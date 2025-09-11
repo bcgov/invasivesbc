@@ -16,7 +16,6 @@ const TrainingPage = () => {
     (async () => {
       await fetch(`${api_base}/api/training_videos`)
         .then(async (res) => {
-          console.log(res);
           const data = await res.json();
           setVideos(data.result);
         })
