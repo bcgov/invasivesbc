@@ -25,11 +25,10 @@ const LpGlobalFilters = () => {
         {Object.entries(globalMapFilters).map(([key, value], index) => (
           <Fragment key={key}>
             {index !== 0 && <hr />}
-            <li
-              onClick={() => handleToggleGlobalMapFilter(key as MapRecordsetLayerFilterCategory)}
-              className="lp-global-map-filter-option"
-            >
-              <IconButton>{value ? <FilterAlt /> : <FilterAltOff />}</IconButton>
+            <li className="lp-global-map-filter-option">
+              <IconButton onClick={() => handleToggleGlobalMapFilter(key as MapRecordsetLayerFilterCategory)}>
+                {value ? <FilterAlt /> : <FilterAltOff />}
+              </IconButton>
               {key}
             </li>
           </Fragment>
