@@ -18,13 +18,10 @@ import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
 import AppActions from 'state/actions/appActions/appActions';
 import ExportActions from 'state/actions/exports/exportActions';
 import { OfflineProtomapsActions } from 'state/actions/offlineProtomaps';
-
-enum LeafletWhosEditingEnum {
-  ACTIVITY = 'ACTIVITY',
-  WHATSHERE = 'WHATSHERE',
-  BOUNDARY = 'BOUNDARY',
-  NONE = 'NONE'
-}
+import {
+  MapRecordsetLayerFilterCategory,
+  MapRecordsetLayerFilters
+} from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/reusable-layer-specifications';
 
 interface IServerLayer {
   id: number | string;
@@ -75,6 +72,7 @@ interface MapState {
   userRecordOnHoverRecordID?: string | number;
   userRecordOnHoverRecordGeometry?: Feature | Polygon | Point;
   userRecordOnHoverRecordType?: RecordSetType;
+  globalMapFilters: MapRecordsetLayerFilters;
   viewFilters: boolean;
   whatsHere: {
     toggle: boolean;
@@ -133,6 +131,12 @@ const initialState: MapState = {
   drawingCustomLayerName: '',
   error: false,
   initialized: false,
+  globalMapFilters: {
+    [MapRecordsetLayerFilterCategory.Observations]: true,
+    [MapRecordsetLayerFilterCategory.Treatments]: true,
+    [MapRecordsetLayerFilterCategory.Monitoring]: true,
+    [MapRecordsetLayerFilterCategory.Biocontrol]: true
+  },
   layers: [],
   linkToCSV: '',
   panned: false,
@@ -571,6 +575,8 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         draftState.recordSetForCSV = null;
       } else if (OfflineProtomapsActions.setDebugPanelState.match(action)) {
         draftState.offlineProtomaps.debugPanelOpen = action.payload;
+      } else if (UserSettings.Map.toggleGlobalMapFilter.match(action)) {
+        draftState.globalMapFilters[action.payload] = !draftState.globalMapFilters[action.payload];
       } else if (OfflineProtomapsActions.toggleDebugPanelState.match(action)) {
         draftState.offlineProtomaps.debugPanelOpen = !state.offlineProtomaps.debugPanelOpen;
       }
@@ -580,4 +586,4 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
 
 const selectMap: (state) => MapState = (state) => state.Map;
 export { createMapReducer, selectMap };
-export type { LeafletWhosEditingEnum, MapState, IServerLayer };
+export type { MapState, IServerLayer };
