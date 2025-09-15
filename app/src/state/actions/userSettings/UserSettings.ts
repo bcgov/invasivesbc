@@ -3,6 +3,7 @@ import { Feature, Point, Polygon } from 'geojson';
 import RecordSet from './RecordSet';
 import Boundary from 'interfaces/Boundary';
 import { RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
+import { MapRecordsetLayerFilterCategory } from 'state/reducers/map';
 
 interface IHoverRecordset {
   recordType: RecordSetType;
@@ -100,11 +101,15 @@ class Map {
     layerName: string;
     active?: boolean;
   }>(`${this.PREFIX}/togglePreferredOverlayLayer`);
+
   static readonly setCenter = createAction<number[]>(`${this.PREFIX}/setCenter`);
   static readonly setCenterSuccess = createAction<number[]>(`${this.PREFIX}/setCenterSuccess`);
 
   static readonly setHoveredRecordset = createAction<IHoverRecordset>(`${this.PREFIX}/setHoveredRecordset`);
   static readonly markCoordinate = createAction<IMarkLocation>(`${this.PREFIX}/markCoordinate`);
+  static readonly toggleGlobalMapFilter = createAction<MapRecordsetLayerFilterCategory>(
+    `${this.PREFIX}/toggleGlobalMapFilter`
+  );
 }
 
 class SiteLists {

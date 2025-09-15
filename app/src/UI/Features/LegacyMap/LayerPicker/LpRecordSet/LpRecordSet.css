@@ -33,13 +33,14 @@
 #lp-record-set .lp-record-set-option {
   display: flex;
   align-items: center;
-  height: 48px;
+  min-height: 48px;
   box-sizing: border-box;
   button {
     background-color: transparent;
     border: none;
     height: 100%;
     padding: 10px;
+    color: var(--eigengrau);
   }
   button:hover {
     cursor: pointer;

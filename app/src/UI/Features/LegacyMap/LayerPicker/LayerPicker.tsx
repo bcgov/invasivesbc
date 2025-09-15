@@ -36,14 +36,14 @@ export const LayerPicker = ({ layers, setOverlayState }: PropTypes) => {
 
   if (!showLayerPicker) {
     return (
-      <button
+      <IconButton
         data-testid="lp-open"
         id="layer-picker-closed-icon"
         className="layer-picker-pos"
         onClick={() => setShowLayerPicker(true)}
       >
         <LayersIcon />
-      </button>
+      </IconButton>
     );
   }
   return (
