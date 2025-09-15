@@ -8,7 +8,7 @@ async function main() {
   const dbUrl = process.env.DATABASE_URL;
   const outDir = path.resolve('out_pmtiles_50k');
   const zMin = +(process.env.ZMIN || 9);
-  const zMax = +(process.env.ZMAX || 12);
+  const zMax = +(process.env.ZMAX || 16);
   const mode = (process.env.MODE) || 'build';
   const pmtilesBin = process.env.PMTILES_BIN || 'pmtiles';
 
@@ -28,9 +28,12 @@ async function main() {
   //     on m.sheet_id=s.gid::text and m.minzoom=$1 and m.maxzoom=$2 where m.sheet_id is null;
   //   `, [zMin, zMax]);
 
+
+  //    SELECT s.gid::text as sheet_id FROM invasivesbc.nts_50k_grid s WHERE s.gid IN (185, 175, 166, 158, 196, 186, 176, 167, 197);
+
   const { rows: cells } = await pool.query(
     `
-    SELECT s.gid::text as sheet_id FROM invasivesbc.nts_50k_grid s WHERE s.gid IN (185, 175, 166, 158, 196, 186, 176, 167, 197);
+    SELECT s.gid::text as sheet_id FROM invasivesbc.nts_50k_grid s WHERE s.gid IN (185);
     `
   );
 
