@@ -82,15 +82,18 @@ function* handle_WHATS_HERE_FEATURE(whatsHereFeature: PayloadAction<Feature>) {
 
   const isOversized = newGeom && area(newGeom) > METERS_IN_HECTARE * MAX_HECTARES;
   if (isOversized) {
-    yield put(
-      Alerts.create({
-        subject: AlertSubjects.Map,
-        severity: AlertSeverity.Error,
-        content: `Reduce area of search to <${MAX_HECTARES.toLocaleString()} Hectares`,
-        autoClose: 4
-      })
-    );
-    yield put(WhatsHere.server_filtered_ids_fetched([], []));
+    yield all([
+      // Terminate process, end loading spinner/status
+      yield put(WhatsHere.server_filtered_ids_fetched([], [])),
+      yield put(
+        Alerts.create({
+          subject: AlertSubjects.Map,
+          severity: AlertSeverity.Error,
+          content: `Reduce area of search to <${MAX_HECTARES.toLocaleString()} Hectares`,
+          autoClose: 4
+        })
+      )
+    ]);
     return;
   }
 
