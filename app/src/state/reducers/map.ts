@@ -1,6 +1,7 @@
-import { createNextState, nanoid } from '@reduxjs/toolkit';
+import { createNextState, createSelector, nanoid } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
 import { Feature, GeoJSON, Point, Polygon } from 'geojson';
+import { FilterSpecification } from 'maplibre-gl';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import GeoShapes from 'constants/geoShapes';
 import UserSettings from 'state/actions/userSettings/UserSettings';
@@ -19,12 +20,20 @@ import AppActions from 'state/actions/appActions/appActions';
 import ExportActions from 'state/actions/exports/exportActions';
 import { OfflineProtomapsActions } from 'state/actions/offlineProtomaps';
 
-enum LeafletWhosEditingEnum {
-  ACTIVITY = 'ACTIVITY',
-  WHATSHERE = 'WHATSHERE',
-  BOUNDARY = 'BOUNDARY',
-  NONE = 'NONE'
+/**
+ * Filter Categories, Each of these represents a globally applied filter a user is able to select on the map.
+ * These will render in the LayerPicker as options
+ */
+enum MapRecordsetLayerFilterCategory {
+  Observations = 'Observations',
+  Treatments = 'Treatments',
+  Monitoring = 'Monitoring',
+  Biocontrol = 'Biocontrol'
 }
+
+type MapRecordsetLayerFilters = {
+  [key in MapRecordsetLayerFilterCategory]: boolean;
+};
 
 interface IServerLayer {
   id: number | string;
@@ -75,6 +84,7 @@ interface MapState {
   userRecordOnHoverRecordID?: string | number;
   userRecordOnHoverRecordGeometry?: Feature | Polygon | Point;
   userRecordOnHoverRecordType?: RecordSetType;
+  globalMapFilters: MapRecordsetLayerFilters;
   viewFilters: boolean;
   whatsHere: {
     toggle: boolean;
@@ -133,6 +143,12 @@ const initialState: MapState = {
   drawingCustomLayerName: '',
   error: false,
   initialized: false,
+  globalMapFilters: {
+    [MapRecordsetLayerFilterCategory.Observations]: true,
+    [MapRecordsetLayerFilterCategory.Treatments]: true,
+    [MapRecordsetLayerFilterCategory.Monitoring]: true,
+    [MapRecordsetLayerFilterCategory.Biocontrol]: true
+  },
   layers: [],
   linkToCSV: '',
   panned: false,
@@ -571,6 +587,8 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         draftState.recordSetForCSV = null;
       } else if (OfflineProtomapsActions.setDebugPanelState.match(action)) {
         draftState.offlineProtomaps.debugPanelOpen = action.payload;
+      } else if (UserSettings.Map.toggleGlobalMapFilter.match(action)) {
+        draftState.globalMapFilters[action.payload] = !draftState.globalMapFilters[action.payload];
       } else if (OfflineProtomapsActions.toggleDebugPanelState.match(action)) {
         draftState.offlineProtomaps.debugPanelOpen = !state.offlineProtomaps.debugPanelOpen;
       }
@@ -579,5 +597,50 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
 }
 
 const selectMap: (state) => MapState = (state) => state.Map;
-export { createMapReducer, selectMap };
-export type { LeafletWhosEditingEnum, MapState, IServerLayer };
+
+/**
+ * @desc Calculates the Activity subtypes to be filtered out from the Map Layers based on the current state of 'globalMapFilters'
+ */
+const selectGlobalRecordsetFilters = createSelector(selectMap, (mapState): FilterSpecification | undefined => {
+  const MAP_RECORDSET_BUCKETS = {
+    [MapRecordsetLayerFilterCategory.Observations]: [
+      'Activity_Observation_PlantAquatic',
+      'Activity_Observation_PlantTerrestrial'
+    ],
+
+    [MapRecordsetLayerFilterCategory.Treatments]: [
+      'Activity_Treatment_ChemicalPlantAquatic',
+      'Activity_Treatment_ChemicalPlantTerrestrial',
+      'Activity_Treatment_MechanicalPlantAquatic',
+      'Activity_Treatment_MechanicalPlantTerrestrial'
+    ],
+
+    [MapRecordsetLayerFilterCategory.Monitoring]: [
+      'Activity_Monitoring_ChemicalTerrestrialAquaticPlant',
+      'Activity_Monitoring_MechanicalTerrestrialAquaticPlant'
+    ],
+
+    [MapRecordsetLayerFilterCategory.Biocontrol]: [
+      'Activity_Biocontrol_Collection',
+      'Activity_Biocontrol_Release',
+      'Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant',
+      'Activity_Monitoring_BiocontrolRelease_TerrestrialPlant'
+    ]
+  };
+  const keys = Object.entries(mapState.globalMapFilters)
+    .filter(([_, value]) => !value)
+    .map(([key]) => key);
+
+  const filteredOutSubtypes: Array<string | number> = Array.from(
+    new Set(keys.flatMap((key) => MAP_RECORDSET_BUCKETS?.[key] ?? []))
+  );
+
+  if (filteredOutSubtypes.length === 0) {
+    return undefined; // no filter applied
+  }
+
+  return ['!in', 'activity_subtype', ...filteredOutSubtypes];
+});
+
+export { createMapReducer, selectMap, selectGlobalRecordsetFilters, MapRecordsetLayerFilterCategory };
+export type { MapState, IServerLayer, MapRecordsetLayerFilters };
