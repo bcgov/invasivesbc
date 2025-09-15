@@ -1,4 +1,4 @@
-import { StrictMode, useEffect, useState } from 'react';
+import { CSSProperties, StrictMode, useEffect, useState } from 'react';
 import { Button } from '@mui/material';
 import './Records.css';
 import { useDispatch, useSelector } from 'utils/use_selector';
@@ -8,7 +8,6 @@ import RecordSetDetails from './RecordSetDetails';
 import RecordSetControl from './RecordSetControl';
 import filterRecordsetsByNetworkState from 'utils/filterRecordsetsByNetworkState';
 import UploadSiteList from '../SiteLists/UploadSiteList/UploadSiteList';
-import debounce from 'lodash.debounce';
 import { useNavigate } from 'react-router';
 
 export const Records = () => {
@@ -17,10 +16,6 @@ export const Records = () => {
 
   const handleNameChange = (val: string, setKey: string) =>
     dispatch(UserSettings.RecordSet.set({ recordSetName: val }, setKey));
-
-  const [highlightedSet, setHighlightedSet] = useState<string | null>();
-  const highlightSet = debounce((set: string) => setHighlightedSet(set), 100, { leading: true });
-  const unHighlightSet = debounce(() => setHighlightedSet(null), 100, { leading: true });
 
   const navigate = useNavigate();
 
@@ -63,17 +58,9 @@ export const Records = () => {
                 <li
                   key={set}
                   onClick={() => navigate('/Records/List/Local/' + set)}
-                  onMouseOver={() => {
-                    highlightSet(set);
-                  }}
-                  onFocus={() => {
-                    highlightSet(set);
-                  }}
-                  onMouseOut={unHighlightSet}
-                  onBlur={unHighlightSet}
                   className="record-set-option"
                   data-testid="record-set"
-                  style={{ backgroundColor: `${recordSets[set]?.color}${highlightedSet === set ? 65 : 20}` }}
+                  style={{ '--recordset-color': recordSets[set].color } as CSSProperties}
                 >
                   <RecordSetDetails
                     name={recordSets[set]?.recordSetName}
