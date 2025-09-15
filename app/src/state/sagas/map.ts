@@ -1,4 +1,4 @@
-import { buffer } from '@turf/turf';
+import { area, buffer } from '@turf/turf';
 import { Feature } from 'geojson';
 import { actionChannel, all, call, debounce, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
@@ -52,6 +52,8 @@ import AppActions from 'state/actions/appActions/appActions';
 import DrawToolActions from 'state/actions/drawtool/drawToolActions';
 import getIdsForRecordset from 'utils/getIdsForRecordset';
 import { selectConfiguration } from 'state/reducers/configuration';
+import Alerts from 'state/actions/alerts/Alerts';
+import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS() {
   yield put(MapActions.initRequest());
@@ -71,7 +73,29 @@ function* refetchServerBoundaries() {
 }
 
 function* handle_WHATS_HERE_FEATURE(whatsHereFeature: PayloadAction<Feature>) {
+  const METERS_IN_HECTARE = 10000;
+  const MAX_HECTARES = 3000;
+  const newGeom =
+    whatsHereFeature.payload.geometry.type === GeoShapes.Polygon
+      ? whatsHereFeature.payload
+      : buffer(whatsHereFeature.payload, 5, { units: 'centimeters' });
+
+  const isOversized = newGeom && area(newGeom) > METERS_IN_HECTARE * MAX_HECTARES;
+  if (isOversized) {
+    yield put(
+      Alerts.create({
+        subject: AlertSubjects.Map,
+        severity: AlertSeverity.Error,
+        content: `Reduce area of search to <${MAX_HECTARES.toLocaleString()} Hectares`,
+        autoClose: 4
+      })
+    );
+    yield put(WhatsHere.server_filtered_ids_fetched([], []));
+    return;
+  }
+
   const { connected } = yield select(selectNetworkState);
+
   if (connected) {
     // get all the toggled on recordsets
     const tableFilters = [
