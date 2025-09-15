@@ -67,7 +67,7 @@ const LpLayers = ({ layers, setOverlayState }: PropTypes) => {
 
       <div>
         {KmlLayers?.length > 0 ? (
-          <ul className="layerList">
+          <ul>
             {KmlLayers?.map((layer) => (
               <LpLayersOption key={layer.id ?? nanoid()} onClick={handleKmlClick} layer={layer} />
             ))}
