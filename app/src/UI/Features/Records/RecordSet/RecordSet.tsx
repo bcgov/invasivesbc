@@ -13,6 +13,7 @@ import Activity from 'state/actions/activity/Activity';
 import Filters from './Filters/Filters';
 import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
 import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
+import GlobalFilterWarning from './GlobalFilterWarning/GlobalFilterWarning';
 
 type PropTypes = { setID: string };
 
@@ -47,6 +48,7 @@ export const RecordSet = ({ setID }: PropTypes) => {
           <div className="recordSet_header_name">
             {recordSet?.recordSetName || `New Recordset - ${recordSet?.recordSetType}`}
           </div>
+          <GlobalFilterWarning />
           <MobileOnly>
             <FeatureGated requires="CACHE_RECORDSETS">
               {canCacheRecordset && !isCellPhoneWidth && (
