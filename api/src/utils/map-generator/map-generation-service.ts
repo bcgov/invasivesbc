@@ -181,7 +181,6 @@ class MapGenerationService {
   }
 
   public static async listRequests(user_id: number): Promise<MapGenerationRequest[]> {
-    console.dir(user_id);
     const db = await getDBConnection();
     const result = await db.query(
       //language=PostgreSQL
