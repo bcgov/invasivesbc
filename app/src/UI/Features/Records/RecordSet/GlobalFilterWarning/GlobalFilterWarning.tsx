@@ -1,4 +1,3 @@
-import { Tooltip } from '@mui/material';
 import { ReactNode, useMemo } from 'react';
 import { selectGlobalRecordsetFilters } from 'state/reducers/map';
 import { useSelector } from 'utils/use_selector';
@@ -13,7 +12,7 @@ const GlobalFilterWarning = () => {
     if (globalMapFilters == undefined) return null;
     return (
       <div className="global-filter-tooltip">
-        <p>Global filters are active. The map may not show all data.</p>
+        <p>Global filters are active. The map will not show the following data:</p>
         <ul>
           {(globalMapFilters as unknown as Array<string>).slice(2).map((f) => (
             <li key={f}>{ActivitySubtypeShortLabels?.[f]}</li>
