@@ -1,12 +1,13 @@
 import { HelpOutline } from '@mui/icons-material';
-import { IconButton, Tooltip } from '@mui/material';
-import { useState } from 'react';
+import { IconButton, SvgIconProps, Tooltip } from '@mui/material';
+import { ReactElement, ReactNode, useState } from 'react';
 
 type PropTypes = {
-  tooltipText: string;
+  tooltipText: string | ReactNode;
+  icon?: ReactElement<SvgIconProps>;
 };
 
-const TooltipWithIcon = ({ tooltipText }: PropTypes) => {
+const TooltipWithIcon = ({ tooltipText, icon }: PropTypes) => {
   const [showTooltip, setShowTooltip] = useState<boolean>(false);
   return (
     <Tooltip
@@ -19,7 +20,7 @@ const TooltipWithIcon = ({ tooltipText }: PropTypes) => {
       title={tooltipText}
     >
       <IconButton sx={{ padding: 0, margin: 0, pointerEvents: 'auto' }}>
-        <HelpOutline color="info" />
+        {icon ? icon : <HelpOutline color="info" />}
       </IconButton>
     </Tooltip>
   );
