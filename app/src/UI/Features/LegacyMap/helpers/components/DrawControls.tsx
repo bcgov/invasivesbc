@@ -504,7 +504,7 @@ const DrawControls = () => {
           id: 'gl-drawn-fill.hot',
           type: 'fill',
           layout: {},
-          filter: ['all', ['==', 'active', 'false'], ['!=', 'user_error', 'true']],
+          filter: ['all', ['==', 'active', 'false'], ['!=', 'user_error', 'true'], ['==', '$type', 'Polygon']],
           paint: {
             'fill-color': 'white',
             'fill-opacity': 0.5
