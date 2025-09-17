@@ -177,7 +177,11 @@ abstract class RecordCacheService extends BaseCacheService<
     const containsServerFilterShape = spec.filterObjects?.tableFilters.some(
       (shape) => shape.filterType === EFilterType.Uploaded
     );
-    if (containsServerFilterShape) {
+    const filtersSubsetOfData = spec.filterObjects.tableFilters.some(
+      (f) => f.filterType === EFilterType.MostRecentObservation
+    );
+
+    if (containsServerFilterShape || filtersSubsetOfData) {
       spec.ids_to_filter ??= spec.idsToCache;
     }
     await this.addOrUpdateRepository({
