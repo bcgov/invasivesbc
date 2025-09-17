@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes, useParams } from 'react-router';
+import { Navigate, Route, Routes, useNavigate, useParams } from 'react-router';
 import { LandingComponent } from 'UI/Features/Landing/Landing';
 import { Records } from 'UI/Features/Records/Records';
 import { Activity } from 'UI/Features/Records/Record';
@@ -6,11 +6,9 @@ import { IAPPRecord } from 'UI/Features/IAPP/IAPPRecord';
 import { RecordSetId } from 'interfaces/UserRecordSet';
 import { OfflineRecordSet } from 'UI/Features/Records/RecordSet/OfflineRecordSet';
 import { RecordSet } from 'UI/Features/Records/RecordSet/RecordSet';
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import Spinner from 'UI/Reusable/Spinner/Spinner';
 import { WhatsHereTable } from 'UI/Features/WhatsHere/WhatsHereTable';
-import FormMenuButtons from 'UI/Features/Records/FormMenuButtons/FormMenuButtons';
-import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
 import { useSelector } from 'utils/use_selector';
 
 const UserAccessPage = React.lazy(() => import('UI/Features/Admin/userAccess/UserAccessPage'));
@@ -29,6 +27,16 @@ const ManageTripsPage = React.lazy(() => import('UI/Features/ManageTripsPage/Man
 const UserGuide = React.lazy(() => import('UI/Features/UserGuide/UserGuide'));
 
 const AppRoutes = () => {
+  const navigate = useNavigate();
+  const userActivated = useSelector((state) => state.UserInfo.activated);
+  const userLoaded = useSelector((state) => state.UserInfo.loaded);
+
+  useEffect(() => {
+    if (!userActivated && userLoaded) {
+      navigate('/AccessRequest');
+    }
+  }, [userActivated, userLoaded]);
+
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/Landing" replace />} />
