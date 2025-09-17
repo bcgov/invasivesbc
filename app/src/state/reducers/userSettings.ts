@@ -282,17 +282,15 @@ function createUserSettingsReducer(_configuration: AppConfig) {
         draftState.recordSets[recordSetID].idList = idList;
       } else if (UserSettings.RecordSet.addFilter.match(action)) {
         const { filterType, setID, field, operator, operator2, filter } = action.payload;
-        if (filterType === EFilterType.Table) {
-          draftState.recordSets[setID].tableFilters ??= [];
-          draftState.recordSets[setID]?.tableFilters.push({
-            id: nanoid(),
-            field: field ?? '',
-            filterType: filterType,
-            operator: operator ?? 'CONTAINS',
-            operator2: operator2 ?? 'AND',
-            filter: filter ?? ''
-          });
-        }
+        draftState.recordSets[setID].tableFilters ??= [];
+        draftState.recordSets[setID]?.tableFilters.push({
+          id: nanoid(),
+          field: field ?? '',
+          filterType: filterType!,
+          operator: operator ?? 'CONTAINS',
+          operator2: operator2 ?? 'AND',
+          filter: filter ?? ''
+        });
       } else if (UserSettings.RecordSet.clearFilters.match(action)) {
         if (action.payload.setID === RecordSetId.Drafts) {
           draftState.recordSets[action.payload.setID].tableFilters = [
