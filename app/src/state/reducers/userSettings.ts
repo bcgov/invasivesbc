@@ -191,26 +191,14 @@ function createUserSettingsReducer(_configuration: AppConfig) {
           tableFilter.filter ??= '';
           tableFilter.geojson = geojson;
         }
-
-        const tableFiltersNotBlank = recordSet?.tableFilters.filter((filter) => !!filter.filter);
-        recordSet.tableFiltersPreviousHash = recordSet?.tableFiltersHash;
-        recordSet.tableFiltersHash = Md5.hashStr(JSON.stringify(tableFiltersNotBlank));
       } else if (UserSettings.RecordSet.removeFilter.match(action)) {
-        const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
-          (filter) => filter.id === action.payload.filterID
-        );
+        const { setID, filterID } = action.payload;
+        const index = draftState.recordSets[setID]?.tableFilters.findIndex((filter) => filter.id === filterID);
         draftState.recordSets[action.payload.setID]?.tableFilters.splice(index, 1);
-
-        draftState.recordSets[action.payload.setID].tableFiltersPreviousHash =
-          draftState.recordSets[action.payload.setID]?.tableFiltersHash;
-
-        const tableFiltersNotBlank = draftState.recordSets[action.payload.setID]?.tableFilters.filter(
-          (filter) => filter.filter !== ''
-        );
-
-        draftState.recordSets[action.payload.setID].tableFiltersHash = Md5.hashStr(
-          JSON.stringify(tableFiltersNotBlank)
-        );
+      } else if (UserSettings.RecordSet.updateTableFiltersHash.match(action)) {
+        const { setID, tableFiltersHash } = action.payload;
+        draftState.recordSets[setID].tableFiltersPreviousHash = draftState.recordSets[setID].tableFiltersHash;
+        draftState.recordSets[setID].tableFiltersHash = tableFiltersHash;
       } else if (UserSettings.RecordSet.toggleRecordColumn.match(action)) {
         const { recordType, key } = action.payload;
         const index = draftState.tableColumns[recordType].findIndex((item) => item.key === key);
@@ -281,7 +269,7 @@ function createUserSettingsReducer(_configuration: AppConfig) {
         const { recordSetID, idList } = action.payload;
         draftState.recordSets[recordSetID].idList = idList;
       } else if (UserSettings.RecordSet.addFilter.match(action)) {
-        const { filterType, setID, field, operator, operator2, filter } = action.payload;
+        const { filterType, setID, field, operator, operator2, filter, hidden } = action.payload;
         draftState.recordSets[setID].tableFilters ??= [];
         draftState.recordSets[setID]?.tableFilters.push({
           id: nanoid(),
@@ -289,7 +277,8 @@ function createUserSettingsReducer(_configuration: AppConfig) {
           filterType: filterType!,
           operator: operator ?? 'CONTAINS',
           operator2: operator2 ?? 'AND',
-          filter: filter ?? ''
+          filter: filter ?? '',
+          hidden
         });
       } else if (UserSettings.RecordSet.clearFilters.match(action)) {
         if (action.payload.setID === RecordSetId.Drafts) {
@@ -300,7 +289,8 @@ function createUserSettingsReducer(_configuration: AppConfig) {
               filterType: EFilterType.Table,
               filter: 'Draft',
               operator: 'CONTAINS',
-              operator2: 'AND'
+              operator2: 'AND',
+              hidden: true
             }
           ];
         } else {
