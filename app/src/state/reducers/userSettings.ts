@@ -1,5 +1,4 @@
 import { createNextState, nanoid } from '@reduxjs/toolkit';
-import { Md5 } from 'ts-md5';
 import { Draft } from 'immer';
 import { AppConfig } from 'state/configuration/runtime-config';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
