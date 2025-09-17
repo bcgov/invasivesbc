@@ -33,6 +33,7 @@ interface IFilter {
   operator: string;
   operator2: string;
   geojson?: Feature;
+  hidden?: boolean;
 }
 
 interface IAddFilter extends Partial<IFilter> {
