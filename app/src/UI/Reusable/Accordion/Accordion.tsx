@@ -14,10 +14,11 @@ interface PropTypes {
   title: string;
   children: ReactNode;
   icon?: ReactElement<SvgIconProps>;
+  initState?: boolean;
 }
 
-const Accordion = ({ title, children, icon }: PropTypes) => {
-  const [open, setOpen] = useState<boolean>(false);
+const Accordion = ({ title, children, icon, initState = false }: PropTypes) => {
+  const [open, setOpen] = useState<boolean>(initState);
 
   return (
     <>
