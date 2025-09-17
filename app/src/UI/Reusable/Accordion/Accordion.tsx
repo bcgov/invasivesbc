@@ -11,7 +11,7 @@ import { ExpandLess, ExpandMore } from '@mui/icons-material';
  * @property {string} title Title text for Accordion
  */
 interface PropTypes {
-  title: string;
+  title: string | ReactNode;
   children: ReactNode;
   icon?: ReactElement<SvgIconProps>;
   initState?: boolean;
