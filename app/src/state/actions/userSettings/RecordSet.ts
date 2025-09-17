@@ -120,7 +120,6 @@ class RecordSet {
   static readonly clearFilters = createAction<{ setID: number | string }>(`${this.PREFIX}/clearFilters`);
   static readonly updateFilter = createAction<IUpdateFilter>(`${this.PREFIX}/updateFilter`);
   static readonly removeFilter = createAction<IRemoveFilter>(`${this.PREFIX}/removeFilter`);
-  static readonly hideFilters = createAction(`${this.PREFIX}/hideFilters`);
 
   public static readonly createDefaultRecordset = (type: RecordSetType, id?: string): UserRecordSet => ({
     tableFilters: [],
