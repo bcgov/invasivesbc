@@ -22,7 +22,8 @@ interface IRemoveFilter {
 enum EFilterType {
   Drawn = 'spatialFilterDrawn',
   Uploaded = 'spatialFilterUploaded',
-  Table = 'tableFilter'
+  Table = 'tableFilter',
+  MostRecentObservation = 'mostRecentObservation'
 }
 interface IFilter {
   id: string;
@@ -70,6 +71,10 @@ class RecordSet {
   static readonly cycleColourById = createAction<string>(`${this.PREFIX}/rotateColour`);
   static readonly toggleVisibility = createAction<string>(`${this.PREFIX}/toggleVisibility`);
   static readonly toggleLabelVisibility = createAction<string>(`${this.PREFIX}/toggleLabelVisibility`);
+
+  static readonly updateTableFiltersHash = createAction<{ setID: string | number; tableFiltersHash: string }>(
+    `${this.PREFIX}/updateTableFiltersHash`
+  );
 
   static readonly toggleRecordColumn = createAction(
     `${this.PREFIX}.toggleRecordColumn`,
