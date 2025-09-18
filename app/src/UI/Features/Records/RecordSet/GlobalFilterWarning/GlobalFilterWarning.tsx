@@ -7,7 +7,12 @@ import { WarningAmberRounded } from '@mui/icons-material';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
 
 const GlobalFilterWarning = () => {
-  const START_OF_SUBTYPES = 2; // ["!in", "activity_subtype", ...subtypes]
+  /**
+   *  In a filter expression, index 0 = operator, index 1 = property.
+   *  subtypes start from index 2.
+   *  example filter: ["!in", "activity_subtype", ...subtypes]
+   */
+  const START_OF_SUBTYPES = 2;
   const globalMapFilters = useSelector(selectGlobalRecordsetFilters);
 
   const alertMessage = useMemo<ReactNode>(() => {
