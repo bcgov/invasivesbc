@@ -8,10 +8,6 @@
     margin-top: var(--overlay-grip-height);
     box-sizing: border-box;
   }
-
-  .recordSet_filters {
-    overflow-x: auto;
-  }
 }
 
 .recordSet_header {
@@ -66,68 +62,6 @@
   font-weight: bold;
   text-wrap: wrap;
   width: auto;
-}
-
-.recordSet_filter_buttons_container {
-  padding-top: 10px;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  width: 100%;
-
-  & > * {
-    margin: 0 5pt;
-  }
-
-  & > *:last-of-type {
-    margin-left: auto;
-  }
-}
-
-.deleteButton {
-  cursor: pointer;
-}
-
-.filter-table-cont {
-  width: 100%;
-  box-sizing: border-box;
-  overflow-x: auto;
-}
-
-.recordSetFilterTable {
-  border-collapse: collapse;
-  width: 100%;
-
-  tbody,
-  thead {
-    th,
-    td {
-      text-align: left;
-    }
-
-    tr,
-    td {
-      height: 40px;
-    }
-  }
-}
-
-.filterSelect,
-.filterTypeSelect {
-  width: 100%;
-  min-width: 90px;
-  height: 100%;
-  box-sizing: border-box;
-  background-color: #efefef;
-  border: 1px solid black;
-  color: black;
-  border-radius: 5px;
-
-  &:disabled {
-    color: rgb(0 0 0 / 26%);
-    background-color: rgb(0 0 0 / 12%);
-    border-color: rgb(0 0 0 / 12%);
-  }
 }
 
 .recordSet_footer {

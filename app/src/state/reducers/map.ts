@@ -85,7 +85,6 @@ interface MapState {
   userRecordOnHoverRecordGeometry?: Feature | Polygon | Point;
   userRecordOnHoverRecordType?: RecordSetType;
   globalMapFilters: MapRecordsetLayerFilters;
-  viewFilters: boolean;
   whatsHere: {
     toggle: boolean;
     feature: any | null;
@@ -170,7 +169,6 @@ const initialState: MapState = {
   userRecordOnHoverRecordID: undefined,
   userRecordOnHoverRecordGeometry: undefined,
   userRecordOnHoverRecordType: undefined,
-  viewFilters: true,
   whatsHere: {
     toggle: false,
     limit: 5,
@@ -452,8 +450,6 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
           index = draftState.layers.findIndex((layer) => layer.recordSetID === RecordSetId.OfflineActivities);
         }
         draftState.layers[index].loading = false;
-      } else if (UserSettings.RecordSet.hideFilters.match(action)) {
-        draftState.viewFilters = !draftState.viewFilters;
       } else if (WhatsHere.getIdsForRecordsetSuccess.match(action)) {
         let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
         if (index === -1) {

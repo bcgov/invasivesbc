@@ -161,6 +161,9 @@ function sanitizeActivityFilterObject(filterObject: any, req: InvasivesRequest) 
             serverFilterGeometries.push(parseInt(filter.filter));
           }
           break;
+        case 'mostRecentObservation':
+          sanitizedTableFilters.push(filter);
+          break;
         default:
           break;
       }
@@ -751,6 +754,13 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
             filter.operator === 'CONTAINS' ? '=' : '!='
           }  LOWER('${escapeLiteralUnquoted(filter.filter)}') `
         );
+        break;
+      case 'mostRecentObservation':
+        where.append(`
+          AND ${tableAlias}.short_id in (
+            SELECT short_id from invasivesbc.most_recent_observation
+          ) 
+        `);
         break;
       default:
         break;
