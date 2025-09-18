@@ -1,5 +1,5 @@
 import { all, call, put, select, take, takeEvery } from 'redux-saga/effects';
-import { buffer, distance, kinks, lineToPolygon, polygon } from '@turf/turf';
+import { buffer, distance, kinks, lineToPolygon } from '@turf/turf';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { Feature } from 'geojson';
 import {
