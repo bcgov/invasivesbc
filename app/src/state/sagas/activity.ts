@@ -418,7 +418,7 @@ function* handle_copyGeometry(action: PayloadAction<string>) {
       if (res?.ok) {
         const data = yield res.json();
         if (data.geometry?.[FIRST_ENTRY]) {
-          yield put(DrawToolActions.createShape(data.geometry[0]));
+          yield put(DrawToolActions.createShape(data.geometry[FIRST_ENTRY]));
           return; // Shape was extracted, no need to continue
         }
       }
@@ -432,7 +432,7 @@ function* handle_copyGeometry(action: PayloadAction<string>) {
       const service = yield RecordCacheServiceFactory.getPlatformInstance();
       const data = yield service.loadActivity(action.payload);
       if (data.geometry?.[FIRST_ENTRY]) {
-        yield put(DrawToolActions.createShape(data.geometry[0]));
+        yield put(DrawToolActions.createShape(data.geometry[FIRST_ENTRY]));
         return; // Shape was extracted, no need to continue
       }
     } catch (e) {
