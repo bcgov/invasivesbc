@@ -57,7 +57,7 @@
 
 .recordSet_header_name {
   display: flex;
-  padding-left: 2vw;
+  margin: 0 8pt;
   font-size: large;
   font-weight: bold;
   text-wrap: wrap;
