@@ -1,9 +1,12 @@
 import LaunchIcon from '@mui/icons-material/Launch';
-import { IconButton } from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
 import './layerDataMarkerContent.css';
-import { ArrowCircleLeftOutlined, ArrowCircleRightOutlined } from '@mui/icons-material';
+import { ArrowCircleLeftOutlined, ArrowCircleRightOutlined, CopyAll } from '@mui/icons-material';
 import { useState } from 'react';
 import { NavigateFunction } from 'react-router';
+import { Dispatch } from 'redux';
+import Prompt from 'state/actions/prompts/Prompt';
+import Activity from 'state/actions/activity/Activity';
 
 type PropTypes = {
   features: Array<{
@@ -11,13 +14,31 @@ type PropTypes = {
     url: string;
     value: string;
     map_symbol: string;
+    id?: string | number;
   }>;
+  canCopyShape: boolean;
+  dispatch: Dispatch;
   navigate: NavigateFunction;
 };
 
-const LayerDataMarkerContent = ({ features, navigate }: PropTypes) => {
+const LayerDataMarkerContent = ({ features, navigate, dispatch, canCopyShape: canCopyRecord }: PropTypes) => {
   const STEP = 3;
   const handleGoTo = (url: string) => navigate(url);
+  const handleCopy = (id: string | number) =>
+    dispatch(
+      Prompt.confirmation({
+        title: 'Copy shape',
+        prompt:
+          'Do you want to replace your current shape with this one? Your existing shape will be lost if you continue.',
+        confirmText: 'Copy shape',
+        callback: (confirm: boolean) => {
+          if (confirm) {
+            dispatch(Activity.Autofill.copyGeometry(id.toString()));
+          }
+        }
+      })
+    );
+
   const inc = () => setFirstPos((oldPos) => Math.min(oldPos + STEP, features.length));
   const dec = () => setFirstPos((oldPos) => Math.max(oldPos - STEP, 0));
   const [firstPos, setFirstPos] = useState<number>(0);
@@ -31,16 +52,26 @@ const LayerDataMarkerContent = ({ features, navigate }: PropTypes) => {
             <tr>
               <th>Type</th>
               <th>Record ID</th>
-              <th colSpan={2}>Map Symbol</th>
+              <th>Map Symbol</th>
             </tr>
           </thead>
           <tbody>
-            {slicedFeatures.map(({ label, map_symbol, value, url }) => (
+            {slicedFeatures.map(({ id, label, map_symbol, value, url }) => (
               <tr key={value + map_symbol + label}>
                 <td>{label}</td>
                 <td>{value}</td>
                 <td>{map_symbol}</td>
-                <td>
+
+                <td className="buttons">
+                  {id && canCopyRecord && (
+                    <Tooltip classes={{ tooltip: 'toolTip' }} title={'Replace your current shape with this one'}>
+                      <span>
+                        <IconButton disabled={!canCopyRecord} onClick={handleCopy.bind(this, id)}>
+                          <CopyAll />
+                        </IconButton>
+                      </span>
+                    </Tooltip>
+                  )}
                   <IconButton onClick={handleGoTo.bind(this, url)}>
                     <LaunchIcon />
                   </IconButton>

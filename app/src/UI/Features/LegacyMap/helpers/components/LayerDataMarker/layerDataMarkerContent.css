@@ -68,6 +68,10 @@
       tbody tr td {
         text-align: left;
       }
+      td.buttons {
+        display: flex;
+        justify-content: flex-end;
+      }
       tr {
         font-size: 0.85rem;
       }
