@@ -67,8 +67,8 @@ class LocalForageRecordCacheService extends RecordCacheService {
             } else if (shape) {
               return booleanIntersects(shape, filter.geojson);
             }
-          } else if (filter.filterType === EFilterType.Uploaded) {
-            // Server filters are bound in the ids_to_filter due to accuracy loss of WKB -> GeoJSON. They can safely be ignored
+          } else if ([EFilterType.MostRecentObservation, EFilterType.Uploaded].includes(filter?.filterType ?? '')) {
+            // Records containing these types get constrained via `ids_to_filter` and can be ignored.
             return true;
           } else {
             const pattern = new RegExp(filter.filter, 'i');

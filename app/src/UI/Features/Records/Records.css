@@ -27,12 +27,15 @@
   padding: 5pt 1rem;
   box-sizing: border-box;
   border: none;
-  background-color: white;
+  background-color: color-mix(in srgb, var(--recordset-color) 20%, transparent);
   border-bottom: 1pt solid black;
 
   p {
     margin: 0;
     padding: 0;
+  }
+  &:hover {
+    background-color: color-mix(in srgb, var(--recordset-color) 65%, transparent);
   }
 }
 

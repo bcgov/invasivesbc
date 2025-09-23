@@ -27,6 +27,7 @@ export const refreshWhatsHereFeature = (map, options: any) => {
           id: layerID + 'shape',
           source: layerID,
           type: 'fill',
+          filter: ['==', '$type', 'Polygon'],
           paint: {
             'fill-color': 'white',
             'fill-outline-color': 'black',

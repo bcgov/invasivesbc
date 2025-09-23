@@ -18,7 +18,8 @@ const defaultRecordSets: Record<PropertyKey, Partial<UserRecordSet>> = {
         filterType: 'tableFilter' as EFilterType, // For some reason using this directly loads in as undefined, so casting instead.
         filter: ActivityStatus.DRAFT,
         operator: 'CONTAINS',
-        operator2: 'AND'
+        operator2: 'AND',
+        hidden: true
       }
     ],
     cacheMetadataStatus: UserRecordCacheStatus.NOT_ELIGIBLE,
