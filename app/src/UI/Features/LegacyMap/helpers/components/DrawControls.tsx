@@ -29,6 +29,8 @@ import { LAYER_Z_FOREGROUND } from 'UI/Features/LegacyMap/helpers/functional/lay
 import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
 import DrawToolActions from 'state/actions/drawtool/drawToolActions';
 import { useLocation, useNavigate } from 'react-router';
+import DrawControlCrosshair from './DrawControlCrosshair/DrawControlCrosshair';
+import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
 
 // @ts-expect-error mapboxdraw compatibility with maplibre-gl issue
 MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl';
@@ -585,6 +587,13 @@ const DrawControls = () => {
     };
   }, [map]);
 
+  if (![TargetMode.DISABLED, TargetMode.ACTIVITY_GEO_TRACK].includes(mode)) {
+    return (
+      <FeatureGated requires={'DRAW_CROSSHAIR'}>
+        <DrawControlCrosshair drawControls={drawInstance.current} />;
+      </FeatureGated>
+    );
+  }
   return null;
 };
 
