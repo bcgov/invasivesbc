@@ -7,20 +7,11 @@ type Bounds = {
   maxLongitude: number;
 };
 
-function boundsToWKTPolygon(b: Bounds) {
-  const { minLatitude: minLat, maxLatitude: maxLat, minLongitude: minLng, maxLongitude: maxLng } = b;
-  // WKT in lon lat order
-  return `POLYGON((${{ minLng }} ${{ minLat }},${{ maxLng }} ${{ minLat }},${{ maxLng }} ${{ maxLat }},${{ minLng }} ${{
-    maxLat
-  }},${{ minLng }} ${{ minLat }}))`;
-}
-
 export const getAreaOfInterestTileCoordinates = (bounds: Bounds, maxZoom: number): SQLStatement => {
   if (!bounds || !maxZoom) return null;
-  // const aoiWkt = boundsToWKTPolygon(bounds);
+
   const { minLatitude: minLat, maxLatitude: maxLat, minLongitude: minLng, maxLongitude: maxLng } = bounds;
-  // const aoiJSON = JSON.stringify(aoiWkt);
-  // console.log({ message: '===->' + aoiJSON });
+
   return SQL`
     with aoi as (
       select st_transform(

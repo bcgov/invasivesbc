@@ -13,27 +13,17 @@ async function main() {
   const pmtilesBin = process.env.PMTILES_BIN || 'pmtiles';
 
   // where pmtiles are served
+  // Run: npx http-server ./out_pmtiles_50k -p 8080 --cors
   const localBase = process.env.LOCAL_BASE || 'http://localhost:8080/';
 
   const pool = new Pool({ connectionString: dbUrl });
   fs.mkdirSync(outDir, { recursive: true });
 
 
-  // ---  BUILD MODE ---
-  // picking cells to build; missing from manifest
-  // const {rows: cells } = await pool.query(`
-  //   select s.gid::text as sheet_id
-  //   from invasivesbc.nts_50k_grid s
-  //   left join invasivesbc.pmtiles_manifest m
-  //     on m.sheet_id=s.gid::text and m.minzoom=$1 and m.maxzoom=$2 where m.sheet_id is null;
-  //   `, [zMin, zMax]);
-
-
-  //    SELECT s.gid::text as sheet_id FROM invasivesbc.nts_50k_grid s WHERE s.gid IN (185, 175, 166, 158, 196, 186, 176, 167, 197);
-
+  // The tiles selected here are around the Penticton area. Confirm downloaded pmtiles in http://pmtiles.io/
   const { rows: cells } = await pool.query(
     `
-    SELECT s.gid::text as sheet_id FROM invasivesbc.nts_50k_grid s WHERE s.gid IN (185);
+    SELECT s.gid::text as sheet_id FROM invasivesbc.nts_50k_grid s WHERE s.gid IN (185, 175, 166, 158, 196, 186, 176, 167, 197);
     `
   );
 
@@ -45,9 +35,9 @@ async function main() {
     const { pmPath, bytes } = result;
 
     //TO DO: upload pmPath to object storage
+
     const fileName = path.basename(pmPath);
     const url = localBase.replace(/\/+$/, '') + '/' + fileName;
-    const url_no_ext = url.replace(".pmtiles", '');
 
     await pool.query(
       `

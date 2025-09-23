@@ -31,10 +31,6 @@ POST.apiDoc = {
         schema: {
           type: 'object',
           properties: {
-            // type: {
-            //   type: 'string',
-            //   enum: ['Polygon']
-            // },
             maxZoom: {
               type: 'number'
             },
@@ -55,18 +51,6 @@ POST.apiDoc = {
                 }
               }
             }
-            // coordinates: {
-            //   type: 'array',
-            //   items: {
-            //     type: 'array',
-            //     items: {
-            //       type: 'array',
-            //       items: {
-            //         type: 'number'
-            //       }
-            //     }
-            //   }
-            // }
           }
         }
       }

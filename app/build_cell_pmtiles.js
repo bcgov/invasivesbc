@@ -11,7 +11,7 @@ const { Pool } = pkg;
 const execFileAsync = promisify(execFile);
 import sharp from 'sharp';
 
-const WORLD_IMG = (z, x, y) =>
+const WORLD_IMG = (z, y, x) =>
   `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}`;
 
 // -------------- DB Helpers --------------
@@ -91,7 +91,7 @@ const keepAliveAgent = new https.Agent({
 });
 
 async function fetchTile(t, attempts = 3) {
-  console.log(`[url] fetching tiles ${t.z}, ${t.y}, ${t.x}`);
+
   const url = WORLD_IMG(t.z, t.y, t.x);
   let backoff = 200;
 
@@ -237,65 +237,4 @@ export async function buildCell(gid, opts) {
   const stat = fs.statSync(pmPath);
   console.log(`[cell ${gid}] done, size=${stat.size.toLocaleString()} bytes, file=${pmPath}`);
   return { pmPath, bytes: stat.size, zMin, zMax };
-  // async function worker(batch) {
-  //   const rows = [];
-  //   for (const t of batch) {
-  //     try {
-  //       const buf = await fetchTile(t);
-  //       if (!buf) continue;
-  //       const tmsY = (1 << t.z) - 1 - t.y; // XYZ->TMS
-  //       rows.push([t.z, t.x, tmsY, buf]);
-  //     } catch {
-  //       // retry logic
-  //     }
-  //   }
-  //   if (rows.length) {
-  //     insertMany(rows, (err) => {
-  //       if (err) console.error('batch insert finished', err);
-  //     });
-  //   }
-  // }
-
-  // const batchSize = 64;
-  // const tasks = [];
-  // while (i < tiles.length) {
-  //   const batch = tiles.slice(i, i + batchSize);
-  //   const w = worker(batch);
-  //   tasks.push(w);
-  //   while (tasks.length >= CONC) {
-  //     await Promise.race(tasks).catch(() => { });
-  //     for (let k = tasks.length - 1; k >= 0; k--) {
-  //       if ((tasks[k]).isFulfilled || (tasks[k]).isRejected) tasks.splice(k, 1);
-  //     }
-  //   }
-  //   i += batchSize;
-  // }
-  // await Promise.allSettled(tasks);
-  // db.close();
-  // await pool.end();
-
-  // console.log(`[cell ${gid}]convert MBTiles -> PMTiles`);
-  // await execFileAsync(pmtilesBin, ['convert', mbPath, pmPath]);
-  // try {
-  //   fs.unlinkSync(mbPath);
-  // } catch (err) {
-  //   console.warn("Could not delete");
-  // }
-  // const stat = fs.statSync(pmPath);
-  // console.log(`[cell ${gid}] done, size=${stat.size} bytes, file=${pmPath}`);
-  // return { pmPath, bytes: stat.size, zMin, zMax };
 }
-
-// CLI
-
-// const [gid, zMin, zMax, outDir] = process.argv.slice(2);
-// if (!gid || !zMin || !zMax || !outDir) {
-//   console.error('All arguments needed');
-//   process.exit(1);
-// }
-// console.log("-->", gid, zMin, zMax, outDir);
-
-// buildCell(gid, { zMin: +zMin, zMax: +zMax, outDir, dbUrl: process.env.DATABASE_URL }).catch((e) => {
-//   console.error('All arguments needed', e);
-//   process.exit(1);
-// });
