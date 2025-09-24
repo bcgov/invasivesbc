@@ -9,10 +9,9 @@ async function main() {
   const outDir = path.resolve('out_pmtiles_50k');
   const zMin = +(process.env.ZMIN || 9);
   const zMax = +(process.env.ZMAX || 16);
-  const mode = (process.env.MODE) || 'build';
   const pmtilesBin = process.env.PMTILES_BIN || 'pmtiles';
 
-  // where pmtiles are served
+  // pmtiles are served here
   // Run: npx http-server ./out_pmtiles_50k -p 8080 --cors
   const localBase = process.env.LOCAL_BASE || 'http://localhost:8080/';
 

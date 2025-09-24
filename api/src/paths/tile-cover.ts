@@ -95,9 +95,9 @@ function getTiles(): RequestHandler {
     try {
       connection = await getDBConnection();
 
-      // const sqlStatement: SQLStatement = getAreaOfInterestTileCoordinates(bounds, maxZoom); // to load the bc_sheet_tiles' z/x/y coordinates
-      const sqlStatement: SQLStatement = getTilesForCells(bounds, maxZoom); // pmtiles_manifest already has the min and max zoom defined, so maxzoom isnt used in the query atm
-      defaultLog.info({ message: '=====>1' });
+      const sqlStatement: SQLStatement = getAreaOfInterestTileCoordinates(bounds, maxZoom); // to load the bc_sheet_tiles' z/x/y coordinates
+      // const sqlStatement: SQLStatement = getTilesForCells(bounds, maxZoom); // pmtiles_manifest already has min and max zoom defined, so maxzoom isnt used in the query atm
+
       if (!sqlStatement) {
         return res.status(400).json({
           message: 'Invalid request',
@@ -107,7 +107,7 @@ function getTiles(): RequestHandler {
         });
       }
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
-      defaultLog.info({ message: '=====>2' + response.rows });
+
       if (response.rows.length > 0) {
         return res.status(200).json({
           message: 'Found tiles',
