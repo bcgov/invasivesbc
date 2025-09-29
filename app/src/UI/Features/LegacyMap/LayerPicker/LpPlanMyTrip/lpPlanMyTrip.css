@@ -36,7 +36,7 @@
       padding: 5pt 5pt 5pt 1rem;
 
       button:not(:disabled) {
-        color: var(--bc-blue);
+        color: var(--eigengrau);
       }
 
       p {

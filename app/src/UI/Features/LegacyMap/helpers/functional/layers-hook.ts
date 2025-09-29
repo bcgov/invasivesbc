@@ -56,51 +56,23 @@ const useInvasivesMapLayers = () => {
 
     // evaluate each potential map definition and remove those not eligible at this moment
     for (const l of [...MAP_DEFINITIONS, ...offlineDefinitions] as InvasivesMapLayerDefinition[]) {
-      let pass = true;
-
-      if (!l.predicates.directlySelectable) {
-        pass = false;
-      }
-
-      if (l.predicates.mobileOnly && !MOBILE) {
-        pass = false;
-      }
-
-      if (l.predicates.webOnly && MOBILE) {
-        pass = false;
-      }
-
-      if (l.predicates.requiresDebug && !DEBUG) {
-        pass = false;
-      }
-
-      if (l.predicates.requiresPlatform !== undefined) {
-        if (l.predicates.requiresPlatform !== platform) {
-          pass = false;
+      const pass = (() => {
+        switch (true) {
+          case !l.predicates.directlySelectable:
+          case l.predicates.mobileOnly && !MOBILE:
+          case l.predicates.webOnly && MOBILE:
+          case l.predicates.requiresDebug && !DEBUG:
+          case l.predicates.requiresPlatform !== undefined && l.predicates.requiresPlatform !== platform:
+          case l.predicates.requiresFeature !== undefined && !features[l.predicates.requiresFeature].enabled:
+          case l.predicates.requiresAuthentication && !loggedInOrWorkingOffline:
+          case l.predicates.requiresAnonymous && loggedInOrWorkingOffline:
+          case l.predicates.requiresNetwork && !connected:
+          case l.predicates.requiresOffline && connected:
+            return false;
+          default:
+            return true;
         }
-      }
-
-      if (l.predicates.requiresFeature !== undefined) {
-        if (!features[l.predicates.requiresFeature].enabled) {
-          pass = false;
-        }
-      }
-
-      if (l.predicates.requiresAuthentication && !loggedInOrWorkingOffline) {
-        pass = false;
-      }
-
-      if (l.predicates.requiresAnonymous && loggedInOrWorkingOffline) {
-        pass = false;
-      }
-
-      if (l.predicates.requiresNetwork && !connected) {
-        pass = false;
-      }
-
-      if (l.predicates.requiresOffline && connected) {
-        pass = false;
-      }
+      })();
 
       if (pass) {
         newFilteredLayerDefinitions.push({

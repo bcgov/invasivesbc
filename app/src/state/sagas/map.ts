@@ -1,8 +1,9 @@
-import { buffer } from '@turf/turf';
+import { area, buffer } from '@turf/turf';
 import { Feature } from 'geojson';
 import { actionChannel, all, call, debounce, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { buffers } from 'redux-saga';
+import { Md5 } from 'ts-md5';
 import {
   getIdsForRecordsetFromCache,
   handle_ACTIVITIES_TABLE_GET_ROWS,
@@ -29,6 +30,7 @@ import TileCache from 'state/actions/cache/TileCache';
 import { RECORD_COLOURS } from 'constants/colors';
 import {
   EFilterType,
+  IAddFilter,
   IRemoveFilter,
   ISetPageLimit,
   ISetSort,
@@ -52,6 +54,8 @@ import AppActions from 'state/actions/appActions/appActions';
 import DrawToolActions from 'state/actions/drawtool/drawToolActions';
 import getIdsForRecordset from 'utils/getIdsForRecordset';
 import { selectConfiguration } from 'state/reducers/configuration';
+import Alerts from 'state/actions/alerts/Alerts';
+import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS() {
   yield put(MapActions.initRequest());
@@ -71,7 +75,32 @@ function* refetchServerBoundaries() {
 }
 
 function* handle_WHATS_HERE_FEATURE(whatsHereFeature: PayloadAction<Feature>) {
+  const METERS_IN_HECTARE = 10000;
+  const MAX_HECTARES = 3000;
+  const newGeom =
+    whatsHereFeature.payload.geometry.type === GeoShapes.Polygon
+      ? whatsHereFeature.payload
+      : buffer(whatsHereFeature.payload, 5, { units: 'centimeters' });
+
+  const isOversized = newGeom && area(newGeom) > METERS_IN_HECTARE * MAX_HECTARES;
+  if (isOversized) {
+    yield all([
+      // Terminate process, end loading spinner/status
+      yield put(WhatsHere.server_filtered_ids_fetched([], [])),
+      yield put(
+        Alerts.create({
+          subject: AlertSubjects.Map,
+          severity: AlertSeverity.Error,
+          content: `Reduce area of search to <${MAX_HECTARES.toLocaleString()} Hectares`,
+          autoClose: 4
+        })
+      )
+    ]);
+    return;
+  }
+
   const { connected } = yield select(selectNetworkState);
+
   if (connected) {
     // get all the toggled on recordsets
     const tableFilters = [
@@ -326,7 +355,7 @@ function* handle_SWITCH_RECORDSET(action: PayloadAction<SwitchRecordSetPayload>)
   }
 }
 
-function* handle_UserFilterChange(action: PayloadAction<IRemoveFilter | IUpdateFilter>) {
+function* handle_UserFilterChange(action: PayloadAction<{ setID: string | number; tableFiltersHash: string }>) {
   const { setID } = action.payload;
   const { recordSets } = yield select(selectUserSettings);
   const map = yield select(selectMap);
@@ -335,14 +364,12 @@ function* handle_UserFilterChange(action: PayloadAction<IRemoveFilter | IUpdateF
   const currentSet = map?.currentOpenSet;
   const recordSetType = record?.recordSetType;
 
-  if (record?.tableFiltersHash !== record?.tableFiltersPreviousHash) {
-    yield put(
-      AppActions.prepVectorFilters({
-        recordSetID: setID,
-        tableFiltersHash: record?.tableFiltersHash
-      })
-    );
-  }
+  yield put(
+    AppActions.prepVectorFilters({
+      recordSetID: setID,
+      tableFiltersHash: record?.tableFiltersHash
+    })
+  );
   const actionArg = {
     recordSetID: setID,
     tableFiltersHash: record?.tableFiltersHash,
@@ -652,13 +679,28 @@ function* createQueueWorker(channel) {
   }
 }
 
+function* handle_updateTableFiltersHash(action: PayloadAction<IRemoveFilter | IUpdateFilter | IAddFilter>) {
+  const { setID } = action.payload;
+  const { recordSets } = yield select(selectUserSettings);
+  const tableFiltersNotBlank = recordSets[setID]?.tableFilters.filter((filter) => !!filter.filter);
+
+  const newTableFiltersHash = Md5.hashStr(JSON.stringify(tableFiltersNotBlank));
+  const currentHash = recordSets[setID]?.tableFiltersHash;
+
+  if (newTableFiltersHash !== currentHash) {
+    yield put(UserSettings.RecordSet.updateTableFiltersHash({ setID, tableFiltersHash: newTableFiltersHash }));
+  }
+}
 function* activitiesPageSaga() {
   yield all([
     fork(whatsHereSaga),
-    debounce(500, UserSettings.RecordSet.updateFilter, handle_UserFilterChange),
-    takeEvery(UserSettings.RecordSet.clearFilters, handle_UserFilterChange),
-    takeEvery(UserSettings.RecordSet.removeFilter, handle_UserFilterChange),
+    // On changes to recordsets filters, update the hash.
+    debounce(500, UserSettings.RecordSet.updateFilter, handle_updateTableFiltersHash),
+    takeEvery(UserSettings.RecordSet.clearFilters, handle_updateTableFiltersHash),
+    takeEvery(UserSettings.RecordSet.removeFilter, handle_updateTableFiltersHash),
+    takeEvery(UserSettings.RecordSet.addFilter, handle_updateTableFiltersHash),
 
+    takeEvery(UserSettings.RecordSet.updateTableFiltersHash, handle_UserFilterChange),
     takeEvery(UserSettings.Boundaries.removeCustomLayer, handle_REMOVE_CUSTOM_LAYER),
 
     takeEvery(UserSettings.RecordSet.setSort, handle_RECORDSET_SET_SORT),

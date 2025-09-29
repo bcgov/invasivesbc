@@ -161,6 +161,9 @@ function sanitizeActivityFilterObject(filterObject: any, req: InvasivesRequest) 
             serverFilterGeometries.push(parseInt(filter.filter));
           }
           break;
+        case 'mostRecentObservation':
+          sanitizedTableFilters.push(filter);
+          break;
         default:
           break;
       }
@@ -336,6 +339,7 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
 	    a.short_id,
 	    a.activity_type,
 	    a.activity_subtype,
+      a.activity_subtype_full,
 	    a.activity_payload,
 	    a.jurisdiction_display,
 	    a.invasive_plant,
@@ -533,7 +537,6 @@ function fromStatement(sqlStatement: SQLStatement, filterObject: any) {
           'join biocontrol_release_monitoring_summary extract ON extract.activity_id = b.activity_id '
         );
         break;
-
       default:
         sqlStatement.append(
           'join observation_terrestrial_plant_summary extract ON extract.activity_id = b.activity_id '
@@ -592,7 +595,7 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
         break;
       case 'activity_subtype':
         where.append(
-          `${filter.operator2} LOWER(${tableAlias}.activity_subtype) ${
+          `${filter.operator2} LOWER(${tableAlias}.activity_subtype_full) ${
             filter.operator === 'CONTAINS' ? 'like' : 'not like'
           }  LOWER('%${escapeLiteralUnquoted(filter.filter)}%') `
         );
@@ -751,6 +754,13 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
             filter.operator === 'CONTAINS' ? '=' : '!='
           }  LOWER('${escapeLiteralUnquoted(filter.filter)}') `
         );
+        break;
+      case 'mostRecentObservation':
+        where.append(`
+          AND ${tableAlias}.short_id in (
+            SELECT short_id from invasivesbc.most_recent_observation
+          ) 
+        `);
         break;
       default:
         break;

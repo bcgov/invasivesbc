@@ -34,6 +34,7 @@ import {
   handle_ACTIVITY_SAVE_NETWORK_REQUEST
 } from './activity/online';
 import { OFFLINE_ACTIVITY_SAGA_HANDLERS } from './activity/offline';
+import { getCurrentJWT } from './auth/auth';
 import { selectActivity } from 'state/reducers/activity';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import RootUISchemas from 'rjsf/uiSchema/RootUISchemas';
@@ -61,6 +62,7 @@ import { GEO_TRACKING_FEATURE } from 'UI/Features/LegacyMap/helpers/functional/c
 import { isDrawing } from 'utils/geoTrackingHelpers';
 import AppActions from 'state/actions/appActions/appActions';
 import DrawToolActions from 'state/actions/drawtool/drawToolActions';
+import { selectConfiguration, selectRootConfiguration } from 'state/reducers/configuration';
 
 function* handle_ACTIVITY_DELETE_SUCCESS() {
   yield put(UserSettings.RecordSet.setSelected(null));
@@ -397,10 +399,61 @@ function* handle_UPDATE_CACHED_RECORDS() {
     yield Alerts.create(cacheAlertMessages.updateCachesFailed);
   }
 }
+/**
+ * @desc Take a geometry from an existing record and apply it to the active record. Hooks into Draw tools so the shape can be edited after if needed
+ * @param {PayloadAction} action Activity ID of Record
+ */
+function* handle_copyGeometry(action: PayloadAction<string>) {
+  const FIRST_ENTRY = 0;
+  const { API_BASE } = yield select(selectConfiguration);
+  const baseConfig = yield select(selectRootConfiguration);
+  const connected = yield select(selectNetworkConnected);
+  const MOBILE = baseConfig.current.build.MOBILE;
+
+  if (connected) {
+    try {
+      const res = yield fetch(`${API_BASE}/api/activity/${action.payload}`, {
+        headers: { authorization: yield getCurrentJWT(), 'Content-Type': 'application/json' }
+      });
+      if (res?.ok) {
+        const data = yield res.json();
+        if (data.geometry?.[FIRST_ENTRY]) {
+          yield put(DrawToolActions.createShape(data.geometry[FIRST_ENTRY]));
+          return; // Shape was extracted, no need to continue
+        }
+      }
+    } catch (e) {
+      console.error('[handle_copyGeometry]', e);
+    }
+  }
+  if (MOBILE) {
+    try {
+      // Try getting the shape from our local cache
+      const service = yield RecordCacheServiceFactory.getPlatformInstance();
+      const data = yield service.loadActivity(action.payload);
+      if (data.geometry?.[FIRST_ENTRY]) {
+        yield put(DrawToolActions.createShape(data.geometry[FIRST_ENTRY]));
+        return; // Shape was extracted, no need to continue
+      }
+    } catch (e) {
+      console.error('[handle_copyGeometry]', e);
+    }
+  }
+  // Neither the API nor local cache could get us the shape we wanted.
+  yield put(
+    Alerts.create({
+      content: 'Failed to copy shape from record.',
+      severity: AlertSeverity.Error,
+      autoClose: 3,
+      subject: AlertSubjects.Form
+    })
+  );
+}
 
 function* activityPageSaga() {
   yield all([
     takeEvery(UserSettings.InitState.get, handle_UPDATE_CACHED_RECORDS),
+    takeEvery(Activity.Autofill.copyGeometry, handle_copyGeometry),
     takeEvery(Activity.loadActivityIfRequired, handle_LOAD_ACTIVITY_IF_REQUIRED),
     takeEvery(Activity.buildFormSchema, handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST),
     takeEvery(Activity.get, handle_ACTIVITY_GET_REQUEST),

@@ -160,7 +160,8 @@ function createRootReducer(config: UnifiedConfig) {
           'accuracyToggle',
           'simplePickerLayers2',
           'clientBoundaries',
-          'serverBoundaries'
+          'serverBoundaries',
+          'globalMapFilters'
         ]
       },
       createMapReducer()

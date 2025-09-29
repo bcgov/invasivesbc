@@ -1,86 +1,37 @@
 import { useDispatch } from 'react-redux';
 import './RecordSet.css';
 import Button from '@mui/material/Button';
-import { Tooltip } from '@mui/material';
 import { RecordTable } from './RecordTable';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import FilterAltIcon from '@mui/icons-material/FilterAlt';
-import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import ExcelExporter from '../ExcelExporter';
 import RecordSetFooter from './RecordSetFooter';
-import Filter from './Filter';
 import { useSelector } from 'utils/use_selector';
-import { useEffect, useState } from 'react';
-import UserSettings from 'state/actions/userSettings/UserSettings';
-import { RecordSetId, RecordSetType } from 'interfaces/UserRecordSet';
-import { EFilterType, IFilter } from 'state/actions/userSettings/RecordSet';
-import { RecordCacheServiceFactory } from 'utils/record-cache/context';
+import { useEffect } from 'react';
+import { RecordSetId } from 'interfaces/UserRecordSet';
 import { RecordSetCacheButtons } from '../RecordSetCacheButtons';
 import { useNavigate } from 'react-router';
 import Activity from 'state/actions/activity/Activity';
+import Filters from './Filters/Filters';
+import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
+import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
+import GlobalFilterWarning from './GlobalFilterWarning/GlobalFilterWarning';
 
 type PropTypes = { setID: string };
 
-interface ExtendedFilter extends IFilter {
-  disabled: boolean;
-}
-
 export const RecordSet = ({ setID }: PropTypes) => {
-  const viewFilters = useSelector((state) => state.Map.viewFilters);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const onClickBackButton = () => navigate('/Records');
 
-  const onClickBackButton = () => {
-    navigate('/Records');
-  };
-
-  const { MOBILE } = useSelector((state) => state.Configuration.current.build);
+  const MOBILE = useSelector((state) => state.Configuration.current.build.MOBILE);
   const CACHE_RECORDSETS = useSelector((state) => state.Configuration.current.features.CACHE_RECORDSETS.enabled);
   const isCellPhoneWidth = useSelector((state) => state.AppMode.constraints.tinyScreen);
   const recordSet = useSelector((state) => state.UserSettings?.recordSets?.[setID]);
-  const tableType = recordSet?.recordSetType;
-
-  const [cacheFilters, setCacheFilters] = useState<IFilter[]>([]);
-  const [filters, setFilters] = useState<ExtendedFilter[]>([]);
 
   const canCacheRecordset = MOBILE && CACHE_RECORDSETS && !Object.values(RecordSetId).includes(setID as RecordSetId);
-  /**
-   * Get filters from recordset metadata that were applied at time of caching.
-   */
-  useEffect(() => {
-    if (!MOBILE) return;
-    (async () => {
-      const service = await RecordCacheServiceFactory.getPlatformInstance();
-      if (await service.isCached(setID)) {
-        const filtersInCache =
-          (await service.getRepository(setID, ['filter_objects']))?.filter_objects?.tableFilters ?? [];
-        setCacheFilters(filtersInCache);
-      } else {
-        setCacheFilters([]);
-      }
-    })();
-  }, [recordSet?.cacheMetadataStatus]);
-
-  /**
-   * Disabled modification of filters that part of the Cache.
-   * Enabling a user to filter into their cache, but not move out of it
-   */
-  useEffect(() => {
-    const disabledFilters: ExtendedFilter[] = (recordSet?.tableFilters ?? []).map((filter, i) => {
-      const filterCopy = { ...filter }; // Decouple from immutable Selector
-      filterCopy['disabled'] = cacheFilters?.[i]?.id === filterCopy.id;
-      return filterCopy as ExtendedFilter;
-    });
-    setFilters(disabledFilters);
-  }, [cacheFilters, recordSet?.tableFilters]);
 
   useEffect(() => {
     dispatch(Activity.switchRecordSet({ type: 'Activity', setId: setID }));
   }, [setID]);
-
-  const onlyFilterIsForDrafts =
-    recordSet?.tableFilters?.length === 1 && recordSet?.tableFilters[0]?.field === 'form_status';
 
   if (!recordSet) {
     return;
@@ -97,125 +48,21 @@ export const RecordSet = ({ setID }: PropTypes) => {
           <div className="recordSet_header_name">
             {recordSet?.recordSetName || `New Recordset - ${recordSet?.recordSetType}`}
           </div>
-          {canCacheRecordset && !isCellPhoneWidth && (
-            <div className="recordset-cache-control">
-              <RecordSetCacheButtons recordSet={recordSet} setId={setID} onCacheStateChange={() => {}} />
-            </div>
-          )}
+          <GlobalFilterWarning />
+          <MobileOnly>
+            <FeatureGated requires="CACHE_RECORDSETS">
+              {canCacheRecordset && !isCellPhoneWidth && (
+                <div className="recordset-cache-control">
+                  <RecordSetCacheButtons recordSet={recordSet} setId={setID} onCacheStateChange={() => {}} />
+                </div>
+              )}
+            </FeatureGated>
+          </MobileOnly>
         </div>
       </div>
       <div className="recordSet_container">
-        <div className="recordSet_filter_buttons_container">
-          <div className="recordSet_clear_filter_button">
-            <Tooltip classes={{ tooltip: 'toolTip' }} title="Clear all filters and refetch all data for this layer.">
-              <span>
-                <Button
-                  size={'small'}
-                  disabled={cacheFilters.length > 0}
-                  onClick={() => dispatch(UserSettings.RecordSet.clearFilters({ setID }))}
-                  variant="contained"
-                >
-                  Clear Filters
-                  <FilterAltOffIcon />
-                </Button>
-              </span>
-            </Tooltip>
-          </div>
-          <div className="recordSet_toggleView_filter_button">
-            <Tooltip classes={{ tooltip: 'toolTip' }} title="Toggle hiding filters - does not toggle applying them.">
-              <span>
-                <Button
-                  size={'small'}
-                  onClick={() => dispatch(UserSettings.RecordSet.hideFilters())}
-                  variant="contained"
-                >
-                  {viewFilters ? (
-                    <>
-                      Hide Filters
-                      <VisibilityOffIcon />
-                      <FilterAltIcon />
-                    </>
-                  ) : (
-                    <>
-                      Show Filters{' '}
-                      {(recordSet?.tableFilters?.length || 0) > 0 &&
-                        !onlyFilterIsForDrafts &&
-                        `(${recordSet?.tableFilters?.length})`}
-                      <VisibilityIcon />
-                      <FilterAltIcon />
-                    </>
-                  )}
-                </Button>
-              </span>
-            </Tooltip>
-          </div>
-          <div className="recordSet_new_filter_button">
-            <Tooltip
-              classes={{ tooltip: 'toolTip' }}
-              title="Add a new filter, drawn, uploaded KML, or just text search on a field."
-            >
-              <span>
-                <Button
-                  size={'small'}
-                  onClick={() =>
-                    dispatch(
-                      UserSettings.RecordSet.addFilter({
-                        field: tableType === RecordSetType.Activity ? 'short_id' : 'site_id',
-                        filterType: EFilterType.Table,
-                        operator: 'CONTAINS',
-                        operator2: 'AND',
-                        setID: setID
-                      })
-                    )
-                  }
-                  variant="contained"
-                >
-                  Add Filter + <FilterAltIcon />
-                </Button>
-              </span>
-            </Tooltip>
-          </div>
-        </div>
-        <div className="recordSet_filters_container">
-          <div className="recordSet_filters">
-            {recordSet?.tableFilters?.length > 0 && !onlyFilterIsForDrafts && viewFilters && (
-              <table className="recordSetFilterTable">
-                <thead>
-                  <tr>
-                    <th>Operator 1</th>
-                    <th>Operator 2</th>
-                    <th>Filter type</th>
-                    <th>Filter On</th>
-                    <th>Value</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filters.map((filter) => {
-                    if (filter.field !== 'form_status') {
-                      return (
-                        <Filter
-                          key={filter.id}
-                          recordSetType={recordSet.recordSetType}
-                          setID={setID}
-                          filterSet={filter}
-                          disabled={filter.disabled}
-                        />
-                      );
-                    }
-                  })}
-                  <tr>
-                    {MOBILE && cacheFilters.length > 0 && (
-                      <td colSpan={5}>
-                        <i>Filters applied after caching will not be reflected on the map.</i>
-                      </td>
-                    )}
-                  </tr>
-                </tbody>
-              </table>
-            )}
-          </div>
-          <ExcelExporter setName={setID} />
-        </div>
+        <Filters recordsetId={setID} />
+        <ExcelExporter setName={setID} />
         <RecordTable setID={setID} />
       </div>
       <RecordSetFooter recordSet={recordSet} />

@@ -5,6 +5,7 @@ import LpRecordSetOption from './LpRecordSetOption';
 import { RecordSetId, UserRecordSet } from 'interfaces/UserRecordSet';
 import filterRecordsetsByNetworkState from 'utils/filterRecordsetsByNetworkState';
 import { useEffect, useState } from 'react';
+import LpGlobalFilters from '../LpGlobalFilters/LpGlobalFilters';
 
 type PropTypes = {
   closePicker: () => void;
@@ -52,6 +53,7 @@ const LpRecordSet = ({ closePicker }: PropTypes) => {
 
   return (
     <div id="lp-record-set">
+      <LpGlobalFilters />
       <h3>Default Recordsets</h3>
       <ul>
         {defaultRecordSets.map((recordSet, index) => (

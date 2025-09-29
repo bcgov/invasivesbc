@@ -1,9 +1,9 @@
-import { useCallback, useContext, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { MapContext } from '../MapContext';
 import { MapMouseEvent, MapTouchEvent, Point, PointLike, Popup } from 'maplibre-gl';
 import ReactDOM from 'react-dom/client';
 import LayerDataMarkerContent from './LayerDataMarkerContent';
-import { useSelector } from 'utils/use_selector';
+import { useDispatch, useSelector } from 'utils/use_selector';
 import { useNavigate } from 'react-router';
 
 const LayerDataMarker = () => {
@@ -12,9 +12,17 @@ const LayerDataMarker = () => {
 
   const map = useContext(MapContext);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
+  const isCellPhoneWidth = useSelector((state) => state.AppMode.constraints.tinyScreen);
   const whatsHereEnabled = useSelector((state) => state.Map.whatsHere.toggle);
   const connected = useSelector((state) => state.Network.connected);
+  const globalMapFilters = useSelector((state) => state.Map.globalMapFilters);
+
+  // Allow for Copying records geometry
+  const url = useSelector((state) => state.AppMode.url);
+  const editPermission = useSelector((state) => !!state.ActivityPage.activeActivityPermissions?.can_edit);
+  const userCanCopyShape = useMemo(() => editPermission && /\/Activity\//.test(url ?? ''), [url, editPermission]);
 
   const drawToolsActive = useRef<boolean>(false);
   const editModeActive = useRef<boolean>(false);
@@ -22,12 +30,15 @@ const LayerDataMarker = () => {
   const popupRef = useRef<Popup>();
   const timeOfTouchStart = useRef<number>(0);
 
-  const recordsetLayers = useMemo(() => {
+  const [recordsetLayers, setRecordsetLayers] = useState<string[]>([]);
+
+  const updateLayers = () => {
     if (!map) return [];
-    return map
+    const newLayers = map
       .getLayersOrder()
       .filter((layer) => layer.includes('recordset-layer-') || layer.includes('offline-activity'));
-  }, [map?.getLayersOrder()]);
+    setRecordsetLayers(newLayers);
+  };
 
   const createPopupDiv = (numFeatures: number): HTMLDivElement => {
     /*
@@ -46,7 +57,6 @@ const LayerDataMarker = () => {
     return el;
   };
 
-  //
   const queryFeaturesAtTarget = useCallback(
     (e: MapMouseEvent | MapTouchEvent) => {
       const isUserUtilizingDraw = drawToolsActive.current || whatsHereEnabled || editModeActive.current;
@@ -67,6 +77,7 @@ const LayerDataMarker = () => {
                     label: feature.properties.type,
                     value: feature.properties.short_id,
                     map_symbol: feature.properties.map_symbol,
+                    id: feature.properties.activity_id,
                     url: '/Records/Activity/' + feature.properties.activity_id + '/form'
                   }
                 : {
@@ -89,17 +100,24 @@ const LayerDataMarker = () => {
         className: 'map-features-at-point',
         maxWidth: 'none',
         closeButton: true,
-        closeOnMove: true
+        closeOnMove: !isCellPhoneWidth // Small viewports may need to pan the screen if necessary
       })
         .setLngLat(e.lngLat)
         .setDOMContent(el)
         .addTo(map);
 
-      // Inject React into the new static container
+      // Inject React into the new static container.
       const root = ReactDOM.createRoot(el);
-      root.render(<LayerDataMarkerContent navigate={navigate} features={uniqueFormattedFeaturesAtClickTarget} />);
+      root.render(
+        <LayerDataMarkerContent
+          navigate={navigate}
+          dispatch={dispatch}
+          features={uniqueFormattedFeaturesAtClickTarget}
+          canCopyShape={userCanCopyShape}
+        />
+      );
     },
-    [map, recordsetLayers, popupRef, whatsHereEnabled, connected]
+    [map, recordsetLayers, popupRef, whatsHereEnabled, connected, globalMapFilters, userCanCopyShape]
   );
   /**
    * @desc Sets time touch event started at
@@ -139,14 +157,21 @@ const LayerDataMarker = () => {
     map.on('click', queryFeaturesAtTarget);
     map.on('touchstart', handleTouchStart);
     map.on('touchend', handleTouchEnd);
+    map.on('styledata', updateLayers);
     return () => {
       map.off('draw.editshape', handleEditShape);
       map.off('draw.modechange', handleDrawModeChanged);
       map.off('click', queryFeaturesAtTarget);
       map.off('touchstart', handleTouchStart);
       map.off('touchend', handleTouchEnd);
+      map.off('styledata', updateLayers);
     };
-  }, [map?.isStyleLoaded(), whatsHereEnabled, recordsetLayers, connected]);
+  }, [map, whatsHereEnabled, recordsetLayers, connected]);
+
+  // Close popup when URL Changes.
+  useEffect(() => {
+    popupRef.current?.remove();
+  }, [url]);
 
   return null;
 };

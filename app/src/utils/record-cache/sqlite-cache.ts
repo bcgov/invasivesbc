@@ -497,8 +497,9 @@ class SQLiteRecordCacheService extends RecordCacheService {
     let where = 'WHERE 1=1 ';
 
     params.tableFilters.forEach((filter: IFilter) => {
-      // Server filters are bound in the ids_to_filter due to accuracy loss of WKB -> GeoJSON. They can safely be ignored
-      if (filter?.filterType === EFilterType.Uploaded) return;
+      // Records containing these types get constrained via `ids_to_filter` and can be ignored.
+      if ([EFilterType.MostRecentObservation, EFilterType.Uploaded].includes(filter?.filterType ?? '')) return;
+
       where += '\n AND ';
       if (filter?.filterType === EFilterType.Drawn && filter?.geojson) {
         const [minX, minY, maxX, maxY] = bbox(filter.geojson);
