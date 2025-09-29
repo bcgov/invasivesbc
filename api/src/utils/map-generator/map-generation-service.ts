@@ -1,7 +1,7 @@
 import SQL from 'sql-template-strings';
-import { escapeIdentifier, escapeLiteral } from 'pg';
-import { getDBConnection } from 'database/db';
-import { getLogger } from 'utils/logger';
+import {escapeIdentifier, escapeLiteral} from 'pg';
+import {getDBConnection} from 'database/db';
+import {getLogger} from 'utils/logger';
 
 const defaultLog = getLogger('map-generation-service');
 
@@ -84,21 +84,21 @@ class MapGenerationService {
 
     try {
       const insertParams = {};
+
       if (request.bbox) {
-        if (request.bbox) {
-          // Transform bbox to PostGIS geometry
-          if (
-            typeof request.bbox.minX !== 'number' ||
-            typeof request.bbox.maxX !== 'number' ||
-            typeof request.bbox.minY !== 'number' ||
-            typeof request.bbox.maxY !== 'number'
-          ) {
-            throw new Error('invalid type for coordinate');
-          }
-          const geomSql = `ST_SetSRID(ST_MakeEnvelope(${request.bbox.minX}, ${request.bbox.minY}, ${request.bbox.maxX}, ${request.bbox.maxY}), 4326)`;
-          insertParams['bbox'] = geomSql;
+        // Transform bbox to PostGIS geometry
+        if (
+          typeof request.bbox.minX !== 'number' ||
+          typeof request.bbox.maxX !== 'number' ||
+          typeof request.bbox.minY !== 'number' ||
+          typeof request.bbox.maxY !== 'number'
+        ) {
+          throw new Error('invalid type for coordinate');
         }
+        const geomSql = `ST_SetSRID(ST_MakeEnvelope(${request.bbox.minX}, ${request.bbox.minY}, ${request.bbox.maxX}, ${request.bbox.maxY}), 4326)`;
+        insertParams['bbox'] = geomSql;
       }
+
 
       if (request.minZoom) {
         insertParams['minimum_zoom'] = request.minZoom;
@@ -129,8 +129,7 @@ class MapGenerationService {
       if (entries.length == 0) {
         // they specified nothing, insert defaults
         sql = SQL`insert into map_generation_request default
-                  values
-                  returning id`;
+                  values returning id`;
       } else {
         const columns = entries.map((entry) => escapeIdentifier(entry[0])).join(', ');
         const values = entries.map((entry) => entry[1]).join(', ');
@@ -151,8 +150,7 @@ class MapGenerationService {
 
       if (request.vectorGenerationMode) {
         const stmt = SQL`insert into vector_data_source(generation_request, mode)
-                         values (${id}, ${request.vectorGenerationMode})
-                         returning id`;
+                         values (${id}, ${request.vectorGenerationMode}) returning id`;
 
         const vdsResult = await db.query(stmt.text, stmt.values);
         const vdsId = vdsResult.rows.length > 0 ? parseInt(vdsResult.rows[0].id) : undefined;
@@ -168,7 +166,7 @@ class MapGenerationService {
 
       return id;
     } catch (e) {
-      defaultLog.error({ message: 'Error creating map generation request', error: e });
+      defaultLog.error({message: 'Error creating map generation request', error: e});
       rollback = true;
       throw e;
     } finally {
@@ -256,15 +254,15 @@ class MapGenerationService {
                                                and vds.generation_request = mgr.id)
                                  insert
                                  into vector_data_source_activity_id (vector_data_source, activity_incoming_data_id)
-                                 select sq.vgs_id, ${id}
-                                 from sq
-                                 where sq.vds_mode = 'IDLIST'
-                                   and sq.user_id = ${user_id}`;
+        select sq.vgs_id, ${id}
+        from sq
+        where sq.vds_mode = 'IDLIST'
+          and sq.user_id = ${user_id}`;
 
         await db.query(idBindingSQL.text, idBindingSQL.values);
       }
     } catch (e) {
-      defaultLog.error({ message: 'Error binding IDs to map request', error: e });
+      defaultLog.error({message: 'Error binding IDs to map request', error: e});
       rollback = true;
       throw e;
     } finally {
@@ -323,5 +321,5 @@ class MapGenerationService {
   }
 }
 
-export { MapGenerationService, MapGenerationValueLiterals };
-export type { MapGenerationRequest, MapGenerationRequestCreationRequest };
+export {MapGenerationService, MapGenerationValueLiterals};
+export type {MapGenerationRequest, MapGenerationRequestCreationRequest};
