@@ -61,29 +61,8 @@ class LocalForageCacheService extends TileCacheService {
     return JSON.parse(key) as TileKey;
   }
 
-  private static serializePmTileKey(key: string) {
-    return JSON.stringify(key);
-  }
-
-  private static deserializePmTileKey(key: string) {
-    // rehydrate
-    return JSON.parse(key);
-  }
-
   async setTile(repository: string, z: number, x: number, y: number, tileData: Uint8Array) {
     const key = LocalForageCacheService.serializeTileKey({ repository, z, x, y });
-
-    if (this.store == null) {
-      throw new Error('cache not available');
-    }
-
-    await this.store.setItem(key, {
-      data: tileData
-    });
-  }
-
-  async setPmTile(repository: string, tileData: Uint8Array) {
-    const key = LocalForageCacheService.serializePmTileKey(repository);
 
     if (this.store == null) {
       throw new Error('cache not available');
@@ -100,24 +79,6 @@ class LocalForageCacheService extends TileCacheService {
     }
 
     const key = LocalForageCacheService.serializeTileKey({ repository, z, x, y });
-
-    const result: SerializedTileData | null = await this.store.getItem(key);
-    if (result != null) {
-      return {
-        data: result.data
-      };
-    }
-
-    return TileCacheService.generateTransparentFallbackTile();
-  }
-
-  async getPmTile(repository: string): Promise<TileData> {
-    // mount pmtiles from idb
-    if (this.store == null) {
-      return TileCacheService.generateTransparentFallbackTile();
-    }
-
-    const key = LocalForageCacheService.serializePmTileKey(repository);
 
     const result: SerializedTileData | null = await this.store.getItem(key);
     if (result != null) {

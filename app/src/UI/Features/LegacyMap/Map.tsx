@@ -185,11 +185,10 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
           return TileCacheService.generateFallbackTile();
         });
       } else {
-        // TO DO: Add protocol to serve raster pmtiles
-
         maplibregl.addProtocol('baked', async (request) => {
           try {
             const [repository, z, x, y] = request.url.replace('baked://', '').split('/');
+
             return await tileCache.getTile(repository, Number(z), Number(x), Number(y));
           } catch {
             // this is a blank 256x256 image
