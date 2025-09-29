@@ -1,0 +1,66 @@
+#mobile-draw {
+  position: absolute;
+  outline: 2px solid black;
+  left: 50%;
+  box-sizing: border-box;
+  top: 30%;
+  background-color: transparent;
+  color: white;
+  transform: translate(-50%);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid white;
+  height: 75px;
+  width: 75px;
+  border-radius: 50%;
+
+  .click-dmz {
+    display: flex;
+    position: absolute;
+    z-index: 0;
+    background-color: red;
+    opacity: 30%;
+    height: 200px;
+    min-width: 150px;
+    left: 35%;
+    bottom: -50px;
+  }
+  .crosshair {
+    position: absolute;
+    height: 30px;
+    width: 30px;
+    color: var(--bc-yellow);
+    filter: drop-shadow(1px 0 black) drop-shadow(-1px 0 black) drop-shadow(0 1px black) drop-shadow(0 -1px black);
+  }
+  .control {
+    position: absolute;
+    display: flex;
+    height: 65px;
+    width: 65px;
+    align-items: center;
+    justify-content: center;
+    pointer-events: all;
+    padding: 0;
+    overflow: hidden;
+    color: white;
+    z-index: 1;
+    &:disabled {
+      opacity: 55%;
+      cursor: not-allowed;
+    }
+    svg {
+      background-color: var(--bc-blue);
+      border-radius: 50%;
+      height: 45px;
+      width: 45px;
+    }
+    &.add {
+      transform: rotate(-22.5deg) translate(70px) rotate(22.5deg);
+    }
+    &.submit {
+      transform: rotate(22.5deg) translate(70px) rotate(-22.5deg);
+    }
+  }
+}

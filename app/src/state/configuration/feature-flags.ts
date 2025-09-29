@@ -16,39 +16,43 @@ class FeatureFlag {
 
 const BASELINE_FEATURES = {
   BATCH: new FeatureFlag('BATCH', true),
-  EMBEDDED_REPORTS: new FeatureFlag('EMBEDDED_REPORTS', true),
-  TRAINING_PAGE: new FeatureFlag('TRAINING_PAGE', true),
-  USER_GUIDE: new FeatureFlag('USER_GUIDE', false) /* set to true when there are entries to display */,
-  USER_SITE_LIST: new FeatureFlag('USER_SITE_LIST', true),
-  MAP: new FeatureFlag('MAP', true),
 
-  MAP_MODE_COMPONENTIZED: new FeatureFlag('MAP_MODE_COMPONENTIZED', false),
-  MAP_MODE_LEGACY: new FeatureFlag('MAP_MODE_LEGACY', true),
-
-  MAP_BAKED_RASTER_TILES: new FeatureFlag('MAP_BAKED_RASTER_TILES', true),
-  MAP_BAKED_VECTOR_TILES: new FeatureFlag('MAP_BAKED_VECTOR_TILES', true),
-  MAP_SIMPLIFIED_BAKED_VECTOR_TILES: new FeatureFlag('MAP_SIMPLIFIED_BAKED_VECTOR_TILES', true),
-  MAP_BASE_IMAGERY_LAYER: new FeatureFlag('MAP_BASE_IMAGERY_LAYER', true),
-  MAP_TOPO_LAYER: new FeatureFlag('MAP_TOPO_LAYER', true),
-  MAP_DATABC_LAYERS: new FeatureFlag('MAP_DATABC_LAYERS', true),
-  MAP_PROXY_DATABC_LAYERS: new FeatureFlag('MAP_PROXY_DATABC_LAYERS', false),
-  MAP_DRAW_TOOLS: new FeatureFlag('MAP_DRAW_TOOLS', true),
-  MAP_RESTRICT_TILE_CACHE_SIZE: new FeatureFlag('MAP_RESTRICT_TILE_CACHE_SIZE', false),
-  MAP_PUBLIC_VECTOR_LAYER: new FeatureFlag('MAP_PUBLIC_VECTOR_LAYER', true),
-
-  OFFLINE_PROTOMAPS: new FeatureFlag('OFFLINE_PROTOMAPS', true),
-
-  CACHE_TILES: new FeatureFlag('CACHE_TILES', true),
   CACHE_RECORDSETS: new FeatureFlag('CACHE_RECORDSETS', true),
+  CACHE_TILES: new FeatureFlag('CACHE_TILES', true),
   CACHE_WELLS: new FeatureFlag('CACHE_WELLS', true),
-  PHOTO_ATTACHMENTS: new FeatureFlag('PHOTO_ATTACHMENTS', true),
   CUSTOM_RECORDSETS: new FeatureFlag('CUSTOM_RECORDSETS', true),
-  OFFLINE_SYNC: new FeatureFlag('OFFLINE_SYNC', true),
-  PLAN_MY_TRIP: new FeatureFlag('PLAN_MY_TRIP', true),
 
   DEGRADED_EXPERIENCE_WARNING: new FeatureFlag('DEGRADED_EXPERIENCE_WARNING', false),
+  DRAW_CROSSHAIR: new FeatureFlag('DRAW_CROSSHAIR', true),
 
-  SIMPLIFIED_LAYOUT: new FeatureFlag('SIMPLIFIED_LAYOUT', false)
+  EMBEDDED_REPORTS: new FeatureFlag('EMBEDDED_REPORTS', true),
+
+  MAP: new FeatureFlag('MAP', true),
+  MAP_BAKED_RASTER_TILES: new FeatureFlag('MAP_BAKED_RASTER_TILES', true),
+  MAP_BAKED_VECTOR_TILES: new FeatureFlag('MAP_BAKED_VECTOR_TILES', true),
+  MAP_BASE_IMAGERY_LAYER: new FeatureFlag('MAP_BASE_IMAGERY_LAYER', true),
+  MAP_DATABC_LAYERS: new FeatureFlag('MAP_DATABC_LAYERS', true),
+  MAP_DRAW_TOOLS: new FeatureFlag('MAP_DRAW_TOOLS', true),
+  MAP_MODE_COMPONENTIZED: new FeatureFlag('MAP_MODE_COMPONENTIZED', false),
+  MAP_MODE_LEGACY: new FeatureFlag('MAP_MODE_LEGACY', true),
+  MAP_PROXY_DATABC_LAYERS: new FeatureFlag('MAP_PROXY_DATABC_LAYERS', false),
+  MAP_PUBLIC_VECTOR_LAYER: new FeatureFlag('MAP_PUBLIC_VECTOR_LAYER', true),
+  MAP_RESTRICT_TILE_CACHE_SIZE: new FeatureFlag('MAP_RESTRICT_TILE_CACHE_SIZE', false),
+  MAP_SIMPLIFIED_BAKED_VECTOR_TILES: new FeatureFlag('MAP_SIMPLIFIED_BAKED_VECTOR_TILES', true),
+  MAP_TOPO_LAYER: new FeatureFlag('MAP_TOPO_LAYER', true),
+
+  OFFLINE_PROTOMAPS: new FeatureFlag('OFFLINE_PROTOMAPS', true),
+  OFFLINE_SYNC: new FeatureFlag('OFFLINE_SYNC', true),
+
+  PLAN_MY_TRIP: new FeatureFlag('PLAN_MY_TRIP', true),
+  PHOTO_ATTACHMENTS: new FeatureFlag('PHOTO_ATTACHMENTS', true),
+
+  SIMPLIFIED_LAYOUT: new FeatureFlag('SIMPLIFIED_LAYOUT', false),
+
+  TRAINING_PAGE: new FeatureFlag('TRAINING_PAGE', true),
+
+  USER_GUIDE: new FeatureFlag('USER_GUIDE', false) /* set to true when there are entries to display */,
+  USER_SITE_LIST: new FeatureFlag('USER_SITE_LIST', true)
 };
 
 type FeatureFlags = typeof BASELINE_FEATURES;
@@ -66,7 +70,7 @@ async function computeFeatures(buildtimeConfig: BuildTimeConfig, _runtimeConfig:
     COMPUTED_FEATURES.MAP_BAKED_RASTER_TILES.enabled = false;
     COMPUTED_FEATURES.MAP_BAKED_VECTOR_TILES.enabled = false;
     COMPUTED_FEATURES.MAP_SIMPLIFIED_BAKED_VECTOR_TILES.enabled = false;
-
+    COMPUTED_FEATURES.DRAW_CROSSHAIR.enabled = false;
     COMPUTED_FEATURES.OFFLINE_SYNC.enabled = false;
     COMPUTED_FEATURES.PLAN_MY_TRIP.enabled = false;
   } else {
