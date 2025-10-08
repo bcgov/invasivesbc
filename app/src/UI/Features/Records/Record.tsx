@@ -61,7 +61,7 @@ export const Activity = () => {
     if (id) {
       dispatch(ActivityActions.loadActivityIfRequired(id));
     }
-  }, [activity_id]);
+  }, [activity_id, id]);
 
   return (
     <div ref={wrapperRef}>
