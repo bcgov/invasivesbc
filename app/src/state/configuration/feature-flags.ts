@@ -33,7 +33,6 @@ const BASELINE_FEATURES = {
   MAP_BASE_IMAGERY_LAYER: new FeatureFlag('MAP_BASE_IMAGERY_LAYER', true),
   MAP_DATABC_LAYERS: new FeatureFlag('MAP_DATABC_LAYERS', true),
   MAP_DRAW_TOOLS: new FeatureFlag('MAP_DRAW_TOOLS', true),
-  MAP_MODE_COMPONENTIZED: new FeatureFlag('MAP_MODE_COMPONENTIZED', false),
   MAP_MODE_LEGACY: new FeatureFlag('MAP_MODE_LEGACY', true),
   MAP_PROXY_DATABC_LAYERS: new FeatureFlag('MAP_PROXY_DATABC_LAYERS', false),
   MAP_PUBLIC_VECTOR_LAYER: new FeatureFlag('MAP_PUBLIC_VECTOR_LAYER', true),
@@ -134,7 +133,6 @@ async function computeFeatures(buildtimeConfig: BuildTimeConfig, _runtimeConfig:
 
   /* apply run-time overrides */
   if (injectedFeatures.COMPONENTIZED_MAP) {
-    COMPUTED_FEATURES.MAP_MODE_COMPONENTIZED.enabled = true;
     COMPUTED_FEATURES.MAP_MODE_LEGACY.enabled = false;
   }
 

@@ -15,8 +15,8 @@ import { OfflineDataSyncDialog } from 'UI/Features/OfflineDataSync/OfflineDataSy
 import { OfflineUserMenu } from 'UI/Features/OfflineUserMenu/OfflineUserMenu';
 import CustomizeLayerMenu from 'UI/Features/LegacyMap/Controls/CustomizeLayerDialog';
 import Spinner from 'UI/Reusable/Spinner/Spinner';
-import { DynamicMapComponent } from 'UI/Layout/DynamicMapComponent/DynamicMapComponent';
 import { LayoutMode } from 'UI/Layout/Routes/PrimaryNavigation';
+import { Map as InvasivesMap } from 'UI/Features/LegacyMap/Map';
 
 const Overlay = () => {
   const [panelOpen, setPanelOpen] = React.useState(true);
@@ -65,7 +65,7 @@ const Overlay = () => {
         <WebHeader />
       </WebOnly>
       <Suspense fallback={<Spinner />}>
-        <DynamicMapComponent />
+        <InvasivesMap />
       </Suspense>
       <div id="overlay-anchor">
         <div className={`overlay-panel ${additionalClasses}`}>
