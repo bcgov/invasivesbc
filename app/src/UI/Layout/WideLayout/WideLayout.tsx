@@ -1,10 +1,9 @@
-import { DynamicMapComponent } from 'UI/Layout/DynamicMapComponent/DynamicMapComponent';
 import 'UI/Layout/WideLayout/WideLayout.css';
 import { AppRoutes } from 'UI/Layout/Routes/AppRoutes';
 import { LayoutMode, usePrimaryNavigationLinks } from 'UI/Layout/Routes/PrimaryNavigation';
 import { Link } from 'react-router';
 import { useDispatch, useSelector } from 'utils/use_selector';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import NewRecordDialog from 'UI/Features/Records/NewRecordDialog';
 import CustomizeLayerMenu from 'UI/Features/LegacyMap/Controls/CustomizeLayerDialog';
 import AlertsContainer from 'UI/Layout/AlertsContainer/AlertsContainer';
@@ -21,6 +20,7 @@ import DebugMenu from 'UI/Layout/DebugMenu/DebugMenu';
 import { NetworkStateControl } from 'UI/Reusable/NetworkStateControl';
 import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
 import ContextualPopover from 'UI/Layout/ContextualPopover/ContextualPopover';
+import { Map as InvasivesMap } from 'UI/Features/LegacyMap/Map';
 
 const WideLayout = () => {
   const { filteredLinks } = usePrimaryNavigationLinks();
@@ -123,7 +123,7 @@ const WideLayout = () => {
       <div id="content">
         {mapShown && (
           <div id="map">
-            <DynamicMapComponent />
+            <InvasivesMap />
           </div>
         )}
 
