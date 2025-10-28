@@ -113,6 +113,8 @@ class LoggerWithContext {
   }
 }
 
+
 export const getLogger = function (logLabel: string): LoggerWithContext {
   return new LoggerWithContext(logLabel);
 };
+export { LoggerWithContext };
