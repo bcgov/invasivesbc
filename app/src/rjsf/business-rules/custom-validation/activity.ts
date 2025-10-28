@@ -30,6 +30,7 @@ import { getJurisdictionPercentValidator } from 'rjsf/business-rules/custom-vali
 import { getPestManagementPlanValidator } from 'rjsf/business-rules/custom-validation/validators/pmp';
 import { accessDescriptionMinChars } from 'rjsf/business-rules/custom-validation/validators/access-description';
 import { combineValidators, rjsfValidator } from 'rjsf/business-rules/custom-validation/utils';
+import { chemicalTreatmentFormIsValid } from 'rjsf/business-rules/custom-validation/validators/chemical-treatment-form';
 
 function validatorForActivity(activity_subtype: string, linkedActivity): rjsfValidator {
   return combineValidators([
@@ -39,6 +40,7 @@ function validatorForActivity(activity_subtype: string, linkedActivity): rjsfVal
     getWindValidator(activity_subtype),
     getWindValidatorBiocontrol(activity_subtype),
     getTemperatureValidator(activity_subtype),
+    chemicalTreatmentFormIsValid(),
     getSlopeAspectBothFlatValidator(),
     getPosAndNegObservationValidator(),
     getPosAndNegObservationValidatorAquatic(),
