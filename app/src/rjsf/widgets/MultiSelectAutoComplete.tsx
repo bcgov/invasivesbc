@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { MultipleSelect, SelectOption } from 'react-select-material-ui';
 import { WidgetProps } from '@rjsf/utils';
+import { Select } from "@mui/material";
 
 const MultiSelectAutoComplete = (props: WidgetProps) => {
   enum Color {
@@ -119,7 +119,7 @@ const MultiSelectAutoComplete = (props: WidgetProps) => {
   };
 
   return (
-    <MultipleSelect
+    <Select
       id="custom-multi-select-field"
       SelectProps={{ styles: colourStyles }}
       InputLabelProps={{

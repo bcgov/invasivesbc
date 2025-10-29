@@ -15,7 +15,7 @@ const ObjectFieldTemplate = (props: ObjectFieldTemplateProps) => {
     <>
       {props.uiSchema['ui:title'] || (props.title && props.title !== 'invisible') ? (
         <TitleField
-          id={`${props.idSchema.$id}-title`}
+          id={`${props.uiSchema.$id}-title`}
           title={props.title}
           required={props.required}
           schema={props.schema}
@@ -26,7 +26,7 @@ const ObjectFieldTemplate = (props: ObjectFieldTemplateProps) => {
       )}
       {props.description && (
         <DescriptionField
-          id={`${props.idSchema.$id}-description`}
+          id={`${props.uiSchema.$id}-description`}
           description={props.description}
           schema={props.schema}
           registry={props.registry}
@@ -39,29 +39,30 @@ const ObjectFieldTemplate = (props: ObjectFieldTemplateProps) => {
           }
           return (
             <Grid
-              item={true}
-              xs={props.uiSchema['ui:column-xs'] || 12}
-              sm={props.uiSchema['ui:column-sm'] || props.uiSchema['ui:column-xs'] || 12}
-              md={
-                props.uiSchema['ui:column-md'] || props.uiSchema['ui:column-sm'] || props.uiSchema['ui:column-xs'] || 12
-              }
-              lg={
-                props.uiSchema['ui:column-lg'] ||
-                props.uiSchema['ui:column-md'] ||
-                props.uiSchema['ui:column-sm'] ||
-                props.uiSchema['ui:column-xs'] ||
-                12
-              }
-              xl={
-                props.uiSchema['ui:column-xl'] ||
-                props.uiSchema['ui:column-lg'] ||
-                props.uiSchema['ui:column-md'] ||
-                props.uiSchema['ui:column-sm'] ||
-                props.uiSchema['ui:column-xs'] ||
-                12
-              }
+              size={{
+                xs: props.uiSchema['ui:column-xs'] || 12,
+                sm: props.uiSchema['ui:column-sm'] || props.uiSchema['ui:column-xs'] || 12,
+                md:
+                  props.uiSchema['ui:column-md'] ||
+                  props.uiSchema['ui:column-sm'] ||
+                  props.uiSchema['ui:column-xs'] ||
+                  12,
+                lg:
+                  props.uiSchema['ui:column-lg'] ||
+                  props.uiSchema['ui:column-md'] ||
+                  props.uiSchema['ui:column-sm'] ||
+                  props.uiSchema['ui:column-xs'] ||
+                  12,
+                xl:
+                  props.uiSchema['ui:column-xl'] ||
+                  props.uiSchema['ui:column-lg'] ||
+                  props.uiSchema['ui:column-md'] ||
+                  props.uiSchema['ui:column-sm'] ||
+                  props.uiSchema['ui:column-xs'] ||
+                  12
+              }}
               key={index}
-              style={{ marginBottom: '10px' }}
+              sx={{ marginBottom: '10px' }}
             >
               <>
                 {element.content.props.schema['x-tooltip-text'] && (
@@ -85,7 +86,7 @@ const ObjectFieldTemplate = (props: ObjectFieldTemplateProps) => {
         })}
         {canExpand(props.schema, props.uiSchema, props.formData) && (
           <Grid container justifyContent="flex-end">
-            <Grid item={true}>
+            <Grid>
               <AddButton
                 className="object-property-expand"
                 onClick={props.onAddClick(props.schema)}

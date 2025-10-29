@@ -1,30 +1,40 @@
-import React, { useEffect, useState } from 'react';
-import { Box } from '@mui/material';
-import { DropzoneDialog } from 'mui-file-dropzone';
+import React, { useState } from 'react';
+import { Box, Button } from '@mui/material';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { useDispatch } from 'react-redux';
 import MapActions from 'state/actions/map';
+import { styled } from '@mui/material/styles';
+import { FileUpload } from '@mui/icons-material';
+
+const VisuallyHiddenInput = styled('input')({
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  height: 1,
+  overflow: 'hidden',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  whiteSpace: 'nowrap',
+  width: 1
+});
 
 export interface IShapeUploadRequest {
   data: string;
-  type: 'kml' | 'kmz';
-  user_id: string;
+  type: string;
+  user_id?: string;
   title: string;
+  status: string;
 }
 
-export const KMLShapesUpload: React.FC<any> = (props) => {
-  const [uploadRequests, setUploadRequests] = useState([]);
+export const KMLShapesUpload: React.FC<{ open: boolean; whenDone: () => void; title: string }> = ({
+  open,
+  title,
+  whenDone
+}) => {
+  const [uploadRequests, setUploadRequests] = useState<IShapeUploadRequest[]>([]);
   const api = useInvasivesApi();
   const [resultMessage, setResultMessage] = useState('');
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (uploadRequests.length > 0)
-      doUpload().then(() => {
-        props.whenDone();
-        dispatch(MapActions.refetchServerBoundaries());
-      });
-  }, [uploadRequests]);
 
   const doUpload = async () => {
     let response;
@@ -45,7 +55,6 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
       setResultMessage('Files uploaded successfully');
       setTimeout(() => {
         setResultMessage('');
-        if (props?.callback) props.callback();
       }, 2000);
     } catch (err) {
       setUploadRequests([]);
@@ -54,18 +63,23 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
         setResultMessage('');
       }, 2000);
     }
-    Promise.resolve();
+    await Promise.resolve();
   };
 
-  const acceptFiles = (files: File[]) => {
+  const acceptFiles = (files: FileList) => {
     setUploadRequests([]);
     if (files.length < 1) {
       return;
     }
 
-    files.forEach((file) => {
+    [...files].forEach((file) => {
       let status: string;
-      const defaultTitle = props.title.length > 0 ? props.title : file.name.split('.')[0];
+
+      if (file.size > 10485760) {
+        status = 'File exceeds maximum allowed size';
+        return;
+      }
+      const defaultTitle = title.length > 0 ? title : file.name.split('.')[0];
 
       const fileType: string = file.name.split('.').pop() || '';
 
@@ -73,15 +87,19 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
 
       reader.onabort = () => (status = 'file reading was aborted');
       reader.onerror = () => (status = 'file reading has failed');
-      reader.onload = () => {
-        const encodedString = btoa(reader.result as string);
+      reader.onloadend = () => {
+        const encodedString = btoa(
+          new Uint8Array(reader.result as ArrayBuffer).reduce(
+            (data: string, char) => data + String.fromCharCode(char),
+            ''
+          )
+        );
 
         setUploadRequests((prev) => {
           const newRequest = [...prev];
           newRequest.push({
-            type: fileType,
+            type: fileType as '',
             data: encodedString,
-            // user_id: extendedInfo.user_id,
             title: defaultTitle,
             status: status
           });
@@ -89,29 +107,47 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
         });
       };
 
-      reader.readAsBinaryString(file);
+      reader.readAsArrayBuffer(file);
     });
   };
 
+  if (!open) {
+    return null;
+  }
+
   return (
     <Box>
-      <DropzoneDialog
-        acceptedFiles={['.kml,.kmz']}
-        filesLimit={1}
-        cancelButtonText={'cancel'}
-        onClose={() => {
-          props.whenDone();
+      <Button component="label" role={undefined} variant="contained" tabIndex={-1} startIcon={<FileUpload />}>
+        Upload files
+        <VisuallyHiddenInput
+          type="file"
+          onChange={(event) => {
+            if (event.target.files) {
+              acceptFiles(event.target.files);
+            }
+          }}
+          accept={'.kml, .kmz'}
+        />
+      </Button>
+      <ul>
+        {uploadRequests.map((req) => (
+          <li key={req.title}>{req.title}</li>
+        ))}
+      </ul>
+      <Button
+        disabled={uploadRequests.length === 0}
+        onClick={() => {
+          doUpload().then(() => {
+            whenDone();
+            dispatch(MapActions.refetchServerBoundaries());
+          });
         }}
-        submitButtonText={'Upload to InvasivesBC'}
-        open={props.open}
-        onSave={(files) => {
-          acceptFiles(files);
-        }}
-        showPreviews={true}
-        previewText={'File will be uploaded to InvasivesBC as ' + props.title}
-        maxFileSize={10485760}
-      />
-
+      >
+        Upload
+      </Button>
+      <Button disabled={uploadRequests.length === 0} onClick={() => setUploadRequests([])}>
+        Clear
+      </Button>
       {resultMessage && <Box>{resultMessage}</Box>}
     </Box>
   );
