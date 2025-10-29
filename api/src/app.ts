@@ -4,6 +4,7 @@ import compression from 'compression';
 
 import { initialize } from 'express-openapi';
 import { api_doc } from 'sharedAPI/src/openapi/api-doc/api-doc';
+import { serve as swaggerServe, setup as swaggerSetup } from 'swagger-ui-express';
 import * as middleware from './middleware';
 import { applyApiDocSecurityFilters } from 'utils/api-doc-security-filter';
 import { getLogger } from 'utils/logger';
@@ -43,6 +44,9 @@ initialize({
     defaultLog.error({ label: 'errorTransformer', message: 'ajvError', ajvError });
     return ajvError;
   }
+}).then(({ apiDoc }) => {
+  // Sets the Swagger UI to serve the fully initialized apiDocs (post-generation)
+  app.use('/api/docs', swaggerServe, swaggerSetup(apiDoc));
 });
 
 export { app, HOST, PORT };
