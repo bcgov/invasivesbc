@@ -1,6 +1,5 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES } from 'constants/misc';
 import { getAllRolesSQL } from 'queries/role-queries';
 import LoggerHandler from 'utils/endpoints/LoggerHandler';
 import QueryHandler from 'utils/endpoints/QueryHandler';
@@ -10,9 +9,9 @@ const logger = new LoggerHandler('roles');
 const GET: Operation = [getRoles()];
 
 new OpenAPISpec('Get some information about users and their roles', ['roles'])
-  .security(ALL_ROLES)
+  .security([])
   .response(200, {
-    description: 'User Acccess get response object array.',
+    description: 'All Role Codes',
     content: {
       'application/json': {
         schema: {
