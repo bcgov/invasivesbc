@@ -1,6 +1,5 @@
 import { call, cancelled, delay, fork, put, select, takeLatest } from 'redux-saga/effects';
-import Keycloak, { KeycloakLogoutOptions } from 'keycloak-js';
-import { useNavigate } from 'react-router';
+import Keycloak, { KeycloakInitOptions, KeycloakLogoutOptions } from 'keycloak-js';
 import { AppConfig } from 'state/configuration/runtime-config';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { selectAuth } from 'state/reducers/auth';
@@ -22,9 +21,11 @@ function* handleSigninRequest(action) {
   }
 
   try {
-    yield call(keycloakInstance.login, {
-      redirectUri: config.REDIRECT_URI,
-      ...action.payload
+    yield call(async () => {
+      await keycloakInstance?.login({
+        redirectUri: config.REDIRECT_URI,
+        ...action.payload
+      });
     });
 
     if (keycloakInstance.idToken) {
@@ -49,7 +50,9 @@ function* handleSignoutRequest() {
     const logoutOptions: KeycloakLogoutOptions = {
       redirectUri: config.REDIRECT_URI
     };
-    yield call(keycloakInstance.logout, logoutOptions);
+    yield call(async () => {
+      await keycloakInstance?.logout(logoutOptions);
+    });
     yield put(AuthActions.signoutComplete());
     yield put(AuthActions.clearUserInfo());
   } catch (e) {
@@ -147,12 +150,17 @@ function* reinitAuth() {
   let failCount = 0;
   while (failCount < FAIL_LIMIT) {
     try {
-      yield call(keycloakInstance.init, {
+      const options: KeycloakInitOptions = {
+        adapter: 'default',
         checkLoginIframe: false,
         redirectUri: config.REDIRECT_URI,
         responseMode: 'fragment',
         onLoad: 'check-sso',
         pkceMethod: 'S256'
+      };
+
+      yield call(async () => {
+        await keycloakInstance?.init(options);
       });
       break;
     } catch (e) {

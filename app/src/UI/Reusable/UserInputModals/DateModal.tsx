@@ -14,12 +14,12 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import 'UI/Reusable/UserInputModals/UserInputModals.css';
 import { useState } from 'react';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider/LocalizationProvider';
 import dayjs, { Dayjs } from 'dayjs';
 import { DateModalInterface, ReduxPayload } from 'interfaces/prompt-interfaces';
 import { useDispatch } from 'react-redux';
 import { UnknownAction } from 'redux';
 import Prompt from 'state/actions/prompts/Prompt';
+import { LocalizationProvider } from "@mui/x-date-pickers";
 
 const DateModal = ({
   callback,

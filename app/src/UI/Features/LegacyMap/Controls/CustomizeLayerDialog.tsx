@@ -159,7 +159,11 @@ const CustomizeLayerMenu = () => {
               </FormControl>
             ),
             [MenuState.Upload]: (
-              <KMLShapesUpload title={newLayerName} open={subMenuType === MenuState.Upload} whenDone={onKMLDone} />
+              <KMLShapesUpload
+                title={newLayerName || 'new layer'}
+                open={subMenuType === MenuState.Upload}
+                whenDone={onKMLDone}
+              />
             )
           }[subMenuType]
         }
