@@ -7,7 +7,7 @@ class OpenAPISpec {
     tags: [],
     security: [],
     requestBody: {
-      description: 'Access request post request object.',
+      description: null,
       content: {
         'application/json': {
           schema: {
@@ -35,10 +35,14 @@ class OpenAPISpec {
     Object.assign(this.apiDoc, { description, tags });
   }
 
-  security = (newVal: Array<unknown> = []) => {
-    if (newVal.length > 0) {
-      this.apiDoc.security = SECURITY_ON ? [{ Bearer: newVal }] : [];
-    }
+  /**
+   * @desc Sets permissions needed on the OpenAPI Doc
+   * @param newVal Roles to apply to endpoint
+   * @example [Role.Admin] - User must have Admin Role
+   * @example [*empty*] - Accessible by anyone logged in, even if no roles.
+   */
+  security = (newVal: Array<string> = []) => {
+    this.apiDoc.security = SECURITY_ON ? [{ Bearer: newVal }] : [];
     return this;
   };
 
@@ -51,6 +55,7 @@ class OpenAPISpec {
     this.apiDoc.responses[code.toString()] = response;
     return this;
   }
+
   build = (method: Operation) => {
     method.apiDoc = this.apiDoc;
   };
