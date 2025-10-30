@@ -1,75 +1,49 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
-import { getDBConnection } from 'database/db';
+import { ALL_ROLES } from 'constants/misc';
 import { getActivityHistorySQL, getActivitiesByIdsSQL } from 'queries/activity-queries';
 import { getFileFromS3 } from 'utils/file-utils';
-import { getLogger } from 'utils/logger';
 import { getMediaItemsList } from 'paths/media';
-import { PoolClient } from 'pg';
 import { InvasivesRequest } from 'utils/auth-utils';
+import OpenAPISpec from 'OpenAPISpec';
+import LoggerHandler from 'utils/endpoints/LoggerHandler';
+import verifyUserRole from 'utils/validateRole';
+import QueryHandler from 'utils/endpoints/QueryHandler';
 
-const NAMESPACE = '/v2/activities/batch-request';
-const defaultLog = getLogger(NAMESPACE);
-
+const logger = new LoggerHandler('/v2/activities/batch-request');
 const GET: Operation = [getActivity()];
 
-GET.apiDoc = {
-  description: 'Returns multiple Activity Records for device caching',
-  tags: ['activity'],
-  security: SECURITY_ON
-    ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
-    : [],
-  parameters: [
-    {
-      in: 'query',
-      name: 'idList',
-      required: true,
-      description: 'A list of IDs to retrieve records for.',
-      content: {
-        'application/json': {
-          schema: {
-            type: 'array',
-            items: {
-              type: 'string'
-            },
-            example: ['id1', 'id2', 'id3']
-          }
+new OpenAPISpec('Returns multiple Activity Records for device caching', ['activity'])
+  .security(ALL_ROLES)
+  .parameters({
+    in: 'query',
+    name: 'idList',
+    required: true,
+    description: 'A list of IDs to retrieve records for.',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: {
+            type: 'string'
+          },
+          example: ['id1', 'id2', 'id3']
         }
       }
     }
-  ],
-  responses: {
-    200: {
-      description: 'Activity get response object array.',
-      content: {
-        'application/json': {
-          schema: {
-            type: 'object',
-            properties: {}
-          }
+  })
+  .response(200, {
+    description: 'Activity get response object array.',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {}
         }
       }
-    },
-    400: {
-      $ref: '#/components/responses/400'
-    },
-    401: {
-      $ref: '#/components/responses/401'
-    },
-    503: {
-      $ref: '#/components/responses/503'
-    },
-    default: {
-      $ref: '#/components/responses/default'
     }
-  }
-};
+  })
+  .build(GET);
 
 /**
  * @desc Fetch a batch of records for caching via their IDs
@@ -77,16 +51,13 @@ GET.apiDoc = {
  */
 function getActivity(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
-    if (req.authContext.roles.length === 0) return res.status(401).json({ message: 'No Role for user' });
+    if (!verifyUserRole(GET.apiDoc, req)) return res.sendStatus(401);
+    const db = new QueryHandler({ maintain: true });
     const idList: string[] = JSON.parse(req.query.idList as string);
-    let connection: PoolClient;
-
     try {
-      connection = await getDBConnection();
       const resObj: Record<PropertyKey, any> = {};
-
-      const sqlStatement: SQLStatement = getActivitiesByIdsSQL(idList);
-      (await connection.query(sqlStatement.text, sqlStatement.values)).rows.forEach(async (a) => {
+      const entries = await db.query(getActivitiesByIdsSQL(idList));
+      entries.rows.forEach(async (a) => {
         resObj[a.activity_id] = { ...a.activity_payload, ...a };
         delete resObj[a.activity_id].activity_payload;
         if (a?.media_keys?.length > 0) {
@@ -94,31 +65,20 @@ function getActivity(): RequestHandler {
             const response = await Promise.all(a?.media_keys?.map(async (key: string) => getFileFromS3(key)));
             resObj[a.activity_id].media = getMediaItemsList(response, a.media_keys);
           } catch (error) {
-            defaultLog.error({
-              label: NAMESPACE,
-              error: error,
-              message: 'Error occured while fetching media from bucket',
-              req: req.query
-            });
+            logger.error('Error fetching media from bucket', error);
           }
         }
       });
       for (const id of idList) {
-        const sql = getActivityHistorySQL(id);
-        resObj[id].activity_history = (await connection.query(sql.text, sql.values)).rows;
+        const result = await db.query(getActivityHistorySQL(id));
+        resObj[id].activity_history = result.rows;
       }
       return res.status(200).json(resObj);
     } catch (error) {
-      defaultLog.debug({ label: NAMESPACE, error: error, body: req.body });
-      return res.status(500).json({
-        message: 'Unable to fetch ids in list.',
-        request: req.query,
-        error: JSON.stringify(error),
-        namespace: NAMESPACE,
-        code: 500
-      });
+      logger.error(error.stack);
+      return res.status(500).send('Unable to fetch ids in list.');
     } finally {
-      connection?.release();
+      db?.close();
     }
   };
 }
