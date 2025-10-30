@@ -74,7 +74,7 @@ const EmailTemplates = () => {
   };
 
   return (
-    <Grid item xs={6}>
+    <Grid size={{ xs: 6 }}>
       <Card elevation={8}>
         <CardContent>
           <Form
