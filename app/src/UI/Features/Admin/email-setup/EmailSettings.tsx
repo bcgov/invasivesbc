@@ -65,7 +65,7 @@ const EmailSettings = () => {
   };
 
   return (
-    <Grid item xs={6}>
+    <Grid size={{ xs: 6 }}>
       <Card elevation={6}>
         <CardContent>
           <Form

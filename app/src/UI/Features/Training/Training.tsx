@@ -37,12 +37,12 @@ const TrainingPage = () => {
       </Box>
       <Grid container spacing={4}>
         {videos.length === 0 && (
-          <Grid item>
+          <Grid>
             <span>No videos are available at this time.</span>
           </Grid>
         )}
         {videos.map((v) => (
-          <Grid key={v.id} item xs={12} lg={6}>
+          <Grid key={v.id} size={{ xs: 12, lg: 6 }}>
             <div className={'trainingVideo'}>
               <label>{v.title}</label>
               <video width={568} height={320} controls preload="metadata">
