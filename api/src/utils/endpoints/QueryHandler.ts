@@ -21,15 +21,18 @@ const defaultPool: PoolConfig = {
 
 interface Options {
   poolConfig?: PoolConfig;
+  maintain?: boolean;
 }
 
 class QueryHandler {
   pool: Pool;
   poolConfig: PoolConfig;
   connection: PoolClient;
+  maintain: boolean;
 
-  constructor({ poolConfig }: Options = {}) {
+  constructor({ poolConfig, maintain }: Options = {}) {
     this.pool = new Pool(poolConfig ?? defaultPool);
+    this.maintain = !!maintain;
   }
 
   public close() {
@@ -42,14 +45,14 @@ class QueryHandler {
     this.connection = client;
   };
 
-  public readonly query = async (sqlStatement: SQLStatement, maintainConnection: boolean = false): Promise<Result> => {
+  public readonly query = async (sqlStatement: SQLStatement): Promise<Result> => {
     try {
       if (!this.connection) {
         await this.getDBConnection();
       }
       return await this.connection.query(sqlStatement.text, sqlStatement.values);
     } finally {
-      if (!maintainConnection) this.close();
+      if (!this.maintain) this.close();
     }
   };
 }
