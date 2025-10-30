@@ -9,7 +9,7 @@ const logger = new LoggerHandler('roles');
 const GET: Operation = [getRoles()];
 
 new OpenAPISpec('Get some information about users and their roles', ['roles'])
-  .security([])
+  .security()
   .response(200, {
     description: 'All Role Codes',
     content: {
