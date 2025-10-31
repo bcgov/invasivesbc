@@ -1,53 +1,32 @@
 import { WidgetProps } from '@rjsf/utils';
-import { Autocomplete, Checkbox, TextField } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { Autocomplete, TextField } from '@mui/material';
 
+interface SelectOption {
+  label: string;
+  value: unknown;
+}
 const MultiSelectAutoComplete = (props: WidgetProps) => {
-  /**
-   * On a value selected or un-selected, call the parents onChange event to inform the form of the new value of the
-   * widget.
-   * @param {string[]} value
-   */
-  const handleOnChange = (value: string[]): void => {
-    const newValue: string[] = [];
-    value.forEach((value) => {
-      newValue.push(value);
-    });
-    if (newValue.length < 1) {
-      props.onChange(undefined);
-    } else {
-      props.onChange(newValue.join(','));
-    }
-  };
-
-  const [options, setOptions] = useState<string[]>([]);
-  useEffect(() => {
-    setOptions(props.options?.enumOptions?.map((opt) => opt.value) ?? []);
-  }, [props.options]);
-
+  const enumOptions = props.schema.options?.map(({ value, label }) => ({ value, label })) ?? [];
+  const selectedOptions = enumOptions.filter((opt) => {
+    // restructure the CSV format of the prop
+    const val = props.value?.split(',');
+    return val?.includes(opt.value);
+  });
   return (
-    <>
-      <Autocomplete
-        id={`${props.id}`}
-        onChange={(_event, value) => {
-          handleOnChange(value);
-        }}
-        disabled={props.disabled}
-        value={props.value?.split(',') ?? []}
-        renderInput={(params) => <TextField {...params} label={props.label} />}
-        renderOption={(props, opt) => {
-          const { key, ...optionProps } = props;
-          return (
-            <li {...optionProps} key={key}>
-              <Checkbox checked={!!optionProps['aria-selected']} />
-              {opt}
-            </li>
-          );
-        }}
-        options={options}
-        multiple
-      ></Autocomplete>
-    </>
+    <Autocomplete
+      multiple
+      id={props.id}
+      options={enumOptions}
+      value={selectedOptions}
+      onChange={(_, newValue: SelectOption[]) => {
+        // Maintain the value as CSV. Set undefined if new value is empty array.
+        props.onChange(newValue.length > 0 ? newValue.map((opt) => opt.value).join(',') : undefined);
+      }}
+      getOptionLabel={(option) => option.label}
+      isOptionEqualToValue={(option, val) => option.value === val.value}
+      disabled={props.disabled || props.readonly}
+      renderInput={(params) => <TextField {...params} required={props.required} label={props.label} />}
+    />
   );
 };
 
