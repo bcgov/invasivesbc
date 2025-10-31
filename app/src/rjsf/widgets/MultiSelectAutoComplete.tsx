@@ -1,148 +1,31 @@
-import { useState } from 'react';
-import { MultipleSelect, SelectOption } from 'react-select-material-ui';
 import { WidgetProps } from '@rjsf/utils';
+import { Autocomplete, TextField } from '@mui/material';
 
+interface SelectOption {
+  label: string;
+  value: unknown;
+}
 const MultiSelectAutoComplete = (props: WidgetProps) => {
-  enum Color {
-    DarkGray = '#575757',
-    MediumGray = '#DDD',
-    SilverGray = '#C4C4C4',
-    LightGray = '#EEEEEE50',
-    Black = '#000',
-    White = '#FFF',
-    Yellow = '#FFF000'
-  }
-
-  /**
-   * On a value selected or un-selected, call the parents onChange event to inform the form of the new value of the
-   * widget.
-   * @param {AutoCompleteMultiSelectOption[]} value
-   */
-  const handleOnChange = (value: unknown[]): void => {
-    const newValue: unknown[] = [];
-    value.forEach((value) => {
-      newValue.push(value);
-    });
-    if (newValue.length < 1) {
-      setHasValues(false);
-      props.onChange(undefined);
-    } else {
-      setHasValues(true);
-      props.onChange(newValue.toString());
-    }
-  };
-
-  const enumOptions: SelectOption[] = props.schema.options ?? props.options.enumOptions ?? [];
-  const hasErrors = props.rawErrors && props.rawErrors?.length > 0;
-  const [focused, setFocused] = useState<boolean>(props.value ?? false);
-  const [hasValues, setHasValues] = useState<boolean>(props.value ?? false);
-
-  const colourStyles = {
-    container: (styles) => {
-      return {
-        ...styles,
-        borderStyle: 'solid',
-        borderWidth: focused && !props.disabled ? '2px' : '1px',
-        boxSizing: 'border-box',
-        padding: '0 5pt',
-        borderRadius: '4px',
-        borderColor: (() => {
-          if (hasErrors) {
-            return 'var(--error-red)';
-          } else if (props.disabled) {
-            return Color.MediumGray;
-          }
-          return Color.SilverGray;
-        })(),
-        marginTop: '0px',
-        ':active': {
-          ...styles[':active'],
-          boxShadow: `0px 0px 3px ${hasErrors ? Color.Yellow : Color.SilverGray}`
-        }
-      };
-    },
-    indicatorSeparator: (styles) => ({
-      ...styles,
-      display: 'none'
-    }),
-    control: (styles) => ({
-      ...styles,
-      border: 'none',
-      boxShadow: 'none',
-      outline: 'none',
-      justifyContent: 'center'
-    }),
-    menu: (styles) => ({
-      ...styles,
-      textAlign: 'left',
-      zIndex: 2
-    }),
-    valueContainer: (styles) => ({
-      ...styles,
-      padding: '12px 4px',
-      fontSize: '1.2rem',
-      lineHeight: '1.2rem'
-    }),
-    option: (styles, { isDisabled, isSelected }) => ({
-      ...styles,
-      backgroundColor: Color.White,
-      ':hover': {
-        backgroundColor: Color.MediumGray
-      },
-      color: isDisabled ? Color.SilverGray : Color.Black,
-      cursor: isDisabled ? 'not-allowed' : 'default',
-      ':active': {
-        ...styles[':active'],
-        backgroundColor: isSelected ? Color.White : Color.Black
-      }
-    }),
-    multiValue: (styles, { isDisabled }) => ({
-      ...styles,
-      border: `1pt solid ${Color.SilverGray}`,
-      color: isDisabled ? Color.MediumGray : Color.Black,
-      borderRadius: '5pt',
-      backgroundColor: Color.White
-    }),
-    multiValueLabel: (styles, { isDisabled }) => ({
-      ...styles,
-      color: isDisabled ? Color.SilverGray : Color.Black
-    }),
-    multiValueRemove: (styles) => ({
-      ...styles,
-      transition: '0.5s background-color',
-      ':hover': {
-        backgroundColor: 'var(--bc-blue)',
-        color: 'var(--bc-yellow)',
-        cursor: 'pointer'
-      }
-    })
-  };
-
+  const enumOptions = props.schema.options?.map(({ value, label }) => ({ value, label })) ?? [];
+  const selectedOptions = enumOptions.filter((opt) => {
+    // restructure the CSV format of the prop
+    const val = props.value?.split(',');
+    return val?.includes(opt.value);
+  });
   return (
-    <MultipleSelect
-      id="custom-multi-select-field"
-      SelectProps={{ styles: colourStyles }}
-      InputLabelProps={{
-        style: {
-          transform: focused ? 'translate(12px, -5px) scale(0.7)' : 'translate(12px, 20px) scale(1)',
-          backgroundColor: Color.White,
-          paddingInline: focused ? '5px' : '0',
-          zIndex: focused ? 1 : 0,
-          position: 'absolute'
-        }
-      }}
-      onChange={handleOnChange}
-      values={props?.value?.split(',') ?? []}
-      error={hasErrors && props.rawErrors?.[0] !== 'should be equal to one of the allowed values'}
-      disabled={props.disabled}
-      label={props.label}
-      onFocus={setFocused.bind(this, true)}
-      onBlur={() => {
-        if (!hasValues) {
-          setFocused(false);
-        }
-      }}
+    <Autocomplete
+      multiple
+      id={props.id}
       options={enumOptions}
+      value={selectedOptions}
+      onChange={(_, newValue: SelectOption[]) => {
+        // Maintain the value as CSV. Set undefined if new value is empty array.
+        props.onChange(newValue.length > 0 ? newValue.map((opt) => opt.value).join(',') : undefined);
+      }}
+      getOptionLabel={(option) => option.label}
+      isOptionEqualToValue={(option, val) => option.value === val.value}
+      disabled={props.disabled || props.readonly}
+      renderInput={(params) => <TextField {...params} required={props.required} label={props.label} />}
     />
   );
 };

@@ -10,7 +10,7 @@
     "baseUrl": "src",
     "outDir": "dist",
     "jsx": "react-jsx",
-    "target": "es5",
+    "target": "ES2022",
     "sourceMap": true,
     "allowJs": false,
     "moduleResolution": "bundler",

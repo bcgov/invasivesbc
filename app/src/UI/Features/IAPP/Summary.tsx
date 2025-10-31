@@ -38,102 +38,74 @@ export const Summary: React.FC<IAPPSitePropType> = ({ record }) => {
 
         <AccordionDetails>
           <Grid container spacing={1}>
-            <Grid item xs={3} sm={2}>
+            <Grid size={{ xs: 3, sm: 2 }}>
               <Typography>Created:</Typography>
             </Grid>
-            <Grid item xs={9} sm={4}>
-              {ifApplicable(date_created)}
-            </Grid>
-            <Grid item xs={3} sm={2}>
+            <Grid size={{ xs: 9, sm: 4 }}>{ifApplicable(date_created)}</Grid>
+            <Grid size={{ xs: 3, sm: 2 }}>
               <Typography>Paper File ID:</Typography>
             </Grid>
-            <Grid item xs={9} sm={4}>
-              {ifApplicable(site?.project_code[0]?.description)}
-            </Grid>
+            <Grid size={{ xs: 9, sm: 4 }}>{ifApplicable(site?.project_code[0]?.description)}</Grid>
 
-            <Grid item xs={3} sm={2}>
+            <Grid size={{ xs: 3, sm: 2 }}>
               <Typography>Mapsheet:</Typography>
             </Grid>
-            <Grid item xs={9} sm={4}>
-              {ifApplicable(site?.map_sheet)}
-            </Grid>
-            <Grid item xs={3} sm={2}>
+            <Grid size={{ xs: 9, sm: 4 }}>{ifApplicable(site?.map_sheet)}</Grid>
+            <Grid size={{ xs: 3, sm: 2 }}>
               <Typography>UTM Zone:</Typography>
             </Grid>
-            <Grid item xs={9} sm={4}>
-              {ifApplicable(site?.utm_zone)}
-            </Grid>
+            <Grid size={{ xs: 9, sm: 4 }}>{ifApplicable(site?.utm_zone)}</Grid>
 
-            <Grid item xs={3} sm={2}>
+            <Grid size={{ xs: 3, sm: 2 }}>
               <Typography>UTM Easting:</Typography>
             </Grid>
-            <Grid item xs={9} sm={4}>
-              {ifApplicable(site?.utm_easting)}
-            </Grid>
-            <Grid item xs={3} sm={2}>
+            <Grid size={{ xs: 9, sm: 4 }}>{ifApplicable(site?.utm_easting)}</Grid>
+            <Grid size={{ xs: 3, sm: 2 }}>
               <Typography>UTM Northing:</Typography>
             </Grid>
-            <Grid item xs={9} sm={4}>
-              {ifApplicable(site?.utm_northing)}
-            </Grid>
+            <Grid size={{ xs: 9, sm: 4 }}>{ifApplicable(site?.utm_northing)}</Grid>
 
-            <Grid item xs={3} sm={2}>
+            <Grid size={{ xs: 3, sm: 2 }}>
               <Typography>Longitude:</Typography>
             </Grid>
-            <Grid item xs={9} sm={4}>
-              {ifApplicable(longitude)}
-            </Grid>
-            <Grid item xs={3} sm={2}>
+            <Grid size={{ xs: 9, sm: 4 }}>{ifApplicable(longitude)}</Grid>
+            <Grid size={{ xs: 3, sm: 2 }}>
               <Typography>Latitude:</Typography>
             </Grid>
-            <Grid item xs={9} sm={4}>
-              {ifApplicable(latitude)}
-            </Grid>
+            <Grid size={{ xs: 9, sm: 4 }}>{ifApplicable(latitude)}</Grid>
 
-            <Grid item xs={3} sm={2}>
+            <Grid size={{ xs: 3, sm: 2 }}>
               <Typography>Elevation (m):</Typography>
             </Grid>
-            <Grid item xs={9} sm={4}>
-              {ifApplicable(site?.site_elevation)}
-            </Grid>
-            <Grid item xs={3} sm={2}>
+            <Grid size={{ xs: 9, sm: 4 }}>{ifApplicable(site?.site_elevation)}</Grid>
+            <Grid size={{ xs: 3, sm: 2 }}>
               <Typography>Range Unit ID:</Typography>
             </Grid>
-            <Grid item xs={9} sm={4}>
-              {ifApplicable(site?.range_unit_id)}
-            </Grid>
+            <Grid size={{ xs: 9, sm: 4 }}>{ifApplicable(site?.range_unit_id)}</Grid>
 
-            <Grid item xs={3} sm={2}>
+            <Grid size={{ xs: 3, sm: 2 }}>
               <Typography>Site Specific Use:</Typography>
             </Grid>
-            <Grid item xs={9} sm={4}>
-              {ifApplicable(site?.specific_use_code)}
-            </Grid>
+            <Grid size={{ xs: 9, sm: 4 }}>{ifApplicable(site?.specific_use_code)}</Grid>
 
-            <Grid item xs={3} sm={2}>
+            <Grid size={{ xs: 3, sm: 2 }}>
               <Typography>Aspect:</Typography>
             </Grid>
-            <Grid item xs={9} sm={4}>
-              {ifApplicable(site?.aspect_code)}
-            </Grid>
-            <Grid item xs={3} sm={2}>
+            <Grid size={{ xs: 9, sm: 4 }}>{ifApplicable(site?.aspect_code)}</Grid>
+            <Grid size={{ xs: 3, sm: 2 }}>
               <Typography>Slope (%):</Typography>
             </Grid>
-            <Grid item xs={9} sm={4}>
-              {ifApplicable(site?.slope_code)}
-            </Grid>
+            <Grid size={{ xs: 9, sm: 4 }}>{ifApplicable(site?.slope_code)}</Grid>
 
-            <Grid item xs={3} sm={2}>
+            <Grid size={{ xs: 3, sm: 2 }}>
               <Typography>Soil Texture:</Typography>
             </Grid>
-            <Grid item xs={9} sm={4}>
-              {ifApplicable(site?.soil_texture_code)}
-            </Grid>
+            <Grid size={{ xs: 9, sm: 4 }}>{ifApplicable(site?.soil_texture_code)}</Grid>
 
-            <Grid item xs={3} sm={2}>
+            <Grid size={{ xs: 3, sm: 2 }}>
               <Typography>Jurisdictions:</Typography>
             </Grid>
-            <Grid item xs={9} sm={4}>
+            <Grid size={{ xs: 9, sm: 4 }}>
               <ul className="jurisdictionSum">
                 {jurisdictions.map((jurisdiction) => (
                   <li key={jurisdiction.jurisdiction_code}>
@@ -143,46 +115,34 @@ export const Summary: React.FC<IAPPSitePropType> = ({ record }) => {
               </ul>
             </Grid>
 
-            <Grid item xs={3} sm={2}>
+            <Grid size={{ xs: 3, sm: 2 }}>
               <Typography>Site Location Details:</Typography>{' '}
             </Grid>
-            <Grid item xs={9} sm={4}>
-              {ifApplicable(site?.access_description)}
-            </Grid>
-            <Grid item xs={3} sm={2}>
+            <Grid size={{ xs: 9, sm: 4 }}>{ifApplicable(site?.access_description)}</Grid>
+            <Grid size={{ xs: 3, sm: 2 }}>
               <Typography>Site Comments:</Typography>
             </Grid>
-            <Grid item xs={9} sm={10}>
-              {ifApplicable(site?.general_comment)}
-            </Grid>
+            <Grid size={{ xs: 9, sm: 4 }}>{ifApplicable(site?.general_comment)}</Grid>
 
-            <Grid item xs={3} sm={2}>
+            <Grid size={{ xs: 3, sm: 2 }}>
               <Typography>Entered By:</Typography>
             </Grid>
-            <Grid item xs={9} sm={4}>
-              {ifApplicable(site?.entered_by)}
-            </Grid>
+            <Grid size={{ xs: 9, sm: 4 }}>{ifApplicable(site?.entered_by)}</Grid>
 
-            <Grid item xs={3} sm={2}>
+            <Grid size={{ xs: 3, sm: 2 }}>
               <Typography>Date Entered:</Typography>
             </Grid>
-            <Grid item xs={9} sm={4}>
-              {ifApplicable(date_entered)}
-            </Grid>
+            <Grid size={{ xs: 9, sm: 4 }}>{ifApplicable(date_entered)}</Grid>
 
-            <Grid item xs={3} sm={2}>
+            <Grid size={{ xs: 3, sm: 2 }}>
               <Typography>Updated By:</Typography>
             </Grid>
-            <Grid item xs={9} sm={4}>
-              {ifApplicable(site?.updated_by)}
-            </Grid>
+            <Grid size={{ xs: 9, sm: 4 }}>{ifApplicable(site?.updated_by)}</Grid>
 
-            <Grid item xs={3} sm={2}>
+            <Grid size={{ xs: 3, sm: 2 }}>
               <Typography>Date Updated:</Typography>
             </Grid>
-            <Grid item xs={9} sm={4}>
-              {ifApplicable(date_updated)}
-            </Grid>
+            <Grid size={{ xs: 9, sm: 4 }}>{ifApplicable(date_updated)}</Grid>
           </Grid>
         </AccordionDetails>
       </Accordion>
