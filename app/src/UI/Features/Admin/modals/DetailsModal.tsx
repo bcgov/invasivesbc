@@ -45,26 +45,26 @@ const DetailsModal = ({
         {detailsDialogUser.firstName + ' ' + detailsDialogUser.lastName}
       </DialogTitle>
       <DialogContent>
-        <Grid item>
+        <Grid>
           <Typography>
             <strong>Email: </strong>
             {detailsDialogUser.email}
           </Typography>
         </Grid>
-        <Grid item>
+        <Grid>
           <Typography>
             <strong>Username: </strong>
             {detailsDialogUser.preferredUsername}
           </Typography>
         </Grid>
-        <Grid item>
+        <Grid>
           <Typography>
             <strong>Expiry Date: </strong>
             {detailsDialogUser.expiryDate}
           </Typography>
         </Grid>
         {detailsDialogUser.bceidUserId && (
-          <Grid item>
+          <Grid>
             <Typography>
               <strong>BCEID User ID: </strong>
               {detailsDialogUser.bceidUserId}
@@ -72,7 +72,7 @@ const DetailsModal = ({
           </Grid>
         )}
         {detailsDialogUser.idirUserId && (
-          <Grid item>
+          <Grid>
             <Typography>
               <strong>IDIR User ID: </strong>
               {detailsDialogUser.idirUserId}
@@ -80,7 +80,7 @@ const DetailsModal = ({
           </Grid>
         )}
         {detailsDialogUser.idirAccountName && (
-          <Grid item>
+          <Grid>
             <Typography>
               <strong>IDIR Account Name: </strong>
               {detailsDialogUser.idirAccountName}
@@ -88,7 +88,7 @@ const DetailsModal = ({
           </Grid>
         )}
         {detailsDialogUser.workPhoneNumber && (
-          <Grid item>
+          <Grid>
             <Typography>
               <strong>Work Phone: </strong>
               {detailsDialogUser.workPhoneNumber}
@@ -96,7 +96,7 @@ const DetailsModal = ({
           </Grid>
         )}
         {detailsDialogUser.pacNumber && (
-          <Grid item>
+          <Grid>
             <Typography>
               <strong>PAC Number: </strong>
               {detailsDialogUser.pacNumber}
@@ -104,7 +104,7 @@ const DetailsModal = ({
           </Grid>
         )}
         {detailsDialogUser.pacServiceNumber1 && (
-          <Grid item>
+          <Grid>
             <Typography>
               <strong>PAC Service Number 1: </strong>
               {detailsDialogUser.pacServiceNumber1}
@@ -112,7 +112,7 @@ const DetailsModal = ({
           </Grid>
         )}
         {detailsDialogUser.pacServiceNumber2 && (
-          <Grid item>
+          <Grid>
             <Typography>
               <strong>PAC Service Number 2: </strong>
               {detailsDialogUser.pacServiceNumber2}
@@ -121,12 +121,12 @@ const DetailsModal = ({
         )}
         {detailsDialogUser.employer && (
           <>
-            <Grid item>
+            <Grid>
               <Typography>
                 <strong>Employer: </strong>
               </Typography>
             </Grid>
-            <Grid item>
+            <Grid>
               {detailsDialogUser.employer.split(',').map((employer) => (
                 <ListItem key={employer}>
                   {employerCodes.map((employerCode) => {
@@ -141,12 +141,12 @@ const DetailsModal = ({
         )}
         {detailsDialogUser.fundingAgencies && detailsDialogUser.fundingAgencies.length > 0 && (
           <>
-            <Grid item>
+            <Grid>
               <Typography>
                 <strong>Funding Agencies: </strong>
               </Typography>
             </Grid>
-            <Grid item>
+            <Grid>
               <List dense>
                 {detailsDialogUser.fundingAgencies.split(',').map((agency) => (
                   <ListItem key={agency}>
@@ -163,10 +163,10 @@ const DetailsModal = ({
         )}
         {detailsDialogUser.role && detailsDialogUser.role.length > 0 && (
           <>
-            <Grid item>
+            <Grid>
               <Typography fontWeight="bold">Roles:</Typography>
             </Grid>
-            <Grid item>
+            <Grid>
               <List dense>
                 {detailsDialogUser.role.split(',').map((role) => (
                   <ListItem key={role}>

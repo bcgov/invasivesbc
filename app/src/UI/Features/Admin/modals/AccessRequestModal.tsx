@@ -45,14 +45,14 @@ const AccessRequestModal = ({
         {detailsDialogRequestUser.firstName + ' ' + detailsDialogRequestUser.lastName}
       </DialogTitle>
       <DialogContent>
-        <Grid item>
+        <Grid>
           <Typography>
             <strong>Email: </strong>
             {detailsDialogRequestUser.email}
           </Typography>
         </Grid>
         {detailsDialogRequestUser.bceidUserId && (
-          <Grid item>
+          <Grid>
             <Typography>
               <strong>BCEID User ID: </strong>
               {detailsDialogRequestUser.bceidUserId}
@@ -60,7 +60,7 @@ const AccessRequestModal = ({
           </Grid>
         )}
         {detailsDialogRequestUser.idirUserId && (
-          <Grid item>
+          <Grid>
             <Typography>
               <strong>IDIR User ID: </strong>
               {detailsDialogRequestUser.idirUserId}
@@ -68,7 +68,7 @@ const AccessRequestModal = ({
           </Grid>
         )}
         {detailsDialogRequestUser.bceidAccountName && (
-          <Grid item>
+          <Grid>
             <Typography>
               <strong>BCEID Account Name: </strong>
               {detailsDialogRequestUser.bceidAccountName}
@@ -76,43 +76,43 @@ const AccessRequestModal = ({
           </Grid>
         )}
         {detailsDialogRequestUser.idirAccountName && (
-          <Grid item>
+          <Grid>
             <Typography>
               <strong>IDIR Account Name: </strong>
               {detailsDialogRequestUser.idirAccountName}
             </Typography>
           </Grid>
         )}
-        <Grid item>
+        <Grid>
           <Typography>
             <strong>Work Phone: </strong>
             {detailsDialogRequestUser.workPhoneNumber}
           </Typography>
         </Grid>
-        <Grid item>
+        <Grid>
           <Typography>
             <strong>PAC Number: </strong>
             {detailsDialogRequestUser.pacNumber}
           </Typography>
         </Grid>
-        <Grid item>
+        <Grid>
           <Typography>
             <strong>PAC Service Number 1: </strong>
             {detailsDialogRequestUser.pacServiceNumber1}
           </Typography>
         </Grid>
-        <Grid item>
+        <Grid>
           <Typography>
             <strong>PAC Service Number 2: </strong>
             {detailsDialogRequestUser.pacServiceNumber2}
           </Typography>
         </Grid>
-        <Grid item>
+        <Grid>
           <Typography>
             <strong>Employer: </strong>
           </Typography>
         </Grid>
-        <Grid item>
+        <Grid>
           <List dense>
             {detailsDialogRequestUser.employer.split(',').map((employer) => (
               <ListItem key={employer}>
@@ -127,10 +127,10 @@ const AccessRequestModal = ({
         </Grid>
         {detailsDialogRequestUser.fundingAgencies && detailsDialogRequestUser.fundingAgencies.length > 0 && (
           <>
-            <Grid item>
+            <Grid>
               <Typography fontWeight="bold">Funding Agencies:</Typography>
             </Grid>
-            <Grid item>
+            <Grid>
               <List dense>
                 {detailsDialogRequestUser.fundingAgencies.split(',').map((agency) => (
                   <ListItem key={agency}>
@@ -149,10 +149,10 @@ const AccessRequestModal = ({
         )}
         {detailsDialogRequestUser.requestedRoles && detailsDialogRequestUser.requestedRoles.length > 0 && (
           <>
-            <Grid item>
+            <Grid>
               <Typography fontWeight="bold">Requested Roles:</Typography>
             </Grid>
-            <Grid item>
+            <Grid>
               <List dense>
                 {detailsDialogRequestUser.requestedRoles.split(',').map((role) => (
                   <ListItem key={role}>

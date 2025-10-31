@@ -164,9 +164,9 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
     <Box width={1}>
       <Box mb={3}>
         <Grid container>
-          <Grid container item>
+          <Grid container>
             {media.map((photo, index) => (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+              <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={index}>
                 <Card>
                   <CardMedia src={photo.encoded_file} component="img" />
                   <Typography style={{ marginTop: '15px' }} textAlign={'center'} variant="h5">
@@ -217,13 +217,13 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
       {!props.isDisabled && (
         <Box>
           <Grid container>
-            <Grid container item spacing={3} justifyContent="center">
-              <Grid item>
+            <Grid container spacing={3} justifyContent="center">
+              <Grid>
                 <Button variant="contained" color="primary" startIcon={<PhotoCamera />} onClick={takePhotoFromCamera}>
                   Capture Photo
                 </Button>
               </Grid>
-              <Grid item>
+              <Grid>
                 <Button
                   variant="contained"
                   color="primary"

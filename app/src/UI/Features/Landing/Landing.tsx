@@ -85,7 +85,7 @@ export const LandingComponent = () => {
             <Box mt={2}>
               <h3>User Information</h3>
               <Grid className="userInfoItemGrid" container spacing={2} sx={{ mt: 2 }}>
-                <Grid item md={3}>
+                <Grid size={{ md: 3 }}>
                   <Box overflow="hidden" textOverflow="ellipsis">
                     <p>
                       <strong>Name:</strong>
@@ -94,7 +94,7 @@ export const LandingComponent = () => {
                   </Box>
                 </Grid>
                 <Divider className="h-divider" flexItem={true} orientation="vertical" />
-                <Grid item md={3}>
+                <Grid size={{ md: 3 }}>
                   <Box overflow="hidden" textOverflow="ellipsis">
                     <p>
                       <strong>Email:</strong>
@@ -103,7 +103,7 @@ export const LandingComponent = () => {
                   </Box>
                 </Grid>
                 <Divider className="h-divider" flexItem={true} orientation="vertical" />
-                <Grid item md={3}>
+                <Grid size={{ md: 3 }}>
                   <Box overflow="hidden" textOverflow="ellipsis">
                     <p>
                       <strong>Username:</strong>
@@ -117,7 +117,7 @@ export const LandingComponent = () => {
               <Grid className="userInfoItemGrid" container spacing={2}>
                 {!workingOffline && (
                   <>
-                    <Grid item md={3}>
+                    <Grid size={{ md: 3 }}>
                       <Box overflow="hidden" textOverflow="ellipsis">
                         <p>
                           <strong>Activation Status:</strong>
@@ -129,7 +129,7 @@ export const LandingComponent = () => {
                   </>
                 )}
                 {roles.length > 0 && (
-                  <Grid item md={8}>
+                  <Grid size={{ md: 8 }}>
                     <Box overflow="hidden" textOverflow="ellipsis">
                       <p>
                         <strong>Roles:</strong>

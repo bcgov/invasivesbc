@@ -28,7 +28,7 @@ const ProgressControlPanel: React.FC<ProgressControlPanelProps> = ({
       onClick={(e) => e.stopPropagation()}
     >
       <Grid container spacing={2} alignItems="center">
-        <Grid item xs={2}>
+        <Grid size={{ xs: 2 }}>
           <IconButton
             onClick={handlePauseResume}
             color="primary"
@@ -43,10 +43,10 @@ const ProgressControlPanel: React.FC<ProgressControlPanelProps> = ({
             {isPaused ? <PlayCircleIcon /> : <PauseCircleIcon />}
           </IconButton>
         </Grid>
-        <Grid item xs={8}>
+        <Grid size={{ xs: 8 }}>
           <LinearProgress variant="determinate" value={downloadProgress.normalizedProgress * 100} />
         </Grid>
-        <Grid item xs={2}>
+        <Grid size={{ xs: 2 }}>
           <IconButton
             color="error"
             onClick={handleCancel}

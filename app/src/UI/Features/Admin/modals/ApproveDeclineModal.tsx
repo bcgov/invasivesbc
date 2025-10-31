@@ -62,7 +62,7 @@ const ApproveDeclineModal = ({
           {mode === Mode.APPROVE ? 'Selected Users:' : 'Selected User:'}
         </DialogContentText>
         {selectedRequestUsers.map((user, index) => (
-          <Grid item sx={{ ml: 2 }} key={user?.id || index}>
+          <Grid sx={{ ml: 2 }} key={user?.id || index}>
             <DialogContentText fontWeight="bold">{user.first_name + ' ' + user.last_name}:</DialogContentText>
             <List dense>
               {user.requested_roles.split(',').map((roleReq: string) => (

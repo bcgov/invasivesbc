@@ -1,4 +1,4 @@
-import { red, green, blue } from '@mui/material/colors';
+import { blue, green, red } from '@mui/material/colors';
 import {
   Box,
   Button,
@@ -12,7 +12,7 @@ import {
   Tooltip,
   Typography
 } from '@mui/material';
-import { DataGrid, GridColDef, GridRowId, GridValueGetterParams } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRowId } from '@mui/x-data-grid';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useEffect, useState } from 'react';
 import { selectAuth } from 'state/reducers/auth';
@@ -21,7 +21,6 @@ import { CustomNoRowsOverlay } from 'UI/Features/Admin/CustomNoRowsOverlay';
 import EmailSetup from 'UI/Features/Admin/email-setup/EmailSetup';
 import { bcYellow, black } from 'constants/colors';
 import Spinner from 'UI/Reusable/Spinner/Spinner';
-import QuickSearchToolbar from 'UI/Features/Admin/userAccess/QuickSearchToolbar';
 import AccessRequestModal from 'UI/Features/Admin/modals/AccessRequestModal';
 import ApproveDeclineModal from 'UI/Features/Admin/modals/ApproveDeclineModal';
 import GrantRevokeRoleModal from 'UI/Features/Admin/modals/GrantRevokeRoleModal';
@@ -29,7 +28,7 @@ import DetailsModal from 'UI/Features/Admin/modals/DetailsModal';
 import { SortFilter } from 'interfaces/filterParams';
 
 interface IAccessRequestPage {
-  classes?: any;
+  classes?;
 }
 
 const UserAccessPage: React.FC<IAccessRequestPage> = () => {
@@ -48,19 +47,19 @@ const UserAccessPage: React.FC<IAccessRequestPage> = () => {
   const [usersTableLoading, setUsersTableLoading] = useState(false);
   const [requestTableLoading, setRequestTableLoading] = useState(false);
 
-  const [rows, setRows] = useState<Record<string, any>[]>([]);
-  const [requestRows, setRequestRows] = useState<Record<string, any>[]>([]);
-  const [searchedRows, setSearchedRows] = useState<any[]>([]);
+  const [rows, setRows] = useState<Record<string, unknown>[]>([]);
+  const [requestRows, setRequestRows] = useState<Record<string, unknown>[]>([]);
+  const [searchedRows, setSearchedRows] = useState<unknown[]>([]);
 
-  const [users, setUsers] = useState<any[]>([]);
-  const [selectedUsers, setSelectedUsers] = useState<Record<string, any>[]>([]);
+  const [users, setUsers] = useState<unknown[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<Record<string, unknown>[]>([]);
   const [selectedUserIds, setSelectedUserIds] = useState<number[]>([]);
-  const [detailsDialogUser, setDetailsDialogUser] = useState<any>({});
+  const [detailsDialogUser, setDetailsDialogUser] = useState<unknown>({});
   const [detailsDialogUserLoaded, setDetailsDialogUserLoaded] = useState(false);
-  const [accessRequests, setAccessRequests] = useState<any[]>([]);
+  const [accessRequests, setAccessRequests] = useState<unknown[]>([]);
 
-  const [selectedRequestUsers, setSelectedRequestUsers] = useState<Record<string, any>[]>([]);
-  const [detailsDialogRequestUser, setDetailsDialogRequestUser] = useState<any>({});
+  const [selectedRequestUsers, setSelectedRequestUsers] = useState<Record<string, unknown>[]>([]);
+  const [detailsDialogRequestUser, setDetailsDialogRequestUser] = useState<unknown>({});
   const [detailsDialogRequestUserLoaded, setDetailsDialogRequestUserLoaded] = useState(false);
   const [selectionModel, setSelectionModel] = useState<GridRowId[]>([]);
 
@@ -69,16 +68,16 @@ const UserAccessPage: React.FC<IAccessRequestPage> = () => {
   const [requestDetailsDialogOpen, setRequestDetailsDialogOpen] = useState(false);
   const [approveDeclineDialogOpen, setApproveDeclineDialogOpen] = useState(false);
 
-  const [availableRoles, setAvailableRoles] = useState<Record<string, any>[]>([]);
-  const [agencyCodes, setAgencyCodes] = useState<Record<string, any>[]>([]);
-  const [employerCodes, setEmployerCodes] = useState<Record<string, any>[]>([]);
+  const [availableRoles, setAvailableRoles] = useState<Record<string, unknown>[]>([]);
+  const [agencyCodes, setAgencyCodes] = useState<Record<string, unknown>[]>([]);
+  const [employerCodes, setEmployerCodes] = useState<Record<string, unknown>[]>([]);
 
-  const [userRoles, setUserRoles] = useState<any[]>([]);
-  const [selectedRole, setSelectedRole] = useState<any>(nilRole);
+  const [userRoles, setUserRoles] = useState<unknown[]>([]);
+  const [selectedRole, setSelectedRole] = useState<unknown>(nilRole);
 
   const [searchText, setSearchText] = React.useState('');
 
-  const [mode, setMode] = useState<any>(Mode.GRANT);
+  const [mode, setMode] = useState<Mode>(Mode.GRANT);
 
   /*
     ================================================================================================
@@ -86,7 +85,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = () => {
     ================================================================================================
   */
 
-  const renderDetailsButton = (params: GridValueGetterParams) => {
+  const renderDetailsButton = (params) => {
     return (
       <Tooltip title="View Details" classes={{ tooltip: 'toolTip' }}>
         <Button
@@ -102,7 +101,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = () => {
     );
   };
 
-  const renderRequestDetailsButton = (params: GridValueGetterParams) => {
+  const renderRequestDetailsButton = (params) => {
     return (
       <Tooltip title="View Details" classes={{ tooltip: 'toolTip' }}>
         <Button
@@ -118,7 +117,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = () => {
     );
   };
 
-  const renderStatus = (params: GridValueGetterParams) => {
+  const renderStatus = (params) => {
     const color = 'white';
     const text = params.row.status;
     let bgcolor = 'white';
@@ -132,7 +131,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = () => {
     return <Chip label={text} sx={{ bgcolor, color }} />;
   };
 
-  const renderType = (params: GridValueGetterParams) => {
+  const renderType = (params) => {
     let color = 'white';
     let bgcolor = 'white';
     if (params.row.requestType === 'ACCESS') {
@@ -162,7 +161,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = () => {
 
   const handleAccessRequestRowSelection = (ids) => {
     // Get user details from ids
-    const requests: Record<string, any>[] = [];
+    const requests: Record<string, unknown>[] = [];
     for (const id of ids) {
       const user = accessRequests.find((u) => u.access_request_id === id);
       if (user) {
@@ -179,7 +178,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = () => {
     ================================================================================================
   */
 
-  const getRows = (users: any) => {
+  const getRows = (users) => {
     const rows: Record<string, any>[] = [];
     for (let i = 0; i < users.length; i++) {
       const user = users[i];
@@ -209,13 +208,13 @@ const UserAccessPage: React.FC<IAccessRequestPage> = () => {
     setRows(rows);
   };
 
-  const getRequestRows = (requests: any) => {
+  const getRequestRows = (requests) => {
     const formatStatus = (arg): string => {
       if (arg === 'NOT_APPROVED') return 'PENDING';
       if (arg === 'REMOVED') return 'DECLINED';
       return arg;
     };
-    const rows: Record<string, any>[] = [];
+    const rows: Record<string, unknown>[] = [];
     for (const request of requests) {
       rows.push({
         id: request.access_request_id,
@@ -273,7 +272,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = () => {
       field: 'actions',
       headerName: 'Actions',
       width: 100,
-      renderCell: (row) => renderDetailsButton(row as GridValueGetterParams)
+      renderCell: (row) => renderDetailsButton(row)
     }
   ];
 
@@ -301,7 +300,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = () => {
       field: 'requestType',
       headerName: 'Type',
       width: 100,
-      renderCell: (row) => renderType(row as GridValueGetterParams)
+      renderCell: (row) => renderType(row)
     },
     { field: 'firstName', headerName: 'First Name', width: 120 },
     { field: 'lastName', headerName: 'Last Name', width: 120 },
@@ -311,35 +310,15 @@ const UserAccessPage: React.FC<IAccessRequestPage> = () => {
       field: 'status',
       headerName: 'Status',
       width: 159,
-      renderCell: (data) => renderStatus(data as GridValueGetterParams)
+      renderCell: (data) => renderStatus(data)
     },
     {
       field: 'actions',
       headerName: 'Actions',
       width: 100,
-      renderCell: (row) => renderRequestDetailsButton(row as GridValueGetterParams)
+      renderCell: (row) => renderRequestDetailsButton(row)
     }
   ];
-
-  /*
-    ================================================================================================
-    SEARCH
-    ================================================================================================
-  */
-
-  const requestSearch = (searchValue: string) => {
-    setSearchText(searchValue);
-    const filteredRows = rows.filter((row: any) => {
-      return Object.values(row).some((field: any) => {
-        if (field != null) {
-          return field.toString().includes(searchValue);
-        } else {
-          return false;
-        }
-      });
-    });
-    setSearchedRows(filteredRows);
-  };
 
   React.useEffect(() => {
     setSearchedRows(rows);
@@ -381,7 +360,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = () => {
 
   const getFundingAgencies = () => {
     api.getFundingAgencies().then((res) => {
-      const agencies: Record<string, any>[] = [];
+      const agencies: Record<string, unknown>[] = [];
       for (let i = 0; i < res.length; i++) {
         agencies.push({
           value: res[i].code_name,
@@ -394,7 +373,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = () => {
 
   const getAvailableRoles = () => {
     api.getRoles().then((res) => {
-      const roles: Record<string, any>[] = [];
+      const roles: Record<string, unknown>[] = [];
       for (let i = 0; i < res.length; i++) {
         roles.push({
           id: res[i].role_id,
@@ -408,7 +387,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = () => {
 
   const getEmployers = () => {
     api.getEmployers().then((res) => {
-      const employers: Record<string, any>[] = [];
+      const employers: Record<string, unknown>[] = [];
       for (let i = 0; i < res.length; i++) {
         employers.push({
           value: res[i].code_name,
@@ -425,7 +404,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = () => {
     ================================================================================================
   */
 
-  const openDetailsDialog = (user: any) => {
+  const openDetailsDialog = (user) => {
     setDetailsDialogUser(user);
     setDetailsDialogUserLoaded(true);
     setDetailsDialogOpen(true);
@@ -437,7 +416,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = () => {
     setDetailsDialogOpen(false);
   };
 
-  const openRequestDetailsDialog = (user: any) => {
+  const openRequestDetailsDialog = (user) => {
     setDetailsDialogRequestUser(user);
     setDetailsDialogRequestUserLoaded(true);
     setRequestDetailsDialogOpen(true);
@@ -449,7 +428,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = () => {
     setRequestDetailsDialogOpen(false);
   };
 
-  const openApproveDeclineDialog = (mode: any) => {
+  const openApproveDeclineDialog = (mode) => {
     if (mode === Mode.APPROVE) {
       setMode(Mode.APPROVE);
     } else {
@@ -462,13 +441,13 @@ const UserAccessPage: React.FC<IAccessRequestPage> = () => {
     setApproveDeclineDialogOpen(false);
   };
 
-  const openRoleDialog = (mode: any) => {
+  const openRoleDialog = (mode) => {
     if (mode === Mode.GRANT) {
       setMode(Mode.GRANT);
       setRoleDialogOpen(true);
     } else {
       api.getRolesForUser(selectedUsers[0].user_id).then((res) => {
-        const roles: Record<string, any>[] = [];
+        const roles: Record<string, unknown>[] = [];
         for (const role of res) {
           roles.push({
             id: role.role_id,
@@ -547,7 +526,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = () => {
     ================================================================================================
   */
 
-  const handleSelectedRoleChange = (event: SelectChangeEvent<any>) => {
+  const handleSelectedRoleChange = (event: SelectChangeEvent) => {
     setSelectedRole(parseInt(event.target.value) || nilRole);
   };
   if (!authState?.roles.some((role) => role.role_name === 'master_administrator')) {
@@ -556,29 +535,20 @@ const UserAccessPage: React.FC<IAccessRequestPage> = () => {
   return (
     <Container style={{ paddingBottom: '50px' }}>
       <Grid container spacing={4} style={{ paddingTop: '2rem' }}>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Typography variant="h4" align="center">
             Grant or Revoke Roles for Existing Users
           </Typography>
         </Grid>
         {/* USERS */}
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Card elevation={8}>
             <CardContent>
               <Grid>
                 <div style={{ height: 550, width: '100%' }}>
                   <DataGrid
                     loading={usersTableLoading}
-                    components={{ Toolbar: QuickSearchToolbar, NoRowsOverlay: CustomNoRowsOverlay }}
-                    componentsProps={{
-                      toolbar: {
-                        value: searchText,
-                        onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
-                          requestSearch(event.target.value);
-                        },
-                        clearSearch: () => requestSearch('')
-                      }
-                    }}
+                    slots={{ noRowsOverlay: CustomNoRowsOverlay }}
                     sortModel={[{ field: 'id', sort: SortFilter.Asc }]}
                     onRowSelectionModelChange={handleRowSelection}
                     rows={searchedRows}
@@ -591,6 +561,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = () => {
                       }
                     }}
                     checkboxSelection
+                    showToolbar
                     onCellClick={handleRowClick}
                     onRowClick={handleRowClick}
                   />
@@ -599,7 +570,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = () => {
             </CardContent>
             <CardActions>
               <Grid container direction="row" spacing={5} justifyContent="flex-end">
-                <Grid item>
+                <Grid>
                   <Button
                     disabled={!selectedUsers || selectedUsers.length === 0}
                     variant="contained"
@@ -609,7 +580,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = () => {
                     Select Role to Grant
                   </Button>
                 </Grid>
-                <Grid item>
+                <Grid>
                   <Button
                     disabled={!selectedUsers || selectedUsers.length > 1 || selectedUsers.length === 0}
                     variant="contained"
@@ -627,21 +598,21 @@ const UserAccessPage: React.FC<IAccessRequestPage> = () => {
 
       {/* ACCESS REQUESTS */}
       <Grid container spacing={4} style={{ paddingTop: '2rem' }}>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Typography variant="h4" align="center">
             Approve or Decline Requests
           </Typography>
         </Grid>
         {/* Approve or decline checked users */}
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Card elevation={8}>
             <CardContent>
               <Grid>
                 <Box style={{ height: 550, width: '100%' }}>
                   <DataGrid
                     loading={requestTableLoading}
-                    components={{
-                      NoRowsOverlay: CustomNoRowsOverlay
+                    slots={{
+                      noRowsOverlay: CustomNoRowsOverlay
                     }}
                     initialState={{
                       filter: {
@@ -650,7 +621,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = () => {
                         }
                       }
                     }}
-                    rowSelectionModel={selectionModel}
+                    // rowSelectionModel={selectionModel}
                     onRowSelectionModelChange={handleAccessRequestRowSelection}
                     rows={requestRows}
                     columns={requestColumns}
@@ -664,7 +635,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = () => {
             </CardContent>
             <CardActions>
               <Grid container direction="row" spacing={5} justifyContent="flex-end">
-                <Grid item>
+                <Grid>
                   <Button
                     disabled={!selectedRequestUsers || selectedRequestUsers.length === 0}
                     variant="contained"
@@ -674,7 +645,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = () => {
                     Approve Selected Users
                   </Button>
                 </Grid>
-                <Grid item>
+                <Grid>
                   <Button
                     disabled={
                       !selectedRequestUsers || selectedRequestUsers.length === 0 || selectedRequestUsers.length > 1
