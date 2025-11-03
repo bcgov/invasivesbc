@@ -5,7 +5,7 @@ import { getActivityHistorySQL, getActivitiesByIdsSQL } from 'queries/activity-q
 import { getFileFromS3 } from 'utils/file-utils';
 import { getMediaItemsList } from 'paths/media';
 import { InvasivesRequest } from 'utils/auth-utils';
-import OpenAPISpec from 'OpenAPISpec';
+import OpenAPISpec from 'utils/OpenAPISpec';
 import LoggerHandler from 'utils/endpoints/LoggerHandler';
 import verifyUserRole from 'utils/validateRole';
 import QueryHandler from 'utils/endpoints/QueryHandler';
