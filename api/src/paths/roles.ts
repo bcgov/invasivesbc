@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { getAllRolesSQL } from 'queries/role-queries';
 import LoggerHandler from 'utils/endpoints/LoggerHandler';
 import QueryHandler from 'utils/endpoints/QueryHandler';
-import OpenAPISpec from 'OpenAPISpec';
+import OpenAPISpec from 'utils/OpenAPISpec';
 
 const logger = new LoggerHandler('roles');
 const GET: Operation = [getRoles()];

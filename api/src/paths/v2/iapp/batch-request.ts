@@ -7,7 +7,7 @@ import { InvasivesRequest } from 'utils/auth-utils';
 import { getSitesBasedOnSearchCriteriaSQL } from 'queries/iapp-queries';
 import { mapSitesRowsToJSON } from 'utils/iapp-json-utils';
 import { PointOfInterestSearchCriteria } from 'models/point-of-interest';
-import OpenAPISpec from 'OpenAPISpec';
+import OpenAPISpec from 'utils/OpenAPISpec';
 import verifyUserRole from 'utils/validateRole';
 import QueryHandler from 'utils/endpoints/QueryHandler';
 import LoggerHandler from 'utils/endpoints/LoggerHandler';
