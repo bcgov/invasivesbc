@@ -144,7 +144,7 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_START() {
         return mappingAlertMessages.trackingStarted;
     }
   })();
-  const userHasTrackingEnabled = 'long' in coords;
+  const userHasTrackingEnabled = coords && 'long' in coords;
 
   if (userHasTrackingEnabled) {
     const initGeo: Feature = {
