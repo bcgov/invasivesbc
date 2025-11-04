@@ -1,13 +1,25 @@
 import { Operation } from 'express-openapi';
 import { SECURITY_ON } from 'constants/misc';
 
-interface Parameter {
+interface QueryParameter {
   in: string;
   name: string;
   required: boolean;
   description: string;
   content: Record<PropertyKey, unknown>;
 }
+interface PathParameter {
+  in: string;
+  name: string;
+  required: boolean;
+  description: string;
+  schema: {
+    type: string;
+  };
+}
+
+type Parameter = QueryParameter | PathParameter;
+
 class OpenAPISpec {
   private readonly apiDoc = {
     description: '',
