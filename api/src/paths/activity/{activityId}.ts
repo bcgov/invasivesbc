@@ -1,144 +1,103 @@
-import { RequestHandler } from 'express';
+import { RequestHandler, Response } from 'express';
 import { Operation } from 'express-openapi';
+
 import { SQLStatement } from 'sql-template-strings';
-import { PoolClient } from 'pg';
 import { GetObjectCommandOutput } from '@aws-sdk/client-s3';
-import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
-import { getDBConnection } from 'database/db';
+import { ALL_ROLES } from 'constants/misc';
 import { getActivityHistorySQL, getActivitySqlWithPermissions } from 'queries/activity-queries';
 import { getFileFromS3 } from 'utils/file-utils';
-import { getLogger } from 'utils/logger';
 import { getMediaItemsList } from 'paths/media';
 import { InvasivesRequest } from 'utils/auth-utils';
+import OpenAPISpec from 'utils/OpenAPISpec';
+import QueryHandler from 'utils/endpoints/QueryHandler';
+import verifyUserRole from 'utils/validateRole';
+import LoggerHandler from 'utils/endpoints/LoggerHandler';
 
-const defaultLog = getLogger('activity');
+const logger = new LoggerHandler('activity');
 
 const GET: Operation = [getActivity(), getMedia(), returnActivity()];
 
-GET.apiDoc = {
-  description: 'Fetches a single activity based on its primary key.',
-  tags: ['activity'],
-  security: SECURITY_ON
-    ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
-    : [],
-  parameters: [
-    {
-      in: 'path',
-      name: 'activityId',
-      required: true
+new OpenAPISpec('Fetches a single activity based on its primary key.', ['activity'])
+  .security(ALL_ROLES)
+  .parameters({
+    description: 'activity id',
+    in: 'path',
+    name: 'activityId',
+    required: true,
+    schema: {
+      type: 'string'
     }
-  ],
-  responses: {
-    200: {
-      description: 'Activity get response object array.',
-      content: {
-        'application/json': {
-          schema: {
-            type: 'object',
-            properties: {
-              // Don't specify exact response, as it will vary, and is not currently enforced anyways
-              // Eventually this could be updated to be a oneOf list, similar to the Post request below.
-            }
+  })
+  .response(200, {
+    description: 'Activity get response object array.',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            // Don't specify exact response, as it will vary, and is not currently enforced anyways
+            // Eventually this could be updated to be a oneOf list, similar to the Post request below.
           }
         }
       }
-    },
-    401: {
-      $ref: '#/components/responses/401'
-    },
-    503: {
-      $ref: '#/components/responses/503'
-    },
-    default: {
-      $ref: '#/components/responses/default'
     }
-  }
-};
+  })
+  .build(GET);
 
 /**
- * Fetches a single activity record based on its primary key.
- *
- * @return {RequestHandler}
+ * @desc Fetches a single activity record based on its primary key.
  */
 function getActivity(): RequestHandler {
-  return async (req: InvasivesRequest, res, next) => {
-    if (req.authContext.roles.length === 0) {
-      res.status(401).json({ message: 'No Role for user' });
-    }
-    defaultLog.debug({ label: '{activityId}', message: 'getActivity', body: req.params });
-
-    const activityId = req.params.activityId;
-    let connection: PoolClient | undefined;
+  return async (req: InvasivesRequest, res: Response, next) => {
+    if (!verifyUserRole(GET.apiDoc, req)) return res.sendStatus(401);
+    const db = new QueryHandler({ maintain: true });
 
     try {
-      connection = await getDBConnection();
+      const activityId = req.params.activityId;
       const sqlStatement: SQLStatement = getActivitySqlWithPermissions(activityId, req?.authContext?.user?.user_id);
       const sqlStatement2: SQLStatement = getActivityHistorySQL(activityId);
 
-      if (!sqlStatement || !sqlStatement2) {
-        return res.status(500).json({
-          message: 'Unable to generate SQL statement.',
-          request: req.body,
-          namespace: 'activity/{activityId}',
-          code: 500
-        });
-      }
+      if (!sqlStatement || !sqlStatement2) return res.status(500).send('Unable to generate SQL statement');
 
-      defaultLog.debug({ label: '{activityId}', message: 'activity audit sql ', body: sqlStatement2 });
-      const response1 = await connection.query(sqlStatement.text, sqlStatement.values);
-      const response2 = await connection.query(sqlStatement2.text, sqlStatement2.values);
+      logger.debug('Activity With Permissions SQL', { body: sqlStatement });
+      logger.debug('Activity Audit SQL', { body: sqlStatement2 });
+
+      const response1 = await db.query(sqlStatement);
+      const response2 = await db.query(sqlStatement2);
 
       const result1 = response1?.rows?.[0] ?? null;
       const result2 = response2?.rows ?? null;
 
-      defaultLog.debug({ label: '{activityId}', message: 'activity response', body: JSON.stringify(result1) });
       req['activity'] = result1;
       req['activity_history'] = result2;
-    } catch (error) {
-      defaultLog.debug({ label: 'getActivity', message: 'error', error });
-      return res.status(500).json({
-        message: 'Unable to fetch activity.',
-        request: req.body,
-        error: error,
-        namespace: 'activity/{activityId}',
-        code: 500
-      });
+    } catch (e) {
+      logger.error(e);
+      return res.status(500).send('Unable to fetch activity.');
     } finally {
-      connection?.release();
+      db?.close();
     }
-
     return next();
   };
 }
 
 function getMedia(): RequestHandler {
-  return async (req, res, next) => {
-    defaultLog.debug({ label: '{activityId}', message: 'getMedia', body: req.body });
-
+  return async (req, _, next) => {
     const activity = req['activity'];
 
-    if (!activity || !activity.media_keys || !activity.media_keys.length) {
+    if (!activity?.media_keys?.length) {
       // No media keys found, skipping get media step
       return next();
     }
 
-    const s3GetPromises: Promise<GetObjectCommandOutput>[] = [];
-
     try {
-      activity['media_keys'].forEach((key: string) => {
+      const s3GetPromises: Promise<GetObjectCommandOutput>[] = activity['media_keys']?.map((key: string) => {
         s3GetPromises.push(getFileFromS3(key));
       });
-
       const response = await Promise.all(s3GetPromises);
-
       // Add encoded media to activity
       req['activity'].media = getMediaItemsList(response, activity['media_keys']);
     } catch (e) {
-      defaultLog.error({ message: 'error while retrieving media keys from s3', error: e });
+      logger.error(e, 'Error retrieving media keys from s3');
     }
     return next();
   };
@@ -151,14 +110,8 @@ function getMedia(): RequestHandler {
  */
 function returnActivity(): RequestHandler {
   return async (req, res) => {
-    if (req['activity'] === null) {
-      return res.status(404).json({
-        message: 'Activity not found.  Maybe it was deleted.',
-        request: req.body,
-        namespace: 'activity/{activityId}',
-        code: 404
-      });
-    }
+    if (!req['activity']) return res.status(400).send('Activity not found. Maybe it was deleted');
+
     // original blob from client:
     const originalPayload = { ...req['activity'].activity_payload };
 
