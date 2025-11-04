@@ -19,9 +19,9 @@ class LoggerHandler extends LoggerWithContext {
       4. Verbose
       5. Debug
   */
-  override error = (message: string, params: Error) => {
-    this._instance.error(params.stack, this.buildLog(message));
-  };
+  override error(err: Error, message?: string) {
+    this._instance.error(err.stack, this.buildLog(message));
+  }
   override warn = (message: string, params?: Record<PropertyKey, unknown>) =>
     this._instance.warn(this.buildLog(message, params));
   override info = (message: string, params?: Record<PropertyKey, unknown>) =>

@@ -126,7 +126,7 @@ class LoggerWithContext {
     this._instance.warn({ ...params, MDC: LoggerWithContext._loadMDC() });
   }
 
-  public error(message, error) {
+  public error(error, message?: string) {
     this._instance.error({ message, error, MDC: LoggerWithContext._loadMDC() });
   }
 }

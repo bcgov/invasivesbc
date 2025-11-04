@@ -45,7 +45,7 @@ if (TRAINING_VIDEOS_JSON_FILE === null) {
     const parsedJSON = JSON.parse(rawFile.toString());
     TRAINING_VIDEOS_JSON.push(...parsedJSON);
   } catch (e) {
-    logger.error({ message: 'Caught an error while reading the JSON file', error: e });
+    logger.error(e, 'Caught an error while reading the JSON file');
   }
   logger.info({ message: `Training video parse complete, will serve ${TRAINING_VIDEOS_JSON.length} videos` });
 }

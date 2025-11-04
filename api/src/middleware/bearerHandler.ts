@@ -14,7 +14,7 @@ const bearerHandler = async (req: Request) => {
       await authenticate(<InvasivesRequest>req);
     }
   } catch (e) {
-    logger.error({ error: e });
+    logger.error(e);
     return false;
   }
   return true;

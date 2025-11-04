@@ -64,8 +64,8 @@ function getActivity(): RequestHandler {
           try {
             const response = await Promise.all(a?.media_keys?.map(async (key: string) => getFileFromS3(key)));
             resObj[a.activity_id].media = getMediaItemsList(response, a.media_keys);
-          } catch (error) {
-            logger.error('Error fetching media from bucket', error);
+          } catch (e) {
+            logger.error(e, 'Error fetching media from bucket');
           }
         }
       });
@@ -74,8 +74,8 @@ function getActivity(): RequestHandler {
         resObj[id].activity_history = result.rows;
       }
       return res.status(200).json(resObj);
-    } catch (error) {
-      logger.error(error.stack);
+    } catch (e) {
+      logger.error(e);
       return res.status(500).send('Unable to fetch ids in list.');
     } finally {
       db?.close();

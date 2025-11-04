@@ -29,9 +29,9 @@ function getRoles(): RequestHandler {
       const db = new QueryHandler();
       const response = await db.query(getAllRolesSQL());
       return res.status(200).json({ result: response.rows });
-    } catch (error) {
-      logger.error('[getRoles]', error.stack);
-      return res.status(500).json(error);
+    } catch (e) {
+      logger.error(e);
+      return res.sendStatus(500);
     }
   };
 }
