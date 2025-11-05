@@ -23,6 +23,8 @@ import ErrorListTemplate from 'UI/Features/Records/Activity/form/ErrorListTempla
 import Activity from 'state/actions/activity/Activity';
 import { ActivitySubtype } from 'sharedAPI';
 import { validatorForActivity } from 'rjsf/business-rules/custom-validation/activity';
+import ArrayItemTemplate from 'rjsf/templates/ArrayItemTemplate';
+import ArrayItemButtonTemplate from 'rjsf/templates/ArrayFieldButtonTemplate';
 
 const FormContainer = () => {
   const ref = useRef(0);
@@ -116,6 +118,8 @@ const FormContainer = () => {
               ObjectFieldTemplate: ObjectFieldTemplate,
               FieldTemplate: FieldTemplate,
               ArrayFieldTemplate: ArrayFieldTemplate,
+              ArrayFieldItemTemplate: ArrayItemTemplate,
+              ArrayFieldItemButtonsTemplate: ArrayItemButtonTemplate,
               ErrorListTemplate: ErrorListTemplate
             }}
             widgets={{
@@ -130,7 +134,7 @@ const FormContainer = () => {
             formData={formDataState}
             schema={activitySchema}
             uiSchema={activityUISchema}
-            liveValidate={true}
+            liveValidate={'onChange'}
             customValidate={customValidators()}
             validator={validator}
             showErrorList={'top'}
