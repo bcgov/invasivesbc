@@ -1,8 +1,7 @@
 import { NextFunction, RequestHandler, Response } from 'express';
 import { Operation } from 'express-openapi';
-import SQL, { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
-import { getDBConnection } from 'database/db';
+import { SQLStatement } from 'sql-template-strings';
+import { ALL_ROLES, Role } from 'constants/misc';
 import {
   getActivitySubtypesUserHasWritePermissionOn,
   getRolesForUserSQL,
@@ -10,28 +9,22 @@ import {
   grantRoleToUserSQL,
   revokeRoleFromUserSQL
 } from 'queries/role-queries';
-import { getLogger } from 'utils/logger';
-import isAdminFromAuthContext from 'utils/isAdminFromAuthContext';
-import { PoolClient } from 'pg';
 import { InvasivesRequest } from 'utils/auth-utils';
+import OpenAPISpec from 'utils/OpenAPISpec';
+import LoggerHandler from 'utils/endpoints/LoggerHandler';
+import verifyUserRole from 'utils/validateRole';
+import QueryHandler from 'utils/endpoints/QueryHandler';
 
-const defaultLog = getLogger('user-access');
+const logger = new LoggerHandler('user-access');
 
-export const POST: Operation = [batchGrantRoleToUser()];
-export const DELETE: Operation = [revokeRoleFromUser()];
-export const GET: Operation = [decideGET()];
+const POST: Operation = [batchGrantRoleToUser()];
+const DELETE: Operation = [revokeRoleFromUser()];
+const GET: Operation = [decideGET()];
 
-GET.apiDoc = {
-  description: 'Get some information about users and their roles',
-  tags: ['user-access'],
-  security: SECURITY_ON
-    ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
-    : [],
-  parameters: [
+// GET Spec
+new OpenAPISpec('Get some information about users and their roles', ['user-access'])
+  .security()
+  .parameters([
     {
       in: 'query',
       name: 'roleId',
@@ -42,43 +35,24 @@ GET.apiDoc = {
       name: 'userId',
       required: false
     }
-  ],
-  responses: {
-    200: {
-      description: 'User Acccess get response object array.',
-      content: {
-        'application/json': {
-          schema: {
-            type: 'object',
-            properties: {
-              // Don't specify exact response, as it will vary, and is not currently enforced anyways
-              // Eventually this could be updated to be a oneOf list, similar to the Post request below.
-            }
-          }
+  ])
+  .response(200, {
+    description: 'User Acccess get response object array.',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {}
         }
       }
-    },
-    401: {
-      $ref: '#/components/responses/401'
-    },
-    503: {
-      $ref: '#/components/responses/503'
-    },
-    default: {
-      $ref: '#/components/responses/default'
     }
-  }
-};
+  })
+  .build(GET);
 
-POST.apiDoc = {
-  description: 'Grant a role to a user',
-  tags: ['user-access'],
-  security: [
-    {
-      Bearer: ALL_ROLES
-    }
-  ],
-  requestBody: {
+// POST Spec
+new OpenAPISpec('Grant a role to a user.', ['user-access'])
+  .security([Role.MASTER_ADMINISTRATOR])
+  .requestBody({
     description: 'User access post request object.',
     content: {
       'application/json': {
@@ -87,39 +61,23 @@ POST.apiDoc = {
         }
       }
     }
-  },
-  responses: {
-    200: {
-      description: 'User access post response object.',
-      content: {
-        'application/json': {
-          schema: {
-            properties: {}
-          }
+  })
+  .response(200, {
+    description: 'User access post response object.',
+    content: {
+      'application/json': {
+        schema: {
+          properties: {}
         }
       }
-    },
-    401: {
-      $ref: '#/components/responses/401'
-    },
-    503: {
-      $ref: '#/components/responses/503'
-    },
-    default: {
-      $ref: '#/components/responses/default'
     }
-  }
-};
+  })
+  .build(POST);
 
-DELETE.apiDoc = {
-  description: 'Grant a role to a user',
-  tags: ['user-access'],
-  security: [
-    {
-      Bearer: ALL_ROLES
-    }
-  ],
-  requestBody: {
+// Delete Spec
+new OpenAPISpec('Delete a role from a user', ['user-access'])
+  .security(ALL_ROLES)
+  .requestBody({
     description: 'User access post request object.',
     content: {
       'application/json': {
@@ -128,29 +86,18 @@ DELETE.apiDoc = {
         }
       }
     }
-  },
-  responses: {
-    200: {
-      description: 'User access post response object.',
-      content: {
-        'application/json': {
-          schema: {
-            properties: {}
-          }
+  })
+  .response(200, {
+    description: 'User access post response object.',
+    content: {
+      'application/json': {
+        schema: {
+          properties: {}
         }
       }
-    },
-    401: {
-      $ref: '#/components/responses/401'
-    },
-    503: {
-      $ref: '#/components/responses/503'
-    },
-    default: {
-      $ref: '#/components/responses/default'
     }
-  }
-};
+  })
+  .build(DELETE);
 
 // Returns a function that will be used as a middleware for the GET request
 // Returns 400 if both parameters are provided
@@ -158,230 +105,110 @@ function decideGET() {
   return async (req, res, next) => {
     const roleId = req.query.roleId;
     const userId = req.query.userId;
-    if (roleId && userId) {
-      return res.status(400).json({
-        error: 'Only one of roleId or userId may be provided',
-        request: req.body,
-        namespace: 'user-access',
-        code: 400
-      });
-    }
+    if (roleId && userId) return res.status(400).send('Only one of roleId or userId may be provided');
+
     if (roleId) {
-      return await getUsersForRole(req, res, next, roleId);
+      return await getUsersForRole(req, res, roleId);
     }
     if (userId) {
-      return await getRolesForUser(req, res, next, userId);
+      return await getRolesForUser(req, res, userId);
     }
     return await getRolesForSelf(req, res, next);
   };
 }
 
 function batchGrantRoleToUser(): RequestHandler {
-  return async (req, res) => {
-    if (!isAdminFromAuthContext(req)) {
-      return res.status(401).json({
-        message: 'Unauthorized access',
-        request: req.body,
-        namespace: 'user-access',
-        code: 401
-      });
-    }
-    defaultLog.debug({ label: 'user-access', message: 'batch-grant', body: req.body });
-    let connection: PoolClient | undefined;
-
+  return async (req: InvasivesRequest, res) => {
+    if (verifyUserRole(POST.apiDoc, req)) return res.sendStatus(401);
+    logger.debug('batch-grant', { body: req.body });
+    const db = new QueryHandler({ maintain: true });
     try {
-      connection = await getDBConnection();
+      const result = [];
       for (const userId of req.body.userIds) {
         const sqlStatement: SQLStatement = grantRoleToUserSQL(userId, req.body.roleId);
-        if (!sqlStatement) {
-          return res.status(500).json({
-            error: 'Failed to generate SQL statement',
-            request: req.body,
-            namespace: 'user-access',
-            code: 500
-          });
-        }
-        const response = await connection.query(sqlStatement.text, sqlStatement.values);
-        const result = response.rows;
-        return res.status(201).json({
-          message: 'Successfully granted role to user',
-          request: req.body,
-          result: result,
-          count: response.rowCount,
-          namespace: 'user-access',
-          code: 201
-        });
+        const response = await db.query(sqlStatement);
+        result.push(...(response?.rows ?? []));
       }
-    } catch (error) {
-      defaultLog.debug({ label: 'create', message: 'error', error });
-      return res.status(500).json({
-        message: 'Failed to grant role to user',
-        request: req.body,
-        error: error,
-        namespace: 'user-access',
-        code: 500
-      });
+      return res.status(201).json({ result });
+    } catch (e) {
+      logger.error(e, '[batchGrantRoleToUser]');
+      return res.status(500).send('Failed to grant role to user');
     } finally {
-      connection?.release();
+      db?.close();
     }
   };
 }
 
 function revokeRoleFromUser(): RequestHandler {
-  return async (req, res) => {
-    if (!isAdminFromAuthContext(req)) {
-      return res.status(401).json({
-        message: 'Unauthorized access',
-        request: req.body,
-        namespace: 'user-access',
-        code: 401
-      });
-    }
-    defaultLog.debug({ label: 'user-access', message: 'revoke', body: req.body });
+  return async (req: InvasivesRequest, res) => {
+    if (verifyUserRole(POST.apiDoc, req)) return res.sendStatus(401);
 
-    let connection: PoolClient | undefined;
+    logger.debug('[revokeRoleFromUser]', { body: req.body });
     try {
-      connection = await getDBConnection();
+      const { userId, roleId } = req.body.userId;
+      if (!userId || !roleId) return res.sendStatus(400);
+
       const sqlStatement: SQLStatement = revokeRoleFromUserSQL(req.body.userId, req.body.roleId);
-      if (!sqlStatement) {
-        return res.status(500).json({
-          message: 'Failed to generate SQL statement',
-          request: req.body,
-          namespace: 'user-access',
-          code: 500
-        });
-      }
-      const response = await connection.query(sqlStatement.text, sqlStatement.values);
-      return res.status(200).json({
-        message: 'Successfully revoked role from user',
-        request: req.body,
-        result: response.rows,
-        count: response.rowCount,
-        namespace: 'user-access',
-        code: 200
-      });
-    } catch (error) {
-      defaultLog.debug({ label: 'create', message: 'error', error });
-      return res.status(500).json({
-        message: 'Failed to revoke role from user',
-        request: req.body,
-        error: error,
-        namespace: 'user-access',
-        code: 500
-      });
-    } finally {
-      connection?.release();
+      const response = await new QueryHandler().query(sqlStatement);
+
+      return res.status(200).json({ result: response.rows });
+    } catch (e) {
+      e.error(e, '[revokeRoleFromUser]');
+      return res.status(500).send('Failed to revoke role from user');
     }
   };
 }
 
-async function getUsersForRole(req, res, next, roleId) {
-  defaultLog.debug({ label: '{userId}', message: 'getUsersForRole', body: req.query });
-  let connection: PoolClient | undefined;
+async function getUsersForRole(req: InvasivesRequest, res: Response, roleId) {
   try {
-    connection = await getDBConnection();
-    const sqlStatement: SQLStatement = getUsersForRoleSQL(roleId);
-    if (!sqlStatement) {
-      return res.status(500).json({
-        message: 'Failed to generate SQL statement',
-        request: req.body,
-        namespace: 'user-access',
-        code: 500
-      });
-    }
-    const response = await connection.query(sqlStatement.text, sqlStatement.values);
-    return res.status(200).json({
-      message: 'Successfully retrieved users for role',
-      request: req.body,
-      result: response.rows,
-      count: response.rowCount,
-      namespace: 'user-access',
-      code: 200
-    });
-  } catch (error) {
-    defaultLog.debug({ label: 'getUsersForRole', message: 'error', error });
-    return res.status(500).json({
-      message: 'Failed to retrieve users for role',
-      request: req.body,
-      error: error,
-      namespace: 'user-access',
-      code: 500
-    });
-  } finally {
-    connection?.release();
+    const response = await new QueryHandler().query(getUsersForRoleSQL(roleId));
+    logger.debug('[getUsersForRole]', { body: req.query, result: response.rows });
+    return res.status(200).json({ result: response.rows });
+  } catch (e) {
+    logger.error(e, '[getUsersForRole]');
+    return res.status(500).send('Failed to retrieve users for role');
   }
 }
 
-async function getRolesForUser(req, res, next, userId) {
-  defaultLog.debug({ label: '{userId}', message: 'getRolesForUser', body: req.query });
-  let connection: PoolClient | undefined;
+async function getRolesForUser(req: InvasivesRequest, res: Response, userId) {
   try {
-    connection = await getDBConnection();
-    const sqlStatement: SQLStatement = getRolesForUserSQL(userId);
-    if (!sqlStatement) {
-      return res.status(500).json({
-        message: 'Failed to generate SQL statement',
-        request: req.body,
-        namespace: 'user-access',
-        code: 500
-      });
-    }
-    const response = await connection.query(sqlStatement.text, sqlStatement.values);
-    return res.status(200).json({
-      message: 'Successfully retrieved roles for user',
-      request: req.body,
-      result: response.rows,
-      count: response.rowCount,
-      namespace: 'user-access',
-      code: 200
-    });
-  } catch (error) {
-    defaultLog.debug({ label: 'getRolesForUser', message: 'error', error });
-    return res.status(500).json({
-      message: 'Failed to retrieve roles for user',
-      request: req.body,
-      error: error,
-      namespace: 'user-access',
-      code: 500
-    });
-  } finally {
-    connection?.release();
+    const response = await new QueryHandler().query(getRolesForUserSQL(userId));
+    logger.debug('[getRolesForUser]', { body: req.query, result: response.rows });
+    return res.status(200).json({ result: response.rows });
+  } catch (e) {
+    logger.error(e, '[getRolesForUser]');
+    return res.status(500).send('Failed to retrieve roles for user');
   }
 }
 
 async function getRolesForSelf(req: InvasivesRequest, res: Response, _: NextFunction) {
-  let connection: PoolClient;
   try {
-    connection = await getDBConnection();
-    const query = getActivitySubtypesUserHasWritePermissionOn(req.authContext.user.user_id);
-    const writePrivilege = await connection.query(query.text, query.values);
+    const writePrivilege = await new QueryHandler().query(
+      getActivitySubtypesUserHasWritePermissionOn(req.authContext.user.user_id)
+    );
 
-    return res.status(200).json({
-      message: 'Successfully retrieved roles for self',
-      request: req.body,
-      result: {
-        roles: req.authContext.roles,
-        writePrivilege: writePrivilege.rows.map((act) => act.form_subtype),
-        v2BetaAccess: req.authContext.user.v2beta,
-        extendedInfo: {
-          user_id: req.authContext.user.user_id,
-          account_status: req.authContext.user.account_status,
-          activation_status: req.authContext.user.activation_status,
-          work_phone_number: req.authContext.user.work_phone_number,
-          funding_agencies: req.authContext.user.funding_agencies,
-          employer: req.authContext.user.employer,
-          pac_number: req.authContext.user.pac_number,
-          pac_service_number_1: req.authContext.user.pac_service_number_1,
-          pac_service_number_2: req.authContext.user.pac_service_number_2
-        }
-      },
-      count: 1,
-      namespace: 'user-access',
-      code: 200
-    });
+    const result = {
+      roles: req.authContext.roles,
+      writePrivilege: writePrivilege.rows.map((act) => act.form_subtype),
+      v2BetaAccess: req.authContext.user.v2beta,
+      extendedInfo: {
+        user_id: req.authContext.user.user_id,
+        account_status: req.authContext.user.account_status,
+        activation_status: req.authContext.user.activation_status,
+        work_phone_number: req.authContext.user.work_phone_number,
+        funding_agencies: req.authContext.user.funding_agencies,
+        employer: req.authContext.user.employer,
+        pac_number: req.authContext.user.pac_number,
+        pac_service_number_1: req.authContext.user.pac_service_number_1,
+        pac_service_number_2: req.authContext.user.pac_service_number_2
+      }
+    };
+    logger.debug('[getRolesForSelf]', { body: req.query, result });
+    return res.status(200).json({ message: 'Successfully retrieved roles for self', result });
   } catch (e) {
-    console.error(e);
-  } finally {
-    connection?.release();
+    logger.error(e, '[getRolesForSelf]');
+    return res.sendStatus(500);
   }
 }
+
+export {DELETE, POST, GET}
