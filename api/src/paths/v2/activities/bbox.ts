@@ -5,7 +5,6 @@ import { getActivitiesSQLv2, sanitizeActivityFilterObject } from 'queries/activi
 import { InvasivesRequest } from 'utils/auth-utils';
 import OpenAPISpec from 'utils/OpenAPISpec';
 import QueryHandler from 'utils/endpoints/QueryHandler';
-import verifyUserRole from 'utils/validateRole';
 import LoggerHandler from 'utils/endpoints/LoggerHandler';
 
 const NAMESPACE = 'bbox';
@@ -47,7 +46,6 @@ new OpenAPISpec('Fetch bounding box based on search criteria', [NAMESPACE])
  */
 function postHandler(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
-    if (!verifyUserRole(POST.apiDoc, req)) return res.sendStatus(401);
     const db = new QueryHandler();
 
     try {

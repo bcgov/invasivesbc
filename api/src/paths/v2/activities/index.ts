@@ -6,7 +6,6 @@ import { InvasivesRequest } from 'utils/auth-utils';
 import { getActivitiesSQLv2, sanitizeActivityFilterObject } from 'queries/activities-v2-queries';
 import OpenAPISpec from 'utils/OpenAPISpec';
 import LoggerHandler from 'utils/endpoints/LoggerHandler';
-import verifyUserRole from 'utils/validateRole';
 import QueryHandler from 'utils/endpoints/QueryHandler';
 
 const logger = new LoggerHandler('activity');
@@ -53,8 +52,6 @@ new OpenAPISpec('Fetches all activities based on search criteria.', ['activity']
  */
 function getActivitiesBySearchFilterCriteria(): RequestHandler {
   return async (req: InvasivesRequest, res: Response) => {
-    if (!verifyUserRole(POST.apiDoc, req)) return res.sendStatus(401);
-
     try {
       const rawBodyCriteria = req.body['filterObjects'];
       const filterObject = sanitizeActivityFilterObject(rawBodyCriteria?.[0], req);

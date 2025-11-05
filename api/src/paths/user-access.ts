@@ -1,7 +1,7 @@
 import { NextFunction, RequestHandler, Response } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES, Role } from 'constants/misc';
+import { Role } from 'constants/misc';
 import {
   getActivitySubtypesUserHasWritePermissionOn,
   getRolesForUserSQL,
@@ -12,7 +12,6 @@ import {
 import { InvasivesRequest } from 'utils/auth-utils';
 import OpenAPISpec from 'utils/OpenAPISpec';
 import LoggerHandler from 'utils/endpoints/LoggerHandler';
-import verifyUserRole from 'utils/validateRole';
 import QueryHandler from 'utils/endpoints/QueryHandler';
 
 const logger = new LoggerHandler('user-access');
@@ -76,7 +75,7 @@ new OpenAPISpec('Grant a role to a user.', ['user-access'])
 
 // Delete Spec
 new OpenAPISpec('Delete a role from a user', ['user-access'])
-  .security(ALL_ROLES)
+  .security([Role.MASTER_ADMINISTRATOR])
   .requestBody({
     description: 'User access post request object.',
     content: {
@@ -119,7 +118,6 @@ function decideGET() {
 
 function batchGrantRoleToUser(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
-    if (verifyUserRole(POST.apiDoc, req)) return res.sendStatus(401);
     logger.debug('batch-grant', { body: req.body });
     const db = new QueryHandler({ maintain: true });
     try {
@@ -141,8 +139,6 @@ function batchGrantRoleToUser(): RequestHandler {
 
 function revokeRoleFromUser(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
-    if (verifyUserRole(POST.apiDoc, req)) return res.sendStatus(401);
-
     logger.debug('[revokeRoleFromUser]', { body: req.body });
     try {
       const { userId, roleId } = req.body.userId;
@@ -211,4 +207,4 @@ async function getRolesForSelf(req: InvasivesRequest, res: Response, _: NextFunc
   }
 }
 
-export {DELETE, POST, GET}
+export { DELETE, POST, GET };

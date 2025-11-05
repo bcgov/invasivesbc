@@ -10,7 +10,6 @@ import { getMediaItemsList } from 'paths/media';
 import { InvasivesRequest } from 'utils/auth-utils';
 import OpenAPISpec from 'utils/OpenAPISpec';
 import QueryHandler from 'utils/endpoints/QueryHandler';
-import verifyUserRole from 'utils/validateRole';
 import LoggerHandler from 'utils/endpoints/LoggerHandler';
 
 const logger = new LoggerHandler('activity');
@@ -49,7 +48,6 @@ new OpenAPISpec('Fetches a single activity based on its primary key.', ['activit
  */
 function getActivity(): RequestHandler {
   return async (req: InvasivesRequest, res: Response, next) => {
-    if (!verifyUserRole(GET.apiDoc, req)) return res.sendStatus(401);
     const db = new QueryHandler({ maintain: true });
 
     try {
