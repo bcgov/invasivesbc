@@ -10,7 +10,6 @@ import {
 } from './user-utils';
 import { MDCAsyncLocal } from 'mdc';
 import { getLogger } from 'utils/logger';
-import { EPermission_Category, IPermission } from 'sharedAPI/src/interfaces/IPermission';
 
 const defaultLog = getLogger('auth-utils');
 
@@ -28,7 +27,7 @@ const rejectWithErr = (issue: string, code: number = 401) =>
   });
 
 // so we have type information available to endpoints
-export interface InvasivesRequest extends Request {
+interface InvasivesRequest extends Request {
   keycloakToken: any;
   authContext: {
     preferredUsername: string;
@@ -39,6 +38,7 @@ export interface InvasivesRequest extends Request {
     v2beta?: boolean;
   };
   originalUrl: string;
+  operationDoc: Record<PropertyKey, unknown>;
 }
 
 const jwks = jwksRsa({
@@ -208,3 +208,5 @@ export const authenticate = async (req: InvasivesRequest): Promise<void> => {
     });
   });
 };
+
+export type { InvasivesRequest };
