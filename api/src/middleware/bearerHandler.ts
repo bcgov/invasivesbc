@@ -1,10 +1,10 @@
 import { Request } from 'express';
 import { MDC, MDCAsyncLocal } from 'mdc';
 import { authenticate, InvasivesRequest } from 'utils/auth-utils';
-import { getLogger } from 'utils/logger';
+import LoggerHandler from 'utils/endpoints/LoggerHandler';
+import verifyUserRole from 'utils/validateRole';
 
 const bearerHandler = async (req: Request) => {
-  const logger = getLogger('bearerHandler');
   try {
     let mdc = MDCAsyncLocal.getStore();
     if (!mdc) {
@@ -14,9 +14,9 @@ const bearerHandler = async (req: Request) => {
       await authenticate(<InvasivesRequest>req);
     }
   } catch (e) {
-    logger.error(e);
+    new LoggerHandler('bearerHandler').error(e);
     return false;
   }
-  return true;
+  return verifyUserRole(req as InvasivesRequest);
 };
 export default bearerHandler;
