@@ -5,26 +5,17 @@ import { exec } from 'child_process';
 import * as Path from 'path';
 import * as fs from 'fs';
 import * as process from 'node:process';
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { getLogger } from 'utils/logger';
 import { S3ACLRole } from 'constants/misc';
 import { PUBLIC_ACTIVITY_SQL, PUBLIC_IAPP_SQL } from 'queries/public-map';
+import getS3Client from 'utils/getS3Client';
 
 const defaultLog = getLogger('tile_processor');
 
 const OBJECT_STORE_BUCKET_NAME = process.env.OBJECT_STORE_BUCKET_NAME;
-const OBJECT_STORE_URL = process.env.OBJECT_STORE_URL || 'nrs.objectstore.gov.bc.ca';
 
-const S3 = new S3Client({
-  endpoint: `https://${OBJECT_STORE_URL}`,
-  credentials: async () => {
-    return {
-      accessKeyId: process.env.OBJECT_STORE_ACCESS_KEY_ID,
-      secretAccessKey: process.env.OBJECT_STORE_SECRET_KEY_ID
-    };
-  },
-  forcePathStyle: true
-});
+const S3 = getS3Client();
 
 async function dumpGeoJSONToFile(connection, filename, query) {
   const response = await connection.query(query.text, query.values);

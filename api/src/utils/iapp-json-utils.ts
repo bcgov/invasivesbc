@@ -4,7 +4,7 @@ import { Readable } from 'stream';
 import { SQLStatement } from 'sql-template-strings';
 import Cursor from 'pg-cursor';
 import { PoolClient } from 'pg';
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { Upload } from '@aws-sdk/lib-storage';
 import { densityMap, distributionMap, mapSlope } from './iapp-payload/iapp-function-utils';
 import {
   biologicalDispersalJSON,
@@ -13,8 +13,8 @@ import {
   mechanicalTreatmenntsJSON
 } from './iapp-payload/extracts-json-utils';
 import { generateSitesCSV } from './iapp-csv-utils';
-
 import { getS3SignedURL } from './file-utils';
+import getS3Client from './getS3Client';
 import { getLogger } from 'utils/logger';
 import { getActivitiesSQL } from 'queries/activity-queries';
 import { getIappExtractsFromDB, getSitesBasedOnSearchCriteriaSQL } from 'queries/iapp-queries';
@@ -295,18 +295,7 @@ const getIAPPjson = (row: any, extract: any, searchCriteria: any) => {
   }
 };
 
-const OBJECT_STORE_URL = process.env.OBJECT_STORE_URL || 'nrs.objectstore.gov.bc.ca';
-
-const S3 = new S3Client({
-  endpoint: `https://${OBJECT_STORE_URL}`,
-  credentials: async () => {
-    return {
-      accessKeyId: process.env.OBJECT_STORE_ACCESS_KEY_ID,
-      secretAccessKey: process.env.OBJECT_STORE_SECRET_KEY_ID
-    };
-  },
-  forcePathStyle: true
-});
+const S3 = getS3Client();
 
 export async function streamActivitiesResult(searchCriteria: any, res: any, sqlStatementOverride?: SQLStatement) {
   const connection = await getDBConnection();
@@ -330,14 +319,16 @@ export async function streamActivitiesResult(searchCriteria: any, res: any, sqlS
     const readable = Readable.from(generatedRows);
     const key = `CSV-${searchCriteria.CSVType}-${randomUUID()}.csv`;
 
-    await S3.send(
-      new PutObjectCommand({
+    const upload = new Upload({
+      client: S3,
+      params: {
         Bucket: process.env.OBJECT_STORE_BUCKET_NAME,
         Key: key,
-        Body: readable
-      })
-    );
-
+        Body: readable,
+        ContentType: 'text/csv'
+      }
+    });
+    await upload.done();
     const url = await getS3SignedURL(key);
     res.status(200).send(url);
     res.end();
@@ -388,13 +379,16 @@ export const streamIAPPResult = async (searchCriteria: any, res: any, sqlStateme
       const generatedRows = generateSitesCSV(cursor, searchCriteria.CSVType);
       const readable = Readable.from(generatedRows);
       const key = `CSV-${searchCriteria.CSVType}-${randomUUID()}.csv`;
-      await S3.send(
-        new PutObjectCommand({
+      const upload = new Upload({
+        client: S3,
+        params: {
           Bucket: process.env.OBJECT_STORE_BUCKET_NAME,
           Key: key,
-          Body: readable
-        })
-      );
+          Body: readable,
+          ContentType: 'text/csv'
+        }
+      });
+      await upload.done();
 
       const url = await getS3SignedURL(key);
       res.status(200).send(url);

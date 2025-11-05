@@ -6,29 +6,19 @@ import {
   GetObjectCommand,
   GetObjectCommandOutput,
   PutObjectCommand,
-  PutObjectCommandOutput,
-  S3Client
+  PutObjectCommandOutput
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { getLogger } from './logger';
+import getS3Client from './getS3Client';
 import { S3ACLRole } from 'constants/misc';
 import { MediaBase64 } from 'models/media';
 
 const defaultLog = getLogger('file-utils');
 
 const OBJECT_STORE_BUCKET_NAME = process.env.OBJECT_STORE_BUCKET_NAME;
-const OBJECT_STORE_URL = process.env.OBJECT_STORE_URL || 'nrs.objectstore.gov.bc.ca';
 
-const S3 = new S3Client({
-  endpoint: `https://${OBJECT_STORE_URL}`,
-  credentials: async () => {
-    return {
-      accessKeyId: process.env.OBJECT_STORE_ACCESS_KEY_ID,
-      secretAccessKey: process.env.OBJECT_STORE_SECRET_KEY_ID
-    };
-  },
-  forcePathStyle: true
-});
+const S3 = getS3Client();
 
 /**
  * Fetch a file from S3, based on its key.

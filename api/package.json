@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.882.0",
+    "@aws-sdk/lib-storage": "3.922.0",
     "@aws-sdk/s3-request-presigner": "^3.882.0",
     "@mapbox/togeojson": "^0.16.2",
     "@turf/bbox": "^7.2.0",
