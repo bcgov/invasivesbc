@@ -5,8 +5,8 @@ interface QueryParameter {
   in: string;
   name: string;
   required: boolean;
-  description: string;
-  content: Record<PropertyKey, unknown>;
+  description?: string;
+  content?: Record<PropertyKey, unknown>;
 }
 interface PathParameter {
   in: string;
