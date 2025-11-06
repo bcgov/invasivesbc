@@ -25,7 +25,7 @@ class LoggerWithContext {
     });
   }
 
-  private createConsoleTransport = () =>
+  private readonly createConsoleTransport = () =>
     new winston.transports.Console({
       level: process.env.LOG_LEVEL || 'debug',
       format: winston.format.combine(
@@ -43,7 +43,7 @@ class LoggerWithContext {
         case 'object': {
           try {
             return YAML.dump(message);
-          } catch (_e) {
+          } catch {
             return JSON.stringify(message, null, 2);
           }
         }
@@ -60,7 +60,7 @@ class LoggerWithContext {
     })();
 
     const { MDC, ...everythingElse } = meta;
-    const additionalContext = _.cloneDeep(everythingElse);
+    const additionalContext = structuredClone(everythingElse);
 
     const formattedAdditionalContext = (() => {
       const authContext: InvasivesRequest['authContext'] = (MDC as Context)?.additionalContext?.authContext;
@@ -85,10 +85,10 @@ class LoggerWithContext {
            *          ---------------------------------------
            */
           return activationWarning + userDetailString + additionalDetailsYaml;
-        } catch (_e) {
+        } catch {
           try {
             return JSON.stringify(additionalContext, null, 2);
-          } catch (_f) {
+          } catch {
             return 'Error in logger while dumping additional context object.';
           }
         }
