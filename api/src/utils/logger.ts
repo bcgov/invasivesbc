@@ -60,39 +60,36 @@ class LoggerWithContext {
     })();
 
     const { MDC, ...everythingElse } = meta;
-    let additionalContext = _.cloneDeep(everythingElse);
+    const additionalContext = _.cloneDeep(everythingElse);
 
     const formattedAdditionalContext = (() => {
       const authContext: InvasivesRequest['authContext'] = (MDC as Context)?.additionalContext?.authContext;
       if (authContext) {
-        const user_id: string = authContext?.user?.user_id ?? 'nil';
+        const user_id: string | number = authContext?.user?.user_id ?? 'nil';
         const roles: string = authContext?.roles?.map(({ role_name }) => role_name).join(', ') ?? 'nil';
         const username: string = authContext?.user?.preferred_username ?? 'nil';
-        const activation_status: boolean = authContext?.user?.activation_status;
-
-        additionalContext = {
-          ...additionalContext
-        };
+        const activation_status: boolean = !!authContext?.user?.activation_status;
 
         _.forOwn(additionalContext, (value: unknown, key: PropertyKey) => {
           if (value === null || value === undefined) {
             delete additionalContext[key];
           }
         });
-        if (_.keys(additionalContext).length > 0) {
+        try {
+          const activationWarning = activation_status ? '' : '[USER IS NOT ACTIVATED] ';
+          const userDetailString = `ID: ${user_id} | User: ${username} | Roles: ${roles}\n`;
+          const additionalDetailsYaml = Object.keys(additionalContext).length > 0 ? YAML.dump(additionalContext) : '';
+          /**
+           * @example [2025-11-06 13:52:11][info][auth-utils]: [authenticate]: New user created from token
+           *          ID: 111 | User: JohnSmith@bcgov | Roles: contractor, surveyor
+           *          ---------------------------------------
+           */
+          return activationWarning + userDetailString + additionalDetailsYaml;
+        } catch (_e) {
           try {
-            const activation = activation_status ? '' : '[USER IS NOT ACTIVATED]';
-            /**
-             * @example  ID: 1 | User: JohnSmith@provider | Roles: general_contractor, specialist
-             *           Result: [23]
-             */
-            return activation + `ID: ${user_id} | User: ${username} | Roles: ${roles}\n` + YAML.dump(additionalContext);
-          } catch (_e) {
-            try {
-              return JSON.stringify(additionalContext, null, 2);
-            } catch (_f) {
-              return 'Error in logger while dumping additional context object.';
-            }
+            return JSON.stringify(additionalContext, null, 2);
+          } catch (_f) {
+            return 'Error in logger while dumping additional context object.';
           }
         }
       }
