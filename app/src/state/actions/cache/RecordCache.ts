@@ -54,10 +54,9 @@ class RecordCache {
       }
       dispatch(RecordCache.startDownload(spec.setId));
 
-      const API_BASE = state.Configuration.current.runtime.API_BASE;
       const service = await RecordCacheServiceFactory.getPlatformInstance();
       const recordSet = JSON.parse(JSON.stringify(state.UserSettings.recordSets[spec.setId]));
-      const idsMatchingFilterSet = await getIdsForRecordset(recordSet, { API_BASE });
+      const idsMatchingFilterSet = await getIdsForRecordset(recordSet);
       const idsToCache = idsMatchingFilterSet.map((id) => id.toString());
 
       recordSet.tableFilters = getRecordFilterObjectFromStateForAPI(spec.setId, state.UserSettings);
@@ -65,7 +64,6 @@ class RecordCache {
       const bbox = await getBoundingBoxFromRecordsetFilters(recordSet);
       const downloadMode: CacheDownloadMode = await service.download(
         {
-          API_BASE,
           bbox,
           idsToCache,
           setName: recordSet.recordSetName,

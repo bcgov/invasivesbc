@@ -10,6 +10,9 @@ import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
 import FilterObjects from 'interfaces/FilterObjects';
 import { EFilterType } from 'state/actions/userSettings/RecordSet';
 
+const config = await import('state/configuration/runtime-config');
+const API_BASE = config.runtimeConfig.API_BASE;
+
 enum IappRecordMode {
   Record = 'record',
   Row = 'row'
@@ -23,7 +26,6 @@ enum CacheDownloadMode {
 
 interface RecordCacheDownloadRequestSpec {
   setId: string;
-  API_BASE: string;
   idsToCache: string[];
   pausedActivityIdx: number;
   processedActivities: number;
@@ -84,7 +86,6 @@ interface CacheDownloadSpec {
   idsToCache: string[];
   setId: string;
   setName: string;
-  API_BASE: string;
   recordSetType: RecordSetType;
   ids_to_filter?: string[];
   recordSetCacheStatus: UserRecordCacheStatus;
@@ -164,7 +165,6 @@ abstract class RecordCacheService extends BaseCacheService<
     const args = {
       idsToCache: spec.idsToCache,
       setId: spec.setId,
-      API_BASE: spec.API_BASE,
       pausedActivityIdx: spec.pausedActivityIdx,
       processedActivities: spec.processedActivities,
       filterObjects: spec.filterObjects
@@ -250,7 +250,7 @@ abstract class RecordCacheService extends BaseCacheService<
       const ids = uncachedRecords.slice(i, i + this.BATCH_AMOUNT);
 
       this.processNext(executing, async () => {
-        const url = `${spec.API_BASE}/api/v2/iapp/batch-request?idList=${JSON.stringify(ids)}`;
+        const url = `${API_BASE}/api/v2/iapp/batch-request?idList=${JSON.stringify(ids)}`;
         const rez = await fetch(url, {
           headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' }
         });
@@ -312,7 +312,7 @@ abstract class RecordCacheService extends BaseCacheService<
       const ids = uncachedRecords.slice(i, i + this.BATCH_AMOUNT);
 
       this.processNext(executing, async () => {
-        const url = `${spec.API_BASE}/api/v2/activities/batch-request?idList=${JSON.stringify(ids)}`;
+        const url = `${API_BASE}/api/v2/activities/batch-request?idList=${JSON.stringify(ids)}`;
         const rez = await fetch(url, {
           headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' }
         });
@@ -415,7 +415,7 @@ abstract class RecordCacheService extends BaseCacheService<
       }
     });
     const rez = await fetch(
-      `${CONFIGURATION_API_BASE}/api/v2/activities/cache-update-ids?filterObjects=${JSON.stringify([filterObjs])}&lastUpdated=${cacheTime.toISOString()}`,
+      `${API_BASE}/api/v2/activities/cache-update-ids?filterObjects=${JSON.stringify([filterObjs])}&lastUpdated=${cacheTime.toISOString()}`,
       { headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' } }
     );
     return (await rez.json()) ?? [];
@@ -440,7 +440,7 @@ abstract class RecordCacheService extends BaseCacheService<
         const newIds = idList.filter((id) => !r.cached_ids?.includes(id)); // Filter out IDs not already in cache to add later
         for (let i = 0; i < idList.length; i += this.BATCH_AMOUNT) {
           const ids = idList.slice(i, i + this.BATCH_AMOUNT);
-          const url = `${CONFIGURATION_API_BASE}/api/v2/activities/batch-request?idList=${JSON.stringify(ids)}`;
+          const url = `${API_BASE}/api/v2/activities/batch-request?idList=${JSON.stringify(ids)}`;
           const rez = await fetch(url, {
             headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' }
           });

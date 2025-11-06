@@ -5,7 +5,11 @@ import { RepositoryBoundingBoxSpec } from './tile-cache';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import { RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
 
+const config = await import('state/configuration/runtime-config');
+
 const getBoundingBoxFromRecordsetFilters = async (recordSet: UserRecordSet): Promise<RepositoryBoundingBoxSpec> => {
+  const API_BASE = config.runtimeConfig.API_BASE;
+
   const { recordSetType } = recordSet;
   const filterObj = {
     recordSetType: recordSetType,
@@ -15,9 +19,7 @@ const getBoundingBoxFromRecordsetFilters = async (recordSet: UserRecordSet): Pro
     selectColumns: getSelectColumnsByRecordSetType(recordSetType)
   };
   const url =
-    recordSetType === RecordSetType.Activity
-      ? `${CONFIGURATION_API_BASE}/api/v2/activities/bbox`
-      : `${CONFIGURATION_API_BASE}/api/v2/IAPP/bbox`;
+    recordSetType === RecordSetType.Activity ? `${API_BASE}/api/v2/activities/bbox` : `${API_BASE}/api/v2/IAPP/bbox`;
   const data = await fetch(url, {
     method: 'POST',
     headers: {

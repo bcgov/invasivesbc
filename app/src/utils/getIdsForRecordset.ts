@@ -1,25 +1,25 @@
 import { RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 
-interface Options {
-  API_BASE: string;
-}
+const config = await import('state/configuration/runtime-config');
+const API_BASE = config.runtimeConfig.API_BASE;
+
 /**
  * @desc Get list of all IDs from a recordset using current filters.
  * @returns {Array<string | number>} Ids for all records matching params for a user with read permissions.
  */
-const getIdsForRecordset = async (record: UserRecordSet, options: Options): Promise<Array<string | number>> => {
+const getIdsForRecordset = async (record: UserRecordSet): Promise<Array<string | number>> => {
   const { ids_to_filter, recordSetType, tableFilters } = record;
   const config = (() => {
     switch (recordSetType) {
       case RecordSetType.IAPP:
         return {
-          url: `${options.API_BASE}/api/v2/IAPP`,
+          url: `${API_BASE}/api/v2/IAPP`,
           col: 'site_id'
         };
       case RecordSetType.Activity:
         return {
-          url: `${options.API_BASE}/api/v2/activities/`,
+          url: `${API_BASE}/api/v2/activities/`,
           col: 'activity_id'
         };
     }
