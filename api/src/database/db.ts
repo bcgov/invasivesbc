@@ -50,3 +50,5 @@ export const getDBConnection = async function (): Promise<PoolClient> {
     throw error;
   }
 };
+
+export { DB_HOST, DB_PORT, DB_USERNAME, DB_PASSWORD, DB_DATABASE, DB_SCHEMA };

@@ -1,12 +1,6 @@
 import { Pool, PoolClient, PoolConfig, Result } from 'pg';
 import { SQLStatement } from 'sql-template-strings';
-
-const DB_HOST: string = process.env.DB_HOST;
-const DB_PORT: number = Number(process.env.DB_PORT);
-const DB_USERNAME: string = process.env.DB_USER;
-const DB_PASSWORD: string = process.env.DB_PASS;
-const DB_DATABASE: string = process.env.DB_DATABASE;
-const DB_SCHEMA: string = process.env.DB_SCHEMA;
+import { DB_DATABASE, DB_HOST, DB_PASSWORD, DB_PORT, DB_SCHEMA, DB_USERNAME } from 'database/db';
 
 const defaultPool: PoolConfig = {
   database: DB_DATABASE,
