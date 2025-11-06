@@ -173,7 +173,7 @@ export const getRoleInfoSQL = (role_id): SQLStatement => {
  */
 export const getAllRolesSQL = (): SQLStatement => {
   return SQL`
-    SELECT *
+    SELECT role_id, role_description, role_name
     FROM user_role;
   `;
 };

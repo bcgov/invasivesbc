@@ -1,11 +1,9 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getAllRolesSQL } from 'queries/role-queries';
-import LoggerHandler from 'utils/endpoints/LoggerHandler';
 import QueryHandler from 'utils/endpoints/QueryHandler';
 import OpenAPISpec from 'utils/OpenAPISpec';
 
-const logger = new LoggerHandler('roles');
 const GET: Operation = [getRoles()];
 
 new OpenAPISpec('Get some information about users and their roles', ['roles'])
@@ -25,14 +23,8 @@ new OpenAPISpec('Get some information about users and their roles', ['roles'])
 
 function getRoles(): RequestHandler {
   return async (_req, res, _next) => {
-    try {
-      const db = new QueryHandler();
-      const response = await db.query(getAllRolesSQL());
-      return res.status(200).json({ result: response.rows });
-    } catch (e) {
-      logger.error(e);
-      return res.sendStatus(500);
-    }
+    const { rows } = await new QueryHandler().query(getAllRolesSQL());
+    return res.status(200).json({ result: rows });
   };
 }
 
