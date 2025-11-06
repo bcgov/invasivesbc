@@ -20,8 +20,7 @@ class LoggerWithContext {
     this.outputLabel = outputLabel;
 
     this._instance = winston.loggers.get(outputLabel, {
-      transports: [this.createConsoleTransport()],
-      exceptionHandlers: [this.createConsoleTransport()]
+      transports: [this.createConsoleTransport()]
     });
   }
 
