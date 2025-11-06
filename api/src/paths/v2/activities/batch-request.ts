@@ -72,9 +72,6 @@ function getActivity(): RequestHandler {
         resObj[id].activity_history = result.rows;
       }
       return res.status(200).json(resObj);
-    } catch (e) {
-      logger.error(e);
-      return res.status(500).send('Unable to fetch ids in list.');
     } finally {
       db?.close();
     }
