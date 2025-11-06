@@ -110,7 +110,7 @@ export const authenticate = async (req: InvasivesRequest): Promise<void> => {
   const MDC = MDCAsyncLocal.getStore();
   const filterForSelectable = req.header('filterforselectable') === 'true';
 
-  const token = req?.header('Authorization')?.replace(/Bearer /, ''); // e.g. "Bearer abc123efg456"
+  const token = req?.header('Authorization')?.replace(/Bearer /, '');
   if (!token) {
     // Set default values for authContext if user has no token.
     req.authContext = {

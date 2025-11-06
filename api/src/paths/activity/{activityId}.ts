@@ -49,7 +49,6 @@ new OpenAPISpec('Fetches a single activity based on its primary key.', ['activit
 function getActivity(): RequestHandler {
   return async (req: InvasivesRequest, res: Response, next) => {
     const db = new QueryHandler({ maintain: true });
-
     try {
       const activityId = req.params.activityId;
       const sqlStatement: SQLStatement = getActivitySqlWithPermissions(activityId, req?.authContext?.user?.user_id);
@@ -68,9 +67,6 @@ function getActivity(): RequestHandler {
 
       req['activity'] = result1;
       req['activity_history'] = result2;
-    } catch (e) {
-      logger.error(e);
-      return res.status(500).send('Unable to fetch activity.');
     } finally {
       db?.close();
     }
