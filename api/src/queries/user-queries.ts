@@ -1,7 +1,6 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { getLogger } from 'utils/logger';
-
-const defaultLog = getLogger('user-queries');
+import { CustomError } from 'middleware/globalErrorHandler';
+import { KeycloakAccountType } from 'utils/auth-utils';
 
 /**
  * SQL query to fetch users.
@@ -62,55 +61,65 @@ export const renewUserSQL = (userId: string): SQLStatement => {
   `;
 };
 
-export enum userTypeEnum {
-  idir = 'idir',
-  bceid = 'bceid',
-  bceid_business = 'bceid_business'
-}
-
 /**
- * SQL statement to create users.
- *
- * @returns {SQLStatement} sql query object
+ * @desc Fetches user from token, includes users roles.
+ *       If user does not exist, create new user and return new row
  */
-export const createUserSQL = (userType: string, id: string, username: string, email: string): SQLStatement => {
-  defaultLog.debug({
-    message: 'create user SQL params',
-    params: {
-      userType,
-      id,
-      username,
-      email
-    }
-  });
-  switch (userType) {
-    case 'idir':
-      try {
-        const returnVal = SQL`
-          insert into application_user (idir_userid, preferred_username, email, activation_status)
-          values (${id}, ${username}, ${email}, 0)
-          on conflict (idir_userid)
-          where idir_userid is not null do nothing;
-        `;
-        return returnVal;
-      } catch (e) {
-        defaultLog.error({ error: e });
-      }
-      break;
-    case 'bceid':
-      try {
-        const returnVal = SQL`
-          insert into application_user (bceid_userid, preferred_username, email, activation_status)
-          values (${id}, ${username}, ${email}, 0)
-          on conflict (bceid_userid)
-          where bceid_userid is not null do nothing;
-        `;
-        return returnVal;
-      } catch (e) {
-        defaultLog.error({ error: e });
-      }
-      break;
-    default:
-      break;
-  }
+export const processTokenSQL = (params: {
+  userType: KeycloakAccountType;
+  id: string;
+  username: string;
+  email: string;
+}): SQLStatement => {
+  const { userType, id, username, email } = params;
+
+  const userTypeCol = (() => {
+    if (userType === KeycloakAccountType.bceid) return 'bceid_userid';
+    else if (userType === KeycloakAccountType.idir) return 'idir_userid';
+    else throw new CustomError('Invalid userType', 400);
+  })();
+
+  // Cannot interpolate Tables/Columns, so broken into multiple append commands as raw value.
+  return SQL`
+    WITH existing AS (
+    SELECT *, false as new_user -- User exists, no insert required
+    FROM application_user WHERE `
+    .append(userTypeCol)
+    .append(
+      SQL` = ${id}
+    ),
+    inserted AS (
+      INSERT INTO application_user (`
+    )
+    .append(userTypeCol).append(SQL`, preferred_username, email, activation_status)
+      SELECT ${id}, ${username}, ${email}, 0
+      WHERE NOT EXISTS (SELECT 1 FROM existing)
+      RETURNING *, true AS new_user -- New User created as result of query
+    ),
+    user_row AS (
+      SELECT * FROM inserted
+      UNION ALL
+      SELECT * FROM existing
+      LIMIT 1
+    )
+    SELECT
+      u.*,
+      (
+        SELECT COALESCE(
+        jsonb_agg(
+          jsonb_build_object(
+            'role_id', ua.role_id,
+            'role_name', ur.role_name,
+            'role_description', ur.role_description
+          )
+      ), '[]'
+          )
+        FROM user_access ua
+        INNER JOIN user_role ur ON ua.role_id = ur.role_id
+        WHERE ua.user_id = u.user_id
+      ) AS roles
+    FROM user_row u
+    LEFT JOIN user_access ua ON ua.user_id = u.user_id
+    LEFT JOIN user_role ur ON ua.role_id = ur.role_id
+  `);
 };
