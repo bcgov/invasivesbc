@@ -1,5 +1,6 @@
 import { CustomError } from 'middleware/globalErrorHandler';
 import { LoggerWithContext } from 'utils/logger';
+
 class LoggerHandler extends LoggerWithContext {
   constructor(label: string = 'undefined') {
     super(label);
