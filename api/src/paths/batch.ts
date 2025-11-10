@@ -1,42 +1,22 @@
 import { Readable } from 'stream';
-import { RequestHandler } from 'express';
+import { RequestHandler, Response } from 'express';
 import { Operation } from 'express-openapi';
-import { PoolClient, QueryResult } from 'pg';
 import csvParser from 'csv-parser';
-import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
-import { getDBConnection } from 'database/db';
+import SQL from 'sql-template-strings';
+import { ALL_ROLES } from 'constants/misc';
 import { InvasivesRequest } from 'utils/auth-utils';
-import { getLogger } from 'utils/logger';
+import OpenAPISpec from 'utils/OpenAPISpec';
+import LoggerHandler from 'utils/endpoints/LoggerHandler';
+import QueryHandler from 'utils/endpoints/QueryHandler';
 
-export const GET: Operation = [listBatches()];
-export const POST: Operation = [createBatch()];
+const logger = new LoggerHandler('batch');
+const GET: Operation = [listBatches()];
+const POST: Operation = [createBatch()];
 
-const GET_API_DOC = {
-  tags: ['batch'],
-  security: SECURITY_ON
-    ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
-    : []
-};
-
-GET.apiDoc = {
-  description: 'Get the list of batch uploads',
-  ...GET_API_DOC
-};
-
-const POST_API_DOC = {
-  tags: ['batch'],
-  security: SECURITY_ON
-    ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
-    : [],
-  requestBody: {
+new OpenAPISpec('Get the list of batch uploads', ['batch']).security(ALL_ROLES).build(GET);
+new OpenAPISpec('Create a new file upload.', ['batch'])
+  .security(ALL_ROLES)
+  .requestBody({
     description: 'Batch upload processor',
     content: {
       'application/json': {
@@ -52,88 +32,38 @@ const POST_API_DOC = {
         }
       }
     }
-  },
-  responses: {
-    201: {
-      description: 'Created successfully',
-      content: {
-        'application/json': {
-          schema: {
-            type: 'object',
-            properties: {
-              id: { type: 'number' }
-            }
+  })
+  .response(201, {
+    description: 'Created successfully',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            id: { type: 'number' }
           }
         }
       }
-    },
-    503: {
-      $ref: '#/components/responses/503'
-    },
-    default: {
-      $ref: '#/components/responses/default'
     }
-  }
-};
-
-POST.apiDoc = {
-  description: 'Create a new file upload.',
-  ...POST_API_DOC
-};
-const defaultLog = getLogger('batch');
+  })
+  .build(POST);
 
 function listBatches(): RequestHandler {
-  return async (req: InvasivesRequest, res) => {
-    let connection: PoolClient | undefined;
-
-    try {
-      connection = await getDBConnection();
-      const response: QueryResult = await connection.query(
-        `select id, status, template, created_at, created_by
-         from batch_uploads
-         where created_by = $1
-         order by created_at desc`,
-        [req.authContext.user.user_id]
-      );
-      return res.status(200).json({
-        message: 'Batches listed',
-        request: req.body,
-        result: response.rows,
-        count: response.rowCount,
-        namespace: 'batch',
-        code: 200
-      });
-    } catch (error) {
-      return res.status(500).json({
-        message: 'Error listing batches',
-        request: req.body,
-        error: error,
-        namespace: 'batch',
-        code: 500
-      });
-    } finally {
-      connection?.release();
-    }
+  return async (req: InvasivesRequest, res: Response) => {
+    const sql = SQL`
+      select id, status, template, created_at, created_by
+      from batch_uploads
+      where created_by = ${req.authContext.user.user_id}
+      order by created_at desc
+    `;
+    const { rows } = await new QueryHandler().query(sql);
+    logger.debug('[listBatches]', { rows });
+    return res.status(200).json({ result: rows });
   };
 }
 
 function createBatch(): RequestHandler {
-  return async (req: InvasivesRequest, res) => {
-    let connection: PoolClient | undefined;
-    try {
-      connection = await getDBConnection();
-    } catch (error) {
-      if (connection) {
-        connection.release();
-      }
-      return res.status(503).json({
-        message: 'Database connection unavailable',
-        request: req.body,
-        namespace: 'batch',
-        code: 503
-      });
-    }
-
+  return async (req: InvasivesRequest, res: Response) => {
     const data = { ...req.body };
     const decoded = atob(data['csvData']);
     const template = data['template'];
@@ -142,14 +72,9 @@ function createBatch(): RequestHandler {
       mapHeaders: ({ header }) => header.trim()
     });
 
-    const parsedCSV = {
-      headers: [],
-      rows: []
-    };
-
+    const parsedCSV = { headers: [], rows: [] };
     let i = 1;
-
-    const readComplete = new Promise<void>((resolve, reject) => {
+    await new Promise<void>((resolve, _) => {
       Readable.from(decoded)
         .pipe(parser)
         .on('headers', async (headers) => {
@@ -167,42 +92,24 @@ function createBatch(): RequestHandler {
         });
     });
 
-    await readComplete;
-
-    let createdId;
-
+    const db = new QueryHandler({ maintain: true });
     try {
-      await connection.query('BEGIN');
-
-      const response: QueryResult = await connection.query(
-        `insert into batch_uploads (csv_data, json_representation, created_by, template)
-         values ($1, $2, $3, $4)
-         returning id`,
-        [decoded, parsedCSV, req.authContext.user.user_id, template]
-      );
-
-      await connection.query('COMMIT');
-
-      createdId = response.rows[0]['id'];
+      await db.query(SQL`BEGIN`);
+      const response = await db.query(SQL`
+        INSERT INTO batch_uploads (csv_data, json_representation, created_by, template)
+        VALUES (${decoded}, ${parsedCSV}, ${req.authContext.user.user_id}, ${template})
+        RETURNING id
+      `);
+      const createdId = response.rows[0]['id']; // Batch ID -- e.g. 555
+      await db.query(SQL`COMMIT`);
+      return res.status(201).json({ batchId: createdId });
     } catch (error) {
-      await connection.query('ROLLBACK');
-      defaultLog.error({ label: 'batchUpload', message: 'error', error });
-      return res.status(500).json({
-        message: 'Error creating batch upload',
-        request: req.body,
-        error: error,
-        namespace: 'batch',
-        code: 500
-      });
+      await db.query(SQL`ROLLBACK`);
+      throw error;
     } finally {
-      connection?.release();
+      db?.close();
     }
-    return res.status(201).json({
-      message: 'Upload successful',
-      request: req.body,
-      batchId: createdId,
-      namespace: 'batch',
-      code: 201
-    });
   };
 }
+
+export { GET, POST };
