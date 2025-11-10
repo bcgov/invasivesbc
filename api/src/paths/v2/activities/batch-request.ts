@@ -7,7 +7,6 @@ import { getMediaItemsList } from 'paths/media';
 import { InvasivesRequest } from 'utils/auth-utils';
 import OpenAPISpec from 'utils/OpenAPISpec';
 import LoggerHandler from 'utils/endpoints/LoggerHandler';
-import verifyUserRole from 'utils/validateRole';
 import QueryHandler from 'utils/endpoints/QueryHandler';
 
 const logger = new LoggerHandler('/v2/activities/batch-request');
@@ -51,7 +50,6 @@ new OpenAPISpec('Returns multiple Activity Records for device caching', ['activi
  */
 function getActivity(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
-    if (!verifyUserRole(GET.apiDoc, req)) return res.sendStatus(401);
     const db = new QueryHandler({ maintain: true });
     const idList: string[] = JSON.parse(req.query.idList as string);
     try {
@@ -64,8 +62,8 @@ function getActivity(): RequestHandler {
           try {
             const response = await Promise.all(a?.media_keys?.map(async (key: string) => getFileFromS3(key)));
             resObj[a.activity_id].media = getMediaItemsList(response, a.media_keys);
-          } catch (error) {
-            logger.error('Error fetching media from bucket', error);
+          } catch (e) {
+            logger.error(e, 'Error fetching media from bucket');
           }
         }
       });
@@ -74,9 +72,6 @@ function getActivity(): RequestHandler {
         resObj[id].activity_history = result.rows;
       }
       return res.status(200).json(resObj);
-    } catch (error) {
-      logger.error(error.stack);
-      return res.status(500).send('Unable to fetch ids in list.');
     } finally {
       db?.close();
     }

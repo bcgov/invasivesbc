@@ -10,7 +10,7 @@
   },
   "scripts": {
     "pre-commit": "lint-staged",
-    "dev": "nodemon --exec 'tsx' src/server --watch ../sharedAPI --watch .",
+    "dev": "nodemon --exec 'tsx'  --inspect src/server --watch ../sharedAPI --watch .",
     "start": "tsx src/server",
     "export-map": "tsx src/map-exporter",
     "worker": "tsx src/celery/worker",

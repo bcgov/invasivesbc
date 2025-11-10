@@ -1,46 +1,90 @@
 import { verify } from 'jsonwebtoken';
 import jwksRsa from 'jwks-rsa';
 import { Request } from 'express';
-import {
-  createUser,
-  getRolesForUser,
-  getUserByKeycloakID,
-  getV2BetaAccessForUser,
-  KeycloakAccountType
-} from './user-utils';
+import LoggerHandler from './endpoints/LoggerHandler';
+import QueryHandler from './endpoints/QueryHandler';
 import { MDCAsyncLocal } from 'mdc';
-import { getLogger } from 'utils/logger';
-import { EPermission_Category, IPermission } from 'sharedAPI/src/interfaces/IPermission';
+import { processTokenSQL } from 'queries/user-queries';
 
-const defaultLog = getLogger('auth-utils');
+const logger = new LoggerHandler('auth-utils');
 
 const APP_CERTIFICATE_URL =
   process.env.APP_CERTIFICATE_URL ||
   'https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/certs';
 
-const rejectWithErr = (issue: string, code: number = 401) =>
-  new Error(issue, {
-    cause: {
-      code: code,
-      message: issue,
-      namespace: 'auth-utils'
-    }
-  });
-
-// so we have type information available to endpoints
-export interface InvasivesRequest extends Request {
-  keycloakToken: any;
-  authContext: {
-    preferredUsername: string;
-    user: any;
-    friendlyUsername?: string;
-    roles: Array<Record<PropertyKey, any>>;
-    filterForSelectable: boolean;
-    v2beta?: boolean;
-  };
-  originalUrl: string;
+/**
+ * @desc Partial Role interface for used values
+ */
+interface Role {
+  role_id: number;
+  role_description: string;
+  role_name: string;
+  [key: PropertyKey]: unknown;
 }
 
+/** @desc Partial decode Keycloak token for used values */
+interface KeycloakToken {
+  idir_user_guid?: string;
+  bceid_user_guid?: string;
+  identity_provider: string;
+  idir_username?: string;
+  bceid_username?: string;
+  name: string;
+  preferred_username: string;
+  display_name: string;
+  given_name: string;
+  family_name: string;
+  email: string;
+  [key: PropertyKey]: unknown;
+}
+
+interface UserContext {
+  user_id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  preferred_username: string;
+  account_status: number;
+  expiry_date: Date;
+  activation_status: number;
+  active_session_id: unknown;
+  created_at: Date;
+  updated_at: Date;
+  idir_userid?: string;
+  bceid_userid?: string;
+  idir_account_name: string;
+  bceid_account_name: string;
+  work_phone_number: string;
+  funding_agencies: string;
+  employer: string;
+  pac_number: number;
+  pac_service_number_1?: number;
+  pac_service_number_2?: number;
+  v2beta: boolean;
+  primary_employer?: string;
+  primary_agency?: string;
+}
+
+interface AuthContext {
+  preferredUsername: string;
+  user?: UserContext;
+  friendlyUsername: string;
+  roles: Array<Role>;
+  filterForSelectable: boolean;
+  v2beta: boolean;
+}
+
+interface InvasivesRequest extends Request {
+  keycloakToken: KeycloakToken;
+  authContext: Partial<AuthContext>;
+  originalUrl: string;
+  operationDoc: Record<PropertyKey, unknown>;
+}
+
+enum KeycloakAccountType {
+  idir = 'idir',
+  bceid = 'bceid'
+}
 const jwks = jwksRsa({
   jwksUri: APP_CERTIFICATE_URL,
   cacheMaxAge: 3600000,
@@ -49,162 +93,78 @@ const jwks = jwksRsa({
 });
 
 function retrieveKey(header, callback) {
-  jwks.getSigningKey(header.kid, function (err, key) {
-    defaultLog.debug({ label: 'authenticate', message: 'retrieve signing key' });
-
-    if (err) {
-      defaultLog.error({ label: 'authenticate', message: 'error retrieving key', error: err });
-      callback(err, null);
+  jwks.getSigningKey(header.kid, function (e, key) {
+    logger.debug('[authenticate]: Retrieve signing key');
+    if (e) {
+      logger.error(e, '[retrieveKey]: Error retrieving Key');
+      callback(e, null);
       return;
     }
-
     const signingKey = key.getPublicKey();
-    try {
-      callback(null, signingKey);
-    } catch (e) {
-      defaultLog.error({ label: 'authenticate', message: 'uncaught error in callback', error: e });
-    }
+    callback(null, signingKey);
   });
 }
 
 export const authenticate = async (req: InvasivesRequest): Promise<void> => {
+  logger.debug('[authenticate]: Authenticating user');
   const MDC = MDCAsyncLocal.getStore();
-
-  defaultLog.debug({ label: 'authenticate', message: 'authenticating user' });
-
   const filterForSelectable = req.header('filterforselectable') === 'true';
-  const authHeader = req.header('Authorization');
 
-  const isPublicURL = ['/api/points-of-interest/', '/api/activities/'].includes(req.originalUrl.split('?')?.[0]);
-
-  MDC.additionalContext.isPublicURL = isPublicURL;
-
-  let token: string;
-
-  try {
-    token = authHeader.split(/\s/)[1];
-  } catch (error) {
-    defaultLog.info({ label: 'authenticate', message: 'malformed auth token received' });
-
-    throw rejectWithErr('Authorization header parse failure', 400);
-  }
-
-  if (isPublicURL && (req.method === 'GET' || req.method === 'POST') && !token) {
-    return new Promise<void>((resolve: any) => {
-      req.authContext = {
-        preferredUsername: null,
-        friendlyUsername: null,
-        user: null,
-        roles: [],
-        filterForSelectable: filterForSelectable
-      };
-
-      resolve();
-    });
-  }
-
+  const token = req?.header('Authorization')?.replace(/Bearer /, '');
   if (!token) {
-    defaultLog.info({ label: 'authenticate', message: 'missing or malformed auth token received' });
-    throw rejectWithErr('Authorization header parse failure');
+    // Set default values for authContext if user has no token.
+    req.authContext = {
+      preferredUsername: null,
+      friendlyUsername: null,
+      user: null,
+      roles: [],
+      filterForSelectable: filterForSelectable,
+      v2beta: false
+    };
+    return;
   }
+  const parsedToken: KeycloakToken = await (() =>
+    new Promise((resolve, reject) => {
+      verify(token, retrieveKey, (error, parsed) => {
+        if (error) reject(error);
+        return resolve(parsed as KeycloakToken);
+      });
+    }))();
 
-  return new Promise<void>((resolve, reject) => {
-    verify(token, retrieveKey, {}, function (error, decoded: Record<string, any>) {
-      if (!decoded || error) {
-        if (error) defaultLog.error({ label: 'authenticate', message: 'token verification failure', error });
-        reject(rejectWithErr('Token decode Failure'));
-        return;
-      }
-      req.keycloakToken = decoded;
+  req.keycloakToken = parsedToken;
 
-      let accountType, id;
-
-      if (decoded?.identity_provider === 'idir') {
-        accountType = KeycloakAccountType.idir;
-        if (!decoded?.idir_user_guid) {
-          return reject(rejectWithErr('Invalid token - missing idir guid'));
-        }
-        id = decoded.idir_user_guid;
-      } else if (decoded.identity_provider === 'bceidbusiness') {
-        accountType = KeycloakAccountType.bceid;
-        if (!decoded?.bceid_user_guid) {
-          return reject(rejectWithErr('Invalid token - missing bceid guid'));
-        }
-        id = decoded.bceid_user_guid;
-      } else {
-        return reject(rejectWithErr('Invalid token - Missing idir_userid or bceid_userid'));
-      }
-
-      getUserByKeycloakID(accountType, id)
-        .then((user) => {
-          const createIfNeeded = new Promise((resolve: any) => {
-            if (!user) {
-              defaultLog.info({ label: 'authenticate', message: `first creating new user ${id}` });
-              createUser(decoded, accountType, id)
-                .then(() => {
-                  getUserByKeycloakID(accountType, id)
-                    .then((newUser) => {
-                      user = newUser;
-                      resolve();
-                    })
-                    .catch((err: Error) => reject(err));
-                })
-                .catch((err: Error) => reject(err));
-            } else {
-              resolve();
-            }
-          });
-
-          createIfNeeded.then(() => {
-            req.authContext = {
-              preferredUsername: null,
-              friendlyUsername: null,
-              user: null,
-              roles: [],
-              filterForSelectable: false
-            };
-            req.authContext.preferredUsername = decoded?.preferred_username;
-            if (decoded?.idir_username) {
-              req.authContext.friendlyUsername = decoded.idir_username.toLowerCase() + '@idir';
-            }
-            if (decoded?.bceid_username) {
-              req.authContext.friendlyUsername = decoded.bceid_username.toLowerCase() + '@bceid-business';
-            }
-
-            req.authContext.filterForSelectable = filterForSelectable;
-            req.authContext.user = user;
-
-            MDC.request.user = req.authContext.preferredUsername || 'unresolved';
-
-            getRolesForUser(user.user_id)
-              .then((res) => {
-                if (!(res instanceof Error)) {
-                  req.authContext.roles = res.roles;
-                  MDC.additionalContext.authContext = req.authContext;
-                }
-              })
-              .catch((error: Error) => {
-                defaultLog.error({ label: 'authenticate', message: 'failed looking up roles', error });
-                return reject(error);
-              })
-              .then(() => {
-                // check if user has beta access
-                getV2BetaAccessForUser(user.user_id)
-                  .then((betaAccess) => {
-                    defaultLog.debug({ label: 'authenticate', message: 'looked up v2beta', betaAccess });
-                    req.authContext.v2beta = !!betaAccess;
-                    return resolve();
-                  })
-                  .catch((error: Error) => {
-                    defaultLog.error({ label: 'authenticate', message: 'failed looking up beta access', error });
-                    return reject(error);
-                  });
-              });
-          });
-        })
-        .catch((err: Error) => {
-          return reject(err);
-        });
-    });
+  let accountType: KeycloakAccountType;
+  let id: string;
+  if (parsedToken?.identity_provider === KeycloakAccountType.idir && !!parsedToken?.idir_user_guid) {
+    accountType = KeycloakAccountType.idir;
+    id = parsedToken.idir_user_guid;
+  } else if (parsedToken.identity_provider === KeycloakAccountType.bceid && !!parsedToken?.bceid_user_guid) {
+    accountType = KeycloakAccountType.bceid;
+    id = parsedToken.bceid_user_guid;
+  } else {
+    logger.debug('[authenticate]', { parsedToken });
+    throw new Error('Invalid token - missing bceid/idir guid');
+  }
+  const userSql = processTokenSQL({
+    userType: accountType,
+    id: id,
+    username: parsedToken.preferred_username,
+    email: parsedToken.email
   });
+  const { roles, new_user, ...user } = (await new QueryHandler().query(userSql))?.rows?.[0] ?? {};
+  // Set context for Request object
+  req.authContext = {
+    preferredUsername: user.preferred_username,
+    friendlyUsername: user.friendlyUsername,
+    user: user,
+    roles: roles,
+    filterForSelectable
+  };
+  MDC.request.user = req.authContext.preferredUsername || 'unresolved';
+  MDC.additionalContext.authContext = req.authContext;
+
+  if (new_user) logger.info('[authenticate]: New user created from token');
 };
+
+export type { InvasivesRequest };
+export { KeycloakAccountType };

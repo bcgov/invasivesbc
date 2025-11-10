@@ -8,7 +8,6 @@ import { getSitesBasedOnSearchCriteriaSQL } from 'queries/iapp-queries';
 import { mapSitesRowsToJSON } from 'utils/iapp-json-utils';
 import { PointOfInterestSearchCriteria } from 'models/point-of-interest';
 import OpenAPISpec from 'utils/OpenAPISpec';
-import verifyUserRole from 'utils/validateRole';
 import QueryHandler from 'utils/endpoints/QueryHandler';
 import LoggerHandler from 'utils/endpoints/LoggerHandler';
 
@@ -52,7 +51,6 @@ new OpenAPISpec('Returns multiple IAPP records for device caching in Table/Recor
  */
 function getActivity(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
-    if (!verifyUserRole(GET.apiDoc, req)) return res.sendStatus(401);
     const idList: string[] = JSON.parse(req.query.idList as string);
     const db = new QueryHandler({ maintain: true });
 
@@ -73,9 +71,6 @@ function getActivity(): RequestHandler {
         resObj[result.site_id].record = result;
       }
       return res.status(200).json(resObj);
-    } catch (e) {
-      logger.error(e?.stack);
-      return res.status(500).send('Unable to fetch ids in list.');
     } finally {
       db?.close();
     }

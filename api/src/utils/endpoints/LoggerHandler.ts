@@ -1,32 +1,45 @@
+import { CustomError } from 'middleware/globalErrorHandler';
 import { LoggerWithContext } from 'utils/logger';
 
 class LoggerHandler extends LoggerWithContext {
-  private readonly namespace: string;
-  constructor(namespace: string = 'undefined') {
-    super(namespace);
-    this.namespace = namespace;
+  constructor(label: string = 'undefined') {
+    super(label);
   }
 
-  private buildLog(message: string, params?: Record<PropertyKey, unknown>) {
-    return {
-      ...params,
-      message,
-      namespace: `/api/${this.namespace}`,
-      
-      MDC: LoggerWithContext._loadMDC()
-    };
+  private readonly buildLog = (message: string, params?: Record<PropertyKey, unknown>) => ({
+    ...params,
+    message,
+    MDC: LoggerWithContext._loadMDC()
+  });
+
+  /* 
+    Logger Priority Order when settings ENV's 
+      1. Error
+      2. Warn
+      3. Info
+      4. Verbose
+      5. Debug
+  */
+  override error(err: Error | CustomError, message?: string) {
+    const m = message ? '\n' + message : message; // Add Newline so not to group into Error Object in log.
+    this._instance.error(err?.stack, this.buildLog(m));
+    return this;
   }
-  override info = (message: string, params?: Record<PropertyKey, unknown>) => this._instance.info(this.buildLog(message, params));
-
-  override debug = (message: string, params?: Record<PropertyKey, unknown>) => this._instance.debug(this.buildLog(message, params));
-
-  override warn = (message: string, params?: Record<PropertyKey, unknown>) => this._instance.warn(this.buildLog(message, params));
-
-  override error = (message: string, params?) => {
-    const stack = new Error().stack;
-    this._instance.error({message, ...params}, {
-      callingContext: stack
-    });
+  override warn = (message: string, params?: Record<PropertyKey, unknown>) => {
+    this._instance.warn(this.buildLog(message, params));
+    return this;
+  };
+  override info = (message: string, params?: Record<PropertyKey, unknown>) => {
+    this._instance.info(this.buildLog(message, params));
+    return this;
+  };
+  verbose = (message: string, params?: Record<PropertyKey, unknown>) => {
+    this._instance.verbose(this.buildLog(message, params));
+    return this;
+  };
+  override debug = (message: string, params?: Record<PropertyKey, unknown>) => {
+    this._instance.debug(this.buildLog(message, params));
+    return this;
   };
 }
 
