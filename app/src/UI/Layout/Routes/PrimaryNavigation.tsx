@@ -174,8 +174,8 @@ function usePrimaryNavigationLinks() {
     },
     {
       id: 'admin',
-      path: '/Admin',
-      activePaths: [{ path: '/Admin' }],
+      path: '/Admin/accessRequests',
+      activePaths: [{ path: '/Admin' }, { path: '/Admin/*' }],
       label: 'Admin',
       predicate: TabPredicate.ALWAYS,
       platform: PlatformPredicate.WEB,

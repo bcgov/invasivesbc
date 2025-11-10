@@ -13,19 +13,19 @@ import {
 } from '@mui/material';
 
 enum Mode {
-  GRANT,
-  REVOKE,
-  APPROVE,
-  DECLINE
+  APPROVE = 'APPROVE',
+  DECLINE = 'DECLINE'
 }
+
 type Props = {
   open: boolean;
   mode: Mode;
-  selectedRequestUsers: Record<string, any>[];
+  selectedRequestUsers: Record<string, unknown>[];
   closeApproveDeclineDialog: () => void;
   approveUsers: () => void;
   declineUser: () => void;
 };
+
 const ApproveDeclineModal = ({
   open,
   mode,
@@ -62,10 +62,10 @@ const ApproveDeclineModal = ({
           {mode === Mode.APPROVE ? 'Selected Users:' : 'Selected User:'}
         </DialogContentText>
         {selectedRequestUsers.map((user, index) => (
-          <Grid sx={{ ml: 2 }} key={user?.id || index}>
+          <Grid sx={{ ml: 2 }} key={(user?.id as string) ?? index}>
             <DialogContentText fontWeight="bold">{user.first_name + ' ' + user.last_name}:</DialogContentText>
             <List dense>
-              {user.requested_roles.split(',').map((roleReq: string) => (
+              {(user.requested_roles as string).split(',').map((roleReq: string) => (
                 <ListItem key={`${roleReq}`}>
                   <Typography>{roleReq}</Typography>
                 </ListItem>
@@ -94,3 +94,4 @@ const ApproveDeclineModal = ({
 };
 
 export default ApproveDeclineModal;
+export { Mode };

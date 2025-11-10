@@ -1,28 +1,18 @@
-import { Box, Container, Stack } from '@mui/material';
-import { NavLink } from 'react-router';
-import { useSelector } from 'react-redux';
-import { selectUserSettings } from 'state/reducers/userSettings';
+import { Box } from '@mui/material';
 import 'UI/Features/Batch/Batch.css';
+import SecondaryNavigation, {
+  SecondaryNavigationLinkDefinition
+} from 'UI/Layout/SecondaryNavigation/SecondaryNavigation';
 
 const BatchLayout = ({ children }) => {
-  const { darkTheme } = useSelector(selectUserSettings);
+  const links: SecondaryNavigationLinkDefinition[] = [
+    { to: '/Batch/list', label: 'My Batches' },
+    { to: '/Batch/new', label: 'Create New' },
+    { to: '/Batch/templates', label: 'Templates' }
+  ];
   return (
     <>
-      <Box className={`batchNav ${darkTheme ? 'batchDarkNav' : ''}`}>
-        <Container maxWidth={'lg'}>
-          <Stack direction="row" justifyContent="start" alignItems="center" spacing={6}>
-            <NavLink to={'/Batch/list'} className={({ isActive }) => (isActive ? 'current_batch_link' : '')}>
-              My Batches
-            </NavLink>
-            <NavLink to={'/Batch/new'} className={({ isActive }) => (isActive ? 'current_batch_link' : '')}>
-              Create New
-            </NavLink>
-            <NavLink to={'/Batch/templates'} className={({ isActive }) => (isActive ? 'current_batch_link' : '')}>
-              Templates
-            </NavLink>
-          </Stack>
-        </Container>
-      </Box>
+      <SecondaryNavigation links={links} />
 
       <Box sx={{ paddingTop: '2rem', marginBottom: '5rem' }}>{children}</Box>
     </>

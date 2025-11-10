@@ -181,7 +181,10 @@ export const Treatment_ChemicalPlant_Information = {
       type: 'boolean',
       title: 'NTZ reduction',
       default: false,
-      enumNames: ['Yes', 'No'],
+      oneOf: [
+        { const: true, title: 'Yes' },
+        { const: false, title: 'No' }
+      ],
       'x-tooltip-text':
         'Required field under the BC Integrated Pest Management Regulation when working under a license or authorization'
     },
@@ -202,7 +205,10 @@ export const Treatment_ChemicalPlant_Information = {
       title: 'Additional/unmapped wells or water license intakes within 30m.',
       type: 'boolean',
       default: false,
-      enumNames: ['Yes', 'No'],
+      oneOf: [
+        { const: true, title: 'Yes' },
+        { const: false, title: 'No' }
+      ],
       'x-tooltip-text':
         'Check this box as an indicator that there are wells or water licenses that will need to be considered if chemical treatment is planned for this area in the future. If unknown, leave unchecked. Additional information can be added into the comments (no names or addresses).'
     },
