@@ -2820,9 +2820,13 @@ export const Pest_Injury_Threshold_Determination = {
     completed_radio: {
       title: 'Choose either option',
       type: 'boolean',
-      enumNames: [
-        'A full survey was completed prior to herbicide application. The survey determined that injury thresholds had been met to fulfill IPM obligations.',
-        'No threshold determination was completed.'
+      oneOf: [
+        {
+          const: true,
+          title:
+            'A full survey was completed prior to herbicide application. The survey determined that injury thresholds had been met to fulfill IPM obligations.'
+        },
+        { const: false, title: 'No threshold determination was completed.' }
       ]
     }
   },

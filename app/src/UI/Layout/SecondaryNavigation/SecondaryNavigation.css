@@ -1,0 +1,19 @@
+.secondary-navigation {
+  background: #1a5a96;
+  &.dark {
+    background: #272727;
+  }
+
+  margin: 0;
+  padding: 0 0 1px;
+
+  a {
+    color: white !important;
+    text-decoration: none;
+  }
+
+  .active {
+    border-bottom: 4px solid #fcba19;
+  }
+}
+

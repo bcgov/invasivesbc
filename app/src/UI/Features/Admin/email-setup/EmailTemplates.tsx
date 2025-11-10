@@ -1,4 +1,3 @@
-import { Card, CardContent, Grid } from '@mui/material';
 import { Form } from '@rjsf/mui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
@@ -10,7 +9,6 @@ import { useDispatch, useSelector } from 'utils/use_selector';
 export const templateNames = ['Approved', 'Declined'];
 
 const jsonSchemaEmailTemplates: RJSFSchema = {
-  title: 'Email Template',
   type: 'object',
   properties: {
     templatename: {
@@ -74,21 +72,18 @@ const EmailTemplates = () => {
   };
 
   return (
-    <Grid size={{ xs: 6 }}>
-      <Card elevation={8}>
-        <CardContent>
-          <Form
-            schema={jsonSchemaEmailTemplates}
-            validator={validator}
-            uiSchema={uiSchemaEmailTemplates}
-            onSubmit={onSubmitEmailTemplates}
-            formData={getActiveTemplate()}
-            onChange={onFormChange}
-          />
-          {emailTemplatesState.message}
-        </CardContent>
-      </Card>
-    </Grid>
+    <>
+      <h2>Email Message Templates</h2>
+      <Form
+        schema={jsonSchemaEmailTemplates}
+        validator={validator}
+        uiSchema={uiSchemaEmailTemplates}
+        onSubmit={onSubmitEmailTemplates}
+        formData={getActiveTemplate()}
+        onChange={onFormChange}
+      />
+      {emailTemplatesState.message}
+    </>
   );
 };
 
