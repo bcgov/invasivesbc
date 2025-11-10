@@ -18,33 +18,33 @@ import { Template, TemplateColumn } from 'utils/batch/definitions';
 
 const defaultLog = getLogger('batch');
 
-export type ValidationMessageSeverity = 'informational' | 'warning' | 'error';
+type ValidationMessageSeverity = 'informational' | 'warning' | 'error';
 
-export interface BatchGlobalValidationMessage {
+interface BatchGlobalValidationMessage {
   severity: ValidationMessageSeverity;
   messageTitle: string;
   messageDetail: string | null;
 }
 
-export interface BatchCellValidationMessage {
+interface BatchCellValidationMessage {
   severity: ValidationMessageSeverity;
   messageTitle: string;
   messageDetail?: string | null;
 }
 
-export interface CellValidationResult {
+interface CellValidationResult {
   validationMessages: BatchCellValidationMessage[];
   parsedValue: string | number | parsedGeoType | boolean | null;
   friendlyValue?: string | null;
 }
 
-export interface RowValidationResult {
+interface RowValidationResult {
   validationMessages: BatchCellValidationMessage[];
   appliesToFields: string[];
   valid: boolean;
 }
 
-export class BatchValidationResult {
+class BatchValidationResult {
   canProceed: boolean;
   globalValidationMessages: BatchGlobalValidationMessage[] = [];
   validatedBatchData;
@@ -690,3 +690,5 @@ export const BatchValidationService = {
     return result;
   }
 };
+
+export type { BatchCellValidationMessage, RowValidationResult };
