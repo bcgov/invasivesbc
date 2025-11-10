@@ -153,9 +153,13 @@ export const authenticate = async (req: InvasivesRequest): Promise<void> => {
   });
   const { roles, new_user, ...user } = (await new QueryHandler().query(userSql))?.rows?.[0] ?? {};
   // Set context for Request object
+  const friendlyUsername = (() => {
+    if (parsedToken?.idir_username) return parsedToken.idir_username.toLowerCase() + '@idir';
+    if (parsedToken?.bceid_username) return parsedToken.bceid_username.toLowerCase() + '@bceid-business';
+  })();
   req.authContext = {
     preferredUsername: user.preferred_username,
-    friendlyUsername: user.friendlyUsername,
+    friendlyUsername: friendlyUsername,
     user: user,
     roles: roles,
     filterForSelectable
