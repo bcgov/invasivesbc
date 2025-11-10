@@ -1,6 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PoolClient, QueryResult } from 'pg';
+import SQL from 'sql-template-strings';
 import { ALL_ROLES } from 'constants/misc';
 import { getDBConnection } from 'database/db';
 import { InvasivesRequest } from 'utils/auth-utils';
@@ -8,10 +9,7 @@ import { TemplateService } from 'utils/batch/template-utils';
 import { BatchValidationService } from 'utils/batch/validation/validation';
 import { BatchExecutionService } from 'utils/batch/execution';
 import OpenAPISpec from 'utils/OpenAPISpec';
-import LoggerHandler from 'utils/endpoints/LoggerHandler';
-import SQL from 'sql-template-strings';
 
-const logger = new LoggerHandler('batch-execute');
 const POST: Operation = [execBatch()];
 
 new OpenAPISpec('', ['batch'])
