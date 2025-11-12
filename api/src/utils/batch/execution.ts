@@ -194,7 +194,7 @@ export const BatchExecutionService = {
             ${activityId},       ${shortId},                ${payload},                     ${id},                          ${template.type},
             ${template.subtype}, ${errEntry},               ${userInfo.preferred_username}, ${userInfo.preferred_username}, ${guid},
             ${guid},             ${geog},                   ${index},                       ${sPos},                        ${sNeg},
-            ${sTreat},           ${payload['platform_src']},
+            ${sTreat},           ${payload['platform_src']}
           )
         `;
 
