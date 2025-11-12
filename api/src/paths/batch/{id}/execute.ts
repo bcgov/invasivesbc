@@ -12,7 +12,7 @@ import OpenAPISpec from 'utils/OpenAPISpec';
 
 const POST: Operation = [execBatch()];
 
-new OpenAPISpec('', ['batch'])
+new OpenAPISpec('Batch upload processor', ['batch'])
   .security(ALL_ROLES)
   .requestBody({
     description: 'Batch upload processor',
@@ -54,7 +54,8 @@ function execBatch(): RequestHandler {
       connection = await getDBConnection();
       const response: QueryResult = await connection.query(
         SQL`
-          SELECT id,
+          SELECT
+            id,
             status,
             csv_data,
             json_representation,
@@ -76,20 +77,21 @@ function execBatch(): RequestHandler {
 
       const validationResult = await BatchValidationService.validateBatchAgainstTemplate(
         template,
-        retrievedBatch['json_representation'],
+        retrievedBatch.json_representation,
         [],
         req.authContext.user
       );
-      await BatchExecutionService.executeBatch(
-        connection,
-        id,
-        template,
-        validationResult.validatedBatchData,
-        desiredActivityState,
-        treatmentOfErrorRows,
-        req.authContext.user
-      );
-      return res.status(200).send('Batch update executed successfully');
+      await BatchExecutionService.executeBatch({
+        dbConnection: connection,
+        id: id,
+        template: template,
+        validatedBatchData: validationResult.validatedBatchData,
+        desiredFinalStatus: desiredActivityState,
+        errorRowsBehaviour: treatmentOfErrorRows,
+        userInfo: req.authContext.user,
+        req: req
+      });
+      return res.status(200).json({ desiredActivityState, treatmentOfErrorRows });
     } finally {
       connection?.release();
     }
