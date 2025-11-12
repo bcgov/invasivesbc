@@ -1,4 +1,5 @@
 import { SQL } from 'sql-template-strings';
+import { PoolClient } from 'pg';
 import QueryHandler from './endpoints/QueryHandler';
 import LoggerHandler from './endpoints/LoggerHandler';
 import getElevation from './context/getElevation';
@@ -11,6 +12,7 @@ interface Params {
   activity_id: string;
   latitude: number;
   longitude: number;
+  db?: PoolClient;
 }
 /**
  * @desc Insert contextual data for the new activity record from the BC Geographic Warehouse (BCGW)
@@ -42,7 +44,7 @@ const saveBCGW = async (params: Params) => {
     }
   ];
 
-  const db = new QueryHandler({ maintain: true });
+  const db = params?.db ?? new QueryHandler({ maintain: true });
   for (const layer of LAYERS) {
     const { tableName, targetColumn, targetAttribute } = layer;
     try {
@@ -61,7 +63,9 @@ const saveBCGW = async (params: Params) => {
       continue;
     }
   }
-  db?.close();
+  if (!params?.db) {
+    db?.close();
+  }
 };
 
 /**
@@ -75,7 +79,7 @@ const saveElevation = async (params: Params) => {
   const elevation = await getElevation(latitude, longitude);
   if (isNaN(elevation)) return;
 
-  await new QueryHandler().query(SQL`
+  await (params?.db ?? new QueryHandler()).query(SQL`
     UPDATE activity_incoming_data
     SET elevation = round(${elevation}, 0)
     WHERE activity_id = ${activity_id}
@@ -93,7 +97,7 @@ const saveWell = async (params: Params): Promise<void> => {
 
   if (Object.keys(well).length === 0 || isNaN(distance)) return;
 
-  await new QueryHandler().query(SQL`
+  await (params?.db ?? new QueryHandler()).query(SQL`
     UPDATE activity_incoming_data
     SET well_proximity = round(${distance} ,0)
     WHERE activity_id = ${activity_id}
