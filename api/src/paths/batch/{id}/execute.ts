@@ -9,7 +9,9 @@ import { TemplateService } from 'utils/batch/template-utils';
 import { BatchValidationService } from 'utils/batch/validation/validation';
 import { BatchExecutionService } from 'utils/batch/execution';
 import OpenAPISpec from 'utils/OpenAPISpec';
+import LoggerHandler from 'utils/endpoints/LoggerHandler';
 
+const logger = new LoggerHandler('batch');
 const POST: Operation = [execBatch()];
 
 new OpenAPISpec('Batch upload processor', ['batch'])
@@ -46,6 +48,7 @@ new OpenAPISpec('Batch upload processor', ['batch'])
 
 function execBatch(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
+    const START_TIME = Date.now();
     const id = req.params.id;
     const { desiredActivityState, treatmentOfErrorRows } = req.body;
 
@@ -91,6 +94,8 @@ function execBatch(): RequestHandler {
         userInfo: req.authContext.user,
         req: req
       });
+      const END_TIME = Date.now();
+      logger.info('[execute] Finished Batch upload', { id, executionTime: `${END_TIME - START_TIME}ms` });
       return res.status(200).json({ desiredActivityState, treatmentOfErrorRows });
     } finally {
       connection?.release();
