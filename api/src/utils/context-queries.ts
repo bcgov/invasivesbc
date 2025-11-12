@@ -95,7 +95,7 @@ const saveWell = async (params: Params): Promise<void> => {
 
   const { well, distance } = await getWell(latitude, longitude);
 
-  if (Object.keys(well).length === 0 || isNaN(distance)) return;
+  if (!well || isNaN(distance)) return;
 
   await (params?.db ?? new QueryHandler()).query(SQL`
     UPDATE activity_incoming_data
