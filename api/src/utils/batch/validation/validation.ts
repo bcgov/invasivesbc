@@ -345,7 +345,6 @@ async function _validateCell(
         const foundCode = templateColumn.codes.find((c) => c.code === data);
         result.parsedValue = foundCode?.code;
         result.friendlyValue = foundCode?.description;
-        defaultLog.info({ message: `parsed ${data}`, foundCode, templateColumn });
 
         const isOptionalAndBlank = !templateColumn?.required && data === '';
         if (!result.parsedValue && !isOptionalAndBlank) {
