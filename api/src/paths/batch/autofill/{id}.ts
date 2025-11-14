@@ -23,7 +23,7 @@ new OpenAPISpec('Retro populate the autofill details for a legacy batch record',
 
 function batchAutofill(): RequestHandler {
   return async (req, res) => {
-    const id = parseInt(req.params.id);
+    const id = Number.parseInt(req.params.id);
     await autofillBatch(id);
     return res.sendStatus(204);
   };

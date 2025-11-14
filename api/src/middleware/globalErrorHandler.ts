@@ -1,7 +1,6 @@
-import e, { NextFunction, Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { TokenExpiredError } from 'jsonwebtoken';
 import LoggerHandler from 'utils/endpoints/LoggerHandler';
-import { log } from 'winston';
 
 class CustomError extends Error {
   code: number;
