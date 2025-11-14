@@ -39,11 +39,7 @@ initialize({
     Bearer: middleware.bearerHandler
   },
   securityFilter: applyApiDocSecurityFilters,
-  errorMiddleware: middleware.globalErrorHandler,
-  errorTransformer: function (openapiError: object, ajvError: object): object {
-    defaultLog.error({ label: 'errorTransformer', message: 'ajvError', ajvError });
-    return ajvError;
-  }
+  errorMiddleware: middleware.globalErrorHandler
 }).then(({ apiDoc }) => {
   // Sets the Swagger UI to serve the fully initialized apiDocs (post-generation)
   app.use('/api/docs', swaggerServe, swaggerSetup(apiDoc));
