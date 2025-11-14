@@ -8,6 +8,28 @@ import getWell from './context/getWell';
 
 const logger = new LoggerHandler('context-queries');
 
+const BCGW_SUPPLEMENTAL_LAYERS = [
+  {
+    tableName: 'WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW', // BCGW table
+    targetAttribute: 'OWNER_TYPE', // The attribute to collect
+    targetColumn: 'ownership' // The column in our database table
+  },
+  {
+    tableName: 'WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY',
+    targetAttribute: 'BGC_LABEL',
+    targetColumn: 'biogeoclimatic_zones'
+  },
+  {
+    tableName: 'WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG',
+    targetAttribute: 'DISTRICT_NAME',
+    targetColumn: 'flnro_districts'
+  },
+  {
+    tableName: 'WHSE_ADMIN_BOUNDARIES.TADM_MOT_DISTRICT_BNDRY_POLY',
+    targetAttribute: 'DISTRICT_NAME',
+    targetColumn: 'moti_districts'
+  }
+];
 interface Params {
   activity_id: string;
   latitude: number;
@@ -21,31 +43,9 @@ interface Params {
 const saveBCGW = async (params: Params) => {
   const { activity_id, latitude, longitude } = params;
   /* All the layers to get queried */
-  const LAYERS = [
-    {
-      tableName: 'WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW', // BCGW table
-      targetAttribute: 'OWNER_TYPE', // The attribute to collect
-      targetColumn: 'ownership' // The column in our database table
-    },
-    {
-      tableName: 'WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY',
-      targetAttribute: 'BGC_LABEL',
-      targetColumn: 'biogeoclimatic_zones'
-    },
-    {
-      tableName: 'WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG',
-      targetAttribute: 'DISTRICT_NAME',
-      targetColumn: 'flnro_districts'
-    },
-    {
-      tableName: 'WHSE_ADMIN_BOUNDARIES.TADM_MOT_DISTRICT_BNDRY_POLY',
-      targetAttribute: 'DISTRICT_NAME',
-      targetColumn: 'moti_districts'
-    }
-  ];
 
   const db = params?.db ?? new QueryHandler({ maintain: true });
-  for (const layer of LAYERS) {
+  for (const layer of BCGW_SUPPLEMENTAL_LAYERS) {
     const { tableName, targetColumn, targetAttribute } = layer;
     try {
       const feature = await getWfsData(latitude, longitude, tableName);
@@ -113,4 +113,4 @@ const commit = async (params: Params) => {
   await saveWell(params); // Insert closest well
 };
 
-export { commit };
+export { commit, BCGW_SUPPLEMENTAL_LAYERS };
