@@ -10,6 +10,7 @@ import { BatchValidationService } from 'utils/batch/validation/validation';
 import { BatchExecutionService } from 'utils/batch/execution';
 import OpenAPISpec from 'utils/OpenAPISpec';
 import LoggerHandler from 'utils/endpoints/LoggerHandler';
+import { autofillBatch } from 'utils/batch/autofillBatch';
 
 const logger = new LoggerHandler('batch');
 const POST: Operation = [execBatch()];
@@ -91,12 +92,13 @@ function execBatch(): RequestHandler {
         validatedBatchData: validationResult.validatedBatchData,
         desiredFinalStatus: desiredActivityState,
         errorRowsBehaviour: treatmentOfErrorRows,
-        userInfo: req.authContext.user,
-        req: req
+        userInfo: req.authContext.user
       });
-      const END_TIME = Date.now();
-      logger.info('[execute] Finished Batch upload', { id, executionTime: `${END_TIME - START_TIME}ms` });
-      return res.status(200).json({ desiredActivityState, treatmentOfErrorRows });
+      logger.info('[execute] Finished Batch upload', { id, executionTime: `${Date.now() - START_TIME}ms` });
+      // Return the success to the user, so they can continue on
+      res.status(200).json({ desiredActivityState, treatmentOfErrorRows });
+      // Now in the background gather and update the autofill information.
+      await autofillBatch(id);
     } finally {
       connection?.release();
     }
