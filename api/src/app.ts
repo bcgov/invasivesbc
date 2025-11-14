@@ -7,9 +7,6 @@ import { api_doc } from 'sharedAPI/src/openapi/api-doc/api-doc';
 import { serve as swaggerServe, setup as swaggerSetup } from 'swagger-ui-express';
 import * as middleware from './middleware';
 import { applyApiDocSecurityFilters } from 'utils/api-doc-security-filter';
-import { getLogger } from 'utils/logger';
-
-const defaultLog = getLogger('app');
 
 const HOST = process.env.API_HOST || 'localhost';
 const PORT = Number(process.env.API_PORT || '3002');
