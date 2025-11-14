@@ -1,5 +1,7 @@
-import { NextFunction, Request, Response } from 'express';
+import e, { NextFunction, Request, Response } from 'express';
+import { TokenExpiredError } from 'jsonwebtoken';
 import LoggerHandler from 'utils/endpoints/LoggerHandler';
+import { log } from 'winston';
 
 class CustomError extends Error {
   code: number;
@@ -12,6 +14,7 @@ interface ExpressOpenApiError {
   status: number;
   message: string;
   errorCode: string;
+  errors?: Array<Record<PropertyKey, unknown>>;
 }
 
 const globalErrorHandler = (
@@ -27,20 +30,21 @@ const globalErrorHandler = (
     } else if (err instanceof Error) {
       return { message: err.message || defaultMessage, status: 500 };
     } else {
-      return { message: err.message || defaultMessage, status: err.status };
+      return { message: err?.message || err?.errors || defaultMessage, status: err.status };
     }
   })();
-  // express-openapi sends its errors as an API Spec, convert it.
+  // Convert regular and custom errors, ignore OpenAPI/Token Errors
   const transformedError = (() => {
+    if (err instanceof TokenExpiredError) return null; // ignore errors about Expired JWTs
     if (err instanceof CustomError || err instanceof Error) return err;
-    return new Error(err.message, { cause: { err } });
+    return null; // OpenAPI Error Objects (Malformed query params, etc)
   })();
   const errorResponse = {
     message,
     method: req.method,
     namespace: req.url
   };
-  if (errorResponse.message !== 'No security handlers returned an acceptable response: Bearer') {
+  if (transformedError) {
     new LoggerHandler('globalErrorHandler').error(transformedError);
   }
   if (!res.headersSent) res.status(status).json(errorResponse);
