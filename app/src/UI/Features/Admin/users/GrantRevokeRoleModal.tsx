@@ -16,11 +16,10 @@ import {
   Typography
 } from '@mui/material';
 enum Mode {
-  GRANT,
-  REVOKE,
-  APPROVE,
-  DECLINE
+  GRANT = 'GRANT',
+  REVOKE = 'REVOKE'
 }
+
 type Props = {
   open: boolean;
   mode: Mode;
@@ -110,3 +109,4 @@ const GrantRevokeRoleModal = ({
   );
 };
 export default GrantRevokeRoleModal;
+export { Mode };

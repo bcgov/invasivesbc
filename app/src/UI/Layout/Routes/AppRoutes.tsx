@@ -10,8 +10,14 @@ import React, { Suspense, useEffect } from 'react';
 import Spinner from 'UI/Reusable/Spinner/Spinner';
 import { WhatsHereTable } from 'UI/Features/WhatsHere/WhatsHereTable';
 import { useSelector } from 'utils/use_selector';
+import AdminLayout from 'UI/Features/Admin/AdminLayout';
+import BatchLayout from 'UI/Features/Batch/BatchLayout';
 
-const UserAccessPage = React.lazy(() => import('UI/Features/Admin/userAccess/UserAccessPage'));
+const EmailSettings = React.lazy(() => import('UI/Features/Admin/email-setup/EmailSettings'));
+const EmailTemplates = React.lazy(() => import('UI/Features/Admin/email-setup/EmailTemplates'));
+const PendingRequests = React.lazy(() => import('UI/Features/Admin/requests/PendingRequests'));
+const RoleAssignment = React.lazy(() => import('UI/Features/Admin/users/RoleAssignment'));
+
 const EmbeddedReportsPage = React.lazy(() => import('UI/Features/Reports/EmbeddedReportsPage'));
 const AccessRequestPage = React.lazy(() => import('UI/Features/AccessRequest/AccessRequestPage'));
 const TrainingPage = React.lazy(() => import('UI/Features/Training/Training'));
@@ -106,11 +112,44 @@ const AppRoutes = () => {
       />
 
       <Route
-        path="/Admin"
+        path="/Admin/emailSettings"
         Component={() => (
-          <Suspense fallback={<Spinner />}>
-            <UserAccessPage />
-          </Suspense>
+          <AdminLayout>
+            <Suspense fallback={<Spinner />}>
+              <EmailSettings />
+            </Suspense>
+          </AdminLayout>
+        )}
+      />
+      <Route
+        path="/Admin/emailTemplates"
+        Component={() => (
+          <AdminLayout>
+            <Suspense fallback={<Spinner />}>
+              <EmailTemplates />
+            </Suspense>
+          </AdminLayout>
+        )}
+      />
+      <Route
+        path="/Admin/accessRequests"
+        Component={() => (
+          <AdminLayout>
+            <Suspense fallback={<Spinner />}>
+              <PendingRequests />
+            </Suspense>
+          </AdminLayout>
+        )}
+      />
+
+      <Route
+        path="/Admin/roleAssignment"
+        Component={() => (
+          <AdminLayout>
+            <Suspense fallback={<Spinner />}>
+              <RoleAssignment />
+            </Suspense>
+          </AdminLayout>
         )}
       />
 
@@ -134,33 +173,41 @@ const AppRoutes = () => {
       <Route
         path="/Batch/list"
         Component={() => (
-          <Suspense fallback={<Spinner />}>
-            <BatchList />
-          </Suspense>
+          <BatchLayout>
+            <Suspense fallback={<Spinner />}>
+              <BatchList />
+            </Suspense>
+          </BatchLayout>
         )}
       />
       <Route
         path="/Batch/list/:id"
         Component={() => (
-          <Suspense fallback={<Spinner />}>
-            <BatchView />
-          </Suspense>
+          <BatchLayout>
+            <Suspense fallback={<Spinner />}>
+              <BatchView />
+            </Suspense>
+          </BatchLayout>
         )}
       />
       <Route
         path="/Batch/new"
         Component={() => (
-          <Suspense fallback={<Spinner />}>
-            <BatchCreateNew />
-          </Suspense>
+          <BatchLayout>
+            <Suspense fallback={<Spinner />}>
+              <BatchCreateNew />
+            </Suspense>
+          </BatchLayout>
         )}
       />
       <Route
         path="/Batch/templates"
         Component={() => (
-          <Suspense fallback={<Spinner />}>
-            <BatchTemplates />
-          </Suspense>
+          <BatchLayout>
+            <Suspense fallback={<Spinner />}>
+              <BatchTemplates />
+            </Suspense>
+          </BatchLayout>
         )}
       />
     </Routes>

@@ -2,13 +2,11 @@ import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
 import { useEffect } from 'react';
 import { Form } from '@rjsf/mui';
-import { Card, CardContent, Grid } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectEmailSettings } from 'state/reducers/emailSettings';
 import { EmailActions } from 'state/actions/email/emailActions';
 
 const jsonSchemaEmailSettings: RJSFSchema = {
-  title: 'Email Settings',
   type: 'object',
   required: ['enabled', 'authenticationURL', 'emailServiceURL', 'clientId', 'clientSecret'],
   properties: {
@@ -65,20 +63,18 @@ const EmailSettings = () => {
   };
 
   return (
-    <Grid size={{ xs: 6 }}>
-      <Card elevation={6}>
-        <CardContent>
-          <Form
-            schema={jsonSchemaEmailSettings}
-            validator={validator}
-            uiSchema={uiSchemaEmailSettings}
-            onSubmit={onSubmitEmailSettings}
-            formData={emailSettingsState?.emailSettings}
-          />
-          {emailSettingsState.message}
-        </CardContent>
-      </Card>
-    </Grid>
+    <>
+      <h2>Email Settings</h2>
+
+      <Form
+        schema={jsonSchemaEmailSettings}
+        validator={validator}
+        uiSchema={uiSchemaEmailSettings}
+        onSubmit={onSubmitEmailSettings}
+        formData={emailSettingsState?.emailSettings}
+      />
+      {emailSettingsState.message}
+    </>
   );
 };
 

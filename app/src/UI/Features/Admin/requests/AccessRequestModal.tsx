@@ -13,10 +13,10 @@ import {
 type Props = {
   closeRequestDetailsDialog: () => void;
   requestDetailsDialogOpen: boolean;
-  detailsDialogRequestUser: Record<string, any>;
-  employerCodes: Record<string, any>[];
-  agencyCodes: Record<string, any>[];
-  availableRoles: Record<string, any>[];
+  detailsDialogRequestUser: Record<string, unknown>;
+  employerCodes: Record<string, unknown>[];
+  agencyCodes: Record<string, unknown>[];
+  availableRoles: Record<string, unknown>[];
 };
 
 const AccessRequestModal = ({
