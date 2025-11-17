@@ -360,7 +360,12 @@ function createActivity(): RequestHandler {
 
       // kick off asynchronous context collection activities
       if (req.body.form_data.activity_data.latitude) {
-        commitContext(result, req);
+        const context = {
+          longitude: req.body.form_data.activity_data.longitude,
+          latitude: req.body.form_data.activity_data.latitude,
+          activity_id: result.activity_id
+        };
+        await commitContext(context);
       }
 
       return res.status(201).json({
@@ -510,20 +515,15 @@ async function updateActivityHandler(req: InvasivesRequest, res: Response): Prom
 
     // kick off asynchronous context collection activities
     if (req.body.form_data?.activity_data?.latitude) {
-      commitContext(result, req);
+      const context = {
+        longitude: req.body.form_data.activity_data.longitude,
+        latitude: req.body.form_data.activity_data.latitude,
+        activity_id: result.activity_id
+      };
+      await commitContext(context);
     }
 
     return res.status(200).json(result);
-  } catch (error) {
-    defaultLog.debug({ label: 'updateActivity', message: 'error', error });
-
-    return res.status(500).json({
-      message: 'Error updating activity.',
-      request: req.body,
-      error: error,
-      namespace: 'activity',
-      code: 500
-    });
   } finally {
     connection?.release();
   }

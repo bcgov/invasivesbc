@@ -131,7 +131,7 @@ function* executeBatch(action: PayloadAction<IBatchExecute>) {
   const configuration = yield select(selectConfiguration);
   const { id, desiredActivityState, treatmentOfErrorRows } = action.payload;
 
-  const res = yield fetch(configuration.API_BASE + `/api/batch/${id}/execute`, {
+  const res: Response = yield fetch(configuration.API_BASE + `/api/batch/${id}/execute`, {
     method: 'POST',
     headers: {
       Authorization: yield getCurrentJWT(),
@@ -143,13 +143,12 @@ function* executeBatch(action: PayloadAction<IBatchExecute>) {
     })
   });
 
-  const data = yield res.json();
-
-  if (data.code === 200) {
+  if (res?.ok) {
+    const data = yield res.json();
     yield put(BatchActions.executeSuccess(data.result));
     yield put(BatchActions.retrieve(id));
   } else {
-    yield put(BatchActions.executeError(data.message ?? ''));
+    yield put(BatchActions.executeError(res?.statusText ?? ''));
   }
 }
 

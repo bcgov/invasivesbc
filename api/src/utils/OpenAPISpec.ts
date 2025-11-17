@@ -15,6 +15,7 @@ interface PathParameter {
   description: string;
   schema: {
     type: string;
+    pattern?: string;
   };
 }
 

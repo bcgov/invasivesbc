@@ -7,9 +7,6 @@ import { api_doc } from 'sharedAPI/src/openapi/api-doc/api-doc';
 import { serve as swaggerServe, setup as swaggerSetup } from 'swagger-ui-express';
 import * as middleware from './middleware';
 import { applyApiDocSecurityFilters } from 'utils/api-doc-security-filter';
-import { getLogger } from 'utils/logger';
-
-const defaultLog = getLogger('app');
 
 const HOST = process.env.API_HOST || 'localhost';
 const PORT = Number(process.env.API_PORT || '3002');
@@ -39,11 +36,7 @@ initialize({
     Bearer: middleware.bearerHandler
   },
   securityFilter: applyApiDocSecurityFilters,
-  errorMiddleware: middleware.globalErrorHandler,
-  errorTransformer: function (openapiError: object, ajvError: object): object {
-    defaultLog.error({ label: 'errorTransformer', message: 'ajvError', ajvError });
-    return ajvError;
-  }
+  errorMiddleware: middleware.globalErrorHandler
 }).then(({ apiDoc }) => {
   // Sets the Swagger UI to serve the fully initialized apiDocs (post-generation)
   app.use('/api/docs', swaggerServe, swaggerSetup(apiDoc));

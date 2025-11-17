@@ -1,199 +1,116 @@
-import axios from 'axios';
-import { SQL, SQLStatement } from 'sql-template-strings';
-import { getDBConnection } from 'database/db';
-import { getLogger } from 'utils/logger';
-import { insertWellDistanceSQL } from 'queries/context-queries';
-import { getWell } from 'utils/well';
+import { SQL } from 'sql-template-strings';
+import { PoolClient } from 'pg';
+import QueryHandler from './endpoints/QueryHandler';
+import LoggerHandler from './endpoints/LoggerHandler';
+import getElevation from './context/getElevation';
+import getWfsData from './context/getWfsData';
+import getWell from './context/getWell';
 
-const defaultLog = getLogger('context-queries');
+const logger = new LoggerHandler('context-queries');
 
-/**
- * Insert contextual data for the new activity record from
- * the BC Geographic Warehouse (BCGW)
- *
- * @param id {integer} The record ID for the activity recently
- *   entered in the database.
- * @param req {object} The express request object
- */
-const saveBCGW = async (id: any, req: any) => {
-  const lat = req.body.form_data.activity_data.latitude;
-  const lon = req.body.form_data.activity_data.longitude;
-  const api = `${req.protocol}://${req.get('host')}/api`;
-  const config = {
-    headers: {
-      authorization: req.headers.authorization
-    }
-  };
-
-  /* All the layers to get queried */
-  const layers = [
-    {
-      tableName: 'WHSE_CADASTRE.CBM_CADASTRAL_FABRIC_PUB_SVW', // BCGW table
-      targetAttribute: 'OWNERSHIP_CLASS', // The attribute to collect
-      targetColumn: 'ownership' // The column in our database table
-    },
-    {
-      tableName: 'WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY',
-      targetAttribute: 'BGC_LABEL',
-      targetColumn: 'biogeoclimatic_zones'
-    },
-    // {
-    //   tableName: 'WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_REGIONAL_DISTRICTS_SP',
-    //   targetAttribute: 'ADMIN_AREA_NAME',
-    //   targetColumn: 'regional_districts'
-    // },
-    {
-      tableName: 'WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG',
-      targetAttribute: 'DISTRICT_NAME',
-      targetColumn: 'flnro_districts'
-    },
-    {
-      tableName: 'WHSE_ADMIN_BOUNDARIES.TADM_MOT_DISTRICT_BNDRY_POLY',
-      targetAttribute: 'DISTRICT_NAME',
-      targetColumn: 'moti_districts'
-    }
-  ];
-
-  const sqlStatement: SQLStatement = SQL``;
-
-  const queryBCGW = async (layer) => {
-    const url = `${api}/context/databc/${layer.tableName}?lon=${lon}&lat=${lat}`;
-
-    await axios
-      .get(url, config)
-      .then(async (response) => {
-        const attribute = response.data.result[layer.targetAttribute];
-        const column = layer.targetColumn;
-        sqlStatement.append(`
-          update activity_incoming_data
-          set ${column} = '${attribute}'
-          where activity_id = '${id}';
-        `);
-      })
-      .catch((error) => {
-        defaultLog.debug({ label: 'addingContext', message: 'error', error });
-      });
-  };
-
-  /* Build the bulk insert statement*/
-  for (const layer of layers) {
-    await queryBCGW(layer);
+const BCGW_SUPPLEMENTAL_LAYERS = [
+  {
+    tableName: 'WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW', // BCGW table
+    targetAttribute: 'OWNER_TYPE', // The attribute to collect
+    targetColumn: 'ownership' // The column in our database table
+  },
+  {
+    tableName: 'WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY',
+    targetAttribute: 'BGC_LABEL',
+    targetColumn: 'biogeoclimatic_zones'
+  },
+  {
+    tableName: 'WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG',
+    targetAttribute: 'DISTRICT_NAME',
+    targetColumn: 'flnro_districts'
+  },
+  {
+    tableName: 'WHSE_ADMIN_BOUNDARIES.TADM_MOT_DISTRICT_BNDRY_POLY',
+    targetAttribute: 'DISTRICT_NAME',
+    targetColumn: 'moti_districts'
   }
+];
+interface Params {
+  activity_id: string;
+  latitude: number;
+  longitude: number;
+  db?: PoolClient;
+}
+/**
+ * @desc Insert contextual data for the new activity record from the BC Geographic Warehouse (BCGW)
+ * @param id The record ID for the new activity
+ */
+const saveBCGW = async (params: Params) => {
+  const { activity_id, latitude, longitude } = params;
+  /* All the layers to get queried */
 
-  const connection = await getDBConnection();
-
-  await connection
-    .query(sqlStatement.sql)
-    .then(() => {
-      defaultLog.info({ message: 'Successfully entered BCGW data.' });
-    })
-    .catch((err) => {
-      defaultLog.error({ message: 'Error inserting BCGW data into the database', error: err });
-    });
-
-  connection.release();
+  const db = params?.db ?? new QueryHandler({ maintain: true });
+  for (const layer of BCGW_SUPPLEMENTAL_LAYERS) {
+    const { tableName, targetColumn, targetAttribute } = layer;
+    try {
+      const feature = await getWfsData(latitude, longitude, tableName);
+      if (!feature?.properties?.[targetAttribute]) continue;
+      const sql = SQL`
+        UPDATE activity_incoming_data
+        SET `.append(targetColumn).append(SQL` = ${feature.properties[targetAttribute]}
+        WHERE activity_id = ${activity_id}
+        AND iscurrent IS TRUE;
+      `);
+      await db.query(sql);
+      logger.debug(`[saveBCGW] Updating Entry`, { targetColumn, value: feature.properties[targetAttribute] });
+    } catch (e) {
+      logger.error(e, `Error updating ${targetColumn}`);
+      continue;
+    }
+  }
+  if (!params?.db) {
+    db?.close();
+  }
 };
 
 /**
- * ## saveElevation
- * Insert contextual data for the new activity record from
- * local datasets housed in the PostGres database.
- *
- * @param id {integer} The record ID for the activity recently
- *   entered in the database.
- * @param req {object} The express request object
+ * @desc Insert contextual data for the new activity record from local datasets housed in the PostGres database.
+ * @param id The record ID for the new activity
  */
-const saveElevation = (id: any, req: any) => {
-  const lat = req.body.form_data.activity_data.latitude;
-  const lon = req.body.form_data.activity_data.longitude;
-  const api = `${req.protocol}://${req.get('host')}/api`;
-  const config = {
-    headers: {
-      authorization: req.headers.authorization
-    }
-  };
+const saveElevation = async (params: Params) => {
+  const { activity_id, latitude, longitude } = params;
 
   /* For each layer run an asynchronous request */
-  const url = `${api}/context/elevation?lon=${lon}&lat=${lat}`;
+  const elevation = await getElevation(latitude, longitude);
+  if (isNaN(elevation)) return;
 
-  axios
-    .get(url, config)
-    .then(async (response) => {
-      const elevation = response.data.result;
-      const connection = await getDBConnection();
-      const sql = `
-        update activity_incoming_data
-        set elevation = round(${elevation}, 0)
-        where activity_id = '${id}'
-      `;
-
-      await connection
-        .query(sql)
-        .then(() => {
-          defaultLog.info({ message: 'Successfully entered elevation' });
-        })
-        .catch((err) => {
-          defaultLog.error({ message: 'Error inserting into the database', error: err });
-        });
-
-      connection.release();
-    })
-    .catch((error) => {
-      defaultLog.debug({ label: 'addingContext', message: 'error', error });
-    });
+  await (params?.db ?? new QueryHandler()).query(SQL`
+    UPDATE activity_incoming_data
+    SET elevation = round(${elevation}, 0)
+    WHERE activity_id = ${activity_id}
+    AND iscurrent IS TRUE;
+  `);
 };
 
 /**
- * ## saveWell
- * Insert contextual well data for the new activity record from
- * local datasets housed in the PostGres database.
- *
- * @param id {integer} The record ID for the activity recently
- *   entered in the database.
- * @param req {object} The express request object
+ * @desc Fetch the well nearest the activity, and update the DB entry
  */
-const saveWell = (id: any, req: any) => {
-  const a = req.body.form_data.activity_data;
-  const payload = {
-    query: {
-      lon: a.longitude,
-      lat: a.latitude
-    }
-  };
+const saveWell = async (params: Params): Promise<void> => {
+  const { activity_id, longitude, latitude } = params;
 
-  /* ### callback
-    Use a callback to insert the data
-    @param bundle {object} The well object containing well data and distance.
-   */
-  const callback = async (bundle) => {
-    const connection = await getDBConnection();
-    const params = {
-      distance: bundle.distance,
-      id: id
-    };
+  const { well, distance } = await getWell(latitude, longitude);
 
-    const sql: SQLStatement = insertWellDistanceSQL(params);
+  if (!well || isNaN(distance)) return;
 
-    await connection
-      .query(sql.text, sql.values)
-      .then(() => {
-        defaultLog.info({ message: 'Successfully entered well proximity' });
-      })
-      .catch((err) => {
-        defaultLog.error({ message: 'Error inserting into the database', error: err });
-      });
+  await (params?.db ?? new QueryHandler()).query(SQL`
+    UPDATE activity_incoming_data
+    SET well_proximity = round(${distance} ,0)
+    WHERE activity_id = ${activity_id}
+    AND iscurrent IS TRUE
+  `);
 
-    connection.release();
-  };
-
-  getWell(payload, false, callback);
+  logger.debug('[getWell]: Entered well proximity', { distance: distance, activity_id });
 };
 
-// TODO: Pass only what's necessary in the 'req' object.
-export const commit = function (record: any, req: any) {
-  const id = record.activity_id;
-  saveBCGW(id, req); // Insert DataBC BCGW attributes
-  // saveInternal(id, req); // Insert local attributes
-  saveElevation(id, req); // Insert elevation
-  saveWell(id, req); // Insert the closest well
+const commit = async (params: Params) => {
+  await saveBCGW(params); // Insert DataBC BCGW attributes
+  await saveElevation(params); // Insert elevation
+  await saveWell(params); // Insert closest well
 };
+
+export { commit, BCGW_SUPPLEMENTAL_LAYERS };
