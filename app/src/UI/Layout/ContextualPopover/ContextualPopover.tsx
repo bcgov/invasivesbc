@@ -2,7 +2,6 @@ import { Route, Routes } from 'react-router';
 import { useSelector } from 'utils/use_selector';
 import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
 import FormMenuButtons from 'UI/Features/Records/FormMenuButtons/FormMenuButtons';
-import React from 'react';
 
 const ContextualPopover = () => {
   return (

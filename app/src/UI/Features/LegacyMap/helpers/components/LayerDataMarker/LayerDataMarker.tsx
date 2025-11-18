@@ -27,7 +27,7 @@ const LayerDataMarker = () => {
   const drawToolsActive = useRef<boolean>(false);
   const editModeActive = useRef<boolean>(false);
 
-  const popupRef = useRef<Popup>();
+  const popupRef = useRef<Popup>(null);
   const timeOfTouchStart = useRef<number>(0);
 
   const [recordsetLayers, setRecordsetLayers] = useState<string[]>([]);
@@ -166,7 +166,7 @@ const LayerDataMarker = () => {
       map.off('touchend', handleTouchEnd);
       map.off('styledata', updateLayers);
     };
-  }, [map, whatsHereEnabled, recordsetLayers, connected]);
+  }, [map, whatsHereEnabled, recordsetLayers, connected, userCanCopyShape]);
 
   // Close popup when URL Changes.
   useEffect(() => {
