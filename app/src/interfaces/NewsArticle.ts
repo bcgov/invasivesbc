@@ -1,3 +1,5 @@
+import { ReactNode } from 'react';
+
 enum NewsSubject {
   New,
   Update,
@@ -12,7 +14,7 @@ enum NewsPlatform {
 type NewsArticle = {
   title: string;
   date: Date;
-  content: string[];
+  content: ReactNode;
   subject: NewsSubject;
   platform: NewsPlatform;
 };

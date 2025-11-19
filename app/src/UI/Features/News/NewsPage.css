@@ -63,13 +63,18 @@
   margin: 0;
 }
 
-.newsListItemContent {
+.newsListItem li {
   font-size: 1rem;
   text-align: left;
   justify-content: left;
   white-space: pre-wrap;
 }
-
+.newsListItem p {
+  text-align: left;
+}
+.newsListItem img {
+  max-height: 175px;
+}
 @media only screen and (width > 400px) {
   .newsIcon {
     display: flex;
@@ -84,4 +89,3 @@
 .newsListItemContent > li:not(:last-child) {
   margin-bottom: 1rem;
 }
-
