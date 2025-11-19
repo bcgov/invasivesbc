@@ -111,7 +111,6 @@ const Filters = ({ recordsetId }: PropTypes) => {
   }, [cacheFilters, recordset?.tableFilters]);
 
   if (!recordset) return;
-  console.log(filters);
   return (
     <Accordion title={accordionTitle} icon={<FilterAlt color="primary" />}>
       <div id="filters-cont">
