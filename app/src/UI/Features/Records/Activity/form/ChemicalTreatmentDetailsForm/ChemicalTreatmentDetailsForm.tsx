@@ -23,7 +23,7 @@ import {
 import HerbicidesAccordion from 'UI/Features/Records/Activity/form/ChemicalTreatmentDetailsForm/Components/accordions/HerbicidesAccordion';
 import TankMixAccordion from 'UI/Features/Records/Activity/form/ChemicalTreatmentDetailsForm/Components/accordions/TankMixAccordion';
 import InvasivePlantsAccordion from 'UI/Features/Records/Activity/form/ChemicalTreatmentDetailsForm/Components/accordions/InvasivePlantsAccordion';
-import { performCalculation, runValidation } from 'sharedAPI';
+import { performCalculation, runValidation, ValidationError } from 'sharedAPI';
 import { GeneralDialog, IGeneralDialog } from 'UI/Reusable/GeneralDialog/GeneralDialog';
 import CalculationResultsTable from 'UI/Features/Records/Activity/form/ChemicalTreatmentDetailsForm/Components/single-objects/CalculationResultsTable';
 import { useSelector } from 'react-redux';
@@ -43,7 +43,7 @@ const ChemicalTreatmentDetailsForm = ({ activitySubType, disabled, form_data, on
     dialogContentText: undefined
   });
   const [calculationResults, setCalculationResults] = useState<Record<PropertyKey, unknown> | null>();
-  const [localErrors, setLocalErrors] = useState<unknown[]>([]);
+  const [localErrors, setLocalErrors] = useState<ValidationError[]>([]);
   const [reportedArea, setReportedArea] = useState(0);
   const [formDetails, setFormDetails] = useState<IChemicalDetailsContextformDetails>({
     form_data: { ...form_data.activity_subtype_data.chemical_treatment_details }
@@ -139,7 +139,7 @@ const ChemicalTreatmentDetailsForm = ({ activitySubType, disabled, form_data, on
         setLocalErrors([...newErr]);
 
         //if no errors, perform calculations
-        if (newErr.length < 1) {
+        if (newErr.every((err) => err.severity === 'warning')) {
           const results = performCalculation(reportedArea, formDetails.form_data);
           setCalculationResults(results);
           onChange(
@@ -180,11 +180,11 @@ const ChemicalTreatmentDetailsForm = ({ activitySubType, disabled, form_data, on
   //when we get application rate error, display warning dialog and if user presses yes, delete this error
   useEffect(() => {
     localErrors.forEach((err) => {
-      if (err.includes('exceeds maximum applicable rate of')) {
+      if (err.message.includes('exceeds maximum applicable rate of')) {
         setWarningDialog({
           dialogOpen: true,
           dialogTitle: 'Warning!',
-          dialogContentText: `${err}. Do you wish to proceed?`,
+          dialogContentText: `${err.message}. Do you wish to proceed?`,
           dialogActions: [
             {
               actionName: 'No',
@@ -309,20 +309,15 @@ const ChemicalTreatmentDetailsForm = ({ activitySubType, disabled, form_data, on
       />
       {localErrors.length > 0 && (
         <>
-          <Typography style={{ marginTop: '1rem' }} color={'error'} variant="h5">
+          <Typography style={{ marginTop: '1rem' }} variant="h5">
             There are errors in this sub-form:
           </Typography>
-          <List dense={true}>
+          <List dense={true} sx={{ marginBottom: '2rem' }}>
             {localErrors.map((err, index) => (
-              <ListItem key={err}>
-                <ListItemText
-                  style={{ color: '#ff000' }}
-                  primary={
-                    <Typography color={'error'} variant="body1">
-                      {`${index + 1}. ${err}`}
-                    </Typography>
-                  }
-                />
+              <ListItem key={err.message}>
+                <Typography color={err.severity} variant="body1">
+                  {`${index + 1}. ${err.message}`}
+                </Typography>
               </ListItem>
             ))}
           </List>
