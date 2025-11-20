@@ -7,7 +7,6 @@ import {
   FormLabel,
   List,
   ListItem,
-  ListItemText,
   Radio,
   RadioGroup,
   Tooltip,
