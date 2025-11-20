@@ -25,6 +25,8 @@ import { ActivitySubtype } from 'sharedAPI';
 import { validatorForActivity } from 'rjsf/business-rules/custom-validation/activity';
 import ArrayItemTemplate from 'rjsf/templates/ArrayItemTemplate';
 import ArrayItemButtonTemplate from 'rjsf/templates/ArrayFieldButtonTemplate';
+import FundingAgencySelectAutoComplete from 'rjsf/widgets/FundingAgencySelectAutoComplete';
+import EmployerSelectAutoComplete from 'rjsf/widgets/EmployerSelectAutoComplete';
 
 const FormContainer = () => {
   const ref = useRef(0);
@@ -123,6 +125,8 @@ const FormContainer = () => {
               ErrorListTemplate: ErrorListTemplate
             }}
             widgets={{
+              'funding-agency-select-autocomplete': FundingAgencySelectAutoComplete,
+              'employer-select-autocomplete': EmployerSelectAutoComplete,
               'multi-select-autocomplete': MultiSelectAutoComplete,
               'single-select-autocomplete': SingleSelectAutoComplete,
               'agent-select-autocomplete': AgentSelectAutoComplete,

@@ -41,8 +41,8 @@ const Activity = {
   utm_zone: { 'ui:readonly': true },
   utm_easting: { 'ui:readonly': true },
   utm_northing: { 'ui:readonly': true },
-  employer_code: { 'ui:widget': 'single-select-autocomplete' },
-  invasive_species_agency_code: { 'ui:widget': 'multi-select-autocomplete' },
+  employer_code: { 'ui:widget': 'employer-select-autocomplete' },
+  invasive_species_agency_code: { 'ui:widget': 'funding-agency-select-autocomplete' },
   jurisdictions: {
     items: {
       jurisdiction_code: { 'ui:widget': 'single-select-autocomplete' },
