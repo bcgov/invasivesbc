@@ -21,10 +21,15 @@ export const mapFormDataToLegacy = (formData) => {
   return mappedData;
 };
 
+interface ValidationError {
+  severity: 'warning' | 'error';
+  message: string;
+}
+
 export const runValidation = (
   area: number,
   formData: IGeneralFields,
-  errors: any[],
+  errors: ValidationError[],
   businessCodes: any,
   herbicideDictionary: any,
   skipAppRateValidation: boolean
@@ -32,7 +37,7 @@ export const runValidation = (
   let newErrors = errors;
 
   if (!area) {
-    newErrors.push('No area provided');
+    newErrors.push({ severity: 'error', message: 'No area provided' });
   }
 
   newErrors = validate_inv_plants_arr_length(formData, errors);
@@ -104,23 +109,32 @@ export const validate_inv_plants_fields = (formData: IGeneralFields, errors: any
   }
 
   if (new Set(plantCodeList).size !== plantCodeList.length) {
-    newErrors.push(
-      `There are duplicated invasive plant species identified.
-        Please remove or fix duplicated species.`
-    );
+    newErrors.push({
+      severity: 'error',
+      message: 'There are duplicated invasive plant species identified. Please remove or fix duplicated species.'
+    });
   }
 
   if (negativePercentage) {
-    newErrors.push('At least 1 of your invasive plants has negative value for percent of area covered');
+    newErrors.push({
+      severity: 'error',
+      message: 'At least 1 of your invasive plants has negative value for percent of area covered'
+    });
   }
   if (noPlantName) {
-    newErrors.push("At least 1 of your invasive plants doesn't have a name");
+    newErrors.push({ severity: 'error', message: "At least 1 of your invasive plants doesn't have a name" });
   }
   if (noPercentage) {
-    newErrors.push("At least 1 of your invasive plants doesn't have a percent of area covered");
+    newErrors.push({
+      severity: 'error',
+      message: "At least 1 of your invasive plants doesn't have a percent of area covered"
+    });
   }
   if (formData.invasive_plants.length > 1 && totalPercentage !== 100) {
-    newErrors.push('Total percent of area covered for invasive plants should be equal to 100');
+    newErrors.push({
+      severity: 'error',
+      message: 'Total percent of area covered for invasive plants should be equal to 100'
+    });
   }
   return newErrors;
 };
@@ -128,16 +142,19 @@ export const validate_inv_plants_fields = (formData: IGeneralFields, errors: any
 /**
  * Validates that Herbicides array is not empty
  */
-export const validate_herbicides_arr_length = (formData: IGeneralFields, errors: any) => {
+export const validate_herbicides_arr_length = (formData: IGeneralFields, errors: Array<ValidationError>) => {
   if (!formData || !formData.herbicides || formData.tank_mix === true) {
     return errors;
   }
   const newErrors = errors;
   if (formData.herbicides.length < 1) {
-    newErrors.push('You must have at least one Herbicide added');
+    newErrors.push({ severity: 'error', message: 'You must have at least one Herbicide added' });
   }
   if (formData.herbicides.length > 1) {
-    newErrors.push('You can have a maximum of 1 herbicide per record, unless you are using tank mix');
+    newErrors.push({
+      severity: 'error',
+      message: 'You can have a maximum of 1 herbicide per record, unless you are using tank mix'
+    });
   }
   return newErrors;
 };
@@ -145,18 +162,18 @@ export const validate_herbicides_arr_length = (formData: IGeneralFields, errors:
 /**
  * Validates that general fields are not undefined/null
  */
-export const validate_general_fields = (formData: IGeneralFields, errors: any) => {
+export const validate_general_fields = (formData: IGeneralFields, errors: Array<ValidationError>) => {
   if (!formData) {
     return errors;
   }
   const newErrors = errors;
 
   if (formData.tank_mix === null || formData.tank_mix === undefined) {
-    newErrors.push('You have to choose if you are using tank mix or not');
+    newErrors.push({ severity: 'error', message: 'You have to choose if you are using tank mix or not' });
   }
 
   if (!formData.chemical_application_method) {
-    newErrors.push('You have to choose chemical application method');
+    newErrors.push({ severity: 'error', message: 'You have to choose chemical application method' });
   }
 
   return newErrors;
@@ -165,7 +182,11 @@ export const validate_general_fields = (formData: IGeneralFields, errors: any) =
 /**
  * Validates that chemical application method has the right value based on the tank mix value
  */
-export const validate_chem_app_method_value = (formData: IGeneralFields, errors: any, businessCodes: any) => {
+export const validate_chem_app_method_value = (
+  formData: IGeneralFields,
+  errors: Array<ValidationError>,
+  businessCodes: any
+) => {
   if (!formData || !formData.chemical_application_method || !formData.tank_mix) {
     return errors;
   }
@@ -174,7 +195,10 @@ export const validate_chem_app_method_value = (formData: IGeneralFields, errors:
   const spray_method_values = businessCodes['chemical_method_spray'].map((item) => item.value);
 
   if (formData.tank_mix === true && !spray_method_values.includes(formData.chemical_application_method)) {
-    newErrors.push('You must choose one of the spray chemical application methods when you are using a tank mix');
+    newErrors.push({
+      severity: 'error',
+      message: 'You must choose one of the spray chemical application methods when you are using a tank mix'
+    });
   }
 
   return newErrors;
@@ -186,8 +210,8 @@ export const validate_chem_app_method_value = (formData: IGeneralFields, errors:
 export const validate_herbicide_fields = (
   area: number,
   formData: IGeneralFields,
-  errors: any,
-  businessCodes: any,
+  errors: Array<ValidationError>,
+  _businessCodes: any,
   herbicideDictionary: any,
   skipAppRateValidation: boolean
 ) => {
@@ -235,26 +259,22 @@ export const validate_herbicide_fields = (
     if (herb.amount_of_mix < 0) {
       negativeAmountOfMix = true;
     }
-
     if (!herb.product_application_rate || !herb.herbicide_code || skipAppRateValidation) {
     } else if (
       herb.calculation_type === 'PAR' &&
       herb.product_application_rate &&
       herb.product_application_rate > HerbicideApplicationRates[herb.herbicide_code.toString()]
     ) {
-      errors.push(
-        `Application rate of ${
-          herbicideDictionary[Number(herb.herbicide_code)]
-        } herbicide exceeds maximum applicable rate of ${
-          HerbicideApplicationRates[herb.herbicide_code]
-        } L/ha for this herbicide`
-      );
+      errors.push({
+        severity: 'warning',
+        message: `Application rate of ${herbicideDictionary[Number(herb.herbicide_code)]} herbicide exceeds maximum applicable rate of ${HerbicideApplicationRates[herb.herbicide_code]} L/ha for this herbicide`
+      });
     } else if (
       herb.herbicide_type_code === 'G' &&
       herb.product_application_rate &&
       herb.product_application_rate < 10
     ) {
-      errors.push(`Product Application Rate is low for a granular herbicide`);
+      errors.push({ severity: 'warning', message: 'Product Application Rate is low for a granular herbicide' });
     }
     if (!herb.calculation_type) {
       noCalculationType = true;
@@ -292,61 +312,83 @@ export const validate_herbicide_fields = (
   });
 
   if (new Set(herbCodeList).size !== herbCodeList.length) {
-    newErrors.push(
-      `There are duplicated herbicides identified.
-        Please remove or fix duplicated herbicides.`
-    );
+    newErrors.push({
+      severity: 'error',
+      message: 'There are duplicated herbicides identified. Please remove or fix duplicated herbicides.'
+    });
   }
 
   if (areaLargerThanTreatmentArea) {
-    newErrors.push('At least 1 of your herbicides area treated is larger than the area of entire treatment');
+    newErrors.push({
+      severity: 'warning',
+      message: 'At least 1 of your herbicides area treated is larger than the area of entire treatment'
+    });
   }
   if (noHerbCode) {
-    newErrors.push("At least 1 of your herbicides doesn't have a herbicide name");
+    newErrors.push({ severity: 'error', message: "At least 1 of your herbicides doesn't have a herbicide name" });
   }
   if (noHerbTypeCode) {
-    newErrors.push("At least 1 of your herbicides doesn't have a herbicide type");
+    newErrors.push({ severity: 'error', message: "At least 1 of your herbicides doesn't have a herbicide type" });
   }
   if (noAmountOfMix) {
-    newErrors.push("At least 1 of your herbicides doesn't have an amount of mix");
+    newErrors.push({ severity: 'error', message: "At least 1 of your herbicides doesn't have an amount of mix" });
   }
   if (negativeAmountOfMix) {
-    newErrors.push('At least 1 of your herbicides has negative value for the amount of mix');
+    newErrors.push({
+      severity: 'error',
+      message: 'At least 1 of your herbicides has negative value for the amount of mix'
+    });
   }
   if (noCalculationType) {
-    newErrors.push("At least 1 of your herbicides doesn't have a calculation type");
+    newErrors.push({ severity: 'error', message: "At least 1 of your herbicides doesn't have a calculation type" });
   }
   if (noDilution) {
-    newErrors.push(
-      'At least 1 of your herbicides has dilution calculation type specified, but has no value for dilution'
-    );
+    newErrors.push({
+      severity: 'error',
+      message: 'At least 1 of your herbicides has dilution calculation type specified, but has no value for dilution'
+    });
   }
   if (negativeDilution) {
-    newErrors.push('At least 1 of your herbicides has negative value for the dilution');
+    newErrors.push({ severity: 'error', message: 'At least 1 of your herbicides has negative value for the dilution' });
   }
   if (noAreaTreatedSqm) {
-    newErrors.push(
-      'At least 1 of your herbicides has dilution calculation type specified, but has no value for area treated'
-    );
+    newErrors.push({
+      severity: 'error',
+      message:
+        'At least 1 of your herbicides has dilution calculation type specified, but has no value for area treated'
+    });
   }
   if (negativeAreaTreatedSqm) {
-    newErrors.push('At least 1 of your herbicides has negative value for the area treated');
+    newErrors.push({
+      severity: 'error',
+      message: 'At least 1 of your herbicides has negative value for the area treated'
+    });
   }
   if (noDeliveryRate) {
-    newErrors.push(
-      'At least 1 of your herbicides has product application rate calculation type specified, but has no value for delivery rate'
-    );
+    newErrors.push({
+      severity: 'error',
+      message:
+        'At least 1 of your herbicides has product application rate calculation type specified, but has no value for delivery rate'
+    });
   }
   if (negativeDeliveryRate) {
-    newErrors.push('At least 1 of your herbicides has negative value for the delivery rate');
+    newErrors.push({
+      severity: 'error',
+      message: 'At least 1 of your herbicides has negative value for the delivery rate'
+    });
   }
   if (noProdAppRate) {
-    newErrors.push(
-      'At least 1 of your herbicides has product application rate calculation type specified, but has no value for product application rate'
-    );
+    newErrors.push({
+      severity: 'error',
+      message:
+        'At least 1 of your herbicides has product application rate calculation type specified, but has no value for product application rate'
+    });
   }
   if (negativeProdAppRate) {
-    newErrors.push('At least 1 of your herbicides has negative value for the product application rate');
+    newErrors.push({
+      severity: 'error',
+      message: 'At least 1 of your herbicides has negative value for the product application rate'
+    });
   }
 
   return newErrors;
@@ -355,32 +397,41 @@ export const validate_herbicide_fields = (
 /**
  * Validates that all tank mix fields are not undefined and not negative(for numbers)
  */
-export const validate_tank_mix_fields = (area: number, formData: IGeneralFields, errors: any) => {
+export const validate_tank_mix_fields = (area: number, formData: IGeneralFields, errors: Array<ValidationError>) => {
   if (!formData || !formData.tank_mix || !formData.tank_mix_object) {
     return errors;
   }
   const newErrors = errors;
 
   if (!formData.tank_mix_object.calculation_type) {
-    newErrors.push('There is no value provided for calculation type in your tank mix');
+    newErrors.push({ severity: 'error', message: 'There is no value provided for calculation type in your tank mix' });
   }
   if (!formData.tank_mix_object.amount_of_mix) {
-    newErrors.push('There is no value provided for amount of mix in your tank mix');
+    newErrors.push({ severity: 'error', message: 'There is no value provided for amount of mix in your tank mix' });
   }
   if (formData.tank_mix_object.amount_of_mix < 0) {
-    newErrors.push('There is a negative value provided for amount of mix in your tank mix');
+    newErrors.push({
+      severity: 'error',
+      message: 'There is a negative value provided for amount of mix in your tank mix'
+    });
   }
   if (formData.tank_mix_object.area_treated_sqm < 0) {
-    newErrors.push('There is a negative value provided for area treated in your tank mix');
+    newErrors.push({
+      severity: 'error',
+      message: 'There is a negative value provided for area treated in your tank mix'
+    });
   }
   if (!formData.tank_mix_object.delivery_rate_of_mix) {
-    newErrors.push('There is no value provided for delivery rate in your tank mix');
+    newErrors.push({ severity: 'error', message: 'There is no value provided for delivery rate in your tank mix' });
   }
   if (formData.tank_mix_object.delivery_rate_of_mix < 0) {
-    newErrors.push('There is a negative value provided for delivery rate in your tank mix');
+    newErrors.push({
+      severity: 'error',
+      message: 'There is a negative value provided for delivery rate in your tank mix'
+    });
   }
   if (formData.tank_mix_object.herbicides.length < 2) {
-    newErrors.push('There must be 2 or more herbicides selected for your tank mix');
+    newErrors.push({ severity: 'error', message: 'There must be 2 or more herbicides selected for your tank mix' });
   }
 
   return newErrors;
@@ -391,7 +442,7 @@ export const validate_tank_mix_fields = (area: number, formData: IGeneralFields,
  */
 export const validate_tank_mix_herbicides = (
   formData: IGeneralFields,
-  errors: any,
+  errors: Array<ValidationError>,
   businessCodes: any,
   herbicideDictionary: any,
   skipAppRateValidation: boolean
@@ -422,13 +473,10 @@ export const validate_tank_mix_herbicides = (
       herb.product_application_rate &&
       herb.product_application_rate > HerbicideApplicationRates[herb.herbicide_code.toString()]
     ) {
-      errors.push(
-        `Application rate of ${
-          herbicideDictionary[Number(herb.herbicide_code)]
-        } herbicide exceeds maximum applicable rate of ${
-          HerbicideApplicationRates[herb.herbicide_code]
-        } L/ha for this herbicide`
-      );
+      errors.push({
+        severity: 'error',
+        message: `Application rate of ${herbicideDictionary[Number(herb.herbicide_code)]} herbicide exceeds maximum applicable rate of ${HerbicideApplicationRates[herb.herbicide_code]} L/ha for this herbicide`
+      });
     }
 
     if (!herb.herbicide_code) {
@@ -448,24 +496,32 @@ export const validate_tank_mix_herbicides = (
   });
 
   if (new Set(herbCodeList).size !== herbCodeList.length) {
-    newErrors.push(
-      `There are duplicated herbicides identified.
-        Please remove or fix duplicated herbicides.`
-    );
+    newErrors.push({
+      severity: 'error',
+      message: 'There are duplicated herbicides identified. Please remove or fix duplicated herbicides.'
+    });
   }
 
   if (noHerbCode) {
-    newErrors.push("At least 1 of your herbicides doesn't have a herbicide name");
+    newErrors.push({ severity: 'error', message: "At least 1 of your herbicides doesn't have a herbicide name" });
   }
   if (noHerbTypeCode) {
-    newErrors.push("At least 1 of your herbicides doesn't have a herbicide type");
+    newErrors.push({ severity: 'error', message: "At least 1 of your herbicides doesn't have a herbicide type" });
   }
   if (noProdAppRate) {
-    newErrors.push('At least 1 of your herbicides has no value for product application rate');
+    newErrors.push({
+      severity: 'error',
+      message: 'At least 1 of your herbicides has no value for product application rate'
+    });
   }
   if (negativeProdAppRate) {
-    newErrors.push('At least 1 of your herbicides has negative value for the product application rate');
+    newErrors.push({
+      severity: 'error',
+      message: 'At least 1 of your herbicides has negative value for the product application rate'
+    });
   }
 
   return newErrors;
 };
+
+export type { ValidationError };
