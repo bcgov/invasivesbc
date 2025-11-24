@@ -14,7 +14,7 @@ const POST: Operation = [postHandler()];
 new OpenAPISpec('Fetch NTS 50k grid references for specified geometry', [NAMESPACE])
   .security(ALL_ROLES)
   .requestBody({
-    description: 'Recordset search filter criteria',
+    description: 'A GeoJSON object specifying a geometry',
     content: {
       'application/json': {
         schema: {
@@ -28,7 +28,7 @@ new OpenAPISpec('Fetch NTS 50k grid references for specified geometry', [NAMESPA
     }
   })
   .response(200, {
-    description: 'Array of grid squares covered by specified geometry',
+    description: 'Array of grid tiles covered by specified geometry',
     content: {
       'application/json': {
         schema: {
