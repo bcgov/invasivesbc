@@ -6,12 +6,16 @@ interface SelectOption {
   value: unknown;
 }
 const MultiSelectAutoComplete = (props: WidgetProps) => {
-  const enumOptions = props.schema.options?.map(({ value, label }) => ({ value, label })) ?? [];
+  const enumOptions =
+    props.schema.options?.map(({ value, label }) => ({ value, label })) ??
+    props.schema?.enum?.map((e) => ({ value: e, label: e }));
+
   const selectedOptions = enumOptions.filter((opt) => {
     // restructure the CSV format of the prop
     const val = props.value?.split(',');
     return val?.includes(opt.value);
   });
+
   return (
     <Autocomplete
       multiple
