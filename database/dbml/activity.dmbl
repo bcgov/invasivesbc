@@ -1,0 +1,394 @@
+CREATE SCHEMA IF NOT EXISTS "activity";
+
+CREATE TYPE "platform_source" AS ENUM ('ios', 'android', 'batch', 'unknown');
+CREATE TYPE "yes_no_unknown" AS ENUM ('yes', 'no', 'unknown');
+
+CREATE TABLE "activity"."microsite_condition" (
+    "activity_id" bigint NOT NULL,
+    "mesoslope_position" varchar(32),
+    "site_surface_shape" varchar(32),
+    CONSTRAINT "pk_table_25_id" PRIMARY KEY ("activity_id")
+);
+
+CREATE TABLE "activity"."waterbody_data" (
+    "activity_id" bigint NOT NULL,
+    "type" varchar(32),
+    "name_gazetted" varchar(128),
+    "name_local" varchar(128),
+    "access" varchar(64),
+    "use" varchar(32)[],
+    "max_depth_m" smallint,
+    "secchi_depth" smallint,
+    "colour" varchar(64),
+    "adjacent_land_use" varchar(32)[],
+    "inflow_permanent" varchar(32)[],
+    "inflow_temp" varchar(32)[],
+    "outflow_permanent" varchar(32)[],
+    "outflow_seasonal" varchar(32)[],
+    "tidal_influence" yes_no_unknown,
+    "substrate_type" varchar(32)[],
+    "water_level_management" varchar(32)[],
+    "comment" text,
+    CONSTRAINT "pk_waterbody_data_activity_id" PRIMARY KEY ("activity_id")
+);
+
+-- User who was involved with a specific activity. Records may contain multiple persons. 
+CREATE TABLE "activity"."participant" (
+    "id" bigserial NOT NULL,
+    "activity_id" bigint NOT NULL,
+    "name" varchar(64) NOT NULL,
+    -- Only chemical treatments require Pac numbers.
+    "pac_number" smallint,
+    CONSTRAINT "pk_table_14_id" PRIMARY KEY ("id", "activity_id")
+);
+COMMENT ON TABLE "activity"."participant" IS 'User who was involved with a specific activity. Records may contain multiple persons.';
+COMMENT ON COLUMN "activity"."participant"."pac_number" IS 'Only chemical treatments require Pac numbers.';
+
+CREATE TABLE "activity"."biological_release_information" (
+    "activity_id" bigint NOT NULL,
+    "invasive_plant" varchar NOT NULL,
+    "biological_agent" varchar,
+    -- Yes/No/Unknown
+    "linear_segment" yes_no_unknown,
+    "plant_collected_from" varchar(64),
+    "plant_collected_from_manual" varchar(64),
+    "mortality" smallint,
+    "collection_date" timestamptz,
+    "agent_source" varchar(128),
+    CONSTRAINT "pk_table_26_id" PRIMARY KEY ("activity_id", "invasive_plant", "biological_agent")
+);
+COMMENT ON COLUMN "activity"."biological_release_information"."linear_segment" IS 'Yes/No/Unknown';
+
+CREATE TABLE "activity"."terrestrial_invasive_plant" (
+    "activity_id" bigint NOT NULL,
+    "invasive_plant" varchar(64),
+    -- positive/negative observation
+    "observation_type" varchar(32),
+    "plant_density" varchar(64),
+    "distribution" varchar(128),
+    "life_stage" varchar(64),
+    CONSTRAINT "pk_table_11_id" PRIMARY KEY ("activity_id", "invasive_plant")
+);
+COMMENT ON COLUMN "activity"."terrestrial_invasive_plant"."observation_type" IS 'positive/negative observation';
+
+-- The company or Agency that the user is directly employed by
+CREATE TABLE "activity"."employer" (
+    "activity_id" bigint NOT NULL,
+    "employer" varchar(64) NOT NULL,
+    CONSTRAINT "pk_employer_activity_id" PRIMARY KEY ("activity_id")
+);
+COMMENT ON TABLE "activity"."employer" IS 'The company or Agency that the user is directly employed by';
+
+CREATE TABLE "activity"."jurisdictions" (
+    "activity_id" bigint NOT NULL,
+    "jurisdiction" varchar(128) NOT NULL,
+    "percent_covered" smallint NOT NULL,
+    CONSTRAINT "pk_jurisdictions_activity_id" PRIMARY KEY ("activity_id")
+);
+
+-- The device used to create the initial record
+CREATE TABLE "activity"."platform" (
+    "activity_id" bigint NOT NULL,
+    -- batch, ios, android
+    "src" platform_source,
+    CONSTRAINT "pk_platform_id" PRIMARY KEY ("activity_id")
+);
+COMMENT ON TABLE "activity"."platform" IS 'The device used to create the initial record';
+COMMENT ON COLUMN "activity"."platform"."src" IS 'batch, ios, android';
+
+CREATE TABLE "activity"."voucher_specimen_collection" (
+    "activity_id" bigint NOT NULL,
+    "invasive_plant" varchar(64),
+    "voucher_sample_id" bigint,
+    "date_collected" date,
+    "date_verified" date,
+    "herbarium" varchar(128),
+    "accession_number" varchar(128),
+    "completed_by_person" varchar(128) DEFAULT 128,
+    "completed_by_org" varchar(128),
+    "utm_zone" smallint,
+    "utm_easting" integer,
+    "utm_northing" integer,
+    CONSTRAINT "pk_table_12_id" PRIMARY KEY ("activity_id", "invasive_plant")
+);
+
+CREATE TABLE "activity"."shoreline_types" (
+    "activity_id" bigint NOT NULL,
+    "shoreline_type" varchar(500) NOT NULL,
+    "percent_covered" smallint,
+    CONSTRAINT "pk_table_16_id" PRIMARY KEY ("activity_id", "shoreline_type")
+);
+
+CREATE TABLE "activity"."riso_areas" (
+    "activity_id" bigint NOT NULL,
+    "organization_area" bigint NOT NULL,
+    CONSTRAINT "pk_table_8_id" PRIMARY KEY ("activity_id", "organization_area")
+);
+
+-- The organization(s) that are paying for the work being done
+CREATE TABLE "activity"."funding_agency" (
+    "activity_id" bigint NOT NULL,
+    "agency" text NOT NULL,
+    CONSTRAINT "pk_table_6_id" PRIMARY KEY ("activity_id", "agency")
+);
+COMMENT ON TABLE "activity"."funding_agency" IS 'The organization(s) that are paying for the work being done';
+
+CREATE TABLE "activity"."treatment_monitoring_information" (
+    "activity_id" bigint NOT NULL,
+    "invasive_plant" varchar(64),
+    -- Yes/No/Unknown
+    "evidence_of_treatment" yes_no_unknown,
+    "management_efficacy_rating" varchar(128),
+    "invasive_plants_on_site" varchar(64),
+    "treatment_pass" varchar(16),
+    "comment" varchar(256),
+    CONSTRAINT "pk_table_23_id" PRIMARY KEY ("activity_id")
+);
+COMMENT ON COLUMN "activity"."treatment_monitoring_information"."evidence_of_treatment" IS 'Yes/No/Unknown';
+
+CREATE TABLE "activity"."nearest_wells" (
+    "activity_id" bigint NOT NULL,
+    "well_tag_number" bigint NOT NULL,
+    "distance" bigint,
+    CONSTRAINT "pk_table_21_id" PRIMARY KEY ("activity_id", "well_tag_number")
+);
+
+CREATE TABLE "activity"."activity_geometry" (
+    "activity_id" bigint NOT NULL,
+    "centroid" point,
+    "area_m" integer,
+    "utm_zone" smallint,
+    "utm_easting" integer,
+    "utm_northing" integer,
+    "latitude" double precision,
+    "longitude" double precision,
+    "location_description" text,
+    -- postgis column
+    "geom" bit [note: 'postgis column'] varying,
+    CONSTRAINT "pk_activity_geometry_activity_id" PRIMARY KEY ("activity_id")
+);
+COMMENT ON COLUMN "activity"."activity_geometry"."geom" IS 'postgis column';
+
+CREATE TABLE "activity"."observation_plant_terrestrial_information" (
+    "activity_id" bigint NOT NULL,
+    "soil_texture" varchar(64),
+    "recent_observation" yes_no_unknown,
+    "aspect" varchar(32),
+    "specific_use" varchar(32),
+    "visible_well_nearby" yes_no_unknown,
+    "slope_percent" varchar(32),
+    CONSTRAINT "pk_observation_plant_terrestrial_information_activity_id" PRIMARY KEY ("activity_id")
+);
+
+CREATE TABLE "activity"."weather_condition" (
+    "activity_id" bigint NOT NULL,
+    "cloud_cover" varchar(64),
+    "precipitation" varchar(64),
+    "wind_speed_kmh" smallint,
+    "wind_direction" varchar(8),
+    "temperature_c" smallint,
+    "weather_comments" varchar(256),
+    CONSTRAINT "pk_table_24_id" PRIMARY KEY ("activity_id")
+);
+
+CREATE TABLE "activity"."biocontrol_collection_information" (
+    "activity_id" bigint NOT NULL,
+    "invasive_plant" varchar(64),
+    "biological_agent" varchar(64),
+    "historical_iapp" smallint,
+    -- used when collection type is count
+    "plant_count_collection_duration" smallint,
+    -- used when collection type is timed
+    "timed_collection_duration_minutes" smallint,
+    "collection_method" varchar(32),
+    -- if collection method is 'Sweep (Counted)'
+    "number_of_sweeps" smallint,
+    "end_time_collecting" timestamptz,
+    "start_time_collecting" timestamptz,
+    "comment" text,
+    CONSTRAINT "pk_table_27_id" PRIMARY KEY ("activity_id", "invasive_plant", "biological_agent")
+);
+COMMENT ON COLUMN "activity"."biocontrol_collection_information"."plant_count_collection_duration" IS 'used when collection type is count';
+COMMENT ON COLUMN "activity"."biocontrol_collection_information"."timed_collection_duration_minutes" IS 'used when collection type is timed';
+COMMENT ON COLUMN "activity"."biocontrol_collection_information"."number_of_sweeps" IS 'if collection method is ''Sweep (Counted)''';
+
+CREATE TABLE "activity"."batch" (
+    "activity_id" bigint NOT NULL,
+    "batch_id" bigint NOT NULL,
+    "row_id" bigint NOT NULL,
+    CONSTRAINT "pk_table_17_id" PRIMARY KEY ("activity_id", "batch_id", "row_id")
+);
+
+CREATE TABLE "activity"."activity_basic" (
+    -- rolling ID with Sequence
+    "activity_id" BIGSERIAL,
+    -- legacy identifier for record (if applicable)
+    "legacy_id" uuid DEFAULT 'gen_random_id()',
+    "created_by" varchar(64) NOT NULL,
+    "activity_type" varchar(32) NOT NULL,
+    "activity_subtype" varchar(128) NOT NULL,
+    -- YY/SubtypeCode/first 8 digits of UUID
+    "short_id" varchar(32) NOT NULL,
+    "received_timestamp" timestamp with time zone NOT NULL,
+    "created_timestamp" timestamp with time zone NOT NULL,
+    "activity_date" date NOT NULL,
+    -- Form state: Draft / Submitted
+    "form_status" text NOT NULL DEFAULT 'Draft',
+    CONSTRAINT "pk_activity_basic_activity_id" PRIMARY KEY ("activity_id")
+);
+COMMENT ON COLUMN "activity"."activity_basic"."activity_id" IS 'rolling ID with Sequence';
+COMMENT ON COLUMN "activity"."activity_basic"."legacy_id" IS 'legacy identifier for record (if applicable)';
+COMMENT ON COLUMN "activity"."activity_basic"."short_id" IS 'YY/SubtypeCode/first 8 digits of UUID';
+COMMENT ON COLUMN "activity"."activity_basic"."form_status" IS 'Form state: Draft / Submitted';
+
+CREATE TABLE "activity"."regional_details" (
+    "activity_id" bigint,
+    "biogeoclimatic_zone" bigint UNIQUE,
+    "invasive_plant_management_areas" varchar(128),
+    "ownership" varchar(64),
+    "regional_districts" varchar(128),
+    "flnro_districts" varchar(128),
+    "moti_districts" varchar(128),
+    -- meters
+    "elevation" smallint,
+    CONSTRAINT "pk_regional_details_activity_id" PRIMARY KEY ("activity_id")
+);
+COMMENT ON COLUMN "activity"."regional_details"."elevation" IS 'meters';
+
+-- optional field that can be added to a record to enable searching and sorting/ replaces IAPP's "Paper file ID"
+CREATE TABLE "activity"."project_code" (
+    "activity_id" BIGSERIAL,
+    "description" text NOT NULL,
+    CONSTRAINT "pk_table_4_id" PRIMARY KEY ("activity_id", "description")
+);
+COMMENT ON TABLE "activity"."project_code" IS 'optional field that can be added to a record to enable searching and sorting/ replaces IAPP''s "Paper file ID"';
+
+CREATE TABLE "activity"."pre_treatment_observation" (
+    "activity_id" bigint NOT NULL,
+    "pre_treatment_observation" yes_no_unknown,
+    CONSTRAINT "pk_pre_treatment_observation_activity_id" PRIMARY KEY ("activity_id")
+);
+
+CREATE TABLE "activity"."linked_record" (
+    "activity_id" bigint NOT NULL,
+    "linked_record_id" bigint NOT NULL,
+    CONSTRAINT "pk_table_22_id" PRIMARY KEY ("activity_id", "linked_record_id")
+);
+
+CREATE TABLE "activity"."suitable_for_biocontrol" (
+    "activity_id" bigint NOT NULL,
+    -- yes/no/unknown
+    "suitable_for_biocontrol" yes_no_unknown,
+    CONSTRAINT "pk_suitable_for_biocontrol_activity_id" PRIMARY KEY ("activity_id")
+);
+COMMENT ON COLUMN "activity"."suitable_for_biocontrol"."suitable_for_biocontrol" IS 'yes/no/unknown';
+
+CREATE TABLE "activity"."aquatic_plant_observation_detail" (
+    "activity_id" bigint NOT NULL,
+    "invasive_plant" varchar(64),
+    -- positive/negative observation
+    "observation_type" varchar(32),
+    "density" varchar(64),
+    "distribution" varchar(128),
+    "life_stage" varchar(32),
+    "sample_point_id" varchar(64),
+    CONSTRAINT "pk_table_19_id" PRIMARY KEY ("activity_id", "invasive_plant")
+);
+COMMENT ON COLUMN "activity"."aquatic_plant_observation_detail"."observation_type" IS 'positive/negative observation';
+
+CREATE TABLE "activity"."chemical_treatment" (
+    "activity_id" bigint NOT NULL,
+    "service_license_number" varchar(128),
+    "pesticide_use_permit" varchar(64),
+    "pest_management_plan" varchar(128),
+    "manual_pest_management_plan" varchar(128),
+    "temperature_c" smallint,
+    "wind_speed_kmh" smallint,
+    "application_start_time" timestamptz,
+    "wind_direction" varchar(8),
+    "humidity" smallint,
+    -- yes/no/unknown
+    "treatment_notice_signs" enum,
+    "precautionary_statement" varchar(64),
+    "ntz_reduction_bool" boolean,
+    "rationale_for_ntz_reduction" varchar(256),
+    "additiona_unmapped_well_water_bool" boolean,
+    "pest_injury_threshold_determination_bool" boolean,
+    CONSTRAINT "pk_table_20_id" PRIMARY KEY ("activity_id")
+);
+COMMENT ON COLUMN "activity"."chemical_treatment"."treatment_notice_signs" IS 'yes/no/unknown';
+
+CREATE TABLE "activity"."biological_agent_count" (
+    "activity_id" bigint NOT NULL,
+    "stage" varchar(32) NOT NULL,
+    "quantity" smallint,
+    "estimate" boolean NOT NULL,
+    CONSTRAINT "pk_table_28_id" PRIMARY KEY ("activity_id", "stage", "estimate")
+);
+
+CREATE TABLE "activity"."biocontrol_dispersal_monitoring_information" (
+    "activity_id" bigint NOT NULL,
+    "invasive_plant" varchar(64),
+    "biological_agent" varchar(64),
+    "biocontrol_present" boolean,
+    "sign_of_biocontrol_presence" varchar(32),
+    "plant_count" smallint,
+    "count_duration_minutes" smallint,
+    "monitoring_method" varchar(32),
+    -- when monitoring method is "Sweep"
+    "number_of_sweeps" smallint,
+    "start_time" timestamptz,
+    "stop_time" timestamptz,
+    "location_agents_found" varchar(32)[],
+    "linear_segment" yes_no_unknown,
+    "suitable_for_collection" yes_no_unknown,
+    CONSTRAINT "pk_table_29_id" PRIMARY KEY ("activity_id", "invasive_plant", "biological_agent")
+);
+COMMENT ON COLUMN "activity"."biocontrol_dispersal_monitoring_information"."number_of_sweeps" IS 'when monitoring method is "Sweep"';
+
+CREATE TABLE "activity"."spread_results" (
+    "activity_id" bigint NOT NULL,
+    "agent_density_percent" smallint,
+    "plant_attack_percent" smallint,
+    "max_spread_distance" smallint,
+    "max_spread_aspect" smallint,
+    CONSTRAINT "pk_table_30_id" PRIMARY KEY ("activity_id")
+);
+
+-- Foreign key constraints
+-- Schema: activity
+ALTER TABLE "activity"."activity_basic" ADD CONSTRAINT "fk_activity_basic_activity_id_aquatic_plant_observation_deta" FOREIGN KEY("activity_id") REFERENCES "activity"."aquatic_plant_observation_detail"("activity_id");
+ALTER TABLE "activity"."activity_basic" ADD CONSTRAINT "fk_activity_basic_activity_id_batch_activity_id" FOREIGN KEY("activity_id") REFERENCES "activity"."batch"("activity_id");
+ALTER TABLE "activity"."shoreline_types" ADD CONSTRAINT "fk_shoreline_types_activity_id_activity_basic_activity_id" FOREIGN KEY("activity_id") REFERENCES "activity"."activity_basic"("activity_id");
+ALTER TABLE "activity"."project_code" ADD CONSTRAINT "fk_project_code_activity_id_activity_basic_activity_id" FOREIGN KEY("activity_id") REFERENCES "activity"."activity_basic"("activity_id");
+ALTER TABLE "activity"."activity_basic" ADD CONSTRAINT "fk_activity_basic_activity_id_linked_record_activity_id" FOREIGN KEY("activity_id") REFERENCES "activity"."linked_record"("activity_id");
+ALTER TABLE "activity"."activity_basic" ADD CONSTRAINT "fk_activity_basic_activity_id_chemical_treatment_activity_id" FOREIGN KEY("activity_id") REFERENCES "activity"."chemical_treatment"("activity_id");
+ALTER TABLE "activity"."nearest_wells" ADD CONSTRAINT "fk_nearest_wells_activity_id_activity_basic_activity_id" FOREIGN KEY("activity_id") REFERENCES "activity"."activity_basic"("activity_id");
+ALTER TABLE "activity"."funding_agency" ADD CONSTRAINT "fk_funding_agency_activity_id_activity_basic_activity_id" FOREIGN KEY("activity_id") REFERENCES "activity"."activity_basic"("activity_id");
+ALTER TABLE "activity"."jurisdictions" ADD CONSTRAINT "fk_jurisdictions_activity_id_activity_basic_activity_id" FOREIGN KEY("activity_id") REFERENCES "activity"."activity_basic"("activity_id");
+ALTER TABLE "activity"."activity_basic" ADD CONSTRAINT "fk_activity_basic_activity_id_observation_plant_terrestrial_" FOREIGN KEY("activity_id") REFERENCES "activity"."observation_plant_terrestrial_information"("activity_id");
+ALTER TABLE "activity"."participant" ADD CONSTRAINT "fk_participant_activity_id_activity_basic_activity_id" FOREIGN KEY("activity_id") REFERENCES "activity"."activity_basic"("activity_id");
+ALTER TABLE "activity"."activity_basic" ADD CONSTRAINT "fk_activity_basic_activity_id_platform_activity_id" FOREIGN KEY("activity_id") REFERENCES "activity"."platform"("activity_id");
+ALTER TABLE "activity"."activity_basic" ADD CONSTRAINT "fk_activity_basic_activity_id_pre_treatment_observation_acti" FOREIGN KEY("activity_id") REFERENCES "activity"."pre_treatment_observation"("activity_id");
+ALTER TABLE "activity"."riso_areas" ADD CONSTRAINT "fk_riso_areas_activity_id_activity_basic_activity_id" FOREIGN KEY("activity_id") REFERENCES "activity"."activity_basic"("activity_id");
+ALTER TABLE "activity"."activity_basic" ADD CONSTRAINT "fk_activity_basic_activity_id_suitable_for_biocontrol_activi" FOREIGN KEY("activity_id") REFERENCES "activity"."suitable_for_biocontrol"("activity_id");
+ALTER TABLE "activity"."activity_basic" ADD CONSTRAINT "fk_activity_basic_activity_id_terrestrial_invasive_plant_act" FOREIGN KEY("activity_id") REFERENCES "activity"."terrestrial_invasive_plant"("activity_id");
+ALTER TABLE "activity"."activity_geometry" ADD CONSTRAINT "fk_activity_geometry_activity_id_activity_basic_activity_id" FOREIGN KEY("activity_id") REFERENCES "activity"."activity_basic"("activity_id");
+ALTER TABLE "activity"."aquatic_plant_observation_detail" ADD CONSTRAINT "fk_aquatic_plant_observation_detail_activity_id_voucher_spec" FOREIGN KEY("activity_id") REFERENCES "activity"."voucher_specimen_collection"("activity_id");
+ALTER TABLE "activity"."voucher_specimen_collection" ADD CONSTRAINT "fk_voucher_specimen_collection_invasive_plant_aquatic_plant_" FOREIGN KEY("invasive_plant") REFERENCES "activity"."aquatic_plant_observation_detail"("invasive_plant");
+ALTER TABLE "activity"."employer" ADD CONSTRAINT "fk_employer_activity_id_activity_basic_activity_id" FOREIGN KEY("activity_id") REFERENCES "activity"."activity_basic"("activity_id");
+ALTER TABLE "activity"."linked_record" ADD CONSTRAINT "fk_linked_record_linked_record_id_activity_basic_activity_id" FOREIGN KEY("linked_record_id") REFERENCES "activity"."activity_basic"("activity_id");
+ALTER TABLE "activity"."regional_details" ADD CONSTRAINT "fk_regional_details_activity_id_activity_basic_activity_id" FOREIGN KEY("activity_id") REFERENCES "activity"."activity_basic"("activity_id");
+ALTER TABLE "activity"."terrestrial_invasive_plant" ADD CONSTRAINT "fk_terrestrial_invasive_plant_activity_id_voucher_specimen_c" FOREIGN KEY("activity_id") REFERENCES "activity"."voucher_specimen_collection"("activity_id");
+ALTER TABLE "activity"."voucher_specimen_collection" ADD CONSTRAINT "fk_voucher_specimen_collection_invasive_plant_terrestrial_in" FOREIGN KEY("invasive_plant") REFERENCES "activity"."terrestrial_invasive_plant"("invasive_plant");
+ALTER TABLE "activity"."waterbody_data" ADD CONSTRAINT "fk_waterbody_data_activity_id_activity_basic_activity_id" FOREIGN KEY("activity_id") REFERENCES "activity"."activity_basic"("activity_id");
+ALTER TABLE "activity"."biocontrol_collection_information" ADD CONSTRAINT "fk_biocontrol_collection_information_activity_id_biological_" FOREIGN KEY("activity_id") REFERENCES "activity"."biological_agent_count"("activity_id");
+ALTER TABLE "activity"."biological_release_information" ADD CONSTRAINT "fk_biological_release_information_activity_id_biological_age" FOREIGN KEY("activity_id") REFERENCES "activity"."biological_agent_count"("activity_id");
+ALTER TABLE "activity"."biocontrol_dispersal_monitoring_information" ADD CONSTRAINT "fk_biocontrol_dispersal_monitoring_information_activity_id_b" FOREIGN KEY("activity_id") REFERENCES "activity"."biological_agent_count"("activity_id");
+ALTER TABLE "activity"."activity_basic" ADD CONSTRAINT "fk_activity_basic_activity_id_treatment_monitoring_informati" FOREIGN KEY("activity_id") REFERENCES "activity"."treatment_monitoring_information"("activity_id");
+ALTER TABLE "activity"."activity_basic" ADD CONSTRAINT "fk_activity_basic_activity_id_weather_condition_activity_id" FOREIGN KEY("activity_id") REFERENCES "activity"."weather_condition"("activity_id");
+ALTER TABLE "activity"."microsite_condition" ADD CONSTRAINT "fk_microsite_condition_activity_id_activity_basic_activity_i" FOREIGN KEY("activity_id") REFERENCES "activity"."activity_basic"("activity_id");
+ALTER TABLE "activity"."spread_results" ADD CONSTRAINT "fk_spread_results_activity_id_activity_basic_activity_id" FOREIGN KEY("activity_id") REFERENCES "activity"."activity_basic"("activity_id");
+ALTER TABLE "activity"."activity_basic" ADD CONSTRAINT "fk_activity_basic_activity_id_biological_release_information" FOREIGN KEY("activity_id") REFERENCES "activity"."biological_release_information"("activity_id");
+ALTER TABLE "activity"."activity_basic" ADD CONSTRAINT "fk_activity_basic_activity_id_biocontrol_collection_informat" FOREIGN KEY("activity_id") REFERENCES "activity"."biocontrol_collection_information"("activity_id");
+ALTER TABLE "activity"."activity_basic" ADD CONSTRAINT "fk_activity_basic_activity_id_biocontrol_dispersal_monitorin" FOREIGN KEY("activity_id") REFERENCES "activity"."biocontrol_dispersal_monitoring_information"("activity_id");
