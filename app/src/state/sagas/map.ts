@@ -510,7 +510,9 @@ function* handle_MAP_ON_SHAPE_CREATE(action: PayloadAction<Feature>) {
 
   const geometry = action.payload.geometry;
   const isLineString = geometry?.type === GeoShapes.LineString;
-  const isPolygonOrPoint = geometry?.type === GeoShapes.Polygon || geometry?.type === GeoShapes.Point;
+  const isPolygonOrPoint = [GeoShapes.Polygon, GeoShapes.Point, GeoShapes.MultiPolygon].includes(
+    geometry?.type as GeoShapes
+  );
   const hasCoordinates = 'coordinates' in geometry && geometry?.coordinates?.length > 0;
   const noUserError = action?.payload?.properties?.user_error !== 'true';
 
