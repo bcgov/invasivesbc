@@ -83,7 +83,7 @@ interface InvasivesRequest extends Request {
 
 enum KeycloakAccountType {
   idir = 'idir',
-  bceid = 'bceid'
+  bceid = 'bceidbusiness'
 }
 const jwks = jwksRsa({
   jwksUri: APP_CERTIFICATE_URL,
