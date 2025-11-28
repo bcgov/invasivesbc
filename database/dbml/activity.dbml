@@ -1,6 +1,8 @@
 Enum "form_status_enum" {
     "Draft"
     "Submitted"
+    "Deleted"
+    "Flagged"
 }
 
 Enum "observation_type_enum" {
@@ -15,15 +17,332 @@ Enum "platform_source_enum" {
     "unknown"
 }
 
+Enum "yes_no_enum" {
+    "yes"
+    "no"
+}
+
 Enum "yes_no_unknown_enum" {
     "yes"
     "no"
     "unknown"
 }
 
-Enum "yes_no_enum" {
-    "yes"
-    "no"
+Enum "cardinal_direction" {
+    "N"
+    "NE"
+    "E"
+    "SE"
+    "S"
+    "SW"
+    "W"
+    "NW"
+    "None"
+}
+
+Enum "water_level_management_enum" {
+    "Dam"
+    "None"
+    "Other"
+    "Station"
+    "Weir"
+}
+
+Enum "treatment_pass" {
+    "First"
+    "Second"
+    "Third"
+    "Unknown"
+}
+
+Enum "plant_disposal_format_enum" {
+    "Number of plants"
+    "Weight (Kg)"
+    "Volume (Cubic meters)"
+}
+
+Table "codes"."efficacy_management_rating" {
+  "code" varchar(8) [pk, not null, ref: < "activity"."ter_treatment_monitoring_info"."management_efficacy_rating", ref: < "activity"."aq_treatment_monitoring_information"."management_efficacy_rating"]
+  "full" varchar(16) [not null, note: 'Full Title of Code']
+  "code_sort_order" integer
+  "valid_from" timestamptz [not null, default: `now()`]
+  "valid_to" timestamptz
+  "created_at" timestamptz [not null, default: `now()`]
+}
+
+Table "codes"."ter_plant_code" {
+  "code" varchar(8) [pk, not null, ref: < "activity"."bio_treatment_release_information"."plant_collected_from", ref: < "activity"."ter_plant_mech_treatment"."invasive_plant", ref: < "activity"."bio_treatment_release_information"."invasive_plant", ref: < "activity"."biocontrol_collection_information"."invasive_plant", ref: < "activity"."biocontrol_dispersal_monitoring_information"."invasive_plant", ref: < "activity"."ter_treatment_monitoring_info"."invasive_plant", ref: < "activity"."ter_plant_observation_detail"."invasive_plant"]
+  "full" varchar(128) [not null, note: 'Full Title of Code']
+  "code_sort_order" integer
+  "valid_from" timestamptz [not null, default: `now()`]
+  "valid_to" timestamptz
+  "created_at" timestamptz [not null, default: `now()`]
+  Note: 'Terrestrial Plant Codes'
+}
+
+Table "codes"."aspect" {
+  "code" varchar(8) [pk, not null, ref: < "activity"."ter_plant_observation_info"."aspect"]
+  "full" varchar(32) [not null, note: 'Full Title of Code']
+  "code_sort_order" integer
+  "valid_from" timestamptz [not null, default: `now()`]
+  "valid_to" timestamptz
+  "created_at" timestamptz [not null, default: `now()`]
+}
+
+Table "codes"."jurisdiction" {
+  "code" varchar(8) [pk, not null, ref: < "activity"."jurisdictions"."jurisdiction"]
+  "full" varchar(64) [note: 'Full Title of Code']
+  "code_sort_order" integer
+  "valid_from" timestamptz [not null, default: `now()`]
+  "valid_to" timestamptz
+  "created_at" timestamptz [not null, default: `now()`]
+}
+
+Table "codes"."soil_texture" {
+  "code" varchar(8) [pk, not null, ref: < "activity"."ter_plant_observation_info"."soil_texture"]
+  "full" varchar(64) [not null, note: 'Full Title of Code']
+  "code_sort_order" integer
+  "valid_from" timestamptz [not null, default: `now()`]
+  "valid_to" timestamptz
+  "created_at" timestamptz [not null, default: `now()`]
+}
+
+Table "codes"."biocontrol_presence" {
+  "code" varchar(8) [pk, not null, ref: < "activity"."biocontrol_dispersal_monitoring_information"."sign_of_biocontrol_presence"]
+  "full" varchar(32) [not null, note: 'Full Title of Code']
+  "code_sort_order" integer
+  "valid_from" timestamptz [not null, default: `now()`]
+  "valid_to" timestamptz
+  "created_at" timestamptz [not null, default: `now()`]
+}
+
+Table "codes"."mesoslope_position" {
+  "code" varchar(8) [pk, not null, ref: < "activity"."microsite_condition"."mesoslope_position"]
+  "full" varchar(32) [not null, note: 'Full Title of Code']
+  "code_sort_order" integer
+  "valid_from" timestamptz [not null, default: `now()`]
+  "valid_to" timestamptz
+  "created_at" timestamptz [not null, default: `now()`]
+}
+
+Table "codes"."waterbody_flow_seasonal" {
+  "code" varchar(8) [pk, not null, ref: < "activity"."waterbody_inflow_seasonal"."inflow_code"]
+  "full" varchar(16) [note: 'Full Title of Code']
+  "code_sort_order" integer
+  "valid_from" timestamptz [not null, default: `now()`]
+  "valid_to" timestamptz
+  "created_at" timestamptz [not null, default: `now()`]
+}
+
+Table "codes"."disposal_method" {
+  "code" varchar(8) [pk, not null, ref: < "activity"."ter_plant_mech_treatment"."disposal_method"]
+  "full" varchar(32) [not null, note: 'Full Title of Code']
+  "code_sort_order" integer
+  "valid_from" timestamptz [not null, default: `now()`]
+  "valid_to" timestamptz
+  "created_at" timestamptz [not null, default: `now()`]
+}
+
+Table "codes"."invasive_plants_on_site" {
+  "code" varchar(8) [pk, not null, ref: < "activity"."ter_treatment_monitoring_info"."invasive_plants_on_site", ref: < "activity"."aq_treatment_monitoring_information"."invasive_plants_on_site"]
+  "full" varchar(32) [not null, note: 'Full Title of Code']
+  "code_sort_order" integer
+  "valid_from" timestamptz [not null, default: `now()`]
+  "valid_to" timestamptz
+  "created_at" timestamptz [not null, default: `now()`]
+}
+
+Table "codes"."adjacent_land_use" {
+  "code" varchar(8) [pk, not null, ref: < "activity"."waterbody_adjacent_land_use_code"."adjacent_land_use"]
+  "full" varchar(64) [note: 'Full Title of Code']
+  "code_sort_order" integer
+  "valid_from" timestamptz [not null, default: `now()`]
+  "valid_to" timestamptz
+  "created_at" timestamptz [not null, default: `now()`]
+}
+
+Table "codes"."bio_agent_life_stage" {
+  "code" varchar(500) [pk, not null, ref: < "activity"."biological_agent_count"."stage"]
+  "full" varchar(500) [note: 'Full Title of Code']
+  "code_sort_order" integer
+  "valid_from" timestamptz [not null, default: `now()`]
+  "valid_to" timestamptz
+  "created_at" timestamptz [not null, default: `now()`]
+}
+
+Table "codes"."substrate" {
+  "code" varchar(8) [pk, not null, ref: < "activity"."waterbody_substrate_level"."substrate_code"]
+  "full" varchar(32) [note: 'Full Title of Code']
+  "code_sort_order" integer
+  "valid_from" timestamptz [not null, default: `now()`]
+  "valid_to" timestamptz
+  "created_at" timestamptz [not null, default: `now()`]
+}
+
+Table "codes"."funding_agency" {
+  "code" varchar(16) [pk, not null, ref: < "activity"."funding_agency"."agency"]
+  "full" varchar(64) [note: 'Full Title of Code']
+  "code_sort_order" integer
+  "valid_from" timestamptz [not null, default: `now()`]
+  "valid_to" timestamptz
+  "created_at" timestamptz [not null, default: `now()`]
+}
+
+Table "codes"."aq_plant_code" {
+  "code" varchar(8) [pk, not null, ref: < "activity"."aq_plant_observation_detail"."invasive_plant", ref: < "activity"."aq_plant_mech_treatment"."invasive_plant"]
+  "full" varchar(128) [not null, note: 'Full Title of Code']
+  "code_sort_order" integer
+  "valid_from" timestamptz [not null, default: `now()`]
+  "valid_to" timestamptz
+  "created_at" timestamptz [not null, default: `now()`]
+  Note: 'Aquatic Plant Codes'
+}
+
+Table "codes"."site_surface_shape" {
+  "code" varchar(8) [pk, not null, ref: < "activity"."microsite_condition"."site_surface_shape"]
+  "full" varchar(32) [not null, note: 'Full Title of Code']
+  "code_sort_order" integer
+  "valid_from" timestamptz [not null, default: `now()`]
+  "valid_to" timestamptz
+  "created_at" timestamptz [not null, default: `now()`]
+}
+
+Table "codes"."shoreline_type" {
+  "code" varchar(8) [pk, not null, ref: < "activity"."shoreline_types"."shoreline_type"]
+  "full" varchar(64) [not null, note: 'Full Title of Code']
+  "code_sort_order" integer
+  "valid_from" timestamptz [not null, default: `now()`]
+  "valid_to" timestamptz
+  "created_at" timestamptz [not null, default: `now()`]
+}
+
+Table "codes"."precipitation" {
+  "code" varchar(8) [pk, not null, ref: < "activity"."weather_condition"."precipitation"]
+  "full" varchar(32) [not null, note: 'Full Title of Code']
+  "code_sort_order" integer
+  "valid_from" timestamptz [not null, default: `now()`]
+  "valid_to" timestamptz
+  "created_at" timestamptz [not null, default: `now()`]
+}
+
+Table "codes"."plant_life_stage" {
+  "code" varchar(8) [pk, not null, ref: < "activity"."aq_plant_observation_detail"."life_stage", ref: < "activity"."ter_plant_observation_detail"."life_stage"]
+  "full" varchar(32) [not null, note: 'Full Title of Code']
+  "code_sort_order" integer
+  "valid_from" timestamptz [not null, default: `now()`]
+  "valid_to" timestamptz
+  "created_at" timestamptz [not null, default: `now()`]
+}
+
+Table "codes"."waterbody_flow" {
+  "code" varchar(8) [pk, not null, ref: < "activity"."waterbody_outflow_permanent"."outflow_code", ref: < "activity"."waterbody_inflow_permanent"."inflow_code"]
+  "full" varchar(16) [note: 'Full Title of Code']
+  "code_sort_order" integer
+  "valid_from" timestamptz [not null, default: `now()`]
+  "valid_to" timestamptz
+  "created_at" timestamptz [not null, default: `now()`]
+}
+
+Table "codes"."waterbody_use" {
+  "code" varchar(8) [pk, not null, ref: < "activity"."waterbody_use"."waterbody_use_code"]
+  "full" varchar(32) [note: 'Full Title of Code']
+  "code_sort_order" integer
+  "valid_from" timestamptz [not null, default: `now()`]
+  "valid_to" timestamptz
+  "created_at" timestamptz [not null, default: `now()`]
+}
+
+Table "codes"."specific_use" {
+  "code" varchar(8) [pk, not null, ref: < "activity"."ter_plant_observation_info"."specific_use"]
+  "full" varchar(32) [not null, note: 'Full Title of Code']
+  "code_sort_order" integer
+  "valid_from" timestamptz [not null, default: `now()`]
+  "valid_to" timestamptz
+  "created_at" timestamptz [not null, default: `now()`]
+}
+
+Table "codes"."plant_mech_treatment_method" {
+  "code" varchar(8) [pk, not null, ref: < "activity"."ter_plant_mech_treatment"."mechanical_method"]
+  "full" varchar(32) [not null, note: 'Full Title of Code']
+  "code_sort_order" integer
+  "valid_from" timestamptz [not null, default: `now()`]
+  "valid_to" timestamptz
+  "created_at" timestamptz [not null, default: `now()`]
+}
+
+Table "codes"."bio_agent_collection_method" {
+  "code" varchar(500) [pk, not null, ref: < "activity"."biocontrol_collection_information"."collection_method"]
+  "full" varchar(500) [note: 'Full Title of Code']
+  "code_sort_order" integer
+  "valid_from" timestamptz [not null, default: `now()`]
+  "valid_to" timestamptz
+  "created_at" timestamptz [not null, default: `now()`]
+}
+
+Table "codes"."density" {
+  "code" varchar(8) [pk, not null, ref: < "activity"."aq_plant_observation_detail"."density", ref: < "activity"."ter_plant_observation_detail"."density"]
+  "full" varchar(64) [not null, note: 'Full Title of Code']
+  "code_sort_order" integer
+  "valid_from" timestamptz [not null, default: `now()`]
+  "valid_to" timestamptz
+  "created_at" timestamptz [not null, default: `now()`]
+}
+
+Table "codes"."slope_percent" {
+  "code" varchar(8) [pk, not null, ref: < "activity"."ter_plant_observation_info"."slope_percent"]
+  "full" varchar(32) [not null, note: 'Full Title of Code']
+  "code_sort_order" integer
+  "valid_from" timestamptz [not null, default: `now()`]
+  "valid_to" timestamptz
+  "created_at" timestamptz [not null, default: `now()`]
+}
+
+Table "codes"."biocontrol_agent_code" {
+  "code" varchar(500) [pk, not null, ref: < "activity"."biological_agent_count"."agent", ref: < "activity"."biocontrol_dispersal_monitoring_information"."biological_agent", ref: < "activity"."bio_treatment_release_information"."bio_agent", ref: < "activity"."biocontrol_collection_information"."biological_agent"]
+  "full" varchar(500) [note: 'Full Title of Code']
+  "code_sort_order" integer
+  "valid_from" timestamptz [not null, default: `now()`]
+  "valid_to" timestamptz
+  "created_at" timestamptz [not null, default: `now()`]
+}
+
+Table "codes"."employer" {
+  "code" varchar(500) [pk, not null, default: 16, ref: < "activity"."employer"."employer"]
+  "full" varchar(64) [note: 'Full Title of Code']
+  "code_sort_order" integer
+  "valid_from" timestamptz [not null, default: `now()`]
+  "valid_to" timestamptz
+  "created_at" timestamptz [not null, default: `now()`]
+}
+
+Table "codes"."cloud_cover" {
+  "code" varchar(8) [pk, not null, ref: < "activity"."weather_condition"."cloud_cover"]
+  "full" varchar(64) [not null, note: 'Full Title of Code']
+  "code_sort_order" integer
+  "valid_from" timestamptz [not null, default: `now()`]
+  "valid_to" timestamptz
+  "created_at" timestamptz [not null, default: `now()`]
+}
+
+Table "codes"."distribution" {
+  "code" varchar(8) [pk, not null, ref: < "activity"."aq_plant_observation_detail"."distribution", ref: < "activity"."ter_plant_observation_detail"."distribution"]
+  "full" varchar(128) [not null, note: 'Full Title of Code']
+  "code_sort_order" integer
+  "valid_from" timestamptz [not null, default: `now()`]
+  "valid_to" timestamptz
+  "created_at" timestamptz [not null, default: `now()`]
+}
+
+Table "activity"."bio_treatment_release_information" {
+  "activity_id" bigint [pk, not null, ref: < "activity"."biological_agent_count"."activity_id"]
+  "invasive_plant" varchar(500)
+  "bio_agent" varchar(500) [ref: < "activity"."biological_agent_count"."agent"]
+  "linear_segment" yes_no_unknown_enum
+  "mortality" smallint
+  "agent_source" varchar(128)
+  "collection_date" date
+  "plant_collected_from" varchar(500) [note: 'Plant an agent was gathered from. Plant may not be the targetted invasive species.']
+  "plant_collected_from_manual" varchar(128)
 }
 
 Table "activity"."waterbody_adjacent_land_use_code" {
@@ -54,7 +373,7 @@ Table "activity"."biological_agent_count" {
 }
 
 Table "activity"."waterbody_data" {
-  "activity_id" bigint [pk, not null, ref: < "activity"."waterbody_outflow_permanent_copy"."activity_id"]
+  "activity_id" bigint [pk, not null, ref: < "activity"."waterbody_outflow_permanent"."activity_id"]
   "type" varchar(32)
   "name_gazetted" varchar(128)
   "name_local" varchar(128)
@@ -67,7 +386,7 @@ Table "activity"."waterbody_data" {
 }
 
 Table "activity"."participant" {
-  "id" bigserial [not null, increment]
+  "id" uuid [not null, default: `gen_random_id()`]
   "activity_id" bigint [not null, ref: < "activity"."activity_basic"."activity_id"]
   "name" varchar(64) [not null]
   "pac_number" smallint [note: 'Only chemical treatments require Pac numbers.']
@@ -118,14 +437,13 @@ Table "activity"."jurisdictions" {
 
 Table "activity"."platform" {
   "activity_id" bigint [pk, not null]
-  "src" platform_source [note: 'batch, ios, android']
+  "src" platform_source_enum [note: 'batch, ios, android']
   Note: 'The device used to create the initial record'
 }
 
-Table "activity"."voucher_specimen_collection" {
+Table "activity"."aq_voucher_specimen" {
   "activity_id" bigint [not null]
-  "terrestrial_invasive_plant" varchar(64)
-  "aquatic_invasive_plant" varchar(64)
+  "invasive_plant" varchar(64)
   "voucher_sample_id" bigint
   "date_collected" date
   "date_verified" date
@@ -138,13 +456,13 @@ Table "activity"."voucher_specimen_collection" {
   "utm_northing" integer
 
   Indexes {
-    (activity_id, terrestrial_invasive_plant, aquatic_invasive_plant) [pk, name: "pk_table_12_id"]
+    (activity_id, invasive_plant) [pk, name: "pk_table_12_id"]
   }
 }
 
 Table "activity"."waterbody_water_level_management" {
   "activity_id" bigint [not null, ref: < "activity"."waterbody_data"."activity_id"]
-  "water_level_management_code" varchar(32) [not null]
+  "water_level_management_code" water_level_management_enum [not null]
 
   Indexes {
     (activity_id, water_level_management_code) [pk, name: "pk_table_32_id"]
@@ -161,6 +479,11 @@ Table "activity"."shoreline_types" {
   }
 }
 
+Table "activity"."aq_plant_mech_treatment_auth" {
+  "activity_id" bigint [pk, not null]
+  "details" text
+}
+
 Table "activity"."riso_areas" {
   "activity_id" bigint [not null, ref: < "activity"."activity_basic"."activity_id"]
   "organization_area" varchar(128) [not null]
@@ -169,6 +492,16 @@ Table "activity"."riso_areas" {
     (activity_id, organization_area) [pk, name: "pk_table_8_id"]
   }
   Note: 'Certain areas may have overlaps'
+}
+
+Table "activity"."plant_heights" {
+  "activity_id" bigint [not null, ref: < "activity"."plant_phenology"."activity_id"]
+  "id" bigint [not null, increment]
+  "height_cm" smallint
+
+  Indexes {
+    (activity_id, id) [pk, name: "pk_table_74_id"]
+  }
 }
 
 Table "activity"."funding_agency" {
@@ -181,14 +514,22 @@ Table "activity"."funding_agency" {
   Note: 'The organization(s) that are paying for the work being done'
 }
 
-Table "activity"."treatment_monitoring_information" {
+Table "activity"."waterbody_outflow_permanent" {
+  "activity_id" bigint [not null]
+  "outflow_code" varchar(32) [not null]
+
+  Indexes {
+    (activity_id, outflow_code) [pk, name: "pk_table_32_id"]
+  }
+}
+
+Table "activity"."ter_treatment_monitoring_info" {
   "activity_id" bigint [pk, not null]
-  "terrestrial_invasive_plant" varchar(64)
-  "aquatic_invasive_plant" varchar(64)
+  "invasive_plant" varchar(64)
   "evidence_of_treatment" yes_no_enum [note: 'Yes/No/Unknown']
   "management_efficacy_rating" varchar(128)
   "invasive_plants_on_site" varchar(64)
-  "treatment_pass" varchar(16)
+  "treatment_pass" treatment_pass
   "comment" varchar(256)
 }
 
@@ -212,16 +553,30 @@ Table "activity"."activity_geometry" {
   "utm_northing" integer
   "latitude" "double precision"
   "longitude" "double precision"
-  "location_description" text
+  "location_description" varchar(512)
 }
 
-Table "activity"."observation_plant_terrestrial_information" {
+Table "activity"."ter_plant_mech_treatment" {
+  "activity_id" bigint [not null]
+  "invasive_plant" varchar(500)
+  "treated_area_msq" integer [note: 'meters^2']
+  "mechanical_method" varchar(500)
+  "disposal_method" varchar(500)
+  "disposed_material_format" plant_disposal_format_enum
+  "disposted_material_amount" smallint
+
+  Indexes {
+    (activity_id, invasive_plant) [pk, name: "pk_table_64_id"]
+  }
+}
+
+Table "activity"."ter_plant_observation_info" {
   "activity_id" bigint [not null]
   "soil_texture" varchar(64)
-  "research_observation" yes_no_unknown
+  "research_observation" yes_no_unknown_enum
   "aspect" varchar(32)
   "specific_use" varchar(32)
-  "visible_well_nearby" yes_no_unknown
+  "visible_well_nearby" yes_no_unknown_enum
   "slope_percent" varchar(32)
 
   Indexes {
@@ -233,7 +588,7 @@ Table "activity"."weather_condition" {
   "activity_id" bigint [pk, not null]
   "cloud_cover" varchar(64)
   "precipitation" varchar(64)
-  "wind_direction" varchar(8)
+  "wind_direction" cardinal_direction
   "wind_speed_kmh" smallint
   "temperature_c" smallint
   "weather_comments" text
@@ -268,19 +623,17 @@ Table "activity"."batch" {
 }
 
 Table "activity"."activity_basic" {
-  "activity_id" bigint [pk, not null, note: 'rolling ID with Sequence', increment, ref: < "activity"."batch"."activity_id", ref: < "activity"."spread_results"."activity_id", ref: < "activity"."regional_details"."activity_id", ref: < "activity"."employer"."activity_id", ref: < "activity"."treatment_monitoring_information"."activity_id", ref: < "activity"."weather_condition"."activity_id", ref: < "activity"."observation_type"."activity_id", ref: < "activity"."waterbody_data"."activity_id", ref: < "activity"."biocontrol_collection_information"."activity_id", ref: < "activity"."linked_record"."activity_id", ref: < "activity"."linked_record"."linked_record_id", ref: < "activity"."biocontrol_dispersal_monitoring_information"."activity_id", ref: < "activity"."chemical_treatment"."activity_id", ref: < "activity"."microsite_condition"."activity_id", ref: < "activity"."activity_geometry"."activity_id", ref: < "activity"."observation_plant_terrestrial_information"."activity_id", ref: < "activity"."platform"."activity_id", ref: < "activity"."pre_treatment_observation"."activity_id", ref: < "activity"."suitable_for_biocontrol"."activity_id", ref: < "activity"."mechanical_treatment"."activity_id", ref: < "activity"."aquatic_mechanical_plant_treatment_authorization"."activity_id", ref: < "activity"."bio_treatment_release_information"."activity_id", ref: < "activity"."plant_phenology"."activity_id"]
-  "legacy_id" uuid [not null, default: `gen_random_id()`, note: 'legacy identifier for record (if applicable)']
+  "activity_id" bigint [pk, not null, note: 'rolling ID with Sequence', ref: < "activity"."batch"."activity_id", ref: < "activity"."aq_plant_mech_treatment_auth"."activity_id", ref: < "activity"."spread_results"."activity_id", ref: < "activity"."regional_details"."activity_id", ref: < "activity"."employer"."activity_id", ref: < "activity"."ter_treatment_monitoring_info"."activity_id", ref: < "activity"."weather_condition"."activity_id", ref: < "activity"."ter_plant_mech_treatment"."activity_id", ref: < "activity"."plant_phenology"."activity_id", ref: < "activity"."observation_type"."activity_id", ref: < "activity"."waterbody_data"."activity_id", ref: < "activity"."biocontrol_collection_information"."activity_id", ref: < "activity"."bio_treatment_release_information"."activity_id", ref: < "activity"."linked_record"."activity_id", ref: < "activity"."linked_record"."linked_record_id", ref: < "activity"."biocontrol_dispersal_monitoring_information"."activity_id", ref: < "activity"."chem_treatment"."activity_id", ref: < "activity"."microsite_condition"."activity_id", ref: < "activity"."activity_geometry"."activity_id", ref: < "activity"."ter_plant_observation_info"."activity_id", ref: < "activity"."platform"."activity_id", ref: < "activity"."pre_treatment_observation"."activity_id", ref: < "activity"."suitable_for_biocontrol"."activity_id", ref: < "activity"."ter_plant_observation_detail"."activity_id", ref: < "activity"."aq_plant_mech_treatment"."activity_id", ref: < "activity"."aq_treatment_monitoring_information"."activity_id"]
   "created_by" varchar(64) [not null]
   "activity_type" varchar(32) [not null]
   "activity_subtype" varchar(128) [not null]
   "short_id" varchar(32) [not null, note: 'YY/SubtypeCode/first 8 digits of UUID']
   "activity_date" date [not null]
-  "form_status" form_status [not null]
+  "form_status" form_status_enum [not null]
   "access_description" text
   "comment" text
   "created_timestamp" "timestamp with time zone" [not null]
   "received_timestamp" "timestamp with time zone" [not null]
-  "is_active" boolean [note: 'If user deletes a record, set to inactive. Perserve records.']
 
   Indexes {
     short_id [name: "index_2"]
@@ -290,8 +643,8 @@ Table "activity"."activity_basic" {
 }
 
 Table "activity"."regional_details" {
-  "activity_id" bigint [pk]
-  "biogeoclimatic_zone" bigint [unique]
+  "activity_id" bigint [pk, not null]
+  "biogeoclimatic_zone" varchar(64) [unique]
   "invasive_plant_management_areas" varchar(128)
   "ownership" varchar(64)
   "regional_districts" varchar(128)
@@ -301,7 +654,7 @@ Table "activity"."regional_details" {
 }
 
 Table "activity"."project_code" {
-  "activity_id" bigint [not null, increment, ref: < "activity"."activity_basic"."activity_id"]
+  "activity_id" bigint [not null, ref: < "activity"."activity_basic"."activity_id"]
   "description" varchar(64) [not null]
 
   Indexes {
@@ -312,7 +665,7 @@ Table "activity"."project_code" {
 
 Table "activity"."pre_treatment_observation" {
   "activity_id" bigint [pk, not null]
-  "pre_treatment_observation" yes_no_unknown
+  "pre_treatment_observation" yes_no_unknown_enum
 }
 
 Table "activity"."agent_found_location" {
@@ -335,19 +688,10 @@ Table "activity"."linked_record" {
   }
 }
 
-Table "activity"."waterbody_outflow_permanent" {
-  "activity_id" bigint [not null, ref: < "activity"."waterbody_data"."activity_id"]
-  "outflow_code" varchar(32) [not null]
-
-  Indexes {
-    (activity_id, outflow_code) [pk, name: "pk_table_32_id"]
-  }
-}
-
 Table "activity"."biocontrol_dispersal_monitoring_information" {
   "activity_id" bigint [not null, ref: < "activity"."biological_agent_count"."activity_id", ref: < "activity"."agent_found_location"."activity_id"]
   "invasive_plant" varchar(64) [ref: < "activity"."agent_found_location"."invasive_plant"]
-  "biological_agent" varchar(64) [ref: < "activity"."agent_found_location"."agent", ref: < "activity"."biological_agent_count"."agent"]
+  "biological_agent" varchar(64) [ref: < "activity"."biological_agent_count"."agent", ref: < "activity"."agent_found_location"."agent"]
   "biocontrol_present" boolean
   "sign_of_biocontrol_presence" varchar(32)
   "plant_count" smallint
@@ -366,20 +710,31 @@ Table "activity"."biocontrol_dispersal_monitoring_information" {
 
 Table "activity"."suitable_for_biocontrol" {
   "activity_id" bigint [pk, not null]
-  "suitable_for_biocontrol" yes_no_unknown [note: 'yes/no/unknown']
+  "suitable_for_biocontrol" yes_no_unknown_enum [note: 'yes/no/unknown']
 }
 
-Table "activity"."individual_observation_information" {
-  "activity_id" bigint [not null, ref: < "activity"."activity_basic"."activity_id", ref: < "activity"."voucher_specimen_collection"."activity_id"]
-  "terrestrial_invasive_plant" varchar(64) [ref: < "activity"."voucher_specimen_collection"."terrestrial_invasive_plant"]
-  "aquatic_invasive_plant" varchar(64) [ref: < "activity"."voucher_specimen_collection"."aquatic_invasive_plant"]
+Table "activity"."plant_phenology" {
+  "activity_id" bigint [pk, not null]
+  "winter_dormant_pc" smallint [not null, default: 0]
+  "seedlings_pc" smallint [not null, default: 0]
+  "rosettes_pc" smallint [not null, default: 0]
+  "bolts_pc" smallint [not null, default: 0]
+  "flowering_pc" smallint [not null, default: 0]
+  "seeds_forming_pc" smallint [not null, default: 0]
+  "senescent_pc" smallint [not null, default: 0]
+  "comment" text
+}
+
+Table "activity"."aq_plant_observation_detail" {
+  "activity_id" bigint [not null, ref: < "activity"."activity_basic"."activity_id", ref: < "activity"."aq_voucher_specimen"."activity_id", ref: < "activity"."ter_voucher_specimen"."activity_id"]
+  "invasive_plant" varchar(64) [ref: < "activity"."aq_voucher_specimen"."invasive_plant"]
   "density" varchar(64)
   "distribution" varchar(128)
   "life_stage" varchar(32)
   "sample_point_id" varchar(64) [note: 'For aquatic presence surveys']
 
   Indexes {
-    (activity_id, terrestrial_invasive_plant, aquatic_invasive_plant, density, distribution, life_stage) [pk, name: "pk_table_19_id"]
+    (activity_id, invasive_plant, density, distribution, life_stage) [pk, name: "pk_table_19_id"]
   }
 }
 
@@ -394,7 +749,7 @@ Table "activity"."waterbody_inflow_seasonal" {
 
 Table "activity"."observation_type" {
   "activity_id" bigint [pk, not null]
-  "observation" observation_type [not null]
+  "observation" observation_type_enum [not null]
 }
 
 Table "activity"."waterbody_substrate_level" {
@@ -414,7 +769,7 @@ Table "activity"."spread_results" {
   "max_spread_aspect" smallint
 }
 
-Table "activity"."chemical_treatment" {
+Table "activity"."chem_treatment" {
   "activity_id" bigint [pk, not null]
   "service_license_number" varchar(128)
   "pesticide_use_permit" varchar(64)
@@ -423,7 +778,7 @@ Table "activity"."chemical_treatment" {
   "temperature_c" smallint
   "wind_speed_kmh" smallint
   "application_start_time" timestamptz
-  "wind_direction" varchar(8)
+  "wind_direction" cardinal_direction
   "humidity" smallint
   "treatment_notice_signs" yes_no_unknown_enum [note: 'yes/no/unknown']
   "precautionary_statement" varchar(64)
@@ -433,19 +788,41 @@ Table "activity"."chemical_treatment" {
   "pest_injury_threshold_determination_bool" boolean
 }
 
-Table "activity"."waterbody_outflow_permanent_copy" {
+Table "activity"."ter_plant_observation_detail" {
   "activity_id" bigint [not null]
-  "outflow_code" varchar(32) [not null]
+  "invasive_plant" varchar(64) [ref: < "activity"."ter_voucher_specimen"."invasive_plant"]
+  "density" varchar(64)
+  "distribution" varchar(128)
+  "life_stage" varchar(32)
+  "sample_point_id" varchar(64) [note: 'For aquatic presence surveys']
 
   Indexes {
-    (activity_id, outflow_code) [pk, name: "pk_table_32_id"]
+    (activity_id, invasive_plant, density, distribution, life_stage) [pk, name: "pk_table_19_id"]
   }
 }
 
-Table "activity"."mechanical_treatment" {
+Table "activity"."ter_voucher_specimen" {
+  "activity_id" bigint
+  "invasive_plant" varchar(64)
+  "voucher_sample_id" bigint
+  "date_collected" date
+  "date_verified" date
+  "herbarium" varchar(128)
+  "accession_number" varchar(128)
+  "completed_by_person" varchar(128) [default: 128]
+  "completed_by_org" varchar(128)
+  "utm_zone" smallint
+  "utm_easting" integer
+  "utm_northing" integer
+
+  Indexes {
+    (activity_id, invasive_plant) [pk, name: "pk_table_12_id"]
+  }
+}
+
+Table "activity"."aq_plant_mech_treatment" {
   "activity_id" bigint [not null]
-  "terrestrial_invasive_plant" varchar(500)
-  "aquatic_invasive_plant" varchar(500)
+  "invasive_plant" varchar(500)
   "treated_area_msq" integer [note: 'meters^2']
   "mechanical_method" varchar(500)
   "disposal_method" varchar(500)
@@ -453,360 +830,16 @@ Table "activity"."mechanical_treatment" {
   "disposted_material_amount" smallint
 
   Indexes {
-    (activity_id, terrestrial_invasive_plant, aquatic_invasive_plant) [pk, name: "pk_table_64_id"]
+    (activity_id, invasive_plant) [pk, name: "pk_table_64_id"]
   }
 }
 
-Table "activity"."aquatic_mechanical_plant_treatment_authorization" {
+Table "activity"."aq_treatment_monitoring_information" {
   "activity_id" bigint [pk, not null]
-  "details" text
-}
-
-Table "activity"."bio_treatment_release_information" {
-  "activity_id" bigint [pk, not null, ref: < "activity"."biological_agent_count"."activity_id"]
-  "invasive_plant" varchar(500)
-  "bio_agent" varchar(500) [ref: < "activity"."biological_agent_count"."agent"]
-  "linear_segment" yes_no_unknown_enum
-  "mortality" smallint
-  "agent_source" varchar(128)
-  "collection_date" date
-  "plant_collected_from" varchar(500) [note: 'Plant an agent was gathered from. Plant may not be the targetted invasive species.']
-  "plant_collected_from_manual" varchar(128)
-}
-
-Table "activity"."plant_phenology" {
-  "activity_id" bigint [pk, not null]
-  "winter_dormant_pc" smallint [not null, default: 0]
-  "seedlings_pc" smallint [not null, default: 0]
-  "rosettes_pc" smallint [not null, default: 0]
-  "bolts_pc" smallint [not null, default: 0]
-  "flowering_pc" smallint [not null, default: 0]
-  "seeds_forming_pc" smallint [not null, default: 0]
-  "senescent_pc" smallint [not null, default: 0]
-  "comment" text
-}
-
-Table "activity"."plant_heights" {
-  "activity_id" bigint [not null, ref: < "activity"."plant_phenology"."activity_id"]
-  "id" bigint [not null, increment]
-  "height_cm" smallint
-
-  Indexes {
-    (activity_id, id) [pk, name: "pk_table_74_id"]
-  }
-}
-
-Table "codes"."base_code" {
-  "code" varchar(500) [pk, not null, note: '''code value, e.g.: \'JK\'''']
-  "full" varchar(500) [not null, note: '''full name of code e.g. \'Japanese Knotweed\'''']
-  "code_sort_order" integer
-  "valid_from" timestamptz [not null, default: `now()`, note: 'eligibility of code use']
-  "valid_to" timestamptz [note: 'Last available time to use code (reject this code after date passed)']
-  "created_at" timestamptz [not null, default: `now()`]
-}
-
-Table "codes"."aquatic_plant_code" {
-  "code" varchar(500) [pk, not null, ref: < "activity"."individual_observation_information"."aquatic_invasive_plant", ref: < "activity"."treatment_monitoring_information"."aquatic_invasive_plant", ref: < "activity"."mechanical_treatment"."aquatic_invasive_plant"]
-  "full" varchar(500) [note: 'Full Title of Code']
-  "code_sort_order" integer
-  "valid_from" timestamptz [not null, default: `now()`]
-  "valid_to" timestamptz
-  "created_at" timestamptz [not null, default: `now()`]
-}
-
-Table "codes"."terrestrial_plant_code" {
-  "code" varchar(500) [pk, not null, ref: < "activity"."individual_observation_information"."terrestrial_invasive_plant", ref: < "activity"."treatment_monitoring_information"."terrestrial_invasive_plant", ref: < "activity"."biocontrol_dispersal_monitoring_information"."invasive_plant", ref: < "activity"."biocontrol_collection_information"."invasive_plant", ref: < "activity"."mechanical_treatment"."terrestrial_invasive_plant", ref: < "activity"."bio_treatment_release_information"."plant_collected_from", ref: < "activity"."bio_treatment_release_information"."invasive_plant"]
-  "full" varchar(500) [note: 'Full Title of Code']
-  "code_sort_order" integer
-  "valid_from" timestamptz [not null, default: `now()`]
-  "valid_to" timestamptz
-  "created_at" timestamptz [not null, default: `now()`]
-}
-
-Table "codes"."biocontrol_agent_code" {
-  "code" varchar(500) [pk, not null, ref: < "activity"."biocontrol_collection_information"."biological_agent", ref: < "activity"."biocontrol_dispersal_monitoring_information"."biological_agent", ref: < "activity"."bio_treatment_release_information"."bio_agent", ref: < "activity"."biological_agent_count"."agent"]
-  "full" varchar(500) [note: 'Full Title of Code']
-  "code_sort_order" integer
-  "valid_from" timestamptz [not null, default: `now()`]
-  "valid_to" timestamptz
-  "created_at" timestamptz [not null, default: `now()`]
-}
-
-Table "codes"."employer_code" {
-  "code" varchar(500) [pk, not null, ref: < "activity"."employer"."employer"]
-  "full" varchar(500) [note: 'Full Title of Code']
-  "code_sort_order" integer
-  "valid_from" timestamptz [not null, default: `now()`]
-  "valid_to" timestamptz
-  "created_at" timestamptz [not null, default: `now()`]
-}
-
-Table "codes"."funding_agency_code" {
-  "code" varchar(500) [pk, not null, ref: < "activity"."funding_agency"."agency"]
-  "full" varchar(500) [note: 'Full Title of Code']
-  "code_sort_order" integer
-  "valid_from" timestamptz [not null, default: `now()`]
-  "valid_to" timestamptz
-  "created_at" timestamptz [not null, default: `now()`]
-}
-
-Table "codes"."jurisdiction_code" {
-  "code" varchar(500) [pk, not null, ref: < "activity"."jurisdictions"."jurisdiction"]
-  "full" varchar(500) [note: 'Full Title of Code']
-  "code_sort_order" integer
-  "valid_from" timestamptz [not null, default: `now()`]
-  "valid_to" timestamptz
-  "created_at" timestamptz [not null, default: `now()`]
-}
-
-Table "codes"."specific_use_code" {
-  "code" varchar(500) [pk, not null, ref: < "activity"."observation_plant_terrestrial_information"."specific_use"]
-  "full" varchar(500) [note: 'Full Title of Code']
-  "code_sort_order" integer
-  "valid_from" timestamptz [not null, default: `now()`]
-  "valid_to" timestamptz
-  "created_at" timestamptz [not null, default: `now()`]
-}
-
-Table "codes"."soil_texture_code" {
-  "code" varchar(500) [pk, not null, ref: < "activity"."observation_plant_terrestrial_information"."soil_texture"]
-  "full" varchar(500) [note: 'Full Title of Code']
-  "code_sort_order" integer
-  "valid_from" timestamptz [not null, default: `now()`]
-  "valid_to" timestamptz
-  "created_at" timestamptz [not null, default: `now()`]
-}
-
-Table "codes"."slope_percent_code" {
-  "code" varchar(500) [pk, not null, ref: < "activity"."observation_plant_terrestrial_information"."slope_percent"]
-  "full" varchar(500) [note: 'Full Title of Code']
-  "code_sort_order" integer
-  "valid_from" timestamptz [not null, default: `now()`]
-  "valid_to" timestamptz
-  "created_at" timestamptz [not null, default: `now()`]
-}
-
-Table "codes"."aspect_code" {
-  "code" varchar(500) [pk, not null, ref: < "activity"."observation_plant_terrestrial_information"."aspect"]
-  "full" varchar(500) [note: 'Full Title of Code']
-  "code_sort_order" integer
-  "valid_from" timestamptz [not null, default: `now()`]
-  "valid_to" timestamptz
-  "created_at" timestamptz [not null, default: `now()`]
-}
-
-Table "codes"."distribution" {
-  "code" varchar(500) [pk, not null, ref: < "activity"."individual_observation_information"."distribution"]
-  "full" varchar(500) [note: 'Full Title of Code']
-  "code_sort_order" integer
-  "valid_from" timestamptz [not null, default: `now()`]
-  "valid_to" timestamptz
-  "created_at" timestamptz [not null, default: `now()`]
-}
-
-Table "codes"."density" {
-  "code" varchar(500) [pk, not null, ref: < "activity"."individual_observation_information"."density"]
-  "full" varchar(500) [note: 'Full Title of Code']
-  "code_sort_order" integer
-  "valid_from" timestamptz [not null, default: `now()`]
-  "valid_to" timestamptz
-  "created_at" timestamptz [not null, default: `now()`]
-}
-
-Table "codes"."plant_life_stage" {
-  "code" varchar(500) [pk, not null, ref: < "activity"."individual_observation_information"."life_stage"]
-  "full" varchar(500) [note: 'Full Title of Code']
-  "code_sort_order" integer
-  "valid_from" timestamptz [not null, default: `now()`]
-  "valid_to" timestamptz
-  "created_at" timestamptz [not null, default: `now()`]
-}
-
-Table "codes"."waterbody_flow" {
-  "code" varchar(8) [pk, not null, ref: < "activity"."waterbody_outflow_permanent"."outflow_code", ref: < "activity"."waterbody_outflow_permanent_copy"."outflow_code", ref: < "activity"."waterbody_inflow_permanent"."inflow_code"]
-  "full" varchar(32) [note: 'Full Title of Code']
-  "code_sort_order" integer
-  "valid_from" timestamptz [not null, default: `now()`]
-  "valid_to" timestamptz
-  "created_at" timestamptz [not null, default: `now()`]
-}
-
-Table "codes"."waterbody_flow_seasonal" {
-  "code" varchar(500) [pk, not null, ref: < "activity"."waterbody_inflow_seasonal"."inflow_code"]
-  "full" varchar(500) [note: 'Full Title of Code']
-  "code_sort_order" integer
-  "valid_from" timestamptz [not null, default: `now()`]
-  "valid_to" timestamptz
-  "created_at" timestamptz [not null, default: `now()`]
-}
-
-Table "codes"."substrate" {
-  "code" varchar(500) [pk, not null, ref: < "activity"."waterbody_substrate_level"."substrate_code"]
-  "full" varchar(500) [note: 'Full Title of Code']
-  "code_sort_order" integer
-  "valid_from" timestamptz [not null, default: `now()`]
-  "valid_to" timestamptz
-  "created_at" timestamptz [not null, default: `now()`]
-}
-
-Table "codes"."water_level_management" {
-  "code" varchar(500) [pk, not null, ref: < "activity"."waterbody_water_level_management"."water_level_management_code"]
-  "full" varchar(500) [note: 'Full Title of Code']
-  "code_sort_order" integer
-  "valid_from" timestamptz [not null, default: `now()`]
-  "valid_to" timestamptz
-  "created_at" timestamptz [not null, default: `now()`]
-}
-
-Table "codes"."adjacent_land_use" {
-  "code" varchar(500) [pk, not null, ref: < "activity"."waterbody_adjacent_land_use_code"."adjacent_land_use"]
-  "full" varchar(500) [note: 'Full Title of Code']
-  "code_sort_order" integer
-  "valid_from" timestamptz [not null, default: `now()`]
-  "valid_to" timestamptz
-  "created_at" timestamptz [not null, default: `now()`]
-}
-
-Table "codes"."waterbody_use" {
-  "code" varchar(500) [pk, not null, ref: < "activity"."waterbody_use"."waterbody_use_code"]
-  "full" varchar(500) [note: 'Full Title of Code']
-  "code_sort_order" integer
-  "valid_from" timestamptz [not null, default: `now()`]
-  "valid_to" timestamptz
-  "created_at" timestamptz [not null, default: `now()`]
-}
-
-Table "codes"."shoreline_type" {
-  "code" varchar(500) [pk, not null, ref: < "activity"."shoreline_types"."shoreline_type"]
-  "full" varchar(500) [note: 'Full Title of Code']
-  "code_sort_order" integer
-  "valid_from" timestamptz [not null, default: `now()`]
-  "valid_to" timestamptz
-  "created_at" timestamptz [not null, default: `now()`]
-}
-
-Table "codes"."efficacy_management_rating" {
-  "code" varchar(500) [pk, not null, ref: < "activity"."treatment_monitoring_information"."management_efficacy_rating"]
-  "full" varchar(500) [note: 'Full Title of Code']
-  "code_sort_order" integer
-  "valid_from" timestamptz [not null, default: `now()`]
-  "valid_to" timestamptz
-  "created_at" timestamptz [not null, default: `now()`]
-}
-
-Table "codes"."plants_at_site" {
-  "code" varchar(500) [pk, not null, ref: < "activity"."treatment_monitoring_information"."invasive_plants_on_site"]
-  "full" varchar(500) [note: 'Full Title of Code']
-  "code_sort_order" integer
-  "valid_from" timestamptz [not null, default: `now()`]
-  "valid_to" timestamptz
-  "created_at" timestamptz [not null, default: `now()`]
-}
-
-Table "codes"."treatment_iteration" {
-  "code" varchar(500) [pk, not null, ref: < "activity"."treatment_monitoring_information"."treatment_pass"]
-  "full" varchar(500) [note: 'Full Title of Code']
-  "code_sort_order" integer
-  "valid_from" timestamptz [not null, default: `now()`]
-  "valid_to" timestamptz
-  "created_at" timestamptz [not null, default: `now()`]
-}
-
-Table "codes"."mechanical_treatment_method" {
-  "code" varchar(500) [pk, not null, ref: < "activity"."mechanical_treatment"."mechanical_method"]
-  "full" varchar(500) [note: 'Full Title of Code']
-  "code_sort_order" integer
-  "valid_from" timestamptz [not null, default: `now()`]
-  "valid_to" timestamptz
-  "created_at" timestamptz [not null, default: `now()`]
-}
-
-Table "codes"."disposal_method" {
-  "code" varchar(8) [pk, not null, ref: < "activity"."mechanical_treatment"."disposal_method"]
-  "full" varchar(32) [note: 'Full Title of Code']
-  "code_sort_order" integer
-  "valid_from" timestamptz [not null, default: `now()`]
-  "valid_to" timestamptz
-  "created_at" timestamptz [not null, default: `now()`]
-}
-
-Table "codes"."disposed_material_format" {
-  "code" varchar(500) [pk, not null, ref: < "activity"."mechanical_treatment"."disposed_material_format"]
-  "full" varchar(500) [note: 'Full Title of Code']
-  "code_sort_order" integer
-  "valid_from" timestamptz [not null, default: `now()`]
-  "valid_to" timestamptz
-  "created_at" timestamptz [not null, default: `now()`]
-}
-
-Table "codes"."precipitation" {
-  "code" varchar(500) [pk, not null, ref: < "activity"."weather_condition"."precipitation"]
-  "full" varchar(500) [note: 'Full Title of Code']
-  "code_sort_order" integer
-  "valid_from" timestamptz [not null, default: `now()`]
-  "valid_to" timestamptz
-  "created_at" timestamptz [not null, default: `now()`]
-}
-
-Table "codes"."wind_direction" {
-  "code" varchar(500) [pk, not null, ref: < "activity"."weather_condition"."wind_direction"]
-  "full" varchar(500) [note: 'Full Title of Code']
-  "code_sort_order" integer
-  "valid_from" timestamptz [not null, default: `now()`]
-  "valid_to" timestamptz
-  "created_at" timestamptz [not null, default: `now()`]
-}
-
-Table "codes"."cloud_cover" {
-  "code" varchar(500) [pk, not null, ref: < "activity"."weather_condition"."cloud_cover"]
-  "full" varchar(500) [note: 'Full Title of Code']
-  "code_sort_order" integer
-  "valid_from" timestamptz [not null, default: `now()`]
-  "valid_to" timestamptz
-  "created_at" timestamptz [not null, default: `now()`]
-}
-
-Table "codes"."mesoslope_position" {
-  "code" varchar(500) [pk, not null, ref: < "activity"."microsite_condition"."mesoslope_position"]
-  "full" varchar(500) [note: 'Full Title of Code']
-  "code_sort_order" integer
-  "valid_from" timestamptz [not null, default: `now()`]
-  "valid_to" timestamptz
-  "created_at" timestamptz [not null, default: `now()`]
-}
-
-Table "codes"."site_surface_shape" {
-  "code" varchar(500) [pk, not null, ref: < "activity"."microsite_condition"."site_surface_shape"]
-  "full" varchar(500) [note: 'Full Title of Code']
-  "code_sort_order" integer
-  "valid_from" timestamptz [not null, default: `now()`]
-  "valid_to" timestamptz
-  "created_at" timestamptz [not null, default: `now()`]
-}
-
-Table "codes"."bio_agent_life_stage" {
-  "code" varchar(500) [pk, not null, ref: < "activity"."biological_agent_count"."stage"]
-  "full" varchar(500) [note: 'Full Title of Code']
-  "code_sort_order" integer
-  "valid_from" timestamptz [not null, default: `now()`]
-  "valid_to" timestamptz
-  "created_at" timestamptz [not null, default: `now()`]
-}
-
-Table "codes"."bio_agent_collection_method" {
-  "code" varchar(500) [pk, not null, ref: < "activity"."biocontrol_collection_information"."collection_method"]
-  "full" varchar(500) [note: 'Full Title of Code']
-  "code_sort_order" integer
-  "valid_from" timestamptz [not null, default: `now()`]
-  "valid_to" timestamptz
-  "created_at" timestamptz [not null, default: `now()`]
-}
-
-Table "codes"."biocontrol_presence" {
-  "code" varchar(500) [pk, not null, ref: < "activity"."biocontrol_dispersal_monitoring_information"."sign_of_biocontrol_presence"]
-  "full" varchar(500) [note: 'Full Title of Code']
-  "code_sort_order" integer
-  "valid_from" timestamptz [not null, default: `now()`]
-  "valid_to" timestamptz
-  "created_at" timestamptz [not null, default: `now()`]
+  "invasive_plant" varchar(64)
+  "evidence_of_treatment" yes_no_enum [note: 'Yes/No/Unknown']
+  "management_efficacy_rating" varchar(128)
+  "invasive_plants_on_site" varchar(64)
+  "treatment_pass" treatment_pass
+  "comment" varchar(256)
 }
