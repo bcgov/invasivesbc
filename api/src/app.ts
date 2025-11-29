@@ -5,6 +5,7 @@ import compression from 'compression';
 import { initialize } from 'express-openapi';
 import { api_doc } from 'sharedAPI/src/openapi/api-doc/api-doc';
 import { serve as swaggerServe, setup as swaggerSetup } from 'swagger-ui-express';
+import { OpenAPIV2, OpenAPIV3 } from 'openapi-types';
 import * as middleware from './middleware';
 import { applyApiDocSecurityFilters } from 'utils/api-doc-security-filter';
 
@@ -22,7 +23,7 @@ app.use(middleware.cors);
 // Initialize express-openapi framework
 initialize({
   validateApiDoc: false,
-  apiDoc: api_doc as any, // base open api spec
+  apiDoc: api_doc as unknown as OpenAPIV3.Document | OpenAPIV2.Document | string, // base open api spec
   app: app, // express app to initialize
   paths: './src/paths', // base folder for endpoint routes
   routesGlob: '**/*.{ts,js}', // updated default to allow .ts
