@@ -55,11 +55,11 @@ function getActivity(): RequestHandler {
     try {
       const resObj: Record<PropertyKey, any> = {};
       const entries = await db.query(getActivitiesByIdsSQL(idList));
-      for (let i = 0; i < entries.rows.length; i++) {
+      for (let i = 0; i < entries?.rows?.length; i++) {
         const a = entries.rows[i];
         resObj[a.activity_id] = { ...a.activity_payload, ...a };
         delete resObj[a.activity_id].activity_payload;
-        if (a?.media_keys.length > 0) {
+        if (a?.media_keys?.length > 0) {
           try {
             const res = await Promise.all(a.media_keys.map(async (key: string) => getFileFromS3(key)));
             resObj[a.activity_id].media = await getMediaItemsList(res, a.media_keys);

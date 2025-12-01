@@ -19,22 +19,29 @@ interface Options {
 }
 
 class QueryHandler {
-  pool: Pool;
-  poolConfig: PoolConfig;
-  connection: PoolClient;
+  private static pool: Pool;
+  private connection: PoolClient;
   maintain: boolean;
 
-  constructor({ poolConfig, maintain }: Options = {}) {
-    this.pool = new Pool(poolConfig ?? defaultPool);
+  constructor({ maintain }: Options = {}) {
     this.maintain = !!maintain;
   }
 
   public close() {
-    this.connection?.release();
+    if (this.connection) {
+      this.connection?.release();
+      this.connection = null;
+    }
   }
 
+  private getPool() {
+    if (!QueryHandler.pool) {
+      QueryHandler.pool = new Pool(defaultPool);
+    }
+    return QueryHandler.pool;
+  }
   private readonly getDBConnection = async (): Promise<PoolClient> => {
-    const client = await this.pool.connect();
+    const client = await this.getPool().connect();
     await client.query(`SET search_path TO ${client.escapeLiteral(DB_SCHEMA)}, public;`);
     this.connection = client;
   };
