@@ -55,18 +55,20 @@ function getActivity(): RequestHandler {
     try {
       const resObj: Record<PropertyKey, any> = {};
       const entries = await db.query(getActivitiesByIdsSQL(idList));
-      entries.rows.forEach(async (a) => {
+      for (let i = 0; i < entries.rows.length; i++) {
+        const a = entries.rows[i];
         resObj[a.activity_id] = { ...a.activity_payload, ...a };
         delete resObj[a.activity_id].activity_payload;
-        if (a?.media_keys?.length > 0) {
+        if (a?.media_keys.length > 0) {
           try {
-            const response = await Promise.all(a?.media_keys?.map(async (key: string) => getFileFromS3(key)));
-            resObj[a.activity_id].media = getMediaItemsList(response, a.media_keys);
+            const res = await Promise.all(a.media_keys.map(async (key: string) => getFileFromS3(key)));
+            resObj[a.activity_id].media = await getMediaItemsList(res, a.media_keys);
           } catch (e) {
             logger.error(e, 'Error fetching media from bucket');
           }
         }
-      });
+      }
+      // Get audit list
       for (const id of idList) {
         const result = await db.query(getActivityHistorySQL(id));
         resObj[id].activity_history = result.rows;
