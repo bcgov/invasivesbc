@@ -69,7 +69,7 @@ export const validate_inv_plants_arr_length = (formData: IGeneralFields, errors:
   const newErrors = errors;
 
   if (formData.invasive_plants.length < 1) {
-    newErrors.push('You must have at least one Invasive Plant added');
+    newErrors.push({ message: 'You must have at least one Invasive Plant added', severity: 'error' });
   }
   return newErrors;
 };
