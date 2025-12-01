@@ -179,7 +179,7 @@ const ChemicalTreatmentDetailsForm = ({ activitySubType, disabled, form_data, on
   //when we get application rate error, display warning dialog and if user presses yes, delete this error
   useEffect(() => {
     localErrors.forEach((err) => {
-      if (err.message.includes('exceeds maximum applicable rate of')) {
+      if (err?.message?.includes('exceeds maximum applicable rate of')) {
         setWarningDialog({
           dialogOpen: true,
           dialogTitle: 'Warning!',
