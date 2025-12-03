@@ -224,8 +224,8 @@
           "id": "18",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "unique": true,
           "nullable": false,
@@ -363,8 +363,8 @@
           "id": "29",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "unique": true,
           "nullable": false,
@@ -416,8 +416,8 @@
           "id": "33",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "unique": true,
           "nullable": false,
@@ -481,8 +481,8 @@
           "id": "38",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "unique": true,
           "nullable": false,
@@ -573,8 +573,8 @@
           "id": "45",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "nullable": false,
           "primaryKey": true,
@@ -745,8 +745,8 @@
           "id": "57",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "unique": true,
           "nullable": false,
@@ -874,8 +874,8 @@
           "id": "67",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "nullable": false,
           "primaryKey": true,
@@ -1044,8 +1044,8 @@
           "id": "80",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "unique": true,
           "nullable": false,
@@ -1097,8 +1097,8 @@
           "id": "84",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "nullable": false,
           "primaryKey": true,
@@ -1518,8 +1518,8 @@
           "id": "115",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "unique": true,
           "nullable": false,
@@ -1631,8 +1631,8 @@
           "id": "124",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "nullable": false,
           "primaryKey": true,
@@ -1686,8 +1686,8 @@
           "id": "128",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "unique": true,
           "nullable": false,
@@ -1843,8 +1843,8 @@
           "id": "140",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "nullable": false,
           "primaryKey": true,
@@ -1912,8 +1912,8 @@
           "id": "145",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "nullable": false,
           "primaryKey": true,
@@ -1965,8 +1965,8 @@
           "id": "149",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "nullable": false,
           "primaryKey": true,
@@ -2165,8 +2165,8 @@
           "id": "163",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "unique": true,
           "nullable": false,
@@ -2218,8 +2218,8 @@
           "id": "167",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "nullable": false,
           "primaryKey": true,
@@ -2390,8 +2390,8 @@
           "id": "180",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "unique": true,
           "nullable": false,
@@ -2442,8 +2442,8 @@
           "id": "184",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "nullable": false,
           "primaryKey": true,
@@ -2599,8 +2599,8 @@
           "id": "196",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "unique": false,
           "nullable": false,
@@ -2767,8 +2767,8 @@
           "id": "209",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "nullable": false,
           "primaryKey": true,
@@ -3128,8 +3128,8 @@
           "id": "237",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "unique": true,
           "nullable": false,
@@ -3182,8 +3182,8 @@
           "id": "241",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "unique": true,
           "nullable": false,
@@ -3298,8 +3298,8 @@
           "id": "250",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "unique": true,
           "nullable": false,
@@ -3465,8 +3465,8 @@
           "id": "263",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "nullable": false,
           "primaryKey": true,
@@ -3619,8 +3619,8 @@
           "id": "275",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "unique": true,
           "nullable": false,
@@ -3732,8 +3732,8 @@
           "id": "284",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "nullable": false,
           "primaryKey": true,
@@ -3866,8 +3866,8 @@
           "id": "293",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "unique": true,
           "nullable": false,
@@ -3979,8 +3979,8 @@
           "id": "302",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "unique": true,
           "nullable": false,
@@ -4356,8 +4356,8 @@
           "id": "331",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "nullable": false,
           "primaryKey": true,
@@ -4629,8 +4629,8 @@
           "id": "352",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "nullable": false,
           "primaryKey": true,
@@ -4951,8 +4951,8 @@
           "id": "377",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "nullable": false,
           "primaryKey": true,
@@ -5104,8 +5104,8 @@
           "id": "387",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "nullable": false,
           "primaryKey": true,
@@ -5159,8 +5159,8 @@
           "id": "391",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "nullable": false,
           "primaryKey": true,
@@ -5210,8 +5210,8 @@
           "id": "395",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "unique": true,
           "nullable": false,
@@ -5288,8 +5288,8 @@
           "id": "401",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "unique": true,
           "nullable": false,
@@ -5340,8 +5340,8 @@
           "id": "405",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "unique": true,
           "nullable": false,
@@ -5703,8 +5703,8 @@
           "id": "433",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "unique": true,
           "nullable": false,
@@ -5998,8 +5998,8 @@
           "id": "456",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "nullable": false,
           "primaryKey": true,
@@ -6050,8 +6050,8 @@
           "id": "460",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "unique": true,
           "nullable": false,
@@ -6399,8 +6399,8 @@
           "id": "487",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "nullable": true,
           "primaryKey": true,
@@ -6603,8 +6603,8 @@
           "id": "501",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "nullable": false,
           "primaryKey": true,
@@ -6729,8 +6729,8 @@
           "id": "509",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "unique": true,
           "nullable": false,
@@ -6885,8 +6885,8 @@
           "id": "521",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "unique": true,
           "nullable": false,
@@ -7049,8 +7049,8 @@
           "id": "534",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "unique": true,
           "nullable": false,
@@ -7309,8 +7309,8 @@
           "id": "554",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "unique": true,
           "nullable": false,
@@ -7396,8 +7396,8 @@
           "id": "561",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "unique": true,
           "nullable": false,
@@ -7729,8 +7729,8 @@
           "id": "587",
           "name": "activity_id",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "uuid",
+            "name": "uuid"
           },
           "unique": true,
           "nullable": false,
