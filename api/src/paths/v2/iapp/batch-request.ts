@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import getSelectColumnsByRecordSetType from 'sharedAPI/src/getSelectColumnsByRecordSetType';
 import { getIAPPSQLv2, sanitizeIAPPFilterObject } from 'paths/v2/iapp';
-import { ALL_ROLES } from 'constants/misc';
+import { ACTIVATED_ROLES } from 'constants/misc';
 import { InvasivesRequest } from 'utils/auth-utils';
 import { getSitesBasedOnSearchCriteriaSQL } from 'queries/iapp-queries';
 import { mapSitesRowsToJSON } from 'utils/iapp-json-utils';
@@ -14,7 +14,7 @@ import LoggerHandler from 'utils/endpoints/LoggerHandler';
 const logger = new LoggerHandler('/v2/iapp/batch-request');
 const GET: Operation = [getActivity()];
 new OpenAPISpec('Returns multiple IAPP records for device caching in Table/Record format', ['iapp'])
-  .security(ALL_ROLES)
+  .security(ACTIVATED_ROLES)
   .parameters({
     in: 'query',
     name: 'idList',

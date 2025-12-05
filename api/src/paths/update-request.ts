@@ -3,7 +3,7 @@ import { PoolClient } from 'pg';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
 import { buildMailer } from 'utils/mailer';
-import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { ACTIVATED_ROLES, SECURITY_ON } from 'constants/misc';
 import { getDBConnection } from 'database/db';
 import { updateAccessRequestStatusSQL } from 'queries/access-request-queries';
 import { grantRoleByValueSQL } from 'queries/role-queries';
@@ -31,7 +31,7 @@ POST.apiDoc = {
   security: SECURITY_ON
     ? [
         {
-          Bearer: ALL_ROLES
+          Bearer: ACTIVATED_ROLES
         }
       ]
     : [],
@@ -72,7 +72,7 @@ GET.apiDoc = {
   tags: ['update-request'],
   security: [
     {
-      Bearer: ALL_ROLES
+      Bearer: ACTIVATED_ROLES
     }
   ],
   responses: {

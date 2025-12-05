@@ -5,7 +5,7 @@ import axios from 'axios';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import proj4 from 'proj4';
-import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { ACTIVATED_ROLES, SECURITY_ON } from 'constants/misc';
 import { getLogger } from 'utils/logger';
 
 const defaultLog = getLogger('activity');
@@ -19,7 +19,7 @@ GET.apiDoc = {
   security: SECURITY_ON
     ? [
         {
-          Bearer: ALL_ROLES
+          Bearer: ACTIVATED_ROLES
         }
       ]
     : [],

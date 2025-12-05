@@ -5,7 +5,7 @@ import { SQLStatement } from 'sql-template-strings';
 import { ActivityType } from 'sharedAPI';
 
 import { PoolClient } from 'pg';
-import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { ACTIVATED_ROLES, SECURITY_ON } from 'constants/misc';
 import { streamActivitiesResult } from 'utils/iapp-json-utils';
 import { getDBConnection } from 'database/db';
 import { ActivitySearchCriteria } from 'models/activity';
@@ -33,7 +33,7 @@ GET.apiDoc = {
   security: SECURITY_ON
     ? [
         {
-          Bearer: ALL_ROLES
+          Bearer: ACTIVATED_ROLES
         }
       ]
     : [],
@@ -87,7 +87,7 @@ DELETE.apiDoc = {
   security: SECURITY_ON
     ? [
         {
-          Bearer: ALL_ROLES
+          Bearer: ACTIVATED_ROLES
         }
       ]
     : [],

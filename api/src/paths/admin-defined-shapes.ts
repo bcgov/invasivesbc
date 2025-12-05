@@ -11,7 +11,7 @@ import { getLogger } from 'utils/logger';
 import { getDBConnection } from 'database/db';
 import { GeoJSONFromKML, KMZToKML, sanitizeGeoJSON } from 'utils/kml-import';
 import { InvasivesRequest } from 'utils/auth-utils';
-import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { ACTIVATED_ROLES, SECURITY_ON } from 'constants/misc';
 import { simplifyGeojson } from 'utils/map-shaper-util';
 
 const defaultLog = getLogger('admin-defined-shapes');
@@ -25,7 +25,7 @@ GET.apiDoc = {
   security: SECURITY_ON
     ? [
         {
-          Bearer: ALL_ROLES
+          Bearer: ACTIVATED_ROLES
         }
       ]
     : [],
@@ -57,7 +57,7 @@ POST.apiDoc = {
   security: SECURITY_ON
     ? [
         {
-          Bearer: ALL_ROLES
+          Bearer: ACTIVATED_ROLES
         }
       ]
     : [],
@@ -100,7 +100,7 @@ DELETE.apiDoc = {
   security: SECURITY_ON
     ? [
         {
-          Bearer: ALL_ROLES
+          Bearer: ACTIVATED_ROLES
         }
       ]
     : [],

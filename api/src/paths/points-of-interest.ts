@@ -4,7 +4,7 @@ import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
 import { PoolClient } from 'pg';
 import { streamIAPPResult } from 'utils/iapp-json-utils';
-import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { ACTIVATED_ROLES, SECURITY_ON } from 'constants/misc';
 import { getDBConnection } from 'database/db';
 import { PointOfInterestSearchCriteria } from 'models/point-of-interest';
 import { getPointsOfInterestSQL, getSpeciesMapSQL } from 'queries/point-of-interest-queries';
@@ -22,7 +22,7 @@ GET.apiDoc = {
   security: SECURITY_ON
     ? [
         {
-          Bearer: ALL_ROLES
+          Bearer: ACTIVATED_ROLES
         }
       ]
     : [],

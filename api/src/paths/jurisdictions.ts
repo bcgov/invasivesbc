@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
 import geoJSON_Feature_Schema from 'sharedAPI/src/openapi/geojson-feature-doc.json';
-import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { ACTIVATED_ROLES, SECURITY_ON } from 'constants/misc';
 import { getDBConnection } from 'database/db';
 import { JurisdictionSearchCriteria } from 'models/jurisdiction';
 import { getJurisdictionsSQL } from 'queries/jurisdiction-queries';
@@ -19,7 +19,7 @@ POST.apiDoc = {
   security: SECURITY_ON
     ? [
         {
-          Bearer: ALL_ROLES
+          Bearer: ACTIVATED_ROLES
         }
       ]
     : [],

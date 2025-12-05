@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { InvasivesRequest } from 'utils/auth-utils';
 import { PostgresTileService } from 'utils/vectors/tile-service';
-import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { ACTIVATED_ROLES, SECURITY_ON } from 'constants/misc';
 import { sanitizeActivityFilterObject } from 'queries/activities-v2-queries';
 import { sanitizeIAPPFilterObject } from 'paths/v2/iapp';
 
@@ -13,7 +13,7 @@ const GET_API_DOC = {
   security: SECURITY_ON
     ? [
         {
-          Bearer: ALL_ROLES
+          Bearer: ACTIVATED_ROLES
         }
       ]
     : []

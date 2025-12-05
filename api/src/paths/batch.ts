@@ -3,7 +3,7 @@ import { RequestHandler, Response } from 'express';
 import { Operation } from 'express-openapi';
 import csvParser from 'csv-parser';
 import SQL from 'sql-template-strings';
-import { ALL_ROLES } from 'constants/misc';
+import { ACTIVATED_ROLES } from 'constants/misc';
 import { InvasivesRequest } from 'utils/auth-utils';
 import OpenAPISpec from 'utils/OpenAPISpec';
 import LoggerHandler from 'utils/endpoints/LoggerHandler';
@@ -13,9 +13,9 @@ const logger = new LoggerHandler('batch');
 const GET: Operation = [listBatches()];
 const POST: Operation = [createBatch()];
 
-new OpenAPISpec('Get the list of batch uploads', ['batch']).security(ALL_ROLES).build(GET);
+new OpenAPISpec('Get the list of batch uploads', ['batch']).security(ACTIVATED_ROLES).build(GET);
 new OpenAPISpec('Create a new file upload.', ['batch'])
-  .security(ALL_ROLES)
+  .security(ACTIVATED_ROLES)
   .requestBody({
     description: 'Batch upload processor',
     content: {

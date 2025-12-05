@@ -5,6 +5,7 @@ import LoggerHandler from './endpoints/LoggerHandler';
 import QueryHandler from './endpoints/QueryHandler';
 import { MDCAsyncLocal } from 'mdc';
 import { processTokenSQL } from 'queries/user-queries';
+import { Role as RoleConstants } from 'constants/misc';
 
 const logger = new LoggerHandler('auth-utils');
 
@@ -16,8 +17,8 @@ const APP_CERTIFICATE_URL =
  * @desc Partial Role interface for used values
  */
 interface Role {
-  role_id: number;
-  role_description: string;
+  role_id?: number;
+  role_description?: string;
   role_name: string;
   [key: PropertyKey]: unknown;
 }
@@ -161,7 +162,7 @@ export const authenticate = async (req: InvasivesRequest): Promise<void> => {
     preferredUsername: user.preferred_username,
     friendlyUsername: friendlyUsername,
     user: user,
-    roles: roles,
+    roles: !!user?.activation_status ? roles : [...roles, { role_name: RoleConstants.NOT_ACTIVATED }],
     filterForSelectable
   };
   MDC.request.user = req.authContext.preferredUsername || 'unresolved';

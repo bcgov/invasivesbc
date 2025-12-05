@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES } from 'constants/misc';
+import { ACTIVATED_ROLES } from 'constants/misc';
 import { getActivityHistorySQL, getActivitiesByIdsSQL } from 'queries/activity-queries';
 import { getFileFromS3 } from 'utils/file-utils';
 import { getMediaItemsList } from 'paths/media';
@@ -13,7 +13,7 @@ const logger = new LoggerHandler('/v2/activities/batch-request');
 const GET: Operation = [getActivity()];
 
 new OpenAPISpec('Returns multiple Activity Records for device caching', ['activity'])
-  .security(ALL_ROLES)
+  .security(ACTIVATED_ROLES)
   .parameters({
     in: 'query',
     name: 'idList',

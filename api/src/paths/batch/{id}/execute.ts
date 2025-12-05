@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PoolClient, QueryResult } from 'pg';
 import SQL from 'sql-template-strings';
-import { ALL_ROLES } from 'constants/misc';
+import { ACTIVATED_ROLES } from 'constants/misc';
 import { getDBConnection } from 'database/db';
 import { InvasivesRequest } from 'utils/auth-utils';
 import { TemplateService } from 'utils/batch/template-utils';
@@ -16,7 +16,7 @@ const logger = new LoggerHandler('batch');
 const POST: Operation = [execBatch()];
 
 new OpenAPISpec('Batch upload processor', ['batch'])
-  .security(ALL_ROLES)
+  .security(ACTIVATED_ROLES)
   .requestBody({
     description: 'Batch upload processor',
     content: {
