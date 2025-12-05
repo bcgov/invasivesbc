@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import SQL from 'sql-template-strings';
-import { ALL_ROLES } from 'constants/misc';
+import { ACTIVATED_ROLES } from 'constants/misc';
 import { InvasivesRequest } from 'utils/auth-utils';
 import LoggerHandler from 'utils/endpoints/LoggerHandler';
 import OpenAPISpec from 'utils/OpenAPISpec';
@@ -12,7 +12,7 @@ const logger = new LoggerHandler(NAMESPACE);
 const POST: Operation = [postHandler()];
 
 new OpenAPISpec('Fetch NTS 50k grid references for specified geometry', [NAMESPACE])
-  .security(ALL_ROLES)
+  .security(ACTIVATED_ROLES)
   .requestBody({
     description: 'A GeoJSON object specifying a geometry',
     content: {

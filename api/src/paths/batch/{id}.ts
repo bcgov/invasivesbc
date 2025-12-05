@@ -3,7 +3,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PoolClient, QueryResult } from 'pg';
 import csvParser from 'csv-parser';
-import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { ACTIVATED_ROLES, SECURITY_ON } from 'constants/misc';
 import { getDBConnection } from 'database/db';
 import { InvasivesRequest } from 'utils/auth-utils';
 import { TemplateService } from 'utils/batch/template-utils';
@@ -19,7 +19,7 @@ const GET_API_DOC = {
   security: SECURITY_ON
     ? [
         {
-          Bearer: ALL_ROLES
+          Bearer: ACTIVATED_ROLES
         }
       ]
     : []
@@ -35,7 +35,7 @@ const PUT_API_DOC = {
   security: SECURITY_ON
     ? [
         {
-          Bearer: ALL_ROLES
+          Bearer: ACTIVATED_ROLES
         }
       ]
     : [],
@@ -316,7 +316,7 @@ const DELETE_API_DOC = {
   security: SECURITY_ON
     ? [
         {
-          Bearer: ALL_ROLES
+          Bearer: ACTIVATED_ROLES
         }
       ]
     : []

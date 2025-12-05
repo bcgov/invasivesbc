@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { PoolClient, QueryResult } from 'pg';
 import { SQLStatement } from 'sql-template-strings';
 import geoJSON_Feature_Schema from 'sharedAPI/src/openapi/geojson-feature-doc.json';
-import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { ACTIVATED_ROLES, SECURITY_ON } from 'constants/misc';
 import { getDBConnection } from 'database/db';
 import { ActivityPostRequestBody } from 'models/activity';
 import { getActivitySQL, IPutActivitySQL, postActivitySQL, putActivitySQL } from 'queries/activity-queries';
@@ -24,7 +24,7 @@ const post_put_apiDoc = {
   security: SECURITY_ON
     ? [
         {
-          Bearer: ALL_ROLES
+          Bearer: ACTIVATED_ROLES
         }
       ]
     : [],

@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
 import { getEmailTemplatesFromDB } from './email-templates';
-import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import {ACTIVATED_ROLES, Role, SECURITY_ON} from 'constants/misc';
 import { getDBConnection } from 'database/db';
 import {
   approveAccessRequestsSQL,
@@ -30,7 +30,7 @@ POST.apiDoc = {
   security: SECURITY_ON
     ? [
         {
-          Bearer: ALL_ROLES
+          Bearer: [...ACTIVATED_ROLES, Role.NOT_ACTIVATED]
         }
       ]
     : [],
@@ -73,7 +73,7 @@ GET.apiDoc = {
   security: SECURITY_ON
     ? [
         {
-          Bearer: ALL_ROLES
+          Bearer: ACTIVATED_ROLES
         }
       ]
     : [],

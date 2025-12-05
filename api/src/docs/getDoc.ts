@@ -1,10 +1,10 @@
-import { ALL_ROLES } from 'constants/misc';
+import { ACTIVATED_ROLES } from 'constants/misc';
 
 export const retrieveGetDoc = (responseDescription: string) => {
   return {
     security: [
       {
-        Bearer: ALL_ROLES
+        Bearer: ACTIVATED_ROLES
       }
     ],
     responses: {

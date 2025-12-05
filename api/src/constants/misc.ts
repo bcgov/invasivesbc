@@ -21,12 +21,13 @@ export enum Role {
   INDIGENOUS_RISO_STAFF_BOTH = 'indigenous_riso_staff_both',
   MUSSEL_INSPECTION_OFFICER = 'mussel_inspection_officer',
   MASTER_ADMINISTRATOR = 'master_administrator',
-  PRIMARY_BIOCONTROL_USER = 'biocontrol_user'
+  PRIMARY_BIOCONTROL_USER = 'biocontrol_user',
+  NOT_ACTIVATED = 'not_activated'
 }
 
 export const SECURITY_ON = process.env.SECURITY_ON === 'false' ? false : true;
 
-export const ALL_ROLES = [
+export const ACTIVATED_ROLES = [
   Role.ADMIN,
   Role.MANAGER,
   Role.DATA_EDITOR,

@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getIAPPSQLv2, sanitizeIAPPFilterObject } from '../iapp';
-import { ALL_ROLES } from 'constants/misc';
+import { ACTIVATED_ROLES } from 'constants/misc';
 import { InvasivesRequest } from 'utils/auth-utils';
 import LoggerHandler from 'utils/endpoints/LoggerHandler';
 import OpenAPISpec from 'utils/OpenAPISpec';
@@ -13,7 +13,7 @@ const logger = new LoggerHandler(NAMESPACE);
 const POST: Operation = [postHandler()];
 
 new OpenAPISpec('Fetch bounding box based on search criteria', [NAMESPACE])
-  .security(ALL_ROLES)
+  .security(ACTIVATED_ROLES)
   .requestBody({
     description: 'Recordset search filter criteria',
     content: {

@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 
 import { SQLStatement } from 'sql-template-strings';
 import { GetObjectCommandOutput } from '@aws-sdk/client-s3';
-import { ALL_ROLES } from 'constants/misc';
+import { ACTIVATED_ROLES } from 'constants/misc';
 import { getActivityHistorySQL, getActivitySqlWithPermissions } from 'queries/activity-queries';
 import { getFileFromS3 } from 'utils/file-utils';
 import { getMediaItemsList } from 'paths/media';
@@ -17,7 +17,7 @@ const logger = new LoggerHandler('activity');
 const GET: Operation = [getActivity(), getMedia(), returnActivity()];
 
 new OpenAPISpec('Fetches a single activity based on its primary key.', ['activity'])
-  .security(ALL_ROLES)
+  .security(ACTIVATED_ROLES)
   .parameters({
     description: 'activity id',
     in: 'path',

@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import IParsedAddress from 'sharedAPI/src/interfaces/IParsedAddress';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { ACTIVATED_ROLES, SECURITY_ON } from 'constants/misc';
 import { getLogger } from 'utils/logger';
 import { InvasivesRequest } from 'utils/auth-utils';
 
@@ -13,7 +13,7 @@ const GET: Operation = [getHandler()];
 GET.apiDoc = {
   description: 'Partial Address Lookup via BC Geocoder API',
   tags: [NAMESPACE],
-  security: SECURITY_ON ? [{ Bearer: ALL_ROLES }] : [],
+  security: SECURITY_ON ? [{ Bearer: ACTIVATED_ROLES }] : [],
   parameters: [
     {
       in: 'query',

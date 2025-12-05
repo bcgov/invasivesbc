@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import moment from 'moment';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES, SEARCH_LIMIT_MAX, SECURITY_ON } from 'constants/misc';
+import { ACTIVATED_ROLES, SEARCH_LIMIT_MAX, SECURITY_ON } from 'constants/misc';
 import { getLogger } from 'utils/logger';
 import {
   closeMetabaseSession,
@@ -23,7 +23,7 @@ POST.apiDoc = {
   security: SECURITY_ON
     ? [
         {
-          Bearer: ALL_ROLES
+          Bearer: ACTIVATED_ROLES
         }
       ]
     : [],
@@ -98,7 +98,7 @@ GET.apiDoc = {
   tags: ['metabase'],
   security: [
     {
-      Bearer: ALL_ROLES
+      Bearer: ACTIVATED_ROLES
     }
   ],
   requestBody: {

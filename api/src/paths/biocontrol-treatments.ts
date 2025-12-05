@@ -2,13 +2,13 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import SQL, { SQLStatement } from 'sql-template-strings';
 
-import { ALL_ROLES } from 'constants/misc';
+import { ACTIVATED_ROLES } from 'constants/misc';
 import OpenAPISpec from 'utils/OpenAPISpec';
 import QueryHandler from 'utils/endpoints/QueryHandler';
 
 const GET: Operation = [getBiocontrolTreatments()];
 new OpenAPISpec('Fetches all Biocontrol treatment code pairings', ['biocontrol-treatments'])
-  .security(ALL_ROLES)
+  .security(ACTIVATED_ROLES)
   .response(200, {
     description: 'Biocontrol treatments response object',
     content: {

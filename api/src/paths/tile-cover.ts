@@ -5,7 +5,7 @@ import { SQLStatement } from 'sql-template-strings';
 import { getLogger } from 'utils/logger';
 import { InvasivesRequest } from 'utils/auth-utils';
 import { getDBConnection } from 'database/db';
-import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { ACTIVATED_ROLES, SECURITY_ON } from 'constants/misc';
 
 import { getAreaOfInterestTileCoordinates, getTilesForCells } from 'queries/area-of-interest-queries';
 
@@ -19,7 +19,7 @@ POST.apiDoc = {
   security: SECURITY_ON
     ? [
         {
-          Bearer: ALL_ROLES
+          Bearer: ACTIVATED_ROLES
         }
       ]
     : [],

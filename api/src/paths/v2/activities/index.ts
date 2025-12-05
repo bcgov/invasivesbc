@@ -1,7 +1,7 @@
 import { Operation } from 'express-openapi';
 import { RequestHandler, Response } from 'express';
 import { streamActivitiesResult } from 'utils/iapp-json-utils';
-import { ALL_ROLES } from 'constants/misc';
+import { ACTIVATED_ROLES } from 'constants/misc';
 import { InvasivesRequest } from 'utils/auth-utils';
 import { getActivitiesSQLv2, sanitizeActivityFilterObject } from 'queries/activities-v2-queries';
 import OpenAPISpec from 'utils/OpenAPISpec';
@@ -12,7 +12,7 @@ const logger = new LoggerHandler('activity');
 const POST: Operation = [getActivitiesBySearchFilterCriteria()];
 
 new OpenAPISpec('Fetches all activities based on search criteria.', ['activity'])
-  .security(ALL_ROLES)
+  .security(ACTIVATED_ROLES)
   .requestBody({
     description: 'Activities Request Object',
     content: {
