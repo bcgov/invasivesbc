@@ -5,6 +5,7 @@ import {
   activity_create_function,
   ActivityStatus,
   ActivitySubtype,
+  ActivitySubtypeShortLabels,
   ActivityType,
   MAX_AREA,
   populateSpeciesArrays
@@ -485,14 +486,20 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST(action) {
 
   try {
     // filter Treatments and/or Biocontrol
-    const linkedActivitySubtypes: ActivitySubtype[] = (() => {
+    const linkedActivitySubtypes: ActivitySubtypeShortLabels[] = (() => {
       switch (payloadActivity.activity_subtype) {
         case 'Activity_Monitoring_MechanicalTerrestrialAquaticPlant':
-          return [ActivitySubtype.Treatment_MechanicalPlant, ActivitySubtype.Treatment_MechanicalPlantAquatic];
+          return [
+            ActivitySubtypeShortLabels.Activity_Treatment_MechanicalPlantTerrestrial,
+            ActivitySubtypeShortLabels.Activity_Treatment_MechanicalPlantAquatic
+          ];
         case 'Activity_Monitoring_ChemicalTerrestrialAquaticPlant':
-          return [ActivitySubtype.Treatment_ChemicalPlant, ActivitySubtype.Treatment_ChemicalPlantAquatic];
+          return [
+            ActivitySubtypeShortLabels.Activity_Treatment_ChemicalPlantTerrestrial,
+            ActivitySubtypeShortLabels.Activity_Treatment_ChemicalPlantAquatic
+          ];
         case 'Activity_Monitoring_BiocontrolRelease_TerrestrialPlant':
-          return [ActivitySubtype.Treatment_BiologicalPlant];
+          return [ActivitySubtypeShortLabels.Activity_Biocontrol_Release];
         default:
           return [];
       }
@@ -525,7 +532,7 @@ export function* getLinkedTreatmentsFromCachedRecords(req: TreatmentIdsRequestOn
   const service = yield RecordCacheServiceFactory.getPlatformInstance();
   const overlappingRecords = yield service.getRecordIdsOverlappingFeature(req.search_feature);
   const treatmentRecords: UserRecord[] = (yield service.getPaginatedCachedActivityRecords(overlappingRecords)).filter(
-    (record: UserRecord) => req.activity_subtype.includes(record.activity_subtype)
+    (record: UserRecord) => req.activity_subtype.includes(record.activity_subtype_full)
   );
 
   yield put(

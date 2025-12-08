@@ -1,10 +1,10 @@
 import { createAction } from '@reduxjs/toolkit';
 import { FeatureCollection, Geometry } from 'geojson';
-import { ActivitySubtype } from 'sharedAPI';
+import { ActivitySubtypeShortLabels } from 'sharedAPI';
 import SuggestedTreatmentId from 'interfaces/SuggestedTreatmentId';
 
 interface TreatmentIdsRequestOnline {
-  activity_subtype: ActivitySubtype[];
+  activity_subtype: ActivitySubtypeShortLabels[];
   user_roles: Record<string, any>[];
   search_feature: FeatureCollection | boolean;
 }
