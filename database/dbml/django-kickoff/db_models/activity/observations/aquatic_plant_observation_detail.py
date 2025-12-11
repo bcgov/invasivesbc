@@ -10,7 +10,7 @@ class AquaticPlantObservationDetail(BaseOneToManyActivityTable):
   distribution = models.ForeignKey(DistributionCode, on_delete=models.PROTECT, blank=True)
   life_stage = models.ForeignKey(PlantLifeStageCode, on_delete=models.PROTECT, blank=True)
   observation_type = models.CharField(choices=ObservationType)
-  sample_point_id = models.CharField(max_length=128)
+  sample_point_id = models.CharField(max_length=128, blank=True)
 
   class Meta:
     # db_table='"activity"."aquatic_plant_observation_detail"'
