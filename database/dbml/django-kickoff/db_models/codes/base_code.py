@@ -7,7 +7,7 @@ class BaseCode(models.Model):
   full = models.CharField(max_length=128)
   code_sort_order = models.PositiveSmallIntegerField(default=0)
   valid_from = models.DateField(auto_now_add=True)
-  valid_to = models.DateField(null=True)
+  valid_to = models.DateField(default=datetime.date(2125, 12, 31))
   created_at = models.DateTimeField(auto_now_add=True)
 
   def __str__(self):
@@ -17,6 +17,7 @@ class BaseCode(models.Model):
     """
     Model-level validation
     """
+    super().clean()
     ## Ensure the valid_to date occurs after the valid_from date. a valid_from date is empty on first entry, so check against current time.
     if self.valid_to and self.valid_from and self.valid_to < self.valid_from or \
        self.valid_to and not self.valid_from and self.valid_to < datetime.date.today():
@@ -37,7 +38,9 @@ class BaseCode(models.Model):
   class Meta:
     abstract=True
     ordering=['code_sort_order', 'full']
-    unique_together=[['code', 'full']]
+    constraints = [
+      models.UniqueConstraint(fields=["code", "full"], name="unique_code_pair")
+    ]
     constraints = [
       models.CheckConstraint(
         condition=models.Q(code_sort_order__gte=0),

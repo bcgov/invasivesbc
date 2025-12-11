@@ -134,7 +134,7 @@ class SpecificUseCode(BaseCode):
 
 class SubstrateCode(BaseCode):
   class Meta:
-    # db_table='"codes"."PH"'
+    # db_table='"codes"."substrate_code"'
     pass
 
 class TerrestrialPlantCode(BaseCode):
@@ -150,6 +150,11 @@ class WaterbodyFlowCode(BaseCode):
 class WaterbodyFlowSeasonalCode(BaseCode):
   class Meta:
     # db_table='"codes"."waterbody_flow_seasonal"'
+    pass
+
+class WaterbodyType(BaseCode):
+  class Meta:
+    #db_table='"codes"."waterbody_type"'
     pass
 
 class WaterbodyUseCode(BaseCode):

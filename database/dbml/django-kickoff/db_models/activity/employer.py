@@ -1,17 +1,16 @@
 from django.db import models
-from .activity_basic import ActivityBasic
-from ..codes import EmployerCode
+from invasivesbc.db_models.activity.abstract_sub_tables import BaseOneToManyActivityTable
+from invasivesbc.db_models.codes import EmployerCode
 
-class Employer(models.Model):
-  activity_id = models.ForeignKey(
-    ActivityBasic,
-    on_delete=models.CASCADE
-  )
-  employer = models.ForeignKey(EmployerCode, blank=False, on_delete=models.PROTECT)
+class Employer(BaseOneToManyActivityTable):
+  employer = models.ForeignKey(EmployerCode, on_delete=models.PROTECT)
 
   class Meta:
+    # db_table='"activity"."employer"'
     db_table_comment="Employer of the person filling out the activity form."
-    unique_together=[["activity_id", "employer"]]
+    constraints = [
+      models.UniqueConstraint(fields=["activity_id", "employer"], name="unique_employer_per_activity")
+    ]
 
   def __str__(self):
     return f"{self.activity_id.short_id}: {self.employer.full}"

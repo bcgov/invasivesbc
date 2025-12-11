@@ -126,3 +126,5 @@ Caddyfile-local
 .run
 
 .devops
+
+__pycache__

@@ -1,8 +1,8 @@
 from django.db import models
 import uuid, datetime
-from ..enums.form_status import FormStatus
-from ..enums.activity_type import ActivityType
-from ..codes import ActivitySubtypeCode
+from invasivesbc.db_models.enums.form_status import FormStatus
+from invasivesbc.db_models.enums.activity_type import ActivityType
+from invasivesbc.db_models.codes import ActivitySubtypeCode
 
 UUID_SUBSTRING_LENGTH = 8
 
@@ -11,29 +11,35 @@ class ActivityBasic(models.Model):
   short_id = models.CharField(
     max_length=16,
     db_comment="User Readable formatted ID",
-    editable=False,
-    blank=False
+    editable=False
   )
-  activity_type = models.CharField(
-    choices=ActivityType,
-    blank=False
-  )
+  activity_type = models.CharField(choices=ActivityType, db_index=True)
   activity_subtype = models.ForeignKey(
     ActivitySubtypeCode,
     on_delete=models.RESTRICT,
-    blank=False
+    db_index=True
   )
-  activity_date = models.DateField(blank=False)
-  created_by = models.CharField(max_length=64, blank=False)
+  activity_date = models.DateField(db_index=True)
+  created_by = models.CharField(max_length=64, db_index=True)
   form_status = models.CharField(
     max_length=16,
     choices=FormStatus,
-    default=FormStatus.Draft.value
+    default=FormStatus.Draft,
+    db_index=True
   )
   access_description = models.TextField(max_length=1024, blank=True)
   comment = models.TextField(max_length=1024, blank=True)
   created_timestamp = models.DateTimeField(auto_now_add=True)
   received_timestamp = models.DateTimeField(auto_now_add=True, editable=False)
+
+  class Meta:
+    # db_table='"activity"."activity_basic"'
+    db_table_comment="Base fields for an activity. All records contain this information"
+    ordering=["activity_date", "received_timestamp"]
+    indexes = [
+      models.Index(fields=['activity_type', 'activity_date'], name="activity_basic_date_type_idx"),
+      models.Index(fields=['activity_subtype', 'activity_date'], name="activity_basic_date_sub_idx")
+    ]
 
   def __str__(self):
     return self.short_id
@@ -50,6 +56,3 @@ class ActivityBasic(models.Model):
         print(f"Subtype not found in database: {self.activity_subtype}")
         raise ActivitySubtypeCode.DoesNotExist
     super().save(*args, **kwargs)
-
-  class Meta:
-    db_table_comment="Base fields for an activity. All records contain this information"
