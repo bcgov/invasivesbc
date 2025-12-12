@@ -13,6 +13,7 @@ class RegionalDetail(BaseOneToOneActivityTable):
   invasive_plant_management_areas = models.CharField(blank=True, max_length=128)
   moti_districts = models.CharField(
     blank=True,
+    null=True,
     db_column="Ministry of Transportation and Infrastructure (MOTI)",
     max_length=128
   )

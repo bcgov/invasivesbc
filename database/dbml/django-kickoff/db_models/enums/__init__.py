@@ -1,5 +1,6 @@
 from .activity_type import *
 from .cardinal_direction import *
+from .collection_type import *
 from .form_status import *
 from .observation_type import *
 from .plant_disposal_format import *

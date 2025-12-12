@@ -1,7 +1,6 @@
 from django.db import models
 import uuid, datetime
-from invasivesbc.db_models.enums.form_status import FormStatus
-from invasivesbc.db_models.enums.activity_type import ActivityType
+from invasivesbc.db_models.enums import ActivityType, FormStatus
 from invasivesbc.db_models.codes import ActivitySubtypeCode
 
 UUID_SUBSTRING_LENGTH = 8
@@ -27,8 +26,8 @@ class ActivityBasic(models.Model):
     default=FormStatus.Draft,
     db_index=True
   )
-  access_description = models.TextField(max_length=1024, blank=True)
-  comment = models.TextField(max_length=1024, blank=True)
+  access_description = models.TextField(max_length=1024, blank=True, null=True)
+  comment = models.TextField(max_length=1024, blank=True, null=True)
   created_timestamp = models.DateTimeField(auto_now_add=True)
   received_timestamp = models.DateTimeField(auto_now_add=True, editable=False)
 

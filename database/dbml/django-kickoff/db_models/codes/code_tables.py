@@ -92,6 +92,16 @@ class MesoslopePositionCode(BaseCode):
     # db_table='"codes"."mesoslope_position"'
     pass
 
+class PestManagementPlan(BaseCode):
+  class Meta:
+    # db_table='"codes"."pest_management_plan"'
+    pass
+
+class ChemicalPrecautionaryStatement(BaseCode):
+  class Meta:
+    # db_table='"codes"."chemical_precautionary_statement"'
+    pass
+
 class PlantLifeStageCode(BaseCode):
   class Meta:
     # db_table='"codes"."plant_life_stage"'
@@ -105,6 +115,11 @@ class PlantMechanicalTreatmentMethodCode(BaseCode):
 class PrecipitationCode(BaseCode):
   class Meta:
     # db_table='"codes"."precipitation"'
+    pass
+
+class ServiceLicenseNumberAndCompany(BaseCode):
+  class Meta:
+    # db_table='"codes"."service_license_number_and_company"'
     pass
 
 class ShorelineTypeCode(BaseCode):

@@ -6,11 +6,11 @@ from invasivesbc.db_models.enums import ObservationType
 
 class AquaticPlantObservationDetail(BaseOneToManyActivityTable):
   invasive_plant = models.ForeignKey(AquaticPlantCode, on_delete=models.PROTECT)
-  density = models.ForeignKey(DensityCode, on_delete=models.PROTECT, blank=True)
-  distribution = models.ForeignKey(DistributionCode, on_delete=models.PROTECT, blank=True)
-  life_stage = models.ForeignKey(PlantLifeStageCode, on_delete=models.PROTECT, blank=True)
+  density = models.ForeignKey(DensityCode, on_delete=models.PROTECT, blank=True, null=True)
+  distribution = models.ForeignKey(DistributionCode, on_delete=models.PROTECT, blank=True, null=True)
+  life_stage = models.ForeignKey(PlantLifeStageCode, on_delete=models.PROTECT, blank=True, null=True)
   observation_type = models.CharField(choices=ObservationType)
-  sample_point_id = models.CharField(max_length=128, blank=True)
+  sample_point_id = models.CharField(max_length=128, blank=True, null=True)
 
   class Meta:
     # db_table='"activity"."aquatic_plant_observation_detail"'

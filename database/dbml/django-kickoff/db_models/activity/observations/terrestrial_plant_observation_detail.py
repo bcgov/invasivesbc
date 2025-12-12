@@ -6,9 +6,9 @@ from invasivesbc.db_models.enums import ObservationType
 
 class TerrestrialPlantObservationDetail(BaseOneToManyActivityTable):
   invasive_plant = models.ForeignKey(TerrestrialPlantCode, on_delete=models.PROTECT)
-  density = models.ForeignKey(DensityCode, on_delete=models.PROTECT, blank=True)
-  distribution = models.ForeignKey(DistributionCode, on_delete=models.PROTECT, blank=True)
-  life_stage = models.ForeignKey(PlantLifeStageCode, on_delete=models.PROTECT, blank=True)
+  density = models.ForeignKey(DensityCode, on_delete=models.PROTECT, blank=True, null=True)
+  distribution = models.ForeignKey(DistributionCode, on_delete=models.PROTECT, blank=True, null=True)
+  life_stage = models.ForeignKey(PlantLifeStageCode, on_delete=models.PROTECT, blank=True, null=True)
   observation_type = models.CharField(choices=ObservationType)
 
   class Meta:

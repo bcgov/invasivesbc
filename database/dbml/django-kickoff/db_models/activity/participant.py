@@ -6,7 +6,9 @@ class Participant(BaseOneToManyActivityTable):
   pac_number = models.CharField(
     max_length=64,
     blank=True,
-    db_column="Pesticide Application Number (if applicable)")
+    null=True,
+    db_column="Pesticide Application Number (if applicable)"
+  )
 
   class Meta:
     # db_table='"activity"."participant"'
