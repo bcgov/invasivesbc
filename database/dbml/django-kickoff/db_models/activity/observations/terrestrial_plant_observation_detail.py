@@ -5,16 +5,25 @@ from invasivesbc.db_models.codes import DensityCode, DistributionCode, Terrestri
 from invasivesbc.db_models.enums import ObservationType
 
 class TerrestrialPlantObservationDetail(BaseOneToManyActivityTable):
+  """
+    section title:
+      Terrestrial Invasive Plants
+    consumed by:
+      - Terrestrial Invasive Plant Observation
+  """
   invasive_plant = models.ForeignKey(TerrestrialPlantCode, on_delete=models.PROTECT)
   density = models.ForeignKey(DensityCode, on_delete=models.PROTECT, blank=True, null=True)
   distribution = models.ForeignKey(DistributionCode, on_delete=models.PROTECT, blank=True, null=True)
   life_stage = models.ForeignKey(PlantLifeStageCode, on_delete=models.PROTECT, blank=True, null=True)
-  observation_type = models.CharField(choices=ObservationType)
+  observation_type = models.CharField(choices=ObservationType, db_comment="The invasive plant in this record was [not] seen at the site.")
 
   class Meta:
     # db_table='"activity"."terrestrial_plant_observation_detail"'
     constraints = [
-      models.UniqueConstraint(fields=["activity_id", "invasive_plant"], name="terrestrialplant_observation_detail_unique_plant")
+      models.UniqueConstraint(
+        fields=["activity_id", "invasive_plant"],
+        name="terrestrialplant_observation_detail_unique_plant"
+      )
     ]
 
   def clean(self):

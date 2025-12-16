@@ -3,6 +3,11 @@ from invasivesbc.db_models.activity.abstract_sub_tables import BaseOneToOneActiv
 from invasivesbc.db_models.enums.yes_no_unknown import YesNoUnknown
 
 class SuitableForBiocontrol(BaseOneToOneActivityTable):
+  """
+    consumed by:
+      - Aquatic Invasive Plant Observation
+      - Terrestrial Invasive Plant Observation
+  """
   suitable_for_biocontrol = models.CharField(choices=YesNoUnknown, default=YesNoUnknown.Unknown)
 
   class Meta:

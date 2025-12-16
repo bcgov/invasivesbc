@@ -2,6 +2,10 @@ from django.db import models
 from invasivesbc.db_models.activity.abstract_sub_tables import BaseOneToOneActivityTable
 
 class BatchDetail(BaseOneToOneActivityTable):
+  """
+    Represents a single row-level association between an uploaded batch record to an activity record.
+    Non-User submitted fields. Entered as part of the batch upload process.
+  """
   batch_id = models.PositiveBigIntegerField()
   row_id = models.PositiveBigIntegerField(db_comment="Row on uploaded document")
 

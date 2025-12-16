@@ -6,6 +6,12 @@ from invasivesbc.db_models.codes import ActivitySubtypeCode
 UUID_SUBSTRING_LENGTH = 8
 
 class ActivityBasic(models.Model):
+  """
+    Base Model for all form types.
+    consumed by:
+      - All IBC Activities
+  """
+
   activity_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
   short_id = models.CharField(
     max_length=16,
@@ -26,7 +32,12 @@ class ActivityBasic(models.Model):
     default=FormStatus.Draft,
     db_index=True
   )
-  access_description = models.TextField(max_length=1024, blank=True, null=True)
+  access_description = models.TextField(
+    max_length=1024,
+    db_comment="User directions to access location",
+    blank=True,
+    null=True
+  )
   comment = models.TextField(max_length=1024, blank=True, null=True)
   created_timestamp = models.DateTimeField(auto_now_add=True)
   received_timestamp = models.DateTimeField(auto_now_add=True, editable=False)
@@ -44,6 +55,9 @@ class ActivityBasic(models.Model):
     return self.short_id
 
   def save(self, *args, **kwargs):
+    """
+      For new records, Mutate the activity ID into the ShortID For a record
+    """
     if not self.short_id: # Create new ShortID
       try:
         subtype = ActivitySubtypeCode.objects.get(pk=self.activity_subtype).short_id_format

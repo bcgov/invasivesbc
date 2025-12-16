@@ -14,7 +14,7 @@ class TerrestrialBiocontrolDispersalMonitoring(BaseOneToManyActivityTable):
     - Biocontrol Dispersal Monitoring
   """
   invasive_plant = models.ForeignKey(TerrestrialPlantCode, on_delete=models.PROTECT)
-  biological_agent = models.ForeignKey(BiocontrolAgentCode, on_delete=models.PROTECT)
+  biocontrol_agent = models.ForeignKey(BiocontrolAgentCode, on_delete=models.PROTECT)
   biocontrol_present = models.BooleanField()
   sign_of_biocontrol_presence = models.ForeignKey(BiocontrolPresenceCode, on_delete=models.PROTECT, null=True, blank=True)
   monitoring_type = models.CharField(choices=CollectionType)

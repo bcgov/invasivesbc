@@ -5,7 +5,7 @@ from invasivesbc.db_models.codes import MesoslopePositionCode, SiteSurfaceShapeC
 class MicrositeCondition(BaseOneToOneActivityTable):
   """
     Microsite Condition details for activities,
-    used by:
+    consumed by:
       - Biocontrol Collection
       - Biocontrol Release Monitoring
       - Biocontrol Dispersal Monitoring

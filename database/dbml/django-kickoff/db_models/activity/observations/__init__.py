@@ -8,5 +8,5 @@ from .voucher_specimen import *
 from .waterbody_data import *
 from .waterbody_flow_detail import *
 from .waterbody_level_management import *
-from .waterbody_substrate_level import *
+from .waterbody_substrate_type import *
 from .waterbody_use import *

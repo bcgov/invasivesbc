@@ -2,6 +2,12 @@ from django.db import models
 from invasivesbc.db_models.activity.abstract_sub_tables import BaseOneToManyActivityTable
 
 class RisoArea(BaseOneToManyActivityTable):
+  """
+    Regional Invasive Species Organization (RISO) areas
+    Non-User submitted Field. Generated after an activity submission based on latest geo data
+    One Geolocation may be contained by overlapping RISO areas
+  """
+
   organization = models.CharField(max_length=62, db_index=True)
 
   class Meta:

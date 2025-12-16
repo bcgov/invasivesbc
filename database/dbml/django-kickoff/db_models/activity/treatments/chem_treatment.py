@@ -22,7 +22,7 @@ class ChemTreatment(BaseOneToOneActivityTable):
   precautionary_statement = models.ForeignKey(ChemicalPrecautionaryStatement, on_delete=models.PROTECT)
   ntz_reduction_bool = models.BooleanField()
   rationale_for_ntz_reduction = models.CharField(max_length=256, blank=True, null=True)
-  additional_unmapped_well_water_bool = models.BooleanField(db_column="Additional or unmapped wells or water license intakes within 30m")
+  additional_unmapped_well_water_bool = models.BooleanField(db_comment="Additional or unmapped wells or water license intakes within 30m")
   pest_injury_threshold_determination_bool = models.BooleanField()
 
   class Meta:

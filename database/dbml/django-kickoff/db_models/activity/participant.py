@@ -7,12 +7,12 @@ class Participant(BaseOneToManyActivityTable):
     max_length=64,
     blank=True,
     null=True,
-    db_column="Pesticide Application Number (if applicable)"
+    db_comment="Pesticide Application Number (if applicable)"
   )
 
   class Meta:
     # db_table='"activity"."participant"'
-    db_table_comment="A Participant is any individual who participated in an activity. They may not be an app user"
+    db_table_comment="A Participant is any individual who participated in an activity. They may not be an application user"
     ordering=["activity_id"]
 
   def __str__(self):

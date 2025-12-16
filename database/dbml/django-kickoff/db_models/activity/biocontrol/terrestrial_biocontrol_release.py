@@ -9,7 +9,7 @@ from invasivesbc.db_models.enums import YesNoUnknown
 class TerrestrialBiocontrolRelease(BaseOneToManyActivityTable):
   """
     1:M Details for Biocontrol Releases
-    Used By:
+    consumed by:
       - Biocontrol Release
   """
   invasive_plant = models.ForeignKey(TerrestrialPlantCode, on_delete=models.PROTECT)

@@ -7,7 +7,7 @@ from invasivesbc.db_models.enums import CardinalDirection
 class WeatherConditions(BaseOneToOneActivityTable):
   """
     Weather Condition Details for Activity
-    Used by:
+    consumed by:
       - Biocontrol Dispersal Monitoring
       - Biocontrol Release Monitoring
       - Biocontrol Collection
@@ -23,9 +23,7 @@ class WeatherConditions(BaseOneToOneActivityTable):
 
   class Meta:
     # db_table='"activity"."weather_conditions"'
-    constraints = [
-      models.UniqueConstraint(fields=["activity_id", "invasive_plant", "biocontrol_agent", "location_code"], name="unique_agent_found_location")
-    ]
+    pass
 
   def clean(self):
     if self.wind_direction is None and self.wind_speed_kmh > 0:

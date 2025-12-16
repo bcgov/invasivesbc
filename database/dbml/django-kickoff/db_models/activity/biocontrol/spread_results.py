@@ -6,7 +6,7 @@ from invasivesbc.db_models.codes import MesoslopePositionCode, SiteSurfaceShapeC
 class SpreadResults(BaseOneToOneActivityTable):
   """
     Spread Result Condition details for activities,
-    used by:
+    consumed by:
       - Biocontrol Release Monitoring
   """
   agent_density = models.PositiveSmallIntegerField(validators=[MaxValueValidator(100)])

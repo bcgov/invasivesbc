@@ -1,9 +1,10 @@
 from django.db import models
 from invasivesbc.db_models.enums import YesNoUnknown
 from invasivesbc.db_models.activity.abstract_sub_tables import BaseOneToOneActivityTable
+from invasivesbc.db_models.codes import WaterbodyType
 
 class WaterbodyData(BaseOneToOneActivityTable):
-  type = models.CharField(max_length=64)
+  type = models.ForeignKey(WaterbodyType, on_delete=models.PROTECT)
   name_gazetted = models.CharField(max_length=256)
   name_local = models.CharField(max_length=256)
   access = models.CharField(max_length=64)

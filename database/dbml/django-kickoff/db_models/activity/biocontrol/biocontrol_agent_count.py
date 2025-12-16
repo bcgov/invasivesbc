@@ -54,7 +54,7 @@ class BiocontrolAgentCountComplex(BiocontrolAgentCountSimple):
 
 class TerrestrialBiocontrolAgentCountSimple(BiocontrolAgentCountSimple):
   """
-  Used by:
+  consumed by:
     - Biocontrol Collection
     - Biocontrol Release
   """
@@ -66,7 +66,7 @@ class TerrestrialBiocontrolAgentCountSimple(BiocontrolAgentCountSimple):
 
 class TerrestrialBiocontrolAgentCountComplex(BiocontrolAgentCountComplex):
   """
-  Used by:
+  consumed by:
     - Biocontrol Dispersal Monitoring
   """
   invasive_plant = models.ForeignKey(TerrestrialPlantCode, on_delete=models.PROTECT)

@@ -7,7 +7,7 @@ class Employer(BaseOneToManyActivityTable):
 
   class Meta:
     # db_table='"activity"."employer"'
-    db_table_comment="Employer of the person filling out the activity form."
+    db_table_comment="Employer of the person filling out the activity form. Generally a 1:1 Relation."
     constraints = [
       models.UniqueConstraint(fields=["activity_id", "employer"], name="unique_employer_per_activity")
     ]
