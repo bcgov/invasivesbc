@@ -1,7 +1,7 @@
 from django.db import models
-from invasivesbc.db_models.activity.abstract_sub_tables import BaseOneToManyActivityTable
+from invasivesbc.db_models.activity.abstract_sub_tables import BaseOneToOneActivityTable
 
-class NearestWell(BaseOneToManyActivityTable):
+class NearestWell(BaseOneToOneActivityTable):
   """
   Identifier for Registered wells in proximity of a Chemical Treatment Site.
   Distance is based on the Centroid value of the Activity shape

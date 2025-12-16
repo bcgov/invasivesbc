@@ -14,3 +14,4 @@ from .riso_areas import *
 from .monitoring import *
 from .observations import *
 from .treatments import *
+from .biocontrol import *

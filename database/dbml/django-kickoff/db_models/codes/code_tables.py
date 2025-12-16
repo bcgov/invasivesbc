@@ -12,6 +12,11 @@ class AdjacentLandUseCode(BaseCode):
     # db_table='"codes"."adjacent_land_use"'
     pass
 
+class AgentLocationFoundCode(BaseCode):
+  class Meta:
+    # db_table='"codes"."agent_location_found"'
+    pass
+
 class AquaticPlantCode(BaseCode):
   class Meta:
     # db_table='"codes"."aquatic_plant_code"'
@@ -102,6 +107,10 @@ class ChemicalPrecautionaryStatement(BaseCode):
     # db_table='"codes"."chemical_precautionary_statement"'
     pass
 
+class PlantPositionCode(BaseCode):
+  class Meta:
+    # db_table'"codes"."plant_position"'
+    pass
 class PlantLifeStageCode(BaseCode):
   class Meta:
     # db_table='"codes"."plant_life_stage"'

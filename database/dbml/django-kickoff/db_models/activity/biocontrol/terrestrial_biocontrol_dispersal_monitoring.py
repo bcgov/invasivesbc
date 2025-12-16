@@ -2,34 +2,46 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 from invasivesbc.db_models.activity.abstract_sub_tables import BaseOneToManyActivityTable
-from invasivesbc.db_models.codes import BiocontrolAgentCode, TerrestrialPlantCode, BioAgentCollectionMethodCode
-from invasivesbc.db_models.enums import CollectionType
+from invasivesbc.db_models.codes import BiocontrolAgentCode, TerrestrialPlantCode, BiocontrolPresenceCode, BioAgentCollectionMethodCode
+from invasivesbc.db_models.enums import YesNoUnknown, CollectionType
 
-class TerrestrialBiocontrolCollectionInformation(BaseOneToManyActivityTable):
+
+class TerrestrialBiocontrolDispersalMonitoring(BaseOneToManyActivityTable):
   """
-    Biocontrol 1:M Collection Information for Activities
-    Used in:
-      - Biocontrol Collection
+  Biocontrol 1:M Monitoring Information
+  Used in:
+    - Biocontrol Release Monitoring
+    - Biocontrol Dispersal Monitoring
   """
   invasive_plant = models.ForeignKey(TerrestrialPlantCode, on_delete=models.PROTECT)
   biological_agent = models.ForeignKey(BiocontrolAgentCode, on_delete=models.PROTECT)
-  historical_iapp_site = models.PositiveBigIntegerField(blank=True, null=True)
-  collection_type = models.CharField(choices=CollectionType)
-  plant_count_collection = models.PositiveIntegerField(blank=True, null=True)
-  time_collection_duration_minutes = models.PositiveIntegerField(blank=True, null=True)
-  collection_method = models.ForeignKey(BioAgentCollectionMethodCode, on_delete=models.PROTECT)
-  number_of_sweeps = models.PositiveIntegerField(blank=True, null=True)
-  start_time_collecting = models.DateTimeField()
-  end_time_collecting = models.DateTimeField()
-  comment = models.TextField(max_length=512, blank=True, null=True)
+  biocontrol_present = models.BooleanField()
+  sign_of_biocontrol_presence = models.ForeignKey(BiocontrolPresenceCode, on_delete=models.PROTECT, null=True, blank=True)
+  monitoring_type = models.CharField(choices=CollectionType)
+  plant_count = models.PositiveIntegerField()
+  monitoring_method = models.ForeignKey(BioAgentCollectionMethodCode, on_delete=models.PROTECT)
+  count_duration_minutes = models.SmallIntegerField(blank=True, null=True)
+  number_of_sweeps = models.PositiveSmallIntegerField(blank=True, null=True)
+  start_time = models.DateTimeField()
+  stop_time = models.DateTimeField()
+  linear_segment = models.CharField(choices=YesNoUnknown)
+  suitable_for_collection = models.CharField(choices=YesNoUnknown)
 
   class Meta:
-    # db_table='"activity"."terrestrial_biocontrol_collection_information"'
-    pass
+    # db_table='"activity"."terrestrial_biocontrol_dispersal_monitoring"'
+    constraints = [
+      models.UniqueConstraint(fields=["activity_id", "invasive_plant", "biocontrol_agent"], name="unique_dispersal_monitoring")
+    ]
 
   def clean(self):
     super().clean()
     errors = {}
+    if self.biocontrol_present and not self.sign_of_biocontrol_presence:
+      errors["sign_of_biocontrol_presence"] = "Sign of Biocontrol Presence must be filled since you \
+        indicated biocontrol were present."
+    elif not self.biocontrol_present:
+      self.sign_of_biocontrol_presence = None
+
     if self.collection_method == CollectionType.Count:
       if self.plant_count_collection is None:
         errors["plant_count_collection"] = "Plant count must be filled if collection type is Count"

@@ -25,6 +25,10 @@ class ChemTreatment(BaseOneToOneActivityTable):
   additional_unmapped_well_water_bool = models.BooleanField(db_column="Additional or unmapped wells or water license intakes within 30m")
   pest_injury_threshold_determination_bool = models.BooleanField()
 
+  class Meta:
+    # db_table='"activity"."chem_treatment"'
+    pass
+
   def clean(self):
     super().clean()
     errors = {}
