@@ -8,16 +8,16 @@ import { useDispatch, useSelector } from 'utils/use_selector';
  */
 const DrawtoolCrosshairUserSettingControl = () => {
   const dispatch = useDispatch();
-  const drawtoolCrosshairEnabled = useSelector((state) => state.UserSettings.drawtoolCrosshairEnabled) ?? false;
+  const drawToolCrosshairEnabled = useSelector((state) => state.UserSettings.drawToolCrosshairEnabled) ?? false;
   const handleClick = () => dispatch(UserSettings.toggleDrawtoolCrosshair());
 
   return (
     <form>
       <AddCircleOutline />
-      <label htmlFor="drawtool-crosshair-user-setting-control">Drawtool Crosshair</label>
+      <label htmlFor="draw-tool-crosshair-user-setting-control">Draw Tool Crosshair</label>
       <Switch
-        id="drawtool-crosshair-user-setting-control"
-        checked={drawtoolCrosshairEnabled}
+        id="draw-tool-crosshair-user-setting-control"
+        checked={drawToolCrosshairEnabled}
         color="primary"
         size="medium"
         onClick={handleClick}

@@ -82,7 +82,7 @@ const DrawControlCrosshair = ({ drawControls }: PropTypes) => {
 
   const map = useContext(MapContext);
   const ref = useRef<SVGSVGElement | null>(null);
-  const drawtoolCrosshairEnabled = useSelector((state) => state.UserSettings.drawtoolCrosshairEnabled);
+  const drawToolCrosshairEnabled = useSelector((state) => state.UserSettings.drawToolCrosshairEnabled);
   const [shouldRender, setShouldRender] = useState<boolean>(false);
 
   useEffect(() => {
@@ -94,7 +94,7 @@ const DrawControlCrosshair = ({ drawControls }: PropTypes) => {
     };
   }, [map]);
 
-  if (!shouldRender || !drawtoolCrosshairEnabled) return null;
+  if (!shouldRender || !drawToolCrosshairEnabled) return null;
   return (
     <div id="mobile-draw">
       <AddIcon ref={ref} className="crosshair" />
