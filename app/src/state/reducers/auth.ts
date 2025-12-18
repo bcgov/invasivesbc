@@ -10,7 +10,7 @@ interface IUserExtendedInfo {
   account_status: number | null;
   activation_status: number | null;
   work_phone_number: string | null;
-  funding_agencies: any[];
+  funding_agencies?: string;
   employer: string | null;
   pac_number: string | null;
   pac_service_number_1: string | null;
@@ -126,7 +126,7 @@ const initialState: AuthState = {
     account_status: 0,
     activation_status: 0,
     employer: null,
-    funding_agencies: [],
+    funding_agencies: null,
     pac_number: null,
     pac_service_number_1: null,
     pac_service_number_2: null,
@@ -214,7 +214,7 @@ function createAuthReducer(_configuration: AppConfig) {
           account_status: 0,
           activation_status: 0,
           employer: null,
-          funding_agencies: [],
+          funding_agencies: null,
           pac_number: null,
           pac_service_number_1: null,
           pac_service_number_2: null,
@@ -328,7 +328,7 @@ function createAuthReducer(_configuration: AppConfig) {
           account_status: 0,
           activation_status: 0,
           employer: null,
-          funding_agencies: [],
+          funding_agencies: null,
           pac_number: null,
           pac_service_number_1: null,
           pac_service_number_2: null,
