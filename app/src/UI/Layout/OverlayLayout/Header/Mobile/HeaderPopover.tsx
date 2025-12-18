@@ -18,6 +18,7 @@ import EventActions from 'state/actions/events/EventActions';
 import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
 import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
 import { useNavigate } from 'react-router';
+import DrawtoolCrosshairUserSettingControl from './DrawtoolCrosshairUserSettingControl';
 
 const LogoutButton = () => {
   const dispatch = useDispatch();
@@ -133,6 +134,11 @@ const HeaderPopover = () => {
                         <Luggage />
                         Manage My Trips
                       </button>
+                    </li>
+                  </FeatureGated>
+                  <FeatureGated requires={'DRAW_CROSSHAIR'}>
+                    <li>
+                      <DrawtoolCrosshairUserSettingControl />
                     </li>
                   </FeatureGated>
                 </MobileOnly>
