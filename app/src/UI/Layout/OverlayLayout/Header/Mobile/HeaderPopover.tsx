@@ -18,7 +18,7 @@ import EventActions from 'state/actions/events/EventActions';
 import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
 import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
 import { useNavigate } from 'react-router';
-import DrawToolCrosshairUserSettingControl from './DrawtoolCrosshairUserSettingControl';
+import DrawToolCrosshairUserSettingControl from './DrawToolCrosshairUserSettingControl';
 
 const LogoutButton = () => {
   const dispatch = useDispatch();
