@@ -1,6 +1,6 @@
 import { DBSQLiteValues, SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
 import centroid from '@turf/centroid';
-import { Feature } from 'geojson';
+import { Feature, GeoJSON } from 'geojson';
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
 import booleanIntersects from '@turf/boolean-intersects';
 import bbox from '@turf/bbox';
@@ -571,7 +571,11 @@ class SQLiteRecordCacheService extends RecordCacheService {
     }
     const entry = `( ${Array(NUM_ACTIVITY_COLUMNS).fill('?').join(',')} )`;
     const values: Array<any> = [];
-    Object.keys(data).forEach((key) => values.push(this.transformActivity(key, data[key])));
+    Object.keys(data).forEach((key) => {
+      if (values.length != null) {
+        values.push(this.transformActivity(key, data[key]));
+      }
+    });
     let query = `INSERT INTO CACHED_RECORDS(ID,
                                             LATITUDE,
                                             LONGITUDE,
@@ -788,6 +792,27 @@ class SQLiteRecordCacheService extends RecordCacheService {
   }
 
   /**
+   * @desc If GeoJSON fails to be parsed, use recovery shape in middle of ocean to identify outlier records.
+   * @returns
+   */
+  private getRecoveryGeoJSON = (short_id: string): Array<GeoJSON> => {
+    console.warn(`Record ${short_id} Found without a geometry`);
+    return [
+      {
+        id: 'ERROR_OCCURED',
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [-131.60496320034184, 54.43608755757705]
+        },
+        properties: {
+          name: short_id,
+          radius: 1.2615662610100802
+        }
+      }
+    ];
+  };
+  /**
    * @desc Takes the incoming Activity payload, and maps the column information to the fields, preps any geometry to contain Activity IDs and information.
    * @param id ID of New record
    * @param data Incoming Activity data
@@ -796,7 +821,8 @@ class SQLiteRecordCacheService extends RecordCacheService {
   private transformActivity(id: string, data: UserRecord): Array<any> {
     const normalizedRows = getUnnestedFieldsForActivity(data);
     const stringifiedData = JSON.stringify(data);
-    const geometry = (data as Record<PropertyKey, Feature[]>)?.geometry;
+    const geometry =
+      (data as Record<PropertyKey, Feature[]>)?.geometry ?? this.getRecoveryGeoJSON(normalizedRows.short_id);
     const activityDate = (data as Record<PropertyKey, any>)?.date_created;
     geometry.forEach((_, i) => {
       geometry[i].properties = {
@@ -805,8 +831,10 @@ class SQLiteRecordCacheService extends RecordCacheService {
         activity_subtype: data.activity_subtype
       };
     });
-    const centroidObj = centroid(geometry[0], { properties: geometry[0].properties });
+
+    const centroidObj = centroid(geometry?.[0], { properties: geometry[0].properties });
     const geojson = JSON.stringify(geometry) ?? null;
+
     return [
       id, // ID
       centroidObj.geometry.coordinates[1], // LATITUDE
