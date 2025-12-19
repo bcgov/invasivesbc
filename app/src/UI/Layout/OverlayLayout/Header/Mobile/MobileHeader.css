@@ -110,7 +110,8 @@
         background-color: var(--odd-list-item-bg-color);
       }
 
-      li > button {
+      li > button,
+      li > form {
         align-items: center;
         background-color: transparent;
         border: none;
@@ -130,7 +131,8 @@
           margin-right: 10px;
         }
 
-        &:hover {
+        &:hover,
+        & > label:hover {
           cursor: pointer;
           background-color: var(--hovered-list-item-bg-color);
         }

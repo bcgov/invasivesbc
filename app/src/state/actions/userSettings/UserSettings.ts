@@ -130,6 +130,7 @@ class UserSettings {
   static readonly Map = Map;
   static readonly RecordSet = RecordSet;
   static readonly SiteLists = SiteLists;
+  static readonly toggleDrawtoolCrosshair = createAction(`${this.PREFIX}/toggleDrawtoolCrosshair`);
   static readonly toggleRecordExpand = createAction(`${this.PREFIX}/toggleRecordExpand`);
   static readonly toggleRecordExpandSuccess = createAction(`${this.PREFIX}/toggleRecordExpandSuccess`);
   static readonly toggleLayerPickerAccordion = createAction(`${this.PREFIX}/toggleLayerPickerAccordion`);
