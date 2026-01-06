@@ -11,17 +11,23 @@ from api.legacy_db.model_serializer import LegacyActivity
 from api.models import (
     ActivityBasic,
     AdjacentLandUseCode,
+    FundingAgencyCode,
     AgentLocationFoundCode,
+    AquaticPlantCode,
     AspectCode,
     BaseCode,
     BioAgentCollectionMethodCode,
     BioAgentLifeStageCode,
     BiocontrolAgentCode,
     BiocontrolPresenceCode,
+    ChemicalPrecautionaryStatement,
     CloudCoverCode,
+    DensityCode,
     DisposalMethodCode,
+    DistributionCode,
     EfficacyManagementRatingCode,
     EmployerCode,
+    InvasivePlantsOnSiteCode,
     JurisdictionCode,
     MesoslopePositionCode,
     PestManagementPlan,
@@ -29,12 +35,16 @@ from api.models import (
     PlantMechanicalTreatmentMethodCode,
     PlantPositionCode,
     PrecipitationCode,
+    ServiceLicenseNumberAndCompany,
     ShorelineTypeCode,
     SiteSurfaceShapeCode,
+    SlopePercentCode,
     SoilTextureCode,
     SpecificUseCode,
     SubstrateCode,
+    TerrestrialPlantCode,
     WaterbodyFlowCode,
+    WaterbodyFlowSeasonalCode,
     WaterbodyUseCode,
 )
 from api.models.migrator.activity_migration_status import ActivityMigrationStatus
@@ -113,31 +123,31 @@ class LegacyDB:
                 return WaterbodyFlowCode
 
             case "inflow_temporary_code":
-                return WaterbodyFlowCode
+                return WaterbodyFlowSeasonalCode
 
             case "invasive_code":
                 pass
 
             case "invasive_plant_aquatic_code":
-                pass
+                return AquaticPlantCode
 
             case "invasive_plant_change_code":
                 pass
 
             case "invasive_plant_code":
-                pass
+                return TerrestrialPlantCode
 
             case "invasive_plant_code_withbiocontrol":
                 pass
 
             case "invasive_plant_density_code":
-                pass
+                return DensityCode
 
             case "invasive_plant_distribution_code":
-                pass
+                return DistributionCode
 
             case "invasive_species_agency_code":
-                pass
+                return FundingAgencyCode
 
             case "jurisdiction_code":
                 return JurisdictionCode
@@ -157,6 +167,9 @@ class LegacyDB:
             case "mesoslope_position_code":
                 return MesoslopePositionCode
 
+            case "monitoring_evidence_code":
+                return InvasivePlantsOnSiteCode
+
             case "outflow_code":
                 return WaterbodyFlowCode
 
@@ -169,14 +182,23 @@ class LegacyDB:
             case "plant_position_code":
                 return PlantPositionCode
 
+            case "precautionary_statement_code":
+                return ChemicalPrecautionaryStatement
+
             case "precipitation_code":
                 return PrecipitationCode
 
             case "shoreline_type_code":
                 return ShorelineTypeCode
 
+            case "service_license_code":
+                return ServiceLicenseNumberAndCompany
+
             case "site_surface_shape_code":
                 return SiteSurfaceShapeCode
+
+            case "slope_code":
+                return SlopePercentCode
 
             case "soil_texture_code":
                 return SoilTextureCode
