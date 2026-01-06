@@ -1,4 +1,5 @@
 from django.db import models
+
 from api.models.activity.abstract_sub_tables import BaseOneToOneActivityTable
 
 
@@ -14,6 +15,9 @@ class NearestWell(BaseOneToOneActivityTable):
     distance = models.PositiveIntegerField(
         db_comment="Distance from centroid of activity"
     )
+
+    class Meta:
+        db_table = '"activity"."nearest_well"'
 
     def __str__(self):
         return (

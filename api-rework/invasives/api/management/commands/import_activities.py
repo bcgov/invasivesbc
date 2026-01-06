@@ -13,11 +13,35 @@ class Command(BaseCommand):
             help="Parse legacy entries only, do not copy into new database",
             action="store_true",
         )
-        parser.add_argument("--source", choices=["all", "random-sample"], default="all")
+        parser.add_argument(
+            "--clobber",
+            help="Overwrite previously-migrated activities (use with caution!)",
+            action="store_true",
+        )
+        parser.add_argument(
+            "--source", choices=["all", "random-sample", "single"], default="all"
+        )
+        parser.add_argument(
+            "pk",
+            nargs="?",
+            type=str,
+            help="The primary key (UUID identifier) of the single activity to import",
+        )
         pass
 
     def handle(self, *args, **options):
+        if (options["source"] == "single") and options["pk"] is None:
+            raise Exception("pk is required if source is 'single'")
+        if options["source"] != "single" and options["pk"] is not None:
+            raise Exception("pk is only allowed if source is 'single'")
+
+        if options["clobber"] and options["dry_run"]:
+            raise Exception("--clobber cannot be used with --dry-run")
+
         stats = LegacyDB.migrate_activities(
-            dry_run=options["dry_run"], source=options["source"]
+            dry_run=options["dry_run"],
+            source=options["source"],
+            pk=options["pk"],
+            clobber=options["clobber"],
         )
         pprint(stats)

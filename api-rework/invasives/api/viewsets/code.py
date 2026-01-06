@@ -1,11 +1,62 @@
-from rest_framework.viewsets import ReadOnlyModelViewSet
-from rest_framework.permissions import AllowAny
+from itertools import chain
+from pprint import pprint
 
-from api.models import BaseCode, WaterbodyUseCode
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework.status import HTTP_200_OK
+from rest_framework.viewsets import ViewSet
+
+from api.models.codes import *
 from api.serializers import CodeSerializer
 
 
-class CodeViewSet(ReadOnlyModelViewSet):
-    queryset = WaterbodyUseCode.objects.all()
-    serializer_class = CodeSerializer
+class CodeViewSet(ViewSet):
     permission_classes = [AllowAny]
+    http_method_names = ["get"]
+
+    code_models = [
+        ActivitySubtypeCode,
+        AdjacentLandUseCode,
+        AgentLocationFoundCode,
+        AquaticPlantCode,
+        AspectCode,
+        BioAgentCollectionMethodCode,
+        BioAgentLifeStageCode,
+        BiocontrolAgentCode,
+        BiocontrolPresenceCode,
+        CloudCoverCode,
+        DensityCode,
+        DisposalMethodCode,
+        DistributionCode,
+        EfficacyManagementRatingCode,
+        EmployerCode,
+        FundingAgencyCode,
+        InvasivePlantsOnSiteCode,
+        JurisdictionCode,
+        MesoslopePositionCode,
+        PestManagementPlan,
+        ChemicalPrecautionaryStatement,
+        PlantPositionCode,
+        PlantLifeStageCode,
+        PlantMechanicalTreatmentMethodCode,
+        PrecipitationCode,
+        ServiceLicenseNumberAndCompany,
+        ShorelineTypeCode,
+        SiteSurfaceShapeCode,
+        SlopePercentCode,
+        SoilTextureCode,
+        SpecificUseCode,
+        SubstrateCode,
+        TerrestrialPlantCode,
+        WaterbodyFlowCode,
+        WaterbodyFlowSeasonalCode,
+        WaterbodyType,
+        WaterbodyUseCode,
+    ]
+
+    def list(self, request):
+        result = chain(x.objects.all().iterator() for x in self.code_models)
+
+        serializer = CodeSerializer(result, many=True)
+
+        return Response(data=serializer.data, status=HTTP_200_OK)

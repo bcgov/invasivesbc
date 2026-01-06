@@ -10,6 +10,8 @@ class ShorelineTypes(BaseOneToManyActivityTable):
       - Aquatic Invasive Plant Observation
     """
 
+    objects = models.Manager()
+
     shoreline_type = models.ForeignKey(ShorelineTypeCode, on_delete=models.PROTECT)
     percent_covered = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(100)]
