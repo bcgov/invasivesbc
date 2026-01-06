@@ -9,10 +9,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-INSTALLED_APPS = ["django.contrib.contenttypes", "api"]
+INSTALLED_APPS = ["django.contrib.contenttypes", "api", "corsheaders"]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -68,3 +69,8 @@ LANGUAGE_CODE = "en-ca"
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3001",
+]
+CORS_EXPOSE_HEADERS = ["Content-Disposition"]

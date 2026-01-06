@@ -1,8 +1,8 @@
 from datetime import date
 from enum import Enum
-from typing import Optional, Literal
+from typing import Literal, Optional
 
-from pydantic import BaseModel, UUID4, JsonValue, AwareDatetime, Field, model_validator
+from pydantic import AwareDatetime, BaseModel, Field, JsonValue, UUID4, model_validator
 from pydantic_extra_types.coordinate import Latitude, Longitude
 
 
@@ -626,7 +626,9 @@ class LegacyActivityPayload(BaseModel):
     species_treated: Optional[list[str]] = Field(default=None)
     date_created: Optional[AwareDatetime] = Field(default=None)
     date_updated: Optional[AwareDatetime] = Field(default=None)
-    platform_src: Optional[Literal["web", "ios", "android"]] = Field(default=None)
+    platform_src: Optional[Literal["web", "ios", "android", "unknown"]] = Field(
+        default=None
+    )
 
 
 class LegacyActivity(BaseModel):

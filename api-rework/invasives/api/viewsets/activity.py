@@ -1,11 +1,74 @@
-from rest_framework.viewsets import ReadOnlyModelViewSet
-from rest_framework.permissions import AllowAny
+import json
 
-from api.models import ActivityBasic
+from django.http.response import HttpResponse
+import psycopg
+from psycopg.rows import dict_row
+from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework.status import HTTP_200_OK
+from rest_framework.viewsets import ReadOnlyModelViewSet
+
+from api.legacy_db.model_serializer import LegacyActivity
+from api.models import ActivityBasic, ActivityMigrationStatus
 from api.serializers import ActivitySerializer
+from api.serializers.activity import ActivityListSerializer
+from api.serializers.activity_migration_status import ActivityMigrationStatusSerializer
+from invasivesbc.settings import LEGACY_DB_CONNECTION_STRING
 
 
 class ActivityViewSet(ReadOnlyModelViewSet):
     queryset = ActivityBasic.objects.all()
-    serializer_class = ActivitySerializer
     permission_classes = [AllowAny]
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return ActivityListSerializer
+        return ActivitySerializer
+
+    @action(detail=True, methods=["get"])
+    def migration_status(self, request, *args, **kwargs):
+        try:
+            found = ActivityMigrationStatus.objects.get(activity_id=self.kwargs["pk"])
+            serialized = ActivityMigrationStatusSerializer(found)
+            return Response(data=serialized.data, status=HTTP_200_OK)
+        except:
+            return Response(status=404)
+
+    @action(detail=True, methods=["get"])
+    def legacy(self, request, *args, **kwargs):
+        with psycopg.connect(LEGACY_DB_CONNECTION_STRING, row_factory=dict_row) as conn:
+            with conn.cursor() as cursor:
+                response = cursor.execute(
+                    "select activity_id, activity_type, activity_subtype, activity_payload from invasivesbc.activity_incoming_data where iscurrent=true and activity_payload->>'form_status' like 'Submitted' and activity_id=%s",
+                    (kwargs["pk"],),
+                )
+                if cursor.rowcount <= 0:
+                    return Response(status=404)
+                return Response(response.fetchone(), status=HTTP_200_OK)
+
+    @action(detail=True, methods=["get"])
+    def pydantic(self, request, *args, **kwargs):
+        try:
+            with psycopg.connect(
+                LEGACY_DB_CONNECTION_STRING, row_factory=dict_row
+            ) as conn:
+                with conn.cursor() as cursor:
+                    response = cursor.execute(
+                        "select activity_id, activity_type, activity_subtype, activity_payload from invasivesbc.activity_incoming_data where iscurrent=true and activity_payload->>'form_status' like 'Submitted' and activity_id=%s",
+                        (kwargs["pk"],),
+                    )
+                    parsed = LegacyActivity.model_validate(
+                        response.fetchone(), extra="forbid"
+                    )
+                    return HttpResponse(
+                        parsed.model_dump_json(),
+                        status=HTTP_200_OK,
+                        content_type="application/json",
+                    )
+        except Exception as e:
+            return HttpResponse(
+                content=json.dumps({"exception": e.__str__()}),
+                status=500,
+                content_type="application/json",
+            )

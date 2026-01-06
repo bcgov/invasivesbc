@@ -1,5 +1,5 @@
-import logging
 from dataclasses import dataclass
+import logging
 from typing import Literal
 
 import psycopg
@@ -9,33 +9,35 @@ from pydantic_core._pydantic_core import ValidationError
 from api.legacy_db.migrate import migrate
 from api.legacy_db.model_serializer import LegacyActivity
 from api.models import (
-    WaterbodyUseCode,
-    SpecificUseCode,
+    ActivityBasic,
     AdjacentLandUseCode,
     AgentLocationFoundCode,
     AspectCode,
+    BaseCode,
     BioAgentCollectionMethodCode,
+    BioAgentLifeStageCode,
     BiocontrolAgentCode,
     BiocontrolPresenceCode,
-    BioAgentLifeStageCode,
     CloudCoverCode,
-    EmployerCode,
-    WaterbodyFlowCode,
-    JurisdictionCode,
-    EfficacyManagementRatingCode,
     DisposalMethodCode,
+    EfficacyManagementRatingCode,
+    EmployerCode,
+    JurisdictionCode,
     MesoslopePositionCode,
     PestManagementPlan,
-    PlantMechanicalTreatmentMethodCode,
     PlantLifeStageCode,
+    PlantMechanicalTreatmentMethodCode,
     PlantPositionCode,
     PrecipitationCode,
     ShorelineTypeCode,
     SiteSurfaceShapeCode,
     SoilTextureCode,
+    SpecificUseCode,
     SubstrateCode,
-    BaseCode,
+    WaterbodyFlowCode,
+    WaterbodyUseCode,
 )
+from api.models.migrator.activity_migration_status import ActivityMigrationStatus
 from invasivesbc.settings import LEGACY_DB_CONNECTION_STRING
 
 logging.basicConfig(level=logging.DEBUG)
@@ -53,6 +55,8 @@ class ActivityMigrationStatistics:
     failed_parse: int = 0
     failed_translate: int = 0
     failed_validate: int = 0
+    pre_existing: int = 0
+    clobbered: int = 0
 
 
 @dataclass
@@ -191,6 +195,7 @@ class LegacyDB:
 
     @staticmethod
     def migrate_codes(dry_run=False):
+        # language=PostgreSQL
         query = """select c.code_name                  as code_name,
                       c.code_description           as code_description,
                       c.code_sort_order            as sort_order,
@@ -249,7 +254,9 @@ class LegacyDB:
     @staticmethod
     def migrate_activities(
         dry_run=False,
+        clobber=False,
         source: Literal["all", "previously-failed", "random-sample", "list"] = "all",
+        pk=None,
     ):
         stats = ActivityMigrationStatistics(source=source)
 
@@ -260,33 +267,64 @@ class LegacyDB:
                 sourcing_query = f"select activity_id, activity_type, activity_subtype, activity_payload from invasivesbc.activity_incoming_data where iscurrent=true and activity_payload->>'form_status' like 'Submitted'"
             case "random-sample":
                 sourcing_query = f"select activity_id, activity_type, activity_subtype, activity_payload from invasivesbc.activity_incoming_data where iscurrent=true and activity_payload->>'form_status' like 'Submitted' and random() >= 0.98"
+            case "single":
+                sourcing_query = f"select activity_id, activity_type, activity_subtype, activity_payload from invasivesbc.activity_incoming_data where iscurrent=true and activity_payload->>'form_status' like 'Submitted' and activity_id = '{pk}'"
 
         with psycopg.connect(LEGACY_DB_CONNECTION_STRING, row_factory=dict_row) as conn:
             with conn.cursor() as cursor:
                 result = cursor.execute(sourcing_query)
                 for row in result.fetchall():
+                    migration_status = ActivityMigrationStatus.objects.filter(
+                        activity_id=row["activity_id"]
+                    ).first()
+                    pre_existing = False
+                    if migration_status is not None:
+                        stats.pre_existing += 1
+                        pre_existing = True
+                        if clobber:
+                            log.warning(
+                                f"Clobbering old records for {row['activity_id']}"
+                            )
+                            migration_status.delete()
+                            migration_status = ActivityMigrationStatus(
+                                activity_id=row["activity_id"]
+                            )
+                            ActivityBasic.objects.filter(
+                                activity_id=row["activity_id"]
+                            ).delete()
+                            stats.clobbered += 1
+                    else:
+                        migration_status = ActivityMigrationStatus(
+                            activity_id=row["activity_id"]
+                        )
+
                     stats.attempted += 1
                     try:
                         parsed_activity = LegacyActivity.model_validate(
                             row, extra="forbid"
                         )
-                        if not dry_run:
+                        if not dry_run and (not pre_existing or clobber):
                             try:
                                 new_activity = migrate(parsed_activity)
                                 new_activity.save()
-                            except:
+                            except Exception as e:
                                 log.warning(
                                     f"building model for {row['activity_id']} failed",
                                     exc_info=True,
                                 )
-
-                        stats.succeeded += 1
-                    except ValidationError:
+                                migration_status.extended_status = e.__str__()
+                            stats.succeeded += 1
+                            migration_status.success = True
+                    except ValidationError as e:
                         log.warning(
                             f"initial parse for {row['activity_id']} failed",
                             exc_info=True,
                         )
+                        migration_status.extended_status = e.__str__()
                         stats.failed_for_any_reason += 1
                         stats.failed_parse += 1
+                    finally:
+                        if not dry_run:
+                            migration_status.save()
 
                 return stats
