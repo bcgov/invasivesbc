@@ -1,13 +1,15 @@
 from api.legacy_db.model_serializer import LegacyActivity
-from api.models import (
+from api.models_public.activity import (
     ActivityBasic,
-    ActivitySubtypeCode,
     Jurisdiction,
-    JurisdictionCode,
     Platform,
-    PlatformSource,
     ShorelineTypes,
 )
+from api.models_public.codes import (
+    ActivitySubtypeCode,
+    JurisdictionCode,
+)
+from api.models_public.enums import PlatformSource
 
 def migrate(old: LegacyActivity):
     new = ActivityBasic()
