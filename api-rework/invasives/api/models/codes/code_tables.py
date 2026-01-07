@@ -214,13 +214,6 @@ class WaterbodyFlowSeasonalCode(BaseCode):
         db_table = '"codes"."waterbody_flow_seasonal"'
         pass
 
-
-class WaterbodyType(BaseCode):
-    class Meta:
-        db_table = '"codes"."waterbody_type"'
-        pass
-
-
 class WaterbodyUseCode(BaseCode):
     class Meta:
         db_table = '"codes"."waterbody_use"'

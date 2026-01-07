@@ -50,7 +50,6 @@ class CodeViewSet(ViewSet):
         TerrestrialPlantCode,
         WaterbodyFlowCode,
         WaterbodyFlowSeasonalCode,
-        WaterbodyType,
         WaterbodyUseCode,
     ]
 

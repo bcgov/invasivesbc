@@ -1,5 +1,6 @@
 from .abstract_sub_tables import *
 from .activity_basic import *
+# from .activity_geometry import *
 from .batch_detail import *
 from .employer import *
 from .funding_agency import *
