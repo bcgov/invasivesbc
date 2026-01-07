@@ -16,7 +16,7 @@ class UploadedImage(BaseOneToManyActivityTable):
     )
 
     class Meta:
-        db_table = '"activity"."platform"'
+        db_table = '"activity"."uploaded_image"'
         db_table_comment = "Image uploads for IBC Records"
 
     def __str__(self):
