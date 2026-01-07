@@ -41,3 +41,8 @@ from api.models.activity.project_code import ProjectCode
 from api.models.activity.regional_detail import RegionalDetail
 from api.models.activity.riso_areas import RisoArea
 from api.models.activity.uploaded_image import UploadedImage
+
+from api.models.activity.abstract_sub_tables import (
+    BaseOneToManyActivityTable,
+    BaseOneToOneActivityTable,
+)

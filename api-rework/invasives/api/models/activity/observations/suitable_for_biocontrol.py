@@ -1,6 +1,6 @@
 from django.db import models
 from api.models.activity.abstract_sub_tables import BaseOneToOneActivityTable
-from api.models.enums.yes_no_unknown import YesNoUnknown
+from api.models_public.enums import YesNoUnknown
 
 
 class SuitableForBiocontrol(BaseOneToOneActivityTable):

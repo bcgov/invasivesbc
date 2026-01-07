@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
-from api.models import ActivityMigrationStatus
+from api.models_public.migrators import ActivityMigrationStatus
 from api.serializers.activity_migration_status import ActivityMigrationStatusSerializer
 
 

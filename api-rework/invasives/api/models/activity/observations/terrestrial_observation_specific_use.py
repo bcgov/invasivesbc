@@ -1,6 +1,6 @@
 from django.db import models
 from api.models.activity.abstract_sub_tables import BaseOneToManyActivityTable
-from api.models.codes import SpecificUseCode
+from api.models_public.codes import SpecificUseCode
 
 
 class TerrestrialObservationSpecificUse(BaseOneToManyActivityTable):

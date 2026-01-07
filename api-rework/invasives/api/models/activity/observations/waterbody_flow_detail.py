@@ -1,5 +1,5 @@
 from django.db import models
-from api.models.codes import WaterbodyFlowCode, WaterbodyFlowSeasonalCode
+from api.models_public.codes import WaterbodyFlowCode, WaterbodyFlowSeasonalCode
 from api.models.activity.abstract_sub_tables import BaseOneToManyActivityTable
 
 

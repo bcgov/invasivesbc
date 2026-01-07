@@ -3,12 +3,12 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils import timezone
 from api.models.activity.abstract_sub_tables import BaseOneToOneActivityTable
-from api.models.codes import (
+from api.models_public.codes import (
     ChemicalPrecautionaryStatement,
     ServiceLicenseNumberAndCompany,
     PestManagementPlan,
 )
-from api.models.enums import CardinalDirection, YesNoUnknown
+from api.models_public.enums import CardinalDirection, YesNoUnknown
 
 
 class ChemTreatment(BaseOneToOneActivityTable):

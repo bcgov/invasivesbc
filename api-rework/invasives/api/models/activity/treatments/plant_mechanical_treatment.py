@@ -2,13 +2,13 @@ from django.core.validators import MinValueValidator
 from django.db import models
 
 from api.models.activity.abstract_sub_tables import BaseOneToManyActivityTable
-from api.models.codes import (
+from api.models_public.codes import (
     AquaticPlantCode,
     TerrestrialPlantCode,
     PlantMechanicalTreatmentMethodCode,
     DisposalMethodCode,
 )
-from api.models.enums import PlantDisposalFormat
+from api.models_public.enums import PlantDisposalFormat
 
 
 class PlantMechanicalTreatment(BaseOneToManyActivityTable):

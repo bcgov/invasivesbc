@@ -10,7 +10,8 @@ from rest_framework.status import HTTP_200_OK
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from api.legacy_db.model_serializer import LegacyActivity
-from api.models import ActivityBasic, ActivityMigrationStatus
+from api.models_public.activity import ActivityBasic
+from api.models_public.migrators import ActivityMigrationStatus
 from api.serializers import ActivitySerializer
 from api.serializers.activity import ActivityListSerializer
 from api.serializers.activity_migration_status import ActivityMigrationStatusSerializer

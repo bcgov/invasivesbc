@@ -1,6 +1,6 @@
 from django.db import models
 from api.models.activity.abstract_sub_tables import BaseOneToManyActivityTable
-from api.models.codes import FundingAgencyCode
+from api.models_public.codes import FundingAgencyCode
 
 
 class FundingAgency(BaseOneToManyActivityTable):

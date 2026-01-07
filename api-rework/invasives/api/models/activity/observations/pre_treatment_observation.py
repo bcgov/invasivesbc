@@ -1,6 +1,6 @@
 from django.db import models
 from api.models.activity.abstract_sub_tables import BaseOneToOneActivityTable
-from api.models.enums import YesNoUnknown
+from api.models_public.enums import YesNoUnknown
 
 
 class PretreatmentObservation(BaseOneToOneActivityTable):

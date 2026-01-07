@@ -2,7 +2,7 @@ from typing import Iterable
 
 from rest_framework import serializers
 
-from api.models import BaseCode
+from api.models_public.codes import BaseCode
 
 
 class CodeSerializer(serializers.BaseSerializer):

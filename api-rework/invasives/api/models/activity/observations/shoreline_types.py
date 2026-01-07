@@ -1,6 +1,6 @@
 from django.db import models
 from api.models.activity.abstract_sub_tables import BaseOneToManyActivityTable
-from api.models.codes import ShorelineTypeCode
+from api.models_public.codes import ShorelineTypeCode
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 

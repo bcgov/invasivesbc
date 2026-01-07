@@ -1,6 +1,6 @@
 from django.db import models
 from api.models.activity.abstract_sub_tables import BaseOneToOneActivityTable
-from api.models.codes import MesoslopePositionCode, SiteSurfaceShapeCode
+from api.models_public.codes import MesoslopePositionCode, SiteSurfaceShapeCode
 
 
 class MicrositeCondition(BaseOneToOneActivityTable):

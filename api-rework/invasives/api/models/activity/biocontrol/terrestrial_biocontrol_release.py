@@ -2,8 +2,8 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 from api.models.activity.abstract_sub_tables import BaseOneToManyActivityTable
-from api.models.codes import BiocontrolAgentCode, TerrestrialPlantCode
-from api.models.enums import YesNoUnknown
+from api.models_public.codes import BiocontrolAgentCode, TerrestrialPlantCode
+from api.models_public.enums import YesNoUnknown
 
 
 class TerrestrialBiocontrolRelease(BaseOneToManyActivityTable):

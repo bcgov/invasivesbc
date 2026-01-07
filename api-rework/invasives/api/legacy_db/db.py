@@ -8,8 +8,8 @@ from pydantic_core._pydantic_core import ValidationError
 
 from api.legacy_db.migrate import migrate
 from api.legacy_db.model_serializer import LegacyActivity
-from api.models import (
-    ActivityBasic,
+from api.models_public.activity import ActivityBasic
+from api.models_public.codes import (
     AdjacentLandUseCode,
     FundingAgencyCode,
     AgentLocationFoundCode,
@@ -47,7 +47,7 @@ from api.models import (
     WaterbodyFlowSeasonalCode,
     WaterbodyUseCode,
 )
-from api.models.migrator.activity_migration_status import ActivityMigrationStatus
+from api.models_public.migrators import ActivityMigrationStatus
 from invasivesbc.settings import LEGACY_DB_CONNECTION_STRING
 
 logging.basicConfig(level=logging.DEBUG)
