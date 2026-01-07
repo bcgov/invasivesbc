@@ -1,6 +1,6 @@
 from django.db import models
 from api.models.activity.abstract_sub_tables import BaseOneToManyActivityTable
-from api.models.codes import EmployerCode
+from api.models.codes.code_tables import EmployerCode
 
 
 class Employer(BaseOneToManyActivityTable):

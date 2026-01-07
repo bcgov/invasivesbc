@@ -21,8 +21,8 @@ class ActivityGeometry(BaseOneToOneActivityTable):
     )
     utm_easting = models.PositiveBigIntegerField()
     utm_northing = models.PositiveBigIntegerField()
-    latitude = models.DecimalField()
-    longitude = models.DecimalField()
+    latitude = models.DecimalField(max_digits=10, decimal_places=7)
+    longitude = models.DecimalField(max_digits=10, decimal_places=7)
     location_description = models.CharField(max_length=512)
 
     class Meta:

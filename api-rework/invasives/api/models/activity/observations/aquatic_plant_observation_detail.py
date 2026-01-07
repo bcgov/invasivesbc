@@ -1,13 +1,13 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from api.models.activity.abstract_sub_tables import BaseOneToManyActivityTable
-from api.models.codes import (
+from api.models.codes.code_tables import (
     DensityCode,
     DistributionCode,
     AquaticPlantCode,
     PlantLifeStageCode,
 )
-from api.models.enums import ObservationType
+from api.models.enums.observation_type import ObservationType
 
 
 class AquaticPlantObservationDetail(BaseOneToManyActivityTable):

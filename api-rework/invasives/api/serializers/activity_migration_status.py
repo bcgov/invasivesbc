@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from api.models import ActivityMigrationStatus
+from api.models.migrator.activity_migration_status import ActivityMigrationStatus
 
 
 class ActivityMigrationStatusSerializer(serializers.ModelSerializer):

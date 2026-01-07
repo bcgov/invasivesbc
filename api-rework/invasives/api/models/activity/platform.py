@@ -1,6 +1,6 @@
 from django.db import models
 from api.models.activity.abstract_sub_tables import BaseOneToOneActivityTable
-from api.models.enums import PlatformSource
+from api.models.enums.platform_source import PlatformSource
 
 
 class Platform(BaseOneToOneActivityTable):

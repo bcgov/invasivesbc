@@ -10,9 +10,9 @@ from rest_framework.status import HTTP_200_OK
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from api.legacy_db.model_serializer import LegacyActivity
-from api.models import ActivityBasic, ActivityMigrationStatus
-from api.serializers import ActivitySerializer
-from api.serializers.activity import ActivityListSerializer
+from api.models.activity.activity_basic import ActivityBasic
+from api.models.migrator.activity_migration_status import ActivityMigrationStatus
+from api.serializers.activity import ActivityListSerializer, ActivitySerializer
 from api.serializers.activity_migration_status import ActivityMigrationStatusSerializer
 from invasivesbc.settings import LEGACY_DB_CONNECTION_STRING
 

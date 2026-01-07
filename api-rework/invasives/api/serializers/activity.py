@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from api.models import ActivityBasic
+from api.models.activity.activity_basic import ActivityBasic
 
 
 class ActivityListSerializer(serializers.ModelSerializer):

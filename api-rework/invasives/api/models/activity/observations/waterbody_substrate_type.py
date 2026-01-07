@@ -1,5 +1,5 @@
 from django.db import models
-from api.models.codes import SubstrateCode
+from api.models.codes.code_tables import SubstrateCode
 from api.models.activity.abstract_sub_tables import BaseOneToManyActivityTable
 
 

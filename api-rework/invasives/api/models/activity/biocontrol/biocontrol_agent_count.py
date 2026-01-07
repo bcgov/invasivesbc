@@ -2,12 +2,12 @@ from django.core.validators import MinValueValidator
 from django.db import models
 
 from api.models.activity.abstract_sub_tables import BaseOneToManyActivityTable
-from api.models.codes import (
-    BiocontrolAgentCode,
-    BioAgentLifeStageCode,
-    TerrestrialPlantCode,
+from api.models.codes.code_tables import (
     AgentLocationFoundCode,
+    BioAgentLifeStageCode,
+    BiocontrolAgentCode,
     PlantPositionCode,
+    TerrestrialPlantCode,
 )
 
 

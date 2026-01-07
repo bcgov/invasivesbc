@@ -1,5 +1,5 @@
 from django.db import models
-from api.models.enums import WaterLevelManagement
+from api.models.enums.water_level_management import WaterLevelManagement
 from api.models.activity.abstract_sub_tables import BaseOneToManyActivityTable
 
 

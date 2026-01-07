@@ -1,7 +1,11 @@
+import datetime
+import uuid
+
 from django.db import models
-import uuid, datetime
-from api.models.enums import ActivityType, FormStatus
-from api.models.codes import ActivitySubtypeCode
+
+from api.models.codes.code_tables import ActivitySubtypeCode
+from api.models.enums.activity_type import ActivityType
+from api.models.enums.form_status import FormStatus
 
 UUID_SUBSTRING_LENGTH = 8
 

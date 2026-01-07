@@ -1,8 +1,8 @@
 from django.db import models
-from django.core.exceptions import ValidationError
+
 from api.models.activity.abstract_sub_tables import BaseOneToOneActivityTable
-from api.models.codes import SlopePercentCode, AspectCode, SoilTextureCode
-from api.models.enums import YesNoUnknown
+from api.models.codes.code_tables import AspectCode, SlopePercentCode, SoilTextureCode
+from api.models.enums.yes_no_unknown import YesNoUnknown
 
 
 class TerrestrialPlantObservationInfo(BaseOneToOneActivityTable):

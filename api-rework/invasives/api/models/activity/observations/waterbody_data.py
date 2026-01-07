@@ -1,11 +1,11 @@
 from django.db import models
-from api.models.enums import YesNoUnknown
+from api.models.enums.yes_no_unknown import YesNoUnknown
 from api.models.activity.abstract_sub_tables import BaseOneToOneActivityTable
-from api.models.codes import WaterbodyType
+from api.models.enums.waterbody_type import WaterbodyType
 
 
 class WaterbodyData(BaseOneToOneActivityTable):
-    type = models.ForeignKey(WaterbodyType, on_delete=models.PROTECT)
+    type = models.TextField(choices=WaterbodyType)
     name_gazetted = models.CharField(max_length=256)
     name_local = models.CharField(max_length=256)
     access = models.CharField(max_length=64)

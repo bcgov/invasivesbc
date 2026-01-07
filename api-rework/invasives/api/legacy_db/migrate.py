@@ -2,6 +2,8 @@ from api.legacy_db.model_serializer import LegacyActivity
 from api.models import (
     ActivityBasic,
     ActivitySubtypeCode,
+    Jurisdiction,
+    JurisdictionCode,
     Platform,
     PlatformSource,
     ShorelineTypes,
@@ -29,15 +31,27 @@ def migrate(old: LegacyActivity):
 
     new.created_by = old.activity_payload.created_by
 
-    # if old.activity_payload.platform_src:
-    #     if old.activity_payload.platform_src == "web":
-    #         Platform.objects.create(activity=new, platform_src=PlatformSource.Web)
-    #     if old.activity_payload.platform_src == "ios":
-    #         Platform.objects.create(activity=new, platform_src=PlatformSource.Ios)
-    #     if old.activity_payload.platform_src == "android":
-    #         Platform.objects.create(activity=new, platform_src=PlatformSource.Android)
-    #     if old.activity_payload.platform_src == "unknown":
-    #         Platform.objects.create(activity=new, platform_src=PlatformSource.Unknown)
+    # If ActivityBasic is not saved first, we cannot link other records to it.
+    new.save()
+
+    src_map = {
+        "web": PlatformSource.Web,
+        "ios": PlatformSource.Ios,
+        "android": PlatformSource.Android,
+    }
+    Platform.objects.update_or_create(
+        activity_id=new,
+        src=src_map.get(old.activity_payload.platform_src, PlatformSource.Unknown),
+    )
+    if old.activity_payload.form_data.activity_data.jurisdictions:
+        for jurisdiction in old.activity_payload.form_data.activity_data.jurisdictions:
+            jur_code = JurisdictionCode.objects.get(code=jurisdiction.jurisdiction_code)
+            if jur_code:
+                Jurisdiction.objects.create(
+                    jurisdiction=jur_code,
+                    percent_covered=jurisdiction.percent_covered,
+                    activity_id=new,
+                )
 
     st = old.activity_payload.form_data.activity_subtype_data
 

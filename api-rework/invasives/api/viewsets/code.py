@@ -6,8 +6,8 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK
 from rest_framework.viewsets import ViewSet
 
-from api.models.codes import *
-from api.serializers import CodeSerializer
+from api.models.codes.code_tables import *
+from api.serializers.code import CodeSerializer
 
 
 class CodeViewSet(ViewSet):
@@ -50,7 +50,6 @@ class CodeViewSet(ViewSet):
         TerrestrialPlantCode,
         WaterbodyFlowCode,
         WaterbodyFlowSeasonalCode,
-        WaterbodyType,
         WaterbodyUseCode,
     ]
 
