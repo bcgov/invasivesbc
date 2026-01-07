@@ -2,12 +2,12 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 from api.models.activity.abstract_sub_tables import BaseOneToManyActivityTable
-from api.models.codes import (
+from api.models.codes.code_tables import (
     BiocontrolAgentCode,
     TerrestrialPlantCode,
     BioAgentCollectionMethodCode,
 )
-from api.models.enums import CollectionType
+from api.models.enums.collection_type import CollectionType
 
 
 class TerrestrialBiocontrolCollectionInformation(BaseOneToManyActivityTable):

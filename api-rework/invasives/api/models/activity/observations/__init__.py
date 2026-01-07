@@ -2,6 +2,7 @@ from .aquatic_plant_observation_detail import *
 from .pre_treatment_observation import *
 from .shoreline_types import *
 from .suitable_for_biocontrol import *
+from .terrestrial_observation_specific_use import *
 from .terrestrial_plant_observation_detail import *
 from .terrestrial_plant_observation_info import *
 from .voucher_specimen import *

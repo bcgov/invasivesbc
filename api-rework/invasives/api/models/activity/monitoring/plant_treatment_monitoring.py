@@ -1,13 +1,14 @@
 from django.db import models
 
 from api.models.activity.abstract_sub_tables import BaseOneToManyActivityTable
-from api.models.codes import (
-    EfficacyManagementRatingCode,
+from api.models.codes.code_tables import (
     AquaticPlantCode,
-    TerrestrialPlantCode,
+    EfficacyManagementRatingCode,
     InvasivePlantsOnSiteCode,
+    TerrestrialPlantCode,
 )
-from api.models.enums import YesNo, TreatmentPass
+from api.models.enums.treatment_pass import TreatmentPass
+from api.models.enums.yes_no import YesNo
 
 
 class PlantMonitoringBase(BaseOneToManyActivityTable):

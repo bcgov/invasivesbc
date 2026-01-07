@@ -6,4 +6,5 @@ from .target_plant_phenology import *
 from .terrestrial_biocontrol_collection_information import *
 from .terrestrial_biocontrol_dispersal_monitoring import *
 from .terrestrial_biocontrol_release import *
+from .terrestrial_biocontrol_release import *
 from .weather_condition import *

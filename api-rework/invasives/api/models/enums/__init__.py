@@ -9,3 +9,4 @@ from .treatment_pass import *
 from .water_level_management import *
 from .yes_no_unknown import *
 from .yes_no import *
+from .waterbody_type import *

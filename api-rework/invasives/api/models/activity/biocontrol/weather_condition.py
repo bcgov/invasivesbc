@@ -1,8 +1,8 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from api.models.activity.abstract_sub_tables import BaseOneToOneActivityTable
-from api.models.codes import CloudCoverCode, PrecipitationCode
-from api.models.enums import CardinalDirection
+from api.models.codes.code_tables import CloudCoverCode, PrecipitationCode
+from api.models.enums.cardinal_direction import CardinalDirection
 
 
 class WeatherConditions(BaseOneToOneActivityTable):
