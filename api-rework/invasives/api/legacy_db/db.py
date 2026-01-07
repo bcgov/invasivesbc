@@ -328,7 +328,7 @@ class LegacyDB:
                         if not dry_run and (not pre_existing or clobber):
                             try:
                                 new_activity = migrate(parsed_activity)
-                                new_activity.save()
+                                # new_activity.save()
                             except Exception as e:
                                 log.warning(
                                     f"building model for {row['activity_id']} failed",
