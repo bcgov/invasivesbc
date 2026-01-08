@@ -1,0 +1,32 @@
+[
+  {
+    "model": "api.ActivitySubtypeCode",
+    "pk": "PlantObservationTerrestrial",
+    "fields": {
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.ActivityBasic",
+    "pk": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+    "fields": {
+      "activity_date": "2026-01-01",
+      "created_timestamp": "2026-01-01 12:01:00-08:00",
+      "received_timestamp": "2026-01-01 12:02:00-08:00",
+      "activity_subtype": "PlantObservationTerrestrial",
+      "comment": "The test looks for this comment"
+    }
+  },
+  {
+    "model": "api.ActivityBasic",
+    "pk": "CD542709-F767-402F-818E-117B3FBC797D",
+    "fields": {
+      "activity_date": "2026-01-01",
+      "created_timestamp": "2026-01-01 12:01:00-08:00",
+      "received_timestamp": "2026-01-01 12:02:00-08:00",
+      "activity_subtype": "PlantObservationTerrestrial",
+      "comment": "Nothing here"
+    }
+  }
+]
