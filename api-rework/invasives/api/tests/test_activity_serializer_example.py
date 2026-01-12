@@ -45,7 +45,7 @@ class ActivitySerializerTest(TestCase):
     def test_funding_agency_collates(self):
         """Test that the Funding agencies are returned in CSV format with expected fields"""
         EXPECTED = ["MMCM", "MECS"]
-        KEY = "invasive_species_agency_code"
+        KEY = "funding_agency"
 
         client = Client()
         result = client.get("/activities/6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7")
