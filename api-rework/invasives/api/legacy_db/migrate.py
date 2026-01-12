@@ -1,12 +1,14 @@
 from api.legacy_db.model_serializer import LegacyActivity
-from api.models import (
+from api.models.activity import (
     ActivityBasic,
-    ActivitySubtypeCode,
     Jurisdiction,
-    JurisdictionCode,
     Platform,
     PlatformSource,
     ShorelineTypes,
+)
+from api.models.codes import (
+    ActivitySubtypeCode,
+    JurisdictionCode,
 )
 
 

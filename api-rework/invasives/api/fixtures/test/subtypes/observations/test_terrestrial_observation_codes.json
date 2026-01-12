@@ -1,0 +1,227 @@
+[
+  {
+    "model": "api.ActivitySubtypeCode",
+    "pk": "Activity_Observation_PlantTerrestrial",
+    "fields": {
+      "short_id_format": "PTO",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.EmployerCode",
+    "pk": "MOTI",
+    "fields": {
+      "full": "BC Ministry of Transportation and Transit",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.EmployerCode",
+    "pk": "MMCM",
+    "fields": {
+      "full": "BC Ministry of Mining and Critical Minerals",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.EmployerCode",
+    "pk": "MECS",
+    "fields": {
+      "full": "BC Ministry of Energy and Climate Solutions",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.JurisdictionCode",
+    "pk": "MOTI",
+    "fields": {
+      "full": "Ministry of Transportation and Transit",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.JurisdictionCode",
+    "pk": "RAIL",
+    "fields": {
+      "full": "Other Rail",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.JurisdictionCode",
+    "pk": "P",
+    "fields": {
+      "full": "Private Land",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.FundingAgencyCode",
+    "pk": "MOTI",
+    "fields": {
+      "full": "BC Ministry of Transportation and Transit",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.FundingAgencyCode",
+    "pk": "MMCM",
+    "fields": {
+      "full": "BC Ministry of Mining and Critical Minerals",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.FundingAgencyCode",
+    "pk": "MECS",
+    "fields": {
+      "full": "BC Ministry of Energy and Climate Solutions",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.TerrestrialPlantCode",
+    "pk": "JK",
+    "fields": {
+      "full": "Japanese Knotweed",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.TerrestrialPlantCode",
+    "pk": "CT",
+    "fields": {
+      "full": "CT",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.TerrestrialPlantCode",
+    "pk": "SK",
+    "fields": {
+      "full": "Spotted Knapweed",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.PlantLifeStageCode",
+    "pk": "U",
+    "fields": {
+      "full": "Unknown",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.PlantLifeStageCode",
+    "pk": "MDF",
+    "fields": {
+      "full": "Mature: Dispensing Fruit",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.DistributionCode",
+    "pk": "WS",
+    "fields": {
+      "full": "6 | several well-spaced patches or clumps",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.DistributionCode",
+    "pk": "FP",
+    "fields": {
+      "full": "5 | a few patches or clumps of a species",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.DensityCode",
+    "pk": "NA",
+    "fields": {
+      "full": "Not applicable - actual footprint or sample location",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.DensityCode",
+    "pk": "D",
+    "fields": {
+      "full": "4 | >10 plants/m2 (Dense)",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.SlopePercentCode",
+    "pk": "SS",
+    "fields": {
+      "full": "Strong slope 15-19 %",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.SlopePercentCode",
+    "pk": "VT",
+    "fields": {
+      "full": "Very steep slope > 45 %",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.AspectCode",
+    "pk": "N",
+    "fields": {
+      "full": "North facing",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.AspectCode",
+    "pk": "NA",
+    "fields": {
+      "full": "variable",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.SoilTextureCode",
+    "pk": "M",
+    "fields": {
+      "full": "Medium (Loamy / silty soil - water takes longer to drain)",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.SoilTextureCode",
+    "pk": "F",
+    "fields": {
+      "full": "Fine (Clay - compact soil that holds water)",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  }
+]

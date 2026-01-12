@@ -1,0 +1,291 @@
+[
+  {
+    "model": "api.ActivityBasic",
+    "pk": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+    "fields": {
+      "short_id": "25PTO6BBA2749",
+      "activity_type": "ActivityType.Observation",
+      "activity_date": "2025-09-29",
+      "created_by": "janerealwoman@identifier",
+      "form_status": "Submitted",
+      "access_description": "55.37033; -121.51513",
+      "comment": "Many plants found here",
+      "created_timestamp": "2026-01-07T23:44:38.874Z",
+      "received_timestamp": "2026-01-07T23:44:38.874Z",
+      "activity_subtype_id": "Activity_Observation_PlantTerrestrial"
+    }
+  },
+  {
+    "model": "api.ActivityBasic",
+    "pk": "CD542709-F767-402F-818E-117B3FBC797D",
+    "fields": {
+      "short_id": "25PTO6BBA2749",
+      "activity_type": "ActivityType.Observation",
+      "activity_date": "2025-10-03",
+      "created_by": "johnrealman@identifier",
+      "form_status": "Submitted",
+      "access_description": "Terrestrial Observation access",
+      "comment": "Found few species",
+      "created_timestamp": "2026-01-07T23:44:38.919Z",
+      "received_timestamp": "2026-01-07T23:44:38.919Z",
+      "activity_subtype_id": "Activity_Observation_PlantTerrestrial"
+    }
+  },
+  {
+    "model": "api.BatchDetail",
+    "pk": 1,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "batch_id": 12,
+      "row_id": 34
+    }
+  },
+  {
+    "model": "api.BatchDetail",
+    "pk": 2,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "batch_id": 56,
+      "row_id": 78
+    }
+  },
+  {
+    "model": "api.Employer",
+    "pk": 2,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "employer_id": "MMCM"
+    }
+  },
+  {
+    "model": "api.Employer",
+    "pk": 2,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "employer_id": "MECS"
+    }
+  },
+  {
+    "model": "api.ProjectCode",
+    "pk": 3,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "description": "Lone Project Code"
+    }
+  },
+  {
+    "model": "api.ProjectCode",
+    "pk": 1,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "description": "Project Code 1:3"
+    }
+  },
+  {
+    "model": "api.ProjectCode",
+    "pk": 2,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "description": "Project Code 2:3"
+    }
+  },
+  {
+    "model": "api.ProjectCode",
+    "pk": 3,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "description": "Project Code 3:3"
+    }
+  },
+  {
+    "model": "api.Participant",
+    "pk": 1,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "name": "Jane Realwoman"
+    }
+  },
+  {
+    "model": "api.Participant",
+    "pk": 2,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "name": "John Realman"
+    }
+  },
+  {
+    "model": "api.Participant",
+    "pk": 3,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "name": "Jane Realwoman"
+    }
+  },
+  {
+    "model": "api.LinkedRecord",
+    "pk": 1,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "linked_id": "CD542709-F767-402F-818E-117B3FBC797D"
+    }
+  },
+  {
+    "model": "api.Jurisdiction",
+    "pk": 1,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "percent_covered": 33,
+      "jurisdiction_id": "RAIL"
+    }
+  },
+  {
+    "model": "api.Jurisdiction",
+    "pk": 2,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "percent_covered": 77,
+      "jurisdiction_id": "P"
+    }
+  },
+  {
+    "model": "api.Jurisdiction",
+    "pk": 3,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "percent_covered": 100,
+      "jurisdiction_id": "MOTI"
+    }
+  },
+  {
+    "model": "api.FundingAgency",
+    "pk": 1,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "agency_id": "MMCM"
+    }
+  },
+  {
+    "model": "api.FundingAgency",
+    "pk": 2,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "agency_id": "MECS"
+    }
+  },
+  {
+    "model": "api.FundingAgency",
+    "pk": 3,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "agency_id": "MOTI"
+    }
+  },
+  {
+    "model": "api.PretreatmentObservation",
+    "pk": 1,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "pre_treatment_observation": "Yes"
+    }
+  },
+  {
+    "model": "api.PretreatmentObservation",
+    "pk": 2,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "pre_treatment_observation": "No"
+    }
+  },
+  {
+    "model": "api.TerrestrialPlantObservationDetail",
+    "pk": 1,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "observation_type": "Positive",
+      "density": "D",
+      "distribution": "WS",
+      "invasive_plant": "JK",
+      "life_stage": "U"
+    }
+  },
+  {
+    "model": "api.TerrestrialPlantObservationDetail",
+    "pk": 2,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "observation_type": "Positive",
+      "density": "D",
+      "distribution": "WS",
+      "invasive_plant": "JK",
+      "life_stage": "U"
+    }
+  },
+  {
+    "model": "api.TerrestrialPlantObservationDetail",
+    "pk": 3,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "invasive_plant": "CT",
+      "observation_type": "Negative",
+      "density": "NA"
+    }
+  },
+  {
+    "model": "api.TerrestrialPlantObservationInfo",
+    "pk": 1,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "research_observation": "Yes",
+      "visible_well_nearby": "Unknown",
+      "aspect": "N",
+      "slope_percent": "SS",
+      "soil_texture": "M"
+    }
+  },
+  {
+    "model": "api.TerrestrialPlantObservationInfo",
+    "pk": 2,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "research_observation": "Yes",
+      "visible_well_nearby": "Unknown",
+      "aspect": "NA",
+      "slope_percent": "VT",
+      "soil_texture": "F"
+    }
+  },
+  {
+    "model": "api.SuitableForBiocontrol",
+    "pk": 1,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "suitable_for_biocontrol": "Yes"
+    }
+  },
+  {
+    "model": "api.SuitableForBiocontrol",
+    "pk": 2,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "suitable_for_biocontrol": "No"
+    }
+  },
+  {
+    "model": "api.TerrestrialVoucherSpecimen",
+    "pk": 1,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "invasive_plant": "JK",
+      "voucher_sample_id": 123,
+      "date_collected": "2025-01-21",
+      "date_verified": "2025-01-22",
+      "herbarium": "Johns Herbarium",
+      "accession_number": "123",
+      "completed_by_person": "Jane Realwoman",
+      "completed_by_org": "BC Gov",
+      "utm_zone": 10,
+      "utm_easting": 6543232,
+      "utm_northing": 123456
+    }
+  }
+]
