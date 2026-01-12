@@ -8,8 +8,8 @@ from pydantic_core._pydantic_core import ValidationError
 
 from api.legacy_db.migrate import migrate
 from api.legacy_db.model_serializer import LegacyActivity
-from api.models import (
-    ActivityBasic,
+from api.models.activity import ActivityBasic
+from api.models.codes import (
     AdjacentLandUseCode,
     FundingAgencyCode,
     AgentLocationFoundCode,

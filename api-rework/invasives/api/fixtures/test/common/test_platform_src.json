@@ -1,0 +1,18 @@
+[
+  {
+    "model": "api.Platform",
+    "pk": 1,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "jurisdiction_id": "Web"
+    }
+  },
+  {
+    "model": "api.Platform",
+    "pk": 2,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "src": "Ios"
+    }
+  }
+]
