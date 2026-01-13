@@ -4,7 +4,7 @@ from api.models.activity.activity_basic import ActivityBasic
 from api.serializers.activity import ActivitySerializer
 
 
-class TerrestrialObservationTest(TestCase):
+class AquaticObservationTest(TestCase):
   """
     Tests:
     - Two activities present
@@ -14,8 +14,8 @@ class TerrestrialObservationTest(TestCase):
   """
 
   fixtures = [
-    "test/subtypes/observations/test_terrestrial_observation_codes",
-    "test/subtypes/observations/test_terrestrial_observation"
+    "test/subtypes/observations/test_aquatic_observation_codes",
+    "test/subtypes/observations/test_aquatic_observation"
   ]
 
   def test_expect_two_activities(self):
@@ -34,7 +34,7 @@ class TerrestrialObservationTest(TestCase):
       self.assertIsNotNone(record)
 
       serial = ActivitySerializer(record)
-      self.assertEqual(serial.data["subtype_data"]["slope_percent"], "SS")
+      self.assertEqual(serial.data["subtype_data"]["secchi_depth"], 9)
       serial.data["participants"]
 
       for person in serial.data["participants"]:
@@ -51,7 +51,8 @@ class TerrestrialObservationTest(TestCase):
       self.assertIsNotNone(record)
 
       serial = ActivitySerializer(record)
-      self.assertEqual(serial.data["subtype_data"]["slope_percent"], "SS")
+      # Check a subtype specific field
+      self.assertEqual(serial.data["subtype_data"]["secchi_depth"], 9)
 
     except ActivityBasic.DoesNotExist:
       self.fail("Activity does not exist")
@@ -67,14 +68,17 @@ class TerrestrialObservationTest(TestCase):
 
     self.assertEqual(sd["suitable_for_biocontrol"], "No")
     self.assertEqual(sd["pretreatment_observation"], "Yes")
-    self.assertListEqual(sd["specific_use"], ["NO", "MI"])
-    self.assertEqual(sd["research_observation"], "Yes")
-    self.assertEqual(sd["visible_well_nearby"], "Unknown")
-    self.assertEqual(sd["aspect"], "N")
-    self.assertEqual(sd["slope_percent"], "SS")
-    self.assertEqual(sd["soil_texture"], "M")
-    self.assertEqual(sd["pretreatment_observation"], "Yes")
+
     self.assertGreaterEqual(len(sd["observation_details"]), 1)
+    self.assertIn("WET", sd["inflow_permanent"])
+    self.assertIn("DISP", sd["inflow_seasonal"])
+    self.assertIn("WET", sd["outflow_permanent"])
+    self.assertIn("WET", sd["outflow_seasonal"])
+    self.assertIn("Dam", sd["waterlevel_management"])
+    self.assertIn("AI", sd["waterbody_use"])
+    self.assertIn("GR", sd["substrate_type"])
+    self.assertIn("H", sd["adjacent_land_use"])
+
 
     od = sd["observation_details"][0]
     self.assertEqual(od["density"], "D")
@@ -82,14 +86,15 @@ class TerrestrialObservationTest(TestCase):
     self.assertEqual(od["invasive_plant"], "JK")
     self.assertEqual(od["life_stage"], "U")
     self.assertEqual(od["observation_type"], "Positive")
+    self.assertEqual(od["sample_point_id"], '123A')
 
     vs = od["voucher_specimen"]
     self.assertEqual(vs["invasive_plant"], "JK")
-    self.assertEqual(vs["voucher_sample_id"], "123")
+    self.assertEqual(vs["voucher_sample_id"], '123Vouch')
     self.assertEqual(vs["date_collected"], "2025-01-21")
     self.assertEqual(vs["date_verified"], "2025-01-22")
     self.assertEqual(vs["herbarium"], "Johns Herbarium")
-    self.assertEqual(vs["accession_number"], "123")
+    self.assertEqual(vs["accession_number"], "123Acc")
     self.assertEqual(vs["completed_by_person"], "Jane Realwoman")
     self.assertEqual(vs["completed_by_org"], "BC Gov")
     self.assertEqual(vs["utm_zone"], 10)
@@ -107,29 +112,25 @@ class TerrestrialObservationTest(TestCase):
 
       self.assertEqual(sd["suitable_for_biocontrol"], "Yes")
       self.assertEqual(sd["pretreatment_observation"], "No")
-      self.assertListEqual(sd["specific_use"], ["GP",])
-      self.assertEqual(sd["research_observation"], "Yes")
-      self.assertEqual(sd["visible_well_nearby"], "Unknown")
-      self.assertEqual(sd["aspect"], "NA")
-      self.assertEqual(sd["slope_percent"], "VT")
-      self.assertEqual(sd["soil_texture"], "F")
       self.assertEqual(len(sd["observation_details"]), 2)
 
       obs_detail = [{
+        "density": None,
+        "distribution": None,
+        "invasive_plant": "CT",
+        "life_stage": None,
+        "observation_type": "Negative",
+        "sample_point_id": "567SP",
+        "voucher_specimen": None
+      },
+      {
         "density": "D",
         "distribution": "WS",
         "invasive_plant": "JK",
         "life_stage": "U",
         "observation_type": "Positive",
+        "sample_point_id": "456BD",
         "voucher_specimen": None
-      },
-      {
-        "invasive_plant": "CT",
-        "observation_type": "Negative",
-        "density": None,
-        "voucher_specimen": None,
-        "life_stage": None,
-        "distribution": None
       }]
 
       self.assertCountEqual(obs_detail, sd["observation_details"])
