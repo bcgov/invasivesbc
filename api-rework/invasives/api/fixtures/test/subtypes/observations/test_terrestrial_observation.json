@@ -102,7 +102,7 @@
     "pk": 1,
     "fields": {
       "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
-      "name": "Jane Realwoman",
+      "name": "Jane Doe",
       "pac_number": 1234
     }
   },
@@ -111,7 +111,7 @@
     "pk": 2,
     "fields": {
       "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
-      "name": "John Person",
+      "name": "John Smith",
       "pac_number": 4567
     }
   },
@@ -120,7 +120,7 @@
     "pk": 3,
     "fields": {
       "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
-      "name": "Jane Person",
+      "name": "Jane Doe",
       "pac_number": 1234
     }
   },
@@ -307,7 +307,7 @@
       "date_verified": "2025-01-22",
       "herbarium": "Johns Herbarium",
       "accession_number": "123",
-      "completed_by_person": "Jane Realwoman",
+      "completed_by_person": "Jane Doe",
       "completed_by_org": "BC Gov",
       "utm_zone": 10,
       "utm_easting": 6543232,

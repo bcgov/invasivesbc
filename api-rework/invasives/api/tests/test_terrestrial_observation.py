@@ -90,7 +90,7 @@ class TerrestrialObservationTest(TestCase):
     self.assertEqual(vs["date_verified"], "2025-01-22")
     self.assertEqual(vs["herbarium"], "Johns Herbarium")
     self.assertEqual(vs["accession_number"], "123")
-    self.assertEqual(vs["completed_by_person"], "Jane Realwoman")
+    self.assertEqual(vs["completed_by_person"], "Jane Doe")
     self.assertEqual(vs["completed_by_org"], "BC Gov")
     self.assertEqual(vs["utm_zone"], 10)
     self.assertEqual(vs["utm_easting"], 6543232)
