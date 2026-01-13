@@ -81,9 +81,9 @@ class TerrestrialObservationSerializer(serializers.Serializer):
   specific_use = TerrestrialObservationSpecificUseSerializer(source="terrestrialobservationspecificuse_set", many=True)
 
   def to_representation(self, instance):
-        ret = super().to_representation(instance)
-        info_data = ret.pop('observation_information', None)
+    ret = super().to_representation(instance)
+    info_data = ret.pop('observation_information', None)
 
-        if info_data and isinstance(info_data, dict):
-            ret.update(info_data)
-        return ret
+    if info_data and isinstance(info_data, dict):
+        ret.update(info_data)
+    return ret
