@@ -10,6 +10,7 @@ from api.models.activity import (
   WaterbodyInflowSeasonal,
   WaterbodyType,
   WaterbodyData,
+  WaterbodyUse,
   WaterbodyLevelManagement,
   WaterbodyAdjacentLandUse
 )
@@ -68,6 +69,14 @@ class WaterbodyTypeSerializer(serializers.ModelSerializer):
   class Meta:
     model = WaterbodyType
     fields = ["flow_code"]
+
+class WaterbodyUseSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = WaterbodyUse
+    fields = ["waterbody_use"]
+  def to_representation(self, instance):
+    ret = super().to_representation(instance)
+    return ret["waterbody_use"]
 
 class WaterbodyLevelManagementSerializer(serializers.ModelSerializer):
   class Meta:
@@ -143,8 +152,9 @@ class AquaticObservationSerializer(serializers.Serializer):
   observation_details = AquaticPlantObservationDetailSerializer(source="aquaticplantobservationdetail_set", many=True)
   pretreatment_observation = serializers.CharField(source="pretreatmentobservation.pre_treatment_observation")
   substrate_type = WaterbodySubstrateTypeSerializer(source="waterbodysubstratetype_set", many=True)
+  suitable_for_biocontrol = serializers.CharField(source="suitableforbiocontrol.suitable_for_biocontrol")
   waterbody_details = WaterbodyDataSerializer(source="waterbodydata")
-  waterbody_use = WaterbodyAdjacentLandUseSerializer(source="waterbodyadjacentlanduse_set", many=True)
+  waterbody_use = WaterbodyUseSerializer(source="waterbodyuse_set", many=True)
   waterlevel_management = WaterbodyLevelManagementSerializer(source="waterbodylevelmanagement_set", many=True)
 
   # Water Flow
