@@ -1,8 +1,8 @@
 from rest_framework import serializers
+from api.serializers.common import ShorelineTypesSerializer
 from api.models.activity import (
   AquaticPlantObservationDetail,
   AquaticVoucherSpecimen,
-  ShorelineTypes,
   WaterbodySubstrateType,
   WaterbodyOutflowPermanent,
   WaterbodyOutflowSeasonal,
@@ -14,6 +14,7 @@ from api.models.activity import (
   WaterbodyLevelManagement,
   WaterbodyAdjacentLandUse
 )
+
 ####
 # Waterbody Flow Codes
 ####
@@ -48,14 +49,6 @@ class WaterbodyAdjacentLandUseSerializer(serializers.ModelSerializer):
   def to_representation(self, instance):
     ret = super().to_representation(instance)
     return ret["waterbody_adjacent_land_use"]
-
-class ShorelineTypesSerializer(serializers.ModelSerializer):
-  class Meta:
-    model = ShorelineTypes
-    fields = (
-      "percent_covered",
-      "shoreline_type"
-    )
 
 class WaterbodySubstrateTypeSerializer(serializers.ModelSerializer):
   class Meta:
@@ -156,6 +149,7 @@ class AquaticObservationSerializer(serializers.Serializer):
   waterbody_details = WaterbodyDataSerializer(source="waterbodydata")
   waterbody_use = WaterbodyUseSerializer(source="waterbodyuse_set", many=True)
   waterlevel_management = WaterbodyLevelManagementSerializer(source="waterbodylevelmanagement_set", many=True)
+  shoreline_types = ShorelineTypesSerializer(source="shorelinetypes_set", many=True)
 
   # Water Flow
   inflow_permanent = WaterbodyInflowPermanentSerializer(source="waterbodyinflowpermanent_set", many=True)
