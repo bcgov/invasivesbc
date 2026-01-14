@@ -44,7 +44,6 @@ class TerrestrialPlantMechanicalTreatment(PlantMechanicalTreatment):
 
     class Meta:
         db_table = '"activity"."terrestrial_plant_mechanical_treatment"'
-        pass
 
 
 class AquaticPlantMechanicalTreatment(PlantMechanicalTreatment):
@@ -57,4 +56,3 @@ class AquaticPlantMechanicalTreatment(PlantMechanicalTreatment):
 
     class Meta:
         db_table = '"activity"."aquatic_plant_mechanical_treatment"'
-        pass
