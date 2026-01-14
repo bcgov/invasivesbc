@@ -1,0 +1,252 @@
+[
+  {
+    "model": "api.ActivityBasic",
+    "pk": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+    "fields": {
+      "short_id": "25PAM6BBA2749",
+      "activity_type": "ActivityType.Treatment",
+      "activity_date": "2025-09-29",
+      "created_by": "janedoe@identifier",
+      "form_status": "Submitted",
+      "access_description": "55.37033; -121.51513",
+      "comment": "Many plants found here",
+      "created_timestamp": "2026-01-07T23:44:38.874Z",
+      "received_timestamp": "2026-01-07T23:44:38.874Z",
+      "activity_subtype_id": "Activity_Treatment_MechanicalPlantAquatic"
+    }
+  },
+  {
+    "model": "api.ActivityBasic",
+    "pk": "CD542709-F767-402F-818E-117B3FBC797D",
+    "fields": {
+      "short_id": "25PTO6BBA2749",
+      "activity_type": "ActivityType.Treatment",
+      "activity_date": "2025-10-03",
+      "created_by": "johnsmith@identifier",
+      "form_status": "Submitted",
+      "access_description": "Aquatic Mechanical Treatment access",
+      "comment": "Found few species",
+      "created_timestamp": "2026-01-07T23:44:38.919Z",
+      "received_timestamp": "2026-01-07T23:44:38.919Z",
+      "activity_subtype_id": "Activity_Treatment_MechanicalPlantAquatic"
+    }
+  },
+  {
+    "model": "api.BatchDetail",
+    "pk": 1,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "batch_id": 12,
+      "row_id": 34
+    }
+  },
+  {
+    "model": "api.BatchDetail",
+    "pk": 2,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "batch_id": 56,
+      "row_id": 78
+    }
+  },
+  {
+    "model": "api.Employer",
+    "pk": 2,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "employer_id": "MMCM"
+    }
+  },
+  {
+    "model": "api.Employer",
+    "pk": 2,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "employer_id": "MECS"
+    }
+  },
+  {
+    "model": "api.ProjectCode",
+    "pk": 3,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "description": "Lone Project Code"
+    }
+  },
+  {
+    "model": "api.ProjectCode",
+    "pk": 1,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "description": "Project Code 1:3"
+    }
+  },
+  {
+    "model": "api.ProjectCode",
+    "pk": 2,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "description": "Project Code 2:3"
+    }
+  },
+  {
+    "model": "api.ProjectCode",
+    "pk": 3,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "description": "Project Code 3:3"
+    }
+  },
+  {
+    "model": "api.Participant",
+    "pk": 1,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "name": "Jane Doe",
+      "pac_number": 1234
+    }
+  },
+  {
+    "model": "api.Participant",
+    "pk": 2,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "name": "John Smith",
+      "pac_number": 4567
+    }
+  },
+  {
+    "model": "api.Participant",
+    "pk": 3,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "name": "Jane Person",
+      "pac_number": 1234
+    }
+  },
+  {
+    "model": "api.LinkedRecord",
+    "pk": 1,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "linked_id": "CD542709-F767-402F-818E-117B3FBC797D"
+    }
+  },
+  {
+    "model": "api.Jurisdiction",
+    "pk": 1,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "percent_covered": 33,
+      "jurisdiction_id": "RAIL"
+    }
+  },
+  {
+    "model": "api.Jurisdiction",
+    "pk": 2,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "percent_covered": 77,
+      "jurisdiction_id": "P"
+    }
+  },
+  {
+    "model": "api.Jurisdiction",
+    "pk": 3,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "percent_covered": 100,
+      "jurisdiction_id": "MOTI"
+    }
+  },
+  {
+    "model": "api.FundingAgency",
+    "pk": 1,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "agency_id": "MMCM"
+    }
+  },
+  {
+    "model": "api.FundingAgency",
+    "pk": 2,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "agency_id": "MECS"
+    }
+  },
+  {
+    "model": "api.FundingAgency",
+    "pk": 3,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "agency_id": "MOTI"
+    }
+  },
+  {
+    "model": "api.AquaticPlantMechanicalTreatment",
+    "pk": 1,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "disposed_material_amount": 544,
+      "disposed_material_format": "kg",
+      "disposal_method": "II",
+      "invasive_plant": "CT",
+      "mechanical_method": "DIG",
+      "treated_area_msq": 33
+    }
+  },
+  {
+    "model": "api.AquaticPlantMechanicalTreatment",
+    "pk": 2,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "disposed_material_amount": 544,
+      "disposed_material_format": "m^3",
+      "disposal_method": "II",
+      "invasive_plant": "JK",
+      "mechanical_method": "DIG",
+      "treated_area_msq": 33
+    }
+  },
+  {
+    "model": "api.AquaticPlantMechanicalTreatment",
+    "pk": 3,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "invasive_plant": "JK",
+      "disposed_material_amount": 544,
+      "disposed_material_format": "plants",
+      "disposal_method": "LDB",
+      "mechanical_method": "CNV",
+      "treated_area_msq": 512
+    }
+  },
+  {
+    "model": "api.ShorelineTypes",
+    "pk": 1,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "percent_covered": 100,
+      "shoreline_type": "RR"
+    }
+  },
+  {
+    "model": "api.ShorelineTypes",
+    "pk": 1,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "percent_covered": 66,
+      "shoreline_type": "RR"
+    }
+  },
+  {
+    "model": "api.ShorelineTypes",
+    "pk": 1,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "percent_covered": 33,
+      "shoreline_type": "T"
+    }
+  }
+]
