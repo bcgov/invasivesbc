@@ -10,8 +10,12 @@ from api.models.activity import (
     Participant,
     ProjectCode,
 )
-from api.serializers.type.subtype.aquatic_observation import AquaticObservationSerializer
-from api.serializers.type.subtype.terrestrial_observation import TerrestrialObservationSerializer
+from api.serializers.type.subtype import (
+    AquaticObservationSerializer,
+    AquaticPlantTreatmentMechanicalSerializer,
+    TerrestrialObservationSerializer,
+    TerrestrialPlantTreatmentMechanicalSerializer
+)
 
 """
 Serializers for all Common models in an Activity
@@ -123,6 +127,8 @@ class ActivitySerializer(serializers.ModelSerializer):
         SUBTYPE_SERIALIZER_MAP = {
             "Activity_Observation_PlantTerrestrial": TerrestrialObservationSerializer,
             "Activity_Observation_PlantAquatic": AquaticObservationSerializer,
+            "Activity_Treatment_MechanicalPlantTerrestrial": TerrestrialPlantTreatmentMechanicalSerializer,
+            "Activity_Treatment_MechanicalPlantAquatic": AquaticPlantTreatmentMechanicalSerializer
         }
         serializer_cls = SUBTYPE_SERIALIZER_MAP.get(obj.activity_subtype.full)
 
