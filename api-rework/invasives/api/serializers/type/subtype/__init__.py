@@ -1,0 +1,4 @@
+from .aquatic_observation import AquaticObservationSerializer
+from .aquatic_mechanical_treatment import AquaticPlantTreatmentMechanicalSerializer
+from .terrestrial_observation import TerrestrialObservationSerializer
+from .terrestrial_mechanical_treatment import TerrestrialPlantTreatmentMechanicalSerializer
