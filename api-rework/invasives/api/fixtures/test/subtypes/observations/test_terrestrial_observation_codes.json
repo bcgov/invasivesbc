@@ -4,6 +4,7 @@
     "pk": "Activity_Observation_PlantTerrestrial",
     "fields": {
       "short_id_format": "PTO",
+      "full": "Activity_Observation_PlantTerrestrial",
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }
@@ -148,6 +149,33 @@
     "pk": "FP",
     "fields": {
       "full": "5 | a few patches or clumps of a species",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.SpecificUseCode",
+    "pk": "MI",
+    "fields": {
+      "full": "Mine Site",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.SpecificUseCode",
+    "pk": "GP",
+    "fields": {
+      "full": "Gravel Pit",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.SpecificUseCode",
+    "pk": "NO",
+    "fields": {
+      "full": "None",
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }

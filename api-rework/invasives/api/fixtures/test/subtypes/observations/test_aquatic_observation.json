@@ -6,7 +6,7 @@
       "short_id": "25PTO6BBA2749",
       "activity_type": "ActivityType.Observation",
       "activity_date": "2025-09-29",
-      "created_by": "janerealwoman@identifier",
+      "created_by": "janedoe@identifier",
       "form_status": "Submitted",
       "access_description": "55.37033; -121.51513",
       "comment": "Many plants found here",
@@ -22,7 +22,7 @@
       "short_id": "25PTO6BBA2749",
       "activity_type": "ActivityType.Observation",
       "activity_date": "2025-10-03",
-      "created_by": "johnrealman@identifier",
+      "created_by": "johnsmith@identifier",
       "form_status": "Submitted",
       "access_description": "Aquatic Observation access",
       "comment": "Found few species",
@@ -102,7 +102,8 @@
     "pk": 1,
     "fields": {
       "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
-      "name": "Jane Realwoman"
+      "name": "Jane Doe",
+      "pac_number": 1234
     }
   },
   {
@@ -110,7 +111,8 @@
     "pk": 2,
     "fields": {
       "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
-      "name": "John Realman"
+      "name": "John Smith",
+      "pac_number": 4567
     }
   },
   {
@@ -118,7 +120,8 @@
     "pk": 3,
     "fields": {
       "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
-      "name": "Jane Realwoman"
+      "name": "J.J. Realperson",
+      "pac_number": 4567
     }
   },
   {
@@ -205,7 +208,8 @@
       "density": "D",
       "distribution": "WS",
       "invasive_plant": "JK",
-      "life_stage": "U"
+      "life_stage": "U",
+      "sample_point_id": "123A"
     }
   },
   {
@@ -217,7 +221,8 @@
       "density": "D",
       "distribution": "WS",
       "invasive_plant": "JK",
-      "life_stage": "U"
+      "life_stage": "U",
+      "sample_point_id": "456BD"
     }
   },
   {
@@ -227,7 +232,7 @@
       "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
       "invasive_plant": "CT",
       "observation_type": "Negative",
-      "density": "NA"
+      "sample_point_id": "567SP"
     }
   },
   {
@@ -252,12 +257,12 @@
     "fields": {
       "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
       "invasive_plant": "JK",
-      "voucher_sample_id": 123,
+      "voucher_sample_id": "123Vouch",
       "date_collected": "2025-01-21",
       "date_verified": "2025-01-22",
       "herbarium": "Johns Herbarium",
-      "accession_number": "123",
-      "completed_by_person": "Jane Realwoman",
+      "accession_number": "123Acc",
+      "completed_by_person": "Jane Doe",
       "completed_by_org": "BC Gov",
       "utm_zone": 10,
       "utm_easting": 6543232,
@@ -401,6 +406,22 @@
     "fields": {
       "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
       "substrate_type": "BR"
+    }
+  },
+  {
+    "model": "api.WaterbodyAdjacentLandUse",
+    "pk": 1,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "waterbody_adjacent_land_use": "H"
+    }
+  },
+  {
+    "model": "api.WaterbodyAdjacentLandUse",
+    "pk": 2,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "waterbody_adjacent_land_use": "PL"
     }
   },
   {

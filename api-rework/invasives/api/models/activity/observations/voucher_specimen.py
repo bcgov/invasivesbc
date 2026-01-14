@@ -5,7 +5,7 @@ from api.models.codes.code_tables import TerrestrialPlantCode, AquaticPlantCode
 
 class VoucherSpecimen(BaseOneToOneActivityTable):
     invasive_plant = models.ForeignKey("PlantCodes", on_delete=models.PROTECT)
-    voucher_sample_id = models.PositiveBigIntegerField()
+    voucher_sample_id = models.CharField(max_length=128)
     date_collected = models.DateField()
     date_verified = models.DateField()
     herbarium = models.CharField()

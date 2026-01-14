@@ -1,7 +1,17 @@
 from rest_framework import serializers
+import logging
 
 from api.models.activity.activity_basic import ActivityBasic
-from api.models.activity import Employer, FundingAgency, Jurisdiction, Participant, ProjectCode
+from api.models.activity import (
+    Employer,
+    FundingAgency,
+    Jurisdiction,
+    LinkedRecord,
+    Participant,
+    ProjectCode,
+)
+from api.serializers.type.subtype.aquatic_observation import AquaticObservationSerializer
+from api.serializers.type.subtype.terrestrial_observation import TerrestrialObservationSerializer
 
 """
 Serializers for all Common models in an Activity
@@ -10,7 +20,7 @@ Serializers for all Common models in an Activity
 class EmployerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employer
-        fields = ("employer")
+        fields = ["employer"]
 
 class FundingAgencySerializer(serializers.ModelSerializer):
     invasive_species_agency_code = serializers.CharField(source="agency_id")
@@ -29,10 +39,30 @@ class ParticipantSerializer(serializers.ModelSerializer):
         model = Participant
         fields = ("name", "pac_number")
 
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        try:
+            if instance.activity_id.activity_subtype.full in ["Activity_Treatment_ChemicalPlantTerrestrial", "Activity_Monitoring_ChemicalTerrestrialAquaticPlant"]:
+                return ret
+        except Exception as e:
+
+            pass
+        return {"name": ret["name"]}
+
+
+class LinkedRecordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LinkedRecord
+        fields = ["linked_id"]
+    def to_representation(self, instance):
+        """Format Response to return string value"""
+        ret = super().to_representation(instance)
+        return ret["linked_id"]
+
 class ProjectCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProjectCode
-        fields = ("description")
+        fields = ["description"]
 
 # class ActivityGeometrySerializer():
 # TODO: Implement when Model finalized
@@ -62,19 +92,41 @@ class ActivityListSerializer(serializers.ModelSerializer):
 
 
 class ActivitySerializer(serializers.ModelSerializer):
+    """
+    Entry For Serializing Activities to a Record
+    """
     jurisdictions = JurisdictionSerializer(source='jurisdiction_set', many=True)
     project_code = ProjectCodeSerializer(source="projectcode_set", many=True)
-    invasive_species_agency_code = serializers.SerializerMethodField()
+    funding_agency = serializers.SerializerMethodField()
     employer_code = serializers.SerializerMethodField()
+    subtype_data = serializers.SerializerMethodField()
+    linked_id = LinkedRecordSerializer(source="links_from", many=True)
+    participants = ParticipantSerializer(source="participant_set", many=True)
 
     class Meta:
         model = ActivityBasic
         fields = "__all__"
 
-    def get_invasive_species_agency_code(self, obj):
+    def get_funding_agency(self, obj):
+        """Formats Funding agency codes into comma separated format"""
         agencies = obj.fundingagency_set.all().values_list('agency_id', flat=True)
         return ",".join(agencies) or None
 
     def get_employer_code(self, obj):
+        """Formats Employer codes into comma separated format"""
         employers = obj.employer_set.all().values_list('employer_id', flat=True)
         return ",".join(employers) or None
+
+    def get_subtype_data(self, obj):
+        """Maps the Activity to the proper Subtype Serializer, populating the form specific information"""
+
+        SUBTYPE_SERIALIZER_MAP = {
+            "Activity_Observation_PlantTerrestrial": TerrestrialObservationSerializer,
+            "Activity_Observation_PlantAquatic": AquaticObservationSerializer,
+        }
+        serializer_cls = SUBTYPE_SERIALIZER_MAP.get(obj.activity_subtype.full)
+
+        if not serializer_cls:
+            return None
+
+        return serializer_cls(obj, context=self.context).data

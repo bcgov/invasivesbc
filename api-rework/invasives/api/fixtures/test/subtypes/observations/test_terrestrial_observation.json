@@ -6,7 +6,7 @@
       "short_id": "25PTO6BBA2749",
       "activity_type": "ActivityType.Observation",
       "activity_date": "2025-09-29",
-      "created_by": "janerealwoman@identifier",
+      "created_by": "janedoe@identifier",
       "form_status": "Submitted",
       "access_description": "55.37033; -121.51513",
       "comment": "Many plants found here",
@@ -22,7 +22,7 @@
       "short_id": "25PTO6BBA2749",
       "activity_type": "ActivityType.Observation",
       "activity_date": "2025-10-03",
-      "created_by": "johnrealman@identifier",
+      "created_by": "johnsmith@identifier",
       "form_status": "Submitted",
       "access_description": "Terrestrial Observation access",
       "comment": "Found few species",
@@ -102,7 +102,8 @@
     "pk": 1,
     "fields": {
       "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
-      "name": "Jane Realwoman"
+      "name": "Jane Doe",
+      "pac_number": 1234
     }
   },
   {
@@ -110,7 +111,8 @@
     "pk": 2,
     "fields": {
       "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
-      "name": "John Realman"
+      "name": "John Smith",
+      "pac_number": 4567
     }
   },
   {
@@ -118,7 +120,8 @@
     "pk": 3,
     "fields": {
       "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
-      "name": "Jane Realwoman"
+      "name": "Jane Doe",
+      "pac_number": 1234
     }
   },
   {
@@ -226,8 +229,7 @@
     "fields": {
       "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
       "invasive_plant": "CT",
-      "observation_type": "Negative",
-      "density": "NA"
+      "observation_type": "Negative"
     }
   },
   {
@@ -252,6 +254,30 @@
       "aspect": "NA",
       "slope_percent": "VT",
       "soil_texture": "F"
+    }
+  },
+  {
+    "model": "api.TerrestrialObservationSpecificUse",
+    "pk": 1,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "specific_use": "NO"
+    }
+  },
+  {
+    "model": "api.TerrestrialObservationSpecificUse",
+    "pk": 2,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "specific_use": "MI"
+    }
+  },
+  {
+    "model": "api.TerrestrialObservationSpecificUse",
+    "pk": 3,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "specific_use": "GP"
     }
   },
   {
@@ -281,7 +307,7 @@
       "date_verified": "2025-01-22",
       "herbarium": "Johns Herbarium",
       "accession_number": "123",
-      "completed_by_person": "Jane Realwoman",
+      "completed_by_person": "Jane Doe",
       "completed_by_org": "BC Gov",
       "utm_zone": 10,
       "utm_easting": 6543232,
