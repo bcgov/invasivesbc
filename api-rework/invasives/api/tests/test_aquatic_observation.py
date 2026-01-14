@@ -79,6 +79,9 @@ class AquaticObservationTest(TestCase):
     self.assertIn("GR", sd["substrate_type"])
     self.assertIn("H", sd["adjacent_land_use"])
 
+    st = sd["shoreline_types"][0]
+    self.assertEqual(st["shoreline_type"], "LGA")
+    self.assertEqual(st["percent_covered"], 100)
 
     od = sd["observation_details"][0]
     self.assertEqual(od["density"], "D")
