@@ -1,2 +1,1 @@
 from .plant_treatment_monitoring import *
-from .aquatic_mechanical_authorization import AquaticMechanicalAuthorization
