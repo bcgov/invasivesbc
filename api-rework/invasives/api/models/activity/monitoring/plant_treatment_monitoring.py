@@ -5,6 +5,7 @@ from api.models.codes.code_tables import (
     AquaticPlantCode,
     EfficacyManagementRatingCode,
     TerrestrialPlantCode,
+    TreatmentEfficacyRatingCode
 )
 from api.models.enums.treatment_pass import TreatmentPass
 from api.models.enums.yes_no import YesNo
@@ -20,11 +21,10 @@ class PlantMonitoringBase(BaseOneToManyActivityTable):
     invasive_plant = models.ForeignKey("PlantCodes", on_delete=models.PROTECT)
     evidence_of_treatment = models.CharField(choices=YesNo)
     treatment_efficacy_rating = models.ForeignKey(
-        EfficacyManagementRatingCode,
+        TreatmentEfficacyRatingCode,
         on_delete=models.PROTECT,
         null=True,
-        blank=True,
-        related_name="%(class)s_management_efficacy"
+        blank=True
     )
     management_efficacy_rating = models.ForeignKey(
         EfficacyManagementRatingCode, on_delete=models.PROTECT
