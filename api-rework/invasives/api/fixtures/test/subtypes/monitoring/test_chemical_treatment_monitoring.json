@@ -1,0 +1,295 @@
+[
+  {
+    "model": "api.ActivityBasic",
+    "pk": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+    "fields": {
+      "short_id": "25PCM6BBA2749",
+      "activity_type": "ActivityType.Monitoring",
+      "activity_date": "2025-09-29",
+      "created_by": "janedoe@identifier",
+      "form_status": "Submitted",
+      "access_description": "55.37033; -121.51513",
+      "comment": "Many plants found here",
+      "created_timestamp": "2026-01-07T23:44:38.874Z",
+      "received_timestamp": "2026-01-07T23:44:38.874Z",
+      "activity_subtype_id": "Activity_Monitoring_ChemicalTerrestrialAquaticPlant"
+    }
+  },
+  {
+    "model": "api.ActivityBasic",
+    "pk": "CD542709-F767-402F-818E-117B3FBC797D",
+    "fields": {
+      "short_id": "25PCM6BBA2749",
+      "activity_type": "ActivityType.Monitoring",
+      "activity_date": "2025-10-03",
+      "created_by": "johnsmith@identifier",
+      "form_status": "Submitted",
+      "access_description": "Terrestrial Monitoring",
+      "comment": "Found few species",
+      "created_timestamp": "2026-01-07T23:44:38.919Z",
+      "received_timestamp": "2026-01-07T23:44:38.919Z",
+      "activity_subtype_id": "Activity_Monitoring_ChemicalTerrestrialAquaticPlant"
+    }
+  },
+  {
+    "model": "api.BatchDetail",
+    "pk": 1,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "batch_id": 12,
+      "row_id": 34
+    }
+  },
+  {
+    "model": "api.BatchDetail",
+    "pk": 2,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "batch_id": 56,
+      "row_id": 78
+    }
+  },
+  {
+    "model": "api.Employer",
+    "pk": 2,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "employer_id": "MMCM"
+    }
+  },
+  {
+    "model": "api.Employer",
+    "pk": 2,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "employer_id": "MECS"
+    }
+  },
+  {
+    "model": "api.ProjectCode",
+    "pk": 3,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "description": "Lone Project Code"
+    }
+  },
+  {
+    "model": "api.ProjectCode",
+    "pk": 1,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "description": "Project Code 1:3"
+    }
+  },
+  {
+    "model": "api.ProjectCode",
+    "pk": 2,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "description": "Project Code 2:3"
+    }
+  },
+  {
+    "model": "api.ProjectCode",
+    "pk": 3,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "description": "Project Code 3:3"
+    }
+  },
+  {
+    "model": "api.Participant",
+    "pk": 1,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "name": "Jane Doe",
+      "pac_number": 1234
+    }
+  },
+  {
+    "model": "api.Participant",
+    "pk": 2,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "name": "John Smith",
+      "pac_number": 4567
+    }
+  },
+  {
+    "model": "api.Participant",
+    "pk": 3,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "name": "Jane Person",
+      "pac_number": 1234
+    }
+  },
+  {
+    "model": "api.LinkedRecord",
+    "pk": 1,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "linked_id": "CD542709-F767-402F-818E-117B3FBC797D"
+    }
+  },
+  {
+    "model": "api.Jurisdiction",
+    "pk": 1,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "percent_covered": 33,
+      "jurisdiction_id": "RAIL"
+    }
+  },
+  {
+    "model": "api.Jurisdiction",
+    "pk": 2,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "percent_covered": 77,
+      "jurisdiction_id": "P"
+    }
+  },
+  {
+    "model": "api.Jurisdiction",
+    "pk": 3,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "percent_covered": 100,
+      "jurisdiction_id": "MOTI"
+    }
+  },
+  {
+    "model": "api.FundingAgency",
+    "pk": 1,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "agency_id": "MMCM"
+    }
+  },
+  {
+    "model": "api.FundingAgency",
+    "pk": 2,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "agency_id": "MECS"
+    }
+  },
+  {
+    "model": "api.FundingAgency",
+    "pk": 3,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "agency_id": "MOTI"
+    }
+  },
+  {
+    "model": "api.TerrestrialTreatmentMonitoringInformation",
+    "pk": 1,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "comment": "Several plants remain",
+      "treatment_pass": "Second",
+      "invasive_plant": "JK",
+      "evidence_of_treatment": "No",
+      "management_efficacy_rating": "6M"
+    }
+  },
+  {
+    "model": "api.TerrestrialTreatmentMonitoringInformation",
+    "pk": 2,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "invasive_plant": "CT",
+      "evidence_of_treatment": "Y",
+      "treatment_pass": "Second",
+      "management_efficacy_rating": "1M",
+      "treatment_efficacy_rating": "6"
+    }
+  },
+  {
+    "model": "api.AquaticTreatmentMonitoringInformation",
+    "pk": 1,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "comment": "Several plants remain",
+      "treatment_pass": "Third",
+      "invasive_plant": "RC",
+      "evidence_of_treatment": "Y",
+      "management_efficacy_rating": "6M",
+      "treatment_efficacy_rating": "1"
+    }
+  },
+  {
+    "model": "api.AquaticInvasivePlantOnSite",
+    "pk": 1,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "invasive_plant": "RC",
+      "invasive_plant_on_site": "ROP"
+    }
+  },
+  {
+    "model": "api.AquaticInvasivePlantOnSite",
+    "pk": 2,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "invasive_plant": "RC",
+      "invasive_plant_on_site": "SWOS"
+    }
+  },
+  {
+    "model": "api.NearestWell",
+    "pk": 1,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "well_tag_number": 1,
+      "distance": 63
+    }
+  },
+  {
+    "model": "api.NearestWell",
+    "pk": 2,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "well_tag_number": 2,
+      "distance": 63
+    }
+  },
+  {
+    "model": "api.NearestWell",
+    "pk": 3,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "well_tag_number": 3,
+      "distance": 63
+    }
+  },
+  {
+    "model": "api.NearestWell",
+    "pk": 4,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "well_tag_number": 1,
+      "distance": 63
+    }
+  },
+  {
+    "model": "api.NearestWell",
+    "pk": 5,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "well_tag_number": 2,
+      "distance": 63
+    }
+  },
+  {
+    "model": "api.NearestWell",
+    "pk": 6,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "well_tag_number": 3,
+      "distance": 63
+    }
+  }
+]
