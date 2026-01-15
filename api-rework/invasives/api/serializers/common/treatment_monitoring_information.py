@@ -138,7 +138,7 @@ class TreatmentMonitoringInfoSerializer(serializers.Serializer):
         raise serializers.ValidationError({
           "treatmentmonitoring_information": errors
         })
-      return {
-        "aquatictreatmentmonitoringinformation_set": a_items,
-        "terrestrialtreatmentmonitoringinformation_set": t_items,
-      }
+    return {
+      "aquatictreatmentmonitoringinformation_set": a_items,
+      "terrestrialtreatmentmonitoringinformation_set": t_items,
+    }
