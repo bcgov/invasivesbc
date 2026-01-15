@@ -48,7 +48,7 @@ class ParticipantSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         ret = super().to_representation(instance)
         try:
-            if instance.activity_id.activity_subtype.full in ["Activity_Treatment_ChemicalPlantTerrestrial", "Activity_Monitoring_ChemicalTerrestrialAquaticPlant"]:
+            if instance.activity_id.activity_subtype.full in ["Activity_Treatment_ChemicalPlantTerrestrial", "Activity_Treatment_ChemicalPlantAquatic"]:
                 return ret
         except Exception as e:
 
