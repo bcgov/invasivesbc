@@ -1,0 +1,1 @@
+from .shoreline_type import ShorelineTypesSerializer

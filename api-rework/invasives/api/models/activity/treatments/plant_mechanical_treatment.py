@@ -44,7 +44,6 @@ class TerrestrialPlantMechanicalTreatment(PlantMechanicalTreatment):
 
     class Meta:
         db_table = '"activity"."terrestrial_plant_mechanical_treatment"'
-        pass
 
 
 class AquaticPlantMechanicalTreatment(PlantMechanicalTreatment):
@@ -53,8 +52,6 @@ class AquaticPlantMechanicalTreatment(PlantMechanicalTreatment):
     """
 
     invasive_plant = models.ForeignKey(AquaticPlantCode, on_delete=models.PROTECT)
-    details = models.CharField(max_length=256)
 
     class Meta:
         db_table = '"activity"."aquatic_plant_mechanical_treatment"'
-        pass
