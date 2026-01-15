@@ -14,7 +14,8 @@ from api.serializers.type.subtype import (
     AquaticObservationSerializer,
     AquaticPlantTreatmentMechanicalSerializer,
     TerrestrialObservationSerializer,
-    TerrestrialPlantTreatmentMechanicalSerializer
+    TerrestrialPlantTreatmentMechanicalSerializer,
+    MechanicalMonitoringSerializer
 )
 
 """
@@ -128,7 +129,8 @@ class ActivitySerializer(serializers.ModelSerializer):
             "Activity_Observation_PlantTerrestrial": TerrestrialObservationSerializer,
             "Activity_Observation_PlantAquatic": AquaticObservationSerializer,
             "Activity_Treatment_MechanicalPlantTerrestrial": TerrestrialPlantTreatmentMechanicalSerializer,
-            "Activity_Treatment_MechanicalPlantAquatic": AquaticPlantTreatmentMechanicalSerializer
+            "Activity_Treatment_MechanicalPlantAquatic": AquaticPlantTreatmentMechanicalSerializer,
+            "Activity_Monitoring_MechanicalTerrestrialAquaticPlant": MechanicalMonitoringSerializer
         }
         serializer_cls = SUBTYPE_SERIALIZER_MAP.get(obj.activity_subtype.full)
 
