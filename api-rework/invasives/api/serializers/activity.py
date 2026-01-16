@@ -14,7 +14,9 @@ from api.serializers.type.subtype import (
     AquaticObservationSerializer,
     AquaticPlantTreatmentMechanicalSerializer,
     TerrestrialObservationSerializer,
-    TerrestrialPlantTreatmentMechanicalSerializer
+    TerrestrialPlantTreatmentMechanicalSerializer,
+    MechanicalMonitoringSerializer,
+    ChemicalMonitoringSerializer
 )
 
 """
@@ -46,7 +48,7 @@ class ParticipantSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         ret = super().to_representation(instance)
         try:
-            if instance.activity_id.activity_subtype.full in ["Activity_Treatment_ChemicalPlantTerrestrial", "Activity_Monitoring_ChemicalTerrestrialAquaticPlant"]:
+            if instance.activity_id.activity_subtype.full in ["Activity_Treatment_ChemicalPlantTerrestrial", "Activity_Treatment_ChemicalPlantAquatic"]:
                 return ret
         except Exception as e:
 
@@ -128,7 +130,9 @@ class ActivitySerializer(serializers.ModelSerializer):
             "Activity_Observation_PlantTerrestrial": TerrestrialObservationSerializer,
             "Activity_Observation_PlantAquatic": AquaticObservationSerializer,
             "Activity_Treatment_MechanicalPlantTerrestrial": TerrestrialPlantTreatmentMechanicalSerializer,
-            "Activity_Treatment_MechanicalPlantAquatic": AquaticPlantTreatmentMechanicalSerializer
+            "Activity_Treatment_MechanicalPlantAquatic": AquaticPlantTreatmentMechanicalSerializer,
+            "Activity_Monitoring_MechanicalTerrestrialAquaticPlant": MechanicalMonitoringSerializer,
+            "Activity_Monitoring_ChemicalTerrestrialAquaticPlant": ChemicalMonitoringSerializer
         }
         serializer_cls = SUBTYPE_SERIALIZER_MAP.get(obj.activity_subtype.full)
 

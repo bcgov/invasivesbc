@@ -203,6 +203,12 @@ class TerrestrialPlantCode(BaseCode):
         pass
 
 
+class TreatmentEfficacyRatingCode(BaseCode):
+    class Meta:
+        db_table = '"codes"."treatment_efficacy_rating"'
+
+
+
 class WaterbodyFlowCode(BaseCode):
     class Meta:
         db_table = '"codes"."waterbody_flow"'

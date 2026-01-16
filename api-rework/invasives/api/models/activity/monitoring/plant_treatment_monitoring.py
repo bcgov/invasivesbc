@@ -1,11 +1,11 @@
 from django.db import models
-
+from django.core.exceptions import ValidationError
 from api.models.activity.abstract_sub_tables import BaseOneToManyActivityTable
 from api.models.codes.code_tables import (
     AquaticPlantCode,
     EfficacyManagementRatingCode,
-    InvasivePlantsOnSiteCode,
     TerrestrialPlantCode,
+    TreatmentEfficacyRatingCode
 )
 from api.models.enums.treatment_pass import TreatmentPass
 from api.models.enums.yes_no import YesNo
@@ -20,11 +20,14 @@ class PlantMonitoringBase(BaseOneToManyActivityTable):
 
     invasive_plant = models.ForeignKey("PlantCodes", on_delete=models.PROTECT)
     evidence_of_treatment = models.CharField(choices=YesNo)
+    treatment_efficacy_rating = models.ForeignKey(
+        TreatmentEfficacyRatingCode,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True
+    )
     management_efficacy_rating = models.ForeignKey(
         EfficacyManagementRatingCode, on_delete=models.PROTECT
-    )
-    invasive_plants_on_site = models.ForeignKey(
-        InvasivePlantsOnSiteCode, on_delete=models.PROTECT
     )
     treatment_pass = models.CharField(choices=TreatmentPass)
     comment = models.TextField(max_length=256, blank=True, null=True)
@@ -37,6 +40,18 @@ class PlantMonitoringBase(BaseOneToManyActivityTable):
             )
         ]
 
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    def clean(self):
+        super().clean()
+        if self.evidence_of_treatment == YesNo.Yes and self.treatment_efficacy_rating is None:
+            error = "Must include treatment efficacy rating if evidence of treatment is 'Yes'"
+            raise ValidationError({"treatment_efficacy_rating": error, "evidence_of_treatment": error})
+        elif self.evidence_of_treatment == YesNo.No and self.treatment_efficacy_rating is not None:
+            self.treatment_efficacy_rating = None
+
 
 class TerrestrialTreatmentMonitoringInformation(PlantMonitoringBase):
     """
@@ -47,7 +62,6 @@ class TerrestrialTreatmentMonitoringInformation(PlantMonitoringBase):
 
     class Meta:
         db_table = '"activity"."ter_treatment_monitoring_info"'
-        pass
 
 
 class AquaticTreatmentMonitoringInformation(PlantMonitoringBase):
@@ -59,4 +73,3 @@ class AquaticTreatmentMonitoringInformation(PlantMonitoringBase):
 
     class Meta:
         db_table = '"activity"."aq_treatment_monitoring_info"'
-        pass

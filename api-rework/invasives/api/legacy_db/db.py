@@ -43,6 +43,7 @@ from api.models.codes import (
     SpecificUseCode,
     SubstrateCode,
     TerrestrialPlantCode,
+    TreatmentEfficacyRatingCode,
     WaterbodyFlowCode,
     WaterbodyFlowSeasonalCode,
     WaterbodyUseCode,
@@ -115,6 +116,9 @@ class LegacyDB:
 
             case "collecting_plant_count_code":
                 pass
+
+            case "efficacy_code":
+                return TreatmentEfficacyRatingCode
 
             case "employer_code":
                 return EmployerCode
