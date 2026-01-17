@@ -8,7 +8,7 @@ from pydantic_core._pydantic_core import ValidationError
 
 from api.legacy_db.migrate import migrate
 from api.legacy_db.model_serializer import LegacyActivity
-from api.models.activity import ActivityBasic
+from api.models.activity import Activity
 from api.models.codes import (
     AdjacentLandUseCode,
     FundingAgencyCode,
@@ -315,7 +315,7 @@ class LegacyDB:
                             migration_status = ActivityMigrationStatus(
                                 activity_id=row["activity_id"]
                             )
-                            ActivityBasic.objects.filter(
+                            Activity.objects.filter(
                                 activity_id=row["activity_id"]
                             ).delete()
                             stats.clobbered += 1

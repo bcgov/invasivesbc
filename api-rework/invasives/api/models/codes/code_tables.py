@@ -3,14 +3,6 @@ from django.db import models
 from .base_code import BaseCode
 
 
-class ActivitySubtypeCode(BaseCode):
-    short_id_format = models.CharField(max_length=8)
-
-    class Meta:
-        db_table = '"codes"."activity_subtype"'
-        pass
-
-
 class AdjacentLandUseCode(BaseCode):
     class Meta:
         db_table = '"codes"."adjacent_land_use"'
@@ -206,7 +198,6 @@ class TerrestrialPlantCode(BaseCode):
 class TreatmentEfficacyRatingCode(BaseCode):
     class Meta:
         db_table = '"codes"."treatment_efficacy_rating"'
-
 
 
 class WaterbodyFlowCode(BaseCode):

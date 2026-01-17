@@ -8,7 +8,7 @@ class ActivitySerializerTest(TestCase):
         "test/common/test_activities.json",
         "test/common/test_jurisdictions.json",
         "test/common/test_funding_agency.json",
-        "test/common/test_employer.json"
+        "test/common/test_employer.json",
     ]
 
     def test_expect_two_activities(self):

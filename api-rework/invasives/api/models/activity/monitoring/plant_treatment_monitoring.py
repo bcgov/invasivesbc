@@ -5,7 +5,7 @@ from api.models.codes.code_tables import (
     AquaticPlantCode,
     EfficacyManagementRatingCode,
     TerrestrialPlantCode,
-    TreatmentEfficacyRatingCode
+    TreatmentEfficacyRatingCode,
 )
 from api.models.enums.treatment_pass import TreatmentPass
 from api.models.enums.yes_no import YesNo
@@ -21,10 +21,7 @@ class PlantMonitoringBase(BaseOneToManyActivityTable):
     invasive_plant = models.ForeignKey("PlantCodes", on_delete=models.PROTECT)
     evidence_of_treatment = models.CharField(choices=YesNo)
     treatment_efficacy_rating = models.ForeignKey(
-        TreatmentEfficacyRatingCode,
-        on_delete=models.PROTECT,
-        null=True,
-        blank=True
+        TreatmentEfficacyRatingCode, on_delete=models.PROTECT, null=True, blank=True
     )
     management_efficacy_rating = models.ForeignKey(
         EfficacyManagementRatingCode, on_delete=models.PROTECT
@@ -46,10 +43,18 @@ class PlantMonitoringBase(BaseOneToManyActivityTable):
 
     def clean(self):
         super().clean()
-        if self.evidence_of_treatment == YesNo.Yes and self.treatment_efficacy_rating is None:
+        if (
+            self.evidence_of_treatment == YesNo.Yes
+            and self.treatment_efficacy_rating is None
+        ):
             error = "Must include treatment efficacy rating if evidence of treatment is 'Yes'"
-            raise ValidationError({"treatment_efficacy_rating": error, "evidence_of_treatment": error})
-        elif self.evidence_of_treatment == YesNo.No and self.treatment_efficacy_rating is not None:
+            raise ValidationError(
+                {"treatment_efficacy_rating": error, "evidence_of_treatment": error}
+            )
+        elif (
+            self.evidence_of_treatment == YesNo.No
+            and self.treatment_efficacy_rating is not None
+        ):
             self.treatment_efficacy_rating = None
 
 

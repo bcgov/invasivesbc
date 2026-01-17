@@ -1,6 +1,6 @@
 [
   {
-    "model": "api.ActivityBasic",
+    "model": "api.Activity",
     "pk": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
     "fields": {
       "short_id": "25PTO6BBA2749",
@@ -12,11 +12,16 @@
       "comment": "Many plants found here",
       "created_timestamp": "2026-01-07T23:44:38.874Z",
       "received_timestamp": "2026-01-07T23:44:38.874Z",
-      "activity_subtype_id": "Activity_Observation_PlantAquatic"
+      "activity_subtype": "Observation_Plant_Aquatic",
+      "batch_id": 12,
+      "batch_row_id": 34,
+      "linked_activities": [
+        "CD542709-F767-402F-818E-117B3FBC797D"
+      ]
     }
   },
   {
-    "model": "api.ActivityBasic",
+    "model": "api.Activity",
     "pk": "CD542709-F767-402F-818E-117B3FBC797D",
     "fields": {
       "short_id": "25PTO6BBA2749",
@@ -28,25 +33,9 @@
       "comment": "Found few species",
       "created_timestamp": "2026-01-07T23:44:38.919Z",
       "received_timestamp": "2026-01-07T23:44:38.919Z",
-      "activity_subtype_id": "Activity_Observation_PlantAquatic"
-    }
-  },
-  {
-    "model": "api.BatchDetail",
-    "pk": 1,
-    "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
-      "batch_id": 12,
-      "row_id": 34
-    }
-  },
-  {
-    "model": "api.BatchDetail",
-    "pk": 2,
-    "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "activity_subtype": "Observation_Plant_Aquatic",
       "batch_id": 56,
-      "row_id": 78
+      "batch_row_id": 78
     }
   },
   {
@@ -122,14 +111,6 @@
       "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
       "name": "J.J. Realperson",
       "pac_number": 4567
-    }
-  },
-  {
-    "model": "api.LinkedRecord",
-    "pk": 1,
-    "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
-      "linked_id": "CD542709-F767-402F-818E-117B3FBC797D"
     }
   },
   {

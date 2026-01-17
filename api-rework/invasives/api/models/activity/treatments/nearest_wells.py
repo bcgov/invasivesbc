@@ -24,6 +24,7 @@ class NearestWell(BaseOneToManyActivityTable):
                 name="unique_well_in_activity",
             )
         ]
+
     def __str__(self):
         return (
             f"{self.activity_id.short_id}: {self.distance}m ID: {self.well_tag_number}"

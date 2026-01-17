@@ -1,4 +1,4 @@
-from api.models.activity.activity_basic import ActivityBasic
+from api.models.activity.activity import Activity
 from django.db import models
 
 
@@ -8,7 +8,7 @@ class BaseOneToOneActivityTable(models.Model):
     """
 
     activity_id = models.OneToOneField(
-        ActivityBasic,
+        Activity,
         on_delete=models.CASCADE,
     )
 
@@ -22,7 +22,7 @@ class BaseOneToManyActivityTable(models.Model):
     """
 
     activity_id = models.ForeignKey(
-        ActivityBasic,
+        Activity,
         on_delete=models.CASCADE,
     )
 

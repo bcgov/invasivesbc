@@ -15,7 +15,6 @@ class CodeViewSet(ViewSet):
     http_method_names = ["get"]
 
     code_models = [
-        ActivitySubtypeCode,
         AdjacentLandUseCode,
         AgentLocationFoundCode,
         AquaticPlantCode,

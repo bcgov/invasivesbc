@@ -10,7 +10,7 @@ from rest_framework.status import HTTP_200_OK
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from api.legacy_db.model_serializer import LegacyActivity
-from api.models.activity.activity_basic import ActivityBasic
+from api.models.activity.activity import Activity
 from api.models.migrator.activity_migration_status import ActivityMigrationStatus
 from api.serializers.activity import ActivityListSerializer, ActivitySerializer
 from api.serializers.activity_migration_status import ActivityMigrationStatusSerializer
@@ -18,7 +18,7 @@ from invasivesbc.settings import LEGACY_DB_CONNECTION_STRING
 
 
 class ActivityViewSet(ReadOnlyModelViewSet):
-    queryset = ActivityBasic.objects.all()
+    queryset = Activity.objects.all()
     permission_classes = [AllowAny]
 
     def get_serializer_class(self):

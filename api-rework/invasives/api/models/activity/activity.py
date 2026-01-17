@@ -1,16 +1,23 @@
 import datetime
 import uuid
 
+from django.core.exceptions import ValidationError
 from django.db import models
 
-from api.models.codes.code_tables import ActivitySubtypeCode
+from api.models.activity.activity_subtypes import ActivitySubtypes
 from api.models.enums.activity_type import ActivityType
 from api.models.enums.form_status import FormStatus
+from api.models.mixins.batch import BatchInformation
+from api.models.mixins.geometry import Geometry
+from api.models.mixins.platform import Platform
+from api.models.mixins.regional_detail import ComputedLocationFields
 
 UUID_SUBSTRING_LENGTH = 8
 
 
-class ActivityBasic(models.Model):
+class Activity(
+    ComputedLocationFields, Geometry, BatchInformation, Platform, models.Model
+):
     """
     Base Model for all form types.
     consumed by:
@@ -22,9 +29,10 @@ class ActivityBasic(models.Model):
         max_length=16, db_comment="User Readable formatted ID", editable=False
     )
     activity_type = models.CharField(choices=ActivityType, db_index=True)
-    activity_subtype = models.ForeignKey(
-        ActivitySubtypeCode, on_delete=models.RESTRICT, db_index=True
+    activity_subtype = models.CharField(
+        choices=[(member.name, member.name) for member in ActivitySubtypes]
     )
+
     activity_date = models.DateField(db_index=True)
     created_by = models.CharField(max_length=64, db_index=True)
     form_status = models.CharField(
@@ -40,8 +48,10 @@ class ActivityBasic(models.Model):
     created_timestamp = models.DateTimeField(auto_now_add=True)
     received_timestamp = models.DateTimeField(auto_now_add=True, editable=False)
 
+    linked_activities = models.ManyToManyField("api.Activity")
+
     class Meta:
-        db_table = '"activity"."activity_basic"'
+        db_table = '"activity"."activity"'
         db_table_comment = (
             "Base fields for an activity. All records contain this information"
         )
@@ -60,22 +70,25 @@ class ActivityBasic(models.Model):
     def __str__(self):
         return self.short_id
 
+    def clean(self):
+        super().clean()
+        for other in self.linked_ids.all():
+            if other.activity_id == self.activity_id:
+                raise ValidationError(
+                    {"linked_activities": "activity cannot link to itself"}
+                )
+
     def save(self, *args, **kwargs):
         """
         For new records, Mutate the activity ID into the ShortID For a record
         """
         if not self.short_id:  # Create new ShortID
-            try:
-                subtype = ActivitySubtypeCode.objects.get(
-                    pk=self.activity_subtype
-                ).short_id_format
-                uuid_substr = str(self.activity_id)[
-                    :UUID_SUBSTRING_LENGTH
-                ].upper()  # 21bAcd -> 21BACD
-                year = datetime.datetime.now().strftime("%y")
-                ## Assign formatted short_id
-                self.short_id = f"{year}{subtype}{uuid_substr}"
-            except ActivitySubtypeCode.DoesNotExist:
-                print(f"Subtype not found in database: {self.activity_subtype}")
-                raise ActivitySubtypeCode.DoesNotExist
+            subtype = ActivitySubtypes[self.activity_subtype].short_id_format
+            uuid_substr = str(self.activity_id)[
+                :UUID_SUBSTRING_LENGTH
+            ].upper()  # 21bAcd -> 21BACD
+            year = datetime.datetime.now().strftime("%y")
+            ## Assign formatted short_id
+            self.short_id = f"{year}{subtype}{uuid_substr}"
+
         super().save(*args, **kwargs)
