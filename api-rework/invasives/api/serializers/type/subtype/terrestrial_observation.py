@@ -41,15 +41,15 @@ class TerrestrialPlantObservationDetailSerializer(serializers.ModelSerializer):
 
     def get_voucher_specimen(self, obj):
         """Search for Voucher Specimen matching the record"""
-        activity_id = getattr(obj, "activity_id", None)
+        activity = getattr(obj, "activity", None)
         invasive_plant = obj.invasive_plant
 
-        if not activity_id or not invasive_plant:
+        if not activity or not invasive_plant:
             return None
 
         try:
             voucher_specimen = TerrestrialVoucherSpecimen.objects.get(
-                activity_id=activity_id, invasive_plant=invasive_plant
+                activity=activity, invasive_plant=invasive_plant
             )
             return TerrestrialVoucherSpecimenSerializer(voucher_specimen).data
         except TerrestrialVoucherSpecimen.DoesNotExist:

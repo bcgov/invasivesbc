@@ -10,7 +10,7 @@ class WaterbodyUse(BaseOneToManyActivityTable):
         db_table = '"activity"."waterbody_use"'
         constraints = [
             models.UniqueConstraint(
-                fields=["activity_id", "waterbody_use"],
+                fields=["activity", "waterbody_use"],
                 name="waterbody_use_activity_waterbody_use",
             )
         ]
@@ -25,7 +25,7 @@ class WaterbodyAdjacentLandUse(BaseOneToManyActivityTable):
         db_table = '"activity"."waterbody_adjacent_land_use"'
         constraints = [
             models.UniqueConstraint(
-                fields=["activity_id", "waterbody_adjacent_land_use"],
-                name="adjacent_land_use_activity_id",
+                fields=["activity", "waterbody_adjacent_land_use"],
+                name="adjacent_land_use_activity",
             )
         ]

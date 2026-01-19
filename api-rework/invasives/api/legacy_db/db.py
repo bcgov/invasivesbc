@@ -315,9 +315,7 @@ class LegacyDB:
                             migration_status = ActivityMigrationStatus(
                                 activity_id=row["activity_id"]
                             )
-                            Activity.objects.filter(
-                                activity_id=row["activity_id"]
-                            ).delete()
+                            Activity.objects.filter(id=row["activity_id"]).delete()
                             stats.clobbered += 1
                     else:
                         migration_status = ActivityMigrationStatus(

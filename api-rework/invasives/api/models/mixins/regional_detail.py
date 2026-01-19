@@ -46,6 +46,6 @@ class ComputedLocationFields(models.Model):
             and not self.elevation_m
         ):
             raise ValidationError(
-                "At least one value other than activity_id must be non-null",
+                "At least one value other than activity must be non-null",
                 code="invalid",
             )

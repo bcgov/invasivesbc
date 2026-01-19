@@ -28,7 +28,7 @@ class AquaticPlantObservationDetail(BaseOneToManyActivityTable):
         db_table = '"activity"."aquatic_plant_observation_detail"'
         constraints = [
             models.UniqueConstraint(
-                fields=["activity_id", "invasive_plant"],
+                fields=["activity", "invasive_plant"],
                 name="aquaticplant_observation_detail_unique_plant",
             )
         ]

@@ -20,4 +20,4 @@ class TerrestrialObservationSpecificUse(BaseOneToManyActivityTable):
         db_table_comment = "Notable land uses or attributed within the observation area"
 
     def __str__(self):
-        return f"{self.activity_id.short_id}: {self.specific_use}"
+        return f"{self.activity.short_id}: {self.specific_use}"

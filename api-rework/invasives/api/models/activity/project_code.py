@@ -10,10 +10,10 @@ class ProjectCode(BaseOneToManyActivityTable):
         db_table_comment = "Project codes can be created for a user to organize their records in a way meaningful to them"
         constraints = [
             models.UniqueConstraint(
-                fields=["activity_id", "description"],
+                fields=["activity", "description"],
                 name="unique_activity_description",
             )
         ]
 
     def __str__(self):
-        return f"{self.activity_id.short_id}: {self.description}"
+        return f"{self.activity.short_id}: {self.description}"

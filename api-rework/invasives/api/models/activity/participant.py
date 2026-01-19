@@ -14,11 +14,9 @@ class Participant(BaseOneToManyActivityTable):
     class Meta:
         db_table = '"activity"."participant"'
         db_table_comment = "A Participant is any individual who participated in an activity. They may not be an application user"
-        ordering = ["activity_id"]
+        ordering = ["activity"]
 
     def __str__(self):
         if self.pac_number is None:
-            return f"{self.activity_id.activity_subtype}: {self.name}"
-        return (
-            f"{self.activity_id.activity_subtype}: {self.name}, PAC: {self.pac_number}"
-        )
+            return f"{self.activity.subtype}: {self.name}"
+        return f"{self.activity.subtype}: {self.name}, PAC: {self.pac_number}"

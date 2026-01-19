@@ -15,10 +15,10 @@ class Jurisdiction(BaseOneToManyActivityTable):
         db_table_comment = "Jurisdiction where the activity was conducted."
         constraints = [
             models.UniqueConstraint(
-                fields=["activity_id", "jurisdiction"],
+                fields=["activity", "jurisdiction"],
                 name="unique_activity_jurisdiction",
             )
         ]
 
     def __str__(self):
-        return f"{self.activity_id.short_id}: {self.jurisdiction}"
+        return f"{self.activity.short_id}: {self.jurisdiction}"

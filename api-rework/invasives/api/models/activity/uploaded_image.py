@@ -21,4 +21,4 @@ class UploadedImage(BaseOneToManyActivityTable):
         db_table_comment = "Image uploads for IBC Records"
 
     def __str__(self):
-        return f"{self.activity_id.short_id}: {self.description}"
+        return f"{self.activity.short_id}: {self.description}"

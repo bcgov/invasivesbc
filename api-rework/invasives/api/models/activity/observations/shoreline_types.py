@@ -21,7 +21,7 @@ class ShorelineTypes(BaseOneToManyActivityTable):
         db_table = '"activity"."shoreline_types"'
         constraints = [
             models.UniqueConstraint(
-                fields=["activity_id", "shoreline_type"],
+                fields=["activity", "shoreline_type"],
                 name="unique_activity_shoreline",
             )
         ]

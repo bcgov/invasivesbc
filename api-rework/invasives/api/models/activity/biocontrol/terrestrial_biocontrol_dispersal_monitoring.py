@@ -41,7 +41,7 @@ class TerrestrialBiocontrolDispersalMonitoring(BaseOneToManyActivityTable):
         db_table = '"activity"."terrestrial_biocontrol_dispersal_monitoring"'
         constraints = [
             models.UniqueConstraint(
-                fields=["activity_id", "invasive_plant", "biocontrol_agent"],
+                fields=["activity", "invasive_plant", "biocontrol_agent"],
                 name="unique_dispersal_monitoring",
             )
         ]

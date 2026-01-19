@@ -144,4 +144,4 @@ class ActivitySubtypes(ActivitySubtype, Enum):
         for st in ActivitySubtypes:
             if legacy_name in st.legacyDatabaseName:
                 return st
-        return None
+        raise KeyError(legacy_name)

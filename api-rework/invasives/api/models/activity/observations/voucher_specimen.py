@@ -20,7 +20,7 @@ class VoucherSpecimen(BaseOneToOneActivityTable):
         abstract = True
         constraints = [
             models.UniqueConstraint(
-                fields=["activity_id", "invasive_plant"],
+                fields=["activity", "invasive_plant"],
                 name="voucher_specimen_unique_plant",
             )
         ]

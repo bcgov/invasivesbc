@@ -33,7 +33,7 @@ class PlantMonitoringBase(BaseOneToManyActivityTable):
         abstract = True
         constraints = [
             models.UniqueConstraint(
-                fields=["activity_id", "invasive_plant"], name="u_mech_plant_monitoring"
+                fields=["activity", "invasive_plant"], name="u_mech_plant_monitoring"
             )
         ]
 
@@ -66,7 +66,7 @@ class TerrestrialTreatmentMonitoringInformation(PlantMonitoringBase):
     invasive_plant = models.ForeignKey(TerrestrialPlantCode, on_delete=models.PROTECT)
 
     class Meta:
-        db_table = '"activity"."ter_treatment_monitoring_info"'
+        db_table = '"activity"."terrestrial_treatment_monitoring_info"'
 
 
 class AquaticTreatmentMonitoringInformation(PlantMonitoringBase):
@@ -77,4 +77,4 @@ class AquaticTreatmentMonitoringInformation(PlantMonitoringBase):
     invasive_plant = models.ForeignKey(AquaticPlantCode, on_delete=models.PROTECT)
 
     class Meta:
-        db_table = '"activity"."aq_treatment_monitoring_info"'
+        db_table = '"activity"."aquatic_treatment_monitoring_info"'

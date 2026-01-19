@@ -11,9 +11,9 @@ class FundingAgency(BaseOneToManyActivityTable):
         db_table_comment = "Agencies funding the activity."
         constraints = [
             models.UniqueConstraint(
-                fields=["activity_id", "agency"], name="unique_activity_agency"
+                fields=["activity", "agency"], name="unique_activity_agency"
             )
         ]
 
     def __str__(self):
-        return f"{self.activity_id.short_id}, Funded by: {self.agency}"
+        return f"{self.activity.short_id}, Funded by: {self.agency}"

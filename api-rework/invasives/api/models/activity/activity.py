@@ -24,16 +24,16 @@ class Activity(
       - All IBC Activities
     """
 
-    activity_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     short_id = models.CharField(
         max_length=16, db_comment="User Readable formatted ID", editable=False
     )
-    activity_type = models.CharField(choices=ActivityType, db_index=True)
-    activity_subtype = models.CharField(
+    type = models.CharField(choices=ActivityType, db_index=True)
+    subtype = models.CharField(
         choices=[(member.name, member.name) for member in ActivitySubtypes]
     )
 
-    activity_date = models.DateField(db_index=True)
+    date = models.DateField(db_index=True)
     created_by = models.CharField(max_length=64, db_index=True)
     form_status = models.CharField(
         max_length=16, choices=FormStatus, default=FormStatus.Draft, db_index=True
@@ -48,21 +48,23 @@ class Activity(
     created_timestamp = models.DateTimeField(auto_now_add=True)
     received_timestamp = models.DateTimeField(auto_now_add=True, editable=False)
 
-    linked_activities = models.ManyToManyField("api.Activity")
+    linked_activities = models.ManyToManyField(
+        "api.Activity", db_table="linked_activities"
+    )
 
     class Meta:
         db_table = '"activity"."activity"'
         db_table_comment = (
             "Base fields for an activity. All records contain this information"
         )
-        ordering = ["activity_date", "received_timestamp"]
+        ordering = ["date", "received_timestamp"]
         indexes = [
             models.Index(
-                fields=["activity_type", "activity_date"],
+                fields=["type", "date"],
                 name="activity_basic_date_type_idx",
             ),
             models.Index(
-                fields=["activity_subtype", "activity_date"],
+                fields=["subtype", "date"],
                 name="activity_basic_date_sub_idx",
             ),
         ]
@@ -72,8 +74,8 @@ class Activity(
 
     def clean(self):
         super().clean()
-        for other in self.linked_ids.all():
-            if other.activity_id == self.activity_id:
+        for other in self.linked_activities.all():
+            if other.id == self.id:
                 raise ValidationError(
                     {"linked_activities": "activity cannot link to itself"}
                 )
@@ -83,8 +85,8 @@ class Activity(
         For new records, Mutate the activity ID into the ShortID For a record
         """
         if not self.short_id:  # Create new ShortID
-            subtype = ActivitySubtypes[self.activity_subtype].short_id_format
-            uuid_substr = str(self.activity_id)[
+            subtype = ActivitySubtypes[self.subtype].short_id_format
+            uuid_substr = str(self.id)[
                 :UUID_SUBSTRING_LENGTH
             ].upper()  # 21bAcd -> 21BACD
             year = datetime.datetime.now().strftime("%y")

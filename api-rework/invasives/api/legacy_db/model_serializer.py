@@ -1,9 +1,19 @@
 from datetime import date
 from enum import Enum
-from typing import Literal, Optional
+from typing import Annotated, Any, Literal, Optional
 
-from pydantic import AwareDatetime, BaseModel, Field, JsonValue, UUID4, model_validator
+from pydantic import (
+    AwareDatetime,
+    BaseModel,
+    BeforeValidator,
+    Field,
+    JsonValue,
+    UUID4,
+    model_validator,
+)
 from pydantic_extra_types.coordinate import Latitude, Longitude
+
+from api.models.activity import ActivitySubtypes
 
 
 class ActivityType(Enum):
@@ -14,36 +24,22 @@ class ActivityType(Enum):
     Treatment = "Treatment"
 
 
-class ActivitySubtype(Enum):
-    Activity_Biocontrol_Collection = "Activity_Biocontrol_Collection"
-    Activity_Biocontrol_Release = "Activity_Biocontrol_Release"
-    Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant = (
-        "Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant"
-    )
-    Activity_Monitoring_BiocontrolRelease_TerrestrialPlant = (
-        "Activity_Monitoring_BiocontrolRelease_TerrestrialPlant"
-    )
-    Activity_Monitoring_ChemicalTerrestrialAquaticPlant = (
-        "Activity_Monitoring_ChemicalTerrestrialAquaticPlant"
-    )
-    Activity_Monitoring_MechanicalTerrestrialAquaticPlant = (
-        "Activity_Monitoring_MechanicalTerrestrialAquaticPlant"
-    )
-    Activity_Observation_Mussels = "Activity_Observation_Mussels"
-    Activity_Observation_PlantAquatic = "Activity_Observation_PlantAquatic"
-    Activity_Observation_PlantTerrestrial = "Activity_Observation_PlantTerrestrial"
-    Activity_Officer_Shift = "Activity_Officer_Shift"
-    Activity_Treatment_ChemicalPlantAquatic = "Activity_Treatment_ChemicalPlantAquatic"
-    Activity_Treatment_ChemicalPlantTerrestrial = (
-        "Activity_Treatment_ChemicalPlantTerrestrial"
-    )
-    Activity_Treatment_MechanicalPlantAquatic = (
-        "Activity_Treatment_MechanicalPlantAquatic"
-    )
-    Activity_Treatment_MechanicalPlantTerrestrial = (
-        "Activity_Treatment_MechanicalPlantTerrestrial"
-    )
-    Treatment_Mechanical_Aquatic_Plant = "Treatment - Mechanical - Aquatic Plant"
+def subtype_from_input(v: Any) -> ActivitySubtypes:
+    if isinstance(v, ActivitySubtypes):
+        return v
+
+    if isinstance(v, str):
+        try:
+            return ActivitySubtypes.find_by_legacy_database_name(v)
+        except KeyError:
+            pass
+
+    return v
+
+
+AnnotatedActivitySubtypes = Annotated[
+    ActivitySubtypes, BeforeValidator(subtype_from_input)
+]
 
 
 class LegacyProjectCode(BaseModel):
@@ -617,7 +613,7 @@ class LegacyActivityPayload(BaseModel):
     user_role: Optional[list[int | None]] = Field(default=None)
     sync_status: Optional[str] = Field(default=None)
     activity_type: ActivityType
-    activity_subtype: ActivitySubtype
+    activity_subtype: AnnotatedActivitySubtypes
     species_positive: Optional[list[str]] = Field(default=None)
     species_negative: Optional[list[str]] = Field(default=None)
     jurisdiction: Optional[list[str]] = Field(default=None)
@@ -634,5 +630,5 @@ class LegacyActivityPayload(BaseModel):
 class LegacyActivity(BaseModel):
     activity_id: UUID4
     activity_type: ActivityType
-    activity_subtype: ActivitySubtype
+    activity_subtype: AnnotatedActivitySubtypes
     activity_payload: LegacyActivityPayload

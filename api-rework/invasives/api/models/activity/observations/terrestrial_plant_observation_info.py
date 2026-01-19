@@ -20,7 +20,7 @@ class TerrestrialPlantObservationInfo(BaseOneToOneActivityTable):
     slope_percent = models.ForeignKey(SlopePercentCode, on_delete=models.PROTECT)
 
     class Meta:
-        db_table = '"activity"."ter_plant_observation_info"'
+        db_table = '"activity"."terrestrial_plant_observation_info"'
         db_table_comment = "Details of surrounding area for a terrestrial activity."
 
     def clean(self):

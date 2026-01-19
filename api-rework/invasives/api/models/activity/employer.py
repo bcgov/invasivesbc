@@ -11,9 +11,9 @@ class Employer(BaseOneToManyActivityTable):
         db_table_comment = "Employer of the person filling out the activity form. Generally a 1:1 Relation."
         constraints = [
             models.UniqueConstraint(
-                fields=["activity_id", "employer"], name="unique_employer_per_activity"
+                fields=["activity", "employer"], name="unique_employer_per_activity"
             )
         ]
 
     def __str__(self):
-        return f"{self.activity_id.short_id}: {self.employer.full}"
+        return f"{self.activity.short_id}: {self.employer.full}"

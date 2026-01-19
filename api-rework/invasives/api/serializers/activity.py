@@ -1,3 +1,5 @@
+import logging
+
 from rest_framework import serializers
 
 from api.models.activity import (
@@ -53,13 +55,12 @@ class ParticipantSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         ret = super().to_representation(instance)
         try:
-            if instance.activity_id.activity_subtype.full in [
-                "Activity_Treatment_ChemicalPlantTerrestrial",
-                "Activity_Treatment_ChemicalPlantAquatic",
+            if instance.activity.subtype in [
+                ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial.name,
+                ActivitySubtypes.Treatment_Chemical_Plant_Aquatic.name,
             ]:
                 return ret
         except Exception as e:
-
             pass
         return {"name": ret["name"]}
 
@@ -74,10 +75,10 @@ class ActivityListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Activity
         fields = (
-            "activity_id",
-            "activity_type",
-            "activity_subtype",
-            "activity_date",
+            "id",
+            "type",
+            "subtype",
+            "date",
         )
 
 
@@ -109,7 +110,6 @@ class ActivitySerializer(serializers.ModelSerializer):
 
     def get_subtype_data(self, obj: Activity):
         """Maps the Activity to the proper Subtype Serializer, populating the form specific information"""
-
         SUBTYPE_SERIALIZER_MAP = {
             ActivitySubtypes.Observation_Plant_Terrestrial.name: TerrestrialObservationSerializer,
             ActivitySubtypes.Observation_Plant_Aquatic.name: AquaticObservationSerializer,
@@ -118,9 +118,10 @@ class ActivitySerializer(serializers.ModelSerializer):
             ActivitySubtypes.Monitoring_Mechanical_Plant_Terrestrial_Aquatic.name: MechanicalMonitoringSerializer,
             ActivitySubtypes.Monitoring_Chemical_Plant_Terrestrial_Aquatic.name: ChemicalMonitoringSerializer,
         }
-        serializer_cls = SUBTYPE_SERIALIZER_MAP.get(obj.activity_subtype)
+        serializer_cls = SUBTYPE_SERIALIZER_MAP.get(obj.subtype)
 
         if not serializer_cls:
+            logging.warning("No serializer found for activity subtype %s", obj.subtype)
             return None
 
         return serializer_cls(obj, context=self.context).data

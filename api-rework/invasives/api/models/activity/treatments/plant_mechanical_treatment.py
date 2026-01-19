@@ -29,7 +29,7 @@ class PlantMechanicalTreatment(BaseOneToManyActivityTable):
         abstract = True
         constraints = [
             models.UniqueConstraint(
-                fields=["activity_id", "invasive_plant"],
+                fields=["activity", "invasive_plant"],
                 name="uq_mechanical_plant_treat",
             )
         ]

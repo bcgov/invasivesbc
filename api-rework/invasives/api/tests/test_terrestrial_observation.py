@@ -30,9 +30,7 @@ class TerrestrialObservationTest(TestCase):
     def test_no_pac_number_present(self):
         """Check that participants do not include a pac number when fetched for an Observation activity"""
         try:
-            record = Activity.objects.get(
-                activity_id="6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7"
-            )
+            record = Activity.objects.get(id="6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7")
             self.assertIsNotNone(record)
 
             serial = ActivitySerializer(record)
@@ -49,9 +47,7 @@ class TerrestrialObservationTest(TestCase):
     def test_casting_fixture_into_serializer(self):
         """fetching an activity can be cast into serializer"""
         try:
-            record = Activity.objects.get(
-                activity_id="6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7"
-            )
+            record = Activity.objects.get(id="6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7")
             self.assertIsNotNone(record)
 
             serial = ActivitySerializer(record)

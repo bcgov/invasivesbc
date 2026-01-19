@@ -10,7 +10,7 @@ class WaterbodyLevelManagement(BaseOneToManyActivityTable):
         db_table = '"activity"."water_level_management"'
         constraints = [
             models.UniqueConstraint(
-                fields=["activity_id", "waterlevel_management"],
+                fields=["activity", "waterlevel_management"],
                 name="unique_activity_waterlevel_management",
             )
         ]

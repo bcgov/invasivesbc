@@ -5,10 +5,10 @@ import Spinner from 'activities/spinner';
 import { NavLink } from 'react-router';
 
 interface ActivitySummary {
-  activity_id: string;
-  activity_type: string;
-  activity_subtype: string;
-  activity_date: string;
+  id: string;
+  type: string;
+  subtype: string;
+  date: string;
 }
 
 const SortingTableHeader = ({
@@ -39,7 +39,7 @@ const ActivitiesList: React.FC = () => {
   const [activities, setActivities] = useState<ActivitySummary[]>([]);
   const [sorted, setSorted] = useState<ActivitySummary[]>([]);
 
-  const [sortProperty, setSortProperty] = useState<keyof ActivitySummary>('activity_id');
+  const [sortProperty, setSortProperty] = useState<keyof ActivitySummary>('id');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   const [loading, setLoading] = useState<boolean>(true);
@@ -104,13 +104,13 @@ const ActivitiesList: React.FC = () => {
       </thead>
       <tbody>
         {sorted.map((activity) => (
-          <tr key={activity.activity_id}>
+          <tr key={activity.id}>
             <td>
-              <NavLink to={`/activities/${activity.activity_id}`}>{activity.activity_id}</NavLink>
+              <NavLink to={`/activities/${activity.id}`}>{activity.id}</NavLink>
             </td>
-            <td>{activity.activity_type}</td>
-            <td>{activity.activity_subtype}</td>
-            <td>{activity.activity_date}</td>
+            <td>{activity.type}</td>
+            <td>{activity.subtype}</td>
+            <td>{activity.date}</td>
           </tr>
         ))}
       </tbody>

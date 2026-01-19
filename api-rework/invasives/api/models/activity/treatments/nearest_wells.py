@@ -20,12 +20,10 @@ class NearestWell(BaseOneToManyActivityTable):
         db_table = '"activity"."nearest_well"'
         constraints = [
             models.UniqueConstraint(
-                fields=["activity_id", "well_tag_number"],
+                fields=["activity", "well_tag_number"],
                 name="unique_well_in_activity",
             )
         ]
 
     def __str__(self):
-        return (
-            f"{self.activity_id.short_id}: {self.distance}m ID: {self.well_tag_number}"
-        )
+        return f"{self.activity.short_id}: {self.distance}m ID: {self.well_tag_number}"

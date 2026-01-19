@@ -16,10 +16,10 @@ class RisoArea(BaseOneToManyActivityTable):
         db_table_comment = "Regional Invasive Species Organization (RISO) areas"
         constraints = [
             models.UniqueConstraint(
-                fields=["activity_id", "organization"],
+                fields=["activity", "organization"],
                 name="unique_activity_riso_organization",
             )
         ]
 
     def __str__(self):
-        return f"{self.activity_id.short_id}: {self.organization}"
+        return f"{self.activity.short_id}: {self.organization}"

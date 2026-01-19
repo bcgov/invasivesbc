@@ -55,15 +55,15 @@ class TerrestrialTreatmentMonitoringSerializer(BaseTreatmentMonitoringSerializer
 
     def get_invasive_plants_on_site(self, obj):
         """Search for invasive plants on site matching the record"""
-        activity_id = getattr(obj, "activity_id", None)
+        activity = getattr(obj, "activity", None)
         invasive_plant = obj.invasive_plant
 
-        if not activity_id or not invasive_plant:
+        if not activity or not invasive_plant:
             return None
 
         try:
             invasive_plants_on_site = TerrestrialInvasivePlantOnSite.objects.filter(
-                activity_id=activity_id, invasive_plant=invasive_plant
+                activity=activity, invasive_plant=invasive_plant
             )
             return TerrestrialInvasivePlantOnSiteSerializer(
                 invasive_plants_on_site, many=True
@@ -80,14 +80,14 @@ class AquaticMechanicalMonitoringSerializer(BaseTreatmentMonitoringSerializer):
 
     def get_invasive_plants_on_site(self, obj):
         """Search for invasive plants on site matching the record"""
-        activity_id = getattr(obj, "activity_id", None)
+        activity = getattr(obj, "activity", None)
         invasive_plant = obj.invasive_plant
 
-        if not activity_id or not invasive_plant:
+        if not activity or not invasive_plant:
             return None
 
         invasive_plants_on_site = AquaticInvasivePlantOnSite.objects.filter(
-            activity_id=activity_id, invasive_plant=invasive_plant
+            activity=activity, invasive_plant=invasive_plant
         )
         return AquaticInvasivePlantOnSiteSerializer(
             invasive_plants_on_site, many=True

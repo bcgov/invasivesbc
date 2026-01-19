@@ -9,7 +9,7 @@ class BaseWaterbodyFlow(BaseOneToManyActivityTable):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["activity_id", "flow_code"],
+                fields=["activity", "flow_code"],
                 name="unique_activity_waterlevel_management",
             )
         ]

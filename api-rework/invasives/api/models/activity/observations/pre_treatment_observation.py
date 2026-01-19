@@ -18,4 +18,4 @@ class PretreatmentObservation(BaseOneToOneActivityTable):
         pass
 
     def __str__(self):
-        return f"{self.activity_id.short_id}: Pretreatment Status {self.pre_treatment_observation}"
+        return f"{self.activity.short_id}: Pretreatment Status {self.pre_treatment_observation}"

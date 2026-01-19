@@ -41,7 +41,7 @@ class BiocontrolAgentCountSimple(BaseOneToManyActivityTable):
         constraints = [
             models.UniqueConstraint(
                 fields=[
-                    "activity_id",
+                    "activity",
                     "invasive_plant",
                     "biocontrol_agent",
                     "stage",
@@ -68,7 +68,7 @@ class BiocontrolAgentCountComplex(BiocontrolAgentCountSimple):
         constraints = [
             models.UniqueConstraint(
                 fields=[
-                    "activity_id",
+                    "activity",
                     "invasive_plant",
                     "biocontrol_agent",
                     "stage",

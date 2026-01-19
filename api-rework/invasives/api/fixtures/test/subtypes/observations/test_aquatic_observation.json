@@ -4,15 +4,15 @@
     "pk": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
     "fields": {
       "short_id": "25PTO6BBA2749",
-      "activity_type": "ActivityType.Observation",
-      "activity_date": "2025-09-29",
+      "type": "ActivityType.Observation",
+      "date": "2025-09-29",
       "created_by": "janedoe@identifier",
       "form_status": "Submitted",
       "access_description": "55.37033; -121.51513",
       "comment": "Many plants found here",
       "created_timestamp": "2026-01-07T23:44:38.874Z",
       "received_timestamp": "2026-01-07T23:44:38.874Z",
-      "activity_subtype": "Observation_Plant_Aquatic",
+      "subtype": "Observation_Plant_Aquatic",
       "batch_id": 12,
       "batch_row_id": 34,
       "linked_activities": [
@@ -25,15 +25,15 @@
     "pk": "CD542709-F767-402F-818E-117B3FBC797D",
     "fields": {
       "short_id": "25PTO6BBA2749",
-      "activity_type": "ActivityType.Observation",
-      "activity_date": "2025-10-03",
+      "type": "ActivityType.Observation",
+      "date": "2025-10-03",
       "created_by": "johnsmith@identifier",
       "form_status": "Submitted",
       "access_description": "Aquatic Observation access",
       "comment": "Found few species",
       "created_timestamp": "2026-01-07T23:44:38.919Z",
       "received_timestamp": "2026-01-07T23:44:38.919Z",
-      "activity_subtype": "Observation_Plant_Aquatic",
+      "subtype": "Observation_Plant_Aquatic",
       "batch_id": 56,
       "batch_row_id": 78
     }

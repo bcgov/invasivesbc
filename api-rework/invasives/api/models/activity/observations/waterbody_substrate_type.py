@@ -10,7 +10,7 @@ class WaterbodySubstrateType(BaseOneToManyActivityTable):
         db_table = '"activity"."waterbody_substrate_level"'
         constraints = [
             models.UniqueConstraint(
-                fields=["activity_id", "substrate_type"],
+                fields=["activity", "substrate_type"],
                 name="unique_activity_waterbody_substrate_level",
             )
         ]

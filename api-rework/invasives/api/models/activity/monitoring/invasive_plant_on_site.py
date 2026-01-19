@@ -22,10 +22,10 @@ class TerrestrialInvasivePlantOnSite(BaseInvasivePlantsOnSite):
     invasive_plant = models.ForeignKey(TerrestrialPlantCode, on_delete=models.PROTECT)
 
     class Meta(BaseInvasivePlantsOnSite.Meta):
-        db_table = '"activity"."ter_plant_on_site"'
+        db_table = '"activity"."terrestrial_plant_on_site"'
         constraints = [
             models.UniqueConstraint(
-                fields=["activity_id", "invasive_plant", "invasive_plant_on_site"],
+                fields=["activity", "invasive_plant", "invasive_plant_on_site"],
                 name="t_mech_plants_on_site",
             )
         ]
@@ -35,10 +35,10 @@ class AquaticInvasivePlantOnSite(BaseInvasivePlantsOnSite):
     invasive_plant = models.ForeignKey(AquaticPlantCode, on_delete=models.PROTECT)
 
     class Meta(BaseInvasivePlantsOnSite.Meta):
-        db_table = '"activity"."aq_plant_on_site"'
+        db_table = '"activity"."aquatic_plant_on_site"'
         constraints = [
             models.UniqueConstraint(
-                fields=["activity_id", "invasive_plant", "invasive_plant_on_site"],
+                fields=["activity", "invasive_plant", "invasive_plant_on_site"],
                 name="a_mech_plants_on_site",
             )
         ]
