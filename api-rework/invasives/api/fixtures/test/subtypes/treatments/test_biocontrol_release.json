@@ -253,6 +253,7 @@
       "biocontrol_agent": "HYLEEUP",
       "collection_date": "2025-04-30T07:00:00Z",
       "invasive_plant": "CT",
+      "linear_segment": "Yes",
       "mortality": 30,
       "plant_collected_from": "JK",
       "plant_collected_from_manual": null
@@ -267,6 +268,7 @@
       "biocontrol_agent": "HYLEEUP",
       "collection_date": "2025-04-30 00:00:00.000 -0700",
       "invasive_plant": "JK",
+      "linear_segment": "No",
       "mortality": 0,
       "plant_collected_from": "CT",
       "plant_collected_from_manual": "Knotweed"

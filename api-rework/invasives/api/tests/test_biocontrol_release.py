@@ -80,6 +80,7 @@ class BiocontrolReleaseTest(TestCase):
     self.assertEqual(ti["biocontrol_agent"], "HYLEEUP")
     self.assertEqual(ti["collection_date"], "2025-04-30T07:00:00Z")
     self.assertEqual(ti["invasive_plant"], "CT")
+    self.assertEqual(ti["linear_segment"], "Yes")
     self.assertEqual(ti["mortality"], 30)
     self.assertEqual(ti["plant_collected_from"], "JK")
     self.assertEqual(ti["plant_collected_from_manual"], None)

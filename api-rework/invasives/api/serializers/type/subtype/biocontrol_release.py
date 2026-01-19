@@ -22,6 +22,7 @@ class TerrestrialBiocontrolReleaseSerializer(serializers.ModelSerializer):
       "biocontrol_agent",
       "collection_date",
       "estimated_biological_agents",
+      "linear_segment",
       "invasive_plant",
       "mortality",
       "plant_collected_from",
