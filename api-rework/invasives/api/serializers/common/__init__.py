@@ -7,3 +7,10 @@ from .treatment_monitoring_information import (
     TerrestrialInvasivePlantOnSiteSerializer,
 )
 from .nearest_well import NearestWellSerializer
+from .plant_phenology import TargetPlantPhenologySerializer
+from .biocontrol_counts import (
+  TerrestrialBiocontrolAgentCountComplexSerializer,
+  TerrestrialBiocontrolAgentCountSimpleSerializer
+)
+from .microsite_conditions import MicrositeConditionSerializer
+from .weather_conditions import WeatherConditionsSerializer
