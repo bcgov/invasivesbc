@@ -1,7 +1,5 @@
 from rest_framework import serializers
 from api.models.activity import (
-  WeatherConditions,
-  MicrositeCondition,
   TerrestrialBiocontrolRelease,
   TerrestrialBiocontrolAgentCountSimple,
 )
@@ -49,7 +47,17 @@ class TerrestrialBiocontrolReleaseSerializer(serializers.ModelSerializer):
     return TerrestrialBiocontrolAgentCountSimpleSerializer(qs, many=True).data
 
 class BiocontrolReleaseSerializer(serializers.Serializer):
-  biological_treatment_information = TerrestrialBiocontrolReleaseSerializer(source="terrestrialbiocontrolrelease_set", many=True)
+  treatment_information = TerrestrialBiocontrolReleaseSerializer(source="terrestrialbiocontrolrelease_set", many=True)
   target_plant_phenology = TargetPlantPhenologySerializer(source="targetplantphenology")
   microsite_condition = MicrositeConditionSerializer(source="micrositecondition")
   weather_conditions = WeatherConditionsSerializer(source="weatherconditions")
+
+  def to_representation(self, instance):
+    keys = ["microsite_condition", "weather_conditions"]
+    ret = super().to_representation(instance)
+
+    for key in keys:
+      info_data = ret.pop(key, None)
+      if info_data and isinstance(info_data, dict):
+        ret.update(info_data)
+    return ret
