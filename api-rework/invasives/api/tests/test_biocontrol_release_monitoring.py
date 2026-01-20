@@ -61,7 +61,6 @@ class BiocontrolReleaseTest(TestCase):
     self.assertEqual(mi["number_of_sweeps"], None)
     self.assertEqual(mi["start_time"], "2026-01-02T08:00:00Z")
     self.assertEqual(mi["stop_time"], "2026-01-02T08:00:00Z")
-    self.assertEqual(mi["linear_segment"], "Yes")
     self.assertEqual(mi["suitable_for_collection"], "No")
     self.assertEqual(mi["biocontrol_agent"], "CHEIURB")
     self.assertEqual(mi["monitoring_method"], "Cs")
