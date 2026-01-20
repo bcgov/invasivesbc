@@ -6,9 +6,7 @@ class TerrestrialBiocontrolAgentCountComplexSerializer(serializers.ModelSerializ
     model = TerrestrialBiocontrolAgentCountComplex
     fields = (
       "quantity",
-      "biocontrol_agent",
       "stage",
-      "invasive_plant",
       "plant_position",
       "agent_location",
     )
@@ -18,7 +16,5 @@ class TerrestrialBiocontrolAgentCountSimpleSerializer(serializers.ModelSerialize
     model = TerrestrialBiocontrolAgentCountSimple
     fields = (
       "quantity",
-      "biocontrol_agent",
       "stage",
-      "invasive_plant"
     )
