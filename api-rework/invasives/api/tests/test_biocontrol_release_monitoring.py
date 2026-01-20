@@ -65,6 +65,8 @@ class BiocontrolReleaseTest(TestCase):
     self.assertEqual(mi["biocontrol_agent"], "CHEIURB")
     self.assertEqual(mi["monitoring_method"], "Cs")
     self.assertEqual(mi["invasive_plant"], "CT")
+    # linear spread should be removed from this record type. Serializer rule in place.
+    self.assertNotIn("linear_segment", mi)
 
     eba = mi["estimated_biological_agents"][0]
     self.assertEqual(eba["stage"], "EG")
