@@ -13,6 +13,7 @@ from api.models.codes import (
     AdjacentLandUseCode,
     FundingAgencyCode,
     AgentLocationFoundCode,
+    AgentLocationFoundTerrainCode,
     AquaticPlantCode,
     AspectCode,
     BaseCode,
@@ -157,7 +158,7 @@ class LegacyDB:
                 return JurisdictionCode
 
             case "location_agents_found_code":
-                pass
+                return AgentLocationFoundTerrainCode
 
             case "management_efficacy_code":
                 return EfficacyManagementRatingCode
