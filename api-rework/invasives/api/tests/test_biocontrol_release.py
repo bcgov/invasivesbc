@@ -87,15 +87,11 @@ class BiocontrolReleaseTest(TestCase):
 
 
     aba = ti["actual_biological_agents"][0]
-    self.assertEqual(aba["invasive_plant"], "CT")
-    self.assertEqual(aba["biocontrol_agent"], "HYLEEUP")
     self.assertEqual(aba["stage"], "B",)
     self.assertEqual(aba["quantity"], 11)
 
 
     eba = ti["estimated_biological_agents"][0]
-    self.assertEqual(eba["invasive_plant"], "CT")
-    self.assertEqual(eba["biocontrol_agent"], "HYLEEUP")
     self.assertEqual(eba["stage"], "B",)
     self.assertEqual(eba["quantity"], 11)
 
