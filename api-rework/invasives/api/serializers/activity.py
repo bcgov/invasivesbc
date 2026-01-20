@@ -18,7 +18,8 @@ from api.serializers.type.subtype import (
     MechanicalMonitoringSerializer,
     TerrestrialObservationSerializer,
     TerrestrialPlantTreatmentMechanicalSerializer,
-    BiocontrolReleaseSerializer
+    BiocontrolReleaseSerializer,
+    BiocontrolReleaseMonitoringSerializer
 )
 
 """
@@ -118,7 +119,8 @@ class ActivitySerializer(serializers.ModelSerializer):
             ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic.name: AquaticPlantTreatmentMechanicalSerializer,
             ActivitySubtypes.Monitoring_Mechanical_Plant_Terrestrial_Aquatic.name: MechanicalMonitoringSerializer,
             ActivitySubtypes.Monitoring_Chemical_Plant_Terrestrial_Aquatic.name: ChemicalMonitoringSerializer,
-            ActivitySubtypes.Biocontrol_Release.name: BiocontrolReleaseSerializer
+            ActivitySubtypes.Biocontrol_Release.name: BiocontrolReleaseSerializer,
+            ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial.name: BiocontrolReleaseMonitoringSerializer
         }
         serializer_cls = SUBTYPE_SERIALIZER_MAP.get(obj.subtype)
 

@@ -14,3 +14,5 @@ from .biocontrol_counts import (
 )
 from .microsite_conditions import MicrositeConditionSerializer
 from .weather_conditions import WeatherConditionsSerializer
+from .spread_results import SpreadResultsSerializer
+from .biocontrol_dispersal_monitoring_information import TerrestrialBiologicalMonitoringInformationSerializer
