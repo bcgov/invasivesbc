@@ -1,11 +1,8 @@
 
 from rest_framework import serializers
-from api.serializers.common import (
-  MicrositeConditionSerializer,
-  TargetPlantPhenologySerializer,
-  TerrestrialBiocontrolAgentCountComplexSerializer
-)
+from api.serializers.common import TerrestrialBiocontrolAgentCountComplexSerializer
 from api.models.activity import (
+    ActivitySubtypes,
     LocationBiocontrolAgentsFoundTerrestrial,
     TerrestrialBiocontrolDispersalMonitoring,
     SignOfBiocontrolPresenceTerrestrial,
@@ -92,3 +89,10 @@ class TerrestrialBiologicalMonitoringInformationSerializer(serializers.ModelSeri
     return SignOfBiocontrolPresenceTerrestrial.objects.filter(
       activity=obj.activity, invasive_plant=obj.invasive_plant, biocontrol_agent=obj.biocontrol_agent
     ).exists()
+
+  def to_representation(self, instance):
+    """Remove Linear_Segment from Release forms."""
+    ret = super().to_representation(instance)
+    if instance.activity.subtype == ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial.name:
+      ret.pop("linear_segment")
+    return ret
