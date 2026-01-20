@@ -103,3 +103,9 @@ class BiocontrolReleaseTest(TestCase):
     self.assertEqual(sd["cloud_cover"], "1")
     self.assertEqual(sd["precipitation"], "DP")
     self.assertEqual(sd["wind_direction"], "NW")
+
+    # spread results
+    self.assertEqual(sd["agent_density"], 55)
+    self.assertEqual(sd["plant_attack"], 20)
+    self.assertEqual(sd["max_spread_distance_m"], 300)
+    self.assertEqual(sd["max_spread_aspect_deg"], 320)

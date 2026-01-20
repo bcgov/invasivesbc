@@ -327,5 +327,27 @@
       "invasive_plant": "CT",
       "sign_of_presence": "ST"
     }
+  },
+  {
+    "model": "api.SpreadResults",
+    "pk": 1,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "agent_density": 55,
+      "plant_attack": 20,
+      "max_spread_distance_m": 300,
+      "max_spread_aspect_deg": 320
+    }
+  },
+  {
+    "model": "api.SpreadResults",
+    "pk": 2,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "agent_density": 32,
+      "plant_attack": 22,
+      "max_spread_distance_m": 330,
+      "max_spread_aspect_deg": 310
+    }
   }
 ]
