@@ -6,3 +6,4 @@ from .terrestrial_mechanical_treatment import (
 )
 from .mechanical_treatment_monitoring import MechanicalMonitoringSerializer
 from .chemical_treatment_monitoring import ChemicalMonitoringSerializer
+from .biocontrol_release import BiocontrolReleaseSerializer
