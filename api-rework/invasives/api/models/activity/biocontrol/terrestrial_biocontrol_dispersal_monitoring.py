@@ -1,11 +1,10 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
-from api.models.activity.abstract_sub_tables import BaseOneToManyActivityTable
+from api.models.activity import BaseOneToManyActivityTable, ActivitySubtypes
 from api.models.codes.code_tables import (
     BiocontrolAgentCode,
     TerrestrialPlantCode,
-    BiocontrolPresenceCode,
     BioAgentCollectionMethodCode,
 )
 from api.models.enums import CollectionType, YesNoUnknown
@@ -22,9 +21,6 @@ class TerrestrialBiocontrolDispersalMonitoring(BaseOneToManyActivityTable):
     invasive_plant = models.ForeignKey(TerrestrialPlantCode, on_delete=models.PROTECT)
     biocontrol_agent = models.ForeignKey(BiocontrolAgentCode, on_delete=models.PROTECT)
     biocontrol_present = models.BooleanField()
-    sign_of_biocontrol_presence = models.ForeignKey(
-        BiocontrolPresenceCode, on_delete=models.PROTECT, null=True, blank=True
-    )
     monitoring_type = models.CharField(choices=CollectionType)
     plant_count = models.PositiveIntegerField()
     monitoring_method = models.ForeignKey(
@@ -34,7 +30,7 @@ class TerrestrialBiocontrolDispersalMonitoring(BaseOneToManyActivityTable):
     number_of_sweeps = models.PositiveSmallIntegerField(blank=True, null=True)
     start_time = models.DateTimeField()
     stop_time = models.DateTimeField()
-    linear_segment = models.CharField(choices=YesNoUnknown)
+    linear_segment = models.CharField(choices=YesNoUnknown, blank=True, null=True)
     suitable_for_collection = models.CharField(choices=YesNoUnknown)
 
     class Meta:
@@ -78,7 +74,11 @@ class TerrestrialBiocontrolDispersalMonitoring(BaseOneToManyActivityTable):
             errors["end_time_collecting"] = (
                 "Cannot stop collecting before collecting began."
             )
-
+        if self.activity.subtype != ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial \
+            and self.linear_segment is None:
+            errors["linear_segment"] = (
+                "Linear segment is a required field"
+            )
         ## TODO: ADD ACTUAL CODE FOR SWEEP
         if self.collection_method == "Sweep Counted" and not self.number_of_sweeps:
             errors["collection_method"] = (

@@ -10,10 +10,15 @@ class AdjacentLandUseCode(BaseCode):
 
 
 class AgentLocationFoundCode(BaseCode):
+    """Plant location where agents found e.g.: 'Stem base', 'Seedhead """
     class Meta:
         db_table = '"codes"."agent_location_found"'
         pass
 
+class AgentLocationFoundTerrainCode(BaseCode):
+    """Generic terrain details where agent was found e.g.: 'Slope', 'Edge of Patch'"""
+    class Meta:
+        db_table = '"codes"."agent_location_found_terrain"'
 
 class AquaticPlantCode(BaseCode):
     class Meta:
