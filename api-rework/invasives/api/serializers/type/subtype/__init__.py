@@ -10,3 +10,6 @@ from .biocontrol_release import BiocontrolReleaseSerializer
 from .biocontrol_release_monitoring import BiocontrolReleaseMonitoringSerializer
 from .biocontrol_dispersal_monitoring import BiocontrolDispersalMonitoringSerializer
 from .biocontrol_collection import BiocontrolCollectionSerializer
+
+from .terrestrial_chemical_treatment import TerrestrialChemicalTreatmentSerializer
+from .aquatic_chemical_treatment import AquaticChemicalTreatmentSerializer
