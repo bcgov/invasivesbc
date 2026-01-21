@@ -9,3 +9,4 @@ from .chemical_treatment_monitoring import ChemicalMonitoringSerializer
 from .biocontrol_release import BiocontrolReleaseSerializer
 from .biocontrol_release_monitoring import BiocontrolReleaseMonitoringSerializer
 from .biocontrol_dispersal_monitoring import BiocontrolDispersalMonitoringSerializer
+from .biocontrol_collection import BiocontrolCollectionSerializer
