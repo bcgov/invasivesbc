@@ -174,7 +174,7 @@
       "pest_management_plan": "BCGOV",
       "temperature_c": 23,
       "wind_speed_kmh": 33,
-      "application_start_time": "2025-01-01",
+      "application_start_time": "2025-01-01T00:00:00Z",
       "wind_direction": "NW",
       "humidity": 30,
       "treatment_notice_signs": "Yes",
@@ -187,7 +187,7 @@
   },
   {
     "model": "api.ChemTreatment",
-    "pk": 1,
+    "pk": 2,
     "fields": {
       "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
       "service_license_number": "1",
@@ -195,7 +195,7 @@
       "pest_management_plan_manual": "Manual - Mocktown",
       "temperature_c": 98,
       "wind_speed_kmh": 89,
-      "application_start_time": "2025-01-01",
+      "application_start_time": "2025-01-01T00:00:00Z",
       "wind_direction": "NW",
       "humidity": 20,
       "treatment_notice_signs": "No",
