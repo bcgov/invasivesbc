@@ -30,7 +30,7 @@ const SortingTableHeader = ({
         }
       }}>
       {title}
-      {sortProperty === propertyName && <span className={'sort_dir'}>{sortDirection == 'desc' ? '⌄' : '^'}</span>}
+      {sortProperty === propertyName && <span className={'sort-direction'}>{sortDirection == 'desc' ? '⌄' : '^'}</span>}
     </th>
   );
 };

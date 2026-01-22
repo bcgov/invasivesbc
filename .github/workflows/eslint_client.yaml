@@ -9,7 +9,7 @@ on:
       - "normalized-database"
 
 jobs:
-  black:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -21,4 +21,4 @@ jobs:
         run: npx eslint src
       - name: stylelint
         working-directory: ./api-rework/client
-        run: npx stylelint "src/**/*.css" "src/**/*.scss"
+        run: npx stylelint "src/**/*.css" "src/**/*.scss" --mw 0
