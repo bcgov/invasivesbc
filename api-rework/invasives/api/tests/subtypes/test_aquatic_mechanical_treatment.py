@@ -5,7 +5,7 @@ class AquaticMechanicalTreatmentTest(BaseActivitySubtypeTest):
 
     fixtures = [
         "test/common/test_invasive_plant_codes",
-        "test/subtypes/treatments/test_aquatic_mechanical_treatment_codes",
+        "test/subtypes/treatments/test_mechanical_treatment_codes",
         "test/subtypes/treatments/test_aquatic_mechanical_treatment",
         "test/common/test_participants",
     ]
