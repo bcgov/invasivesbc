@@ -35,6 +35,7 @@ jobs:
         working-directory: ./api-rework/invasives
       - run: python manage.py test
         env:
+          -DB_NAME: django
           -TEST_DB_NAME: django_test
           -DB_USER: invasivesbc
           -DB_PASSWORD: testtest
