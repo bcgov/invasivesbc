@@ -7,6 +7,13 @@ class ComputedLocationFields(models.Model):
     Non-User submitted Fields. Generated after an activity submission based on latest geo data
     """
 
+    computed_fields_generated = models.BooleanField(
+        null=False,
+        default=False,
+        db_column="computed_fields_generated",
+        db_comment="Whether or not computed regional details have been generated",
+    )
+
     computed_biogeoclimatic_zone = models.CharField(
         blank=True,
         db_comment="Large geographic area defined by similar regional climate (temperature, rainfall, moisture)",
@@ -36,16 +43,17 @@ class ComputedLocationFields(models.Model):
 
     def clean(self):
         super().clean()
-        if (
-            not self.biogeoclimatic_zone
-            and not self.invasive_plant_management_areas
-            and not self.ownership
-            and not self.regional_districts
-            and not self.flrno_districts
-            and not self.moti_districts
-            and not self.elevation_m
-        ):
-            raise ValidationError(
-                "At least one value other than activity must be non-null",
-                code="invalid",
-            )
+        if self.computed_fields_generated:
+            if (
+                not self.computed_biogeoclimatic_zone
+                and not self.computed_invasive_plant_management_areas
+                and not self.computed_ownership
+                and not self.computed_regional_districts
+                and not self.computed_flrno_districts
+                and not self.computed_moti_districts
+                and not self.computed_elevation_m
+            ):
+                raise ValidationError(
+                    "At least one value other than activity must be non-null if generation has been completed",
+                    code="invalid",
+                )

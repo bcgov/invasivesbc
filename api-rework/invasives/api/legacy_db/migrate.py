@@ -1,5 +1,9 @@
+import decimal
 import logging
 
+from pydantic_core._pydantic_core import ValidationError
+
+from api.legacy_db.migration_errors import MigrationErrors
 from api.legacy_db.model_serializer import LegacyActivity
 from api.models.activity import (
     Activity,
@@ -21,10 +25,13 @@ def migrate(old: LegacyActivity):
     new = Activity()
     new.id = old.activity_id
     new.short_id = old.activity_payload.short_id
-    new.type = old.activity_type
+    new.type = old.activity_type.name
     new.subtype = old.activity_subtype.name
     new.access_description = (
         old.activity_payload.form_data.activity_data.access_description
+    )
+    new.location_description = (
+        old.activity_payload.form_data.activity_data.location_description
     )
     new.date = old.activity_payload.form_data.activity_data.activity_date_time
     new.form_status = old.activity_payload.form_status
@@ -42,36 +49,23 @@ def migrate(old: LegacyActivity):
     )
     new.batch_id = old.activity_payload.batch_id
 
-    # pprint(old)
-
-    new.latitude = old.activity_payload.form_data.activity_data.latitude
-    new.longitude = old.activity_payload.form_data.activity_data.longitude
+    new.area_m = old.activity_payload.form_data.activity_data.reported_area
+    new.latitude = round(
+        decimal.Decimal(old.activity_payload.form_data.activity_data.latitude), 7
+    )
+    new.longitude = round(
+        decimal.Decimal(old.activity_payload.form_data.activity_data.longitude), 7
+    )
     new.utm_zone = old.activity_payload.form_data.activity_data.utm_zone
     new.utm_easting = old.activity_payload.form_data.activity_data.utm_easting
     new.utm_northing = old.activity_payload.form_data.activity_data.utm_northing
 
-    # If Activity is not saved first, we cannot link other records to it.
-    new.save()
-
-    if (
-        old.activity_payload.form_data.activity_type_data.linked_id is not None
-        and old.activity_payload.form_data.activity_type_data.linked_id != ""
-    ):
-        logging.warning(
-            "linked_id: %s", old.activity_payload.form_data.activity_type_data.linked_id
-        )
-        try:
-            new.linked_activities.add(
-                Activity.objects.get(
-                    activity_id=old.activity_payload.form_data.activity_type_data.linked_id
-                )
-            )
-        except Activity.DoesNotExist:
-            # @todo add to errors object
-            logging.warning("Linked activity does not exist")
-
-    # re-save
-    new.save()
+    try:
+        new.full_clean()
+        new.save()
+    except ValidationError as e:
+        # handled in the caller
+        raise
 
     if old.activity_payload.form_data.activity_data.jurisdictions:
         for jurisdiction in old.activity_payload.form_data.activity_data.jurisdictions:

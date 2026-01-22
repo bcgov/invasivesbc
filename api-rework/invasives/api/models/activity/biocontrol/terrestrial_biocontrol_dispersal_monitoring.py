@@ -74,11 +74,12 @@ class TerrestrialBiocontrolDispersalMonitoring(BaseOneToManyActivityTable):
             errors["end_time_collecting"] = (
                 "Cannot stop collecting before collecting began."
             )
-        if self.activity.subtype != ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial \
-            and self.linear_segment is None:
-            errors["linear_segment"] = (
-                "Linear segment is a required field"
-            )
+        if (
+            self.activity.subtype
+            != ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial
+            and self.linear_segment is None
+        ):
+            errors["linear_segment"] = "Linear segment is a required field"
         ## TODO: ADD ACTUAL CODE FOR SWEEP
         if self.collection_method == "Sweep Counted" and not self.number_of_sweeps:
             errors["collection_method"] = (

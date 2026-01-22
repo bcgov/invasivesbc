@@ -49,7 +49,7 @@ class Activity(
     received_timestamp = models.DateTimeField(auto_now_add=True, editable=False)
 
     linked_activities = models.ManyToManyField(
-        "api.Activity", db_table="linked_activities"
+        "api.Activity", db_table='"activity"."linked_activities"'
     )
 
     class Meta:

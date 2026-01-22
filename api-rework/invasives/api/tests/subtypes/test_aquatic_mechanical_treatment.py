@@ -15,7 +15,9 @@ class AquaticMechanicalTreatmentTest(BaseActivitySubtypeTest):
         self.no_pac_number_present()
 
     def test_casting_fixture_into_serializer(self):
-        self.casting_fixture_into_serializer(expected_subtype_key="mechanical_treatments")
+        self.casting_fixture_into_serializer(
+            expected_subtype_key="mechanical_treatments"
+        )
 
     def test_subtype_details_full(self):
         """Subtype keys match the information from fixtures."""

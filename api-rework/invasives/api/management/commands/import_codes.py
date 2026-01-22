@@ -1,5 +1,7 @@
+import logging
+from pprint import pformat
+
 from django.core.management.base import BaseCommand
-from rich.pretty import pprint
 
 from api.legacy_db.db import LegacyDB
 
@@ -17,4 +19,4 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         stats = LegacyDB.migrate_codes(dry_run=options["dry_run"])
-        pprint(stats)
+        logging.info(pformat(stats))

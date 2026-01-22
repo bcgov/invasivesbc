@@ -2,16 +2,19 @@ from dataclasses import dataclass
 import logging
 from typing import Literal
 
+from django.core.exceptions import ValidationError as DjangoValidationError
+from django.db.models import Q
+import django.db.transaction as transaction
 import psycopg
 from psycopg.rows import dict_row
 from pydantic_core._pydantic_core import ValidationError
 
 from api.legacy_db.migrate import migrate
+from api.legacy_db.migration_errors import MigrationErrors
 from api.legacy_db.model_serializer import LegacyActivity
 from api.models.activity import Activity
 from api.models.codes import (
     AdjacentLandUseCode,
-    FundingAgencyCode,
     AgentLocationFoundCode,
     AgentLocationFoundTerrainCode,
     AquaticPlantCode,
@@ -28,6 +31,7 @@ from api.models.codes import (
     DistributionCode,
     EfficacyManagementRatingCode,
     EmployerCode,
+    FundingAgencyCode,
     InvasivePlantsOnSiteCode,
     JurisdictionCode,
     MesoslopePositionCode,
@@ -49,6 +53,7 @@ from api.models.codes import (
     WaterbodyFlowSeasonalCode,
     WaterbodyUseCode,
 )
+from api.models.migrator import ActivityPendingLink, MigrationError
 from api.models.migrator.activity_migration_status import ActivityMigrationStatus
 from invasivesbc.settings import LEGACY_DB_CONNECTION_STRING
 
@@ -67,6 +72,7 @@ class ActivityMigrationStatistics:
     failed_parse: int = 0
     failed_translate: int = 0
     failed_validate: int = 0
+    pending_links_created: int = 0
     pre_existing: int = 0
     clobbered: int = 0
 
@@ -78,6 +84,13 @@ class CodeMigrationStatistics:
     failed_for_any_reason: int = 0
     not_modified: int = 0
     no_equivalent_code: int = 0
+
+
+@dataclass
+class ActivityLinkStatistics:
+    attempted: int = 0
+    succeeded: int = 0
+    failed_for_any_reason: int = 0
 
 
 class LegacyDB:
@@ -301,6 +314,7 @@ class LegacyDB:
             with conn.cursor() as cursor:
                 result = cursor.execute(sourcing_query)
                 for row in result.fetchall():
+                    errors = MigrationErrors(errors=[])
                     migration_status = ActivityMigrationStatus.objects.filter(
                         activity_id=row["activity_id"]
                     ).first()
@@ -330,26 +344,86 @@ class LegacyDB:
                         )
                         if not dry_run and (not pre_existing or clobber):
                             try:
-                                new_activity = migrate(parsed_activity)
-                                # new_activity.save()
+                                with transaction.atomic():
+                                    new_activity = migrate(parsed_activity)
+                                    stats.succeeded += 1
+                                    migration_status.success = True
+
+                                    if (
+                                        parsed_activity.activity_payload.form_data.activity_type_data.linked_id
+                                        is not None
+                                        and parsed_activity.activity_payload.form_data.activity_type_data.linked_id
+                                        != ""
+                                    ):
+                                        ActivityPendingLink.objects.create(
+                                            from_activity_id=new_activity.id,
+                                            to_activity_id=parsed_activity.activity_payload.form_data.activity_type_data.linked_id,
+                                        )
+                                        stats.pending_links_created += 1
+
+                            except DjangoValidationError as e:
+                                log.warning(
+                                    f"validation for {row['activity_id']} failed",
+                                    exc_info=True,
+                                )
+                                errors.errors.append(("validation", e.__str__()))
+                                stats.failed_validate += 1
                             except Exception as e:
                                 log.warning(
                                     f"building model for {row['activity_id']} failed",
                                     exc_info=True,
                                 )
-                                migration_status.extended_status = e.__str__()
-                            stats.succeeded += 1
-                            migration_status.success = True
+                                stats.failed_for_any_reason += 1
+
                     except ValidationError as e:
                         log.warning(
                             f"initial parse for {row['activity_id']} failed",
                             exc_info=True,
                         )
-                        migration_status.extended_status = e.__str__()
+                        errors.errors.append(
+                            ("parse failed", e.__str__()),
+                        )
                         stats.failed_for_any_reason += 1
                         stats.failed_parse += 1
                     finally:
                         if not dry_run:
                             migration_status.save()
+                            if len(errors.errors) > 0:
+                                for error in errors.errors:
+                                    logging.warning("error")
+                                    MigrationError.objects.create(
+                                        migration_status=migration_status,
+                                        reason=error[0],
+                                        extended_status=error[1],
+                                    )
 
                 return stats
+
+    @staticmethod
+    def migrate_links():
+        stats = ActivityLinkStatistics()
+        to_action = ActivityPendingLink.objects.filter(
+            Q(actioned=False) | Q(success=False)
+        )
+
+        for link in to_action:
+            logging.debug(
+                f"{"re-trying" if link.actioned else "creating" } link {link.from_activity_id}<->{link.to_activity_id}"
+            )
+            stats.attempted += 1
+            try:
+                from_activity = Activity.objects.get(id=link.from_activity_id)
+                to_activity = Activity.objects.get(id=link.to_activity_id)
+                from_activity.linked_activities.add(to_activity)
+                from_activity.save()
+                link.success = True
+                stats.succeeded += 1
+            except Activity.DoesNotExist as e:
+                logging.warning("Either the `from` or `to` activity does not exist")
+                link.success = False
+                stats.failed_for_any_reason += 1
+            finally:
+                link.actioned = True
+                link.save()
+
+        return stats

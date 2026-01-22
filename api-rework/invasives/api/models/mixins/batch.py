@@ -7,9 +7,9 @@ class BatchInformation(models.Model):
     Non-User submitted fields. Entered as part of the batch upload process.
     """
 
-    batch_id = models.PositiveBigIntegerField(null=True, default=None)
+    batch_id = models.PositiveBigIntegerField(null=True, default=None, blank=True)
     batch_row_id = models.PositiveBigIntegerField(
-        db_comment="Row on uploaded document", null=True, default=None
+        db_comment="Row on uploaded document", null=True, default=None, blank=True
     )
 
     class Meta:

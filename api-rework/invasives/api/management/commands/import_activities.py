@@ -1,5 +1,7 @@
+import logging
+from pprint import pformat
+
 from django.core.management.base import BaseCommand
-from rich.pretty import pprint
 
 from api.legacy_db.db import LegacyDB
 
@@ -44,4 +46,10 @@ class Command(BaseCommand):
             pk=options["pk"],
             clobber=options["clobber"],
         )
-        pprint(stats)
+
+        logging.info(pformat(stats))
+
+        if stats.pending_links_created > 0:
+            logging.info(
+                "Pending links were created. Run `import_activity_links` to import them"
+            )
