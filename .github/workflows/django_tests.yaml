@@ -41,6 +41,6 @@ jobs:
           DB_HOST: localhost
           DB_PORT: 5432
         working-directory: ./api-rework/invasives
-        run: python manage.py test
+        run: python manage.py test --noinput -v 2 --keepdb
 
 
