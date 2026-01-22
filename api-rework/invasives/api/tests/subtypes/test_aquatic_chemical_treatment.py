@@ -7,6 +7,7 @@ class AquaticChemicalTreatmentTest(BaseActivitySubtypeTest):
         "test/common/test_invasive_plant_codes",
         "test/subtypes/treatments/test_aquatic_chemical_treatment_codes",
         "test/subtypes/treatments/test_aquatic_chemical_treatment",
+        "test/common/test_nearest_wells",
         "test/common/test_participants",
     ]
 
