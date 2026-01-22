@@ -5,7 +5,7 @@ class ChemicalTreatmentMonitoringTest(BaseActivitySubtypeTest):
 
     fixtures = [
         "test/common/test_invasive_plant_codes",
-        "test/subtypes/monitoring/test_chemical_treatment_monitoring_codes",
+        "test/subtypes/monitoring/test_chem_mech_treatment_monitoring_codes",
         "test/subtypes/monitoring/test_chemical_treatment_monitoring",
         "test/common/test_nearest_wells",
         "test/common/test_participants",
