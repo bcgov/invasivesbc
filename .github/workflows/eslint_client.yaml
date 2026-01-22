@@ -1,0 +1,24 @@
+name: eslint+stylelint
+
+on:
+  push:
+    branches:
+      - "normalized-database"
+  pull_request:
+    branches:
+      - "normalized-database"
+
+jobs:
+  black:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: install deps
+        working-directory: ./api-rework/client
+        run: npm ci
+      - name: eslint
+        working-directory: ./api-rework/client
+        run: npx eslint src
+      - name: stylelint
+        working-directory: ./api-rework/client
+        run: npx stylelint "src/**/*.css" "src/**/*.scss"
