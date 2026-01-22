@@ -8,8 +8,8 @@
       "date": "2025-09-29",
       "created_by": "janedoe@identifier",
       "form_status": "Submitted",
-      "access_description": "55.37033; -121.51513",
-      "comment": "Many plants found here",
+      "access_description": "Fixture access description",
+      "comment": "Fixture for: Observation_Plant_Terrestrial",
       "created_timestamp": "2026-01-07T23:44:38.874Z",
       "received_timestamp": "2026-01-07T23:44:38.874Z",
       "subtype": "Observation_Plant_Terrestrial",
@@ -29,8 +29,8 @@
       "date": "2025-10-03",
       "created_by": "johnsmith@identifier",
       "form_status": "Submitted",
-      "access_description": "Terrestrial Observation access",
-      "comment": "Found few species",
+      "access_description": "Fixture access description",
+      "comment": "Fixture for: Observation_Plant_Terrestrial",
       "created_timestamp": "2026-01-07T23:44:38.919Z",
       "received_timestamp": "2026-01-07T23:44:38.919Z",
       "subtype": "Observation_Plant_Terrestrial",
@@ -112,7 +112,8 @@
       "name": "Jane Doe",
       "pac_number": 1234
     }
-  }, {
+  },
+  {
     "model": "api.Jurisdiction",
     "pk": 1,
     "fields": {

@@ -1,46 +1,22 @@
-from django.test import TestCase
-from django.test.client import Client
+from .base import BaseActivitySubtypeTest
 
-class BiocontrolReleaseTest(TestCase):
+class BiocontrolReleaseTest(BaseActivitySubtypeTest):
 
   fixtures = [
     "test/subtypes/biocontrol/test_biocontrol_dispersal_monitoring_codes",
     "test/subtypes/biocontrol/test_biocontrol_dispersal_monitoring",
   ]
 
-  def fetch(self, id):
-    client = Client()
-
-    result = client.get(f"/activities/{id}")
-    self.assertEqual(result.status_code, 200)
-    return result
-
-  def fetch_a(self):
-    return self.fetch("6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7")
-
-  def fetch_b(self):
-    return self.fetch("CD542709-F767-402F-818E-117B3FBC797D")
 
   def test_expect_two_activities(self):
-    """Verify that two activities are returned from the list endpoint"""
-    client = Client()
-    result = client.get("/activities")
-    self.assertEqual(result.status_code, 200)
-
-    response_object = result.json()
-    self.assertEqual(len(response_object), 2)
+      self.expect_two_activities()
 
   def test_no_pac_number_present(self):
-    """Check that participants do not include a pac number when fetched for a non-chemical treatment"""
-    record = self.fetch_a()
-    self.assertIsNotNone(record)
-    record = record.json()
-    self.assertIsNotNone(
-      record["subtype_data"]["monitoring_information"]
-    )
-    for person in record["participants"]:
-      self.assertIsNotNone(person.get("name"))
-      self.assertIsNone(person.get("pac_number"))
+      self.no_pac_number_present()
+
+  def test_casting_fixture_into_serializer(self):
+      self.casting_fixture_into_serializer(expected_subtype_key="monitoring_information")
+
 
   def test_subtype_details_full(self):
     response_object = self.fetch_a().json()

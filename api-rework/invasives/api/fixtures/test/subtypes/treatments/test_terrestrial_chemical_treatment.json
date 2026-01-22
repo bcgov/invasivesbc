@@ -3,16 +3,16 @@
     "model": "api.Activity",
     "pk": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
     "fields": {
-      "short_id": "25PBD6BBA2749",
-      "type": "ActivityType.Biocontrol",
+      "short_id": "25PTC6BBA2749",
+      "type": "ActivityType.Treatment",
       "date": "2025-09-29",
       "created_by": "janedoe@identifier",
       "form_status": "Submitted",
       "access_description": "Fixture access description",
-      "comment": "Fixture for: Monitoring_Biocontrol_Dispersal_Plant_Terrestrial",
+      "comment": "Fixture for: Treatment_Chemical_Plant_Terrestrial",
       "created_timestamp": "2026-01-07T23:44:38.874Z",
       "received_timestamp": "2026-01-07T23:44:38.874Z",
-      "subtype": "Monitoring_Biocontrol_Dispersal_Plant_Terrestrial",
+      "subtype": "Treatment_Chemical_Plant_Terrestrial",
       "batch_id": 12,
       "batch_row_id": 34,
       "linked_activities": [
@@ -24,16 +24,16 @@
     "model": "api.Activity",
     "pk": "CD542709-F767-402F-818E-117B3FBC797D",
     "fields": {
-      "short_id": "25PBD6BBA2749",
-      "type": "ActivityType.Biocontrol",
+      "short_id": "25PTC6BBA2749",
+      "type": "ActivityType.Treatment",
       "date": "2025-10-03",
       "created_by": "johnsmith@identifier",
       "form_status": "Submitted",
       "access_description": "Fixture access description",
-      "comment": "Fixture for: Monitoring_Biocontrol_Dispersal_Plant_Terrestrial",
+      "comment": "Fixture for: Treatment_Chemical_Plant_Terrestrial",
       "created_timestamp": "2026-01-07T23:44:38.919Z",
       "received_timestamp": "2026-01-07T23:44:38.919Z",
-      "subtype": "Monitoring_Biocontrol_Dispersal_Plant_Terrestrial",
+      "subtype": "Treatment_Chemical_Plant_Terrestrial",
       "batch_id": 56,
       "batch_row_id": 78
     }
@@ -109,7 +109,7 @@
     "pk": 3,
     "fields": {
       "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
-      "name": "Jane Person",
+      "name": "Jane Doe",
       "pac_number": 1234
     }
   },
@@ -165,169 +165,98 @@
     }
   },
   {
-    "model": "api.TargetPlantPhenology",
+    "model": "api.ChemTreatment",
     "pk": 1,
     "fields": {
       "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
-      "winter_dormant": "10",
-      "seedlings": "11",
-      "rosettes": "12",
-      "bolts": "13",
-      "flowering": "14",
-      "seeds_forming": "15",
-      "senescent": "25"
+      "service_license_number": "0",
+      "pesticide_use_permit": "none",
+      "pest_management_plan": "BCGOV",
+      "temperature_c": 23,
+      "wind_speed_kmh": 33,
+      "application_start_time": "2025-01-01T00:00:00Z",
+      "wind_direction": "NW",
+      "humidity": 30,
+      "treatment_notice_signs": "Yes",
+      "precautionary_statement": "COM",
+      "ntz_reduction_bool": true,
+      "rationale_for_ntz_reduction": "stated rationale",
+      "additional_unmapped_well_water_bool": true,
+      "pest_injury_threshold_determination_bool": true
     }
   },
   {
-    "model": "api.TargetPlantHeights",
+    "model": "api.ChemTreatment",
+    "pk": 2,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "service_license_number": "1",
+      "pesticide_use_permit": "none",
+      "pest_management_plan_manual": "Manual - Mocktown",
+      "temperature_c": 98,
+      "wind_speed_kmh": 89,
+      "application_start_time": "2025-01-01T00:00:00Z",
+      "wind_direction": "NW",
+      "humidity": 20,
+      "treatment_notice_signs": "No",
+      "precautionary_statement": "2W",
+      "ntz_reduction_bool": false,
+      "additional_unmapped_well_water_bool": false,
+      "pest_injury_threshold_determination_bool": false
+    }
+  },
+  {
+    "model": "api.NearestWell",
     "pk": 1,
     "fields": {
       "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
-      "height_cm": 4
+      "well_tag_number": 1,
+      "distance": 63
     }
   },
   {
-    "model": "api.TargetPlantHeights",
+    "model": "api.NearestWell",
     "pk": 2,
     "fields": {
       "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
-      "height_cm": 5
+      "well_tag_number": 2,
+      "distance": 63
     }
   },
   {
-    "model": "api.TargetPlantHeights",
+    "model": "api.NearestWell",
     "pk": 3,
     "fields": {
       "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
-      "height_cm": 6
+      "well_tag_number": 3,
+      "distance": 63
     }
   },
   {
-    "model": "api.MicrositeCondition",
-    "pk": 1,
-    "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
-      "mesoslope_position": "LV",
-      "site_surface_shape": "LN"
-    }
-  },
-  {
-    "model": "api.MicrositeCondition",
-    "pk": 2,
+    "model": "api.NearestWell",
+    "pk": 4,
     "fields": {
       "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
-      "mesoslope_position": "DP",
-      "site_surface_shape": "NA"
+      "well_tag_number": 1,
+      "distance": 63
     }
   },
   {
-    "model": "api.WeatherConditions",
-    "pk": 1,
+    "model": "api.NearestWell",
+    "pk": 5,
     "fields": {
       "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
-      "wind_speed_kmh": 0,
-      "temperature": 26,
-      "cloud_cover": "2",
-      "precipitation": "DP",
-      "wind_direction": "SE"
+      "well_tag_number": 2,
+      "distance": 63
     }
   },
   {
-    "model": "api.WeatherConditions",
-    "pk": 2,
-    "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
-      "wind_speed_kmh": 22,
-      "temperature": 32,
-      "cloud_cover": "1",
-      "precipitation": "DP",
-      "wind_direction": "NW"
-    }
-  },
-  {
-    "model": "api.TerrestrialBiocontrolDispersalMonitoring",
-    "pk": 1,
-    "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
-      "biocontrol_present": true,
-      "monitoring_type": "Timed",
-      "plant_count": 33,
-      "linear_segment": "Yes",
-      "count_duration_minutes": 22,
-      "number_of_sweeps": null,
-      "start_time": "2026-01-02 00:00:00.000 -0800",
-      "stop_time": "2026-01-02 00:00:00.000 -0800",
-      "suitable_for_collection": "No",
-      "biocontrol_agent": "CHEIURB",
-      "monitoring_method": "Cs",
-      "invasive_plant": "CT"
-    }
-  },
-  {
-    "model": "api.TerrestrialBiocontrolDispersalMonitoring",
-    "pk": 2,
+    "model": "api.NearestWell",
+    "pk": 6,
     "fields": {
       "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
-      "biocontrol_present": true,
-      "monitoring_type": "Count",
-      "plant_count": 33,
-      "count_duration_minutes": 22,
-      "linear_segment": "Yes",
-      "number_of_sweeps": null,
-      "start_time": "2026-01-02 00:00:00.000 -0800",
-      "stop_time": "2026-01-02 00:00:00.000 -0800",
-      "suitable_for_collection": "Yes",
-      "biocontrol_agent": "CHEIURB",
-      "monitoring_method": "Cs",
-      "invasive_plant": "CT"
-    }
-  },
-  {
-    "model": "api.TerrestrialBiocontrolAgentCountComplex",
-    "pk": 1,
-    "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
-      "invasive_plant": "CT",
-      "biocontrol_agent": "CHEIURB",
-      "agent_location": "Pe",
-      "plant_position": "Pu",
-      "stage": "EG",
-      "quantity": 11,
-      "is_estimate": true
-    }
-  },
-  {
-    "model": "api.TerrestrialBiocontrolAgentCountComplex",
-    "pk": 2,
-    "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
-      "invasive_plant": "CT",
-      "biocontrol_agent": "CHEIURB",
-      "agent_location": "Me",
-      "plant_position": "Pl",
-      "stage": "AD",
-      "quantity": 111,
-      "is_estimate": false
-    }
-  },
-  {
-    "model": "api.SignOfBiocontrolPresenceTerrestrial",
-    "pk": 1,
-    "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
-      "biocontrol_agent": "CHEIURB",
-      "invasive_plant": "CT",
-      "sign_of_presence": "EH"
-    }
-  },
-  {
-    "model": "api.SignOfBiocontrolPresenceTerrestrial",
-    "pk": 2,
-    "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
-      "biocontrol_agent": "CHEIURB",
-      "invasive_plant": "CT",
-      "sign_of_presence": "ST"
+      "well_tag_number": 3,
+      "distance": 63
     }
   }
 ]

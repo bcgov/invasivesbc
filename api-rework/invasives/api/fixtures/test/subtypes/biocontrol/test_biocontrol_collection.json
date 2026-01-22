@@ -3,16 +3,16 @@
     "model": "api.Activity",
     "pk": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
     "fields": {
-      "short_id": "25PBD6BBA2749",
+      "short_id": "25PBC6BBA2749",
       "type": "ActivityType.Biocontrol",
       "date": "2025-09-29",
       "created_by": "janedoe@identifier",
       "form_status": "Submitted",
       "access_description": "Fixture access description",
-      "comment": "Fixture for: Monitoring_Biocontrol_Dispersal_Plant_Terrestrial",
+      "comment": "Fixture for: Biocontrol_Collection",
       "created_timestamp": "2026-01-07T23:44:38.874Z",
       "received_timestamp": "2026-01-07T23:44:38.874Z",
-      "subtype": "Monitoring_Biocontrol_Dispersal_Plant_Terrestrial",
+      "subtype": "Biocontrol_Collection",
       "batch_id": 12,
       "batch_row_id": 34,
       "linked_activities": [
@@ -24,16 +24,16 @@
     "model": "api.Activity",
     "pk": "CD542709-F767-402F-818E-117B3FBC797D",
     "fields": {
-      "short_id": "25PBD6BBA2749",
+      "short_id": "25PBC6BBA2749",
       "type": "ActivityType.Biocontrol",
       "date": "2025-10-03",
       "created_by": "johnsmith@identifier",
       "form_status": "Submitted",
       "access_description": "Fixture access description",
-      "comment": "Fixture for: Monitoring_Biocontrol_Dispersal_Plant_Terrestrial",
+      "comment": "Fixture for: Biocontrol_Collection",
       "created_timestamp": "2026-01-07T23:44:38.919Z",
       "received_timestamp": "2026-01-07T23:44:38.919Z",
-      "subtype": "Monitoring_Biocontrol_Dispersal_Plant_Terrestrial",
+      "subtype": "Biocontrol_Collection",
       "batch_id": 56,
       "batch_row_id": 78
     }
@@ -245,89 +245,59 @@
     }
   },
   {
-    "model": "api.TerrestrialBiocontrolDispersalMonitoring",
+    "model": "api.TerrestrialBiocontrolCollectionInformation",
     "pk": 1,
     "fields": {
       "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
-      "biocontrol_present": true,
-      "monitoring_type": "Timed",
-      "plant_count": 33,
-      "linear_segment": "Yes",
-      "count_duration_minutes": 22,
+      "collection_type": "Timed",
+      "plant_count_collection": 33,
+      "time_collection_duration_minutes": 22,
       "number_of_sweeps": null,
-      "start_time": "2026-01-02 00:00:00.000 -0800",
-      "stop_time": "2026-01-02 00:00:00.000 -0800",
-      "suitable_for_collection": "No",
-      "biocontrol_agent": "CHEIURB",
-      "monitoring_method": "Cs",
+      "start_time_collecting": "2026-01-02 00:00:00.000 -0800",
+      "end_time_collecting": "2026-01-02 00:00:00.000 -0800",
+      "biological_agent": "CHEIURB",
+      "collection_method": "Cs",
       "invasive_plant": "CT"
     }
   },
   {
-    "model": "api.TerrestrialBiocontrolDispersalMonitoring",
+    "model": "api.TerrestrialBiocontrolCollectionInformation",
     "pk": 2,
     "fields": {
       "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
-      "biocontrol_present": true,
-      "monitoring_type": "Count",
-      "plant_count": 33,
-      "count_duration_minutes": 22,
-      "linear_segment": "Yes",
+      "collection_type": "Count",
+      "plant_count_collection": 33,
+      "time_collection_duration_minutes": 22,
       "number_of_sweeps": null,
-      "start_time": "2026-01-02 00:00:00.000 -0800",
-      "stop_time": "2026-01-02 00:00:00.000 -0800",
-      "suitable_for_collection": "Yes",
-      "biocontrol_agent": "CHEIURB",
-      "monitoring_method": "Cs",
+      "start_time_collecting": "2026-01-02 00:00:00.000 -0800",
+      "end_time_collecting": "2026-01-02 00:00:00.000 -0800",
+      "biological_agent": "CHEIURB",
+      "collection_method": "Cs",
       "invasive_plant": "CT"
     }
   },
   {
-    "model": "api.TerrestrialBiocontrolAgentCountComplex",
+    "model": "api.TerrestrialBiocontrolAgentCountSimple",
     "pk": 1,
     "fields": {
       "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
       "invasive_plant": "CT",
       "biocontrol_agent": "CHEIURB",
-      "agent_location": "Pe",
-      "plant_position": "Pu",
       "stage": "EG",
       "quantity": 11,
       "is_estimate": true
     }
   },
   {
-    "model": "api.TerrestrialBiocontrolAgentCountComplex",
+    "model": "api.TerrestrialBiocontrolAgentCountSimple",
     "pk": 2,
     "fields": {
       "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
       "invasive_plant": "CT",
       "biocontrol_agent": "CHEIURB",
-      "agent_location": "Me",
-      "plant_position": "Pl",
       "stage": "AD",
       "quantity": 111,
       "is_estimate": false
-    }
-  },
-  {
-    "model": "api.SignOfBiocontrolPresenceTerrestrial",
-    "pk": 1,
-    "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
-      "biocontrol_agent": "CHEIURB",
-      "invasive_plant": "CT",
-      "sign_of_presence": "EH"
-    }
-  },
-  {
-    "model": "api.SignOfBiocontrolPresenceTerrestrial",
-    "pk": 2,
-    "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
-      "biocontrol_agent": "CHEIURB",
-      "invasive_plant": "CT",
-      "sign_of_presence": "ST"
     }
   }
 ]

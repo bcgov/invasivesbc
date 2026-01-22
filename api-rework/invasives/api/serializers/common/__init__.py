@@ -16,3 +16,4 @@ from .microsite_conditions import MicrositeConditionSerializer
 from .weather_conditions import WeatherConditionsSerializer
 from .spread_results import SpreadResultsSerializer
 from .biocontrol_dispersal_monitoring_information import TerrestrialBiologicalMonitoringInformationSerializer
+from .chemical_treatment_information import ChemicalTreatmentInformationSerializer
