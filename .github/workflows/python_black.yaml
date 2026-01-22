@@ -1,0 +1,19 @@
+name: Black
+
+on:
+  push:
+    branches:
+      - "normalized-database"
+  pull_request:
+    branches:
+      - "normalized-database"
+
+jobs:
+  black:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: psf/black@stable
+        with:
+          options: "--check --verbose"
+          src: "./api-rework/invasives/api"
+          version: "~= 25.0"
