@@ -7,6 +7,7 @@ class ChemicalTreatmentMonitoringTest(BaseActivitySubtypeTest):
         "test/common/test_invasive_plant_codes",
         "test/subtypes/monitoring/test_chemical_treatment_monitoring_codes",
         "test/subtypes/monitoring/test_chemical_treatment_monitoring",
+        "test/common/test_participants",
     ]
 
     def test_expect_two_activities(self):

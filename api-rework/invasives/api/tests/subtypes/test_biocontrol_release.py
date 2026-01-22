@@ -7,6 +7,7 @@ class BiocontrolReleaseTest(BaseActivitySubtypeTest):
         "test/common/test_invasive_plant_codes",
         "test/subtypes/treatments/test_biocontrol_release_codes",
         "test/subtypes/treatments/test_biocontrol_release",
+        "test/common/test_participants",
     ]
 
     def test_expect_two_activities(self):

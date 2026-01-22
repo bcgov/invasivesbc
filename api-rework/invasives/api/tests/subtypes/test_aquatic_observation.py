@@ -6,6 +6,7 @@ class AquaticObservationTest(BaseActivitySubtypeTest):
         "test/common/test_invasive_plant_codes",
         "test/subtypes/observations/test_aquatic_observation_codes",
         "test/subtypes/observations/test_aquatic_observation",
+        "test/common/test_participants",
     ]
 
     def test_expect_two_activities(self):

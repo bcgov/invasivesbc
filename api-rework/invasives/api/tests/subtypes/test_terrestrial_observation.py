@@ -2,18 +2,12 @@ from .base import BaseActivitySubtypeTest
 
 
 class TerrestrialObservationTest(BaseActivitySubtypeTest):
-    """
-    Tests:
-    - Two activities present
-    - Activity is Serialized
-    - Activity can be correctly serialized from Activity Basic
-    - No Pac number on Participants
-    """
 
     fixtures = [
         "test/common/test_invasive_plant_codes",
         "test/subtypes/observations/test_terrestrial_observation_codes",
         "test/subtypes/observations/test_terrestrial_observation",
+        "test/common/test_participants",
     ]
 
     def test_expect_two_activities(self):
