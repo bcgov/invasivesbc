@@ -9,7 +9,8 @@ on:
       - "normalized-database"
 
 jobs:
-  test:
+  django-test:
+    name: "Django Tests"
     runs-on: ubuntu-latest
     services:
       postgres:
