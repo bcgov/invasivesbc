@@ -1,0 +1,45 @@
+name: django tests
+
+on:
+  push:
+    branches:
+      - "normalized-database"
+  pull_request:
+    branches:
+      - "normalized-database"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgis:17-3.6-alpine
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: django_test
+          POSTGRES_USER: invasivesbc
+          POSTGRES_PASSWORD: testtest
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+          cache: 'pip'
+      - run: pip install -r requirements.txt
+        working-directory: ./api-rework/invasives
+      - run: python manage.py test
+        env:
+          -TEST_DB_NAME: django_test
+          -DB_USER: invasivesbc
+          -DB_PASSWORD: testtest
+          -DB_HOST: localhost
+          -DB_PORT: 5432
+        working-directory: ./api-rework/invasives
+
+
