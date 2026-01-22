@@ -1,0 +1,56 @@
+[
+  {
+    "model": "api.TerrestrialPlantCode",
+    "pk": "JK",
+    "fields": {
+      "full": "Japanese Knotweed",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.TerrestrialPlantCode",
+    "pk": "CT",
+    "fields": {
+      "full": "Common Tansy",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.AquaticPlantCode",
+    "pk": "RC",
+    "fields": {
+      "full": "RC Plant",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.AquaticPlantCode",
+    "pk": "JK",
+    "fields": {
+      "full": "Japanese Knotweed",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.AquaticPlantCode",
+    "pk": "CT",
+    "fields": {
+      "full": "CT",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.AquaticPlantCode",
+    "pk": "SK",
+    "fields": {
+      "full": "Spotted Knapweed",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  }
+]

@@ -4,6 +4,7 @@ from .base import BaseActivitySubtypeTest
 class TerrestrialMechanicalTreatmentTest(BaseActivitySubtypeTest):
 
     fixtures = [
+        "test/common/invasive_plant_codes",
         "test/subtypes/treatments/test_terrestrial_mechanical_treatment_codes",
         "test/subtypes/treatments/test_terrestrial_mechanical_treatment",
     ]

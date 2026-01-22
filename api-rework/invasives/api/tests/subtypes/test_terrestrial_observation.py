@@ -11,6 +11,7 @@ class TerrestrialObservationTest(BaseActivitySubtypeTest):
     """
 
     fixtures = [
+        "test/common/invasive_plant_codes",
         "test/subtypes/observations/test_terrestrial_observation_codes",
         "test/subtypes/observations/test_terrestrial_observation",
     ]

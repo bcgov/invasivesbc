@@ -3,6 +3,7 @@ from .base import BaseActivitySubtypeTest
 
 class AquaticObservationTest(BaseActivitySubtypeTest):
     fixtures = [
+        "test/common/invasive_plant_codes",
         "test/subtypes/observations/test_aquatic_observation_codes",
         "test/subtypes/observations/test_aquatic_observation",
     ]
