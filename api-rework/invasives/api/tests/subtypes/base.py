@@ -56,9 +56,9 @@ class BaseActivitySubtypeTest(TestCase, ABC):
             record = Activity.objects.get(id=self.ID_A)
             self.assertIsNotNone(record)
             serial = ActivitySerializer(record)
-            serial.data["participants"]
-
-            for person in serial.data["participants"]:
+            participants = serial.data["participants"]
+            self.assertGreaterEqual(len(participants), 1)
+            for person in participants:
                 self.assertIsNotNone(person.get("name"))
                 self.assertIsNone(person.get("pac_number"))
 
