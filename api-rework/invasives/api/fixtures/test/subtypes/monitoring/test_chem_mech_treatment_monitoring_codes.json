@@ -1,0 +1,56 @@
+[
+  {
+    "model": "api.EfficacyManagementRatingCode",
+    "pk": "1M",
+    "fields": {
+      "full": "10%",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.EfficacyManagementRatingCode",
+    "pk": "6M",
+    "fields": {
+      "full": "60%",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.TreatmentEfficacyRatingCode",
+    "pk": "1",
+    "fields": {
+      "full": "10%",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.TreatmentEfficacyRatingCode",
+    "pk": "6",
+    "fields": {
+      "full": "60%",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.InvasivePlantsOnSiteCode",
+    "pk": "ROP",
+    "fields": {
+      "full": "Regrowth",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.InvasivePlantsOnSiteCode",
+    "pk": "SWOS",
+    "fields": {
+      "full": "Skeletons without seed",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  }
+]

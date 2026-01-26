@@ -1,171 +1,171 @@
 [
   {
-    "model": "api.EmployerCode",
-    "pk": "MOTI",
+    "model": "api.BiocontrolAgentCode",
+    "pk": "CHEIURB",
     "fields": {
-      "full": "BC Ministry of Transportation and Transit",
+      "full": "CHEIURB [Cheilosia urbana]",
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }
   },
   {
-    "model": "api.EmployerCode",
-    "pk": "MMCM",
+    "model": "api.BiocontrolAgentCode",
+    "pk": "CHAEACR",
     "fields": {
-      "full": "BC Ministry of Mining and Critical Minerals",
+      "full": "CHAEACR [Chaetorellia acrolophi]",
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }
   },
   {
-    "model": "api.EmployerCode",
-    "pk": "MECS",
+    "model": "api.AgentLocationFoundCode",
+    "pk": "Pe",
     "fields": {
-      "full": "BC Ministry of Energy and Climate Solutions",
+      "full": "Root (internal)",
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }
   },
   {
-    "model": "api.JurisdictionCode",
-    "pk": "MOTI",
+    "model": "api.AgentLocationFoundCode",
+    "pk": "Me",
     "fields": {
-      "full": "Ministry of Transportation and Transit",
+      "full": "Meristem",
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }
   },
   {
-    "model": "api.JurisdictionCode",
-    "pk": "RAIL",
+    "model": "api.PlantPositionCode",
+    "pk": "Pl",
     "fields": {
-      "full": "Other Rail",
+      "full": "Plant Lower",
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }
   },
   {
-    "model": "api.JurisdictionCode",
-    "pk": "P",
+    "model": "api.PlantPositionCode",
+    "pk": "Pu",
     "fields": {
-      "full": "Private Land",
+      "full": "Plant Upper",
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }
   },
   {
-    "model": "api.FundingAgencyCode",
-    "pk": "MOTI",
+    "model": "api.BioAgentLifeStageCode",
+    "pk": "AD",
     "fields": {
-      "full": "BC Ministry of Transportation and Transit",
+      "full": "Adult",
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }
   },
   {
-    "model": "api.FundingAgencyCode",
-    "pk": "MMCM",
+    "model": "api.BioAgentLifeStageCode",
+    "pk": "EG",
     "fields": {
-      "full": "BC Ministry of Mining and Critical Minerals",
+      "full": "Egg",
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }
   },
   {
-    "model": "api.FundingAgencyCode",
-    "pk": "MECS",
+    "model": "api.BioAgentCollectionMethodCode",
+    "pk": "Cs",
     "fields": {
-      "full": "BC Ministry of Energy and Climate Solutions",
+      "full": "Sweep (count)",
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }
   },
   {
-    "model": "api.AquaticPlantCode",
-    "pk": "JK",
+    "model": "api.BioAgentCollectionMethodCode",
+    "pk": "As",
     "fields": {
-      "full": "Japanese Knotweed",
+      "full": "Aspirate",
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }
   },
   {
-    "model": "api.AquaticPlantCode",
-    "pk": "CT",
+    "model": "api.MesoslopePositionCode",
+    "pk": "LV",
     "fields": {
-      "full": "CT",
+      "full": "Level",
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }
   },
   {
-    "model": "api.PlantMechanicalTreatmentMethodCode",
-    "pk": "PLT",
+    "model": "api.MesoslopePositionCode",
+    "pk": "DP",
     "fields": {
-      "full": "Planting",
+      "full": "Depression",
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }
   },
   {
-    "model": "api.PlantMechanicalTreatmentMethodCode",
-    "pk": "CNV",
+    "model": "api.SiteSurfaceShapeCode",
+    "pk": "NA",
     "fields": {
-      "full": "Mechanical Method Not Listed",
+      "full": "Unknown or Indeterminant",
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }
   },
   {
-    "model": "api.PlantMechanicalTreatmentMethodCode",
-    "pk": "DIG",
+    "model": "api.SiteSurfaceShapeCode",
+    "pk": "LN",
     "fields": {
-      "full": "Digging",
+      "full": "Linear",
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }
   },
   {
-    "model": "api.DisposalMethodCode",
-    "pk": "II",
+    "model": "api.PrecipitationCode",
+    "pk": "DP",
     "fields": {
-      "full": "Industrial Incineration",
+      "full": "Downpour",
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }
   },
   {
-    "model": "api.DisposalMethodCode",
-    "pk": "LDB",
+    "model": "api.CloudCoverCode",
+    "pk": "1",
     "fields": {
-      "full": "Landfill Deep Burial",
+      "full": "1 Okta",
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }
   },
   {
-    "model": "api.ShorelineTypeCode",
-    "pk": "RR",
+    "model": "api.CloudCoverCode",
+    "pk": "2",
     "fields": {
-      "full": "Riprap",
+      "full": "2 Okta",
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }
   },
   {
-    "model": "api.ShorelineTypeCode",
-    "pk": "T",
+    "model": "api.BiocontrolPresenceCode",
+    "pk": "EH",
     "fields": {
-      "full": "Turf",
+      "full": "Exit Holes/Tunnels",
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }
   },
   {
-    "model": "api.DisposalMethodCode",
-    "pk": "RRV",
+    "model": "api.BiocontrolPresenceCode",
+    "pk": "ST",
     "fields": {
-      "full": "Riprarian Vegetation",
+      "full": "Stem Feeding Damage",
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }
