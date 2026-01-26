@@ -24,14 +24,14 @@ class TerrestrialObservationTest(BaseActivitySubtypeTest):
         response_object = self.fetch_a().json()
         sd = response_object["subtype_data"]
 
-        self.assertEqual(sd["suitable_for_biocontrol"], "No")
+        self.assertEqual(sd["suitable_for_biocontrol_agent"], "Yes")
         self.assertEqual(sd["pretreatment_observation"], "Yes")
-        self.assertListEqual(sd["specific_use"], ["NO", "MI"])
+        self.assertEqual(sd["specific_use"]["code"], "NO")
         self.assertEqual(sd["research_observation"], "Yes")
         self.assertEqual(sd["visible_well_nearby"], "Unknown")
-        self.assertEqual(sd["aspect"], "N")
-        self.assertEqual(sd["slope_percent"], "SS")
-        self.assertEqual(sd["soil_texture"], "M")
+        self.assertEqual(sd["aspect"]["code"], "N")
+        self.assertEqual(sd["slope_percent"]["code"], "SS")
+        self.assertEqual(sd["soil_texture"]["code"], "M")
         self.assertEqual(sd["pretreatment_observation"], "Yes")
         self.assertGreaterEqual(len(sd["observation_details"]), 1)
 
@@ -60,19 +60,14 @@ class TerrestrialObservationTest(BaseActivitySubtypeTest):
         response_object = self.fetch_b().json()
         sd = response_object["subtype_data"]
 
-        self.assertEqual(sd["suitable_for_biocontrol"], "Yes")
+        self.assertEqual(sd["suitable_for_biocontrol_agent"], "No")
         self.assertEqual(sd["pretreatment_observation"], "No")
-        self.assertListEqual(
-            sd["specific_use"],
-            [
-                "GP",
-            ],
-        )
+        self.assertEqual(sd["specific_use"]["code"], "GP")
         self.assertEqual(sd["research_observation"], "Yes")
         self.assertEqual(sd["visible_well_nearby"], "Unknown")
-        self.assertEqual(sd["aspect"], "NA")
-        self.assertEqual(sd["slope_percent"], "VT")
-        self.assertEqual(sd["soil_texture"], "F")
+        self.assertEqual(sd["aspect"]["code"], "NA")
+        self.assertEqual(sd["slope_percent"]["code"], "VT")
+        self.assertEqual(sd["soil_texture"]["code"], "F")
         self.assertEqual(len(sd["observation_details"]), 2)
 
         obs_detail = [

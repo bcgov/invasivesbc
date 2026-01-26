@@ -1,21 +1,22 @@
 import decimal
 import logging
+from pprint import pformat
 
 from pydantic_core._pydantic_core import ValidationError
 
 from api.legacy_db.mappings.plants import (
     add_subtype_payload_for_plant_terrestrial_observation,
 )
-from api.legacy_db.migration_errors import MigrationErrors
 from api.legacy_db.model_serializer import LegacyActivity
 from api.models.activity import (
     Activity,
     ActivitySubtypes,
+    FundingAgency,
     ProjectCode,
 )
 from api.models.codes import (
     EmployerCode,
-    InvasivePlantsOnSiteCode,
+    FundingAgencyCode,
     JurisdictionCode,
 )
 from api.models.enums import PlatformSource
@@ -95,9 +96,10 @@ def migrate(old: LegacyActivity):
 
     if old.activity_payload.form_data.activity_data.project_code:
         for project_code in old.activity_payload.form_data.activity_data.project_code:
-            ProjectCode.objects.update_or_create(
-                description=project_code.description, activity=new
-            )
+            if project_code.description is not None:
+                ProjectCode.objects.update_or_create(
+                    description=project_code.description, activity=new
+                )
 
     if old.activity_payload.form_data.activity_data.employer_code:
         found_code = EmployerCode.objects.filter(
@@ -121,12 +123,17 @@ def migrate(old: LegacyActivity):
         )
         raise
 
-    # @todo agency codes
-    # if old.activity_payload.form_data.activity_data.agency_code:
-    #     for ag in old.activity_payload.form_data.activity_data.invasive_species_agency_code:
-    #         AgencyC.objects.update_or_create(
-    #             description=project_code.description, activity=new
-    #         )
+    if old.activity_payload.form_data.activity_data.invasive_species_agency_code:
+        codes = old.activity_payload.form_data.activity_data.invasive_species_agency_code.split(
+            ","
+        )
+        for ag in codes:
+            found_code = FundingAgencyCode.objects.filter(code=ag).first()
+            if not found_code:
+                logging.warning(f"No matching funding agency code found for {ag}")
+                raise ValueError(f"No matching funding agency code found for {ag}")
+
+            FundingAgency.objects.update_or_create(activity=new, agency=found_code)
 
     add_subtype_payload(new, old)
 

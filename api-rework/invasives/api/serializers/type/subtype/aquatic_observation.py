@@ -178,9 +178,10 @@ class AquaticObservationSerializer(serializers.Serializer):
     substrate_type = WaterbodySubstrateTypeSerializer(
         source="waterbodysubstratetype_set", many=True
     )
-    suitable_for_biocontrol = serializers.CharField(
-        source="suitableforbiocontrol.suitable_for_biocontrol"
-    )
+    # @todo add to subtype obs model
+    # suitable_for_biocontrol = serializers.CharField(
+    #     source="suitableforbiocontrol.suitable_for_biocontrol"
+    # )
     waterbody_details = WaterbodyDataSerializer(source="waterbodydata")
     waterbody_use = WaterbodyUseSerializer(source="waterbodyuse_set", many=True)
     waterlevel_management = WaterbodyLevelManagementSerializer(

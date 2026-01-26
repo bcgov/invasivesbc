@@ -1,8 +1,10 @@
 from django.test import TestCase
 from django.test.client import Client
 
+from api.tests.base_test_case import BaseTestCase
 
-class ActivitySerializerTest(TestCase):
+
+class ActivitySerializerTest(BaseTestCase):
 
     fixtures = [
         "test/common/test_activities.json",
@@ -14,7 +16,10 @@ class ActivitySerializerTest(TestCase):
     def test_expect_two_activities(self):
         """Verify that two activities are returned from the list endpoint"""
         client = Client()
-        result = client.get("/activities")
+        result = client.get(
+            "/activities",
+            headers={"Authorization": "Bearer act_as_user=test_user"},
+        )
         self.assertEqual(result.status_code, 200)
 
         response_object = result.json()
@@ -23,7 +28,10 @@ class ActivitySerializerTest(TestCase):
     def test_activity_comment(self):
         """Test that the serialized comment contains the expected string"""
         client = Client()
-        result = client.get("/activities/6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7")
+        result = client.get(
+            "/activities/6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+            headers={"Authorization": "Bearer act_as_user=test_user"},
+        )
         self.assertEqual(result.status_code, 200)
 
         response_object = result.json()
@@ -34,38 +42,13 @@ class ActivitySerializerTest(TestCase):
         EXPECTED_SUBSET = {"percent_covered": 33, "jurisdiction": "RAIL"}
 
         client = Client()
-        result = client.get("/activities/6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7")
+        result = client.get(
+            "/activities/6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+            headers={"Authorization": "Bearer act_as_user=test_user"},
+        )
         self.assertEqual(result.status_code, 200)
 
         response_object = result.json()
         self.assertEqual(len(response_object["jurisdictions"]), 2)
 
         self.assertIn(EXPECTED_SUBSET, response_object["jurisdictions"])
-
-    def test_funding_agency_collates(self):
-        """Test that the Funding agencies are returned in CSV format with expected fields"""
-        EXPECTED = ["MMCM", "MECS"]
-        KEY = "funding_agency"
-
-        client = Client()
-        result = client.get("/activities/6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7")
-        self.assertEqual(result.status_code, 200)
-
-        response_object = result.json()
-        self.assertEqual(type(response_object[KEY]), type("string"))
-        for fa in response_object[KEY].split(","):
-            self.assertTrue(fa in EXPECTED)
-
-    def test_employer_collates(self):
-        """Test that the Employer(s) are returned in CSV format with expected fields"""
-        EXPECTED = ["MMCM", "MECS"]
-        KEY = "employer_code"
-
-        client = Client()
-        result = client.get("/activities/6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7")
-        self.assertEqual(result.status_code, 200)
-
-        response_object = result.json()
-        self.assertEqual(type(response_object[KEY]), type("string"))
-        for fa in response_object[KEY].split(","):
-            self.assertTrue(fa in EXPECTED)

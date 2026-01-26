@@ -1,8 +1,7 @@
 import logging
-from pprint import pformat
 
 from api.legacy_db.model_serializer import LegacyActivity
-from api.models.activity import Activity
+from api.models.activity import Activity, NearestWell
 
 
 def add_well_information(new: Activity, old: LegacyActivity):
@@ -10,4 +9,13 @@ def add_well_information(new: Activity, old: LegacyActivity):
         for (
             well
         ) in old.activity_payload.form_data.activity_subtype_data.Well_Information:
-            logging.warning(pformat(well))
+            if well.well_id == "No wells found":
+                logging.info(
+                    "Omitting empty well spec because of magic string well id = 'No wells found'"
+                )
+            else:
+                NearestWell.objects.create(
+                    activity=new,
+                    well_tag_number=well.well_id,
+                    distance=well.well_proximity,
+                )

@@ -42,7 +42,7 @@ class FundingAgencySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FundingAgency
-        fields = "invasive_species_agency_code"
+        fields = ["invasive_species_agency_code"]
 
     pass
 
@@ -94,25 +94,15 @@ class ActivitySerializer(serializers.ModelSerializer):
     """
 
     jurisdictions = JurisdictionSerializer(source="jurisdiction_set", many=True)
-    project_code = ProjectCodeSerializer(source="projectcode_set", many=True)
-    funding_agency = serializers.SerializerMethodField()
-    employer_code = serializers.SerializerMethodField()
+    projects = ProjectCodeSerializer(source="projectcode_set", many=True)
+    funding_agencies = FundingAgencySerializer(source="fundingagency_set", many=True)
+    employer = EmployerSerializer(source="employer_set", many=True)
     subtype_data = serializers.SerializerMethodField()
     participants = ParticipantSerializer(source="participant_set", many=True)
 
     class Meta:
         model = Activity
         fields = "__all__"
-
-    def get_funding_agency(self, obj):
-        """Formats Funding agency codes into comma separated format"""
-        agencies = obj.fundingagency_set.all().values_list("agency_id", flat=True)
-        return ",".join(agencies) or None
-
-    def get_employer_code(self, obj):
-        """Formats Employer codes into comma separated format"""
-        employers = obj.employer_set.all().values_list("employer_id", flat=True)
-        return ",".join(employers) or None
 
     def get_subtype_data(self, obj: Activity):
         """Maps the Activity to the proper Subtype Serializer, populating the form specific information"""

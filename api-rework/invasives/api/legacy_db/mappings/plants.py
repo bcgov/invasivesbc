@@ -1,6 +1,3 @@
-import logging
-from pprint import pformat
-
 from api.legacy_db.mappings.wells import add_well_information
 from api.legacy_db.model_serializer import (
     LegacyActivity,
@@ -12,7 +9,7 @@ from api.models.activity import (
     PretreatmentObservation,
     TerrestrialPlantObservationDetail,
     TerrestrialPlantObservationInfo,
-    VoucherSpecimen,
+    TerrestrialVoucherSpecimen,
 )
 from api.models.codes import (
     AspectCode,
@@ -32,14 +29,24 @@ def add_voucher_specimen(
     old: LegacyActivity,
     plant: LegacyActivityTerrestrialPlants,
 ):
-    VoucherSpecimen.objects.create(
+    TerrestrialVoucherSpecimen.objects.create(
         activity=new,
         date_verified=plant.voucher_specimen_collection_information.date_voucher_verified,
         date_collected=plant.voucher_specimen_collection_information.date_voucher_verified,
         voucher_sample_id=plant.voucher_specimen_collection_information.voucher_sample_id,
         herbarium=plant.voucher_specimen_collection_information.name_of_herbarium,
-        completed_by_org=plant.voucher_specimen_collection_information.completed_by_org,
-        completed_by_person=plant.voucher_specimen_collection_information.completed_by_person,
+        completed_by_org=(
+            plant.voucher_specimen_collection_information.voucher_verification_completed_by.organization
+            if plant.voucher_specimen_collection_information.voucher_verification_completed_by
+            is not None
+            else None
+        ),
+        completed_by_person=(
+            plant.voucher_specimen_collection_information.voucher_verification_completed_by.person
+            if plant.voucher_specimen_collection_information.voucher_verification_completed_by
+            is not None
+            else None
+        ),
         utm_zone=plant.voucher_specimen_collection_information.utm_zone,
         utm_easting=plant.voucher_specimen_collection_information.utm_easting,
         utm_northing=plant.voucher_specimen_collection_information.utm_northing,
@@ -67,8 +74,6 @@ def add_terrestrial_plant_observation_information(new: Activity, old: LegacyActi
     old_information = (
         old.activity_payload.form_data.activity_subtype_data.Observation_PlantTerrestrial_Information
     )
-
-    logging.debug(f"old_information: {old_information}")
 
     TerrestrialPlantObservationInfo.objects.create(
         activity=new,
@@ -113,9 +118,6 @@ def add_subtype_payload_for_plant_terrestrial_observation(
         )
 
     for plant in old.activity_payload.form_data.activity_subtype_data.TerrestrialPlants:
-        logging.debug(
-            f"adding plant {plant.invasive_plant_code} {plant.observation_type}"
-        )
         TerrestrialPlantObservationDetail.objects.create(
             activity=new,
             observation_type=(
