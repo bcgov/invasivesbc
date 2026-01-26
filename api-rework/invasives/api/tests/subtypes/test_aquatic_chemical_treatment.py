@@ -4,8 +4,11 @@ from .base import BaseActivitySubtypeTest
 class AquaticChemicalTreatmentTest(BaseActivitySubtypeTest):
 
     fixtures = [
-        "test/subtypes/treatments/test_aquatic_chemical_treatment_codes",
+        "test/common/test_invasive_plant_codes",
+        "test/subtypes/treatments/test_chemical_treatment_codes",
         "test/subtypes/treatments/test_aquatic_chemical_treatment",
+        "test/common/test_nearest_wells",
+        "test/common/test_participants",
     ]
 
     def test_expect_two_activities(self):

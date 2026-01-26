@@ -4,8 +4,10 @@ from .base import BaseActivitySubtypeTest
 class BiocontrolReleaseTest(BaseActivitySubtypeTest):
 
     fixtures = [
-        "test/subtypes/biocontrol/test_biocontrol_dispersal_monitoring_codes",
+        "test/common/test_invasive_plant_codes",
+        "test/subtypes/biocontrol/test_biocontrol_codes",
         "test/subtypes/biocontrol/test_biocontrol_dispersal_monitoring",
+        "test/common/test_participants",
     ]
 
     def test_expect_two_activities(self):

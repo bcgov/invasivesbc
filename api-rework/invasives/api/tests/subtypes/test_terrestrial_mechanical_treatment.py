@@ -4,8 +4,10 @@ from .base import BaseActivitySubtypeTest
 class TerrestrialMechanicalTreatmentTest(BaseActivitySubtypeTest):
 
     fixtures = [
-        "test/subtypes/treatments/test_terrestrial_mechanical_treatment_codes",
+        "test/common/test_invasive_plant_codes",
+        "test/subtypes/treatments/test_mechanical_treatment_codes",
         "test/subtypes/treatments/test_terrestrial_mechanical_treatment",
+        "test/common/test_participants",
     ]
 
     def test_expect_two_activities(self):
