@@ -25,16 +25,13 @@ type AuthState = {
   } | null;
 };
 
-const AuthContext = createContext<{ state: AuthState; dispatch: React.ActionDispatch<any> }>({
+const AuthContext = createContext<{ state: AuthState }>({
   state: {
     authenticated: false,
     initialized: false,
     authentication_in_process: false,
     token: null,
     user_details: null
-  },
-  dispatch: () => {
-    console.error('context was not properly initialized');
   }
 });
 
@@ -162,8 +159,7 @@ const Client: React.FC = () => {
   return (
     <AuthContext
       value={{
-        state: auth,
-        dispatch: dispatch
+        state: auth
       }}>
       <pre>
         Welcome, {auth.user_details?.given_name} [{keycloakInstance.idTokenParsed?.sub}] [
