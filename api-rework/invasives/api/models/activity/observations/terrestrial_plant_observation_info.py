@@ -1,7 +1,12 @@
 from django.db import models
 
 from api.models.activity.abstract_sub_tables import BaseOneToOneActivityTable
-from api.models.codes.code_tables import AspectCode, SlopePercentCode, SoilTextureCode
+from api.models.codes.code_tables import (
+    AspectCode,
+    SlopePercentCode,
+    SoilTextureCode,
+    SpecificUseCode,
+)
 from api.models.enums.yes_no_unknown import YesNoUnknown
 
 
@@ -13,10 +18,19 @@ class TerrestrialPlantObservationInfo(BaseOneToOneActivityTable):
       - Terrestrial Invasive Plant Observation
     """
 
-    soil_texture = models.ForeignKey(SoilTextureCode, on_delete=models.PROTECT)
-    research_observation = models.CharField(choices=YesNoUnknown)
+    soil_texture = models.ForeignKey(
+        SoilTextureCode, on_delete=models.PROTECT, null=True
+    )
+    suitable_for_biocontrol_agent = models.CharField(
+        choices=YesNoUnknown,
+        default="Unknown",
+    )
+    specific_use = models.ForeignKey(
+        SpecificUseCode, on_delete=models.PROTECT, null=True
+    )
+    research_observation = models.CharField(choices=YesNoUnknown, default="Unknown")
     aspect = models.ForeignKey(AspectCode, on_delete=models.PROTECT)
-    visible_well_nearby = models.CharField(choices=YesNoUnknown)
+    visible_well_nearby = models.CharField(choices=YesNoUnknown, default="Unknown")
     slope_percent = models.ForeignKey(SlopePercentCode, on_delete=models.PROTECT)
 
     class Meta:

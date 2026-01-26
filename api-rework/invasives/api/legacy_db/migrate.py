@@ -3,12 +3,19 @@ import logging
 
 from pydantic_core._pydantic_core import ValidationError
 
+from api.legacy_db.mappings.plants import (
+    add_subtype_payload_for_plant_terrestrial_observation,
+)
 from api.legacy_db.migration_errors import MigrationErrors
 from api.legacy_db.model_serializer import LegacyActivity
 from api.models.activity import (
     Activity,
+    ActivitySubtypes,
+    ProjectCode,
 )
 from api.models.codes import (
+    EmployerCode,
+    InvasivePlantsOnSiteCode,
     JurisdictionCode,
 )
 from api.models.enums import PlatformSource
@@ -16,7 +23,10 @@ from api.models.enums import PlatformSource
 
 def add_subtype_payload(new: Activity, old: LegacyActivity) -> None:
     # temporarily stripped out
-    match new.subtype:
+
+    match old.activity_payload.activity_subtype:
+        case ActivitySubtypes.Observation_Plant_Terrestrial:
+            add_subtype_payload_for_plant_terrestrial_observation(new, old)
         case _:
             pass
 
@@ -69,16 +79,62 @@ def migrate(old: LegacyActivity):
 
     if old.activity_payload.form_data.activity_data.jurisdictions:
         for jurisdiction in old.activity_payload.form_data.activity_data.jurisdictions:
-            jur_code = JurisdictionCode.objects.get(code=jurisdiction.jurisdiction_code)
-            if jur_code:
-                new.jurisdiction_set.update_or_create(
-                    jurisdiction=jur_code, percent_covered=jurisdiction.percent_covered
+            jur_code = JurisdictionCode.objects.filter(
+                code=jurisdiction.jurisdiction_code
+            ).first()
+            if not jur_code:
+                logging.warning(
+                    f"No matching jurisdiction code found for {jurisdiction.jurisdiction_code}"
                 )
+                raise ValueError(
+                    f"No matching jurisdiction code found for {jurisdiction.jurisdiction_code}"
+                )
+            new.jurisdiction_set.update_or_create(
+                jurisdiction=jur_code, percent_covered=jurisdiction.percent_covered
+            )
 
-    st = old.activity_payload.form_data.activity_subtype_data
+    if old.activity_payload.form_data.activity_data.project_code:
+        for project_code in old.activity_payload.form_data.activity_data.project_code:
+            ProjectCode.objects.update_or_create(
+                description=project_code.description, activity=new
+            )
+
+    if old.activity_payload.form_data.activity_data.employer_code:
+        found_code = EmployerCode.objects.filter(
+            code=old.activity_payload.form_data.activity_data.employer_code
+        ).first()
+        if not found_code:
+            logging.warning(
+                f"No matching employer code found for {old.activity_payload.form_data.activity_data.employer_code}"
+            )
+            raise ValueError(
+                f"No matching employer code found for {old.activity_payload.form_data.activity_data.employer_code}"
+            )
+        new.employer_set.update_or_create(employer=found_code)
+
+    try:
+        new.full_clean()
+        new.save()
+    except ValidationError as e:
+        logging.error(
+            "validation error after base activity codes mapped", exc_info=True
+        )
+        raise
+
+    # @todo agency codes
+    # if old.activity_payload.form_data.activity_data.agency_code:
+    #     for ag in old.activity_payload.form_data.activity_data.invasive_species_agency_code:
+    #         AgencyC.objects.update_or_create(
+    #             description=project_code.description, activity=new
+    #         )
 
     add_subtype_payload(new, old)
 
-    new.save()
+    try:
+        new.full_clean()
+        new.save()
+    except ValidationError as e:
+        logging.error("validation error after subtype data mapped", exc_info=True)
+        raise
 
     return new

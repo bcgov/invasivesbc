@@ -1,10 +1,51 @@
+from abc import abstractclassmethod
+
 from rest_framework import serializers
+
+from api.models.activity import TerrestrialBiocontrolRelease
 from api.models.activity.observations import (
     TerrestrialPlantObservationDetail,
     TerrestrialVoucherSpecimen,
     TerrestrialPlantObservationInfo,
-    TerrestrialObservationSpecificUse,
 )
+from api.models.codes import (
+    AspectCode,
+    SlopePercentCode,
+    SoilTextureCode,
+    SpecificUseCode,
+)
+
+
+class BaseCodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = (
+            "code",
+            "full",
+        )
+
+
+class SpecificUseCodeSerializer(BaseCodeSerializer):
+    class Meta:
+        model = SpecificUseCode
+        fields = BaseCodeSerializer.Meta.fields
+
+
+class SoilTextureCodeSerializer(BaseCodeSerializer):
+    class Meta:
+        model = SoilTextureCode
+        fields = BaseCodeSerializer.Meta.fields
+
+
+class AspectCodeSerializer(BaseCodeSerializer):
+    class Meta:
+        model = AspectCode
+        fields = BaseCodeSerializer.Meta.fields
+
+
+class SlopeCodeSerializer(BaseCodeSerializer):
+    class Meta:
+        model = SlopePercentCode
+        fields = BaseCodeSerializer.Meta.fields
 
 
 class TerrestrialVoucherSpecimenSerializer(serializers.ModelSerializer):
@@ -57,6 +98,11 @@ class TerrestrialPlantObservationDetailSerializer(serializers.ModelSerializer):
 
 
 class TerrestrialPlantObservationInfoSerializer(serializers.ModelSerializer):
+    specific_use = SpecificUseCodeSerializer()
+    soil_texture = SoilTextureCodeSerializer()
+    aspect = AspectCodeSerializer()
+    slope_percent = SlopeCodeSerializer()
+
     class Meta:
         model = TerrestrialPlantObservationInfo
         fields = (
@@ -65,23 +111,12 @@ class TerrestrialPlantObservationInfoSerializer(serializers.ModelSerializer):
             "aspect",
             "slope_percent",
             "soil_texture",
+            "specific_use",
+            "suitable_for_biocontrol_agent",
         )
 
 
-class TerrestrialObservationSpecificUseSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TerrestrialObservationSpecificUse()
-        fields = ["specific_use"]
-
-    def to_representation(self, instance):
-        ret = super().to_representation(instance)
-        return ret["specific_use"]
-
-
 class TerrestrialObservationSerializer(serializers.Serializer):
-    suitable_for_biocontrol = serializers.CharField(
-        source="suitableforbiocontrol.suitable_for_biocontrol"
-    )
     observation_details = TerrestrialPlantObservationDetailSerializer(
         source="terrestrialplantobservationdetail_set", many=True
     )
@@ -90,9 +125,6 @@ class TerrestrialObservationSerializer(serializers.Serializer):
     )
     pretreatment_observation = serializers.CharField(
         source="pretreatmentobservation.pre_treatment_observation"
-    )
-    specific_use = TerrestrialObservationSpecificUseSerializer(
-        source="terrestrialobservationspecificuse_set", many=True
     )
 
     def to_representation(self, instance):
