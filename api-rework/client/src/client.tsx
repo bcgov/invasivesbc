@@ -8,9 +8,9 @@ import { produce } from 'immer';
 const MIN_FRESHNESS = 60;
 
 const keycloakInstance = new Keycloak({
-  clientId: 'invasives-bc-4565',
-  realm: 'standard',
-  url: 'https://dev.loginproxy.gov.bc.ca/auth/'
+  clientId: import.meta.env.VITE_SSO_CLIENT_ID || 'invasives-bc-4565',
+  realm: import.meta.env.VITE_SSO_REALM || 'standard',
+  url: import.meta.env.VITE_SSO_URL || 'https://dev.loginproxy.gov.bc.ca/auth/'
 });
 
 type AuthState = {
@@ -102,7 +102,12 @@ const Client: React.FC = () => {
               keycloakInstance.updateToken(MIN_FRESHNESS).then(() => dispatch({ type: 'update_stored_token' }));
             }
           } else {
-            dispatch({ type: 'logged_out' });
+            return produce(state, (draft) => {
+              draft.token = null;
+              draft.authenticated = false;
+              draft.authentication_in_process = false;
+              draft.user_details = null;
+            });
           }
 
           return state;
@@ -124,13 +129,12 @@ const Client: React.FC = () => {
       .init({
         adapter: 'default',
         checkLoginIframe: false,
-        redirectUri: 'http://localhost:3001',
+        redirectUri: import.meta.env.VITE_SSO_REDIRECT_URI || 'http://localhost:3001',
         responseMode: 'fragment',
         onLoad: 'check-sso',
         pkceMethod: 'S256'
       })
       .then((auth) => {
-        console.log('Keycloak is initialized');
         dispatch({ type: 'initialized', payload: auth });
       });
   }, []);
@@ -138,7 +142,6 @@ const Client: React.FC = () => {
   useEffect(() => {
     /* check every 5 seconds to see if we are going to expire */
     const id = setInterval(() => {
-      console.log('freshness check');
       dispatch({ type: 'keep_token_fresh' });
     }, 5000);
     return () => clearInterval(id);

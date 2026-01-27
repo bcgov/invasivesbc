@@ -63,6 +63,7 @@
     "pre-commit": "lint-staged",
     "check-types": "tsc --noEmit --skipLibCheck",
     "lint:fix": "npm run lint -- --fix",
-    "start": "cross-env vite serve --port 3001 --strictPort"
+    "start": "cross-env vite serve --port 3001 --strictPort",
+    "build": "vite build -l error"
   }
 }

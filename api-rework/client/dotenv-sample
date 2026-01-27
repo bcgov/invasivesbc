@@ -1,0 +1,5 @@
+VITE_SSO_CLIENT_ID=invasives-bc-4565
+VITE_SSO_REALM=standard
+VITE_SSO_URL=https://dev.loginproxy.gov.bc.ca/auth/
+VITE_SSO_REDIRECT_URI=http://localhost:3001
+VITE_API_BASE=http://localhost:8080
