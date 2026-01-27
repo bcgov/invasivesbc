@@ -1,8 +1,8 @@
 import Fieldset from 'common-components/Fieldset';
-import TextField from 'common-components/TextField';
 import TextInput from 'common-components/TextInput';
 
 interface PropTypes {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   subtypeData: Record<PropertyKey, any>;
 }
 
@@ -36,8 +36,8 @@ const TerrestrialObservation = ({ subtypeData }: PropTypes) => {
             <TextInput label="invasive plant" value={od?.invasive_plant} />
             <TextInput label="life stage" value={od?.life_stage} />
             <TextInput label="observation type" value={od?.observation_type} />
-            <TextInput label="voucher specimen" value={!!od?.voucher_specimen ? 'Yes' : 'No'} />
-            {!!od?.voucher_specimen && (
+            <TextInput label="voucher specimen" value={od?.voucher_specimen ? 'Yes' : 'No'} />
+            {od?.voucher_specimen && (
               <>
                 <TextInput label="invasive plant" value={od?.voucher_specimen?.invasive_plant} />
                 <TextInput label="voucher sample id" value={od?.voucher_specimen?.voucher_sample_id} />
