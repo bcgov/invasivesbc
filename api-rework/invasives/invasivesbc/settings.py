@@ -8,7 +8,7 @@ SECRET_KEY = "django-insecure-&3i*dwyfxin1+336nfgz861&1z(56@qod5mq!^9f&-8y(r8qio
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
     "django.contrib.auth",
@@ -111,7 +111,9 @@ USE_TZ = True
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3001",
+    "https://normalization-fe-dev-invasivesbci.apps.silver.devops.gov.bc.ca",
 ]
+
 CORS_EXPOSE_HEADERS = ["Content-Disposition"]
 
 LOGGING = {
