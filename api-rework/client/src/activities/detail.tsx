@@ -5,19 +5,13 @@ import Spinner from 'activities/spinner';
 import JSONViewer from 'activities/json_viewer';
 import './activities.scss';
 import { AuthContext } from 'client';
+import FormViewer from './form-viewer/FormViewer';
 
-const Tab = ({ tab, setTab, title, tabName }) => {
-  return (
-    <li className={tab === tabName ? 'active' : ''}>
-      <a
-        onClick={() => {
-          setTab(tabName);
-        }}>
-        {title}
-      </a>
-    </li>
-  );
-};
+const Tab = ({ tab, setTab, title, tabName }) => (
+  <li className={tab === tabName ? 'active' : ''}>
+    <a onClick={() => setTab(tabName)}>{title}</a>
+  </li>
+);
 
 const ActivitiesDetail: React.FC = () => {
   const { id } = useParams();
@@ -87,6 +81,7 @@ const ActivitiesDetail: React.FC = () => {
           <Tab tab={tab} setTab={setTab} tabName={'pydantic'} title={'Pydantic Model'} />
           <Tab tab={tab} setTab={setTab} tabName={'django'} title={'Final Django Model'} />
           <Tab tab={tab} setTab={setTab} tabName={'migration'} title={'Migration Status'} />
+          <Tab tab={tab} setTab={setTab} tabName={'form-view'} title={'View as Form'} />
           <li>
             <a
               onClick={() => {
@@ -157,6 +152,9 @@ const ActivitiesDetail: React.FC = () => {
             'Information about the migration output for this activity (if there were errors, they would be displayed here)'
           }
         />
+      </div>
+      <div className={`${tab === 'form-view' ? 'active' : 'inactive'} tab`}>
+        <FormViewer formData={djangoModel} />
       </div>
     </div>
   );
