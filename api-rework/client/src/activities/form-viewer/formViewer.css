@@ -9,9 +9,7 @@
 }
 
 .contained label {
-  font-family:
-    'Comic Sans MS' Arial,
-    sans-serif;
+  font-family: 'Comic Sans MS', Arial, sans-serif;
   padding-right: 1rem;
   text-transform: capitalize;
 
@@ -52,9 +50,7 @@
 }
 
 fieldset {
-  font-family:
-    'Comic Sans MS' Arial,
-    sans-serif;
+  font-family: 'Comic Sans MS', Arial, sans-serif;
   display: flex;
   flex-flow: row wrap;
   text-wrap: wrap;
