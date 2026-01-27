@@ -102,7 +102,34 @@ class ActivitySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Activity
-        fields = "__all__"
+        fields = (
+            # Identifiers
+            "short_id",
+            "id",
+            "created_by",
+            "form_status",
+            # Record type details
+            "type",
+            "subtype",
+            # Top level form details
+            "access_description",
+            "comment",
+            "date",
+            "employer",
+            "funding_agencies",
+            "jurisdictions",
+            "participants",
+            "projects",
+            "subtype_data",
+            # Geographic Detail
+            "area_m",
+            "latitude",
+            "longitude",
+            "utm_zone",
+            "utm_easting",
+            "utm_northing",
+            "location_description",
+        )
 
     def get_subtype_data(self, obj: Activity):
         """Maps the Activity to the proper Subtype Serializer, populating the form specific information"""
