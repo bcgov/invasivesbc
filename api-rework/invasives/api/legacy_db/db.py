@@ -296,6 +296,7 @@ class LegacyDB:
         dry_run=False,
         clobber=False,
         source: Literal["all", "previously-failed", "random-sample", "list"] = "all",
+        restrict_to_subtype: str | None = None,
         pk=None,
     ):
         stats = ActivityMigrationStatistics(source=source)
@@ -309,6 +310,11 @@ class LegacyDB:
                 sourcing_query = f"select activity_id, activity_type, activity_subtype, activity_payload from invasivesbc.activity_incoming_data where iscurrent=true and activity_payload->>'form_status' like 'Submitted' and random() >= 0.98"
             case "single":
                 sourcing_query = f"select activity_id, activity_type, activity_subtype, activity_payload from invasivesbc.activity_incoming_data where iscurrent=true and activity_payload->>'form_status' like 'Submitted' and activity_id = '{pk}'"
+
+        if restrict_to_subtype is not None:
+            sourcing_query = (
+                f"{sourcing_query} and activity_subtype = '{restrict_to_subtype}'"
+            )
 
         with psycopg.connect(LEGACY_DB_CONNECTION_STRING, row_factory=dict_row) as conn:
             with conn.cursor() as cursor:

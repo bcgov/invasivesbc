@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { API_URL } from 'constants';
 import './activities.scss';
 import Spinner from 'activities/spinner';
 import { NavLink } from 'react-router';
+import { AuthContext } from 'client';
 
 interface ActivitySummary {
   id: string;
@@ -43,9 +44,14 @@ const ActivitiesList: React.FC = () => {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   const [loading, setLoading] = useState<boolean>(true);
+  const { state: auth } = useContext(AuthContext);
 
   useEffect(() => {
-    fetch(`${API_URL}/activities`).then(async (res) => {
+    fetch(`${API_URL}/activities`, {
+      headers: {
+        Authorization: `Bearer ${auth.token}`
+      }
+    }).then(async (res) => {
       setLoading(true);
       setActivities(await res.json());
       setLoading(false);

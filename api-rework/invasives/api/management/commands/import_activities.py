@@ -24,16 +24,23 @@ class Command(BaseCommand):
             "--source", choices=["all", "random-sample", "single"], default="all"
         )
         parser.add_argument(
+            "--restrict-to-subtype",
+            default=None,
+            help="Restrict import to a particular subtype. Probably something like 'Activity_Observation_PlantTerrestrial'",
+        )
+        parser.add_argument(
             "pk",
             nargs="?",
             type=str,
             help="The primary key (UUID identifier) of the single activity to import",
         )
+
         pass
 
     def handle(self, *args, **options):
         if (options["source"] == "single") and options["pk"] is None:
             raise Exception("pk is required if source is 'single'")
+
         if options["source"] != "single" and options["pk"] is not None:
             raise Exception("pk is only allowed if source is 'single'")
 
@@ -45,6 +52,7 @@ class Command(BaseCommand):
             source=options["source"],
             pk=options["pk"],
             clobber=options["clobber"],
+            restrict_to_subtype=options["restrict_to_subtype"],
         )
 
         logging.info(pformat(stats))

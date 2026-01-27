@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { API_URL } from 'constants';
 import { NavLink, useParams } from 'react-router';
 import Spinner from 'activities/spinner';
 import JSONViewer from 'activities/json_viewer';
 import './activities.scss';
+import { AuthContext } from 'client';
 
 const Tab = ({ tab, setTab, title, tabName }) => {
   return (
@@ -31,19 +32,38 @@ const ActivitiesDetail: React.FC = () => {
 
   const [tab, setTab] = useState('django');
 
+  const { state: auth } = useContext(AuthContext);
+
   useEffect(() => {
     setLoading(true);
+    console.dir(auth);
     const promises = [
-      fetch(`${API_URL}/activities/${id}`).then(async (res) => {
+      fetch(`${API_URL}/activities/${id}`, {
+        headers: {
+          Authorization: `Bearer ${auth.token}`
+        }
+      }).then(async (res) => {
         setDjangoModel(await res.json());
       }),
-      fetch(`${API_URL}/activities/${id}/pydantic`).then(async (res) => {
+      fetch(`${API_URL}/activities/${id}/pydantic`, {
+        headers: {
+          Authorization: `Bearer ${auth.token}`
+        }
+      }).then(async (res) => {
         setPydanticModel(await res.json());
       }),
-      fetch(`${API_URL}/activities/${id}/legacy`).then(async (res) => {
+      fetch(`${API_URL}/activities/${id}/legacy`, {
+        headers: {
+          Authorization: `Bearer ${auth.token}`
+        }
+      }).then(async (res) => {
         setLegacyModel(await res.json());
       }),
-      fetch(`${API_URL}/activities/${id}/migration_status`).then(async (res) => {
+      fetch(`${API_URL}/activities/${id}/migration_status`, {
+        headers: {
+          Authorization: `Bearer ${auth.token}`
+        }
+      }).then(async (res) => {
         setMigrationStatus(await res.json());
       })
     ];

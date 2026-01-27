@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import sys
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -9,7 +10,12 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-INSTALLED_APPS = ["django.contrib.contenttypes", "api", "corsheaders"]
+INSTALLED_APPS = [
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "api",
+    "corsheaders",
+]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -56,6 +62,18 @@ LEGACY_DB = {
     "HOST": os.getenv("LEGACY_DB_HOST"),
 }
 
+KEYCLOAK = {
+    "JWKS_ENDPOINT": os.getenv(
+        "JWKS_ENDPOINT",
+        "https://loginproxy.gov.bc.ca/auth/realms/standard/.well-known/openid-configuration",
+    ),
+    "AUDIENCE": os.getenv("JWT_AUDIENCE", "invasivesbc"),
+}
+
+KEYCLOAK_AUDIENCE = os.getenv("KEYCLOAK_AUDIENCE", "tfrs-on-gold-4308")
+
+UNIT_TESTING_ENABLED = False
+
 LEGACY_DB_CONNECTION_STRING = f"dbname={LEGACY_DB['NAME']} host={LEGACY_DB['HOST']} user={LEGACY_DB['USER']} password={LEGACY_DB['PASSWORD']}"
 
 REST_FRAMEWORK = {
@@ -63,10 +81,28 @@ REST_FRAMEWORK = {
         "rest_framework.renderers.JSONRenderer",
     ],
     "COMPACT_JSON": False,
-    "DEFAULT_AUTHENTICATION_CLASSES": [],
-    "DEFAULT_PERMISSION_CLASSES": [],
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "api.keycloak_authentication.UserAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
     "UNAUTHENTICATED_USER": None,
 }
+
+AUTH_USER_MODEL = "api.User"
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+    },
+    "keycloak": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "keycloak",
+    },
+}
+
+DATABASE_ROUTERS = ["api.db_router.InvasivesDBRouter"]
 
 LANGUAGE_CODE = "en-ca"
 TIME_ZONE = "UTC"
@@ -77,3 +113,25 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3001",
 ]
 CORS_EXPOSE_HEADERS = ["Content-Disposition"]
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "stream": sys.stdout,
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
+}

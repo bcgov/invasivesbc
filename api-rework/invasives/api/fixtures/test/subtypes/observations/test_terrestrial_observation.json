@@ -96,7 +96,9 @@
       "visible_well_nearby": "Unknown",
       "aspect": "N",
       "slope_percent": "SS",
-      "soil_texture": "M"
+      "soil_texture": "M",
+      "specific_use": "NO",
+      "suitable_for_biocontrol_agent": "Yes"
     }
   },
   {
@@ -108,47 +110,9 @@
       "visible_well_nearby": "Unknown",
       "aspect": "NA",
       "slope_percent": "VT",
-      "soil_texture": "F"
-    }
-  },
-  {
-    "model": "api.TerrestrialObservationSpecificUse",
-    "pk": 1,
-    "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
-      "specific_use": "NO"
-    }
-  },
-  {
-    "model": "api.TerrestrialObservationSpecificUse",
-    "pk": 2,
-    "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
-      "specific_use": "MI"
-    }
-  },
-  {
-    "model": "api.TerrestrialObservationSpecificUse",
-    "pk": 3,
-    "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
-      "specific_use": "GP"
-    }
-  },
-  {
-    "model": "api.SuitableForBiocontrol",
-    "pk": 1,
-    "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
-      "suitable_for_biocontrol": "Yes"
-    }
-  },
-  {
-    "model": "api.SuitableForBiocontrol",
-    "pk": 2,
-    "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
-      "suitable_for_biocontrol": "No"
+      "soil_texture": "F",
+      "specific_use": "GP",
+      "suitable_for_biocontrol_agent": "No"
     }
   },
   {
