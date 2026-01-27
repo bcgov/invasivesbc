@@ -111,7 +111,9 @@ USE_TZ = True
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3001",
+    "https://normalization-fe-dev-invasivesbci.apps.silver.devops.gov.bc.ca",
 ]
+
 CORS_EXPOSE_HEADERS = ["Content-Disposition"]
 
 LOGGING = {
