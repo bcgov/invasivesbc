@@ -18,6 +18,7 @@
   p:not(:first-child) {
     margin-top: 0;
   }
+
   .logo {
     height: 45vh;
     width: 45vh;

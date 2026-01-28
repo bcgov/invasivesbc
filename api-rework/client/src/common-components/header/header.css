@@ -11,16 +11,18 @@ header {
   background-color: #003366;
   border-bottom: 1pt solid black;
   font-family: 'Calibri', sans-serif;
-
   color: white;
+
   h1,
   p {
     padding: 0;
     margin: 0 0.5rem;
   }
+
   h1 {
     font-size: 24px;
   }
+
   p {
     font-size: 18px;
   }
@@ -32,6 +34,7 @@ header {
     background-color: white;
     border-radius: 5px;
   }
+
   button {
     margin-left: auto;
     margin-right: 1rem;
@@ -41,6 +44,7 @@ header {
     background-color: white;
     border: none;
     border-radius: 5px;
+
     &:hover {
       cursor: pointer;
       background-color: #ddd;
