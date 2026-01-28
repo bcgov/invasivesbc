@@ -44,27 +44,56 @@ const ActivitiesList: React.FC = () => {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const { state: auth } = useContext(AuthContext);
 
   useEffect(() => {
+    setLoading(true);
+    setErrorMessage('');
+    setError(false);
+
     fetch(`${API_URL}/activities`, {
       headers: {
         Authorization: `Bearer ${auth.token}`
       }
-    }).then(async (res) => {
-      setLoading(true);
-      setActivities(await res.json());
-      setLoading(false);
-    });
+    })
+      .then(async (res) => {
+        setLoading(false);
+        if (res.status === 200) {
+          setActivities(await res.json());
+        } else {
+          setActivities([]);
+          setError(true);
+          let extraMessage = '';
+          if (res.status === 403) {
+            extraMessage = `You should request access to this page, providing your SSO subject [${auth.user_details?.sub || ''}]`;
+          }
+          setErrorMessage(`response status code was [${res.status} ${res.statusText}] ${extraMessage}`);
+        }
+      })
+      .catch((reason) => {
+        setLoading(false);
+        setError(true);
+        setErrorMessage(`${reason}`);
+      });
   }, []);
 
   useEffect(() => {
-    const completed = activities.sort((a, b) => {
-      const invert = sortDirection === 'desc' ? -1 : 1;
-      return a[sortProperty] > b[sortProperty] ? 1 * invert : -1 * invert;
-    });
-    setSorted(completed);
+    if (activities) {
+      const completed = activities.sort((a, b) => {
+        const invert = sortDirection === 'desc' ? -1 : 1;
+        return a[sortProperty] > b[sortProperty] ? 1 * invert : -1 * invert;
+      });
+      setSorted(completed);
+    } else {
+      setSorted([]);
+    }
   }, [activities, sortProperty, sortDirection]);
+
+  if (error) {
+    return <pre>{errorMessage}</pre>;
+  }
 
   if (loading) {
     return <Spinner />;

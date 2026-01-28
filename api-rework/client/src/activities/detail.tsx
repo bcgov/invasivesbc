@@ -17,6 +17,7 @@ const ActivitiesDetail: React.FC = () => {
   const { id } = useParams();
 
   const [loading, setLoading] = useState<boolean>(true);
+  const [anyError, setAnyError] = useState<boolean>(false);
   const [serial, setSerial] = useState(0);
 
   const [djangoModel, setDjangoModel] = useState(undefined);
@@ -30,35 +31,52 @@ const ActivitiesDetail: React.FC = () => {
 
   useEffect(() => {
     setLoading(true);
-    console.dir(auth);
+    setAnyError(false);
+
     const promises = [
       fetch(`${API_URL}/activities/${id}`, {
         headers: {
           Authorization: `Bearer ${auth.token}`
         }
       }).then(async (res) => {
-        setDjangoModel(await res.json());
+        if (res.status === 200) {
+          setDjangoModel(await res.json());
+        } else {
+          setAnyError(true);
+        }
       }),
       fetch(`${API_URL}/activities/${id}/pydantic`, {
         headers: {
           Authorization: `Bearer ${auth.token}`
         }
       }).then(async (res) => {
-        setPydanticModel(await res.json());
+        if (res.status === 200) {
+          setPydanticModel(await res.json());
+        } else {
+          setAnyError(true);
+        }
       }),
       fetch(`${API_URL}/activities/${id}/legacy`, {
         headers: {
           Authorization: `Bearer ${auth.token}`
         }
       }).then(async (res) => {
-        setLegacyModel(await res.json());
+        if (res.status === 200) {
+          setLegacyModel(await res.json());
+        } else {
+          setAnyError(true);
+        }
       }),
       fetch(`${API_URL}/activities/${id}/migration_status`, {
         headers: {
           Authorization: `Bearer ${auth.token}`
         }
       }).then(async (res) => {
-        setMigrationStatus(await res.json());
+        if (res.status === 200) {
+          setMigrationStatus(await res.json());
+        } else {
+          setAnyError(true);
+        }
       })
     ];
     Promise.all(promises).then(() => {
@@ -74,6 +92,12 @@ const ActivitiesDetail: React.FC = () => {
     <div className="activities-detail">
       <NavLink to={'/'}>← Activities List</NavLink>
       <h4>{id}</h4>
+
+      {anyError && (
+        <pre className={'warning'}>
+          Errors occurred while loading components of this record. Check network log for details.
+        </pre>
+      )}
 
       <nav className={'tabs'}>
         <ul>
