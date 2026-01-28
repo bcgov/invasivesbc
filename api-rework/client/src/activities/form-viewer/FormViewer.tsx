@@ -4,6 +4,7 @@ import TextField from 'common-components/TextField';
 import './formViewer.css';
 import Spacer from 'common-components/Spacer';
 import TerrestrialObservation from 'activities/subtypes/TerrestrialObservation';
+import AquaticObservation from 'activities/subtypes/AquaticObservation';
 
 const FormViewer = ({ formData }) => {
   return (
@@ -61,9 +62,10 @@ const FormViewer = ({ formData }) => {
         <Spacer />
         <h2>Subtype Specific Details</h2>
         {
-          { Observation_Plant_Terrestrial: <TerrestrialObservation subtypeData={formData?.subtype_data} /> }[
-            formData?.subtype
-          ]
+          {
+            Observation_Plant_Terrestrial: <TerrestrialObservation subtypeData={formData?.subtype_data} />,
+            Observation_Plant_Aquatic: <AquaticObservation subtypeData={formData?.subtype_data} />
+          }[formData?.subtype]
         }
       </div>
     </div>
