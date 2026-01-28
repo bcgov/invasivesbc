@@ -1,0 +1,25 @@
+:root {
+  --header-height: 40px;
+  --footer-height: 35px;
+}
+
+.main {
+  height: auto;
+  overflow-y: auto;
+  margin-top: calc(var(--header-height) + 5px);
+  margin-bottom: calc(var(--footer-height) + 5px);
+  box-sizing: border-box;
+}
+
+.landing {
+  font-size: 18px;
+  text-align: center;
+
+  p:not(:first-child) {
+    margin-top: 0;
+  }
+  .logo {
+    height: 45vh;
+    width: 45vh;
+  }
+}
