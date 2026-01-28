@@ -45,6 +45,26 @@
   margin-bottom: 5pt;
 }
 
+.chit-list {
+  border: 1pt solid black;
+  padding: 10px;
+  box-sizing: border-box;
+  width: 100%;
+  background-color: white;
+  display: flex;
+  flex-flow: row wrap;
+
+  .chit {
+    box-sizing: border-box;
+    border-radius: 6pt;
+    background-color: lightgreen;
+    border: 1pt solid black;
+    margin-right: 5px;
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+}
+
 .spacer {
   width: 100pt;
 }
