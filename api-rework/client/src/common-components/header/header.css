@@ -8,9 +8,9 @@ header {
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
-  background-color: #003366;
+  background-color: #036;
   border-bottom: 1pt solid black;
-  font-family: 'Calibri', sans-serif;
+  font-family: Calibri, sans-serif;
   color: white;
 
   h1,
@@ -40,7 +40,7 @@ header {
     margin-right: 1rem;
     height: 30px;
     width: 70px;
-    font-family: 'Calibri', sans-serif;
+    font-family: Calibri, sans-serif;
     background-color: white;
     border: none;
     border-radius: 5px;

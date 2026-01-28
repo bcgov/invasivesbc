@@ -2,14 +2,13 @@
   position: absolute;
   z-index: 0;
   top: 50%;
-  background-color: #efefef;
   left: 50%;
   transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
   border: 1pt solid black;
   color: white;
-  background-color: #003366;
+  background-color: #036;
   border-radius: 5px;
   height: 100px;
   width: 100%;
@@ -17,7 +16,7 @@
   align-items: center;
 
   p {
-    font-family: 'Calibri', sans-serif;
+    font-family: Calibri, sans-serif;
     font-size: 18px;
   }
 
@@ -27,6 +26,7 @@
     width: 211px;
     border: 1pt solid white;
     align-items: center;
+
     & > * {
       margin-left: 1px;
     }

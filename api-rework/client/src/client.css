@@ -14,6 +14,7 @@
 .landing {
   font-size: 18px;
   text-align: center;
+  font-family: Calibri, sans-serif;
 
   p:not(:first-child) {
     margin-top: 0;
