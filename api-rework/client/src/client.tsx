@@ -8,6 +8,7 @@ import Header from 'common-components/header/Header';
 import Footer from 'common-components/footer/Footer';
 import Logo from 'common-components/logo/Logo';
 import './client.css';
+import EndlessLoadingBar from 'common-components/endless-loading-bar/EndlessLoadingBar';
 
 const MIN_FRESHNESS = 60;
 
@@ -157,7 +158,7 @@ const Client: React.FC = () => {
   }, []);
 
   if (!auth.initialized) {
-    return <p>initializing</p>;
+    return <EndlessLoadingBar />;
   }
 
   if (!auth.authenticated) {
