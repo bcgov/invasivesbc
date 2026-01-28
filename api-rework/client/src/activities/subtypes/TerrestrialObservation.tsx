@@ -1,12 +1,8 @@
 import Fieldset from 'common-components/Fieldset';
 import TextInput from 'common-components/TextInput';
+import { SubtypeData } from 'constants';
 
-interface PropTypes {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  subtypeData: Record<PropertyKey, any>;
-}
-
-const TerrestrialObservation = ({ subtypeData }: PropTypes) => {
+const TerrestrialObservation = ({ subtypeData }: SubtypeData) => {
   const BLANK = 'N/A';
   return (
     <>
