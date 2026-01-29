@@ -8,12 +8,12 @@ interface PropTypes {
 }
 
 const TextInput = ({ label, value }: PropTypes) => {
-  const isEmpty = !value;
+  const isEmpty = value == undefined;
   const [id] = useState<string>(Math.random().toString());
 
   return (
     <div className="contained">
-      {label && <label htmlFor={id}>{label ?? 'N/A'}</label>}
+      {label && <label htmlFor={id}>{label}</label>}
       <input id={id} type="text" className={`${isEmpty ? 'warning' : ''}`} value={stringify(value)} readOnly></input>
     </div>
   );
