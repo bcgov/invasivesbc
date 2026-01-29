@@ -9,13 +9,23 @@
 }
 
 .contained label {
-  font-family: 'Comic Sans MS', Arial, sans-serif;
+  font-family: 'Calibri', Arial, sans-serif;
   padding-right: 1rem;
   text-transform: capitalize;
 
   &::after {
     content: ':';
   }
+}
+
+h2 {
+  font-family: 'Calibri', Arial, sans-serif;
+  text-align: start;
+  width: 100%;
+}
+
+fieldset input {
+  width: 95%;
 }
 
 .content {
@@ -32,7 +42,7 @@
   align-items: flex-start;
   flex-flow: row wrap;
   max-width: 850px;
-  background-color: #66996650;
+  background-color: #f2f7f3;
 }
 
 .group-wrap {
@@ -57,7 +67,7 @@
   .chit {
     box-sizing: border-box;
     border-radius: 6pt;
-    background-color: lightgreen;
+    background-color: #66996675;
     border: 1pt solid black;
     margin-right: 5px;
     font-size: 12px;
@@ -70,13 +80,17 @@
 }
 
 fieldset {
-  font-family: 'Comic Sans MS', Arial, sans-serif;
+  font-family: 'Calibri', Arial, sans-serif;
   display: flex;
   flex-flow: row wrap;
   text-wrap: wrap;
   word-break: break-all;
   width: 100%;
   justify-content: space-between;
+  background-color: #e4eee7;
+  margin-bottom: 1rem;
+  margin-top: 0.5rem;
+  font-weight: bold;
 
   legend {
     text-transform: capitalize;
@@ -86,4 +100,8 @@ fieldset {
     width: 46% !important;
     overflow: hidden;
   }
+}
+
+fieldset fieldset .group-wrap {
+  background-color: #9fb6a8;
 }
