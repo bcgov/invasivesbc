@@ -1,7 +1,6 @@
-interface KeyValue {
-  code: string;
-  full: string | number;
-}
+import { KeyValue } from 'constants';
+import { stringify } from 'utils';
+
 type PropTypes = {
   items: Array<string> | Array<KeyValue>;
 };
@@ -9,13 +8,13 @@ type PropTypes = {
  * Mock MultiSelect Chit input
  */
 const ChitList = ({ items }: PropTypes) => {
-  const isStr = typeof items?.[0] === 'string';
-
+  const isEmpty = !items || items.length === 0;
   return (
-    <div className="chit-list">
+    <div className={`chit-list ${isEmpty ? 'warning' : ''}`}>
+      {items?.length === 0 && 'NO DATA'}
       {items?.map((i) => (
         <span key={i} className="chit">
-          {isStr ? i : `${i.full} (${i.code})`}
+          {stringify(i)}
         </span>
       ))}
     </div>
