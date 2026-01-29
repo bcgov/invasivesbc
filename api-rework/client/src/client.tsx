@@ -4,6 +4,11 @@ import { BrowserRouter, Route, Routes } from 'react-router';
 import ActivitiesDetail from 'activities/detail';
 import Keycloak from 'keycloak-js';
 import { produce } from 'immer';
+import Header from 'common-components/header/Header';
+import Footer from 'common-components/footer/Footer';
+import Logo from 'common-components/logo/Logo';
+import './client.css';
+import EndlessLoadingBar from 'common-components/endless-loading-bar/EndlessLoadingBar';
 
 const MIN_FRESHNESS = 60;
 
@@ -142,6 +147,8 @@ const Client: React.FC = () => {
       });
   }, []);
 
+  const handleLogin = () => dispatch({ type: 'do_authentication' });
+  const handleLogout = () => dispatch({ type: 'do_logout' });
   useEffect(() => {
     /* check every 5 seconds to see if we are going to expire */
     const id = setInterval(() => {
@@ -151,14 +158,27 @@ const Client: React.FC = () => {
   }, []);
 
   if (!auth.initialized) {
-    return <p>initializing</p>;
+    return <EndlessLoadingBar />;
   }
 
   if (!auth.authenticated) {
     return (
       <>
-        <p>Please authenticate to proceed</p>
-        <button onClick={() => dispatch({ type: 'do_authentication' })}>Authenticate</button>
+        <Header authenticated={auth.authenticated} handleLogout={handleLogout} handleLogin={handleLogin} />
+        <div className="main">
+          <div className="content landing">
+            <p>
+              Welcome to the staging area for the InvasivesBC Normalization work. In order to proceed, please
+              authenticate using your IDIR
+            </p>
+            <p>
+              If you arrived here searching for the official InvasivesBC application, please head to{' '}
+              <a href="https://invasivesbc.gov.bc.ca/">https://invasivesbc.gov.bc.ca/</a>
+            </p>
+            <Logo className="logo" />
+          </div>
+        </div>
+        <Footer />
       </>
     );
   }
@@ -167,18 +187,20 @@ const Client: React.FC = () => {
       value={{
         state: auth
       }}>
-      <pre>
-        Welcome, {auth.user_details?.given_name} [{keycloakInstance.idTokenParsed?.sub}] [
-        {keycloakInstance.idTokenParsed?.aud}]
-      </pre>
-      <button onClick={() => dispatch({ type: 'do_logout' })}>Logout</button>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<ActivitiesList />} />
-          <Route path="/activities" element={<ActivitiesList />} />
-          <Route path="/activities/:id" element={<ActivitiesDetail />} />
-        </Routes>
-      </BrowserRouter>
+      <Header authenticated={auth.authenticated} handleLogout={handleLogout} handleLogin={handleLogin} />
+      <div className="main">
+        <pre>
+          Welcome, {auth.user_details?.given_name} [{keycloakInstance.idTokenParsed?.sub}] [
+          {keycloakInstance.idTokenParsed?.aud}]
+        </pre>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<ActivitiesList />} />
+            <Route path="/activities" element={<ActivitiesList />} />
+            <Route path="/activities/:id" element={<ActivitiesDetail />} />
+          </Routes>
+        </BrowserRouter>
+      </div>
     </AuthContext>
   );
 };

@@ -1,5 +1,5 @@
-import Fieldset from 'common-components/Fieldset';
-import TextInput from 'common-components/TextInput';
+import Fieldset from 'common-components/inputs/Fieldset';
+import TextInput from 'common-components/inputs/TextInput';
 import { SubtypeData } from 'constants';
 
 const TerrestrialObservation = ({ subtypeData }: SubtypeData) => {

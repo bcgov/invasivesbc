@@ -1,7 +1,7 @@
-import ChitList from 'common-components/ChitList';
-import Fieldset from 'common-components/Fieldset';
-import Spacer from 'common-components/Spacer';
-import TextInput from 'common-components/TextInput';
+import ChitList from 'common-components/inputs/ChitList';
+import Fieldset from 'common-components/inputs/Fieldset';
+import Spacer from 'common-components/inputs/Spacer';
+import TextInput from 'common-components/inputs/TextInput';
 import { SubtypeData } from 'constants';
 
 const AquaticObservation = ({ subtypeData }: SubtypeData) => {

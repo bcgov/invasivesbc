@@ -1,8 +1,8 @@
-import Fieldset from 'common-components/Fieldset';
-import TextInput from 'common-components/TextInput';
-import TextField from 'common-components/TextField';
+import Fieldset from 'common-components/inputs/Fieldset';
+import TextInput from 'common-components/inputs/TextInput';
+import TextField from 'common-components/inputs/TextField';
 import './formViewer.css';
-import Spacer from 'common-components/Spacer';
+import Spacer from 'common-components/inputs/Spacer';
 import TerrestrialObservation from 'activities/subtypes/TerrestrialObservation';
 import AquaticObservation from 'activities/subtypes/AquaticObservation';
 
