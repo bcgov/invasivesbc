@@ -99,6 +99,7 @@ class ActivitySerializer(serializers.ModelSerializer):
     employer = EmployerSerializer(source="employer_set", many=True)
     subtype_data = serializers.SerializerMethodField()
     participants = ParticipantSerializer(source="participant_set", many=True)
+    linked_activities = serializers.SerializerMethodField()
 
     class Meta:
         model = Activity
@@ -131,6 +132,13 @@ class ActivitySerializer(serializers.ModelSerializer):
             "utm_northing",
             "location_description",
         )
+
+    def get_linked_activities(self, obj):
+        print(obj)
+        arr = []
+        for linked_id in obj.linked_activities.all():
+            arr.append({"short_id": linked_id.short_id, "full": linked_id.id})
+        return arr
 
     def get_subtype_data(self, obj: Activity):
         """Maps the Activity to the proper Subtype Serializer, populating the form specific information"""
