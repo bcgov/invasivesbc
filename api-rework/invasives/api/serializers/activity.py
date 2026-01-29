@@ -108,6 +108,7 @@ class ActivitySerializer(serializers.ModelSerializer):
             "id",
             "created_by",
             "form_status",
+            "linked_activities",
             # Record type details
             "type",
             "subtype",
