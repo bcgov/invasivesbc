@@ -84,6 +84,17 @@ const ActivitiesDetail: React.FC = () => {
     });
   }, [id, serial]);
 
+  const rerunImport = () => {
+    fetch(`${API_URL}/activities/${id}/migrate`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${auth.token}`
+      }
+    }).then(() => {
+      setSerial(serial + 1);
+    });
+  };
+
   if (loading) {
     return <Spinner />;
   }
@@ -169,6 +180,12 @@ const ActivitiesDetail: React.FC = () => {
         />
       </div>
       <div className={`${tab === 'migration' ? 'active' : 'inactive'} tab`}>
+        <button
+          onClick={() => {
+            rerunImport();
+          }}>
+          Rerun Import
+        </button>
         <JSONViewer
           data={migrationStatus}
           diffCandidates={[]}

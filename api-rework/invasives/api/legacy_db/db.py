@@ -295,7 +295,7 @@ class LegacyDB:
     def migrate_activities(
         dry_run=False,
         clobber=False,
-        source: Literal["all", "previously-failed", "random-sample", "list"] = "all",
+        source: Literal["all", "previously-failed", "random-sample", "single"] = "all",
         restrict_to_subtype: str | None = None,
         pk=None,
     ):

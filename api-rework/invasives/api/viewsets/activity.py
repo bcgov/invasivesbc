@@ -1,4 +1,5 @@
 import json
+import logging
 
 from django.http.response import HttpResponse
 import psycopg
@@ -9,6 +10,7 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
+from api.legacy_db.db import LegacyDB
 from api.legacy_db.model_serializer import LegacyActivity
 from api.models.activity.activity import Activity
 from api.models.migrator.activity_migration_status import ActivityMigrationStatus
@@ -34,6 +36,17 @@ class ActivityViewSet(ReadOnlyModelViewSet):
             return Response(data=serialized.data, status=HTTP_200_OK)
         except:
             return Response(status=404)
+
+    @action(detail=True, methods=["post"])
+    def migrate(self, request, *args, **kwargs):
+        try:
+            LegacyDB.migrate_activities(
+                source="single", dry_run=False, clobber=True, pk=self.kwargs["pk"]
+            )
+            return Response(status=HTTP_200_OK)
+        except Exception as e:
+            logging.error("error migrating activity", exc_info=True)
+            return Response(status=500)
 
     @action(detail=True, methods=["get"])
     def legacy(self, request, *args, **kwargs):
