@@ -7,6 +7,7 @@ import TerrestrialObservation from 'activities/subtypes/TerrestrialObservation';
 import AquaticObservation from 'activities/subtypes/AquaticObservation';
 import ChemicalMonitoring from 'activities/subtypes/ChemicalMonitoring';
 import MechanicalMonitoring from 'activities/subtypes/MechanicalMonitoring';
+import ReleaseMonitoring from 'activities/subtypes/ReleaseMonitoring';
 
 const FormViewer = ({ formData }) => (
   <div className="content">
@@ -75,7 +76,10 @@ const FormViewer = ({ formData }) => (
           Observation_Plant_Terrestrial: <TerrestrialObservation subtypeData={formData?.subtype_data} />,
           Observation_Plant_Aquatic: <AquaticObservation subtypeData={formData?.subtype_data} />,
           Monitoring_Chemical_Plant_Terrestrial_Aquatic: <ChemicalMonitoring subtypeData={formData?.subtype_data} />,
-          Monitoring_Mechanical_Plant_Terrestrial_Aquatic: <MechanicalMonitoring subtypeData={formData?.subtype_data} />
+          Monitoring_Mechanical_Plant_Terrestrial_Aquatic: (
+            <MechanicalMonitoring subtypeData={formData?.subtype_data} />
+          ),
+          Monitoring_Biocontrol_Release_Plant_Terrestrial: <ReleaseMonitoring subtypeData={formData?.subtype_data} />
         }[formData?.subtype]
       }
     </div>
