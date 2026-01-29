@@ -100,7 +100,8 @@ const Client: React.FC = () => {
               draft.user_details = {
                 identity_provider: keycloakInstance.idTokenParsed.identity_provider,
                 family_name: keycloakInstance.idTokenParsed.family_name,
-                given_name: keycloakInstance.idTokenParsed.given_name
+                given_name: keycloakInstance.idTokenParsed.given_name,
+                sub: keycloakInstance.idTokenParsed.sub || 'unknown'
               };
             }
           });
