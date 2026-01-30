@@ -9,7 +9,7 @@
 }
 
 .contained label {
-  font-family: 'Calibri', Arial, sans-serif;
+  font-family: Calibri, Arial, sans-serif;
   padding-right: 1rem;
   text-transform: capitalize;
 
@@ -19,7 +19,7 @@
 }
 
 h2 {
-  font-family: 'Calibri', Arial, sans-serif;
+  font-family: Calibri, Arial, sans-serif;
   text-align: start;
   width: 100%;
 }
@@ -80,7 +80,7 @@ fieldset input {
 }
 
 fieldset {
-  font-family: 'Calibri', Arial, sans-serif;
+  font-family: Calibri, Arial, sans-serif;
   display: flex;
   flex-flow: row wrap;
   text-wrap: wrap;
