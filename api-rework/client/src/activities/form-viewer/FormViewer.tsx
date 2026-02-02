@@ -13,6 +13,7 @@ import TerrestrialMechTreatment from 'activities/subtypes/TerrestrialMechTreatme
 import TerrestrialChemTreatment from 'activities/subtypes/TerrestrialChemTreatment';
 import AquaticChemTreatment from 'activities/subtypes/AquaticChemTreatment';
 import FormMap from 'common-components/form-map/FormMap';
+import DispersalMonitoring from 'activities/subtypes/DispersalMonitoring';
 
 const FormViewer = ({ formData }) => (
   <div className="content">
@@ -90,7 +91,10 @@ const FormViewer = ({ formData }) => (
           Treatment_Mechanical_Plant_Terrestrial: <TerrestrialMechTreatment subtypeData={formData?.subtype_data} />,
           Treatment_Mechanical_Plant_Aquatic: <AquaticMechTreatment subtypeData={formData?.subtype_data} />,
           Treatment_Chemical_Plant_Terrestrial: <TerrestrialChemTreatment subtypeData={formData?.subtype_data} />,
-          Treatment_Chemical_Plant_Aquatic: <AquaticChemTreatment subtypeData={formData?.subtype_data} />
+          Treatment_Chemical_Plant_Aquatic: <AquaticChemTreatment subtypeData={formData?.subtype_data} />,
+          Monitoring_Biocontrol_Dispersal_Plant_Terrestrial: (
+            <DispersalMonitoring subtypeData={formData?.subtype_data} />
+          )
         }[formData?.subtype]
       }
     </div>
