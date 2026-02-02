@@ -14,6 +14,7 @@ import TerrestrialChemTreatment from 'activities/subtypes/TerrestrialChemTreatme
 import AquaticChemTreatment from 'activities/subtypes/AquaticChemTreatment';
 import FormMap from 'common-components/form-map/FormMap';
 import DispersalMonitoring from 'activities/subtypes/DispersalMonitoring';
+import BiocontrolCollection from 'activities/subtypes/BiocontrolCollection';
 
 const FormViewer = ({ formData }) => (
   <div className="content">
@@ -94,7 +95,8 @@ const FormViewer = ({ formData }) => (
           Treatment_Chemical_Plant_Aquatic: <AquaticChemTreatment subtypeData={formData?.subtype_data} />,
           Monitoring_Biocontrol_Dispersal_Plant_Terrestrial: (
             <DispersalMonitoring subtypeData={formData?.subtype_data} />
-          )
+          ),
+          Biocontrol_Collection: <BiocontrolCollection subtypeData={formData?.subtype_data} />
         }[formData?.subtype]
       }
     </div>
