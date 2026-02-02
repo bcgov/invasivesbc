@@ -4,7 +4,6 @@ import MonitoringInfo from './common/MonitoringInfo';
 import NearestWells from './common/NearestWells';
 
 const ChemicalMonitoring = ({ subtypeData }: SubtypeData) => {
-  console.log(subtypeData);
   return (
     <>
       <NearestWells data={subtypeData?.nearest_wells} />
