@@ -12,6 +12,7 @@ import AquaticMechTreatment from 'activities/subtypes/AquaticMechTreatment';
 import TerrestrialMechTreatment from 'activities/subtypes/TerrestrialMechTreatment';
 import TerrestrialChemTreatment from 'activities/subtypes/TerrestrialChemTreatment';
 import AquaticChemTreatment from 'activities/subtypes/AquaticChemTreatment';
+import FormMap from 'common-components/form-map/FormMap';
 
 const FormViewer = ({ formData }) => (
   <div className="content">
@@ -22,7 +23,9 @@ const FormViewer = ({ formData }) => (
         <TextInput label={'created by'} value={formData?.created_by} />
         <TextInput label={'subtype'} value={formData?.subtype} />
         <TextInput label={'form status'} value={formData?.form_status} />
-        <Spacer />
+        <FormMap
+        // TODO: geojson={} ADD GEOJSON WHEN READY
+        />
         <TextInput label={'latitude'} value={formData?.latitude} />
         <TextInput label={'longitude'} value={formData?.longitude} />
         <TextInput label={'area (m)'} value={formData?.area_m} />
