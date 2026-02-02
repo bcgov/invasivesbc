@@ -66,7 +66,7 @@ class TerrestrialVoucherSpecimenSerializer(serializers.ModelSerializer):
         )
 
 
-class TerrestrialPlantObservationDetailSerializer(serializers.ModelSerializer):
+class TerrestrialPlantObservationContextSerializer(serializers.ModelSerializer):
     voucher_specimen = serializers.SerializerMethodField()
 
     class Meta:
@@ -97,7 +97,7 @@ class TerrestrialPlantObservationDetailSerializer(serializers.ModelSerializer):
             return None
 
 
-class TerrestrialPlantObservationInfoSerializer(serializers.ModelSerializer):
+class TerrestrialPlantObservationEntriesSerializer(serializers.ModelSerializer):
     specific_use = SpecificUseCodeSerializer()
     soil_texture = SoilTextureCodeSerializer()
     aspect = AspectCodeSerializer()
@@ -117,10 +117,10 @@ class TerrestrialPlantObservationInfoSerializer(serializers.ModelSerializer):
 
 
 class TerrestrialObservationSerializer(serializers.Serializer):
-    observation_details = TerrestrialPlantObservationDetailSerializer(
+    entries = TerrestrialPlantObservationContextSerializer(
         source="terrestrialplantobservationdetail_set", many=True
     )
-    observation_information = TerrestrialPlantObservationInfoSerializer(
+    context = TerrestrialPlantObservationEntriesSerializer(
         source="terrestrialplantobservationinfo"
     )
     pretreatment_observation = serializers.CharField(

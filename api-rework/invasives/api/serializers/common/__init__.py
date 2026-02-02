@@ -1,6 +1,6 @@
 from .shoreline_type import ShorelineTypesSerializer
 from .treatment_monitoring_information import (
-    TreatmentMonitoringInfoSerializer,
+    TreatmentMonitoringEntriesSerializer,
     AquaticMechanicalMonitoringSerializer,
     TerrestrialTreatmentMonitoringSerializer,
     AquaticInvasivePlantOnSiteSerializer,
@@ -16,6 +16,6 @@ from .microsite_conditions import MicrositeConditionSerializer
 from .weather_conditions import WeatherConditionsSerializer
 from .spread_results import SpreadResultsSerializer
 from .biocontrol_dispersal_monitoring_information import (
-    TerrestrialBiologicalMonitoringInformationSerializer,
+    TerrestrialBiologicalMonitoringEntriesSerializer,
 )
-from .chemical_treatment_information import ChemicalTreatmentInformationSerializer
+from .chemical_treatment_information import ChemicalTreatmentContextSerializer

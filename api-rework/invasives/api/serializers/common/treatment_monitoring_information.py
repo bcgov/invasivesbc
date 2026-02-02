@@ -103,7 +103,7 @@ class AquaticMechanicalMonitoringSerializer(BaseTreatmentMonitoringSerializer):
         return ret
 
 
-class TreatmentMonitoringInfoSerializer(serializers.Serializer):
+class TreatmentMonitoringEntriesSerializer(serializers.Serializer):
     """Shared Between Mechanical and Chemical Treatments"""
 
     a_monitoring_information = AquaticMechanicalMonitoringSerializer(

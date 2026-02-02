@@ -16,6 +16,6 @@ class TerrestrialPlantMechanicalTreatmentSerializer(serializers.ModelSerializer)
 
 
 class TerrestrialPlantTreatmentMechanicalSerializer(serializers.Serializer):
-    mechanical_treatments = TerrestrialPlantMechanicalTreatmentSerializer(
+    entries = TerrestrialPlantMechanicalTreatmentSerializer(
         source="terrestrialplantmechanicaltreatment_set", many=True
     )

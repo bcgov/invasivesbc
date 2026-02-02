@@ -1,12 +1,12 @@
 from rest_framework import serializers
 from api.serializers.common import (
     NearestWellSerializer,
-    ChemicalTreatmentInformationSerializer,
+    ChemicalTreatmentContextSerializer,
 )
 
 
 class TerrestrialChemicalTreatmentSerializer(serializers.Serializer):
-    chem_treatment = ChemicalTreatmentInformationSerializer(source="chemtreatment")
+    chem_treatment = ChemicalTreatmentContextSerializer(source="chemtreatment")
     well_information = NearestWellSerializer(source="nearestwell_set", many=True)
     chem_treatment_details = serializers.SerializerMethodField()
 
