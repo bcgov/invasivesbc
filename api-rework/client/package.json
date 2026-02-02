@@ -13,6 +13,7 @@
     "npm": ">= 6.0.0"
   },
   "dependencies": {
+    "@turf/bbox": "7.3.3",
     "@turf/centroid": "7.3.3",
     "esbuild": "^0.27.2",
     "immer": "^11.1.3",
