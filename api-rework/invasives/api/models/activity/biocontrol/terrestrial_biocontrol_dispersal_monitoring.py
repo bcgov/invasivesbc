@@ -22,7 +22,7 @@ class TerrestrialBiocontrolDispersalMonitoring(BaseOneToManyActivityTable):
     biocontrol_agent = models.ForeignKey(BiocontrolAgentCode, on_delete=models.PROTECT)
     biocontrol_present = models.BooleanField()
     monitoring_type = models.CharField(choices=CollectionType)
-    plant_count = models.PositiveIntegerField()
+    plant_count = models.PositiveIntegerField(null=True, blank=True)
     monitoring_method = models.ForeignKey(
         BioAgentCollectionMethodCode, on_delete=models.PROTECT
     )
@@ -54,7 +54,7 @@ class TerrestrialBiocontrolDispersalMonitoring(BaseOneToManyActivityTable):
             self.sign_of_biocontrol_presence = None
 
         if self.collection_method == CollectionType.Count:
-            if self.plant_count_collection is None:
+            if self.plant_count is None:
                 errors["plant_count_collection"] = (
                     "Plant count must be filled if collection type is Count"
                 )
@@ -64,7 +64,7 @@ class TerrestrialBiocontrolDispersalMonitoring(BaseOneToManyActivityTable):
                 errors["time_collection_duration_minutes"] = (
                     "Count duration must be filled if collection type is Timed"
                 )
-            self.plant_count_collection = None  # Ensure other field is blank
+            self.plant_count = None  # Ensure other field is blank
 
         if self.start_time_collecting > timezone.now():
             errors["start_time_collecting"] = (

@@ -5,5 +5,10 @@ interface SubtypeData {
   subtypeData: Record<PropertyKey, any>;
 }
 
-export type { SubtypeData };
+interface KeyValue {
+  code: string;
+  full: string | number;
+}
+
+export type { SubtypeData, KeyValue };
 export { API_URL };
