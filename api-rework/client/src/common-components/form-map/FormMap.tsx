@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import maplibregl, { LngLatLike } from 'maplibre-gl';
+import maplibregl, { LngLatBoundsLike, LngLatLike } from 'maplibre-gl';
 import { centroid } from '@turf/centroid';
+import { bbox } from '@turf/bbox';
 
 import './formMap.css';
 
@@ -63,6 +64,11 @@ const FormMap = ({ geojson }: PropTypes) => {
             'fill-color': 'orange',
             'fill-opacity': 0.6
           }
+        });
+        const bounds = bbox(geojson) as LngLatBoundsLike;
+        map.fitBounds(bounds, {
+          padding: 10,
+          minZoom: 8
         });
       }
     });
