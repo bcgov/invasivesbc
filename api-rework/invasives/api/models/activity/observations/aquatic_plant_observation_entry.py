@@ -10,7 +10,7 @@ from api.models.codes.code_tables import (
 from api.models.enums.observation_type import ObservationType
 
 
-class AquaticPlantObservationContext(BaseOneToManyActivityTable):
+class AquaticPlantObservationEntry(BaseOneToManyActivityTable):
     invasive_plant = models.ForeignKey(AquaticPlantCode, on_delete=models.PROTECT)
     density = models.ForeignKey(
         DensityCode, on_delete=models.PROTECT, blank=True, null=True

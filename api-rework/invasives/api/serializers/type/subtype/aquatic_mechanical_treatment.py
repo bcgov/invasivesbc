@@ -18,7 +18,7 @@ class AquaticPlantMechanicalTreatmentSerializer(serializers.ModelSerializer):
 
 class AquaticPlantTreatmentMechanicalSerializer(serializers.Serializer):
     entries = AquaticPlantMechanicalTreatmentSerializer(
-        source="aquaticplantmechanicaltreatment_set", many=True
+        source="aquaticplantmechanicaltreatmententry_set", many=True
     )
     authorization_info = serializers.CharField(
         source="aquaticmechanicalauthorization.authorization_information"

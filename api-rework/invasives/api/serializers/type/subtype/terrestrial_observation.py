@@ -118,10 +118,10 @@ class TerrestrialPlantObservationEntriesSerializer(serializers.ModelSerializer):
 
 class TerrestrialObservationSerializer(serializers.Serializer):
     entries = TerrestrialPlantObservationContextSerializer(
-        source="terrestrialplantobservationdetail_set", many=True
+        source="terrestrialplantobservationentries_set", many=True
     )
     context = TerrestrialPlantObservationEntriesSerializer(
-        source="terrestrialplantobservationinfo"
+        source="terrestrialplantobservationcontext"
     )
     pretreatment_observation = serializers.CharField(
         source="pretreatmentobservation.pre_treatment_observation"

@@ -10,7 +10,7 @@ from api.serializers.common import (
 class BiocontrolDispersalMonitoringSerializer(serializers.Serializer):
     microsite_condition = MicrositeConditionSerializer(source="micrositecondition")
     entries = TerrestrialBiologicalMonitoringEntriesSerializer(
-        source="terrestrialbiocontroldispersalmonitoring_set", many=True
+        source="terrestrialbiocontroldispersalmonitoringentry_set", many=True
     )
     target_plant_phenology = TargetPlantPhenologySerializer(
         source="targetplantphenology"

@@ -11,7 +11,7 @@ from api.models.activity import (
 )
 
 
-class TerrestrialBiocontrolCollectionInfoSerializer(serializers.ModelSerializer):
+class TerrestrialBiocontrolCollectionEntrySerializer(serializers.ModelSerializer):
     actual_biological_agents = serializers.SerializerMethodField()
     estimated_biological_agents = serializers.SerializerMethodField()
 
@@ -58,8 +58,8 @@ class BiocontrolCollectionSerializer(serializers.Serializer):
     target_plant_phenology = TargetPlantPhenologySerializer(
         source="targetplantphenology"
     )
-    entries = TerrestrialBiocontrolCollectionInfoSerializer(
-        source="terrestrialbiocontrolcollectioninformation_set", many=True
+    entries = TerrestrialBiocontrolCollectionEntrySerializer(
+        source="terrestrialbiocontrolcollectionentry_set", many=True
     )
 
     def to_representation(self, instance):

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from api.models.activity import (
-    AquaticTreatmentMonitoringInformationEntry,
-    TerrestrialTreatmentMonitoringInformation,
+    AquaticTreatmentMonitoringEntry,
+    TerrestrialTreatmentMonitoringEntry,
     AquaticInvasivePlantOnSite,
     TerrestrialInvasivePlantOnSite,
 )
@@ -51,7 +51,7 @@ class TerrestrialTreatmentMonitoringSerializer(BaseTreatmentMonitoringSerializer
     invasive_plants_on_site = serializers.SerializerMethodField()
 
     class Meta(BaseTreatmentMonitoringSerializer.Meta):
-        model = TerrestrialTreatmentMonitoringInformation
+        model = TerrestrialTreatmentMonitoringEntry
 
     def get_invasive_plants_on_site(self, obj):
         """Search for invasive plants on site matching the record"""
@@ -76,7 +76,7 @@ class AquaticMechanicalMonitoringSerializer(BaseTreatmentMonitoringSerializer):
     invasive_plants_on_site = serializers.SerializerMethodField()
 
     class Meta(BaseTreatmentMonitoringSerializer.Meta):
-        model = AquaticTreatmentMonitoringInformationEntry
+        model = AquaticTreatmentMonitoringEntry
 
     def get_invasive_plants_on_site(self, obj):
         """Search for invasive plants on site matching the record"""
@@ -107,10 +107,10 @@ class TreatmentMonitoringEntriesSerializer(serializers.Serializer):
     """Shared Between Mechanical and Chemical Treatments"""
 
     a_monitoring_information = AquaticMechanicalMonitoringSerializer(
-        source="aquatictreatmentmonitoringinformation_set", many=True, required=False
+        source="monitoringtreatmententriespa_set", many=True, required=False
     )
     t_monitoring_information = TerrestrialTreatmentMonitoringSerializer(
-        source="terrestrialtreatmentmonitoringinformation_set",
+        source="monitoringtreatmententriespt_set",
         many=True,
         required=False,
     )

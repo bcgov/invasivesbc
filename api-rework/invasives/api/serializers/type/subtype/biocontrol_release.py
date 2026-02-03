@@ -51,7 +51,7 @@ class TerrestrialBiocontrolReleaseSerializer(serializers.ModelSerializer):
 
 class BiocontrolReleaseSerializer(serializers.Serializer):
     entries = TerrestrialBiocontrolReleaseSerializer(
-        source="terrestrialbiocontrolrelease_set", many=True
+        source="terrestrialbiocontrolreleaseentry_set", many=True
     )
     target_plant_phenology = TargetPlantPhenologySerializer(
         source="targetplantphenology"

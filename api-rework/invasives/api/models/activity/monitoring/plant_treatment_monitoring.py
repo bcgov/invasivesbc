@@ -58,7 +58,7 @@ class PlantMonitoringBase(BaseOneToManyActivityTable):
             self.treatment_efficacy_rating = None
 
 
-class TerrestrialTreatmentMonitoringInformation(PlantMonitoringBase):
+class TerrestrialTreatmentMonitoringEntry(PlantMonitoringBase):
     """
     Terrestrial Plant Specific Monitoring for Chemical / Mechanical treatments.
     """
@@ -69,7 +69,7 @@ class TerrestrialTreatmentMonitoringInformation(PlantMonitoringBase):
         db_table = '"activity"."monitoring_treatment_entries_pt"'
 
 
-class AquaticTreatmentMonitoringInformationEntry(PlantMonitoringBase):
+class AquaticTreatmentMonitoringEntry(PlantMonitoringBase):
     """
     Aquatic Plant Specific Monitoring for Chemical / Mechanical treatments.
     """
