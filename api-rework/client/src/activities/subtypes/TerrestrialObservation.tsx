@@ -3,7 +3,6 @@ import TextInput from 'common-components/inputs/TextInput';
 import { SubtypeData } from 'constants';
 
 const TerrestrialObservation = ({ subtypeData }: SubtypeData) => {
-  console.log(subtypeData);
   return (
     <>
       <Fieldset label={'observation info'}>
