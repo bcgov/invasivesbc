@@ -10,7 +10,7 @@ class AquaticChemicalTreatmentSerializer(serializers.Serializer):
     well_entries = NearestWellSerializer(source="nearestwell_set", many=True)
     entries = serializers.SerializerMethodField()
 
-    def get_treatment_chemical_details(self, obj):
+    def get_entries(self, obj):
         # TODO:
         return "NOT IMPLEMENTED"
 

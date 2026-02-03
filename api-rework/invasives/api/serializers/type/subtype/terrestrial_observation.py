@@ -129,7 +129,7 @@ class TerrestrialObservationSerializer(serializers.Serializer):
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)
-        info_data = ret.pop("observation_information", None)
+        info_data = ret.pop("context", None)
 
         if info_data and isinstance(info_data, dict):
             ret.update(info_data)

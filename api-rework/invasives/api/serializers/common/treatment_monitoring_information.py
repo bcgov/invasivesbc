@@ -123,7 +123,7 @@ class TreatmentMonitoringEntriesSerializer(serializers.Serializer):
         ret = super().to_representation(instance)
         am = ret.pop("a_monitoring_information", [])
         tm = ret.pop("t_monitoring_information", [])
-        ret.update({"treatment_monitoring_information": am + tm})
+        ret.update({"entries": am + tm})
         return ret
 
     def to_internal_value(self, data):
@@ -158,9 +158,7 @@ class TreatmentMonitoringEntriesSerializer(serializers.Serializer):
                 errors[idx] = serializer.errors
 
             if errors:
-                raise serializers.ValidationError(
-                    {"treatmentmonitoring_information": errors}
-                )
+                raise serializers.ValidationError({"entries": errors})
         return {
             "aquatictreatmentmonitoringinformation_set": a_items,
             "terrestrialtreatmentmonitoringinformation_set": t_items,

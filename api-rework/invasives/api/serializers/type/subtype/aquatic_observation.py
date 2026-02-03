@@ -169,7 +169,7 @@ class AquaticObservationSerializer(serializers.Serializer):
     adjacent_land_use = WaterbodyAdjacentLandUseSerializer(
         source="waterbodyadjacentlanduse_set", many=True
     )
-    observation_details = AquaticPlantObservationDetailSerializer(
+    entries = AquaticPlantObservationDetailSerializer(
         source="aquaticplantobservationdetail_set", many=True
     )
     pretreatment_observation = serializers.CharField(
