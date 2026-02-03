@@ -10,7 +10,7 @@ from api.models.codes.code_tables import (
 from api.models.enums.yes_no_unknown import YesNoUnknown
 
 
-class TerrestrialPlantObservationInfo(BaseOneToOneActivityTable):
+class TerrestrialPlantObservationContext(BaseOneToOneActivityTable):
     """
     section title:
       Observation Plant Terrestrial Information
@@ -34,7 +34,7 @@ class TerrestrialPlantObservationInfo(BaseOneToOneActivityTable):
     slope_percent = models.ForeignKey(SlopePercentCode, on_delete=models.PROTECT)
 
     class Meta:
-        db_table = '"activity"."terrestrial_plant_observation_info"'
+        db_table = '"activity"."observation_context_pt"'
         db_table_comment = "Details of surrounding area for a terrestrial activity."
 
     def clean(self):

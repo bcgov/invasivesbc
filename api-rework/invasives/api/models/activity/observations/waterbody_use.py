@@ -7,7 +7,7 @@ class WaterbodyUse(BaseOneToManyActivityTable):
     waterbody_use = models.ForeignKey(WaterbodyUseCode, on_delete=models.PROTECT)
 
     class Meta:
-        db_table = '"activity"."waterbody_use"'
+        db_table = '"activity"."water_use"'
         constraints = [
             models.UniqueConstraint(
                 fields=["activity", "waterbody_use"],
@@ -22,7 +22,7 @@ class WaterbodyAdjacentLandUse(BaseOneToManyActivityTable):
     )
 
     class Meta:
-        db_table = '"activity"."waterbody_adjacent_land_use"'
+        db_table = '"activity"."water_adjacent_land_use"'
         constraints = [
             models.UniqueConstraint(
                 fields=["activity", "waterbody_adjacent_land_use"],

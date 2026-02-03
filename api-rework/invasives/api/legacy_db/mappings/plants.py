@@ -7,8 +7,8 @@ from api.models.activity import (
     Activity,
     Participant,
     PretreatmentObservation,
-    TerrestrialPlantObservationDetail,
-    TerrestrialPlantObservationInfo,
+    TerrestrialPlantObservationEntries,
+    TerrestrialPlantObservationContext,
     TerrestrialVoucherSpecimen,
 )
 from api.models.codes import (
@@ -75,7 +75,7 @@ def add_terrestrial_plant_observation_information(new: Activity, old: LegacyActi
         old.activity_payload.form_data.activity_subtype_data.Observation_PlantTerrestrial_Information
     )
 
-    TerrestrialPlantObservationInfo.objects.create(
+    TerrestrialPlantObservationContext.objects.create(
         activity=new,
         research_observation=old_information.research_detection_ind,
         aspect=(
@@ -118,7 +118,7 @@ def add_subtype_payload_for_plant_terrestrial_observation(
         )
 
     for plant in old.activity_payload.form_data.activity_subtype_data.TerrestrialPlants:
-        TerrestrialPlantObservationDetail.objects.create(
+        TerrestrialPlantObservationEntries.objects.create(
             activity=new,
             observation_type=(
                 ObservationType.Positive.value

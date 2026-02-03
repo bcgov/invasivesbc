@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from api.serializers.common import ShorelineTypesSerializer
 from api.models.activity import (
-    AquaticPlantObservationDetail,
+    AquaticPlantObservationContext,
     AquaticVoucherSpecimen,
     WaterbodySubstrateType,
     WaterbodyOutflowPermanent,
@@ -9,7 +9,7 @@ from api.models.activity import (
     WaterbodyInflowPermanent,
     WaterbodyInflowSeasonal,
     WaterbodyType,
-    WaterbodyData,
+    WaterbodyContext,
     WaterbodyUse,
     WaterbodyLevelManagement,
     WaterbodyAdjacentLandUse,
@@ -101,7 +101,7 @@ class WaterbodyLevelManagementSerializer(serializers.ModelSerializer):
 
 class WaterbodyDataSerializer(serializers.ModelSerializer):
     class Meta:
-        model = WaterbodyData
+        model = WaterbodyContext
         fields = (
             "access",
             "colour",
@@ -137,7 +137,7 @@ class AquaticPlantObservationDetailSerializer(serializers.ModelSerializer):
     voucher_specimen = serializers.SerializerMethodField()
 
     class Meta:
-        model = AquaticPlantObservationDetail
+        model = AquaticPlantObservationContext
         fields = (
             "density",
             "distribution",

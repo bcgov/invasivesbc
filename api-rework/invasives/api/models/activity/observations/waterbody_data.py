@@ -4,7 +4,7 @@ from api.models.activity.abstract_sub_tables import BaseOneToOneActivityTable
 from api.models.enums.waterbody_type import WaterbodyType
 
 
-class WaterbodyData(BaseOneToOneActivityTable):
+class WaterbodyContext(BaseOneToOneActivityTable):
     type = models.TextField(choices=WaterbodyType)
     name_gazetted = models.CharField(max_length=256)
     name_local = models.CharField(max_length=256)
@@ -16,5 +16,5 @@ class WaterbodyData(BaseOneToOneActivityTable):
     comment = models.TextField(max_length=512)
 
     class Meta:
-        db_table = '"activity"."waterbody_data"'
+        db_table = '"activity"."waterbody_context"'
         pass

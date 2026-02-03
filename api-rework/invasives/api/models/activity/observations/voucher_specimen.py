@@ -30,7 +30,7 @@ class TerrestrialVoucherSpecimen(VoucherSpecimen):
     invasive_plant = models.ForeignKey(TerrestrialPlantCode, on_delete=models.PROTECT)
 
     class Meta:
-        db_table = '"activity"."terrestrial_voucher_specimen"'
+        db_table = '"activity"."voucher_specimen_pt"'
         pass
 
 
@@ -38,5 +38,5 @@ class AquaticVoucherSpecimen(VoucherSpecimen):
     invasive_plant = models.ForeignKey(AquaticPlantCode, on_delete=models.PROTECT)
 
     class Meta:
-        db_table = '"activity"."aquatic_voucher_specimen"'
+        db_table = '"activity"."voucher_specimen_pa"'
         pass

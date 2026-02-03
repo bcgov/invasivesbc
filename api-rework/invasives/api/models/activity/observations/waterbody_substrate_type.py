@@ -7,7 +7,7 @@ class WaterbodySubstrateType(BaseOneToManyActivityTable):
     substrate_type = models.ForeignKey(SubstrateCode, on_delete=models.PROTECT)
 
     class Meta:
-        db_table = '"activity"."waterbody_substrate_level"'
+        db_table = '"activity"."water_substrate_level"'
         constraints = [
             models.UniqueConstraint(
                 fields=["activity", "substrate_type"],

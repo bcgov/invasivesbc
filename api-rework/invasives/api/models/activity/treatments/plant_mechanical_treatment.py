@@ -11,7 +11,7 @@ from api.models.codes.code_tables import (
 from api.models.enums.plant_disposal_format import PlantDisposalFormat
 
 
-class PlantMechanicalTreatment(BaseOneToManyActivityTable):
+class PlantMechanicalTreatmentEntry(BaseOneToManyActivityTable):
     """
     Abstract Model for PlantMechanicalTreatments
     """
@@ -35,7 +35,7 @@ class PlantMechanicalTreatment(BaseOneToManyActivityTable):
         ]
 
 
-class TerrestrialPlantMechanicalTreatment(PlantMechanicalTreatment):
+class TerrestrialPlantMechanicalTreatmentEntry(PlantMechanicalTreatmentEntry):
     """
     Mechanical Treatment Information for Terrestrial Plant activities
     """
@@ -43,10 +43,10 @@ class TerrestrialPlantMechanicalTreatment(PlantMechanicalTreatment):
     invasive_plant = models.ForeignKey(TerrestrialPlantCode, on_delete=models.PROTECT)
 
     class Meta:
-        db_table = '"activity"."terrestrial_plant_mechanical_treatment"'
+        db_table = '"activity"."treatment_mechanical_entries_pt"'
 
 
-class AquaticPlantMechanicalTreatment(PlantMechanicalTreatment):
+class AquaticPlantMechanicalTreatmentEntry(PlantMechanicalTreatmentEntry):
     """
     Mechanical Treatment Information for Aquatic Plant activities
     """
@@ -54,4 +54,4 @@ class AquaticPlantMechanicalTreatment(PlantMechanicalTreatment):
     invasive_plant = models.ForeignKey(AquaticPlantCode, on_delete=models.PROTECT)
 
     class Meta:
-        db_table = '"activity"."aquatic_plant_mechanical_treatment"'
+        db_table = '"activity"."treatment_mechanical_entries_pa"'

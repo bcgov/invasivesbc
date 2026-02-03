@@ -1,11 +1,11 @@
 from rest_framework import serializers
-from api.serializers.common import TerrestrialBiocontrolAgentCountComplexSerializer
+from api.serializers.common import TerrestrialBiocontrolAgentCountExtendedSerializer
 from api.models.activity import (
     ActivitySubtypes,
     LocationBiocontrolAgentsFoundTerrestrial,
-    TerrestrialBiocontrolDispersalMonitoring,
+    TerrestrialBiocontrolDispersalMonitoringEntry,
     SignOfBiocontrolPresenceTerrestrial,
-    TerrestrialBiocontrolAgentCountComplex,
+    TerrestrialBiocontrolAgentCountExtended,
 )
 
 
@@ -37,7 +37,7 @@ class TerrestrialBiologicalMonitoringEntriesSerializer(serializers.ModelSerializ
     estimated_biological_agents = serializers.SerializerMethodField()
 
     class Meta:
-        model = TerrestrialBiocontrolDispersalMonitoring
+        model = TerrestrialBiocontrolDispersalMonitoringEntry
         fields = (
             "biocontrol_agent",
             "biocontrol_present",
@@ -58,22 +58,22 @@ class TerrestrialBiologicalMonitoringEntriesSerializer(serializers.ModelSerializ
         )
 
     def get_actual_biological_agents(self, obj):
-        qs = TerrestrialBiocontrolAgentCountComplex.objects.filter(
+        qs = TerrestrialBiocontrolAgentCountExtended.objects.filter(
             activity=obj.activity,
             is_estimate=False,
             invasive_plant=obj.invasive_plant,
             biocontrol_agent=obj.biocontrol_agent,
         )
-        return TerrestrialBiocontrolAgentCountComplexSerializer(qs, many=True).data
+        return TerrestrialBiocontrolAgentCountExtendedSerializer(qs, many=True).data
 
     def get_estimated_biological_agents(self, obj):
-        qs = TerrestrialBiocontrolAgentCountComplex.objects.filter(
+        qs = TerrestrialBiocontrolAgentCountExtended.objects.filter(
             activity=obj.activity,
             is_estimate=True,
             invasive_plant=obj.invasive_plant,
             biocontrol_agent=obj.biocontrol_agent,
         )
-        return TerrestrialBiocontrolAgentCountComplexSerializer(qs, many=True).data
+        return TerrestrialBiocontrolAgentCountExtendedSerializer(qs, many=True).data
 
     def get_sign_of_biocontrol_presence(self, obj):
         sbpt = SignOfBiocontrolPresenceTerrestrial.objects.filter(

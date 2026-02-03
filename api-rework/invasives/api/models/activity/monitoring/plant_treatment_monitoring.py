@@ -66,10 +66,10 @@ class TerrestrialTreatmentMonitoringInformation(PlantMonitoringBase):
     invasive_plant = models.ForeignKey(TerrestrialPlantCode, on_delete=models.PROTECT)
 
     class Meta:
-        db_table = '"activity"."terrestrial_treatment_monitoring_info"'
+        db_table = '"activity"."monitoring_treatment_entries_pt"'
 
 
-class AquaticTreatmentMonitoringInformation(PlantMonitoringBase):
+class AquaticTreatmentMonitoringInformationEntry(PlantMonitoringBase):
     """
     Aquatic Plant Specific Monitoring for Chemical / Mechanical treatments.
     """
@@ -77,4 +77,4 @@ class AquaticTreatmentMonitoringInformation(PlantMonitoringBase):
     invasive_plant = models.ForeignKey(AquaticPlantCode, on_delete=models.PROTECT)
 
     class Meta:
-        db_table = '"activity"."aquatic_treatment_monitoring_info"'
+        db_table = '"activity"."monitoring_treatment_entries_pa"'

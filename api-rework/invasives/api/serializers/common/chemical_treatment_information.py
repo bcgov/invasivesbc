@@ -1,10 +1,10 @@
 from rest_framework import serializers
-from api.models.activity import ChemTreatment
+from api.models.activity import ChemTreatmentContext
 
 
 class ChemicalTreatmentContextSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ChemTreatment
+        model = ChemTreatmentContext
         fields = (
             "service_license_number",
             "pesticide_use_permit",

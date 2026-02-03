@@ -3,7 +3,7 @@ from django.db import models
 from api.models.activity.abstract_sub_tables import BaseOneToManyActivityTable
 
 
-class NearestWell(BaseOneToManyActivityTable):
+class WellEntry(BaseOneToManyActivityTable):
     """
     Identifier for Registered wells in proximity of a Chemical Treatment Site.
     Distance is based on the Centroid value of the Activity shape
@@ -17,7 +17,7 @@ class NearestWell(BaseOneToManyActivityTable):
     )
 
     class Meta:
-        db_table = '"activity"."nearest_well"'
+        db_table = '"activity"."well_entries"'
         constraints = [
             models.UniqueConstraint(
                 fields=["activity", "well_tag_number"],

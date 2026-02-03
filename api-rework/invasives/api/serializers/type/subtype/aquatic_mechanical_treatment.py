@@ -1,11 +1,11 @@
 from rest_framework import serializers
-from api.models.activity import AquaticPlantMechanicalTreatment
+from api.models.activity import AquaticPlantMechanicalTreatmentEntry
 from api.serializers.common import ShorelineTypesSerializer
 
 
 class AquaticPlantMechanicalTreatmentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = AquaticPlantMechanicalTreatment
+        model = AquaticPlantMechanicalTreatmentEntry
         fields = (
             "disposed_material_amount",
             "disposed_material_format",

@@ -10,4 +10,4 @@ class AquaticMechanicalAuthorization(BaseOneToOneActivityTable):
     )
 
     class Meta:
-        db_table = '"activity"."aquatic_mechanical_authorization"'
+        db_table = '"activity"."mechanical_authorization_pa"'

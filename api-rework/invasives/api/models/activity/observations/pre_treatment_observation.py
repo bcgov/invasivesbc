@@ -13,7 +13,7 @@ class PretreatmentObservation(BaseOneToOneActivityTable):
     pre_treatment_observation = models.CharField(choices=YesNoUnknown)
 
     class Meta:
-        db_table = '"activity"."pre_treatment_observation"'
+        db_table = '"activity"."observation_pre_treatment_p"'
         db_table_comment = "Detail that an Observation has taken place before any known Treatments have occured"
         pass
 

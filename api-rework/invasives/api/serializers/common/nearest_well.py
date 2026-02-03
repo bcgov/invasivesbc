@@ -1,8 +1,8 @@
 from rest_framework import serializers
-from api.models.activity import NearestWell
+from api.models.activity import WellEntry
 
 
 class NearestWellSerializer(serializers.ModelSerializer):
     class Meta:
-        model = NearestWell
+        model = WellEntry
         fields = ("well_tag_number", "distance")

@@ -1,10 +1,10 @@
 from rest_framework import serializers
-from api.models.activity import TerrestrialPlantMechanicalTreatment
+from api.models.activity import TerrestrialPlantMechanicalTreatmentEntry
 
 
 class TerrestrialPlantMechanicalTreatmentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = TerrestrialPlantMechanicalTreatment
+        model = TerrestrialPlantMechanicalTreatmentEntry
         fields = (
             "disposed_material_amount",
             "disposed_material_format",

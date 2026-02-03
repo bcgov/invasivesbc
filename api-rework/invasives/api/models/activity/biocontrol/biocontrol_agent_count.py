@@ -86,7 +86,7 @@ class BiocontrolAgentCountComplex(BiocontrolAgentCountSimple):
 ####
 
 
-class TerrestrialBiocontrolAgentCountSimple(BiocontrolAgentCountSimple):
+class TerrestrialBiocontrolAgentCount(BiocontrolAgentCountSimple):
     """
     consumed by:
       - Biocontrol Collection
@@ -96,11 +96,11 @@ class TerrestrialBiocontrolAgentCountSimple(BiocontrolAgentCountSimple):
     invasive_plant = models.ForeignKey(TerrestrialPlantCode, on_delete=models.PROTECT)
 
     class Meta:
-        db_table = '"activity"."terrestrial_biocontrol_agent_count_simple"'
+        db_table = '"activity"."biocontrol_agent_count_pt"'
         pass
 
 
-class TerrestrialBiocontrolAgentCountComplex(BiocontrolAgentCountComplex):
+class TerrestrialBiocontrolAgentCountExtended(BiocontrolAgentCountComplex):
     """
     consumed by:
       - Biocontrol Dispersal Monitoring
@@ -109,5 +109,5 @@ class TerrestrialBiocontrolAgentCountComplex(BiocontrolAgentCountComplex):
     invasive_plant = models.ForeignKey(TerrestrialPlantCode, on_delete=models.PROTECT)
 
     class Meta:
-        db_table = '"activity"."terrestrial_biocontrol_agent_count_complex"'
+        db_table = '"activity"."biocontrol_agent_count_extended_pt"'
         pass

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from api.models.activity import (
-    AquaticTreatmentMonitoringInformation,
+    AquaticTreatmentMonitoringInformationEntry,
     TerrestrialTreatmentMonitoringInformation,
     AquaticInvasivePlantOnSite,
     TerrestrialInvasivePlantOnSite,
@@ -76,7 +76,7 @@ class AquaticMechanicalMonitoringSerializer(BaseTreatmentMonitoringSerializer):
     invasive_plants_on_site = serializers.SerializerMethodField()
 
     class Meta(BaseTreatmentMonitoringSerializer.Meta):
-        model = AquaticTreatmentMonitoringInformation
+        model = AquaticTreatmentMonitoringInformationEntry
 
     def get_invasive_plants_on_site(self, obj):
         """Search for invasive plants on site matching the record"""
