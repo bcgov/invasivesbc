@@ -119,7 +119,7 @@
     }
   },
   {
-    "model": "api.TerrestrialBiocontrolCollectionInformation",
+    "model": "api.TerrestrialBiocontrolCollectionEntry",
     "pk": 1,
     "fields": {
       "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
@@ -135,7 +135,7 @@
     }
   },
   {
-    "model": "api.TerrestrialBiocontrolCollectionInformation",
+    "model": "api.TerrestrialBiocontrolCollectionEntry",
     "pk": 2,
     "fields": {
       "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
@@ -151,7 +151,7 @@
     }
   },
   {
-    "model": "api.TerrestrialBiocontrolAgentCountSimple",
+    "model": "api.TerrestrialBiocontrolAgentCount",
     "pk": 1,
     "fields": {
       "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
@@ -163,7 +163,7 @@
     }
   },
   {
-    "model": "api.TerrestrialBiocontrolAgentCountSimple",
+    "model": "api.TerrestrialBiocontrolAgentCount",
     "pk": 2,
     "fields": {
       "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
