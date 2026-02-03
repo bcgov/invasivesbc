@@ -17,9 +17,7 @@ class BiocontrolReleaseTest(BaseActivitySubtypeTest):
         self.no_pac_number_present()
 
     def test_casting_fixture_into_serializer(self):
-        self.casting_fixture_into_serializer(
-            expected_subtype_key="treatment_information"
-        )
+        self.casting_fixture_into_serializer(expected_subtype_key="entries")
 
     def test_subtype_details_full(self):
         """Subtype keys match the information from fixtures."""
@@ -27,7 +25,7 @@ class BiocontrolReleaseTest(BaseActivitySubtypeTest):
 
         sd = response_object["subtype_data"]
 
-        ti = sd["treatment_information"]
+        ti = sd["entries"]
         self.assertEqual(len(ti), 1)
         ti = ti[0]
 

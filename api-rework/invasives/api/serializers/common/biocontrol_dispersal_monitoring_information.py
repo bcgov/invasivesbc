@@ -27,7 +27,7 @@ class LocationBiocontrolAgentsFoundTerrestrialSerializer(serializers.ModelSerial
         return super().to_representation(instance)["location_agent_found"]
 
 
-class TerrestrialBiologicalMonitoringInformationSerializer(serializers.ModelSerializer):
+class TerrestrialBiologicalMonitoringEntriesSerializer(serializers.ModelSerializer):
     """Serializer for Biocontrol Dispersal/Release Monitoring records"""
 
     biocontrol_present = serializers.SerializerMethodField()

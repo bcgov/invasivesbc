@@ -3,14 +3,12 @@ import TextInput from 'common-components/inputs/TextInput';
 import { SubtypeData } from 'constants';
 import BiocontrolMonitoring from './common/BiocontrolMonitoring';
 import TargetPlantPhenology from './common/TargetPlantPhenology';
+import MicrositeConditions from './common/MicrositeConditions';
 
 const ReleaseMonitoring = ({ subtypeData }: SubtypeData) => (
   <>
-    <Fieldset label={'microsite conditions'}>
-      <TextInput label={'site surface shape'} value={subtypeData?.microsite_conditions?.site_surface_shape} />
-      <TextInput label={'mesoslope position'} value={subtypeData?.microsite_conditions?.mesoslope_position} />
-    </Fieldset>
-    <BiocontrolMonitoring monitoring_information={subtypeData.monitoring_information} />
+    <MicrositeConditions microsite_conditions={subtypeData?.microsite_conditions} />
+    <BiocontrolMonitoring entries={subtypeData.entries} />
     <TargetPlantPhenology targetPlantPhenology={subtypeData?.target_plant_phenology} />
     <Fieldset label={'Spread Results'}>
       <TextInput

@@ -12,86 +12,106 @@ import AquaticMechTreatment from 'activities/subtypes/AquaticMechTreatment';
 import TerrestrialMechTreatment from 'activities/subtypes/TerrestrialMechTreatment';
 import TerrestrialChemTreatment from 'activities/subtypes/TerrestrialChemTreatment';
 import AquaticChemTreatment from 'activities/subtypes/AquaticChemTreatment';
+import FormMap from 'common-components/form-map/FormMap';
+import DispersalMonitoring from 'activities/subtypes/DispersalMonitoring';
+import BiocontrolCollection from 'activities/subtypes/BiocontrolCollection';
+import BiocontrolRelease from 'activities/subtypes/BiocontrolRelease';
+import { useEffect } from 'react';
 
-const FormViewer = ({ formData }) => (
-  <div className="content">
-    <div className="form-viewer">
-      <Fieldset label={'Basic Information'}>
-        <TextInput label={'short id'} value={formData?.short_id} />
-        <TextInput label={'activity date'} value={formData?.date} />
-        <TextInput label={'created by'} value={formData?.created_by} />
-        <TextInput label={'subtype'} value={formData?.subtype} />
-        <TextInput label={'form status'} value={formData?.form_status} />
+const FormViewer = ({ formData }) => {
+  useEffect(() => {
+    // Inserts <p> tags into empty fieldsets where array data would otherwise populate. Used for flagging missing fields
+    const emptyFieldsets = document.querySelectorAll('fieldset:has(> legend):not(:has(> :not(legend)))');
+    emptyFieldsets.forEach((f) => (f.innerHTML += '<p class="warning">NO DATA</>'));
+  }, []);
+
+  return (
+    <div className="content">
+      <div className="form-viewer">
+        <Fieldset label={'Basic Information'}>
+          <TextInput label={'short id'} value={formData?.short_id} />
+          <TextInput label={'activity date'} value={formData?.date} />
+          <TextInput label={'created by'} value={formData?.created_by} />
+          <TextInput label={'subtype'} value={formData?.subtype} />
+          <TextInput label={'form status'} value={formData?.form_status} />
+          <FormMap
+          // TODO: geojson={} ADD GEOJSON WHEN READY
+          />
+          <TextInput label={'latitude'} value={formData?.latitude} />
+          <TextInput label={'longitude'} value={formData?.longitude} />
+          <TextInput label={'area (m)'} value={formData?.area_m} />
+          <TextInput label={'UTM Easting'} value={formData?.utm_easting} />
+          <TextInput label={'UTM Northing'} value={formData?.utm_northing} />
+          <TextInput label={'UTM Zone'} value={formData?.utm_zone} />
+          <TextField label={'location description'} value={formData?.location_description} />
+          <TextField label={'access description'} value={formData?.access_description} />
+          <TextField label={'comment'} value={formData?.comment} />
+        </Fieldset>
+        <Fieldset label={'project codes'} small>
+          {formData?.projects.map(({ description }) => (
+            <TextInput value={description} />
+          ))}
+        </Fieldset>
+        <Fieldset label={'employers'} small>
+          {formData?.employer.map(({ employer }) => (
+            <TextInput value={employer} />
+          ))}
+        </Fieldset>
+        <Fieldset label={'funding agencies'} small>
+          {formData?.funding_agencies.map(({ invasive_species_agency_code }) => (
+            <TextInput value={invasive_species_agency_code} />
+          ))}
+        </Fieldset>
+        <Fieldset label={'jurisdictions'} small>
+          {formData?.jurisdictions.map(({ jurisdiction, percent_covered }) => (
+            <div className="group-wrap">
+              <TextInput label={'jurisdiction'} value={jurisdiction} />
+              <TextInput label={'percent covered'} value={percent_covered} />
+            </div>
+          ))}
+        </Fieldset>
+        <Fieldset label={'participants'} small>
+          {formData?.participants.map(({ name, pac_number }) => (
+            <div className="group-wrap">
+              {pac_number && <TextInput label={'PAC number'} value={pac_number} />}
+              <TextInput label={'name'} value={name} />
+            </div>
+          ))}
+        </Fieldset>
+        <Fieldset label={'Linked Records'}>
+          {formData?.linked_activities?.map(({ full, short_id }) => (
+            <div className="group-wrap">
+              <TextInput label={'Short ID'} value={short_id} />
+              <TextInput label={'Full'} value={full} />
+            </div>
+          ))}
+        </Fieldset>
         <Spacer />
-        <TextInput label={'latitude'} value={formData?.latitude} />
-        <TextInput label={'longitude'} value={formData?.longitude} />
-        <TextInput label={'area (m)'} value={formData?.area_m} />
-        <TextInput label={'UTM Easting'} value={formData?.utm_easting} />
-        <TextInput label={'UTM Northing'} value={formData?.utm_northing} />
-        <TextInput label={'UTM Zone'} value={formData?.utm_zone} />
-        <TextField label={'location description'} value={formData?.location_description} />
-        <TextField label={'access description'} value={formData?.access_description} />
-        <TextField label={'comment'} value={formData?.comment} />
-      </Fieldset>
-      <Fieldset label={'project codes'} small>
-        {formData?.projects.map(({ description }) => (
-          <TextInput value={description} />
-        ))}
-      </Fieldset>
-      <Fieldset label={'employers'} small>
-        {formData?.employer.map(({ employer }) => (
-          <TextInput value={employer} />
-        ))}
-      </Fieldset>
-      <Fieldset label={'funding agencies'} small>
-        {formData?.funding_agencies.map(({ invasive_species_agency_code }) => (
-          <TextInput value={invasive_species_agency_code} />
-        ))}
-      </Fieldset>
-      <Fieldset label={'jurisdictions'} small>
-        {formData?.jurisdictions.map(({ jurisdiction, percent_covered }) => (
-          <div className="group-wrap">
-            <TextInput label={'jurisdiction'} value={jurisdiction} />
-            <TextInput label={'percent covered'} value={percent_covered} />
-          </div>
-        ))}
-      </Fieldset>
-      <Fieldset label={'participants'} small>
-        {formData?.participants.map(({ name, pac_number }) => (
-          <div className="group-wrap">
-            {pac_number && <TextInput label={'PAC number'} value={pac_number} />}
-            <TextInput label={'name'} value={name} />
-          </div>
-        ))}
-      </Fieldset>
-      <Fieldset label={'Linked Records'}>
-        {formData?.linked_activities?.map(({ full, short_id }) => (
-          <div className="group-wrap">
-            <TextInput label={'Short ID'} value={short_id} />
-            <TextInput label={'Full'} value={full} />
-          </div>
-        ))}
-      </Fieldset>
-      <Spacer />
-      <Spacer />
-      <h2>Subtype Specific Details</h2>
-      {
+        <Spacer />
+        <h2>Subtype Specific Details</h2>
         {
-          Observation_Plant_Terrestrial: <TerrestrialObservation subtypeData={formData?.subtype_data} />,
-          Observation_Plant_Aquatic: <AquaticObservation subtypeData={formData?.subtype_data} />,
-          Monitoring_Chemical_Plant_Terrestrial_Aquatic: <ChemicalMonitoring subtypeData={formData?.subtype_data} />,
-          Monitoring_Mechanical_Plant_Terrestrial_Aquatic: (
-            <MechanicalMonitoring subtypeData={formData?.subtype_data} />
-          ),
-          Monitoring_Biocontrol_Release_Plant_Terrestrial: <ReleaseMonitoring subtypeData={formData?.subtype_data} />,
-          Treatment_Mechanical_Plant_Terrestrial: <TerrestrialMechTreatment subtypeData={formData?.subtype_data} />,
-          Treatment_Mechanical_Plant_Aquatic: <AquaticMechTreatment subtypeData={formData?.subtype_data} />,
-          Treatment_Chemical_Plant_Terrestrial: <TerrestrialChemTreatment subtypeData={formData?.subtype_data} />,
-          Treatment_Chemical_Plant_Aquatic: <AquaticChemTreatment subtypeData={formData?.subtype_data} />
-        }[formData?.subtype]
-      }
+          {
+            Observation_Plant_Terrestrial: <TerrestrialObservation subtypeData={formData?.subtype_data} />,
+            Observation_Plant_Aquatic: <AquaticObservation subtypeData={formData?.subtype_data} />,
+            Monitoring_Chemical_Plant_Terrestrial_Aquatic: <ChemicalMonitoring subtypeData={formData?.subtype_data} />,
+            Monitoring_Mechanical_Plant_Terrestrial_Aquatic: (
+              <MechanicalMonitoring subtypeData={formData?.subtype_data} />
+            ),
+            Monitoring_Biocontrol_Release_Plant_Terrestrial: <ReleaseMonitoring subtypeData={formData?.subtype_data} />,
+            Treatment_Mechanical_Plant_Terrestrial: <TerrestrialMechTreatment subtypeData={formData?.subtype_data} />,
+            Treatment_Mechanical_Plant_Aquatic: <AquaticMechTreatment subtypeData={formData?.subtype_data} />,
+            Treatment_Chemical_Plant_Terrestrial: <TerrestrialChemTreatment subtypeData={formData?.subtype_data} />,
+            Treatment_Chemical_Plant_Aquatic: <AquaticChemTreatment subtypeData={formData?.subtype_data} />,
+            Monitoring_Biocontrol_Dispersal_Plant_Terrestrial: (
+              <DispersalMonitoring subtypeData={formData?.subtype_data} />
+            ),
+            Biocontrol_Collection: <BiocontrolCollection subtypeData={formData?.subtype_data} />,
+            Biocontrol_Release: <BiocontrolRelease subtypeData={formData?.subtype_data} />
+          }[formData?.subtype]
+        }
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default FormViewer;

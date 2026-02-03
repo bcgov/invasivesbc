@@ -3,29 +3,20 @@ import TextInput from 'common-components/inputs/TextInput';
 import { SubtypeData } from 'constants';
 
 const TerrestrialObservation = ({ subtypeData }: SubtypeData) => {
-  const BLANK = 'N/A';
+  console.log(subtypeData);
   return (
     <>
       <Fieldset label={'observation info'}>
         <TextInput label="pretreatment observation" value={subtypeData?.pretreatment_observation} />
         <TextInput label="research observation" value={subtypeData?.research_observation} />
-        <TextInput
-          label="aspect"
-          value={`${subtypeData?.aspect?.full ?? BLANK} (${subtypeData?.aspect?.code ?? BLANK})`}
-        />
-        <TextInput
-          label="slope percent"
-          value={`${subtypeData.slope_percent.full ?? BLANK} (${subtypeData.slope_percent.code ?? BLANK})`}
-        />
-        <TextInput
-          label="soil texture"
-          value={`${subtypeData?.soil_texture?.full ?? BLANK} (${subtypeData.soil_texture?.code ?? BLANK})`}
-        />
-        <TextInput label="specific use" value={`${subtypeData.specific_use.full} (${subtypeData.specific_use.code})`} />
+        <TextInput label="aspect" value={subtypeData?.aspect} />
+        <TextInput label="slope percent" value={subtypeData?.slope_percent} />
+        <TextInput label="soil texture" value={subtypeData?.soil_texture} />
+        <TextInput label="specific use" value={subtypeData.specific_use} />
         <TextInput label="suitable for biocontrol agent" value={subtypeData.suitable_for_biocontrol_agent} />
       </Fieldset>
       <Fieldset label={'observation details'}>
-        {subtypeData?.observation_details.map((od) => (
+        {subtypeData?.entries.map((od) => (
           <div className="group-wrap">
             <TextInput label="density" value={od?.density} />
             <TextInput label="distribution" value={od?.distribution} />

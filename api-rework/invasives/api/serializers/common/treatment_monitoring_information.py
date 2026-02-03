@@ -103,7 +103,7 @@ class AquaticMechanicalMonitoringSerializer(BaseTreatmentMonitoringSerializer):
         return ret
 
 
-class TreatmentMonitoringInfoSerializer(serializers.Serializer):
+class TreatmentMonitoringEntriesSerializer(serializers.Serializer):
     """Shared Between Mechanical and Chemical Treatments"""
 
     a_monitoring_information = AquaticMechanicalMonitoringSerializer(
@@ -123,12 +123,12 @@ class TreatmentMonitoringInfoSerializer(serializers.Serializer):
         ret = super().to_representation(instance)
         am = ret.pop("a_monitoring_information", [])
         tm = ret.pop("t_monitoring_information", [])
-        ret.update({"treatment_monitoring_information": am + tm})
+        ret.update({"entries": am + tm})
         return ret
 
     def to_internal_value(self, data):
         """Split incoming list into respective models, normalize aquatic plant key to consistent generic in DB"""
-        items = data.get("treatment_monitoring_information", [])
+        items = data.get("entries", [])
         a_items = []
         t_items = []
         errors = {}
@@ -158,9 +158,7 @@ class TreatmentMonitoringInfoSerializer(serializers.Serializer):
                 errors[idx] = serializer.errors
 
             if errors:
-                raise serializers.ValidationError(
-                    {"treatmentmonitoring_information": errors}
-                )
+                raise serializers.ValidationError({"entries": errors})
         return {
             "aquatictreatmentmonitoringinformation_set": a_items,
             "terrestrialtreatmentmonitoringinformation_set": t_items,

@@ -3,9 +3,9 @@ import Fieldset from 'common-components/inputs/Fieldset';
 import Spacer from 'common-components/inputs/Spacer';
 import TextInput from 'common-components/inputs/TextInput';
 
-const BiocontrolMonitoring = ({ monitoring_information }) => (
+const BiocontrolMonitoring = ({ entries }) => (
   <Fieldset label={'Biological Monitoring Information'}>
-    {monitoring_information.map((mi) => (
+    {entries.map((mi) => (
       <div className="group-wrap">
         <TextInput label={'Invasive plant'} value={mi.invasive_plant} />
         <TextInput label={'Biological Agent'} value={mi.biocontrol_agent} />

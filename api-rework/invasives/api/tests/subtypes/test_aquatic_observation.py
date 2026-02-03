@@ -28,13 +28,13 @@ class AquaticObservationTest(BaseActivitySubtypeTest):
         # self.assertEqual(sd["suitable_for_biocontrol"], "No")
         self.assertEqual(sd["pretreatment_observation"], "Yes")
 
-        self.assertGreaterEqual(len(sd["observation_details"]), 1)
+        self.assertGreaterEqual(len(sd["entries"]), 1)
         self.assertIn("WET", sd["inflow_permanent"])
         self.assertIn("DISP", sd["inflow_seasonal"])
         self.assertIn("WET", sd["outflow_permanent"])
         self.assertIn("WET", sd["outflow_seasonal"])
         self.assertIn("Dam", sd["waterlevel_management"])
-        self.assertIn("AI", sd["waterbody_use"])
+        self.assertIn("AI", sd["water_use"])
         self.assertIn("GR", sd["substrate_type"])
         self.assertIn("H", sd["adjacent_land_use"])
 
@@ -42,7 +42,7 @@ class AquaticObservationTest(BaseActivitySubtypeTest):
         self.assertEqual(st["shoreline_type"], "LGA")
         self.assertEqual(st["percent_covered"], 100)
 
-        od = sd["observation_details"][0]
+        od = sd["entries"][0]
         self.assertEqual(od["density"], "D")
         self.assertEqual(od["distribution"], "WS")
         self.assertEqual(od["invasive_plant"], "JK")
@@ -72,7 +72,7 @@ class AquaticObservationTest(BaseActivitySubtypeTest):
         # @todo add subtype observation info class
         # self.assertEqual(sd["suitable_for_biocontrol"], "Yes")
         self.assertEqual(sd["pretreatment_observation"], "No")
-        self.assertEqual(len(sd["observation_details"]), 2)
+        self.assertEqual(len(sd["entries"]), 2)
 
         obs_detail = [
             {
@@ -95,4 +95,4 @@ class AquaticObservationTest(BaseActivitySubtypeTest):
             },
         ]
 
-        self.assertCountEqual(obs_detail, sd["observation_details"])
+        self.assertCountEqual(obs_detail, sd["entries"])

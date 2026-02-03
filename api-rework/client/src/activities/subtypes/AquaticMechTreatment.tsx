@@ -18,7 +18,7 @@ const AquaticMechTreatment = ({ subtypeData }: SubtypeData) => (
         </div>
       ))}
     </Fieldset>
-    <MechTreatmentInfo treatmentInfo={subtypeData?.mechanical_treatments} />
+    <MechTreatmentInfo entries={subtypeData?.entries} />
   </>
 );
 

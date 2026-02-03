@@ -58,7 +58,7 @@ class BiocontrolCollectionSerializer(serializers.Serializer):
     target_plant_phenology = TargetPlantPhenologySerializer(
         source="targetplantphenology"
     )
-    collection_information = TerrestrialBiocontrolCollectionInfoSerializer(
+    entries = TerrestrialBiocontrolCollectionInfoSerializer(
         source="terrestrialbiocontrolcollectioninformation_set", many=True
     )
 

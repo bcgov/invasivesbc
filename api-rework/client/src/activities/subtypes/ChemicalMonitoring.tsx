@@ -4,12 +4,11 @@ import MonitoringInfo from './common/MonitoringInfo';
 import NearestWells from './common/NearestWells';
 
 const ChemicalMonitoring = ({ subtypeData }: SubtypeData) => {
-  console.log(subtypeData);
   return (
     <>
-      <NearestWells data={subtypeData?.nearest_wells} />
+      <NearestWells data={subtypeData?.well_entries} />
       <Fieldset label={'Monitoring Information'}>
-        {subtypeData?.treatment_monitoring_information?.map((d) => (
+        {subtypeData?.entries?.map((d) => (
           <MonitoringInfo data={d} />
         ))}
       </Fieldset>
