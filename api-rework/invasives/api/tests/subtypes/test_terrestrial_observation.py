@@ -33,9 +33,9 @@ class TerrestrialObservationTest(BaseActivitySubtypeTest):
         self.assertEqual(sd["slope_percent"]["code"], "SS")
         self.assertEqual(sd["soil_texture"]["code"], "M")
         self.assertEqual(sd["pretreatment_observation"], "Yes")
-        self.assertGreaterEqual(len(sd["observation_details"]), 1)
+        self.assertGreaterEqual(len(sd["entries"]), 1)
 
-        od = sd["observation_details"][0]
+        od = sd["entries"][0]
         self.assertEqual(od["density"], "D")
         self.assertEqual(od["distribution"], "WS")
         self.assertEqual(od["invasive_plant"], "JK")
@@ -68,7 +68,7 @@ class TerrestrialObservationTest(BaseActivitySubtypeTest):
         self.assertEqual(sd["aspect"]["code"], "NA")
         self.assertEqual(sd["slope_percent"]["code"], "VT")
         self.assertEqual(sd["soil_texture"]["code"], "F")
-        self.assertEqual(len(sd["observation_details"]), 2)
+        self.assertEqual(len(sd["entries"]), 2)
 
         obs_detail = [
             {
@@ -89,4 +89,4 @@ class TerrestrialObservationTest(BaseActivitySubtypeTest):
             },
         ]
 
-        self.assertCountEqual(obs_detail, sd["observation_details"])
+        self.assertCountEqual(obs_detail, sd["entries"])
