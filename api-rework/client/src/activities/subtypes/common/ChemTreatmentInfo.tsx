@@ -6,7 +6,7 @@ import Fieldset from 'common-components/inputs/Fieldset';
 const ChemTreatmentInfo = ({ subtypeData }: SubtypeData) => {
   return (
     <>
-      <NearestWells data={subtypeData?.well_information} />
+      <NearestWells data={subtypeData?.well_entries} />
       <div className="group-wrap">
         <TextInput label={'service license number'} value={subtypeData?.service_license_number} />
         <TextInput label={'pesticide use permit'} value={subtypeData?.pesticide_use_permit} />

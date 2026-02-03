@@ -128,7 +128,7 @@ class TreatmentMonitoringEntriesSerializer(serializers.Serializer):
 
     def to_internal_value(self, data):
         """Split incoming list into respective models, normalize aquatic plant key to consistent generic in DB"""
-        items = data.get("treatment_monitoring_information", [])
+        items = data.get("entries", [])
         a_items = []
         t_items = []
         errors = {}

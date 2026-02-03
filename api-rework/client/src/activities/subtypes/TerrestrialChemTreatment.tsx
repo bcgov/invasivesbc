@@ -8,7 +8,7 @@ const TerrestrialChemTreatment = ({ subtypeData }: SubtypeData) => {
     <>
       <ChemTreatmentInfo subtypeData={subtypeData} />
       <Fieldset label={'Chem Treatment Details'}>
-        <TextInput value={subtypeData?.chem_treatment_details} />
+        <TextInput value={subtypeData?.entries} />
       </Fieldset>
     </>
   );

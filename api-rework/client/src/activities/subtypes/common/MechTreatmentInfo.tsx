@@ -1,9 +1,9 @@
 import Fieldset from 'common-components/inputs/Fieldset';
 import TextInput from 'common-components/inputs/TextInput';
 
-const MechTreatmentInfo = ({ treatmentInfo }) => (
+const MechTreatmentInfo = ({ entries }) => (
   <Fieldset label={'Mechanical Treatment Info'}>
-    {treatmentInfo?.map((ti) => (
+    {entries?.map((ti) => (
       <div className="group-wrap">
         <TextInput label={'Invasive Plant'} value={ti?.invasive_plant} />
         <TextInput label={'Treated Area (m2)'} value={ti?.treated_area_msq} />

@@ -7,7 +7,7 @@ from api.serializers.common import (
 
 class TerrestrialChemicalTreatmentSerializer(serializers.Serializer):
     details = ChemicalTreatmentContextSerializer(source="chemtreatment")
-    well_information = NearestWellSerializer(source="nearestwell_set", many=True)
+    well_entries = NearestWellSerializer(source="nearestwell_set", many=True)
     entries = serializers.SerializerMethodField()
 
     def get_entries(self, obj):

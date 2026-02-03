@@ -47,7 +47,7 @@ const AquaticObservation = ({ subtypeData }: SubtypeData) => {
       </Fieldset>
 
       <Fieldset label={'observation details'}>
-        {subtypeData?.observation_details.map((od) => (
+        {subtypeData?.entries.map((od) => (
           <div className="group-wrap">
             <TextInput label="density" value={od.density} />
             <TextInput label="distribution" value={od.distribution} />
