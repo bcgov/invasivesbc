@@ -1,22 +1,22 @@
 from rest_framework import serializers
 from api.serializers.common import (
     NearestWellSerializer,
-    ChemicalTreatmentInformationSerializer,
+    ChemicalTreatmentContextSerializer,
 )
 
 
 class TerrestrialChemicalTreatmentSerializer(serializers.Serializer):
-    chem_treatment = ChemicalTreatmentInformationSerializer(source="chemtreatment")
-    well_information = NearestWellSerializer(source="nearestwell_set", many=True)
-    chem_treatment_details = serializers.SerializerMethodField()
+    details = ChemicalTreatmentContextSerializer(source="chemtreatment")
+    well_entries = NearestWellSerializer(source="nearestwell_set", many=True)
+    entries = serializers.SerializerMethodField()
 
-    def get_chem_treatment_details(self, obj):
+    def get_entries(self, obj):
         # TODO:
         return "NOT IMPLEMENTED"
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)
-        info_data = ret.pop("chem_treatment", None)
+        info_data = ret.pop("details", None)
         if info_data and isinstance(info_data, dict):
             ret.update(info_data)
         return ret

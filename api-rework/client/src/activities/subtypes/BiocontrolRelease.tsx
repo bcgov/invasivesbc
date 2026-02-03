@@ -11,8 +11,8 @@ const BiocontrolRelease = ({ subtypeData }: SubtypeData) => {
       <WeatherConditions subtypeData={subtypeData} />
       <MicrositeConditions microsite_conditions={subtypeData?.microsite_conditions} />
       <Fieldset label={'Treatment Information'}>
-        {!!subtypeData?.treatment_information?.length && <p>No Data</p>}
-        {subtypeData?.treatment_information?.map((ti) => (
+        {!!subtypeData?.entries?.length && <p>No Data</p>}
+        {subtypeData?.entries?.map((ti) => (
           <div className="group-wrap">
             <TextInput label={'agent source'} value={ti.agent_source} />
             <TextInput label={'biocontrol agent'} value={ti.biocontrol_agent} />

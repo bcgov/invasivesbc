@@ -17,20 +17,16 @@ class AquaticMechanicalTreatmentTest(BaseActivitySubtypeTest):
         self.no_pac_number_present()
 
     def test_casting_fixture_into_serializer(self):
-        self.casting_fixture_into_serializer(
-            expected_subtype_key="mechanical_treatments"
-        )
+        self.casting_fixture_into_serializer(expected_subtype_key="entries")
 
     def test_subtype_details_full(self):
         """Subtype keys match the information from fixtures."""
         response_object = self.fetch_a().json()
 
-        self.assertEqual(
-            len(response_object["subtype_data"]["mechanical_treatments"]), 1
-        )
+        self.assertEqual(len(response_object["subtype_data"]["entries"]), 1)
 
         sd = response_object["subtype_data"]
-        mt = sd["mechanical_treatments"][0]
+        mt = sd["entries"][0]
 
         self.assertEqual(mt["disposed_material_amount"], 544)
         self.assertEqual(mt["disposed_material_format"], "kg")
@@ -53,7 +49,7 @@ class AquaticMechanicalTreatmentTest(BaseActivitySubtypeTest):
         sd = response_object["subtype_data"]
         self.assertEqual(sd["authorization_info"], "The test looks for this")
 
-        mt = sd["mechanical_treatments"]
+        mt = sd["entries"]
         self.assertEqual(len(mt), 2)
 
         expected = [

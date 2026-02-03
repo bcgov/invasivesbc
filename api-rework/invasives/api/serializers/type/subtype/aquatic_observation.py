@@ -169,7 +169,7 @@ class AquaticObservationSerializer(serializers.Serializer):
     adjacent_land_use = WaterbodyAdjacentLandUseSerializer(
         source="waterbodyadjacentlanduse_set", many=True
     )
-    observation_details = AquaticPlantObservationDetailSerializer(
+    entries = AquaticPlantObservationDetailSerializer(
         source="aquaticplantobservationdetail_set", many=True
     )
     pretreatment_observation = serializers.CharField(
@@ -182,8 +182,8 @@ class AquaticObservationSerializer(serializers.Serializer):
     # suitable_for_biocontrol = serializers.CharField(
     #     source="suitableforbiocontrol.suitable_for_biocontrol"
     # )
-    waterbody_details = WaterbodyDataSerializer(source="waterbodydata")
-    waterbody_use = WaterbodyUseSerializer(source="waterbodyuse_set", many=True)
+    waterbody_context = WaterbodyDataSerializer(source="waterbodydata")
+    water_use = WaterbodyUseSerializer(source="waterbodyuse_set", many=True)
     waterlevel_management = WaterbodyLevelManagementSerializer(
         source="waterbodylevelmanagement_set", many=True
     )
@@ -206,7 +206,7 @@ class AquaticObservationSerializer(serializers.Serializer):
     def to_representation(self, instance):
         """Flatten Waterbody Details into top_level"""
         ret = super().to_representation(instance)
-        info_data = ret.pop("waterbody_details", None)
+        info_data = ret.pop("waterbody_context", None)
 
         if info_data and isinstance(info_data, dict):
             ret.update(info_data)

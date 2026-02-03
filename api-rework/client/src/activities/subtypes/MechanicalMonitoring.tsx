@@ -4,7 +4,7 @@ import MonitoringInfo from './common/MonitoringInfo';
 
 const MechanicalMonitoring = ({ subtypeData }: SubtypeData) => (
   <Fieldset label={'Monitoring Information'}>
-    {subtypeData?.treatment_monitoring_information?.map((d) => (
+    {subtypeData?.entries?.map((d) => (
       <MonitoringInfo data={d} />
     ))}
   </Fieldset>

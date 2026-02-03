@@ -9,7 +9,7 @@ const DispersalMonitoring = ({ subtypeData }: SubtypeData) => {
     <>
       <WeatherConditions subtypeData={subtypeData} />
       <MicrositeConditions microsite_conditions={subtypeData?.microsite_conditions} />
-      <BiocontrolMonitoring monitoring_information={subtypeData?.monitoring_information} />
+      <BiocontrolMonitoring entries={subtypeData?.entries} />
       <TargetPlantPhenology targetPlantPhenology={subtypeData?.target_plant_phenology} />
     </>
   );

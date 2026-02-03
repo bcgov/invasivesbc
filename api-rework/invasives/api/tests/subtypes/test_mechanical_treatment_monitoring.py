@@ -17,14 +17,12 @@ class MechanicalTreatmentMonitoringTest(BaseActivitySubtypeTest):
         self.no_pac_number_present()
 
     def test_casting_fixture_into_serializer(self):
-        self.casting_fixture_into_serializer(
-            expected_subtype_key="treatment_monitoring_information"
-        )
+        self.casting_fixture_into_serializer(expected_subtype_key="entries")
 
     def test_subtype_details_full(self):
         """Subtype keys match the information from fixtures."""
         response_object = self.fetch_a().json()
-        tmi = response_object["subtype_data"]["treatment_monitoring_information"]
+        tmi = response_object["subtype_data"]["entries"]
         self.assertEqual(len(tmi), 1)
         tmi = tmi[0]
         self.assertEqual(tmi["comment"], "Several plants remain")
@@ -60,5 +58,5 @@ class MechanicalTreatmentMonitoringTest(BaseActivitySubtypeTest):
         ]
 
         response_object = self.fetch_b().json()
-        tmi = response_object["subtype_data"]["treatment_monitoring_information"]
+        tmi = response_object["subtype_data"]["entries"]
         self.assertListEqual(payload, tmi)

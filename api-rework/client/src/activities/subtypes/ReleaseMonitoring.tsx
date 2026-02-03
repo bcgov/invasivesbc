@@ -8,7 +8,7 @@ import MicrositeConditions from './common/MicrositeConditions';
 const ReleaseMonitoring = ({ subtypeData }: SubtypeData) => (
   <>
     <MicrositeConditions microsite_conditions={subtypeData?.microsite_conditions} />
-    <BiocontrolMonitoring monitoring_information={subtypeData.monitoring_information} />
+    <BiocontrolMonitoring entries={subtypeData.entries} />
     <TargetPlantPhenology targetPlantPhenology={subtypeData?.target_plant_phenology} />
     <Fieldset label={'Spread Results'}>
       <TextInput

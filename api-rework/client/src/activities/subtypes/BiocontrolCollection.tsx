@@ -12,8 +12,8 @@ const BiocontrolCollection = ({ subtypeData }) => {
       <WeatherConditions subtypeData={subtypeData} />
       <MicrositeConditions microsite_conditions={subtypeData?.microsite_conditions} />
       <Fieldset label={'Collection Information'}>
-        {!!subtypeData?.collection_information?.length && <p>No Data</p>}
-        {subtypeData?.collection_information?.map((ci) => (
+        {!!subtypeData?.entries?.length && <p>No Data</p>}
+        {subtypeData?.entries?.map((ci) => (
           <div className="group-wrap">
             <TextInput label={'invasive plant'} value={ci?.invasive_plant} />
             <TextInput label={'biological agent'} value={ci?.biological_agent} />

@@ -2,7 +2,7 @@ from rest_framework import serializers
 from api.models.activity import ChemTreatment
 
 
-class ChemicalTreatmentInformationSerializer(serializers.ModelSerializer):
+class ChemicalTreatmentContextSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChemTreatment
         fields = (

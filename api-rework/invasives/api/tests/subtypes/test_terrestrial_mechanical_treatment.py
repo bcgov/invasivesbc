@@ -17,18 +17,14 @@ class TerrestrialMechanicalTreatmentTest(BaseActivitySubtypeTest):
         self.no_pac_number_present()
 
     def test_casting_fixture_into_serializer(self):
-        self.casting_fixture_into_serializer(
-            expected_subtype_key="mechanical_treatments"
-        )
+        self.casting_fixture_into_serializer(expected_subtype_key="entries")
 
     def test_subtype_details_full(self):
         """Subtype keys match the information from fixtures."""
         response_object = self.fetch_a().json()
-        self.assertEqual(
-            len(response_object["subtype_data"]["mechanical_treatments"]), 1
-        )
+        self.assertEqual(len(response_object["subtype_data"]["entries"]), 1)
 
-        mt = response_object["subtype_data"]["mechanical_treatments"][0]
+        mt = response_object["subtype_data"]["entries"][0]
         self.assertEqual(mt["disposed_material_amount"], 544)
         self.assertEqual(mt["disposed_material_format"], "kg")
         self.assertEqual(mt["disposal_method"], "II")
@@ -39,7 +35,7 @@ class TerrestrialMechanicalTreatmentTest(BaseActivitySubtypeTest):
     def test_subtype_details_two_entries(self):
         """Subtype keys match the information from fixtures."""
         response_object = self.fetch_b().json()
-        mt = response_object["subtype_data"]["mechanical_treatments"]
+        mt = response_object["subtype_data"]["entries"]
         self.assertEqual(len(mt), 2)
 
         expected = [

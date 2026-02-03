@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from api.serializers.common import (
     MicrositeConditionSerializer,
-    TerrestrialBiologicalMonitoringInformationSerializer,
+    TerrestrialBiologicalMonitoringEntriesSerializer,
     TargetPlantPhenologySerializer,
     SpreadResultsSerializer,
     WeatherConditionsSerializer,
@@ -10,7 +10,7 @@ from api.serializers.common import (
 
 class BiocontrolReleaseMonitoringSerializer(serializers.Serializer):
     microsite_condition = MicrositeConditionSerializer(source="micrositecondition")
-    monitoring_information = TerrestrialBiologicalMonitoringInformationSerializer(
+    entries = TerrestrialBiologicalMonitoringEntriesSerializer(
         source="terrestrialbiocontroldispersalmonitoring_set", many=True
     )
     target_plant_phenology = TargetPlantPhenologySerializer(

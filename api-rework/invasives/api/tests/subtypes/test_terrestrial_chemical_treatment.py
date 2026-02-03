@@ -18,7 +18,7 @@ class TerrestrialChemicalTreatmentTest(BaseActivitySubtypeTest):
         self.pac_number_is_present()
 
     def test_casting_fixture_into_serializer(self):
-        self.casting_fixture_into_serializer(expected_subtype_key="well_information")
+        self.casting_fixture_into_serializer(expected_subtype_key="well_entries")
 
     def test_subtype_values(self):
         record = self.fetch_a().json()
@@ -40,13 +40,13 @@ class TerrestrialChemicalTreatmentTest(BaseActivitySubtypeTest):
         self.assertEqual(sd["additional_unmapped_well_water_bool"], True)
         self.assertEqual(sd["pest_injury_threshold_determination_bool"], True)
 
-        wells = sd["well_information"]
+        wells = sd["well_entries"]
         self.assertEqual(len(wells), 3)
 
         for well in wells:
             self.assertIsNotNone(well["well_tag_number"])
             self.assertIsNotNone(well["distance"])
 
-        if sd["chem_treatment_details"] != "NOT IMPLEMENTED":
+        if sd["entries"] != "NOT IMPLEMENTED":
             # TODO
             self.fail("UPDATE TESTS FOR CHEM TREATMENT DETAILS")
