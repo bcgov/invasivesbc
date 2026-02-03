@@ -107,10 +107,10 @@ class TreatmentMonitoringEntriesSerializer(serializers.Serializer):
     """Shared Between Mechanical and Chemical Treatments"""
 
     a_monitoring_information = AquaticMechanicalMonitoringSerializer(
-        source="monitoringtreatmententriespa_set", many=True, required=False
+        source="aquatictreatmentmonitoringentry_set", many=True, required=False
     )
     t_monitoring_information = TerrestrialTreatmentMonitoringSerializer(
-        source="monitoringtreatmententriespt_set",
+        source="terrestrialtreatmentmonitoringentry_set",
         many=True,
         required=False,
     )
