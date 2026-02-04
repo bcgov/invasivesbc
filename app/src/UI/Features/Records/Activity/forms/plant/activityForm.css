@@ -1,0 +1,35 @@
+fieldset input {
+  margin-bottom: 0.5rem;
+}
+
+.activity-form,
+fieldset {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 500px;
+  margin: auto;
+  text-transform: capitalize;
+  text-align: left;
+}
+
+.form-text-input {
+  height: 40px;
+  border: 1pt solid orange;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+
+  input {
+    margin-bottom: 0;
+  }
+
+  label {
+    margin-right: 0.75rem;
+
+    &::after {
+      content: ':';
+    }
+  }
+}

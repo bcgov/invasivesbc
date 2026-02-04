@@ -2,12 +2,12 @@ import { useEffect, useRef } from 'react';
 import 'UI/Features/Records/Record.css';
 import { useNavigate, useParams } from 'react-router';
 import { useDispatch, useSelector } from 'utils/use_selector';
-import { ActivityForm } from 'UI/Features/Records/Activity/Form';
 import { ActivityPhotos } from 'UI/Features/Records/Activity/Photos';
 import { Button } from '@mui/material';
 import { RENDER_DEBUG } from 'UI/App';
 import ActivityActions from 'state/actions/activity/Activity';
 import Spinner from 'UI/Reusable/Spinner/Spinner';
+import ActivityForm from './Activity/forms/plant/ActivityForm';
 
 const RenderActivityPhotos = () => {
   const activity_id = useSelector((state) => state.ActivityPage?.activity?.activity_id);
@@ -33,6 +33,7 @@ const RenderActivityForm = () => {
     }, 3000);
     return <div>Activity does not exist, redirecting...</div>;
   }
+  return <ActivityForm />;
   if (activity_id && apiDocsWithSelectOptions && apiDocsWithViewOptions && loading === false) {
     return <ActivityForm />;
   } else {
