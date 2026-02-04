@@ -103,6 +103,7 @@ class Activity {
   static readonly getFailure = createAction(`${this.PREFIX}/getFailure`, (arg?: Response) => ({
     payload: arg
   }));
+  static readonly setCodes = createAction<Array<Record<PropertyKey, any>>[]>(`${this.PREFIX}/setCodes`);
   static readonly getRows = createAction<ActivityTableRowRequest>(`${this.PREFIX}/getRows`);
   static readonly getRowsRequest = createAction<ActivityTableRowGetRequest>(`${this.PREFIX}/getRowsRequest`);
   static readonly getRowsOnline = createAction<ActivityTableRowGetRequest>(`${this.PREFIX}/getRowsOnline`);
