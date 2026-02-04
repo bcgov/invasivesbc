@@ -77,7 +77,8 @@
     "urlencode": "^2.0.0",
     "uuid": "^13.0.0",
     "wkt": "^0.1.1",
-    "xlsx": "0.18.5"
+    "xlsx": "0.18.5",
+    "zod": "4.3.6"
   },
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",
