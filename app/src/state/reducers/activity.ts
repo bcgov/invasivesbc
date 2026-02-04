@@ -17,6 +17,7 @@ interface ActivityState {
   activeActivity: string | null;
   activeActivityPermissions?: IActivityPermissions;
   activityErrors: any[];
+  codes: Record<PropertyKey, Array<Record<PropertyKey, any>>>;
   error: boolean;
   pasteCount: number;
   failCode: number | null;
@@ -44,6 +45,7 @@ const initialState: ActivityState = {
   activeActivity: null,
   activityErrors: [],
   error: false,
+  codes: {},
   pasteCount: 0,
   failCode: null,
   initialized: false,
@@ -180,6 +182,14 @@ function createActivityReducer() {
         draftState.activity_copy_buffer = {
           form_data: copiedData
         };
+      } else if (Activity.setCodes.match(action)) {
+        const array = action.payload;
+        const obj = {};
+        for (const arr of array) {
+          if (arr.length === 0) continue;
+          obj[arr[0].table] = arr;
+        }
+        draftState.codes = obj;
       } else if (Activity.get.match(action)) {
         draftState.failCode = null;
         draftState.loading = true;

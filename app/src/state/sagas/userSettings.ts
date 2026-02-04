@@ -12,6 +12,7 @@ import { RepositoryMetadata } from 'utils/record-cache';
 import defaultRecordSets from 'constants/defaultRecordSets';
 import { RootState } from 'state/reducers/rootReducer';
 import TileCache from 'state/actions/cache/TileCache';
+import { getCurrentJWT } from './auth/auth';
 
 function* handle_USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST() {
   yield put(UserSettings.toggleRecordExpandSuccess());
@@ -143,6 +144,20 @@ function* handle_GET_API_DOC_REQUEST() {
     if (displayName) {
       yield put(APIDocs.save({ displayName }));
     }
+  }
+
+  try {
+    const newFormat = yield fetch(`http://localhost:8000/codes`, {
+      headers: { Authorization: yield getCurrentJWT() }
+    });
+    if (newFormat.ok) {
+      const parsed = yield newFormat.json();
+      yield put(Activity.setCodes(parsed));
+
+      return;
+    }
+  } catch (ex) {
+    console.log(ex);
   }
 }
 
