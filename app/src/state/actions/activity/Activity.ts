@@ -99,6 +99,15 @@ class Activity {
   static readonly copy = createAction(`${this.PREFIX}/copy`);
   static readonly copySuccess = createAction<Record<string, any>>(`${this.PREFIX}/copySuccess`);
   static readonly get = createAction<string>(`${this.PREFIX}/get`);
+
+  /** Fetch Record from Django API */
+  static readonly getDjango = createAsyncThunk(`${this.PREFIX}/getDjango`, async (spec: { id: string }) => {
+    const newFormat = await fetch(`http://localhost:8000/activities/${spec.id}`, {
+      headers: { Authorization: await getCurrentJWT() }
+    });
+    return await newFormat.json();
+  });
+
   static readonly getLocal = createAction<string>(`${this.PREFIX}/getLocal`);
   static readonly getSuccess = createAction<IGetSuccess>(`${this.PREFIX}/getSuccess`);
   static readonly getFailure = createAction(`${this.PREFIX}/getFailure`, (arg?: Response) => ({
