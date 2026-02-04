@@ -14,6 +14,7 @@ import { buildTimeConfig } from 'state/configuration/build-time-config';
 import parseActivityForPermissions from 'utils/parseActivityForPermissions';
 import { EFilterType } from 'state/actions/userSettings/RecordSet';
 import { PLATFORM_SRC } from 'constants/misc';
+import { getCurrentJWT } from '../auth/auth';
 
 export function* handle_ACTIVITY_CREATE_NETWORK(action: PayloadAction<Record<string, any>>) {
   const response = yield InvasivesAPI_Call('POST', `/api/activity/`, action.payload);
@@ -51,6 +52,18 @@ export function* handle_ACTIVITY_GET_NETWORK_REQUEST(action) {
   const authState = yield select(selectAuth);
   if (!authState.authenticated) {
     yield take(AuthActions.initializeComplete.type);
+  }
+  try {
+    const newFormat = yield fetch(`http://localhost:8000/activities/${action.payload}`, {
+      headers: { Authorization: yield getCurrentJWT() }
+    });
+    if (newFormat.ok) {
+      const parsed = yield newFormat.json();
+      yield put(Activity.getSuccess({ activity: parsed, permissions: parseActivityForPermissions(parsed, true) }));
+      return;
+    }
+  } catch (ex) {
+    console.log(ex);
   }
   const networkReturn = yield InvasivesAPI_Call('GET', `/api/activity/${action.payload}`);
 
