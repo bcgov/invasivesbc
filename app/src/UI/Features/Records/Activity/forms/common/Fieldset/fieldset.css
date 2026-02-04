@@ -1,0 +1,25 @@
+.form-fieldset {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+  border: 1pt solid black;
+  box-sizing: border-box;
+  margin: 0.5rem;
+  text-wrap: wrap;
+
+  & > * {
+    margin-right: 10px;
+  }
+
+  &.small {
+    /* Allow for two columns  */
+    width: 47%;
+  }
+}
+
+@media only screen and (width >= 800) {
+  .small {
+    width: 95%;
+  }
+}
