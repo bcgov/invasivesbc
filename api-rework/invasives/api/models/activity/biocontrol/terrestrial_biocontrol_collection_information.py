@@ -10,7 +10,7 @@ from api.models.codes.code_tables import (
 from api.models.enums.collection_type import CollectionType
 
 
-class TerrestrialBiocontrolCollectionInformation(BaseOneToManyActivityTable):
+class TerrestrialBiocontrolCollectionEntry(BaseOneToManyActivityTable):
     """
     Biocontrol 1:M Collection Information for Activities
     Used in:
@@ -34,7 +34,7 @@ class TerrestrialBiocontrolCollectionInformation(BaseOneToManyActivityTable):
     comment = models.TextField(max_length=512, blank=True, null=True)
 
     class Meta:
-        db_table = '"activity"."terrestrial_biocontrol_collection_information"'
+        db_table = '"activity"."biocontrol_collection_entries_pt"'
         pass
 
     def clean(self):

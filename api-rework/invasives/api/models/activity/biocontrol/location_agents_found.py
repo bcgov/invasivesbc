@@ -15,7 +15,7 @@ class LocationBiocontrolAgentsFoundTerrestrial(BaseOneToManyActivityTable):
     biocontrol_agent = models.ForeignKey(BiocontrolAgentCode, on_delete=models.PROTECT)
 
     class Meta:
-        db_table = '"activity"."location_biocontrol_agents_found_terrestrial"'
+        db_table = '"activity"."bioagent_location_found_pt"'
         constraints = [
             models.UniqueConstraint(
                 fields=[

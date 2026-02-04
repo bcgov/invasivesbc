@@ -10,7 +10,7 @@ from api.models.codes.code_tables import (
 from api.models.enums.observation_type import ObservationType
 
 
-class TerrestrialPlantObservationDetail(BaseOneToManyActivityTable):
+class TerrestrialPlantObservationEntries(BaseOneToManyActivityTable):
     """
     section title:
       Terrestrial Invasive Plants
@@ -34,7 +34,7 @@ class TerrestrialPlantObservationDetail(BaseOneToManyActivityTable):
     )
 
     class Meta:
-        db_table = '"activity"."terrestrial_plant_observation_detail"'
+        db_table = '"activity"."observation_entries_pt"'
         constraints = [
             models.UniqueConstraint(
                 fields=["activity", "invasive_plant"],

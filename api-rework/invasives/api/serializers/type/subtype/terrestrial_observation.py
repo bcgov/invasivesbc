@@ -2,11 +2,11 @@ from abc import abstractclassmethod
 
 from rest_framework import serializers
 
-from api.models.activity import TerrestrialBiocontrolRelease
+from api.models.activity import TerrestrialBiocontrolReleaseEntry
 from api.models.activity.observations import (
-    TerrestrialPlantObservationDetail,
+    TerrestrialPlantObservationEntries,
     TerrestrialVoucherSpecimen,
-    TerrestrialPlantObservationInfo,
+    TerrestrialPlantObservationContext,
 )
 from api.models.codes import (
     AspectCode,
@@ -70,7 +70,7 @@ class TerrestrialPlantObservationContextSerializer(serializers.ModelSerializer):
     voucher_specimen = serializers.SerializerMethodField()
 
     class Meta:
-        model = TerrestrialPlantObservationDetail
+        model = TerrestrialPlantObservationEntries
         fields = (
             "density",
             "distribution",
@@ -104,7 +104,7 @@ class TerrestrialPlantObservationEntriesSerializer(serializers.ModelSerializer):
     slope_percent = SlopeCodeSerializer()
 
     class Meta:
-        model = TerrestrialPlantObservationInfo
+        model = TerrestrialPlantObservationContext
         fields = (
             "research_observation",
             "visible_well_nearby",
@@ -118,10 +118,10 @@ class TerrestrialPlantObservationEntriesSerializer(serializers.ModelSerializer):
 
 class TerrestrialObservationSerializer(serializers.Serializer):
     entries = TerrestrialPlantObservationContextSerializer(
-        source="terrestrialplantobservationdetail_set", many=True
+        source="terrestrialplantobservationentries_set", many=True
     )
     context = TerrestrialPlantObservationEntriesSerializer(
-        source="terrestrialplantobservationinfo"
+        source="terrestrialplantobservationcontext"
     )
     pretreatment_observation = serializers.CharField(
         source="pretreatmentobservation.pre_treatment_observation"

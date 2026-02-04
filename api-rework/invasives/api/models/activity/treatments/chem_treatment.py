@@ -13,7 +13,7 @@ from api.models.enums.cardinal_direction import CardinalDirection
 from api.models.enums.yes_no_unknown import YesNoUnknown
 
 
-class ChemTreatment(BaseOneToOneActivityTable):
+class ChemTreatmentContext(BaseOneToOneActivityTable):
     service_license_number = models.ForeignKey(
         ServiceLicenseNumberAndCompany, on_delete=models.PROTECT
     )
@@ -51,7 +51,7 @@ class ChemTreatment(BaseOneToOneActivityTable):
     pest_injury_threshold_determination_bool = models.BooleanField()
 
     class Meta:
-        db_table = '"activity"."chem_treatment"'
+        db_table = '"activity"."treatment_chemical_context_p"'
         pass
 
     def clean(self):

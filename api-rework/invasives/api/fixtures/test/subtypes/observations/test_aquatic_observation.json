@@ -54,7 +54,7 @@
     }
   },
   {
-    "model": "api.AquaticPlantObservationDetail",
+    "model": "api.AquaticPlantObservationEntry",
     "pk": 1,
     "fields": {
       "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
@@ -67,7 +67,7 @@
     }
   },
   {
-    "model": "api.AquaticPlantObservationDetail",
+    "model": "api.AquaticPlantObservationEntry",
     "pk": 2,
     "fields": {
       "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
@@ -80,7 +80,7 @@
     }
   },
   {
-    "model": "api.AquaticPlantObservationDetail",
+    "model": "api.AquaticPlantObservationEntry",
     "pk": 3,
     "fields": {
       "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
@@ -263,7 +263,7 @@
     }
   },
   {
-    "model": "api.WaterbodyData",
+    "model": "api.WaterbodyContext",
     "pk": 1,
     "fields": {
       "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
@@ -279,7 +279,7 @@
     }
   },
   {
-    "model": "api.WaterbodyData",
+    "model": "api.WaterbodyContext",
     "pk": 1,
     "fields": {
       "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
@@ -295,7 +295,7 @@
     }
   },
   {
-    "model": "api.WaterbodyData",
+    "model": "api.WaterbodyContext",
     "pk": 2,
     "fields": {
       "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",

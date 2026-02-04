@@ -6,7 +6,7 @@ from api.models.codes.code_tables import BiocontrolAgentCode, TerrestrialPlantCo
 from api.models.enums.yes_no_unknown import YesNoUnknown
 
 
-class TerrestrialBiocontrolRelease(BaseOneToManyActivityTable):
+class TerrestrialBiocontrolReleaseEntry(BaseOneToManyActivityTable):
     """
     1:M Details for Biocontrol Releases
     consumed by:
@@ -31,7 +31,7 @@ class TerrestrialBiocontrolRelease(BaseOneToManyActivityTable):
     )
 
     class Meta:
-        db_table = '"activity"."terrestrial_biocontrol_release"'
+        db_table = '"activity"."biocontrol_release_pt"'
         constraints = [
             models.UniqueConstraint(
                 fields=["activity", "invasive_plant", "biocontrol_agent"],

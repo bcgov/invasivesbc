@@ -6,8 +6,8 @@ from api.serializers.common import (
 
 
 class AquaticChemicalTreatmentSerializer(serializers.Serializer):
-    context = ChemicalTreatmentContextSerializer(source="chemtreatment")
-    well_entries = NearestWellSerializer(source="nearestwell_set", many=True)
+    context = ChemicalTreatmentContextSerializer(source="chemtreatmentcontext")
+    well_entries = NearestWellSerializer(source="wellentry_set", many=True)
     entries = serializers.SerializerMethodField()
 
     def get_entries(self, obj):

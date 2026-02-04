@@ -7,7 +7,7 @@ from api.serializers.common import (
 
 class ChemicalMonitoringSerializer(serializers.Serializer):
     entries = serializers.SerializerMethodField()
-    well_entries = NearestWellSerializer(source="nearestwell_set", many=True)
+    well_entries = NearestWellSerializer(source="wellentry_set", many=True)
 
     def get_entries(self, obj):
         return TreatmentMonitoringEntriesSerializer(obj, context=self.context).data

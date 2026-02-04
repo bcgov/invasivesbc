@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from api.serializers.common import ShorelineTypesSerializer
 from api.models.activity import (
-    AquaticPlantObservationDetail,
+    AquaticPlantObservationEntry,
     AquaticVoucherSpecimen,
     WaterbodySubstrateType,
     WaterbodyOutflowPermanent,
@@ -9,7 +9,7 @@ from api.models.activity import (
     WaterbodyInflowPermanent,
     WaterbodyInflowSeasonal,
     WaterbodyType,
-    WaterbodyData,
+    WaterbodyContext,
     WaterbodyUse,
     WaterbodyLevelManagement,
     WaterbodyAdjacentLandUse,
@@ -101,7 +101,7 @@ class WaterbodyLevelManagementSerializer(serializers.ModelSerializer):
 
 class WaterbodyDataSerializer(serializers.ModelSerializer):
     class Meta:
-        model = WaterbodyData
+        model = WaterbodyContext
         fields = (
             "access",
             "colour",
@@ -133,11 +133,11 @@ class AquaticVoucherSpecimenSerializer(serializers.ModelSerializer):
         )
 
 
-class AquaticPlantObservationDetailSerializer(serializers.ModelSerializer):
+class AquaticPlantObservationEntrySerializer(serializers.ModelSerializer):
     voucher_specimen = serializers.SerializerMethodField()
 
     class Meta:
-        model = AquaticPlantObservationDetail
+        model = AquaticPlantObservationEntry
         fields = (
             "density",
             "distribution",
@@ -169,8 +169,8 @@ class AquaticObservationSerializer(serializers.Serializer):
     adjacent_land_use = WaterbodyAdjacentLandUseSerializer(
         source="waterbodyadjacentlanduse_set", many=True
     )
-    entries = AquaticPlantObservationDetailSerializer(
-        source="aquaticplantobservationdetail_set", many=True
+    entries = AquaticPlantObservationEntrySerializer(
+        source="aquaticplantobservationentry_set", many=True
     )
     pretreatment_observation = serializers.CharField(
         source="pretreatmentobservation.pre_treatment_observation"
@@ -182,7 +182,7 @@ class AquaticObservationSerializer(serializers.Serializer):
     # suitable_for_biocontrol = serializers.CharField(
     #     source="suitableforbiocontrol.suitable_for_biocontrol"
     # )
-    waterbody_context = WaterbodyDataSerializer(source="waterbodydata")
+    waterbody_context = WaterbodyDataSerializer(source="waterbodycontext")
     water_use = WaterbodyUseSerializer(source="waterbodyuse_set", many=True)
     waterlevel_management = WaterbodyLevelManagementSerializer(
         source="waterbodylevelmanagement_set", many=True

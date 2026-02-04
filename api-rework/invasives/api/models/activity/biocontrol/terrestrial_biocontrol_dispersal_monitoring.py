@@ -10,7 +10,7 @@ from api.models.codes.code_tables import (
 from api.models.enums import CollectionType, YesNoUnknown
 
 
-class TerrestrialBiocontrolDispersalMonitoring(BaseOneToManyActivityTable):
+class TerrestrialBiocontrolDispersalMonitoringEntry(BaseOneToManyActivityTable):
     """
     Biocontrol 1:M Monitoring Information
     Used in:
@@ -34,7 +34,7 @@ class TerrestrialBiocontrolDispersalMonitoring(BaseOneToManyActivityTable):
     suitable_for_collection = models.CharField(choices=YesNoUnknown)
 
     class Meta:
-        db_table = '"activity"."terrestrial_biocontrol_dispersal_monitoring"'
+        db_table = '"activity"."monitoring_biocontrol_dispersal_entries_pt"'
         constraints = [
             models.UniqueConstraint(
                 fields=["activity", "invasive_plant", "biocontrol_agent"],

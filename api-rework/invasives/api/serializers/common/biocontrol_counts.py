@@ -1,13 +1,13 @@
 from rest_framework import serializers
 from api.models.activity import (
-    TerrestrialBiocontrolAgentCountComplex,
-    TerrestrialBiocontrolAgentCountSimple,
+    TerrestrialBiocontrolAgentCountExtended,
+    TerrestrialBiocontrolAgentCount,
 )
 
 
-class TerrestrialBiocontrolAgentCountComplexSerializer(serializers.ModelSerializer):
+class TerrestrialBiocontrolAgentCountExtendedSerializer(serializers.ModelSerializer):
     class Meta:
-        model = TerrestrialBiocontrolAgentCountComplex
+        model = TerrestrialBiocontrolAgentCountExtended
         fields = (
             "quantity",
             "stage",
@@ -16,9 +16,9 @@ class TerrestrialBiocontrolAgentCountComplexSerializer(serializers.ModelSerializ
         )
 
 
-class TerrestrialBiocontrolAgentCountSimpleSerializer(serializers.ModelSerializer):
+class TerrestrialBiocontrolAgentCountSerializer(serializers.ModelSerializer):
     class Meta:
-        model = TerrestrialBiocontrolAgentCountSimple
+        model = TerrestrialBiocontrolAgentCount
         fields = (
             "quantity",
             "stage",

@@ -3,20 +3,20 @@ from api.serializers.common import (
     WeatherConditionsSerializer,
     MicrositeConditionSerializer,
     TargetPlantPhenologySerializer,
-    TerrestrialBiocontrolAgentCountSimpleSerializer,
+    TerrestrialBiocontrolAgentCountSerializer,
 )
 from api.models.activity import (
-    TerrestrialBiocontrolCollectionInformation,
-    TerrestrialBiocontrolAgentCountSimple,
+    TerrestrialBiocontrolCollectionEntry,
+    TerrestrialBiocontrolAgentCount,
 )
 
 
-class TerrestrialBiocontrolCollectionInfoSerializer(serializers.ModelSerializer):
+class TerrestrialBiocontrolCollectionEntrySerializer(serializers.ModelSerializer):
     actual_biological_agents = serializers.SerializerMethodField()
     estimated_biological_agents = serializers.SerializerMethodField()
 
     class Meta:
-        model = TerrestrialBiocontrolCollectionInformation
+        model = TerrestrialBiocontrolCollectionEntry
         fields = (
             "actual_biological_agents",
             "estimated_biological_agents",
@@ -34,22 +34,22 @@ class TerrestrialBiocontrolCollectionInfoSerializer(serializers.ModelSerializer)
         )
 
     def get_actual_biological_agents(self, obj):
-        qs = TerrestrialBiocontrolAgentCountSimple.objects.filter(
+        qs = TerrestrialBiocontrolAgentCount.objects.filter(
             activity=obj.activity,
             is_estimate=False,
             invasive_plant=obj.invasive_plant,
             biocontrol_agent=obj.biological_agent,
         )
-        return TerrestrialBiocontrolAgentCountSimpleSerializer(qs, many=True).data
+        return TerrestrialBiocontrolAgentCountSerializer(qs, many=True).data
 
     def get_estimated_biological_agents(self, obj):
-        qs = TerrestrialBiocontrolAgentCountSimple.objects.filter(
+        qs = TerrestrialBiocontrolAgentCount.objects.filter(
             activity=obj.activity,
             is_estimate=True,
             invasive_plant=obj.invasive_plant,
             biocontrol_agent=obj.biological_agent,
         )
-        return TerrestrialBiocontrolAgentCountSimpleSerializer(qs, many=True).data
+        return TerrestrialBiocontrolAgentCountSerializer(qs, many=True).data
 
 
 class BiocontrolCollectionSerializer(serializers.Serializer):
@@ -58,8 +58,8 @@ class BiocontrolCollectionSerializer(serializers.Serializer):
     target_plant_phenology = TargetPlantPhenologySerializer(
         source="targetplantphenology"
     )
-    entries = TerrestrialBiocontrolCollectionInfoSerializer(
-        source="terrestrialbiocontrolcollectioninformation_set", many=True
+    entries = TerrestrialBiocontrolCollectionEntrySerializer(
+        source="terrestrialbiocontrolcollectionentry_set", many=True
     )
 
     def to_representation(self, instance):

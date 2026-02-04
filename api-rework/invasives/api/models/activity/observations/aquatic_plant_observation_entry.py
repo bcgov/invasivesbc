@@ -10,7 +10,7 @@ from api.models.codes.code_tables import (
 from api.models.enums.observation_type import ObservationType
 
 
-class AquaticPlantObservationDetail(BaseOneToManyActivityTable):
+class AquaticPlantObservationEntry(BaseOneToManyActivityTable):
     invasive_plant = models.ForeignKey(AquaticPlantCode, on_delete=models.PROTECT)
     density = models.ForeignKey(
         DensityCode, on_delete=models.PROTECT, blank=True, null=True
@@ -25,7 +25,7 @@ class AquaticPlantObservationDetail(BaseOneToManyActivityTable):
     sample_point_id = models.CharField(max_length=128, blank=True, null=True)
 
     class Meta:
-        db_table = '"activity"."aquatic_plant_observation_detail"'
+        db_table = '"activity"."observation_context_pa"'
         constraints = [
             models.UniqueConstraint(
                 fields=["activity", "invasive_plant"],

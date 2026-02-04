@@ -18,13 +18,13 @@ class BaseWaterbodyFlow(BaseOneToManyActivityTable):
 
 class WaterbodyOutflowSeasonal(BaseWaterbodyFlow):
     class Meta:
-        db_table = '"activity"."waterbody_outflow_seasonal"'
+        db_table = '"activity"."water_outflow_s"'
         pass
 
 
 class WaterbodyOutflowPermanent(BaseWaterbodyFlow):
     class Meta:
-        db_table = '"activity"."waterbody_outflow_permanent"'
+        db_table = '"activity"."water_outflow_p"'
         pass
 
 
@@ -32,11 +32,11 @@ class WaterbodyInflowSeasonal(BaseWaterbodyFlow):
     flow_code = models.ForeignKey(WaterbodyFlowSeasonalCode, on_delete=models.PROTECT)
 
     class Meta:
-        db_table = '"activity"."waterbody_inflow_seasonal"'
+        db_table = '"activity"."water_inflow_s"'
         pass
 
 
 class WaterbodyInflowPermanent(BaseWaterbodyFlow):
     class Meta:
-        db_table = '"activity"."waterbody_inflow_permanent"'
+        db_table = '"activity"."water_inflow_p"'
         pass
