@@ -10,6 +10,7 @@ import SuggestedTreatmentId from 'interfaces/SuggestedTreatmentId';
 import IActivityPermissions from 'interfaces/IActivityPermissions';
 import { GeoTrackingStatus } from 'constants/geoTrackingStatus';
 import DrawToolActions from 'state/actions/drawtool/drawToolActions';
+import FormCode from 'interfaces/FormCode';
 
 interface ActivityState {
   [MIGRATION_VERSION_KEY]: number;
@@ -17,6 +18,7 @@ interface ActivityState {
   activeActivity: string | null;
   activeActivityPermissions?: IActivityPermissions;
   activityErrors: any[];
+  formCodes: Record<PropertyKey, Array<FormCode>>;
   error: boolean;
   pasteCount: number;
   failCode: number | null;
@@ -44,6 +46,7 @@ const initialState: ActivityState = {
   activeActivity: null,
   activityErrors: [],
   error: false,
+  formCodes: {},
   pasteCount: 0,
   failCode: null,
   initialized: false,
@@ -180,6 +183,8 @@ function createActivityReducer() {
         draftState.activity_copy_buffer = {
           form_data: copiedData
         };
+      } else if (Activity.refreshFormCodes.fulfilled.match(action)) {
+        draftState.formCodes = action.payload;
       } else if (Activity.get.match(action)) {
         draftState.failCode = null;
         draftState.loading = true;

@@ -1,4 +1,4 @@
-import { createAction } from '@reduxjs/toolkit';
+import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { ActivityStatus } from 'sharedAPI';
 import { FieldError } from '@rjsf/utils';
 import Offline from './Offline';
@@ -9,6 +9,7 @@ import ChemicalTreatments from './ChemicalTreatments';
 import FilterObjects from 'interfaces/FilterObjects';
 import IActivityPermissions from 'interfaces/IActivityPermissions';
 import UserRecord from 'interfaces/UserRecord';
+import { getCurrentJWT } from 'state/sagas/auth/auth';
 
 interface INewActivity {
   type: string;
@@ -103,6 +104,18 @@ class Activity {
   static readonly getFailure = createAction(`${this.PREFIX}/getFailure`, (arg?: Response) => ({
     payload: arg
   }));
+  static readonly refreshFormCodes = createAsyncThunk(`${this.PREFIX}/refreshFormCodes`, async () => {
+    const response = await fetch(`http://localhost:8000/codes`, {
+      headers: { Authorization: await getCurrentJWT() }
+    });
+    const formCodes = await response.json();
+    const mappedCodes = {};
+    for (const arr of formCodes) {
+      if (arr.length === 0) continue;
+      mappedCodes[arr[0]?.table] = arr;
+    }
+    return mappedCodes;
+  });
   static readonly getRows = createAction<ActivityTableRowRequest>(`${this.PREFIX}/getRows`);
   static readonly getRowsRequest = createAction<ActivityTableRowGetRequest>(`${this.PREFIX}/getRowsRequest`);
   static readonly getRowsOnline = createAction<ActivityTableRowGetRequest>(`${this.PREFIX}/getRowsOnline`);
