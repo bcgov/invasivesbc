@@ -12,27 +12,11 @@ import { checkSum, noFutureDate } from '../common/validators';
 import { useEffect } from 'react';
 import ArrayField from '../common/ArrayField/ArrayField';
 import { Delete } from '@mui/icons-material';
-
-type Inputs = {
-  date: string;
-  area_m: number;
-  latitude: number;
-  longitude: number;
-  utm_zone: number;
-  utm_easting: number;
-  utm_northing: number;
-  employer: string;
-  funding_agency: Array<{ agency: string }>;
-  jurisdictions: { percent_covered: number; jurisdiction: string }[];
-  subtype_data: {};
-  location_description: string;
-  access_description: string;
-  project_code: { description: string }[];
-  comment: string;
-};
+import SubtypeComposite from './SubtypeComposite';
+import { FormSchema } from './subtypeInterfaces';
 
 const ActivityForm = () => {
-  const methods = useForm<Inputs>({
+  const methods = useForm<FormSchema>({
     defaultValues: {
       jurisdictions: [{ jurisdiction: '', percent_covered: 0 }],
       project_code: [{ description: '' }],
@@ -52,7 +36,7 @@ const ActivityForm = () => {
     formState: { errors, isDirty }
   } = methods;
 
-  const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
+  const onSubmit: SubmitHandler<FormSchema> = (data) => console.log(data);
   const codes = useSelector((state) => state.ActivityPage?.formCodes);
   const formData = watch();
 
@@ -61,6 +45,7 @@ const ActivityForm = () => {
   }, [register]);
 
   useEffect(() => {
+    // After first update, enforce Validation
     if (!isDirty) return;
     trigger();
   }, [isDirty]);
@@ -126,20 +111,20 @@ const ActivityForm = () => {
             <SingleSelect
               label={'Employer'}
               options={codes.EmployerCode}
-              {...register('employer', { required: 'Employer is a required field' })}
+              {...register('employer', { required: true })}
               error={errors?.employer}
             />
 
-            <ArrayField<Inputs>
+            <ArrayField<FormSchema>
               label="Funding Agencies"
               emptyValue={{ agency: '' }}
-              {...register(`funding_agency`, { required: 'Funding Agency is a required field' })}
+              {...register(`funding_agency`, { required: true })}
               renderRow={(index, remove) => (
                 <>
                   <SingleSelect
                     options={codes.FundingAgencyCode}
                     error={errors.funding_agency?.[index]?.agency}
-                    {...register(`funding_agency.${index}.agency`, { required: 'Agency cannot be blank' })}
+                    {...register(`funding_agency.${index}.agency`, { required: true })}
                   />
                   <button
                     type="button"
@@ -153,7 +138,7 @@ const ActivityForm = () => {
               )}
             />
             {/* Start Jurisdictions  */}
-            <ArrayField<Inputs>
+            <ArrayField<FormSchema>
               name="jurisdictions"
               label="Jurisdictions"
               emptyValue={{ jurisdiction: '', percent_covered: 0 }}
@@ -163,7 +148,7 @@ const ActivityForm = () => {
                     label="Jurisdiction"
                     options={codes.JurisdictionCode}
                     error={errors.jurisdictions?.[index]?.jurisdiction}
-                    {...register(`jurisdictions.${index}.jurisdiction`, { required: 'Jurisdiction cannot be blank' })}
+                    {...register(`jurisdictions.${index}.jurisdiction`, { required: true })}
                   />
                   <NumberInput
                     label="Percent Covered"
@@ -195,7 +180,7 @@ const ActivityForm = () => {
               )}
             />
             {/* Start Project Codes  */}
-            <ArrayField<Inputs>
+            <ArrayField<FormSchema>
               name="project_code"
               label="Project Codes"
               emptyValue={{ description: '' }}
@@ -218,6 +203,7 @@ const ActivityForm = () => {
             />
             <TextArea label={'Comment'} {...register('comment')} />
           </Fieldset>
+          <SubtypeComposite />
           <input type="submit" />
           <pre style={{ display: 'flex' }}>{JSON.stringify(formData, null, 2)}</pre>
         </form>
