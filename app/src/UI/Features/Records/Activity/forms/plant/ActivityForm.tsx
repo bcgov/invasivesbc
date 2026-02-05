@@ -1,7 +1,5 @@
 import { useForm, SubmitHandler, useWatch, FormProvider } from 'react-hook-form';
 import { useSelector } from 'utils/use_selector';
-
-import './activityForm.css';
 import TextInput from '../common/TextInput/TextInput';
 import SingleSelect from '../common/SingleSelect/SingleSelect';
 import Fieldset from '../common/Fieldset/Fieldset';
@@ -14,6 +12,7 @@ import ArrayField from '../common/ArrayField/ArrayField';
 import { Delete } from '@mui/icons-material';
 import SubtypeComposite from './SubtypeComposite';
 import { FormSchema } from './subtypeInterfaces';
+import './activityForm.css';
 
 const ActivityForm = () => {
   const methods = useForm<FormSchema>({
