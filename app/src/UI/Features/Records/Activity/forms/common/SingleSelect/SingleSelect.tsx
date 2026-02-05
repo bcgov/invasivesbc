@@ -14,7 +14,6 @@ interface PropTypes extends InputHTMLAttributes<HTMLSelectElement> {
 
 export const SingleSelect = forwardRef<HTMLSelectElement, PropTypes>(
   ({ label, error, options, tooltip, ...props }, ref) => {
-    console.log('SingleSelect Error', error);
     return (
       <div className="form-select-input">
         {label && (
@@ -31,7 +30,7 @@ export const SingleSelect = forwardRef<HTMLSelectElement, PropTypes>(
             </option>
           ))}
         </select>
-        {error && <ErrorMessage message={error.message} />}
+        <ErrorMessage error={error} label={label} />
       </div>
     );
   }

@@ -15,7 +15,6 @@ interface PropTypes extends InputHTMLAttributes<HTMLInputElement> {
 // Use forwardRef so Hook Form can manage the input focus
 export const TextInput = forwardRef<HTMLInputElement, PropTypes>(
   ({ label, error, small, onRemove, tooltip, ...props }, ref) => {
-    console.log('Here', error);
     return (
       <div className="form-text-input">
         {label && (
@@ -28,7 +27,7 @@ export const TextInput = forwardRef<HTMLInputElement, PropTypes>(
           <input type="text" className={small ? 'small' : ''} ref={ref} {...props} />
           {onRemove && <button onClick={onRemove}>Delete</button>}
         </div>
-        {error && <ErrorMessage message={error.message} />}
+        <ErrorMessage error={error} label={label} />
       </div>
     );
   }

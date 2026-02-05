@@ -1,6 +1,7 @@
 import { forwardRef, InputHTMLAttributes } from 'react';
 import { FieldError } from 'react-hook-form';
 import './textArea.css';
+import ErrorMessage from '../ErrorMessage/ErrorMessage';
 
 interface PropTypes extends InputHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
@@ -13,7 +14,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, PropTypes>(({ label, err
     <div className="form-textarea-input">
       {label && <label>{label}</label>}
       <textarea rows={4} ref={ref} {...props} />
-      {error && <span className="error">{error.message}</span>}
+      <ErrorMessage error={error} label={label} />
     </div>
   );
 });

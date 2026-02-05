@@ -23,7 +23,7 @@ export const DateInput = forwardRef<HTMLInputElement, PropTypes>(
           </label>
         )}
         <input type={includeTime ? 'datetime-local' : 'date'} ref={ref} {...props} />
-        {error && <ErrorMessage message={error.message} />}
+        <ErrorMessage error={error} label={label} />
       </div>
     );
   }

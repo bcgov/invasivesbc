@@ -2,6 +2,7 @@ import { forwardRef, InputHTMLAttributes } from 'react';
 import { FieldError } from 'react-hook-form';
 import './numberInput.css';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
+import ErrorMessage from '../ErrorMessage/ErrorMessage';
 
 interface PropTypes extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -14,11 +15,6 @@ interface PropTypes extends InputHTMLAttributes<HTMLInputElement> {
 // Use forwardRef so Hook Form can manage the input focus
 export const NumberInput = forwardRef<HTMLInputElement, PropTypes>(
   ({ label, readOnly = false, error, tooltip, ...props }, ref) => {
-    const errorMessage = (() => {
-      if (error?.message) return error.message;
-      if (error?.type === 'required') return `${label} is Required`;
-      return '';
-    })();
     return (
       <div className="form-number-input">
         {label && (
@@ -28,7 +24,7 @@ export const NumberInput = forwardRef<HTMLInputElement, PropTypes>(
           </label>
         )}
         <input type="number" placeholder={props?.placeholder ?? label} readOnly={readOnly} ref={ref} {...props} />
-        {errorMessage && <span className="error">{errorMessage}</span>}
+        <ErrorMessage error={error} label={label} />
       </div>
     );
   }
