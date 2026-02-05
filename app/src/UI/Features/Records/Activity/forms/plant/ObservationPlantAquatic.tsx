@@ -25,8 +25,8 @@ const ObservationPlantAquatic = () => {
         <SingleSelect
           label={'Waterbody Type'}
           options={WaterbodyType}
-          error={errors?.subtype_data?.type}
-          {...register('subtype_data.type', { required: true })}
+          name={'subtype_data.type'}
+          rules={{ required: true }}
         />
         <TextInput
           label={'Waterbody Name (Gazetted)'}
@@ -64,8 +64,8 @@ const ObservationPlantAquatic = () => {
         <SingleSelect
           label={'Tidal Influence'}
           options={YesNoUnknown}
-          error={errors?.subtype_data?.tidal_influence}
-          {...register('subtype_data.tidal_influence')}
+          name={'subtype_data.tidal_influence'}
+          rules={{ required: true }}
         />
         <MultiSelect
           label={'Adjacent Land Use'}
@@ -105,8 +105,8 @@ const ObservationPlantAquatic = () => {
             <SingleSelect
               label={'Shoreline Type'}
               options={codes?.ShorelineTypeCode}
-              error={errors?.subtype_data?.shoreline_types?.[index]?.shoreline_type}
-              {...register(`subtype_data.shoreline_types.${index}.shoreline_type`)}
+              name={`subtype_data.shoreline_types.${index}.shoreline_type`}
+              rules={{ required: true }}
             />
             <NumberInput
               label={'Percent Covered (%)'}
@@ -137,8 +137,8 @@ const ObservationPlantAquatic = () => {
       <SingleSelect
         label="Suitable For Biocontrol Agent(s)"
         options={YesNoUnknown}
-        error={errors?.subtype_data?.suitable_for_biocontrol}
-        {...register(`subtype_data.suitable_for_biocontrol`)}
+        name={'subtype_data.suitable_for_biocontrol'}
+        rules={{ required: true }}
       />
 
       {/* Aquatic Plant Entries Start */}
@@ -156,34 +156,29 @@ const ObservationPlantAquatic = () => {
             <SingleSelect
               label={'Invasive Plant'}
               options={codes?.AquaticPlantCode}
-              error={errors?.subtype_data?.entries?.[index]?.invasive_plant}
-              {...register(`subtype_data.entries.${index}.invasive_plant`)}
+              name={`subtype_data.entries.${index}.invasive_plant`}
             />
             <SingleSelect
               label={'Observation Type'}
               options={ObservationType}
-              error={errors?.subtype_data?.entries?.[index]?.observation_type}
-              {...register(`subtype_data.entries.${index}.observation_type`)}
+              name={`subtype_data.entries.${index}.observation_type`}
             />
             <SingleSelect
               label={'Density (plants/m2)'}
               options={codes?.DensityCode}
-              error={errors?.subtype_data?.entries?.[index]?.density}
-              {...register(`subtype_data.entries.${index}.density`)}
+              name={`subtype_data.entries.${index}.density`}
             />
             <SingleSelect
               label={'Distribution'}
               options={codes?.DistributionCode}
-              error={errors?.subtype_data?.entries?.[index]?.distribution}
-              {...register(`subtype_data.entries.${index}.distribution`)}
+              name={`subtype_data.entries.${index}.distribution`}
             />
             <SingleSelect
               label={'Life Stage'}
               options={codes?.PlantLifeStageCode}
-              error={errors?.subtype_data?.entries?.[index]?.life_stage}
-              {...register(`subtype_data.entries.${index}.life_stage`)}
+              name={`subtype_data.entries.${index}.life_stage`}
             />
-            <SingleSelect label={'Voucher Specimen Collected'} options={YesNo} />
+            {/* <SingleSelect label={'Voucher Specimen Collected'} options={YesNo}/> */}
 
             <button type="button" className="delete" onClick={() => remove(index)}>
               Remove
