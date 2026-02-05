@@ -1,0 +1,28 @@
+.form-select-input {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 100%;
+  margin-bottom: 10px;
+
+  select {
+    height: var(--form-input-height);
+    width: 100%;
+    padding: 0.25rem 0.5rem;
+    font-size: var(--form-input-font-size);
+  }
+
+  label {
+    font-size: var(--form-input-label-font-size);
+    margin-right: 0.5rem;
+    font-weight: 600;
+
+    & > * {
+      margin-left: 3px;
+    }
+
+    &::after {
+      content: ':';
+    }
+  }
+}

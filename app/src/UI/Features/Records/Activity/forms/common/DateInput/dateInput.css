@@ -1,0 +1,42 @@
+.form-date-input {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  min-height: 81px;
+  width: 400px;
+  max-width: 100%;
+  box-sizing: border-box;
+
+  input[type='date'],
+  input[type='datetime-local'] {
+    height: var(--form-input-height);
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.25rem 0.5rem;
+    font-size: var(--form-input-font-size);
+  }
+
+  label {
+    font-size: var(--form-input-label-font-size);
+    margin-right: 0.5rem;
+    height: 25px;
+    font-weight: 600;
+
+    & > * {
+      margin-left: 3px;
+    }
+
+    &::after {
+      content: ':';
+    }
+  }
+
+  &.small {
+    width: 50%;
+  }
+
+  .error {
+    color: var(--dark-red);
+  }
+}

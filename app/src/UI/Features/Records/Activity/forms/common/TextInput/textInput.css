@@ -1,0 +1,52 @@
+.form-text-input {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  min-height: 81px;
+  width: 100%;
+  box-sizing: border-box;
+
+  div {
+    display: flex;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.25rem 0.5rem;
+    font-size: var(--form-input-font-size);
+  }
+
+  input[type='text'] {
+    height: var(--form-input-height);
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.25rem 0.5rem;
+    font-size: var(--form-input-font-size);
+  }
+
+  label {
+    font-size: var(--form-input-label-font-size);
+    margin-right: 0.5rem;
+    font-weight: 600;
+
+    & > * {
+      margin-left: 3px;
+    }
+
+    &::after {
+      content: ':';
+    }
+  }
+
+  &.small {
+    width: 50%;
+  }
+
+  .error {
+    color: var(--deep-red);
+  }
+
+  & > *:has(:not(label)) {
+    /* Lower Minimum height when label not present */
+    min-height: calc(81px - var(--form-input-label-font-size));
+  }
+}

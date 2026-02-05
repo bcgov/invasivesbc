@@ -9,7 +9,7 @@ interface PropTypes extends PropsWithChildren {
 
 const Fieldset = ({ label, small = false, children }: PropTypes) => {
   return (
-    <fieldset className={`form-fieldset ${small ? 'small' : ''}`}>
+    <fieldset className={`${small ? 'form-small-fieldset' : 'form-fieldset'}`}>
       <legend>{label}</legend>
       {children}
     </fieldset>

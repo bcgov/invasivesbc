@@ -1,0 +1,5 @@
+.form-error {
+  color: var(--deep-red);
+  font-size: var(--form-input-error-font-size);
+  margin-top: 5pt;
+}
