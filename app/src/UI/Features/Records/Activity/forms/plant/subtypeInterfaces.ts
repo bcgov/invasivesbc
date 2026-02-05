@@ -51,24 +51,14 @@ interface AquaticPlantObservationSchema extends BaseForm {
   subtype: ActivitySubtype.Observation_PlantAquatic;
   subtype_data: {
     adjacent_land_use: string[];
-    entries: [
-      {
-        density: string;
-        distribution: string;
-        invasive_plant: string;
-        life_stage: string;
-        observation_type: string;
-        sample_point_id: string;
-      },
-      {
-        density: string;
-        distribution: string;
-        invasive_plant: string;
-        life_stage: string;
-        observation_type: string;
-        sample_point_id: string;
-      }
-    ];
+    entries: Array<{
+      density: string;
+      distribution: string;
+      invasive_plant: string;
+      life_stage: string;
+      observation_type: string;
+      sample_point_id: string;
+    }>;
     pretreatment_observation: string;
     substrate_type: string[];
     water_use: string[];
@@ -88,6 +78,7 @@ interface AquaticPlantObservationSchema extends BaseForm {
     max_depth_m: number;
     name_gazetted: string;
     name_local: string;
+    suitable_for_biocontrol: string;
     secchi_depth: number;
     tidal_influence: string;
     type: string;
