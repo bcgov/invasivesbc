@@ -8,6 +8,8 @@ import ArrayField from '../common/ArrayField/ArrayField';
 import NumberInput from '../common/NumberInput/NumberInput';
 import { useFormContext } from 'react-hook-form';
 import { AquaticPlantObservationSchema } from './subtypeInterfaces';
+import MultiSelect from '../common/MultiSelect/MultiSelect';
+import { minArrayLength } from '../common/validators';
 
 const ObservationPlantAquatic = () => {
   const codes = useSelector((state) => state.ActivityPage?.formCodes);
@@ -41,23 +43,23 @@ const ObservationPlantAquatic = () => {
           error={errors?.subtype_data?.access}
           {...register('subtype_data.access')}
         />
-        <SingleSelect
+        <MultiSelect
           label={'Waterbody Use'}
           options={codes?.WaterbodyUseCode}
-          error={errors?.subtype_data?.water_use}
-          {...register('subtype_data.water_use')}
+          name={'subtype_data.water_use'}
+          rules={{ validate: (val) => minArrayLength(val, 1) }}
         />
-        <SingleSelect
+        <MultiSelect
           label={'Water Level Management'}
           options={WaterLevelManagement}
-          error={errors?.subtype_data?.waterlevel_management}
-          {...register('subtype_data.waterlevel_management')}
+          rules={{ validate: (val) => minArrayLength(val, 1) }}
+          name={'subtype_data.waterlevel_management'}
         />
-        <SingleSelect
+        <MultiSelect
           label={'Substrate Type'}
           options={codes?.SubstrateCode}
-          error={errors?.subtype_data?.substrate_type}
-          {...register('subtype_data.subtrate_type')}
+          name={'subtype_data.substrate_type'}
+          rules={{ validate: (val) => minArrayLength(val, 1) }}
         />
         <SingleSelect
           label={'Tidal Influence'}
@@ -65,35 +67,30 @@ const ObservationPlantAquatic = () => {
           error={errors?.subtype_data?.tidal_influence}
           {...register('subtype_data.tidal_influence')}
         />
-        <SingleSelect
+        <MultiSelect
           label={'Adjacent Land Use'}
           options={codes?.AdjacentLandUseCode}
-          error={errors?.subtype_data?.adjacent_land_use}
-          {...register('subtype_data.adjacent_land_use')}
+          name={'subtype_data.adjacent_land_use'}
         />
-        <SingleSelect
+        <MultiSelect
           label={'Inflow (Permanent)'}
           options={codes?.WaterbodyFlowCode}
-          error={errors?.subtype_data?.inflow_permanent}
-          {...register('subtype_data.inflow_permanent')}
+          name={'subtype_data.inflow_permanent'}
         />
-        <SingleSelect
+        <MultiSelect
           label={'Inflow (Temp. or Seasonal)'}
           options={codes?.WaterbodyFlowSeasonalCode}
-          error={errors?.subtype_data?.inflow_seasonal}
-          {...register('subtype_data.inflow_seasonal')}
+          name={'subtype_data.inflow_seasonal'}
         />
-        <SingleSelect
+        <MultiSelect
           label={'Outflow (Permanent)'}
           options={codes?.WaterbodyFlowCode}
-          error={errors?.subtype_data?.outflow_permanent}
-          {...register('subtype_data.outflow_permanent')}
+          name={'subtype_data.outflow_permanent'}
         />
-        <SingleSelect
+        <MultiSelect
           label={'Outflow (Seasonal)'}
           options={codes?.WaterbodyFlowCode}
-          error={errors?.subtype_data?.outflow_seasonal}
-          {...register('subtype_data.outflow_seasonal')}
+          name={'subtype_data.outflow_seasonal'}
         />
         <TextArea label={'Comment'} error={errors?.subtype_data?.comment} {...register('subtype_data.comment')} />
       </Fieldset>
@@ -140,58 +137,53 @@ const ObservationPlantAquatic = () => {
       <SingleSelect
         label="Suitable For Biocontrol Agent(s)"
         options={YesNoUnknown}
-        error={errors?.subtype_data?.shoreline_types?.[index]?.shoreline_type}
-        {...register(`subtype_data.shoreline_types.${index}.shoreline_type`)}
+        error={errors?.subtype_data?.suitable_for_biocontrol}
+        {...register(`subtype_data.suitable_for_biocontrol`)}
       />
 
       {/* Aquatic Plant Entries Start */}
       <ArrayField<AquaticPlantObservationSchema>
-        name="entries"
+        name="subtype_data.entries"
         label={'Aquatic Invasive Plant Information'}
         emptyValue={{}}
         renderRow={(index, remove) => (
           <>
             <TextInput
               label={'Sample Point ID'}
-              error={errors?.subtype_data?.name_gazetted}
-              {...register('subtype_data.name_gazetted')}
+              error={errors?.subtype_data?.entries?.[index]?.sample_point_id}
+              {...register(`subtype_data.entries.${index}.sample_point_id`)}
             />
             <SingleSelect
               label={'Invasive Plant'}
               options={codes?.AquaticPlantCode}
-              error={errors?.subtype_data?.name_gazetted}
-              {...register('subtype_data.name_gazetted')}
+              error={errors?.subtype_data?.entries?.[index]?.invasive_plant}
+              {...register(`subtype_data.entries.${index}.invasive_plant`)}
             />
             <SingleSelect
               label={'Observation Type'}
               options={ObservationType}
-              error={errors?.subtype_data?.name_gazetted}
-              {...register('subtype_data.name_gazetted')}
+              error={errors?.subtype_data?.entries?.[index]?.observation_type}
+              {...register(`subtype_data.entries.${index}.observation_type`)}
             />
             <SingleSelect
               label={'Density (plants/m2)'}
               options={codes?.DensityCode}
-              error={errors?.subtype_data?.name_gazetted}
-              {...register('subtype_data.name_gazetted')}
+              error={errors?.subtype_data?.entries?.[index]?.density}
+              {...register(`subtype_data.entries.${index}.density`)}
             />
             <SingleSelect
               label={'Distribution'}
               options={codes?.DistributionCode}
-              error={errors?.subtype_data?.name_gazetted}
-              {...register('subtype_data.name_gazetted')}
+              error={errors?.subtype_data?.entries?.[index]?.distribution}
+              {...register(`subtype_data.entries.${index}.distribution`)}
             />
             <SingleSelect
               label={'Life Stage'}
               options={codes?.PlantLifeStageCode}
-              error={errors?.subtype_data?.name_gazetted}
-              {...register('subtype_data.name_gazetted')}
+              error={errors?.subtype_data?.entries?.[index]?.life_stage}
+              {...register(`subtype_data.entries.${index}.life_stage`)}
             />
-            <SingleSelect
-              label={'Voucher Specimen Collected'}
-              options={YesNo}
-              error={errors?.subtype_data?.name_gazetted}
-              {...register('subtype_data.name_gazetted')}
-            />
+            <SingleSelect label={'Voucher Specimen Collected'} options={YesNo} />
 
             <button type="button" className="delete" onClick={() => remove(index)}>
               Remove
