@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from api.serializers.common import ShorelineTypesSerializer
 from api.models.activity import (
+    AquaticPlantObservationContext,
     AquaticPlantObservationEntry,
     AquaticVoucherSpecimen,
     WaterbodySubstrateType,
@@ -133,6 +134,12 @@ class AquaticVoucherSpecimenSerializer(serializers.ModelSerializer):
         )
 
 
+class AquaticPlantObservationContextSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AquaticPlantObservationContext
+        fields = ["suitable_for_biocontrol"]
+
+
 class AquaticPlantObservationEntrySerializer(serializers.ModelSerializer):
     voucher_specimen = serializers.SerializerMethodField()
 
@@ -178,10 +185,11 @@ class AquaticObservationSerializer(serializers.Serializer):
     substrate_type = WaterbodySubstrateTypeSerializer(
         source="waterbodysubstratetype_set", many=True
     )
-    # @todo add to subtype obs model
-    # suitable_for_biocontrol = serializers.CharField(
-    #     source="suitableforbiocontrol.suitable_for_biocontrol"
-    # )
+
+    aquatic_observation_context = AquaticPlantObservationContextSerializer(
+        source="aquaticplantobservationcontext"
+    )
+
     waterbody_context = WaterbodyDataSerializer(source="waterbodycontext")
     water_use = WaterbodyUseSerializer(source="waterbodyuse_set", many=True)
     waterlevel_management = WaterbodyLevelManagementSerializer(
@@ -204,10 +212,10 @@ class AquaticObservationSerializer(serializers.Serializer):
     )
 
     def to_representation(self, instance):
-        """Flatten Waterbody Details into top_level"""
+        """Flatten Waterbody Details into top level"""
         ret = super().to_representation(instance)
-        info_data = ret.pop("waterbody_context", None)
-
-        if info_data and isinstance(info_data, dict):
-            ret.update(info_data)
+        for key in ["waterbody_context", "aquatic_observation_context"]:
+            info_data = ret.pop(key, None)
+            if info_data and isinstance(info_data, dict):
+                ret.update(info_data)
         return ret
