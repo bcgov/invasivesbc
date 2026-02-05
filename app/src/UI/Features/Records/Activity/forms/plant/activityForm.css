@@ -10,8 +10,7 @@
   display: flex;
   flex-flow: row wrap;
   width: 100%;
-  /* relative to iPad air size */
-  max-width: 820px;
+  max-width: var(--form-container-width);
   border: 1pt solid black;
   box-sizing: border-box;
   justify-content: space-around;

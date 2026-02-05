@@ -88,6 +88,7 @@ body {
 }
 
 :root {
+  --form-container-width: 820px;
   --form-input-height: 2.5rem;
   --form-input-font-size: 1rem;
   --form-input-label-font-size: 0.95rem;
