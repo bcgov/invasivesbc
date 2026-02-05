@@ -4,9 +4,6 @@
   align-items: flex-start;
   margin-bottom: 10px;
   min-height: 137px;
-  width: auto;
-  min-width: 48%;
-  max-width: 100%;
   box-sizing: border-box;
 
   div {
@@ -40,11 +37,19 @@
     }
   }
 
-  &.small {
+  &.full-width {
+    width: 100%;
+  }
+
+  &.half-width {
     width: 50%;
   }
 
-  .error {
-    color: var(--deep-red);
+  &.third-width {
+    width: 33%;
+  }
+
+  &.quarter-width {
+    width: 25%;
   }
 }

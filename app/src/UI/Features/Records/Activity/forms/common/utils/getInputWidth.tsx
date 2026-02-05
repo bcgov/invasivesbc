@@ -12,7 +12,7 @@ const getInputWidth = (val?: Width) => {
       case Width.Quarter:
         return 'fourth-width';
       default:
-        'full-width';
+        return 'full-width';
     }
   })();
 };

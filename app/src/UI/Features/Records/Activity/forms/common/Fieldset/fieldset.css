@@ -8,6 +8,22 @@
   box-sizing: border-box;
   margin-bottom: 10px;
   align-items: stretch;
+
+  &.full-width {
+    width: 100%;
+  }
+
+  &.half-width {
+    width: 50%;
+  }
+
+  &.third-width {
+    width: 33%;
+  }
+
+  &.quarter-width {
+    width: 25%;
+  }
 }
 
 .form-small-fieldset {

@@ -3,6 +3,7 @@ import { FieldError } from 'react-hook-form';
 import './numberInput.css';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
+import { getInputWidth, Width } from '../utils';
 
 interface PropTypes extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -10,13 +11,14 @@ interface PropTypes extends InputHTMLAttributes<HTMLInputElement> {
   tooltip?: string;
   placeHolder?: string;
   error?: FieldError;
+  width?: Width;
 }
 
 // Use forwardRef so Hook Form can manage the input focus
 export const NumberInput = forwardRef<HTMLInputElement, PropTypes>(
-  ({ label, readOnly = false, error, tooltip, ...props }, ref) => {
+  ({ label, readOnly = false, error, tooltip, width, ...props }, ref) => {
     return (
-      <div className="form-number-input">
+      <div className={`form-number-input ${getInputWidth(width)}`}>
         {label && (
           <label>
             {label}

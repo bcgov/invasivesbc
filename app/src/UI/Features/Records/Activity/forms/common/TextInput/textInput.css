@@ -37,10 +37,6 @@
     }
   }
 
-  &.small {
-    width: 50%;
-  }
-
   .error {
     color: var(--deep-red);
   }
@@ -48,5 +44,21 @@
   & > *:has(:not(label)) {
     /* Lower Minimum height when label not present */
     min-height: calc(81px - var(--form-input-label-font-size));
+  }
+
+  &.full-width {
+    width: 100%;
+  }
+
+  &.half-width {
+    width: 50%;
+  }
+
+  &.third-width {
+    width: 33%;
+  }
+
+  &.quarter-width {
+    width: 25%;
   }
 }

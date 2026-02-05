@@ -32,11 +32,19 @@
     }
   }
 
-  &.small {
+  &.full-width {
+    width: 100%;
+  }
+
+  &.half-width {
     width: 50%;
   }
 
-  .error {
-    color: var(--dark-red);
+  &.third-width {
+    width: 33%;
+  }
+
+  &.quarter-width {
+    width: 25%;
   }
 }

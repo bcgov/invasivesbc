@@ -1,7 +1,6 @@
 .field-array {
   display: flex;
   flex-direction: column;
-  width: 100%;
   height: 100%;
 
   .add-entry {
@@ -12,5 +11,21 @@
     height: var(--form-input-height);
     font-size: 1rem;
     margin-top: auto;
+  }
+
+  &.full-width {
+    width: 100%;
+  }
+
+  &.half-width {
+    width: 50%;
+  }
+
+  &.third-width {
+    width: 33%;
+  }
+
+  &.quarter-width {
+    width: 25%;
   }
 }

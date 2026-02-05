@@ -3,19 +3,21 @@ import { FieldError } from 'react-hook-form';
 import './dateInput.css';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
+import { getInputWidth, Width } from '../utils';
 
 interface PropTypes extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: FieldError;
   includeTime?: boolean;
   tooltip?: string;
+  width?: Width;
 }
 
 // Use forwardRef so Hook Form can manage the input focus
 export const DateInput = forwardRef<HTMLInputElement, PropTypes>(
-  ({ includeTime = false, label, error, tooltip, ...props }, ref) => {
+  ({ includeTime = false, width, label, error, tooltip, ...props }, ref) => {
     return (
-      <div className="form-date-input">
+      <div className={`form-date-input ${getInputWidth(width)}`}>
         {label && (
           <label>
             {label}
