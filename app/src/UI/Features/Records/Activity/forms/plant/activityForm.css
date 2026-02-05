@@ -1,0 +1,30 @@
+.activity-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.activity-form {
+  display: flex;
+  flex-flow: row wrap;
+  width: 100%;
+  /* relative to iPad air size */
+  max-width: 820px;
+  border: 1pt solid black;
+  box-sizing: border-box;
+  justify-content: space-around;
+
+  pre {
+    background-color: lightgray;
+    border: 1pt solid black;
+    width: 100%;
+    text-align: left;
+    font-size: 0.75rem;
+    line-height: 1.8;
+    margin-top: 0;
+    margin-bottom: 1.5em;
+    padding: 1rem;
+  }
+}
