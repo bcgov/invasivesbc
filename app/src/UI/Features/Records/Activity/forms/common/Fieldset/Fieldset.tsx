@@ -1,15 +1,16 @@
 import { PropsWithChildren, ReactNode } from 'react';
 import './fieldset.css';
+import { getInputWidth, Width } from '../utils';
 
 interface PropTypes extends PropsWithChildren {
   label: string;
-  small?: boolean;
   children: ReactNode;
+  width?: Width;
 }
 
-const Fieldset = ({ label, small = false, children }: PropTypes) => {
+const Fieldset = ({ label, width, children }: PropTypes) => {
   return (
-    <fieldset className={`${small ? 'form-small-fieldset' : 'form-fieldset'}`}>
+    <fieldset className={`form-fieldset ${getInputWidth(width)}`}>
       <legend>{label}</legend>
       {children}
     </fieldset>
