@@ -29,7 +29,7 @@ export function ArrayField<T extends FieldValues>({ name, label, emptyValue, ren
           ))}
         </div>
 
-        {rootError && <ErrorMessage message={rootError.message} />}
+        <ErrorMessage error={rootError} label={label} />
         <button type="button" className="add-entry" onClick={() => append(emptyValue)}>
           + Add {label}
         </button>
