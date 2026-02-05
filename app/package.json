@@ -21,6 +21,7 @@
     "@capacitor/core": "^7.4.3",
     "@capacitor/geolocation": "^7.1.5",
     "@capacitor/ios": "^7.4.3",
+    "@hookform/resolvers": "5.2.2",
     "@mapbox/mapbox-gl-draw": "^1.5.0",
     "@mui/icons-material": "^7.0.0",
     "@mui/material": "^7.0.0",
