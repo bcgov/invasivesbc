@@ -46,7 +46,7 @@ export function MultiSelect<T extends FieldValues>({
             isSearchable={isSearchable}
             options={options.map((o) => ({ label: o.full_name, value: o.code }))}
             onChange={(val) => onChange(val.map((c) => c.value))}
-            className="react-select"
+            className="select-input"
           />
           <ErrorMessage error={error} />
         </div>

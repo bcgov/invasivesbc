@@ -1,39 +1,61 @@
 import FormCode from 'interfaces/FormCode';
-import { forwardRef, InputHTMLAttributes } from 'react';
-import { FieldError } from 'react-hook-form';
 import './singleSelect.css';
+import Select from 'react-select';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
+import { Controller, FieldValues, useFormContext, Path } from 'react-hook-form';
+import { RegisterOptions } from 'react-hook-form';
+import { getInputWidth, Width } from '../utils';
 
-interface PropTypes extends InputHTMLAttributes<HTMLSelectElement> {
+interface PropTypes<T extends FieldValues> {
+  name: Path<T>;
   label?: string;
-  error?: FieldError;
-  tooltip?: string;
   options: Array<FormCode>;
+  rules?: RegisterOptions<T, Path<T>>;
+  isSearchable?: boolean;
+  tooltip?: string;
+  placeholder?: string;
+  width?: Width;
 }
 
-export const SingleSelect = forwardRef<HTMLSelectElement, PropTypes>(
-  ({ label, error, options, tooltip, ...props }, ref) => {
-    return (
-      <div className="form-select-input">
-        {label && (
-          <label>
-            {label}
-            {tooltip && <TooltipWithIcon tooltipText={tooltip} />}
-          </label>
-        )}
-        <select ref={ref} {...props}>
-          <option value="">None Selected</option>
-          {options.map((o) => (
-            <option value={o.code} key={o.code}>
-              {o.full_name}
-            </option>
-          ))}
-        </select>
-        <ErrorMessage error={error} label={label} />
-      </div>
-    );
-  }
-);
+export function SingleSelect<T extends FieldValues>({
+  name,
+  label,
+  options,
+  rules,
+  isSearchable = false,
+  tooltip,
+  placeholder = label,
+  width
+}: PropTypes<T>) {
+  const { control } = useFormContext<T>();
+
+  return (
+    <Controller
+      name={name}
+      control={control}
+      rules={rules}
+      render={({ field: { onChange, ref }, fieldState: { error } }) => (
+        <div className={`form-single-select-input ${getInputWidth(width)}`}>
+          {label && (
+            <label htmlFor={name}>
+              {label} {tooltip && <TooltipWithIcon tooltipText={tooltip} />}
+            </label>
+          )}
+          <Select
+            ref={ref}
+            placeholder={placeholder}
+            isSearchable={isSearchable}
+            options={options.map((o) => ({ label: o.full_name, value: o.code }))}
+            onChange={onChange}
+            className="select-input"
+            noOptionsMessage={() => <option>No options available</option>}
+          />
+          <ErrorMessage error={error} />
+        </div>
+      )}
+    />
+  );
+}
 
 export default SingleSelect;

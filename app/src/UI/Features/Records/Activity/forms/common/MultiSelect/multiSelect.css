@@ -5,6 +5,13 @@
   max-width: 100%;
   margin-bottom: 10px;
 
+  .select-input {
+    width: 365px;
+    margin-right: 1rem;
+    text-align: left;
+    font-size: var(--form-input-font-size);
+  }
+
   label {
     font-size: var(--form-input-label-font-size);
     margin-right: 0.5rem;
