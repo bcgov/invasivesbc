@@ -51,7 +51,7 @@ export function SingleSelect<T extends FieldValues>({
             className="select-input"
             noOptionsMessage={() => <option>No options available</option>}
           />
-          <ErrorMessage error={error} />
+          <ErrorMessage error={error} label={label} />
         </div>
       )}
     />

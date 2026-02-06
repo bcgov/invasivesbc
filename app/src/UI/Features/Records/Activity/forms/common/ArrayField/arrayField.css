@@ -5,6 +5,17 @@
   width: 100%;
   margin-bottom: 10px;
 
+  .field-array-row {
+    display: flex;
+    flex-flow: row wrap;
+    width: 100%;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 10px;
+    & > * {
+      margin-right: auto;
+    }
+  }
+
   .add-entry {
     background-color: #036;
     color: white;
