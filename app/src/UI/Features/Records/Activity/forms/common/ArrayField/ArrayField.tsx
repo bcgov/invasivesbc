@@ -2,7 +2,7 @@ import { useFormContext, useFieldArray, ArrayPath, FieldValues } from 'react-hoo
 import Fieldset from '../Fieldset/Fieldset';
 import './arrayField.css';
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
-import { getInputWidth, Width } from '../utils';
+import { Width } from '../utils';
 
 interface PropTypes<T extends FieldValues> {
   name: ArrayPath<T>;
@@ -21,8 +21,8 @@ export function ArrayField<T extends FieldValues>({ name, label, emptyValue, ren
 
   const rootError = (errors[name] as any)?.root;
   return (
-    <Fieldset small label={label}>
-      <div className={`field-array ${getInputWidth(width)}`}>
+    <Fieldset width={width} label={label}>
+      <div className={'field-array'}>
         <div className="field-array-entries">
           {fields.map((field, index) => (
             <div key={field.id} className="field-array-row">

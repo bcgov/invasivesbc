@@ -11,12 +11,11 @@ interface PropTypes extends InputHTMLAttributes<HTMLInputElement> {
   small?: boolean;
   tooltip?: string;
   width?: Width;
-  onRemove?: () => void;
 }
 
 // Use forwardRef so Hook Form can manage the input focus
 export const TextInput = forwardRef<HTMLInputElement, PropTypes>(
-  ({ label, error, small, onRemove, tooltip, width, ...props }, ref) => {
+  ({ label, error, small, tooltip, width, ...props }, ref) => {
     return (
       <div className={`form-text-input ${getInputWidth(width)}`}>
         {label && (
@@ -25,11 +24,8 @@ export const TextInput = forwardRef<HTMLInputElement, PropTypes>(
             {tooltip && <TooltipWithIcon tooltipText={tooltip} />}
           </label>
         )}
-        <div>
-          <input type="text" className={small ? 'small' : ''} ref={ref} {...props} />
-          {onRemove && <button onClick={onRemove}>Delete</button>}
-        </div>
-        <ErrorMessage error={error} label={label} />
+        <input type="text" className={small ? 'small' : ''} ref={ref} {...props} />
+        {error && <ErrorMessage error={error} label={label} />}
       </div>
     );
   }

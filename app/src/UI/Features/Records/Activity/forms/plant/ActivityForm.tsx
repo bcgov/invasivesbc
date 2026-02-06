@@ -6,13 +6,16 @@ import Fieldset from '../common/Fieldset/Fieldset';
 import DateInput from '../common/DateInput/DateInput';
 import NumberInput from '../common/NumberInput/NumberInput';
 import TextArea from '../common/TextArea/TextArea';
-import { checkSum, noFutureDate } from '../common/validators';
+import { checkSum, minArrayLength, noFutureDate } from '../common/validators';
 import { useEffect } from 'react';
 import ArrayField from '../common/ArrayField/ArrayField';
-import { Delete } from '@mui/icons-material';
 import SubtypeComposite from './SubtypeComposite';
 import { FormSchema } from './subtypeInterfaces';
 import './activityForm.css';
+import { Width } from '../common/utils';
+import DeleteControl from '../common/DeleteControl/DeleteControl';
+import MultiSelect from '../common/MultiSelect/MultiSelect';
+import Spacer from 'UI/Reusable/Spacer/Spacer';
 
 const ActivityForm = () => {
   const methods = useForm<FormSchema>({
@@ -65,36 +68,42 @@ const ActivityForm = () => {
                 required: true,
                 max: { value: 500000, message: 'Area cannot exceed 500,000m' }
               })}
+              width={Width.Third}
             />
             <NumberInput
               label={'Latitude'}
               readOnly
               error={errors?.latitude}
               {...register(`latitude`, { required: true })}
+              width={Width.Third}
             />
             <NumberInput
               label={'Longitude'}
               readOnly
               error={errors?.longitude}
               {...register(`longitude`, { required: true })}
+              width={Width.Third}
             />
             <NumberInput
               label={'UTM Zone'}
               readOnly
               error={errors?.utm_zone}
               {...register(`utm_zone`, { required: true })}
+              width={Width.Third}
             />
             <NumberInput
               label={'UTM Easting'}
               readOnly
               error={errors?.utm_easting}
               {...register(`utm_easting`, { required: true })}
+              width={Width.Third}
             />
             <NumberInput
               label={'UTM Northing'}
               readOnly
               error={errors?.utm_northing}
               {...register(`utm_northing`, { required: true })}
+              width={Width.Third}
             />
           </Fieldset>
 
@@ -105,49 +114,38 @@ const ActivityForm = () => {
               tooltip="The date the activity occurred on"
               error={errors?.date}
               {...register('date', { required: true, validate: (val) => noFutureDate(val) })}
+              width={Width.Half}
             />
 
             <SingleSelect
               label={'Employer'}
               options={codes.EmployerCode}
-              {...register('employer', { required: true })}
-              error={errors?.employer}
+              name={'employer'}
+              rules={{ required: true }}
+              width={Width.Half}
             />
 
-            <ArrayField<FormSchema>
+            <MultiSelect
               label="Funding Agencies"
-              emptyValue={{ agency: '' }}
-              {...register(`funding_agency`, { required: true })}
-              renderRow={(index, remove) => (
-                <>
-                  <SingleSelect
-                    options={codes.FundingAgencyCode}
-                    error={errors.funding_agency?.[index]?.agency}
-                    {...register(`funding_agency.${index}.agency`, { required: true })}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      remove(index);
-                    }}
-                  >
-                    <Delete color={'error'} />
-                  </button>
-                </>
-              )}
+              name={'funding_agency'}
+              options={codes.FundingAgencyCode}
+              width={Width.Half}
+              rules={{ validate: (v) => minArrayLength(v, 1) }}
             />
+            <Spacer x={150} y={10} />
             {/* Start Jurisdictions  */}
             <ArrayField<FormSchema>
               name="jurisdictions"
               label="Jurisdictions"
+              width={Width.Half}
               emptyValue={{ jurisdiction: '', percent_covered: 0 }}
               renderRow={(index, remove) => (
                 <>
                   <SingleSelect
                     label="Jurisdiction"
                     options={codes.JurisdictionCode}
-                    error={errors.jurisdictions?.[index]?.jurisdiction}
-                    {...register(`jurisdictions.${index}.jurisdiction`, { required: true })}
+                    name={`jurisdictions.${index}.jurisdiction`}
+                    rules={{ required: true }}
                   />
                   <NumberInput
                     label="Percent Covered"
@@ -183,24 +181,33 @@ const ActivityForm = () => {
               name="project_code"
               label="Project Codes"
               emptyValue={{ description: '' }}
+              width={Width.Half}
               renderRow={(index, remove) => (
-                <TextInput
-                  small
-                  onRemove={() => remove(index)}
-                  id={`project_code.${index}.description`}
-                  {...register(`project_code.${index}.description`)}
-                  error={formState.errors.project_code?.[index]?.description}
-                />
+                <>
+                  <TextInput
+                    small
+                    id={`project_code.${index}.description`}
+                    {...register(`project_code.${index}.description`)}
+                    error={formState.errors.project_code?.[index]?.description}
+                  />
+                  <DeleteControl onClick={() => remove(index)} />
+                </>
               )}
             />
 
             {/* Start General Comment Boxes  */}
-            <TextArea label={'Location Description'} id="location_description" {...register('location_description')} />
             <TextArea
+              label={'Location Description'}
+              id="location_description"
+              width={Width.Third}
+              {...register('location_description')}
+            />
+            <TextArea
+              width={Width.Third}
               label={'Access Description'}
               {...register('access_description', { required: true, minLength: 10 })}
             />
-            <TextArea label={'Comment'} {...register('comment')} />
+            <TextArea label={'Comment'} width={Width.Third} {...register('comment')} />
           </Fieldset>
           <SubtypeComposite />
           <input type="submit" />

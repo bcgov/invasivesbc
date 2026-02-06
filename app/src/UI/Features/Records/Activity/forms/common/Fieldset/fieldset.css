@@ -1,45 +1,33 @@
-.form-fieldset,
-.form-small-fieldset {
+.form-fieldset {
   display: flex;
-  flex-wrap: wrap;
+  flex-flow: row wrap;
   font-size: 1.25rem;
   justify-content: flex-start;
   text-wrap: wrap;
   box-sizing: border-box;
-  margin-bottom: 10px;
   align-items: stretch;
+
+  & > * {
+    margin-bottom: 10px;
+    margin-right: auto;
+  }
 
   &.full-width {
     width: 100%;
   }
 
   &.half-width {
-    width: 50%;
+    width: 49%;
   }
 
   &.third-width {
-    width: 33%;
+    width: 32%;
   }
 
   &.quarter-width {
-    width: 25%;
+    width: 24%;
   }
-}
-
-.form-small-fieldset {
-  flex-direction: column;
-  justify-content: flex-start;
-  width: 45%;
-}
-
-.form-fieldset {
-  justify-content: row;
-  width: 100%;
 }
 
 @media only screen and (width < 820px) {
-  .form-fieldset,
-  .form-small-fieldset {
-    width: 100%;
-  }
 }

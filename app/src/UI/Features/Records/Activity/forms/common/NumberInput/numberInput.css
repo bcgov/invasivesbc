@@ -3,7 +3,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  margin: auto auto 10px;
+  margin-bottom: 10px;
   min-height: 81px;
 
   input[type='number'] {
@@ -34,14 +34,14 @@
   }
 
   &.half-width {
-    width: 50%;
+    width: 49%;
   }
 
   &.third-width {
-    width: 33%;
+    width: 32%;
   }
 
   &.quarter-width {
-    width: 25%;
+    width: 24%;
   }
 }
