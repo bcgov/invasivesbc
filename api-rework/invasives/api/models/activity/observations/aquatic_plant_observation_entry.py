@@ -25,7 +25,7 @@ class AquaticPlantObservationEntry(BaseOneToManyActivityTable):
     sample_point_id = models.CharField(max_length=128, blank=True, null=True)
 
     class Meta:
-        db_table = '"activity"."observation_context_pa"'
+        db_table = '"activity"."observation_entries_pa"'
         constraints = [
             models.UniqueConstraint(
                 fields=["activity", "invasive_plant"],

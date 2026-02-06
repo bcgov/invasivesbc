@@ -24,10 +24,9 @@ class AquaticObservationTest(BaseActivitySubtypeTest):
 
         sd = response_object["subtype_data"]
 
-        # @todo add subtype observation info class
-        # self.assertEqual(sd["suitable_for_biocontrol"], "No")
-        self.assertEqual(sd["pretreatment_observation"], "Yes")
+        self.assertEqual(sd["suitable_for_biocontrol"], "No")
 
+        self.assertEqual(sd["pretreatment_observation"], "Yes")
         self.assertGreaterEqual(len(sd["entries"]), 1)
         self.assertIn("WET", sd["inflow_permanent"])
         self.assertIn("DISP", sd["inflow_seasonal"])
@@ -69,8 +68,7 @@ class AquaticObservationTest(BaseActivitySubtypeTest):
 
         sd = response_object["subtype_data"]
 
-        # @todo add subtype observation info class
-        # self.assertEqual(sd["suitable_for_biocontrol"], "Yes")
+        self.assertEqual(sd["suitable_for_biocontrol"], "Yes")
         self.assertEqual(sd["pretreatment_observation"], "No")
         self.assertEqual(len(sd["entries"]), 2)
 
