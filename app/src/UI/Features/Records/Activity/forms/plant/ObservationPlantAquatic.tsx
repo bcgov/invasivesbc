@@ -10,6 +10,8 @@ import { useFormContext } from 'react-hook-form';
 import { AquaticPlantObservationSchema } from './subtypeInterfaces';
 import MultiSelect from '../common/MultiSelect/MultiSelect';
 import { minArrayLength } from '../common/validators';
+import { Width } from '../common/utils';
+import DeleteControl from '../common/DeleteControl/DeleteControl';
 
 const ObservationPlantAquatic = () => {
   const codes = useSelector((state) => state.ActivityPage?.formCodes);
@@ -27,72 +29,90 @@ const ObservationPlantAquatic = () => {
           options={WaterbodyType}
           name={'subtype_data.type'}
           rules={{ required: true }}
+          width={Width.Half}
         />
         <TextInput
           label={'Waterbody Name (Gazetted)'}
           error={errors?.subtype_data?.name_gazetted}
           {...register('subtype_data.name_gazetted')}
+          width={Width.Half}
         />
         <TextInput
           label={'Waterbody Name (Local)'}
           error={errors?.subtype_data?.name_local}
           {...register('subtype_data.name_local')}
+          width={Width.Half}
         />
         <TextInput
           label={'Waterbody Access'}
           error={errors?.subtype_data?.access}
           {...register('subtype_data.access')}
+          width={Width.Half}
         />
         <MultiSelect
           label={'Waterbody Use'}
           options={codes?.WaterbodyUseCode}
           name={'subtype_data.water_use'}
           rules={{ validate: (val) => minArrayLength(val, 1) }}
+          width={Width.Half}
         />
         <MultiSelect
           label={'Water Level Management'}
           options={WaterLevelManagement}
           rules={{ validate: (val) => minArrayLength(val, 1) }}
           name={'subtype_data.waterlevel_management'}
+          width={Width.Half}
         />
         <MultiSelect
           label={'Substrate Type'}
           options={codes?.SubstrateCode}
           name={'subtype_data.substrate_type'}
           rules={{ validate: (val) => minArrayLength(val, 1) }}
+          width={Width.Half}
         />
         <SingleSelect
           label={'Tidal Influence'}
           options={YesNoUnknown}
           name={'subtype_data.tidal_influence'}
           rules={{ required: true }}
+          width={Width.Half}
         />
         <MultiSelect
           label={'Adjacent Land Use'}
           options={codes?.AdjacentLandUseCode}
           name={'subtype_data.adjacent_land_use'}
+          width={Width.Half}
         />
         <MultiSelect
           label={'Inflow (Permanent)'}
           options={codes?.WaterbodyFlowCode}
           name={'subtype_data.inflow_permanent'}
+          width={Width.Half}
         />
         <MultiSelect
           label={'Inflow (Temp. or Seasonal)'}
           options={codes?.WaterbodyFlowSeasonalCode}
           name={'subtype_data.inflow_seasonal'}
+          width={Width.Half}
         />
         <MultiSelect
           label={'Outflow (Permanent)'}
           options={codes?.WaterbodyFlowCode}
           name={'subtype_data.outflow_permanent'}
+          width={Width.Half}
         />
         <MultiSelect
           label={'Outflow (Seasonal)'}
           options={codes?.WaterbodyFlowCode}
           name={'subtype_data.outflow_seasonal'}
+          width={Width.Half}
         />
-        <TextArea label={'Comment'} error={errors?.subtype_data?.comment} {...register('subtype_data.comment')} />
+        <TextArea
+          label={'Comment'}
+          error={errors?.subtype_data?.comment}
+          {...register('subtype_data.comment')}
+          width={Width.Half}
+        />
       </Fieldset>
 
       {/* Shoreline Types Start */}
@@ -107,15 +127,15 @@ const ObservationPlantAquatic = () => {
               options={codes?.ShorelineTypeCode}
               name={`subtype_data.shoreline_types.${index}.shoreline_type`}
               rules={{ required: true }}
+              width={Width.Half}
             />
             <NumberInput
               label={'Percent Covered (%)'}
               error={errors?.subtype_data?.shoreline_types?.[index]?.percent_covered}
               {...register(`subtype_data.shoreline_types.${index}.percent_covered`)}
+              width={Width.Half}
             />
-            <button type="button" className="delete" onClick={() => remove(index)}>
-              Remove
-            </button>
+            <DeleteControl onClick={() => remove(index)} />
           </>
         )}
       />
@@ -126,20 +146,29 @@ const ObservationPlantAquatic = () => {
           label="Maximum Depth (m)"
           error={errors?.subtype_data?.max_depth_m}
           {...register('subtype_data.max_depth_m')}
+          width={Width.Half}
         />
         <NumberInput
           label="Secchi Depth (m)"
           error={errors?.subtype_data?.secchi_depth}
           {...register('subtype_data.secchi_depth')}
+          width={Width.Half}
         />
-        <TextInput label="Water Colour" error={errors?.subtype_data?.colour} {...register('subtype_data.colour')} />
+        <TextInput
+          label="Water Colour"
+          error={errors?.subtype_data?.colour}
+          {...register('subtype_data.colour')}
+          width={Width.Half}
+        />
       </Fieldset>
-      <SingleSelect
-        label="Suitable For Biocontrol Agent(s)"
-        options={YesNoUnknown}
-        name={'subtype_data.suitable_for_biocontrol'}
-        rules={{ required: true }}
-      />
+      <Fieldset label={'Observation Information'}>
+        <SingleSelect
+          label="Suitable For Biocontrol Agent(s)"
+          options={YesNoUnknown}
+          name={'subtype_data.suitable_for_biocontrol'}
+          rules={{ required: true }}
+        />
+      </Fieldset>
 
       {/* Aquatic Plant Entries Start */}
       <ArrayField<AquaticPlantObservationSchema>
@@ -152,37 +181,42 @@ const ObservationPlantAquatic = () => {
               label={'Sample Point ID'}
               error={errors?.subtype_data?.entries?.[index]?.sample_point_id}
               {...register(`subtype_data.entries.${index}.sample_point_id`)}
+              width={Width.Half}
             />
             <SingleSelect
               label={'Invasive Plant'}
               options={codes?.AquaticPlantCode}
               name={`subtype_data.entries.${index}.invasive_plant`}
+              rules={{ required: true }}
+              width={Width.Half}
             />
             <SingleSelect
               label={'Observation Type'}
               options={ObservationType}
+              rules={{ required: true }}
               name={`subtype_data.entries.${index}.observation_type`}
+              width={Width.Half}
             />
             <SingleSelect
               label={'Density (plants/m2)'}
               options={codes?.DensityCode}
               name={`subtype_data.entries.${index}.density`}
+              width={Width.Half}
             />
             <SingleSelect
               label={'Distribution'}
               options={codes?.DistributionCode}
               name={`subtype_data.entries.${index}.distribution`}
+              width={Width.Half}
             />
             <SingleSelect
               label={'Life Stage'}
               options={codes?.PlantLifeStageCode}
               name={`subtype_data.entries.${index}.life_stage`}
+              width={Width.Half}
             />
             {/* <SingleSelect label={'Voucher Specimen Collected'} options={YesNo}/> */}
-
-            <button type="button" className="delete" onClick={() => remove(index)}>
-              Remove
-            </button>
+            <DeleteControl onClick={() => remove(index)} />
           </>
         )}
       />
