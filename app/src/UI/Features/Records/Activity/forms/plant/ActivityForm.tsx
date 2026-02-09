@@ -1,5 +1,5 @@
 import { useForm, SubmitHandler, useWatch, FormProvider } from 'react-hook-form';
-import { useSelector } from 'utils/use_selector';
+import { useDispatch, useSelector } from 'utils/use_selector';
 import TextInput from '../common/TextInput/TextInput';
 import SingleSelect from '../common/SingleSelect/SingleSelect';
 import Fieldset from '../common/Fieldset/Fieldset';
@@ -7,7 +7,7 @@ import DateInput from '../common/DateInput/DateInput';
 import NumberInput from '../common/NumberInput/NumberInput';
 import TextArea from '../common/TextArea/TextArea';
 import { checkSum, minArrayLength, noFutureDate } from '../common/validators';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import ArrayField from '../common/ArrayField/ArrayField';
 import SubtypeComposite from './SubtypeComposite';
 import { FormSchema } from './subtypeInterfaces';
@@ -16,17 +16,25 @@ import { Width } from '../common/utils';
 import DeleteControl from '../common/DeleteControl/DeleteControl';
 import MultiSelect from '../common/MultiSelect/MultiSelect';
 import Spacer from 'UI/Reusable/Spacer/Spacer';
+import debounce from 'lodash.debounce';
+import FormActions from 'state/actions/activity/FormActions';
+
+const FORM_UPDATE_THROTTLE_DELAY = 500; //ms
+const FORM_UPDATE_MAX_DELAY = 3000; //ms
 
 const ActivityForm = () => {
+  const dispatch = useDispatch();
+  const initState = useSelector((state) => state.ActivityPage?.formState);
+  // Assign Props to sole variable to pass into FormProvider
   const methods = useForm<FormSchema>({
-    defaultValues: {
+    defaultValues: initState ?? {
       jurisdictions: [{ jurisdiction: '', percent_covered: 0 }],
       project_code: [{ description: '' }],
       funding_agency: [{ agency: '' }]
     },
     mode: 'onChange'
   });
-
+  // Destructure props used at this level
   const {
     register,
     handleSubmit,
@@ -46,6 +54,7 @@ const ActivityForm = () => {
   const geometry_details = useSelector((state) => state.ActivityPage?.geometry_details);
   const codes = useSelector((state) => state.ActivityPage?.formCodes);
   const formData = watch();
+  const allFormValues = useWatch({ control });
 
   useEffect(() => {
     register('jurisdictions', { validate: (val) => checkSum(val, 100, 'percent_covered') });
@@ -78,6 +87,18 @@ const ActivityForm = () => {
     });
   }, [geometry_details]);
 
+  const debouncedFormChange = useCallback(
+    debounce(() => dispatch(FormActions.updateFormState(getValues())), FORM_UPDATE_THROTTLE_DELAY, {
+      maxWait: FORM_UPDATE_MAX_DELAY,
+      leading: false,
+      trailing: true
+    }),
+    []
+  );
+
+  useEffect(() => {
+    debouncedFormChange();
+  }, [allFormValues]);
   return (
     <div className="activity-page">
       <FormProvider {...methods}>
@@ -237,7 +258,7 @@ const ActivityForm = () => {
           </Fieldset>
           <SubtypeComposite />
           <input type="submit" />
-          <pre style={{ display: 'flex' }}>{JSON.stringify(formData, null, 2)}</pre>
+          <pre style={{ display: 'flex', textWrap: 'wrap' }}>{JSON.stringify(formData, null, 2)}</pre>
         </form>
       </FormProvider>
     </div>
