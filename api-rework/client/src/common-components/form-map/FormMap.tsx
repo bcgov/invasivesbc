@@ -6,12 +6,13 @@ import { bbox } from '@turf/bbox';
 import './formMap.css';
 
 type PropTypes = {
-  geojson?: GeoJSON.Polygon | GeoJSON.Feature;
+  geojson: GeoJSON.Polygon | GeoJSON.Feature;
 };
+
 const FormMap = ({ geojson }: PropTypes) => {
   const SRC = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
   const mapRef = useRef<HTMLDivElement>(null);
-  const [map, setMap] = useState<maplibregl.Map>();
+  const map= useRef<maplibregl.Map | undefined>(undefined);
 
   const mapCenter: LngLatLike = (() => {
     if (!geojson) return [-121, 54] as LngLatLike;
@@ -20,7 +21,7 @@ const FormMap = ({ geojson }: PropTypes) => {
 
   useEffect(() => {
     // Init Map after load
-    setMap(
+    map.current =
       new maplibregl.Map({
         container: 'map',
         center: mapCenter,
@@ -30,7 +31,8 @@ const FormMap = ({ geojson }: PropTypes) => {
             'raster-tiles': {
               type: 'raster',
               tiles: [SRC],
-              tileSize: 256
+              tileSize: 256,
+              maxzoom: 18
             }
           },
           layers: [
@@ -42,20 +44,21 @@ const FormMap = ({ geojson }: PropTypes) => {
           ],
           version: 8
         }
-      })
+      }
     );
-  }, []);
+  }, [geojson]);
 
   useEffect(() => {
     // Apply Geometry + Layer
-    if (!map || !geojson) return;
-    map?.on('load', () => {
+    if (!map.current || !geojson) return;
+
+    map.current.on('load', () => {
       if (geojson) {
-        map?.addSource('form-feature', {
+        map.current?.addSource('form-feature', {
           type: 'geojson',
           data: geojson
         });
-        map?.addLayer({
+        map.current?.addLayer({
           id: 'form-feature',
           type: 'fill',
           source: 'form-feature',
@@ -66,12 +69,13 @@ const FormMap = ({ geojson }: PropTypes) => {
           }
         });
         const bounds = bbox(geojson) as LngLatBoundsLike;
-        map.fitBounds(bounds, {
+        map.current?.fitBounds(bounds, {
           padding: 10,
           minZoom: 8
         });
       }
     });
+
   }, [map]);
   return (
     <div>

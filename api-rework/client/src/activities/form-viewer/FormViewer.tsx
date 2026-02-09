@@ -35,7 +35,7 @@ const FormViewer = ({ formData }) => {
           <TextInput label={'subtype'} value={formData?.subtype} />
           <TextInput label={'form status'} value={formData?.form_status} />
           <FormMap
-          // TODO: geojson={} ADD GEOJSON WHEN READY
+            geojson={formData?.shape}
           />
           <TextInput label={'latitude'} value={formData?.latitude} />
           <TextInput label={'longitude'} value={formData?.longitude} />
@@ -49,22 +49,22 @@ const FormViewer = ({ formData }) => {
         </Fieldset>
         <Fieldset label={'project codes'} small>
           {formData?.projects.map(({ description }) => (
-            <TextInput value={description} />
+            <TextInput key={description} value={description} />
           ))}
         </Fieldset>
         <Fieldset label={'employers'} small>
           {formData?.employer.map(({ employer }) => (
-            <TextInput value={employer} />
+            <TextInput key={employer} value={employer} />
           ))}
         </Fieldset>
         <Fieldset label={'funding agencies'} small>
           {formData?.funding_agencies.map(({ invasive_species_agency_code }) => (
-            <TextInput value={invasive_species_agency_code} />
+            <TextInput key={invasive_species_agency_code} value={invasive_species_agency_code} />
           ))}
         </Fieldset>
         <Fieldset label={'jurisdictions'} small>
           {formData?.jurisdictions.map(({ jurisdiction, percent_covered }) => (
-            <div className="group-wrap">
+            <div key={jurisdiction} className="group-wrap">
               <TextInput label={'jurisdiction'} value={jurisdiction} />
               <TextInput label={'percent covered'} value={percent_covered} />
             </div>
@@ -72,7 +72,7 @@ const FormViewer = ({ formData }) => {
         </Fieldset>
         <Fieldset label={'participants'} small>
           {formData?.participants.map(({ name, pac_number }) => (
-            <div className="group-wrap">
+            <div key={pac_number} className="group-wrap">
               {pac_number && <TextInput label={'PAC number'} value={pac_number} />}
               <TextInput label={'name'} value={name} />
             </div>
@@ -80,7 +80,7 @@ const FormViewer = ({ formData }) => {
         </Fieldset>
         <Fieldset label={'Linked Records'}>
           {formData?.linked_activities?.map(({ full, short_id }) => (
-            <div className="group-wrap">
+            <div key={short_id} className="group-wrap">
               <TextInput label={'Short ID'} value={short_id} />
               <TextInput label={'Full'} value={full} />
             </div>
