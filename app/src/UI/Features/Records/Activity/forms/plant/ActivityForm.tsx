@@ -23,52 +23,8 @@ const FORM_UPDATE_THROTTLE_DELAY = 500; //ms
 const FORM_UPDATE_MAX_DELAY = 3000; //ms
 
 const ActivityForm = () => {
-  const dispatch = useDispatch();
-  const initState = useSelector((state) => state.ActivityPage?.formState);
-  // Assign Props to sole variable to pass into FormProvider
-  const methods = useForm<FormSchema>({
-    defaultValues: initState ?? {
-      jurisdictions: [{ jurisdiction: '', percent_covered: 0 }],
-      project_code: [{ description: '' }],
-      funding_agency: [{ agency: '' }]
-    },
-    mode: 'onChange'
-  });
-  // Destructure props used at this level
-  const {
-    register,
-    handleSubmit,
-    getValues,
-    control,
-    formState,
-    reset,
-    resetField,
-    setValue,
-    trigger,
-    unregister,
-    watch,
-    formState: { errors, isDirty }
-  } = methods;
-
-  const onSubmit: SubmitHandler<FormSchema> = (data) => console.log(data);
-  const geometry_details = useSelector((state) => state.ActivityPage?.geometry_details);
-  const codes = useSelector((state) => state.ActivityPage?.formCodes);
-  const formData = watch();
-  const allFormValues = useWatch({ control });
-
-  useEffect(() => {
-    register('jurisdictions', { validate: (val) => checkSum(val, 100, 'percent_covered') });
-    register('geom');
-  }, [register]);
-
-  useEffect(() => {
-    // After first update, enforce Validation
-    if (!isDirty) return;
-    trigger();
-  }, [isDirty]);
-
-  useEffect(() => {
-    const fields: Array<keyof FormSchema> = [
+  const updateGeometryState = () => {
+    const GEOM_FIELDS: Array<keyof FormSchema> = [
       'area_m',
       'geom',
       'latitude',
@@ -77,16 +33,34 @@ const ActivityForm = () => {
       'utm_easting',
       'utm_northing'
     ] as const;
-    fields.forEach((f) => {
+
+    GEOM_FIELDS.forEach((f) => {
       if (geometry_details?.[f] == undefined) {
         resetField(f);
       } else {
         setValue(f, geometry_details[f]);
       }
-      trigger(f);
+      trigger(f); // Activate Forms Validation
     });
-  }, [geometry_details]);
+  };
 
+  const dispatch = useDispatch();
+
+  const codes = useSelector((state) => state.ActivityPage?.formCodes);
+  const geometry_details = useSelector((state) => state.ActivityPage?.geometry_details);
+  const initState = useSelector((state) => state.ActivityPage?.formState);
+
+  // Assign Props to sole variable to pass into FormProvider
+  const methods = useForm<FormSchema>({
+    defaultValues: initState ?? {
+      jurisdictions: [{ jurisdiction: '', percent_covered: 0 }],
+      project_code: [{ description: '' }],
+      funding_agencies: [{ invasive_species_agency_code: '' }]
+    },
+    mode: 'onChange'
+  });
+
+  // Redux state Handler
   const debouncedFormChange = useCallback(
     debounce(() => dispatch(FormActions.updateFormState(getValues())), FORM_UPDATE_THROTTLE_DELAY, {
       maxWait: FORM_UPDATE_MAX_DELAY,
@@ -96,14 +70,56 @@ const ActivityForm = () => {
     []
   );
 
+  // Destructure props used at this level
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    control,
+    formState,
+    resetField,
+    setValue,
+    trigger,
+    unregister,
+    watch,
+    formState: { errors, isDirty }
+  } = methods;
+
+  const onSubmit: SubmitHandler<FormSchema> = (data) => console.log(data);
+  const formData = watch();
+  const allFormValues = useWatch({ control });
+
+  /**
+   * After Form is loaded,
+   *  - Register jurisdiction Validation (applies to Array),
+   *  - Register geom key (Shape on map, not assigned to component)
+   */
   useEffect(() => {
+    register('jurisdictions', { validate: (val) => checkSum(val, 100, 'percent_covered') });
+    register('geom');
+  }, [register]);
+
+  // After first change to form is applied, trigger validation for whole form.
+  useEffect(() => {
+    if (!isDirty) return;
+    trigger();
+  }, [isDirty]);
+
+  /** Trigger Geometry Updates when Redux state changes */
+  useEffect(() => {
+    updateGeometryState();
+  }, [geometry_details]);
+
+  useEffect(() => {
+    // Debounce all internal state updates to persist in Redux
     debouncedFormChange();
   }, [allFormValues]);
+
   return (
     <div className="activity-page">
       <FormProvider {...methods}>
         <form autoComplete={'off'} className="activity-form" onSubmit={handleSubmit(onSubmit)}>
-          {/* Start Geometry Fields */}
+          {/* Start of Geometry Fields */}
           <Fieldset label={'Geometry Information'}>
             <p>To modify or update, please draw a new shape on the Map</p>
             <button onClick={() => alert('Not implemented')}>Draw Shape</button>
@@ -163,7 +179,6 @@ const ActivityForm = () => {
               {...register('date', { required: true, validate: (val) => noFutureDate(val) })}
               width={Width.Half}
             />
-
             <SingleSelect
               label={'Employer'}
               options={codes.EmployerCode}
@@ -171,16 +186,15 @@ const ActivityForm = () => {
               rules={{ required: true }}
               width={Width.Half}
             />
-
             <MultiSelect
               label="Funding Agencies"
-              name={'funding_agency'}
+              name={'funding_agencies'}
               options={codes.FundingAgencyCode}
               width={Width.Half}
               rules={{ validate: (v) => minArrayLength(v, 1) }}
             />
             <Spacer x={150} y={10} />
-            {/* Start Jurisdictions  */}
+            {/* Start of Jurisdictions section */}
             <ArrayField<FormSchema>
               name="jurisdictions"
               label="Jurisdictions"
@@ -223,7 +237,7 @@ const ActivityForm = () => {
                 </>
               )}
             />
-            {/* Start Project Codes  */}
+            {/* Start of Project Codes  */}
             <ArrayField<FormSchema>
               name="project_code"
               label="Project Codes"
@@ -257,6 +271,7 @@ const ActivityForm = () => {
             <TextArea label={'Comment'} width={Width.Third} {...register('comment')} />
           </Fieldset>
           <SubtypeComposite />
+          {/* Submit Button is tied to react-hook-form */}
           <input type="submit" />
           <pre style={{ display: 'flex', textWrap: 'wrap' }}>{JSON.stringify(formData, null, 2)}</pre>
         </form>
