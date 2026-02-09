@@ -101,8 +101,9 @@ class Activity {
   static readonly get = createAction<string>(`${this.PREFIX}/get`);
 
   /** Fetch Record from Django API */
-  static readonly getDjango = createAsyncThunk(`${this.PREFIX}/getDjango`, async (spec: { id: string }) => {
-    const newFormat = await fetch(`http://localhost:8000/activities/${spec.id}`, {
+  static readonly getDjango = createAsyncThunk(`${this.PREFIX}/getDjango`, async (id: string) => {
+    // TODO: POINT DJANGO API ENV
+    const newFormat = await fetch(`http://localhost:8000/activities/${id}`, {
       headers: { Authorization: await getCurrentJWT() }
     });
     return await newFormat.json();
