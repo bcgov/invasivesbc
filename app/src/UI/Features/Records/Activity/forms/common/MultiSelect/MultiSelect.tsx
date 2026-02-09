@@ -15,6 +15,7 @@ interface PropTypes<T extends FieldValues> {
   isSearchable?: boolean;
   tooltip?: string;
   width?: Width;
+  valueKey?: string;
   placeholder?: string;
 }
 
@@ -26,6 +27,7 @@ export function MultiSelect<T extends FieldValues>({
   isSearchable = false,
   tooltip,
   placeholder,
+  valueKey,
   width
 }: PropTypes<T>) {
   const { control } = useFormContext<T>();
@@ -35,7 +37,7 @@ export function MultiSelect<T extends FieldValues>({
       name={name}
       control={control}
       rules={rules}
-      render={({ field: { onChange, ref }, fieldState: { error } }) => (
+      render={({ field: { onChange, ref, value }, fieldState: { error } }) => (
         <div className={`form-multi-select-input ${getInputWidth(width)}`}>
           {label && (
             <label htmlFor={name}>
@@ -48,7 +50,10 @@ export function MultiSelect<T extends FieldValues>({
             placeholder={placeholder}
             isSearchable={isSearchable}
             options={options.map((o) => ({ label: o.full_name, value: o.code }))}
-            onChange={(val) => onChange(val.map((c) => c.value))}
+            value={options
+              .filter((o) => (valueKey ? value?.some((v) => v?.[valueKey] === o.code) : value?.includes(o.code)))
+              .map((o) => ({ label: o.full_name, value: o.code }))}
+            onChange={(val) => onChange(valueKey ? val.map((c) => ({ [valueKey]: c.value })) : val.map((c) => c.value))}
             className="select-input"
           />
           <ErrorMessage error={error} />
