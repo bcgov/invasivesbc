@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import maplibregl, { LngLatBoundsLike, LngLatLike } from 'maplibre-gl';
 import { centroid } from '@turf/centroid';
 import { bbox } from '@turf/bbox';
