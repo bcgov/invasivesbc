@@ -1,6 +1,7 @@
 import json
 import logging
 
+from django.contrib.gis.db.models.functions import Centroid, AsGeoJSON
 from django.http.response import HttpResponse
 import psycopg
 from psycopg.rows import dict_row
@@ -20,8 +21,19 @@ from invasivesbc.settings import LEGACY_DB_CONNECTION_STRING
 
 
 class ActivityViewSet(ReadOnlyModelViewSet):
-    queryset = Activity.objects.all()
+    querysets = {
+        "list": Activity.objects.values("id", "type", "subtype", "date"),
+        "default": Activity.objects.annotate(centroid=AsGeoJSON(Centroid("shape")))
+        .prefetch_related()
+        .all(),
+    }
     permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        if self.action in self.querysets.keys():
+            return self.querysets[self.action]
+
+        return self.querysets["default"]
 
     def get_serializer_class(self):
         if self.action == "list":

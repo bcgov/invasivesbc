@@ -12,6 +12,7 @@ header {
   border-bottom: 1pt solid black;
   font-family: Calibri, sans-serif;
   color: white;
+  z-index: 100;
 
   h1,
   p {

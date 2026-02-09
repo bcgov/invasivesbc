@@ -1,4 +1,8 @@
+import json
 import logging
+
+from django.contrib.gis.db.models.functions import AsGeoJSON
+from django.contrib.gis.serializers.geojson import JSONSerializer as GeoJSONSerializer
 
 from rest_framework import serializers
 
@@ -11,6 +15,7 @@ from api.models.activity import (
     ProjectCode,
 )
 from api.models.activity.activity import Activity
+from api.models.mixins.geometry import Geometry
 from api.serializers.type.subtype import (
     AquaticChemicalTreatmentSerializer,
     AquaticObservationSerializer,
@@ -101,6 +106,9 @@ class ActivitySerializer(serializers.ModelSerializer):
     participants = ParticipantSerializer(source="participant_set", many=True)
     linked_activities = serializers.SerializerMethodField()
 
+    shape = serializers.SerializerMethodField()
+    centroid = serializers.SerializerMethodField()
+
     class Meta:
         model = Activity
         fields = (
@@ -131,14 +139,37 @@ class ActivitySerializer(serializers.ModelSerializer):
             "utm_easting",
             "utm_northing",
             "location_description",
+            "shape",
+            "centroid",
         )
 
     def get_linked_activities(self, obj):
-        print(obj)
         arr = []
         for linked_id in obj.linked_activities.all():
             arr.append({"short_id": linked_id.short_id, "full": linked_id.id})
         return arr
+
+    def get_shape(self, obj: Activity):
+        geojson_py_object = json.loads(obj.shape.json)
+
+        if geojson_py_object["type"] == "Feature":
+            # Shouldn't be any
+            logging.warning("Unexpected geometry with type Feature")
+            return geojson_py_object
+
+        feature_object = {
+            "type": "Feature",
+            "geometry": geojson_py_object,
+            "properties": {"id": obj.short_id},
+        }
+
+        if obj.shape_radius is not None:
+            feature_object["properties"]["radius"] = obj.shape_radius
+
+        return feature_object
+
+    def get_centroid(self, obj: Geometry):
+        return json.loads(obj.centroid)
 
     def get_subtype_data(self, obj: Activity):
         """Maps the Activity to the proper Subtype Serializer, populating the form specific information"""

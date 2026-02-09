@@ -41,7 +41,7 @@ const JSONViewer: React.FC<JSONViewerProps> = ({ data, helpText, diffCandidates 
           <input
             type={'checkbox'}
             checked={diffsEnabled.includes(candidate.title)}
-            onClick={() => toggleDiff(candidate.title)}
+            onChange={() => toggleDiff(candidate.title)}
           />
           Show Diff with {candidate.title}
         </React.Fragment>

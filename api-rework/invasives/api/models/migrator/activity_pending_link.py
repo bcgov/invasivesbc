@@ -13,6 +13,5 @@ class ActivityPendingLink(models.Model):
     actioned = models.BooleanField(blank=False, null=False, default=False)
     success = models.BooleanField(blank=False, null=True, default=None)
 
-
-class Meta:
-    db_table = '"etl"."pending_link"'
+    class Meta:
+        db_table = '"etl"."pending_link"'

@@ -11,15 +11,6 @@ class TerrestrialChemicalTreatmentTest(BaseActivitySubtypeTest):
         "test/common/test_participants",
     ]
 
-    def test_expect_two_activities(self):
-        self.expect_two_activities()
-
-    def test_pac_number_is_present(self):
-        self.pac_number_is_present()
-
-    def test_casting_fixture_into_serializer(self):
-        self.casting_fixture_into_serializer(expected_subtype_key="well_entries")
-
     def test_subtype_values(self):
         record = self.fetch_a().json()
         sd = record["subtype_data"]

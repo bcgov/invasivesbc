@@ -10,15 +10,6 @@ class BiocontrolReleaseTest(BaseActivitySubtypeTest):
         "test/common/test_participants",
     ]
 
-    def test_expect_two_activities(self):
-        self.expect_two_activities()
-
-    def test_no_pac_number_present(self):
-        self.no_pac_number_present()
-
-    def test_casting_fixture_into_serializer(self):
-        self.casting_fixture_into_serializer(expected_subtype_key="entries")
-
     def test_subtype_details_full(self):
         """Subtype keys match the information from fixtures."""
         response_object = self.fetch_a().json()

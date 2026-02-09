@@ -1,4 +1,5 @@
-import decimal
+from decimal import Decimal, ROUND_DOWN
+import json
 import logging
 from pprint import pformat
 
@@ -48,6 +49,23 @@ def migrate(old: LegacyActivity):
     new.form_status = old.activity_payload.form_status
     new.comment = old.activity_payload.form_data.activity_data.general_comment
 
+    if old.activity_payload.geometry is None or len(old.activity_payload.geometry) > 1:
+        logging.error(
+            "geometry cannot be understood: " + pformat(old.activity_payload.geometry)
+        )
+    else:
+        new.shape = json.dumps((old.activity_payload.geometry[0]["geometry"]))
+        properties = (
+            old.activity_payload.geometry[0]["properties"]
+            if "properties" in old.activity_payload.geometry[0]
+            else None
+        )
+        if properties and "radius" in properties:
+            logging.debug(f"Mapping radius: {properties['radius']}")
+            new.shape_radius = Decimal(properties["radius"]).quantize(
+                Decimal("0.0000000000000001"), rounding=ROUND_DOWN
+            )
+
     new.created_by = old.activity_payload.created_by
     src_map = {
         "web": PlatformSource.Web.value,
@@ -62,10 +80,10 @@ def migrate(old: LegacyActivity):
 
     new.area_m = old.activity_payload.form_data.activity_data.reported_area
     new.latitude = round(
-        decimal.Decimal(old.activity_payload.form_data.activity_data.latitude), 7
+        Decimal(old.activity_payload.form_data.activity_data.latitude), 7
     )
     new.longitude = round(
-        decimal.Decimal(old.activity_payload.form_data.activity_data.longitude), 7
+        Decimal(old.activity_payload.form_data.activity_data.longitude), 7
     )
     new.utm_zone = old.activity_payload.form_data.activity_data.utm_zone
     new.utm_easting = old.activity_payload.form_data.activity_data.utm_easting

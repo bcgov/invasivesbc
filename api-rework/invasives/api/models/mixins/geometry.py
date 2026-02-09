@@ -1,3 +1,4 @@
+from django.contrib.gis.db import models as geomodels
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
@@ -9,11 +10,9 @@ class Geometry(models.Model):
     Geometry details for an activity Record
     consumed by:
       - All Activity Types
-    @TODO: Update with PostGIS support for shapes | Constrain to BC Geometry
+    @TODO: Constrain to BC Geometry
     """
 
-    # centroid = models. # SUPPORT CENTROID
-    # geom = models. # SUPPORT GEOMETRY. This should also support Multi-polygons.
     area_m = models.PositiveBigIntegerField(
         validators=[MaxValueValidator(MAX_AREA)], null=True
     )
@@ -26,9 +25,21 @@ class Geometry(models.Model):
     longitude = models.DecimalField(max_digits=10, decimal_places=7, null=True)
     location_description = models.CharField(max_length=512, null=True)
 
+    shape = geomodels.GeometryField(
+        srid=4326, geography=False, spatial_index=True, null=False
+    )
+    shape_radius = models.DecimalField(
+        max_digits=17,
+        decimal_places=16,
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(0)],
+    )
+
     class Meta:
         abstract = True
 
     def clean(self):
         super().save()
         # Check Geometry/Lat/Long are in BC.
+        # Check radius is shape is point. No radius is shape is not point.
