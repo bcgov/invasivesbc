@@ -1,7 +1,9 @@
+import { Feature } from 'geojson';
 import { ActivitySubtype } from 'sharedAPI';
 
 interface BaseForm {
   subtype: ActivitySubtype;
+  geom: Feature;
   date: string;
   area_m: number;
   latitude: number;

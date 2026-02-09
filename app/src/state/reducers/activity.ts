@@ -1,6 +1,7 @@
 import { Draft } from 'immer';
 import { createNextState } from '@reduxjs/toolkit';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
+import { Feature } from 'geojson';
 import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
 import GeoShapes from 'constants/geoShapes';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
@@ -22,6 +23,15 @@ interface ActivityState {
   error: boolean;
   pasteCount: number;
   failCode: number | null;
+  geometry_details?: {
+    geom: Feature;
+    area_m?: number;
+    latitude?: number;
+    longitude?: number;
+    utm_zone?: number;
+    utm_easting?: number;
+    utm_northing?: number;
+  };
   initialized: boolean;
   loading: boolean;
   suggestedJurisdictions: Record<string, any>[];
@@ -203,8 +213,9 @@ function createActivityReducer() {
       } else if (Activity.setErrors.match(action)) {
         draftState.activityErrors = getCustomErrorTransformer()(action.payload ?? []);
       } else if (Activity.updateGeoFailure.match(action)) {
-        draftState.activity.geometry = action.payload.geometry;
+        delete draftState.geometry_details;
 
+        draftState.activity.geometry = action.payload.geometry;
         draftState.activity.form_data.activity_data.latitude = undefined;
         draftState.activity.form_data.activity_data.longitude = undefined;
         draftState.activity.form_data.activity_data.utm_zone = undefined;
@@ -214,8 +225,20 @@ function createActivityReducer() {
       } else if (Activity.buildFormSchemaSuccess.match(action)) {
         draftState.uiSchema = action.payload.uiSchema;
         draftState.schema = action.payload.schema;
+      } else if (DrawToolActions.deleteGeo.match(action)) {
+        delete draftState.geometry_details;
       } else if (DrawToolActions.updateGeoSuccess.match(action)) {
         const { geometry, lat, long, utm, reported_area, Well_Information } = action.payload;
+        //TODO: Make its own thing
+        draftState.geometry_details = {
+          geom: geometry?.[0] as Feature,
+          area_m: reported_area ?? undefined,
+          latitude: lat ?? undefined,
+          longitude: long ?? undefined,
+          utm_zone: utm?.[0],
+          utm_easting: utm?.[1],
+          utm_northing: utm?.[2]
+        };
         draftState.activity.geometry = geometry;
         draftState.activity.form_data.activity_data.latitude = lat;
         draftState.activity.form_data.activity_data.longitude = long;

@@ -26,12 +26,16 @@ const ActivityForm = () => {
     },
     mode: 'onChange'
   });
+
   const {
     register,
     handleSubmit,
     getValues,
     control,
     formState,
+    reset,
+    resetField,
+    setValue,
     trigger,
     unregister,
     watch,
@@ -39,11 +43,13 @@ const ActivityForm = () => {
   } = methods;
 
   const onSubmit: SubmitHandler<FormSchema> = (data) => console.log(data);
+  const geometry_details = useSelector((state) => state.ActivityPage?.geometry_details);
   const codes = useSelector((state) => state.ActivityPage?.formCodes);
   const formData = watch();
 
   useEffect(() => {
     register('jurisdictions', { validate: (val) => checkSum(val, 100, 'percent_covered') });
+    register('geom');
   }, [register]);
 
   useEffect(() => {
@@ -51,6 +57,26 @@ const ActivityForm = () => {
     if (!isDirty) return;
     trigger();
   }, [isDirty]);
+
+  useEffect(() => {
+    const fields: Array<keyof FormSchema> = [
+      'area_m',
+      'geom',
+      'latitude',
+      'longitude',
+      'utm_zone',
+      'utm_easting',
+      'utm_northing'
+    ] as const;
+    fields.forEach((f) => {
+      if (geometry_details?.[f] == undefined) {
+        resetField(f);
+      } else {
+        setValue(f, geometry_details[f]);
+      }
+      trigger(f);
+    });
+  }, [geometry_details]);
 
   return (
     <div className="activity-page">
