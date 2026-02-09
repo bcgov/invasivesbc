@@ -144,7 +144,6 @@ class ActivitySerializer(serializers.ModelSerializer):
         )
 
     def get_linked_activities(self, obj):
-        print(obj)
         arr = []
         for linked_id in obj.linked_activities.all():
             arr.append({"short_id": linked_id.short_id, "full": linked_id.id})
