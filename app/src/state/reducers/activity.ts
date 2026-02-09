@@ -12,6 +12,8 @@ import IActivityPermissions from 'interfaces/IActivityPermissions';
 import { GeoTrackingStatus } from 'constants/geoTrackingStatus';
 import DrawToolActions from 'state/actions/drawtool/drawToolActions';
 import FormCode from 'interfaces/FormCode';
+import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/subtypeInterfaces';
+import FormActions from 'state/actions/activity/FormActions';
 
 interface ActivityState {
   [MIGRATION_VERSION_KEY]: number;
@@ -23,6 +25,7 @@ interface ActivityState {
   error: boolean;
   pasteCount: number;
   failCode: number | null;
+  formState?: FormSchema;
   geometry_details?: {
     geom: Feature;
     area_m?: number;
@@ -195,9 +198,14 @@ function createActivityReducer() {
         };
       } else if (Activity.refreshFormCodes.fulfilled.match(action)) {
         draftState.formCodes = action.payload;
+      } else if (FormActions.updateState.match(action)) {
+        draftState.formState = action.payload;
       } else if (Activity.get.match(action)) {
         draftState.failCode = null;
         draftState.loading = true;
+      } else if (Activity.getDjango.fulfilled.match(action)) {
+        console.log('DJANGO HERE', action.payload);
+        draftState.formState = action.payload;
       } else if (Activity.getSuccess.match(action)) {
         const { activity, permissions } = action.payload;
         draftState.activity = { ...activity };
