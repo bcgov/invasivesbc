@@ -12,7 +12,7 @@ interface BaseForm {
   utm_easting: number;
   utm_northing: number;
   employer: string;
-  funding_agency: Array<{ agency: string }>;
+  funding_agencies: Array<{ invasive_species_agency_code: string }>;
   jurisdictions: { percent_covered: number; jurisdiction: string }[];
   subtype_data: unknown;
   location_description: string;

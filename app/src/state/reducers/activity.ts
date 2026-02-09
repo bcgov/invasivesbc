@@ -204,7 +204,6 @@ function createActivityReducer() {
         draftState.failCode = null;
         draftState.loading = true;
       } else if (Activity.getDjango.fulfilled.match(action)) {
-        console.log('DJANGO HERE', action.payload);
         draftState.formState = action.payload;
       } else if (Activity.getSuccess.match(action)) {
         const { activity, permissions } = action.payload;
