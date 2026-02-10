@@ -179,16 +179,20 @@ const ActivityForm = () => {
               {...register('date', { required: true, validate: (val) => noFutureDate(val) })}
               width={Width.Half}
             />
-            <SingleSelect
+            <MultiSelect
+              isSearchable
               label={'Employer'}
+              valueKey="employer"
               options={codes.EmployerCode}
               name={'employer'}
               rules={{ required: true }}
               width={Width.Half}
             />
             <MultiSelect
+              isSearchable
               label="Funding Agencies"
               name={'funding_agencies'}
+              valueKey={'invasive_species_agency_code'}
               options={codes.FundingAgencyCode}
               width={Width.Half}
               rules={{ validate: (v) => minArrayLength(v, 1) }}
@@ -203,6 +207,7 @@ const ActivityForm = () => {
               renderRow={(index, remove) => (
                 <>
                   <SingleSelect
+                    isSearchable
                     label="Jurisdiction"
                     options={codes.JurisdictionCode}
                     name={`jurisdictions.${index}.jurisdiction`}
@@ -217,13 +222,11 @@ const ActivityForm = () => {
                       onChange: trigger.bind(this, 'jurisdictions')
                     })}
                   />
-                  <button
-                    type="button"
-                    className="delete"
+                  <DeleteControl
                     onClick={() => {
                       remove(index);
                       setTimeout(() => {
-                        // Hacky, remove this
+                        // TODO: Hacky, remove this
                         unregister('jurisdictions');
                         register('jurisdictions', {
                           validate: (val) => checkSum(val, 100, 'percent_covered')
@@ -231,15 +234,13 @@ const ActivityForm = () => {
                         trigger('jurisdictions');
                       }, 10);
                     }}
-                  >
-                    Remove
-                  </button>
+                  />
                 </>
               )}
             />
             {/* Start of Project Codes  */}
             <ArrayField<FormSchema>
-              name="project_code"
+              name="projects"
               label="Project Codes"
               emptyValue={{ description: '' }}
               width={Width.Half}
@@ -247,9 +248,9 @@ const ActivityForm = () => {
                 <>
                   <TextInput
                     small
-                    id={`project_code.${index}.description`}
-                    {...register(`project_code.${index}.description`)}
-                    error={formState.errors.project_code?.[index]?.description}
+                    id={`projects.${index}.description`}
+                    {...register(`projects.${index}.description`, { required: true })}
+                    error={formState.errors.projects?.[index]?.description}
                   />
                   <DeleteControl onClick={() => remove(index)} />
                 </>
