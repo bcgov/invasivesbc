@@ -34,12 +34,12 @@ const YesNo: Array<FormCode> = [
 const ObservationType: Array<FormCode> = [
   {
     full_name: 'Positive Observation',
-    code: 'Positive Observation',
+    code: 'Positive',
     table: 'ObservationType'
   },
   {
     full_name: 'Negative Observation',
-    code: 'Negative Observation',
+    code: 'Negative',
     table: 'ObservationType'
   }
 ];
