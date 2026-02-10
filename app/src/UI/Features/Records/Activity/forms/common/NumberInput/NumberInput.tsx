@@ -22,11 +22,13 @@ export const NumberInput = forwardRef<HTMLInputElement, PropTypes>(
     return (
       <div className={`form-number-input ${getInputWidth(width)}`}>
         {label && (
-          <label>
-            {label}
-            {required && <RequiredField />}
+          <div className="top">
+            <label>
+              {label}
+              {required && <RequiredField />}
+            </label>
             {tooltip && <TooltipWithIcon tooltipText={tooltip} />}
-          </label>
+          </div>
         )}
         <input type="number" placeholder={props?.placeholder ?? label} readOnly={readOnly} ref={ref} {...props} />
         <ErrorMessage error={error} label={label} />

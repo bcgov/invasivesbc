@@ -12,10 +12,16 @@
     font-size: var(--form-input-font-size);
   }
 
+  .top {
+    display: flex;
+    width: 100%;
+  }
+
   label {
     height: 25px;
     font-size: var(--form-input-label-font-size);
     font-weight: 600;
+    margin-right: auto;
 
     &::after {
       content: ':';

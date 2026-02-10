@@ -27,6 +27,7 @@ const ObservationPlantAquatic = () => {
         <SingleSelect
           label={'Waterbody Type'}
           options={WaterbodyType}
+          required
           name={'subtype_data.type'}
           rules={{ required: true }}
           width={Width.Half}
@@ -74,6 +75,7 @@ const ObservationPlantAquatic = () => {
           label={'Tidal Influence'}
           options={YesNoUnknown}
           name={'subtype_data.tidal_influence'}
+          required
           rules={{ required: true }}
           width={Width.Half}
         />
@@ -126,6 +128,7 @@ const ObservationPlantAquatic = () => {
               label={'Shoreline Type'}
               options={codes?.ShorelineTypeCode}
               name={`subtype_data.shoreline_types.${index}.shoreline_type`}
+              required
               rules={{ required: true }}
               width={Width.Half}
             />
@@ -166,6 +169,7 @@ const ObservationPlantAquatic = () => {
           label="Suitable For Biocontrol Agent(s)"
           options={YesNoUnknown}
           name={'subtype_data.suitable_for_biocontrol'}
+          required
           rules={{ required: true }}
         />
       </Fieldset>
@@ -187,12 +191,14 @@ const ObservationPlantAquatic = () => {
               label={'Invasive Plant'}
               options={codes?.AquaticPlantCode}
               name={`subtype_data.entries.${index}.invasive_plant`}
+              required
               rules={{ required: true }}
               width={Width.Half}
             />
             <SingleSelect
               label={'Observation Type'}
               options={ObservationType}
+              required
               rules={{ required: true }}
               name={`subtype_data.entries.${index}.observation_type`}
               width={Width.Half}

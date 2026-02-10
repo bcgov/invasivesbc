@@ -44,10 +44,13 @@ export function SingleSelect<T extends FieldValues>({
         return (
           <div className={`form-single-select-input ${getInputWidth(width)}`}>
             {label && (
-              <label htmlFor={name}>
-                {label} {required && <RequiredField />}
+              <div className="top">
+                <label htmlFor={name}>
+                  {label}
+                  {required && <RequiredField />}
+                </label>
                 {tooltip && <TooltipWithIcon tooltipText={tooltip} />}
-              </label>
+              </div>
             )}
             <Select
               className="select-input"

@@ -21,11 +21,13 @@ export const DateInput = forwardRef<HTMLInputElement, PropTypes>(
     return (
       <div className={`form-date-input ${getInputWidth(width)}`}>
         {label && (
-          <label>
-            {label}
-            {required && <RequiredField />}
+          <div className="top">
+            <label>
+              {label}
+              {required && <RequiredField />}
+            </label>
             {tooltip && <TooltipWithIcon tooltipText={tooltip} />}
-          </label>
+          </div>
         )}
         <input type={includeTime ? 'datetime-local' : 'date'} ref={ref} {...props} />
         <ErrorMessage error={error} label={label} />

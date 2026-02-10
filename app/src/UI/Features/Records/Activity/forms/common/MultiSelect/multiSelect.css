@@ -4,25 +4,20 @@
   align-items: flex-start;
   margin-bottom: 10px;
 
+  .top {
+    display: flex;
+    width: 100%;
+
+    label {
+      margin-right: auto;
+    }
+  }
+
   .select-input {
     width: 100%;
     margin-right: 1rem;
     text-align: left;
     font-size: var(--form-input-font-size);
-  }
-
-  label {
-    font-size: var(--form-input-label-font-size);
-    margin-right: 0.5rem;
-    font-weight: 600;
-
-    & > * {
-      margin-left: 3px;
-    }
-
-    &::after {
-      content: ':';
-    }
   }
 
   &.full-width {

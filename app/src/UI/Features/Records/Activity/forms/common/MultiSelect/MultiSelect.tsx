@@ -40,11 +40,13 @@ export function MultiSelect<T extends FieldValues>({
       rules={rules}
       render={({ field: { onChange, ref, value }, fieldState: { error } }) => (
         <div className={`form-multi-select-input ${getInputWidth(width)}`}>
-          {label && (
+          <div className="top">
             <label htmlFor={name}>
-              {label} {required && <RequiredField />} {tooltip && <TooltipWithIcon tooltipText={tooltip} />}
+              {label}
+              {required && <RequiredField />}
             </label>
-          )}
+            {tooltip && <TooltipWithIcon tooltipText={tooltip} />}
+          </div>
           <Select
             ref={ref}
             isMulti

@@ -21,11 +21,13 @@ export const TextInput = forwardRef<HTMLInputElement, PropTypes>(
     return (
       <div className={`form-text-input ${getInputWidth(width)}`}>
         {label && (
-          <label>
-            {label}
-            {required && <RequiredField />}
+          <div className="top">
+            <label>
+              {label}
+              {required && <RequiredField />}
+            </label>
             {tooltip && <TooltipWithIcon tooltipText={tooltip} />}
-          </label>
+          </div>
         )}
         <input type="text" className={small ? 'small' : ''} ref={ref} {...props} />
         {error && <ErrorMessage error={error} label={label} />}

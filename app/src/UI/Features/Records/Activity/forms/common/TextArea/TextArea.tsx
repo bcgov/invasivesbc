@@ -20,10 +20,13 @@ export const TextArea = forwardRef<HTMLTextAreaElement, PropTypes>(
     return (
       <div className={`form-textarea-input ${getInputWidth(width)}`}>
         {label && (
-          <label>
-            {label} {required && <RequiredField />}
+          <div className="top">
+            <label>
+              {label}
+              {required && <RequiredField />}
+            </label>
             {tooltip && <TooltipWithIcon tooltipText={tooltip} />}
-          </label>
+          </div>
         )}
         <textarea rows={4} ref={ref} {...props} />
         <ErrorMessage error={error} label={label} />
