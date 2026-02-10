@@ -76,6 +76,7 @@ const ObservationPlantTerrestrial = () => {
           <>
             <SingleSelect
               label={'Invasive Plant'}
+              isSearchable
               options={codes?.TerrestrialPlantCode}
               name={`subtype_data.entries.${index}.invasive_plant`}
               rules={{ required: true }}
