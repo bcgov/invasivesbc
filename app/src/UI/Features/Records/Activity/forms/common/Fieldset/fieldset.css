@@ -6,9 +6,9 @@
   text-wrap: wrap;
   box-sizing: border-box;
   align-items: stretch;
-  margin-bottom: 15px;
+  margin-bottom: 3rem;
 
-  & > * {
+  & > *:not(fieldset) {
     margin-bottom: 10px;
     margin-right: auto;
   }

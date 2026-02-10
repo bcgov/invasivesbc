@@ -18,11 +18,24 @@ import MultiSelect from '../common/MultiSelect/MultiSelect';
 import Spacer from 'UI/Reusable/Spacer/Spacer';
 import debounce from 'lodash.debounce';
 import FormActions from 'state/actions/activity/FormActions';
+import Alerts from 'state/actions/alerts/Alerts';
+import tripAlertMessages from 'constants/alerts/tripAlerts';
 
 const FORM_UPDATE_THROTTLE_DELAY = 500; //ms
 const FORM_UPDATE_MAX_DELAY = 3000; //ms
 
 const ActivityForm = () => {
+  /**
+   * @desc Initiate Mouseclick on Polygon draw icon, alert user to start drawing
+   */
+  const handleDrawStart = () => {
+    (document.getElementsByClassName('mapbox-gl-draw_polygon')?.[0] as HTMLButtonElement).click();
+    dispatch(Alerts.create(tripAlertMessages.drawToolClicked));
+  };
+
+  /**
+   * Update Geometry related fields when Redux state of Geom changes
+   */
   const updateGeometryState = () => {
     const GEOM_FIELDS: Array<keyof FormSchema> = [
       'area_m',
@@ -44,6 +57,16 @@ const ActivityForm = () => {
     });
   };
 
+  // Redux state Handler
+  const debouncedFormChange = useCallback(
+    debounce(() => dispatch(FormActions.updateFormState(getValues())), FORM_UPDATE_THROTTLE_DELAY, {
+      maxWait: FORM_UPDATE_MAX_DELAY,
+      leading: false,
+      trailing: true
+    }),
+    []
+  );
+
   const dispatch = useDispatch();
 
   const codes = useSelector((state) => state.ActivityPage?.formCodes);
@@ -59,16 +82,6 @@ const ActivityForm = () => {
     },
     mode: 'onChange'
   });
-
-  // Redux state Handler
-  const debouncedFormChange = useCallback(
-    debounce(() => dispatch(FormActions.updateFormState(getValues())), FORM_UPDATE_THROTTLE_DELAY, {
-      maxWait: FORM_UPDATE_MAX_DELAY,
-      leading: false,
-      trailing: true
-    }),
-    []
-  );
 
   // Destructure props used at this level
   const {
@@ -122,11 +135,13 @@ const ActivityForm = () => {
           {/* Start of Geometry Fields */}
           <Fieldset label={'Geometry Information'}>
             <p>To modify or update, please draw a new shape on the Map</p>
-            <button onClick={() => alert('Not implemented')}>Draw Shape</button>
+            <button onClick={handleDrawStart}>Draw Shape</button>
             <NumberInput
               label={'Area (m)'}
               readOnly
               error={errors?.area_m}
+              required
+              tooltip="Area of the activity automatically created from the geometry in square metres"
               {...register(`area_m`, {
                 required: true,
                 max: { value: 500000, message: 'Area cannot exceed 500,000m' }
@@ -136,13 +151,17 @@ const ActivityForm = () => {
             <NumberInput
               label={'Latitude'}
               readOnly
+              required
               error={errors?.latitude}
+              tooltip="Latitude of the anchor point for the specified geometry"
               {...register(`latitude`, { required: true })}
               width={Width.Third}
             />
             <NumberInput
               label={'Longitude'}
               readOnly
+              required
+              tooltip="Longitude of the anchor point for the specified geometry"
               error={errors?.longitude}
               {...register(`longitude`, { required: true })}
               width={Width.Third}
@@ -150,13 +169,17 @@ const ActivityForm = () => {
             <NumberInput
               label={'UTM Zone'}
               readOnly
+              required
               error={errors?.utm_zone}
+              tooltip="UTM Zone of the anchor point for the specified geometry"
               {...register(`utm_zone`, { required: true })}
               width={Width.Third}
             />
             <NumberInput
               label={'UTM Easting'}
               readOnly
+              required
+              tooltip="UTM Easting of the anchor point for the specified geometry"
               error={errors?.utm_easting}
               {...register(`utm_easting`, { required: true })}
               width={Width.Third}
@@ -164,6 +187,8 @@ const ActivityForm = () => {
             <NumberInput
               label={'UTM Northing'}
               readOnly
+              required
+              tooltip="UTM Northing of the anchor point for the specified geometry"
               error={errors?.utm_northing}
               {...register(`utm_northing`, { required: true })}
               width={Width.Third}
@@ -175,27 +200,29 @@ const ActivityForm = () => {
             <DateInput
               label={'Date'}
               tooltip="The date the activity occurred on"
+              required
               error={errors?.date}
               {...register('date', { required: true, validate: (val) => noFutureDate(val) })}
               width={Width.Half}
             />
             <MultiSelect
-              isSearchable
               label={'Employer'}
               valueKey="employer"
               options={codes.EmployerCode}
               name={'employer'}
+              tooltip="The company or agency that the person(s) completing the activity is directly employed by"
               rules={{ required: true }}
               width={Width.Half}
             />
             <MultiSelect
-              isSearchable
               label="Funding Agencies"
               name={'funding_agencies'}
               valueKey={'invasive_species_agency_code'}
+              tooltip="Choose the organization that is paying for the work to be done. If multiple funders exist or in cases when an agency has been hired to manage the work on behalf of the primary funding agency, multiple Funding Agencies may be chosen."
               options={codes.FundingAgencyCode}
+              required
               width={Width.Half}
-              rules={{ validate: (v) => minArrayLength(v, 1) }}
+              rules={{ validate: (v) => minArrayLength(v, 1), required: true }}
             />
             <Spacer x={150} y={10} />
             {/* Start of Jurisdictions section */}
@@ -207,17 +234,21 @@ const ActivityForm = () => {
               renderRow={(index, remove) => (
                 <>
                   <SingleSelect
-                    isSearchable
                     label="Jurisdiction"
                     options={codes.JurisdictionCode}
+                    tooltip="Entity that owns or is responsible for the land base or water body"
                     name={`jurisdictions.${index}.jurisdiction`}
                     rules={{ required: true }}
+                    required
                   />
                   <NumberInput
                     label="Percent Covered"
                     type="number"
+                    required
+                    tooltip="Percent covered by this jurisdiction"
                     error={errors.jurisdictions?.[index]?.percent_covered}
                     {...register(`jurisdictions.${index}.percent_covered`, {
+                      required: true,
                       valueAsNumber: true,
                       onChange: trigger.bind(this, 'jurisdictions')
                     })}
@@ -242,6 +273,7 @@ const ActivityForm = () => {
             <ArrayField<FormSchema>
               name="projects"
               label="Project Codes"
+              tooltip='Optional field that can be added to a record to enable searching/sorting for records with that project code entered later. Multiple project codes may be added eg. project areas, contract identifiers. Replaces "paper file ID" field used in IAPP'
               emptyValue={{ description: '' }}
               width={Width.Half}
               renderRow={(index, remove) => (
@@ -261,15 +293,23 @@ const ActivityForm = () => {
             <TextArea
               label={'Location Description'}
               id="location_description"
+              tooltip="Text entry to provide location directions. Locations should start general and get more specific"
               width={Width.Third}
               {...register('location_description')}
             />
             <TextArea
               width={Width.Third}
               label={'Access Description'}
+              required
+              tooltip="Text entry to provide access directions."
               {...register('access_description', { required: true, minLength: 10 })}
             />
-            <TextArea label={'Comment'} width={Width.Third} {...register('comment')} />
+            <TextArea
+              label={'Comment'}
+              tooltip="Plain text description of any supporting information about the observation that is not captured elsewhere"
+              width={Width.Third}
+              {...register('comment')}
+            />
           </Fieldset>
           <SubtypeComposite />
           {/* Submit Button is tied to react-hook-form */}

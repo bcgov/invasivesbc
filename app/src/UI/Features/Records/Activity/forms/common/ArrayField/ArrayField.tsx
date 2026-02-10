@@ -5,14 +5,22 @@ import ErrorMessage from '../ErrorMessage/ErrorMessage';
 import { Width } from '../utils';
 
 interface PropTypes<T extends FieldValues> {
-  name: ArrayPath<T>;
-  label: string;
   emptyValue: any; // What to append when "Add" is clicked
+  label: string;
+  name: ArrayPath<T>;
+  tooltip?: string;
   width?: Width;
   renderRow: (index: number, remove: (index: number) => void) => React.ReactNode;
 }
 
-export function ArrayField<T extends FieldValues>({ name, label, emptyValue, renderRow, width }: PropTypes<T>) {
+export function ArrayField<T extends FieldValues>({
+  emptyValue,
+  label,
+  name,
+  renderRow,
+  tooltip,
+  width
+}: PropTypes<T>) {
   const {
     control,
     formState: { errors }
@@ -21,7 +29,7 @@ export function ArrayField<T extends FieldValues>({ name, label, emptyValue, ren
 
   const rootError = (errors[name] as any)?.root;
   return (
-    <Fieldset width={width} label={label}>
+    <Fieldset label={label} tooltip={tooltip} width={width}>
       <div className={'field-array'}>
         <div className="field-array-entries">
           {fields.map((field, index) => (

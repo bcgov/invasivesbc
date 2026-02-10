@@ -6,28 +6,30 @@ import ErrorMessage from '../ErrorMessage/ErrorMessage';
 import { Controller, FieldValues, useFormContext, Path } from 'react-hook-form';
 import { RegisterOptions } from 'react-hook-form';
 import { getInputWidth, Width } from '../utils';
+import RequiredField from '../RequiredField/RequiredField';
 
 interface PropTypes<T extends FieldValues> {
-  name: Path<T>;
   label?: string;
+  name: Path<T>;
   options: Array<FormCode>;
-  rules?: RegisterOptions<T, Path<T>>;
-  isSearchable?: boolean;
-  tooltip?: string;
   placeholder?: string;
+  required?: boolean;
+  rules?: RegisterOptions<T, Path<T>>;
+  tooltip?: string;
   width?: Width;
 }
 
 export function SingleSelect<T extends FieldValues>({
-  name,
   label,
+  name,
   options,
-  rules,
-  isSearchable = false,
-  tooltip,
   placeholder = label,
+  required = false,
+  rules,
+  tooltip,
   width
 }: PropTypes<T>) {
+  const MIN_OPTIONS_TO_ENABLE_SEARCH = 10;
   const { control } = useFormContext<T>();
   return (
     <Controller
@@ -43,18 +45,19 @@ export function SingleSelect<T extends FieldValues>({
           <div className={`form-single-select-input ${getInputWidth(width)}`}>
             {label && (
               <label htmlFor={name}>
-                {label} {tooltip && <TooltipWithIcon tooltipText={tooltip} />}
+                {label} {required && <RequiredField />}
+                {tooltip && <TooltipWithIcon tooltipText={tooltip} />}
               </label>
             )}
             <Select
-              ref={ref}
-              placeholder={placeholder}
-              isSearchable={isSearchable}
-              options={mappedOptions}
-              value={mappedOptions.find((o) => o.value === (value?.code ?? value)) || null}
-              onChange={(opt) => onChange(opt?.value)}
               className="select-input"
+              isSearchable={mappedOptions?.length >= MIN_OPTIONS_TO_ENABLE_SEARCH}
               noOptionsMessage={() => 'No options available'}
+              onChange={(opt) => onChange(opt?.value)}
+              options={mappedOptions}
+              placeholder={placeholder}
+              ref={ref}
+              value={mappedOptions.find((o) => o.value === (value?.code ?? value)) || null}
             />
             <ErrorMessage error={error} label={label} />
           </div>

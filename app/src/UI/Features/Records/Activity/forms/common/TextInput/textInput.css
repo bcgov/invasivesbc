@@ -37,11 +37,6 @@
     color: var(--deep-red);
   }
 
-  & > *:has(:not(label)) {
-    /* Lower Minimum height when label not present */
-    min-height: calc(81px - var(--form-input-label-font-size));
-  }
-
   &.full-width {
     width: 100%;
   }

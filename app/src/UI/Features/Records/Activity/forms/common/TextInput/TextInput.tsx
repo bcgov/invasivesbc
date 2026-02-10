@@ -4,10 +4,12 @@ import './textInput.css';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
 import { getInputWidth, Width } from '../utils';
+import RequiredField from '../RequiredField/RequiredField';
 
 interface PropTypes extends InputHTMLAttributes<HTMLInputElement> {
-  label?: string;
   error?: FieldError;
+  label?: string;
+  required?: boolean;
   small?: boolean;
   tooltip?: string;
   width?: Width;
@@ -15,12 +17,13 @@ interface PropTypes extends InputHTMLAttributes<HTMLInputElement> {
 
 // Use forwardRef so Hook Form can manage the input focus
 export const TextInput = forwardRef<HTMLInputElement, PropTypes>(
-  ({ label, error, small, tooltip, width, ...props }, ref) => {
+  ({ error, label, required = false, small, tooltip, width, ...props }, ref) => {
     return (
       <div className={`form-text-input ${getInputWidth(width)}`}>
         {label && (
           <label>
             {label}
+            {required && <RequiredField />}
             {tooltip && <TooltipWithIcon tooltipText={tooltip} />}
           </label>
         )}

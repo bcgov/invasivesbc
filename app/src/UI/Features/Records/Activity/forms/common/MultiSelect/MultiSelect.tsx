@@ -6,32 +6,33 @@ import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
 import './MultiSelect.css';
 import { getInputWidth, Width } from '../utils';
+import RequiredField from '../RequiredField/RequiredField';
 
 interface PropTypes<T extends FieldValues> {
-  name: Path<T>;
   label?: string;
+  name: Path<T>;
   options: Array<FormCode>;
-  rules?: RegisterOptions<T, Path<T>>;
-  isSearchable?: boolean;
-  tooltip?: string;
-  width?: Width;
-  valueKey?: string;
   placeholder?: string;
+  required?: boolean;
+  rules?: RegisterOptions<T, Path<T>>;
+  tooltip?: string;
+  valueKey?: string;
+  width?: Width;
 }
 
 export function MultiSelect<T extends FieldValues>({
-  name,
   label,
+  name,
   options,
-  rules,
-  isSearchable = false,
-  tooltip,
   placeholder,
+  required = false,
+  rules,
+  tooltip,
   valueKey,
   width
 }: PropTypes<T>) {
+  const MIN_OPTIONS_TO_ENABLE_SEARCH = 10;
   const { control } = useFormContext<T>();
-
   return (
     <Controller
       name={name}
@@ -41,14 +42,14 @@ export function MultiSelect<T extends FieldValues>({
         <div className={`form-multi-select-input ${getInputWidth(width)}`}>
           {label && (
             <label htmlFor={name}>
-              {label} {tooltip && <TooltipWithIcon tooltipText={tooltip} />}
+              {label} {required && <RequiredField />} {tooltip && <TooltipWithIcon tooltipText={tooltip} />}
             </label>
           )}
           <Select
             ref={ref}
             isMulti
             placeholder={placeholder}
-            isSearchable={isSearchable}
+            isSearchable={options?.length >= MIN_OPTIONS_TO_ENABLE_SEARCH}
             options={options.map((o) => ({ label: o.full_name, value: o.code }))}
             value={options
               .filter((o) => (valueKey ? value?.some((v) => v?.[valueKey] === o.code) : value?.includes(o.code)))
