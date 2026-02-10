@@ -17,7 +17,7 @@ interface BaseForm {
   subtype_data: unknown;
   location_description: string;
   access_description: string;
-  project_code: { description: string }[];
+  projects: { description: string }[];
   comment: string;
 }
 
