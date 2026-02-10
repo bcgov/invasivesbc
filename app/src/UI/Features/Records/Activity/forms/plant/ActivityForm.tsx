@@ -54,7 +54,7 @@ const ActivityForm = () => {
   const methods = useForm<FormSchema>({
     defaultValues: initState ?? {
       jurisdictions: [{ jurisdiction: '', percent_covered: 0 }],
-      project_code: [{ description: '' }],
+      projects: [{ description: '' }],
       funding_agencies: [{ invasive_species_agency_code: '' }]
     },
     mode: 'onChange'
@@ -247,7 +247,7 @@ const ActivityForm = () => {
               renderRow={(index, remove) => (
                 <>
                   <TextInput
-                    small
+                    label={'Description'}
                     id={`projects.${index}.description`}
                     {...register(`projects.${index}.description`, { required: true })}
                     error={formState.errors.projects?.[index]?.description}
