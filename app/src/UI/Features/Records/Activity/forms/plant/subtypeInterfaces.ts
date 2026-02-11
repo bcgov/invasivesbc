@@ -3,6 +3,7 @@ import { ActivitySubtype } from 'sharedAPI';
 
 interface BaseForm {
   subtype: ActivitySubtype;
+  linked_activities: { short_id: string; full: string }[];
   geom: Feature;
   date: string;
   area_m: number;
