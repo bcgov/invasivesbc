@@ -25,6 +25,10 @@
     height: var(--form-input-height);
     font-size: 1rem;
     margin-top: auto;
+
+    &:hover {
+      cursor: pointer;
+    }
   }
 
   &.full-width {
