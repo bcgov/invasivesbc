@@ -2,6 +2,7 @@ import { Draft } from 'immer';
 import { createNextState } from '@reduxjs/toolkit';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import { Feature } from 'geojson';
+import { ActivitySubtypes } from 'sharedAPI';
 import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
 import GeoShapes from 'constants/geoShapes';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
@@ -25,6 +26,7 @@ interface ActivityState {
   error: boolean;
   pasteCount: number;
   failCode: number | null;
+  formType?: ActivitySubtypes;
   formState?: FormSchema;
   geometry_details?: {
     geom: Feature;
@@ -198,6 +200,10 @@ function createActivityReducer() {
         };
       } else if (Activity.refreshFormCodes.fulfilled.match(action)) {
         draftState.formCodes = action.payload;
+      } else if (FormActions.createNewForm.match(action)) {
+        delete draftState.activity;
+        delete draftState.geometry_details;
+        draftState.formType = action.payload;
       } else if (FormActions.clearFormState.match(action)) {
         delete draftState.formState;
         delete draftState.geometry_details;
@@ -207,6 +213,7 @@ function createActivityReducer() {
         draftState.failCode = null;
         draftState.loading = true;
       } else if (Activity.getDjango.fulfilled.match(action)) {
+        draftState.formType = action.payload?.subtype;
         draftState.formState = action.payload;
       } else if (Activity.getSuccess.match(action)) {
         const { activity, permissions } = action.payload;

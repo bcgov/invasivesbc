@@ -13,13 +13,14 @@ import {
 import { useEffect, useState } from 'react';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { useDispatch } from 'react-redux';
-import { ActivitySubtype, ActivitySubtypeRelations, ActivitySubtypeShortLabels } from 'sharedAPI';
+import { ActivitySubtype, ActivitySubtypeRelations, ActivitySubtypes, ActivitySubtypeShortLabels } from 'sharedAPI';
 
 import 'UI/Features/Records/NewRecordDialog.css';
 import { useSelector } from 'utils/use_selector';
 import Activity from 'state/actions/activity/Activity';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { useNavigate } from 'react-router';
+import FormActions from 'state/actions/activity/FormActions';
 
 export interface INewRecordDialogState {
   recordCategory: string;
@@ -81,6 +82,7 @@ const NewRecordDialog = () => {
 
   const createNewRecord = async () => {
     dispatch(Activity.createReq({ type: recordType, subType: recordSubtype }));
+    dispatch(FormActions.createNewForm(recordSubtype as ActivitySubtypes));
     navigate('/Records/Activity/new/form');
   };
 
