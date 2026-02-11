@@ -1,0 +1,46 @@
+.form-ui-checkbox {
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+  margin-bottom: 10px;
+  min-height: 81px;
+  width: 400px;
+  max-width: 100%;
+  box-sizing: border-box;
+
+  input[type='checkbox'] {
+    height: calc(var(--form-input-height) * 0.75);
+    width: calc(var(--form-input-height) * 0.75);
+    box-sizing: border-box;
+    padding: 0.25rem 0.5rem;
+    font-size: var(--form-input-font-size);
+  }
+
+  label {
+    font-size: var(--form-input-label-font-size);
+    margin-right: 0.5rem;
+    height: 25px;
+    font-weight: 600;
+
+    & > * {
+      margin-left: 3px;
+    }
+  }
+
+  &.full-width {
+    width: 100%;
+  }
+
+  &.half-width {
+    width: 49%;
+  }
+
+  &.third-width {
+    width: 32%;
+  }
+
+  &.quarter-width {
+    width: 24%;
+  }
+}
