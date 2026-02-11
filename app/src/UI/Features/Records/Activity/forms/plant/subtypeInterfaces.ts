@@ -5,7 +5,7 @@ interface BaseForm {
   subtype: ActivitySubtype;
   linked_activities: { short_id: string; full: string }[];
   geom: Feature;
-  date: string;
+  date: Date;
   area_m: number;
   latitude: number;
   longitude: number;

@@ -1,6 +1,6 @@
-const noFutureDate = (value: string) => {
+const noFutureDate = (value: Date) => {
   try {
-    const today = new Date().toLocaleDateString('en-CA');
+    const today = new Date();
     return value <= today || 'Date cannot occur in the future';
   } catch {
     return 'Invalid Date';

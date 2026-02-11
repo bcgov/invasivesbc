@@ -243,7 +243,7 @@ const ActivityForm = () => {
               tooltip="The date the activity occurred on"
               required
               error={errors?.date}
-              {...register('date', { required: true, validate: (val) => noFutureDate(val) })}
+              {...register('date', { required: true, valueAsDate: true, validate: (val) => noFutureDate(val) })}
               width={Width.Half}
             />
             <MultiSelect
