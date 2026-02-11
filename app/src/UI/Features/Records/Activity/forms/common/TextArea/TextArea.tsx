@@ -28,7 +28,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, PropTypes>(
             {tooltip && <TooltipWithIcon tooltipText={tooltip} />}
           </div>
         )}
-        <textarea rows={6} ref={ref} {...props} />
+        <textarea aria-invalid={!!error} rows={6} ref={ref} {...props} />
         <ErrorMessage error={error} label={label} />
       </div>
     );

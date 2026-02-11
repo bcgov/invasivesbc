@@ -13,6 +13,7 @@ interface PropTypes<T extends FieldValues> {
   name: Path<T>;
   options: Array<FormCode>;
   placeholder?: string;
+  triggerKey?: Path<T>;
   required?: boolean;
   rules?: RegisterOptions<T, Path<T>>;
   tooltip?: string;
@@ -60,6 +61,7 @@ export function SingleSelect<T extends FieldValues>({
               options={mappedOptions}
               placeholder={placeholder}
               ref={ref}
+              aria-invalid={!!error}
               value={mappedOptions?.find((o) => o.value === (value?.code ?? value)) || null}
             />
             <ErrorMessage error={error} label={label} />

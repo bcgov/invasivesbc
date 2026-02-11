@@ -30,7 +30,14 @@ export const NumberInput = forwardRef<HTMLInputElement, PropTypes>(
             {tooltip && <TooltipWithIcon tooltipText={tooltip} />}
           </div>
         )}
-        <input type="number" placeholder={props?.placeholder ?? label} readOnly={readOnly} ref={ref} {...props} />
+        <input
+          type="number"
+          aria-invalid={!!error}
+          placeholder={props?.placeholder ?? label}
+          readOnly={readOnly}
+          ref={ref}
+          {...props}
+        />
         <ErrorMessage error={error} label={label} />
       </div>
     );

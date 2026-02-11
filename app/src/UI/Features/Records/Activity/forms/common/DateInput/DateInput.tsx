@@ -29,7 +29,7 @@ export const DateInput = forwardRef<HTMLInputElement, PropTypes>(
             {tooltip && <TooltipWithIcon tooltipText={tooltip} />}
           </div>
         )}
-        <input type={includeTime ? 'datetime-local' : 'date'} ref={ref} {...props} />
+        <input aria-invalid={!!error} type={includeTime ? 'datetime-local' : 'date'} ref={ref} {...props} />
         <ErrorMessage error={error} label={label} />
       </div>
     );
