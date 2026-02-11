@@ -5,11 +5,11 @@ import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/subtypeInte
 class FormActions {
   private static readonly PREFIX = 'FormActions';
 
-  static readonly updateFormState = createAction<FormSchema>(`${this.PREFIX}/updateFormState`);
+  static readonly clearFormState = createAction(`${this.PREFIX}/clearFormState`);
   static readonly updateGeometry = createAction<Feature | GeoJSON>(`${this.PREFIX}/updateGeometry`);
   static readonly interceptGeometry = createAction<Feature | GeoJSON>(`${this.PREFIX}/interceptGeometry`);
 
-  static readonly updateState = createAction(`${this.PREFIX}/updateState`);
+  static readonly updateState = createAction<FormSchema>(`${this.PREFIX}/updateState`);
 }
 
 export default FormActions;
