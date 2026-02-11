@@ -37,7 +37,7 @@ export function SingleSelect<T extends FieldValues>({
       control={control}
       rules={rules}
       render={({ field: { onChange, ref, value }, fieldState: { error } }) => {
-        const mappedOptions = options.map((o) => ({
+        const mappedOptions = options?.map((o) => ({
           label: o.full_name,
           value: o.code
         }));
@@ -60,7 +60,7 @@ export function SingleSelect<T extends FieldValues>({
               options={mappedOptions}
               placeholder={placeholder}
               ref={ref}
-              value={mappedOptions.find((o) => o.value === (value?.code ?? value)) || null}
+              value={mappedOptions?.find((o) => o.value === (value?.code ?? value)) || null}
             />
             <ErrorMessage error={error} label={label} />
           </div>

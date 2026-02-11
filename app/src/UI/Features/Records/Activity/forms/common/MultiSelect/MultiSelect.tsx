@@ -52,11 +52,13 @@ export function MultiSelect<T extends FieldValues>({
             isMulti
             placeholder={placeholder}
             isSearchable={options?.length >= MIN_OPTIONS_TO_ENABLE_SEARCH}
-            options={options.map((o) => ({ label: o.full_name, value: o.code }))}
+            options={options?.map((o) => ({ label: o.full_name, value: o.code })) ?? []}
             value={options
-              .filter((o) => (valueKey ? value?.some((v) => v?.[valueKey] === o.code) : value?.includes(o.code)))
-              .map((o) => ({ label: o.full_name, value: o.code }))}
-            onChange={(val) => onChange(valueKey ? val.map((c) => ({ [valueKey]: c.value })) : val.map((c) => c.value))}
+              ?.filter((o) => (valueKey ? value?.some((v) => v?.[valueKey] === o.code) : value?.includes(o.code)))
+              ?.map((o) => ({ label: o.full_name, value: o.code }))}
+            onChange={(val) =>
+              onChange(valueKey ? val?.map((c) => ({ [valueKey]: c.value })) : val?.map((c) => c.value))
+            }
             className="select-input"
           />
           <ErrorMessage error={error} />
