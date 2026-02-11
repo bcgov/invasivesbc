@@ -1,20 +1,16 @@
 import { useSelector } from 'utils/use_selector';
-import { useFormContext } from 'react-hook-form';
 import Fieldset from '../common/Fieldset/Fieldset';
 import SingleSelect from '../common/SingleSelect/SingleSelect';
-import { ObservationType, YesNo, YesNoUnknown } from '../enums';
+import { YesNoUnknown } from '../enums';
 import ArrayField from '../common/ArrayField/ArrayField';
-import { FormSchema, TerrestrialPlantObservationSchema } from './subtypeInterfaces';
-import DeleteControl from '../common/DeleteControl/DeleteControl';
+import { TerrestrialPlantObservationSchema } from './subtypeInterfaces';
 import { Width } from '../common/utils';
 import { minArrayLength, noRepeatKey } from '../common/validators';
+import TerrestrialPlantEntryRow from './subtype-component/TerrestrialPlantEntry';
 
 const ObservationPlantTerrestrial = () => {
   const ROOT = 'subtype_data';
   const codes = useSelector((state) => state.ActivityPage?.formCodes);
-  const {
-    formState: { errors }
-  } = useFormContext<TerrestrialPlantObservationSchema>();
 
   return (
     <>
@@ -82,60 +78,23 @@ const ObservationPlantTerrestrial = () => {
           width={Width.Half}
         />
       </Fieldset>
-      <ArrayField<FormSchema, 'subtype_data.entries'>
-        name={`${ROOT}.entries`}
-        label={'Terrestrial Invasive Plants'}
-        emptyValue={{ invasive_plant: '', observation_type: '', density: '', distribution: '', life_stage: '' }}
+      <ArrayField<TerrestrialPlantObservationSchema, 'subtype_data.entries'>
+        name={`subtype_data.entries`}
+        label="Terrestrial Invasive Plants"
+        emptyValue={{
+          invasive_plant: '',
+          observation_type: '',
+          density: '',
+          distribution: '',
+          life_stage: ''
+        }}
         rules={{
           validate: {
             minLength: (val) => minArrayLength(val, 1),
             noRepeatPlants: (val) => noRepeatKey(val, 'invasive_plant', 'Invasive Plant')
           }
         }}
-        renderRow={(index, remove) => (
-          <>
-            <SingleSelect
-              label={'Invasive Plant'}
-              required
-              triggerKey={`${ROOT}.entries`}
-              tooltip="Target invasive plant species for this observation at this location. Create a separate observation for any other species at this location"
-              options={codes?.TerrestrialPlantCode}
-              name={`${ROOT}.entries.${index}.invasive_plant`}
-              width={Width.Half}
-            />
-            <SingleSelect
-              label={'Observation Type'}
-              required
-              tooltip="The observation describes the presence or absence of target invasive plants within a defined area"
-              options={ObservationType}
-              name={`${ROOT}.entries.${index}.observation_type`}
-              width={Width.Half}
-            />
-            <SingleSelect
-              label={'Density (plants/m2)'}
-              options={codes?.DensityCode}
-              tooltip="Average number of individual plants per square meter expressed as a density class code"
-              name={`${ROOT}.entries.${index}.density`}
-              width={Width.Half}
-            />
-            <SingleSelect
-              label={'Distribution'}
-              tooltip="Description of the average arrangement of invasive plant clusters within the observation area expressed as a distribution code"
-              options={codes?.DistributionCode}
-              name={`${ROOT}.entries.${index}.distribution`}
-              width={Width.Half}
-            />
-            <SingleSelect
-              label={'Life Stage'}
-              tooltip="Average phenological stage of plant; rosette, flowering, etc"
-              options={codes?.PlantLifeStageCode}
-              name={`${ROOT}.entries.${index}.life_stage`}
-              width={Width.Half}
-            />
-            {/* <SingleSelect/> */}
-            <DeleteControl onClick={() => remove(index)} />
-          </>
-        )}
+        renderRow={(index, remove) => <TerrestrialPlantEntryRow root={ROOT} index={index} remove={remove} />}
       />
     </>
   );
