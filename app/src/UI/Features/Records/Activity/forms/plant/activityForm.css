@@ -9,14 +9,34 @@
 .activity-form {
   display: flex;
   flex-flow: row wrap;
-  width: 100%;
-  max-width: var(--form-container-width);
-  border: 1pt solid black;
+  width: var(--form-container-width);
+  max-width: 100%;
+  margin: 5vh 0;
   box-sizing: border-box;
   justify-content: space-around;
 
+  .control {
+    width: 100%;
+    display: flex;
+    background-color: green;
+    align-items: center;
+
+    button,
+    input[type='submit'] {
+      width: 100%;
+      height: 3em;
+      border-radius: none;
+      border: 1pt solid black;
+      background-color: #036;
+      color: white;
+      font-weight: bold;
+      font-size: var(--form-input-font-size);
+    }
+  }
+
   pre {
     background-color: lightgray;
+    box-sizing: border-box;
     border: 1pt solid black;
     width: 100%;
     text-align: left;
