@@ -3,7 +3,7 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { TerrestrialPlantObservationSchema } from '../subtypeInterfaces';
 import SingleSelect from '../../common/SingleSelect/SingleSelect';
 import { Width } from '../../common/utils';
-import { ObservationType, YesNo } from '../../enums';
+import { ObservationType } from '../../enums';
 import Fieldset from '../../common/Fieldset/Fieldset';
 import TextInput from '../../common/TextInput/TextInput';
 import DateInput from '../../common/DateInput/DateInput';
@@ -25,7 +25,6 @@ const TerrestrialPlantEntryRow = ({ root, index, remove }: Props) => {
   const {
     register,
     control,
-    setValue,
     formState: { errors }
   } = useFormContext<TerrestrialPlantObservationSchema>();
   const basePath = `${root}.entries.${index}` as EntryBasePath;
@@ -59,6 +58,7 @@ const TerrestrialPlantEntryRow = ({ root, index, remove }: Props) => {
 
       <SingleSelect
         label="Density (plants/m2)"
+        tooltip="Average number of individual plants per square meter expressed as a density class code"
         options={codes?.DensityCode}
         name={`${basePath}.density`}
         width={Width.Half}
@@ -67,6 +67,7 @@ const TerrestrialPlantEntryRow = ({ root, index, remove }: Props) => {
       <SingleSelect
         label="Distribution"
         options={codes?.DistributionCode}
+        tooltip="Description of the average arrangement of invasive plant clusters within the observation area expressed as a distribution code"
         name={`${basePath}.distribution`}
         width={Width.Half}
       />
@@ -74,6 +75,7 @@ const TerrestrialPlantEntryRow = ({ root, index, remove }: Props) => {
       <SingleSelect
         label="Life Stage"
         options={codes?.PlantLifeStageCode}
+        tooltip="Average phenological stage of plant; rosette, flowering, etc"
         name={`${basePath}.life_stage`}
         width={Width.Half}
       />
@@ -82,6 +84,7 @@ const TerrestrialPlantEntryRow = ({ root, index, remove }: Props) => {
         state={voucherCollected}
         onChange={setVoucherCollected}
         label="Voucher Specimen Collected"
+        tooltip="Ideal to collect entire plant structure for verification purposes."
         width={Width.Half}
       />
 
@@ -89,6 +92,7 @@ const TerrestrialPlantEntryRow = ({ root, index, remove }: Props) => {
         <Fieldset label="Voucher Collection Information">
           <TextInput
             label="Voucher Sample ID"
+            tooltip="Unique identifier for each voucher collected."
             {...register(`${basePath}.voucher_specimen.voucher_sample_id`, { required: true })}
             width={Width.Half}
             error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.voucher_sample_id}
@@ -137,27 +141,28 @@ const TerrestrialPlantEntryRow = ({ root, index, remove }: Props) => {
             width={Width.Half}
             error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.date_verified}
           />
+          <Fieldset label={'Exact Coordinate of Voucher Collection Site'}>
+            <NumberInput
+              label="UTM Zone"
+              {...register(`${basePath}.voucher_specimen.utm_zone`, { required: true })}
+              width={Width.Third}
+              error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.utm_zone}
+            />
 
-          <NumberInput
-            label="UTM Zone"
-            {...register(`${basePath}.voucher_specimen.utm_zone`, { required: true })}
-            width={Width.Third}
-            error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.utm_zone}
-          />
+            <NumberInput
+              label="UTM Easting"
+              {...register(`${basePath}.voucher_specimen.utm_easting`, { required: true })}
+              width={Width.Third}
+              error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.utm_easting}
+            />
 
-          <NumberInput
-            label="UTM Easting"
-            {...register(`${basePath}.voucher_specimen.utm_easting`, { required: true })}
-            width={Width.Third}
-            error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.utm_easting}
-          />
-
-          <NumberInput
-            label="UTM Northing"
-            {...register(`${basePath}.voucher_specimen.utm_northing`, { required: true })}
-            width={Width.Third}
-            error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.utm_northing}
-          />
+            <NumberInput
+              label="UTM Northing"
+              {...register(`${basePath}.voucher_specimen.utm_northing`, { required: true })}
+              width={Width.Third}
+              error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.utm_northing}
+            />
+          </Fieldset>
         </Fieldset>
       )}
 
