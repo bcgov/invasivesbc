@@ -198,8 +198,11 @@ function createActivityReducer() {
         };
       } else if (Activity.refreshFormCodes.fulfilled.match(action)) {
         draftState.formCodes = action.payload;
+      } else if (FormActions.clearFormState.match(action)) {
+        delete draftState.formState;
+        delete draftState.geometry_details;
       } else if (FormActions.updateState.match(action)) {
-        draftState.formState = action.payload;
+        draftState.formState = structuredClone(action.payload);
       } else if (Activity.get.match(action)) {
         draftState.failCode = null;
         draftState.loading = true;
