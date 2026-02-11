@@ -9,6 +9,12 @@
   max-width: 100%;
   box-sizing: border-box;
 
+  .label-section {
+    display: flex;
+    flex-flow: row wrap;
+    width: 100%;
+  }
+
   input[type='checkbox'] {
     height: calc(var(--form-input-height) * 0.75);
     width: calc(var(--form-input-height) * 0.75);
@@ -19,7 +25,7 @@
 
   label {
     font-size: var(--form-input-label-font-size);
-    margin-right: 0.5rem;
+    margin-right: auto;
     height: 25px;
     font-weight: 600;
 

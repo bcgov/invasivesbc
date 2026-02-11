@@ -7,6 +7,7 @@
   box-sizing: border-box;
   align-items: stretch;
   margin-bottom: 3rem;
+  background-color: #00336615;
 
   & > *:not(fieldset) {
     margin-bottom: 10px;
