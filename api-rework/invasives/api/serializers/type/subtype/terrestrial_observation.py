@@ -52,7 +52,6 @@ class TerrestrialVoucherSpecimenSerializer(serializers.ModelSerializer):
     class Meta:
         model = TerrestrialVoucherSpecimen
         fields = (
-            "invasive_plant",
             "voucher_sample_id",
             "date_collected",
             "date_verified",
