@@ -15,6 +15,26 @@ export enum ActivityType {
   FREP = 'FREP'
 }
 
+/**
+ * @desc Activity Subtype Titles
+ *       Replaces Old names after converting from API to Django.
+ * @TODO: Remove old names once work is done
+ */
+export enum ActivitySubtypes {
+  Observation_Plant_Terrestrial = 'Observation_Plant_Terrestrial',
+  Observation_Plant_Aquatic = 'Observation_Plant_Aquatic',
+  Monitoring_Chemical_Plant_Terrestrial_Aquatic = 'Monitoring_Chemical_Plant_Terrestrial_Aquatic',
+  Monitoring_Mechanical_Plant_Terrestrial_Aquatic = 'Monitoring_Mechanical_Plant_Terrestrial_Aquatic',
+  Monitoring_Biocontrol_Release_Plant_Terrestrial = 'Monitoring_Biocontrol_Release_Plant_Terrestrial',
+  Treatment_Mechanical_Plant_Terrestrial = 'Treatment_Mechanical_Plant_Terrestrial',
+  Treatment_Mechanical_Plant_Aquatic = 'Treatment_Mechanical_Plant_Aquatic',
+  Treatment_Chemical_Plant_Terrestrial = 'Treatment_Chemical_Plant_Terrestrial',
+  Treatment_Chemical_Plant_Aquatic = 'Treatment_Chemical_Plant_Aquatic',
+  Monitoring_Biocontrol_Dispersal_Plant_Terrestrial = 'Monitoring_Biocontrol_Dispersal_Plant_Terrestrial',
+  Biocontrol_Collection = 'Biocontrol_Collection',
+  Biocontrol_Release = 'Biocontrol_Release'
+}
+
 export enum ActivitySubtype {
   // Observations:
   Observation_PlantTerrestrial = 'Activity_Observation_PlantTerrestrial',
