@@ -10,13 +10,14 @@ interface PropTypes extends InputHTMLAttributes<HTMLInputElement> {
   error?: FieldError;
   label?: string;
   required?: boolean;
+  placeholder?: string;
   tooltip?: string;
   width?: Width;
 }
 
 // Use forwardRef so Hook Form can manage the input focus
 export const TextInput = forwardRef<HTMLInputElement, PropTypes>(
-  ({ error, label, required = false, tooltip, width, ...props }, ref) => {
+  ({ error, label, placeholder = label, required = false, tooltip, width, ...props }, ref) => {
     return (
       <div className={`form-text-input ${getInputWidth(width)}`}>
         {label && (
@@ -28,7 +29,7 @@ export const TextInput = forwardRef<HTMLInputElement, PropTypes>(
             {tooltip && <TooltipWithIcon tooltipText={tooltip} />}
           </div>
         )}
-        <input aria-invalid={!!error} type="text" ref={ref} {...props} />
+        <input aria-invalid={!!error} type="text" ref={ref} placeholder={placeholder} {...props} />
         {error && <ErrorMessage error={error} label={label} />}
       </div>
     );
