@@ -40,7 +40,7 @@ export function CreatableSelect<T extends FieldValues, TOption>({
       name={name}
       control={control}
       rules={rules}
-      render={({ field: { onChange, ref, value }, fieldState: { error } }) => {
+      render={({ field: { onChange, ref, value, disabled }, fieldState: { error } }) => {
         const getValue = () => {
           if (!value) return null;
           const actualValue = typeof value === 'object' ? value[valueKey] : value;
@@ -62,6 +62,7 @@ export function CreatableSelect<T extends FieldValues, TOption>({
               className="select-input"
               isSearchable
               isClearable
+              isDisabled={disabled}
               options={options}
               getOptionLabel={(o: any) => o[labelKey]}
               getOptionValue={(o: any) => o[valueKey]}
