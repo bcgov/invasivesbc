@@ -15,6 +15,18 @@ interface AquaticPlantObservationSchema extends BaseForm {
       life_stage: string;
       observation_type: string;
       sample_point_id: string;
+      voucher_specimen?: {
+        voucher_sample_id: string;
+        herbarium: string;
+        accession_number: string;
+        completed_by_person: string;
+        completed_by_org: string;
+        utm_zone: number;
+        utm_easting: number;
+        utm_northing: number;
+        date_collected: number;
+        date_verified: number;
+      };
     }>;
     pretreatment_observation: string;
     substrate_type: string[];

@@ -27,6 +27,7 @@ import RecordMetadata from '../common/RecordMetadata/RecordMetadata';
 import { FormSchema } from './interfaces';
 import { BugReport } from '@mui/icons-material';
 import getDefaultFormState from './builders/getDefaultState';
+import tooltips from './content/tooltips';
 
 const FORM_UPDATE_THROTTLE_DELAY = 1000; //ms
 const FORM_UPDATE_MAX_DELAY = 5000; //ms
@@ -106,9 +107,7 @@ const ActivityForm = () => {
   const codes = useSelector((state) => state.ActivityPage?.formCodes);
   const geometry_details = useSelector((state) => state.ActivityPage?.geometry_details);
   const initState = useSelector((state) => state.ActivityPage?.formState);
-  const subtype = useSelector((state) => {
-    state.ActivityPage?.formType;
-  });
+  const subtype = useSelector((state) => state.ActivityPage?.formType);
   // Assign Props to sole variable to pass into FormProvider
   const methods = useForm<FormSchema>({
     mode: 'all',
@@ -157,13 +156,20 @@ const ActivityForm = () => {
   }, [allFormValues, isDirty]);
 
   useEffect(() => {
-    // Triggers on initial load, sets data from redux state
-    if (initState !== undefined && !isDirty) {
+    const newFormLoadedFromExisting = initState !== undefined && !isDirty;
+    if (newFormLoadedFromExisting) {
       const mutableState = structuredClone(initState);
       reset({ ...mutableState });
     }
-  }, []);
+  }, [initState, subtype]);
 
+  if (!subtype) {
+    return (
+      <div className="activity-page">
+        <p>There is no Active Form, to get started please create or load a record</p>
+      </div>
+    );
+  }
   return (
     <div className="activity-page">
       <FormProvider {...methods}>
@@ -180,7 +186,7 @@ const ActivityForm = () => {
               readOnly
               error={errors?.area_m}
               required
-              tooltip="Area of the activity automatically created from the geometry in square metres"
+              tooltip={tooltips.basic.area_m}
               {...register(`area_m`, {
                 required: true,
                 max: { value: 500000, message: 'Area cannot exceed 500,000m' }
@@ -192,7 +198,7 @@ const ActivityForm = () => {
               readOnly
               required
               error={errors?.latitude}
-              tooltip="Latitude of the anchor point for the specified geometry"
+              tooltip={tooltips.basic.latitude}
               {...register(`latitude`, { required: true })}
               width={Width.Third}
             />
@@ -200,7 +206,7 @@ const ActivityForm = () => {
               label={'Longitude'}
               readOnly
               required
-              tooltip="Longitude of the anchor point for the specified geometry"
+              tooltip={tooltips.basic.longitude}
               error={errors?.longitude}
               {...register(`longitude`, { required: true })}
               width={Width.Third}
@@ -210,7 +216,7 @@ const ActivityForm = () => {
               readOnly
               required
               error={errors?.utm_zone}
-              tooltip="UTM Zone of the anchor point for the specified geometry"
+              tooltip={tooltips.basic.utm_zone}
               {...register(`utm_zone`, { required: true })}
               width={Width.Third}
             />
@@ -218,7 +224,7 @@ const ActivityForm = () => {
               label={'UTM Easting'}
               readOnly
               required
-              tooltip="UTM Easting of the anchor point for the specified geometry"
+              tooltip={tooltips.basic.utm_easting}
               error={errors?.utm_easting}
               {...register(`utm_easting`, { required: true })}
               width={Width.Third}
@@ -227,7 +233,7 @@ const ActivityForm = () => {
               label={'UTM Northing'}
               readOnly
               required
-              tooltip="UTM Northing of the anchor point for the specified geometry"
+              tooltip={tooltips.basic.utm_northing}
               error={errors?.utm_northing}
               {...register(`utm_northing`, { required: true })}
               width={Width.Third}
@@ -247,7 +253,7 @@ const ActivityForm = () => {
           <Fieldset label={'Basic Information'}>
             <DateInput
               label={'Date'}
-              tooltip="The date the activity occurred on"
+              tooltip={tooltips.basic.date}
               required
               error={errors?.date}
               {...register('date', { required: true, valueAsDate: true, validate: (val) => noFutureDate(val) })}
@@ -258,7 +264,7 @@ const ActivityForm = () => {
               valueKey="employer"
               options={codes.EmployerCode}
               name={'employer'}
-              tooltip="The company or agency that the person(s) completing the activity is directly employed by"
+              tooltip={tooltips.basic.employer}
               rules={{ required: true }}
               width={Width.Half}
             />
@@ -266,7 +272,7 @@ const ActivityForm = () => {
               label="Funding Agencies"
               name={'funding_agencies'}
               valueKey={'invasive_species_agency_code'}
-              tooltip="Choose the organization that is paying for the work to be done. If multiple funders exist or in cases when an agency has been hired to manage the work on behalf of the primary funding agency, multiple Funding Agencies may be chosen."
+              tooltip={tooltips.basic.funding_agencies}
               options={codes.FundingAgencyCode}
               required
               width={Width.Half}
@@ -291,7 +297,7 @@ const ActivityForm = () => {
                   <SingleSelect
                     label="Jurisdiction"
                     options={codes.JurisdictionCode}
-                    tooltip="Entity that owns or is responsible for the land base or water body"
+                    tooltip={tooltips.basic.jurisdiction}
                     name={`jurisdictions.${index}.jurisdiction`}
                     rules={{ required: true }}
                     required
@@ -300,7 +306,7 @@ const ActivityForm = () => {
                     label="Percent Covered"
                     type="number"
                     required
-                    tooltip="Percent covered by this jurisdiction"
+                    tooltip={tooltips.basic.jurisdiction_percent_covered}
                     error={errors.jurisdictions?.[index]?.percent_covered}
                     {...register(`jurisdictions.${index}.percent_covered`, {
                       required: true,
@@ -319,7 +325,7 @@ const ActivityForm = () => {
             <ArrayField<FormSchema, 'projects'>
               name="projects"
               label="Project Codes"
-              tooltip='Optional field that can be added to a record to enable searching/sorting for records with that project code entered later. Multiple project codes may be added eg. project areas, contract identifiers. Replaces "paper file ID" field used in IAPP'
+              tooltip={tooltips.basic.projects}
               emptyValue={{ description: '' }}
               width={Width.Half}
               renderRow={(index, remove) => (
@@ -341,7 +347,7 @@ const ActivityForm = () => {
               id="location_description"
               error={errors?.location_description}
               required
-              tooltip="Text entry to provide location directions. Locations should start general and get more specific"
+              tooltip={tooltips.basic.location_description}
               width={Width.Third}
               {...register('location_description', { required: true, validate: (val) => minValue(val, 10) })}
             />
@@ -349,13 +355,13 @@ const ActivityForm = () => {
               width={Width.Third}
               label={'Access Description'}
               error={errors?.access_description}
-              tooltip="Text entry to provide access directions."
+              tooltip={tooltips.basic.access_description}
               {...register('access_description')}
             />
             <TextArea
               label={'Comment'}
               error={errors?.comment}
-              tooltip="Plain text description of any supporting information about the observation that is not captured elsewhere"
+              tooltip={tooltips.basic.general_comments}
               width={Width.Third}
               {...register('comment')}
             />
@@ -376,12 +382,24 @@ const ActivityForm = () => {
           {/* Debug Information/Options */}
           <Debug>
             <div className="control">
-              <button onClick={() => setIsFormDisabled((prev) => !prev)}>
+              <button
+                onClick={(evt) => {
+                  evt.preventDefault();
+                  setIsFormDisabled((prev) => !prev);
+                }}
+              >
                 <BugReport />
                 {`${isFormDisabled ? 'Enable' : 'Disable'} Form`}
               </button>
             </div>
-            <Accordion title={'Form State (JSON)'}>
+            <Accordion
+              title={
+                <>
+                  <BugReport />
+                  Form State (JSON)
+                </>
+              }
+            >
               <pre style={{ display: 'flex', textWrap: 'wrap' }}>{JSON.stringify(formData, null, 2)}</pre>
             </Accordion>
           </Debug>

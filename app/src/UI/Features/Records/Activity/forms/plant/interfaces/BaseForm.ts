@@ -8,8 +8,8 @@ interface BaseForm {
   form_status?: string;
   created_by?: string;
   linked_activities: { short_id: string; full: string }[];
-  geom: Feature;
-  date: Date;
+  geom?: Feature;
+  date?: Date;
   area_m: number;
   latitude: number;
   longitude: number;

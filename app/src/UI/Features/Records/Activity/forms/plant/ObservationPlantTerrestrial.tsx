@@ -5,8 +5,11 @@ import { YesNoUnknown } from '../enums';
 import ArrayField from '../common/ArrayField/ArrayField';
 import { Width } from '../common/utils';
 import { minArrayLength, noRepeatKey } from '../common/validators';
-import TerrestrialPlantEntryRow from './subtype-component/TerrestrialPlantEntry';
+import TerrestrialPlantEntry from './subtype-component/TerrestrialPlantEntry';
 import { TerrestrialPlantObservationSchema } from './interfaces';
+import tooltips from './content/tooltips';
+import getDefaultFormState from './builders/getDefaultState';
+import { ActivitySubtypes } from 'sharedAPI';
 
 const ObservationPlantTerrestrial = () => {
   const ROOT = 'subtype_data';
@@ -18,7 +21,7 @@ const ObservationPlantTerrestrial = () => {
       <Fieldset label={'Observation Plant Terrestrial Information'}>
         <SingleSelect
           label={'Soil Texture'}
-          tooltip="Relative amount of sand, silt, clay, organic matter, and bedrock throughout the observation area"
+          tooltip={tooltips.plant.soil_texture}
           options={codes?.SoilTextureCode}
           width={Width.Half}
           name={`${ROOT}.soil_texture`}
@@ -28,7 +31,7 @@ const ObservationPlantTerrestrial = () => {
           options={codes?.SpecificUseCode}
           name={`${ROOT}.specific_use`}
           required
-          tooltip="Notable land uses or attributes within the observation area"
+          tooltip={tooltips.plant.terrestrial_specific_use}
           rules={{ required: true }}
           width={Width.Half}
         />
@@ -48,14 +51,14 @@ const ObservationPlantTerrestrial = () => {
               return true;
             }
           }}
-          tooltip="Exact or general slope of the land expressed as a percentage"
+          tooltip={tooltips.plant.slope_percent}
           width={Width.Half}
         />
         <SingleSelect
           label={'Aspect'}
           options={codes?.AspectCode}
           name={`${ROOT}.aspect`}
-          tooltip="Average orientation that slope is facing within the observation area (ie; SE = southeast)"
+          tooltip={tooltips.plant.aspect}
           required
           rules={{
             required: true,
@@ -75,7 +78,7 @@ const ObservationPlantTerrestrial = () => {
           options={YesNoUnknown}
           name={`${ROOT}.research_observation`}
           required
-          tooltip="Is this observation part of a research project? Add details in project code or comments fields"
+          tooltip={tooltips.plant.research_observation}
           rules={{ required: true }}
           width={Width.Half}
         />
@@ -84,7 +87,7 @@ const ObservationPlantTerrestrial = () => {
           options={YesNoUnknown}
           name={`${ROOT}.visible_well_nearby`}
           required
-          tooltip="Is there a visible well nearby? Indicate the distance from the observation in the comments"
+          tooltip={tooltips.plant.visible_well_nearby}
           rules={{ required: true }}
           width={Width.Half}
         />
@@ -93,7 +96,7 @@ const ObservationPlantTerrestrial = () => {
           options={YesNoUnknown}
           name={`${ROOT}.suitable_for_biocontrol_agent`}
           required
-          tooltip="Choose Yes if the infestation is large, evenly infested and the site is secure from future disturbance."
+          tooltip={tooltips.plant.suitable_for_biocontrol_agent}
           rules={{ required: true }}
           width={Width.Half}
         />
@@ -101,20 +104,15 @@ const ObservationPlantTerrestrial = () => {
       <ArrayField<TerrestrialPlantObservationSchema, 'subtype_data.entries'>
         name={`subtype_data.entries`}
         label="Terrestrial Invasive Plants"
-        emptyValue={{
-          invasive_plant: '',
-          observation_type: '',
-          density: '',
-          distribution: '',
-          life_stage: ''
-        }}
+        // Use builder to get empty entry. Less optimal but keeps declarations in one spot.
+        emptyValue={getDefaultFormState(ActivitySubtypes.Observation_Plant_Aquatic).subtype_data.entries[0]}
         rules={{
           validate: {
             minLength: (val) => minArrayLength(val, 1),
             noRepeatPlants: (val) => noRepeatKey(val, 'invasive_plant', 'Invasive Plant')
           }
         }}
-        renderRow={(index, remove) => <TerrestrialPlantEntryRow root={ROOT} index={index} remove={remove} />}
+        renderRow={(index, remove) => <TerrestrialPlantEntry root={ROOT} index={index} remove={remove} />}
       />
     </>
   );
