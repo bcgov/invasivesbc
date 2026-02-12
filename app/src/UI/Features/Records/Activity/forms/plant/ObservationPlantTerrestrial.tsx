@@ -3,10 +3,10 @@ import Fieldset from '../common/Fieldset/Fieldset';
 import SingleSelect from '../common/SingleSelect/SingleSelect';
 import { YesNoUnknown } from '../enums';
 import ArrayField from '../common/ArrayField/ArrayField';
-import { TerrestrialPlantObservationSchema } from './subtypeInterfaces';
 import { Width } from '../common/utils';
 import { minArrayLength, noRepeatKey } from '../common/validators';
 import TerrestrialPlantEntryRow from './subtype-component/TerrestrialPlantEntry';
+import { TerrestrialPlantObservationSchema } from './interfaces';
 
 const ObservationPlantTerrestrial = () => {
   const ROOT = 'subtype_data';

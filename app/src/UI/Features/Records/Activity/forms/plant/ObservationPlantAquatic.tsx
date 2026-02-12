@@ -7,11 +7,11 @@ import TextArea from '../common/TextArea/TextArea';
 import ArrayField from '../common/ArrayField/ArrayField';
 import NumberInput from '../common/NumberInput/NumberInput';
 import { useFormContext } from 'react-hook-form';
-import { AquaticPlantObservationSchema } from './subtypeInterfaces';
 import MultiSelect from '../common/MultiSelect/MultiSelect';
 import { minArrayLength } from '../common/validators';
 import { Width } from '../common/utils';
 import DeleteControl from '../common/DeleteControl/DeleteControl';
+import { AquaticPlantObservationSchema } from './interfaces';
 
 const ObservationPlantAquatic = () => {
   const codes = useSelector((state) => state.ActivityPage?.formCodes);
