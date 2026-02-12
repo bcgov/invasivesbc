@@ -1,11 +1,11 @@
 import { ActivitySubtypes } from 'sharedAPI';
-import { FormSchema } from '../interfaces';
+import { AquaticPlantObservationSchema, FormSchema, TerrestrialPlantObservationSchema } from '../interfaces';
 
 /**
  * @desc Creates empty subtype fields for ObservationPlantTerrestrial
  * Used for Form Creation/Reset
  */
-const getObservationPlantTerrestrialSubtypeFields = (): FormSchema['subtype_data'] => ({
+const getObservationPlantTerrestrialSubtypeFields = (): TerrestrialPlantObservationSchema['subtype_data'] => ({
   entries: [
     {
       density: '',
@@ -27,6 +27,47 @@ const getObservationPlantTerrestrialSubtypeFields = (): FormSchema['subtype_data
 });
 
 /**
+ * @desc Creates empty subtype fields for ObservationPlantAquatic
+ * Used for Form Creation/Reset
+ */
+const getObservationPlantAquaticSubtypeFields = (): AquaticPlantObservationSchema['subtype_data'] => ({
+  adjacent_land_use: [''],
+  entries: [
+    {
+      density: '',
+      distribution: '',
+      invasive_plant: '',
+      life_stage: '',
+      observation_type: '',
+      sample_point_id: ''
+    }
+  ],
+  pretreatment_observation: '',
+  substrate_type: [''],
+  water_use: [''],
+  waterlevel_management: [''],
+  shoreline_types: [
+    {
+      shoreline_type: '',
+      percent_covered: 0
+    }
+  ],
+  inflow_permanent: [''],
+  inflow_seasonal: [''],
+  outflow_permanent: [''],
+  outflow_seasonal: [''],
+  access: '',
+  colour: '',
+  comment: '',
+  max_depth_m: 0,
+  name_gazetted: '',
+  name_local: '',
+  suitable_for_biocontrol: '',
+  secchi_depth: 0,
+  tidal_influence: '',
+  type: ''
+});
+/**
  * @desc Intermediate function to map subtypes to their proper empty values
  * @param subtype Subtype to create
  */
@@ -35,6 +76,7 @@ const getSubtypeData = (subtype: ActivitySubtypes): FormSchema['subtype_data'] =
     case ActivitySubtypes.Observation_Plant_Terrestrial:
       return getObservationPlantTerrestrialSubtypeFields();
     case ActivitySubtypes.Observation_Plant_Aquatic:
+      return getObservationPlantAquaticSubtypeFields();
     case ActivitySubtypes.Monitoring_Chemical_Plant_Terrestrial_Aquatic:
     case ActivitySubtypes.Monitoring_Mechanical_Plant_Terrestrial_Aquatic:
     case ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial:
