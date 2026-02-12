@@ -1,9 +1,11 @@
 import { Delete } from '@mui/icons-material';
 import './deleteControl.css';
 
-const DeleteControl = ({ onClick }) => (
+const DeleteControl = ({ onClick, disabled }) => (
   <div className="delete-control">
-    <button onClick={onClick}>{<Delete color="error" />}</button>
+    <button disabled={disabled} onClick={onClick}>
+      {<Delete color="error" />}
+    </button>
   </div>
 );
 

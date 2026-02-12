@@ -6,20 +6,21 @@ import './checkboxUI.css';
 
 type PropTypes = {
   label: string;
+  disabled?: boolean;
   state: boolean;
   tooltip?: string;
   onChange: Dispatch<SetStateAction<boolean>>;
   width: Width;
 };
 
-const CheckboxUI = ({ label, onChange, state, tooltip, width }: PropTypes) => {
+const CheckboxUI = ({ label, onChange, state, disabled = false, tooltip, width }: PropTypes) => {
   const handleClick = () => onChange((prev: boolean) => !prev);
 
   const [id] = useState(nanoid());
 
   return (
     <div className={`form-ui-checkbox ${getInputWidth(width)}`}>
-      <input id={id} onChange={handleClick} type="checkbox" checked={state} />
+      <input id={id} onChange={handleClick} type="checkbox" disabled={disabled} checked={state} />
       <div className="label-section">
         <label htmlFor={id}>{label}</label>
         {tooltip && <TooltipWithIcon tooltipText={tooltip} />}

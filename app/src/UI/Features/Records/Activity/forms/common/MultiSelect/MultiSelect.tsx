@@ -38,7 +38,7 @@ export function MultiSelect<T extends FieldValues>({
       name={name}
       control={control}
       rules={rules}
-      render={({ field: { onChange, ref, value }, fieldState: { error } }) => (
+      render={({ field: { onChange, ref, disabled, value }, fieldState: { error } }) => (
         <div className={`form-multi-select-input ${getInputWidth(width)}`}>
           <div className="top">
             <label htmlFor={name}>
@@ -50,6 +50,7 @@ export function MultiSelect<T extends FieldValues>({
           <Select
             ref={ref}
             isMulti
+            isDisabled={disabled}
             aria-invalid={!!error}
             placeholder={placeholder}
             isSearchable={options?.length >= MIN_OPTIONS_TO_ENABLE_SEARCH}

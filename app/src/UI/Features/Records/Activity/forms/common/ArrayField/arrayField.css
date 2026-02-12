@@ -32,6 +32,15 @@
     &:hover {
       cursor: pointer;
     }
+
+    &:disabled {
+      background-color: #aaa;
+      color: #111;
+
+      &:hover {
+        cursor: not-allowed;
+      }
+    }
   }
 
   &.full-width {

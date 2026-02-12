@@ -10,7 +10,6 @@ import { checkSum, maxValue, minArrayLength, minValue, noFutureDate, noRepeatKey
 import { MouseEvent, useCallback, useEffect } from 'react';
 import ArrayField from '../common/ArrayField/ArrayField';
 import SubtypeComposite from './SubtypeComposite';
-import { FormSchema } from './interfaces/subtypeInterfaces';
 import './activityForm.css';
 import { Width } from '../common/utils';
 import DeleteControl from '../common/DeleteControl/DeleteControl';
@@ -25,6 +24,7 @@ import Accordion from 'UI/Reusable/Accordion/Accordion';
 import Prompt from 'state/actions/prompts/Prompt';
 import { Debug } from 'UI/Reusable/Predicates/Debug';
 import RecordMetadata from '../common/RecordMetadata/RecordMetadata';
+import { FormSchema } from './interfaces';
 
 const FORM_UPDATE_THROTTLE_DELAY = 1000; //ms
 const FORM_UPDATE_MAX_DELAY = 5000; //ms
@@ -100,12 +100,12 @@ const ActivityForm = () => {
 
   const codes = useSelector((state) => state.ActivityPage?.formCodes);
   const geometry_details = useSelector((state) => state.ActivityPage?.geometry_details);
-  const formType = useSelector((state) => state.ActivityPage.formType);
   const initState = useSelector((state) => state.ActivityPage?.formState);
 
   // Assign Props to sole variable to pass into FormProvider
   const methods = useForm<FormSchema>({
-    mode: 'all'
+    mode: 'all',
+    disabled: true
   });
 
   // Destructure props used at this level
@@ -120,7 +120,7 @@ const ActivityForm = () => {
     setValue,
     trigger,
     watch,
-    formState: { errors, isDirty }
+    formState: { errors, isDirty, disabled }
   } = methods;
 
   const onSubmit: SubmitHandler<FormSchema> = (data) => console.log(data);
@@ -164,7 +164,9 @@ const ActivityForm = () => {
           {/* Start of Geometry Fields */}
           <Fieldset label={'Geometry Information'}>
             <p>To modify or update, please draw a new shape on the Map</p>
-            <button onClick={handleDrawStart}>Draw Shape</button>
+            <button disabled={disabled} onClick={handleDrawStart}>
+              Draw Shape
+            </button>
             <NumberInput
               label={'Area (m)'}
               readOnly
@@ -301,7 +303,7 @@ const ActivityForm = () => {
                       }
                     })}
                   />
-                  <DeleteControl onClick={() => remove(index)} />
+                  <DeleteControl disabled={disabled} onClick={() => remove(index)} />
                 </>
               )}
             />
@@ -320,7 +322,7 @@ const ActivityForm = () => {
                     {...register(`projects.${index}.description`, { required: true })}
                     error={formState.errors.projects?.[index]?.description}
                   />
-                  <DeleteControl onClick={() => remove(index)} />
+                  <DeleteControl disabled={disabled} onClick={() => remove(index)} />
                 </>
               )}
             />
@@ -353,9 +355,13 @@ const ActivityForm = () => {
 
           {/* Submit Button is tied to react-hook-form */}
           <div className="control">
-            <input type="submit" value="Submit Form" />
-            <button onClick={saveToDraft}>Save to Draft</button>
-            <button onClick={handleClear}>Clear Form</button>
+            <input disabled={disabled} type="submit" value="Submit Form" />
+            <button disabled={disabled} onClick={saveToDraft}>
+              Save to Draft
+            </button>
+            <button disabled={disabled} onClick={handleClear}>
+              Clear Form
+            </button>
           </div>
           <Debug>
             <Accordion title={'Form State (JSON)'}>

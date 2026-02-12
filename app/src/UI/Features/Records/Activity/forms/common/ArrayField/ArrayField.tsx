@@ -45,7 +45,7 @@ export function ArrayField<T extends FieldValues, Name extends FieldArrayPath<T>
   );
   const {
     control,
-    formState: { errors },
+    formState: { errors, disabled },
     trigger
   } = useFormContext<T>();
   const { fields, append, remove } = useFieldArray({ control, name, rules });
@@ -67,7 +67,7 @@ export function ArrayField<T extends FieldValues, Name extends FieldArrayPath<T>
             </div>
           ))}
         </div>
-        <button type="button" className="add-entry" onClick={() => append(emptyValue)}>
+        <button disabled={disabled} type="button" className="add-entry" onClick={() => append(emptyValue)}>
           + Add {label}
         </button>
         {rootError && <ErrorMessage error={rootError} label={label} />}

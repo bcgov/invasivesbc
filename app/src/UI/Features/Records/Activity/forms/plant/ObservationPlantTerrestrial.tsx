@@ -37,7 +37,17 @@ const ObservationPlantTerrestrial = () => {
           options={codes?.SlopePercentCode}
           name={`${ROOT}.slope_percent`}
           required
-          rules={{ required: true }}
+          rules={{
+            deps: [`${ROOT}.aspect`],
+            required: true,
+            validate: (val, formValues) => {
+              const slope = val?.code ?? val;
+              const aspect = formValues.subtype_data?.aspect?.code ?? formValues.subtype_data?.aspect;
+              if ([aspect, slope].includes('FL') && aspect !== slope)
+                return 'If either Aspect or Slope is flat, both of them must be flat.';
+              return true;
+            }
+          }}
           tooltip="Exact or general slope of the land expressed as a percentage"
           width={Width.Half}
         />
@@ -47,7 +57,17 @@ const ObservationPlantTerrestrial = () => {
           name={`${ROOT}.aspect`}
           tooltip="Average orientation that slope is facing within the observation area (ie; SE = southeast)"
           required
-          rules={{ required: true }}
+          rules={{
+            required: true,
+            deps: [`${ROOT}.slope_percent`],
+            validate: (val, formValues) => {
+              const aspect = val?.code ?? val;
+              const slope = formValues.subtype_data?.slope_percent?.code ?? formValues.subtype_data?.slope_percent;
+              if ([aspect, slope].includes('FL') && aspect !== slope)
+                return 'If either Aspect or Slope is flat, both of them must be flat.';
+              return true;
+            }
+          }}
           width={Width.Half}
         />
         <SingleSelect

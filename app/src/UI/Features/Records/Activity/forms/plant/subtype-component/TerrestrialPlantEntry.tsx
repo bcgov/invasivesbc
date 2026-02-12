@@ -25,7 +25,7 @@ const TerrestrialPlantEntryRow = ({ root, index, remove }: Props) => {
   const {
     register,
     control,
-    formState: { errors }
+    formState: { errors, disabled }
   } = useFormContext<TerrestrialPlantObservationSchema>();
   const basePath = `${root}.entries.${index}` as EntryBasePath;
   const voucherSpecimen = useWatch({
@@ -83,6 +83,7 @@ const TerrestrialPlantEntryRow = ({ root, index, remove }: Props) => {
       <CheckboxUI
         state={voucherCollected}
         onChange={setVoucherCollected}
+        disabled={disabled}
         label="Voucher Specimen Collected"
         tooltip="Ideal to collect entire plant structure for verification purposes."
         width={Width.Half}
@@ -166,7 +167,7 @@ const TerrestrialPlantEntryRow = ({ root, index, remove }: Props) => {
         </Fieldset>
       )}
 
-      <DeleteControl onClick={() => remove(index)} />
+      <DeleteControl disabled={disabled} onClick={() => remove(index)} />
     </>
   );
 };

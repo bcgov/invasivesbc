@@ -37,7 +37,7 @@ export function SingleSelect<T extends FieldValues>({
       name={name}
       control={control}
       rules={rules}
-      render={({ field: { onChange, ref, value }, fieldState: { error } }) => {
+      render={({ field: { onChange, ref, disabled, value }, fieldState: { error } }) => {
         const mappedOptions = options?.map((o) => ({
           label: o.full_name,
           value: o.code
@@ -55,6 +55,7 @@ export function SingleSelect<T extends FieldValues>({
             )}
             <Select
               className="select-input"
+              isDisabled={disabled}
               isSearchable={mappedOptions?.length >= MIN_OPTIONS_TO_ENABLE_SEARCH}
               noOptionsMessage={() => 'No options available'}
               onChange={(opt) => onChange(opt?.value)}
