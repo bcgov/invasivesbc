@@ -1,5 +1,5 @@
-import { BaseForm, TerrestrialPlantObservationSchema, AquaticPlantObservationSchema } from '.';
+import { TerrestrialPlantObservationSchema, AquaticPlantObservationSchema } from '.';
 
-type FormSchema = BaseForm | TerrestrialPlantObservationSchema | AquaticPlantObservationSchema;
+type FormSchema = TerrestrialPlantObservationSchema | AquaticPlantObservationSchema;
 
 export type { FormSchema };
