@@ -1,6 +1,5 @@
 import { useSelector } from 'utils/use_selector';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { TerrestrialPlantObservationSchema } from '../interfaces/subtypeInterfaces';
 import SingleSelect from '../../common/SingleSelect/SingleSelect';
 import { Width } from '../../common/utils';
 import { ObservationType } from '../../enums';
@@ -12,6 +11,7 @@ import NumberInput from '../../common/NumberInput/NumberInput';
 import DeleteControl from '../../common/DeleteControl/DeleteControl';
 import { useState } from 'react';
 import CheckboxUI from '../../uncontrolled/CheckboxUI/CheckboxUI';
+import { TerrestrialPlantObservationSchema } from '../interfaces';
 
 interface Props {
   root: string;
