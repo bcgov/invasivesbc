@@ -1,7 +1,7 @@
 import { ActivitySubtypes } from 'sharedAPI';
-import { FormSchema } from '../interfaces';
 import getObservationAquaticPlantSubtypeFields from './getObservationAquaticPlantSubtypeFields';
 import getObservationPlantTerrestrialSubtypeFields from './getObservationTerrestrialPlantSubtypeFields';
+import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces/FormSchema';
 
 /**
  * @desc Intermediate function to map subtypes to their proper empty values
@@ -36,7 +36,6 @@ const getDefaultFormState = (
 ): FormSchema => {
   const subtype_data = getSubtypeData(subtype);
   return {
-    date: new Date(),
     employer: '',
     subtype: subtype,
     funding_agencies: [{ invasive_species_agency_code: '' }],

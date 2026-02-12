@@ -9,7 +9,7 @@ interface BaseForm {
   created_by?: string;
   linked_activities: { short_id: string; full: string }[];
   geom?: Feature;
-  date?: Date;
+  date: Date;
   area_m: number;
   latitude: number;
   longitude: number;
