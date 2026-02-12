@@ -7,7 +7,7 @@ import DateInput from '../common/DateInput/DateInput';
 import NumberInput from '../common/NumberInput/NumberInput';
 import TextArea from '../common/TextArea/TextArea';
 import { checkSum, maxValue, minArrayLength, minValue, noFutureDate, noRepeatKey } from '../common/validators';
-import { MouseEvent, useCallback, useEffect } from 'react';
+import { MouseEvent, useCallback, useEffect, useState } from 'react';
 import ArrayField from '../common/ArrayField/ArrayField';
 import SubtypeComposite from './SubtypeComposite';
 import './activityForm.css';
@@ -25,11 +25,14 @@ import Prompt from 'state/actions/prompts/Prompt';
 import { Debug } from 'UI/Reusable/Predicates/Debug';
 import RecordMetadata from '../common/RecordMetadata/RecordMetadata';
 import { FormSchema } from './interfaces';
+import { BugReport } from '@mui/icons-material';
 
 const FORM_UPDATE_THROTTLE_DELAY = 1000; //ms
 const FORM_UPDATE_MAX_DELAY = 5000; //ms
 
 const ActivityForm = () => {
+  // TODO: Replace with Permission Logic
+  const [isFormDisabled, setIsFormDisabled] = useState<boolean>(false);
   /**
    * @desc Initiate Mouseclick on Polygon draw icon, alert user to start drawing
    */
@@ -105,7 +108,7 @@ const ActivityForm = () => {
   // Assign Props to sole variable to pass into FormProvider
   const methods = useForm<FormSchema>({
     mode: 'all',
-    disabled: true
+    disabled: isFormDisabled
   });
 
   // Destructure props used at this level
@@ -363,7 +366,15 @@ const ActivityForm = () => {
               Clear Form
             </button>
           </div>
+
+          {/* Debug Information/Options */}
           <Debug>
+            <div className="control">
+              <button onClick={() => setIsFormDisabled((prev) => !prev)}>
+                <BugReport />
+                {`${isFormDisabled ? 'Enable' : 'Disable'} Form`}
+              </button>
+            </div>
             <Accordion title={'Form State (JSON)'}>
               <pre style={{ display: 'flex', textWrap: 'wrap' }}>{JSON.stringify(formData, null, 2)}</pre>
             </Accordion>
