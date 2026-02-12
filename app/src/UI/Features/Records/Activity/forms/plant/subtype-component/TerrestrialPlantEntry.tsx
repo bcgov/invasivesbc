@@ -121,21 +121,6 @@ const TerrestrialPlantEntryRow = ({ root, index, remove }: Props) => {
             width={Width.Half}
             error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.accession_number}
           />
-
-          <TextInput
-            label="Completed By (Person)"
-            {...register(`${basePath}.voucher_specimen.completed_by_person`, { required: true })}
-            width={Width.Half}
-            error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.completed_by_person}
-          />
-
-          <TextInput
-            label="Completed By (Org)"
-            {...register(`${basePath}.voucher_specimen.completed_by_org`, { required: true })}
-            width={Width.Half}
-            error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.completed_by_org}
-          />
-
           <Spacer x={200} y={10} />
 
           <DateInput
@@ -151,6 +136,21 @@ const TerrestrialPlantEntryRow = ({ root, index, remove }: Props) => {
             width={Width.Half}
             error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.date_verified}
           />
+          <Fieldset label={'Voucher Verification Completed By'}>
+            <TextInput
+              label="Completed By (Person)"
+              {...register(`${basePath}.voucher_specimen.completed_by_person`, { required: true })}
+              width={Width.Half}
+              error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.completed_by_person}
+            />
+            <TextInput
+              label="Completed By (Org)"
+              {...register(`${basePath}.voucher_specimen.completed_by_org`, { required: true })}
+              width={Width.Half}
+              error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.completed_by_org}
+            />
+          </Fieldset>
+
           <Fieldset label={'Exact Coordinate of Voucher Collection Site'}>
             <NumberInput
               label="UTM Zone"
