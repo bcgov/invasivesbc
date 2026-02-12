@@ -1,8 +1,8 @@
 import { Feature } from 'geojson';
-import { ActivitySubtype } from 'sharedAPI';
+import { ActivitySubtypes } from 'sharedAPI';
 
 interface BaseForm {
-  subtype: ActivitySubtype;
+  subtype: ActivitySubtypes;
   linked_activities: { short_id: string; full: string }[];
   geom: Feature;
   date: Date;
@@ -26,7 +26,7 @@ interface BaseForm {
  * Subtype Specific Information for Terrestrial Plant Observations
  */
 interface TerrestrialPlantObservationSchema extends BaseForm {
-  subtype: ActivitySubtype.Observation_PlantTerrestrial;
+  subtype: ActivitySubtypes.Observation_Plant_Terrestrial;
   subtype_data: {
     entries: Array<{
       density: string;
@@ -34,7 +34,18 @@ interface TerrestrialPlantObservationSchema extends BaseForm {
       invasive_plant: string;
       life_stage: string;
       observation_type: string;
-      voucher_specimen: string;
+      voucher_specimen?: {
+        voucher_sample_id: string;
+        herbarium: string;
+        accession_number: string;
+        completed_by_person: string;
+        completed_by_org: string;
+        utm_zone: number;
+        utm_easting: number;
+        utm_northing: number;
+        date_collected: number;
+        date_verified: number;
+      };
     }>;
     pretreatment_observation: string;
     research_observation: string;
@@ -51,7 +62,7 @@ interface TerrestrialPlantObservationSchema extends BaseForm {
  * Subtype Specific Information for Aquatic Plant Observations
  */
 interface AquaticPlantObservationSchema extends BaseForm {
-  subtype: ActivitySubtype.Observation_PlantAquatic;
+  subtype: ActivitySubtypes.Observation_Plant_Aquatic;
   subtype_data: {
     adjacent_land_use: string[];
     entries: Array<{
