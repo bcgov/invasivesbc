@@ -26,6 +26,7 @@ import { Debug } from 'UI/Reusable/Predicates/Debug';
 import RecordMetadata from '../common/RecordMetadata/RecordMetadata';
 import { FormSchema } from './interfaces';
 import { BugReport } from '@mui/icons-material';
+import getDefaultFormState from './builders/getDefaultState';
 
 const FORM_UPDATE_THROTTLE_DELAY = 1000; //ms
 const FORM_UPDATE_MAX_DELAY = 5000; //ms
@@ -57,7 +58,8 @@ const ActivityForm = () => {
         callback: (confirmation: boolean) => {
           if (confirmation) {
             dispatch(FormActions.clearFormState());
-            reset();
+            const newState = getDefaultFormState(subtype);
+            reset(newState);
           }
         }
       })
@@ -104,11 +106,14 @@ const ActivityForm = () => {
   const codes = useSelector((state) => state.ActivityPage?.formCodes);
   const geometry_details = useSelector((state) => state.ActivityPage?.geometry_details);
   const initState = useSelector((state) => state.ActivityPage?.formState);
-
+  const subtype = useSelector((state) => {
+    state.ActivityPage?.formType;
+  });
   // Assign Props to sole variable to pass into FormProvider
   const methods = useForm<FormSchema>({
     mode: 'all',
-    disabled: isFormDisabled
+    disabled: isFormDisabled,
+    defaultValues: getDefaultFormState(subtype)
   });
 
   // Destructure props used at this level
