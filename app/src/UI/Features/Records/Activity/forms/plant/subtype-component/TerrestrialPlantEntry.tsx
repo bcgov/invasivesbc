@@ -9,7 +9,7 @@ import DateInput from '../../common/DateInput/DateInput';
 import Spacer from 'UI/Reusable/Spacer/Spacer';
 import NumberInput from '../../common/NumberInput/NumberInput';
 import DeleteControl from '../../common/DeleteControl/DeleteControl';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import CheckboxUI from '../../uncontrolled/CheckboxUI/CheckboxUI';
 import { TerrestrialPlantObservationSchema } from '../interfaces';
 
@@ -25,7 +25,8 @@ const TerrestrialPlantEntryRow = ({ root, index, remove }: Props) => {
   const {
     register,
     control,
-    formState: { errors, disabled }
+    setValue,
+    formState: { errors, disabled, isDirty }
   } = useFormContext<TerrestrialPlantObservationSchema>();
   const basePath = `${root}.entries.${index}` as EntryBasePath;
   const voucherSpecimen = useWatch({
@@ -36,6 +37,12 @@ const TerrestrialPlantEntryRow = ({ root, index, remove }: Props) => {
   const [voucherCollected, setVoucherCollected] = useState<boolean>(!!voucherSpecimen);
   const codes = useSelector((state) => state.ActivityPage?.formCodes);
 
+  useEffect(() => {
+    if (!voucherCollected && isDirty) {
+      setValue(`${basePath}.voucher_specimen`, undefined);
+    }
+  }, [voucherCollected]);
+
   return (
     <>
       <SingleSelect
@@ -43,6 +50,7 @@ const TerrestrialPlantEntryRow = ({ root, index, remove }: Props) => {
         required
         tooltip="Target invasive plant species for this observation at this location."
         options={codes?.TerrestrialPlantCode}
+        rules={{ required: true }}
         name={`${basePath}.invasive_plant`}
         width={Width.Half}
       />
@@ -52,6 +60,7 @@ const TerrestrialPlantEntryRow = ({ root, index, remove }: Props) => {
         required
         tooltip="Presence or absence of target invasive plants within a defined area."
         options={ObservationType}
+        rules={{ required: true }}
         name={`${basePath}.observation_type`}
         width={Width.Half}
       />
