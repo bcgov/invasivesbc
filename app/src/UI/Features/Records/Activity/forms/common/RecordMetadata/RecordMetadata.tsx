@@ -4,14 +4,14 @@ import Fieldset from '../Fieldset/Fieldset';
 
 type InfoProps = {
   term: string;
-  definition?: string | number | Date;
+  definition?: string | number;
 };
 const Info = ({ term, definition }: InfoProps) => {
   if (!definition) return;
   return (
     <div className="list-item">
       <dt>{term}</dt>
-      <dd>{definition.toString()}</dd>
+      <dd>{definition}</dd>
     </div>
   );
 };
@@ -25,7 +25,10 @@ const RecordMetadata = () => {
         <Info term={'Status'} definition={formState?.form_status} />
         <Info term={'Activity Type'} definition={formState?.type} />
         <Info term={'Activity Subtype'} definition={formState?.subtype} />
-        <Info term={'Date'} definition={formState?.date} />
+        <Info
+          term={'Date'}
+          definition={formState?.date ? new Date(formState?.date)?.toLocaleDateString() : undefined}
+        />
         <Info term={'Created By'} definition={formState?.created_by} />
       </dl>
     </Fieldset>
