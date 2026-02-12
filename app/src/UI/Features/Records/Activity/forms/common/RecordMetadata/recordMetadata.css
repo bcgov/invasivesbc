@@ -1,0 +1,26 @@
+#record-metadata {
+  display: flex;
+  margin-left: auto;
+  width: 75%;
+  flex-flow: row wrap;
+  justify-content: space-between;
+
+  .list-item {
+    min-width: 40%;
+    text-align: left;
+
+    dt {
+      font-size: 1.15rem;
+      font-weight: bold;
+
+      &::after {
+        content: ':';
+      }
+    }
+
+    dd {
+      margin: 0 0 10px;
+      font-size: var(--form-input-font-size);
+    }
+  }
+}

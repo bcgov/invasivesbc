@@ -10,7 +10,7 @@ import { checkSum, maxValue, minArrayLength, minValue, noFutureDate, noRepeatKey
 import { MouseEvent, useCallback, useEffect } from 'react';
 import ArrayField from '../common/ArrayField/ArrayField';
 import SubtypeComposite from './SubtypeComposite';
-import { FormSchema } from './subtypeInterfaces';
+import { FormSchema } from './interfaces/subtypeInterfaces';
 import './activityForm.css';
 import { Width } from '../common/utils';
 import DeleteControl from '../common/DeleteControl/DeleteControl';
@@ -24,6 +24,7 @@ import CreatableSelect from '../common/CreatableSelect.tsx/CreatableSelect';
 import Accordion from 'UI/Reusable/Accordion/Accordion';
 import Prompt from 'state/actions/prompts/Prompt';
 import { Debug } from 'UI/Reusable/Predicates/Debug';
+import RecordMetadata from '../common/RecordMetadata/RecordMetadata';
 
 const FORM_UPDATE_THROTTLE_DELAY = 1000; //ms
 const FORM_UPDATE_MAX_DELAY = 5000; //ms
@@ -159,7 +160,7 @@ const ActivityForm = () => {
     <div className="activity-page">
       <FormProvider {...methods}>
         <form autoComplete={'off'} className="activity-form" onSubmit={handleSubmit(onSubmit)}>
-          <h2>Activity Subtype: {formType}</h2>
+          <RecordMetadata />
           {/* Start of Geometry Fields */}
           <Fieldset label={'Geometry Information'}>
             <p>To modify or update, please draw a new shape on the Map</p>
