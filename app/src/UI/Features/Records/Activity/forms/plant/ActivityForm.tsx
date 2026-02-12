@@ -131,7 +131,7 @@ const ActivityForm = () => {
     formState: { errors, isDirty, disabled }
   } = methods;
 
-  const onSubmit: SubmitHandler<FormSchema> = (data) => console.log(data);
+  const onSubmit: SubmitHandler<FormSchema> = (data) => alert('Form Submitted! [Not implemented]');
   const formData = watch();
   const allFormValues = useWatch({ control });
 
@@ -340,6 +340,7 @@ const ActivityForm = () => {
               label={'Location Description'}
               id="location_description"
               error={errors?.location_description}
+              required
               tooltip="Text entry to provide location directions. Locations should start general and get more specific"
               width={Width.Third}
               {...register('location_description', { required: true, validate: (val) => minValue(val, 10) })}
