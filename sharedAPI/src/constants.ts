@@ -98,6 +98,32 @@ export const ActivitySubtypeTargetKey = {
   [ActivitySubtype.Monitoring_BiologicalTerrestrialPlant]: 'Monitoring_BiocontrolRelease_TerrestrialPlant_Information'
 };
 
+export const ActivitySubtypesRelations = {
+  [ActivityCategory.Plant]: {
+    [ActivityType.Observation]: [
+      ActivitySubtypes.Observation_Plant_Terrestrial,
+      ActivitySubtypes.Observation_Plant_Aquatic
+    ],
+    [ActivityType.Treatment]: [
+      ActivitySubtypes.Treatment_Chemical_Plant_Aquatic,
+      ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial,
+      ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic,
+      ActivitySubtypes.Treatment_Mechanical_Plant_Terrestrial,
+      ActivitySubtypes.Biocontrol_Release
+    ],
+    [ActivityType.Biocontrol]: [
+      ActivitySubtypes.Biocontrol_Collection,
+      ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial
+    ],
+    [ActivityType.Monitoring]: [
+      ActivitySubtypes.Monitoring_Chemical_Plant_Terrestrial_Aquatic,
+      ActivitySubtypes.Monitoring_Mechanical_Plant_Terrestrial_Aquatic,
+      ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial
+    ]
+  }
+};
+
+// TODO: REPLACE
 export const ActivitySubtypeRelations = {
   [ActivityCategory.Plant]: {
     [ActivityType.Observation]: [

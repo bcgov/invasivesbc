@@ -13,11 +13,17 @@ import {
 import { useEffect, useState } from 'react';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { useDispatch } from 'react-redux';
-import { ActivitySubtype, ActivitySubtypeRelations, ActivitySubtypes, ActivitySubtypeShortLabels } from 'sharedAPI';
+import {
+  ActivitySubtype,
+  ActivitySubtypeRelations,
+  ActivitySubtypesRelations,
+  ActivitySubtypes,
+  ActivitySubtypeShortLabels
+} from 'sharedAPI';
 
 import 'UI/Features/Records/NewRecordDialog.css';
 import { useSelector } from 'utils/use_selector';
-import Activity from 'state/actions/activity/Activity';
+// import Activity from 'state/actions/activity/Activity';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { useNavigate } from 'react-router';
 import FormActions from 'state/actions/activity/FormActions';
@@ -63,7 +69,7 @@ const NewRecordDialog = () => {
       setActivityTypeSelectOptions([]);
     } else {
       const types: string[] = [];
-      Object.keys(ActivitySubtypeRelations[recordCategory]).forEach((key) => {
+      Object.keys(ActivitySubtypesRelations[recordCategory]).forEach((key) => {
         types.push(key);
       });
       setActivityTypeSelectOptions(types);
@@ -74,16 +80,19 @@ const NewRecordDialog = () => {
     if (!recordType || !recordCategory) {
       setActivitySubTypeSelectOptions([]);
     } else {
-      const subTypes = ActivitySubtypeRelations[recordCategory][recordType];
-      const availableSubTypes = subTypes.filter((subtype) => writePrivilege.includes(subtype));
-      setActivitySubTypeSelectOptions(availableSubTypes);
+      const subTypes = ActivitySubtypesRelations[recordCategory][recordType];
+      //TODO: Refactor
+      // const availableSubTypes = subTypes.filter((subtype) => writePrivilege.includes(subtype));
+      setActivitySubTypeSelectOptions(subTypes);
     }
   }, [recordType]);
 
   const createNewRecord = async () => {
-    dispatch(Activity.createReq({ type: recordType, subType: recordSubtype }));
+    // dispatch(Activity.createReq({ type: recordType, subType: recordSubtype }));
     dispatch(FormActions.createNewForm(recordSubtype as ActivitySubtypes));
-    navigate('/Records/Activity/new/form');
+    // TODO:
+    navigate('/Records/HookForm');
+    // navigate('/Records/Activity/new/form');
   };
 
   const handleRecordCategoryChange = (event) => {
@@ -148,8 +157,9 @@ const NewRecordDialog = () => {
             label="Select Form Type"
           >
             {activitySubTypeSelectOptions.map((option) => (
+              // TODO: Refactor
               <MenuItem key={option} value={option}>
-                {ActivitySubtypeShortLabels[option]}
+                {ActivitySubtypeShortLabels[option] ?? option}
               </MenuItem>
             ))}
           </Select>
