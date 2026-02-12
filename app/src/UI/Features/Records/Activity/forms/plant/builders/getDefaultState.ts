@@ -1,0 +1,86 @@
+import { ActivitySubtypes } from 'sharedAPI';
+import { FormSchema } from '../interfaces';
+
+/**
+ * @desc Creates empty subtype fields for ObservationPlantTerrestrial
+ * Used for Form Creation/Reset
+ */
+const getObservationPlantTerrestrialSubtypeFields = (): FormSchema['subtype_data'] => ({
+  entries: [
+    {
+      density: '',
+      distribution: '',
+      invasive_plant: '',
+      life_stage: '',
+      observation_type: '',
+      voucher_specimen: undefined
+    }
+  ],
+  pretreatment_observation: '',
+  research_observation: '',
+  visible_well_nearby: '',
+  aspect: '',
+  slope_percent: '',
+  soil_texture: '',
+  specific_use: '',
+  suitable_for_biocontrol_agent: ''
+});
+
+/**
+ * @desc Intermediate function to map subtypes to their proper empty values
+ * @param subtype Subtype to create
+ */
+const getSubtypeData = (subtype: ActivitySubtypes): FormSchema['subtype_data'] => {
+  switch (subtype) {
+    case ActivitySubtypes.Observation_Plant_Terrestrial:
+      return getObservationPlantTerrestrialSubtypeFields();
+    case ActivitySubtypes.Observation_Plant_Aquatic:
+    case ActivitySubtypes.Monitoring_Chemical_Plant_Terrestrial_Aquatic:
+    case ActivitySubtypes.Monitoring_Mechanical_Plant_Terrestrial_Aquatic:
+    case ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial:
+    case ActivitySubtypes.Treatment_Mechanical_Plant_Terrestrial:
+    case ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic:
+    case ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial:
+    case ActivitySubtypes.Treatment_Chemical_Plant_Aquatic:
+    case ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial:
+    case ActivitySubtypes.Biocontrol_Collection:
+    case ActivitySubtypes.Biocontrol_Release:
+    default:
+      return getObservationPlantTerrestrialSubtypeFields();
+  }
+};
+
+/**
+ * Get the default values needed for a form, used for form create/reset logic.
+ */
+const getDefaultFormState = (
+  subtype: ActivitySubtypes = ActivitySubtypes.Observation_Plant_Terrestrial
+): FormSchema => {
+  const subtype_data = getSubtypeData(subtype);
+  return {
+    date: new Date(),
+    employer: '',
+    subtype: subtype,
+    funding_agencies: [{ invasive_species_agency_code: '' }],
+    jurisdictions: [{ jurisdiction: '', percent_covered: 0 }],
+    projects: [{ description: '' }],
+    location_description: '',
+    access_description: '',
+    comment: '',
+    area_m: 0,
+    geom: {
+      type: 'Feature',
+      geometry: { type: 'Point', coordinates: [0, 0] },
+      properties: {}
+    },
+    latitude: 0,
+    longitude: 0,
+    utm_zone: 0,
+    utm_easting: 0,
+    utm_northing: 0,
+    linked_activities: [],
+    subtype_data: subtype_data
+  };
+};
+
+export default getDefaultFormState;
