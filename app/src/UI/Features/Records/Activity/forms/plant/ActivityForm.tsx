@@ -77,9 +77,11 @@ const ActivityForm = () => {
       if (geometry_details?.[f] == undefined) {
         resetField(f, { defaultValue: '' });
       } else {
-        setValue(f, geometry_details[f]);
+        setValue(f, geometry_details[f], {
+          shouldDirty: true,
+          shouldValidate: true
+        });
       }
-      trigger(f); // Activate Forms Validation
     });
   };
 
@@ -132,12 +134,6 @@ const ActivityForm = () => {
   useEffect(() => {
     register('geom');
   }, [register]);
-
-  // After first change to form is applied, trigger validation for whole form.
-  useEffect(() => {
-    if (!isDirty) return;
-    trigger();
-  }, [isDirty]);
 
   /** Trigger Geometry Updates when Redux state changes */
   useEffect(() => {
@@ -341,7 +337,6 @@ const ActivityForm = () => {
               width={Width.Third}
               label={'Access Description'}
               error={errors?.access_description}
-              required
               tooltip="Text entry to provide access directions."
               {...register('access_description')}
             />

@@ -256,14 +256,18 @@ function createActivityReducer() {
           utm_easting: utm?.[1],
           utm_northing: utm?.[2]
         };
-        draftState.activity.geometry = geometry;
-        draftState.activity.form_data.activity_data.latitude = lat;
-        draftState.activity.form_data.activity_data.longitude = long;
-        draftState.activity.form_data.activity_data.utm_zone = utm?.[0].toString(); // RJSF expects this value to be a string
-        draftState.activity.form_data.activity_data.utm_easting = utm?.[1];
-        draftState.activity.form_data.activity_data.utm_northing = utm?.[2];
-        draftState.activity.form_data.activity_data.reported_area = reported_area;
-        draftState.activity.form_data.activity_subtype_data.Well_Information = Well_Information;
+        if (draftState.activity) {
+          // Prevent Crash when using RHF and Activity state empty
+          // TODO: Remove this
+          draftState.activity.geometry = geometry;
+          draftState.activity.form_data.activity_data.latitude = lat;
+          draftState.activity.form_data.activity_data.longitude = long;
+          draftState.activity.form_data.activity_data.utm_zone = utm?.[0].toString(); // RJSF expects this value to be a string
+          draftState.activity.form_data.activity_data.utm_easting = utm?.[1];
+          draftState.activity.form_data.activity_data.utm_northing = utm?.[2];
+          draftState.activity.form_data.activity_data.reported_area = reported_area;
+          draftState.activity.form_data.activity_subtype_data.Well_Information = Well_Information;
+        }
       } else if (Activity.OnFormChangeRequestSuccess.match(action)) {
         draftState.activity.form_data = JSON.parse(JSON.stringify(action.payload.form_data));
         draftState.activity.species_positive = action.payload?.species_positive;
