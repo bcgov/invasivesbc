@@ -1,7 +1,7 @@
 import { createAction } from '@reduxjs/toolkit';
 import { Feature, GeoJSON } from 'geojson';
 import { ActivitySubtypes } from 'sharedAPI';
-import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/subtypeInterfaces';
+import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 
 class FormActions {
   private static readonly PREFIX = 'FormActions';

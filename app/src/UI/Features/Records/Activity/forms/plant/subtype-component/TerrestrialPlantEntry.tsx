@@ -1,6 +1,6 @@
 import { useSelector } from 'utils/use_selector';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { TerrestrialPlantObservationSchema } from '../subtypeInterfaces';
+import { TerrestrialPlantObservationSchema } from '../interfaces/subtypeInterfaces';
 import SingleSelect from '../../common/SingleSelect/SingleSelect';
 import { Width } from '../../common/utils';
 import { ObservationType } from '../../enums';

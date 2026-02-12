@@ -13,8 +13,8 @@ import IActivityPermissions from 'interfaces/IActivityPermissions';
 import { GeoTrackingStatus } from 'constants/geoTrackingStatus';
 import DrawToolActions from 'state/actions/drawtool/drawToolActions';
 import FormCode from 'interfaces/FormCode';
-import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/subtypeInterfaces';
 import FormActions from 'state/actions/activity/FormActions';
+import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 
 interface ActivityState {
   [MIGRATION_VERSION_KEY]: number;
