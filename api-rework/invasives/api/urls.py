@@ -5,10 +5,17 @@ from api.viewsets.activity import ActivityViewSet
 from api.viewsets.code import CodeViewSet
 from api.viewsets.migration import MigrationStatusViewSet
 
+from api.protocol.activity.api import router as activity_router
+
+from ninja import NinjaAPI
+
 ROUTER = DefaultRouter(trailing_slash=False)
 
 ROUTER.register(r"activities", ActivityViewSet, "activity")
 ROUTER.register(r"codes", CodeViewSet, "code")
 ROUTER.register(r"migrations", MigrationStatusViewSet, "migration")
 
-urlpatterns = [path("", include(ROUTER.urls))]
+ninja_api = NinjaAPI()
+ninja_api.add_router("/activities", activity_router)
+
+urlpatterns = [path("", include(ROUTER.urls)), path("ninja/", ninja_api.urls)]

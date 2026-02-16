@@ -1,0 +1,502 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "NinjaAPI",
+    "version": "1.0.0",
+    "description": ""
+  },
+  "paths": {
+    "/ninja/activities/": {
+      "get": {
+        "operationId": "api_protocol_activity_api_list_activities",
+        "summary": "List Activities",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ActivityMinimal"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "NinjaKeycloakAuthentication": []
+          }
+        ]
+      }
+    },
+    "/ninja/activities/search": {
+      "post": {
+        "operationId": "api_protocol_activity_api_activity_search",
+        "summary": "Activity Search",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActivitySearchResult"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ActivitySearchParameters"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "NinjaKeycloakAuthentication": []
+          }
+        ]
+      }
+    },
+    "/ninja/activities/{id}": {
+      "get": {
+        "operationId": "api_protocol_activity_api_get_activity_by_id",
+        "summary": "Get Activity By Id",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "title": "Id",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActivityOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "NinjaKeycloakAuthentication": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ActivityMinimal": {
+        "description": "Minimal fields - shared between all representations",
+        "properties": {
+          "id": {
+            "format": "uuid4",
+            "title": "Id",
+            "type": "string"
+          },
+          "short_id": {
+            "title": "Short Id",
+            "type": "string"
+          },
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          },
+          "subtype": {
+            "title": "Subtype",
+            "type": "string"
+          }
+        },
+        "required": ["id", "short_id", "date", "type", "subtype"],
+        "title": "ActivityMinimal",
+        "type": "object"
+      },
+      "ActivitySearchParameters": {
+        "description": "An object representing activity search parameters",
+        "properties": {
+          "date_from": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date From"
+          },
+          "date_to": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date To"
+          }
+        },
+        "required": ["date_from", "date_to"],
+        "title": "ActivitySearchParameters",
+        "type": "object"
+      },
+      "ActivitySearchResult": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ActivityMinimal"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "search": {
+            "$ref": "#/components/schemas/ActivitySearchParameters"
+          }
+        },
+        "required": ["items", "search"],
+        "title": "ActivitySearchResult",
+        "type": "object"
+      },
+      "ActivityOut": {
+        "properties": {
+          "batch_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batch Id"
+          },
+          "batch_row_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batch Row Id"
+          },
+          "area_m": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Area M"
+          },
+          "utm_zone": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Utm Zone"
+          },
+          "utm_easting": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Utm Easting"
+          },
+          "utm_northing": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Utm Northing"
+          },
+          "latitude": {
+            "anyOf": [
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latitude"
+          },
+          "longitude": {
+            "anyOf": [
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Longitude"
+          },
+          "location_description": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location Description"
+          },
+          "shape_radius": {
+            "anyOf": [
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shape Radius"
+          },
+          "creating_platform": {
+            "default": "Unknown",
+            "maxLength": 100,
+            "title": "Creating Platform",
+            "type": "string"
+          },
+          "computed_fields_generated": {
+            "default": false,
+            "title": "Computed Fields Generated",
+            "type": "boolean"
+          },
+          "computed_biogeoclimatic_zone": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Computed Biogeoclimatic Zone"
+          },
+          "computed_elevation_m": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Computed Elevation M"
+          },
+          "computed_flrno_districts": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Computed Flrno Districts"
+          },
+          "computed_invasive_plant_management_areas": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Computed Invasive Plant Management Areas"
+          },
+          "computed_moti_districts": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Computed Moti Districts"
+          },
+          "computed_ownership": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Computed Ownership"
+          },
+          "computed_regional_districts": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Computed Regional Districts"
+          },
+          "id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "short_id": {
+            "maxLength": 16,
+            "title": "Short Id",
+            "type": "string"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          },
+          "subtype": {
+            "title": "Subtype",
+            "type": "string"
+          },
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "created_by": {
+            "maxLength": 64,
+            "title": "Created By",
+            "type": "string"
+          },
+          "form_status": {
+            "default": "Draft",
+            "maxLength": 16,
+            "title": "Form Status",
+            "type": "string"
+          },
+          "access_description": {
+            "anyOf": [
+              {
+                "maxLength": 1024,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Description"
+          },
+          "comment": {
+            "anyOf": [
+              {
+                "maxLength": 1024,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment"
+          },
+          "created_timestamp": {
+            "format": "date-time",
+            "title": "Created Timestamp",
+            "type": "string"
+          },
+          "received_timestamp": {
+            "format": "date-time",
+            "title": "Received Timestamp",
+            "type": "string"
+          },
+          "linked_activities": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Linked Activities",
+            "type": "array"
+          }
+        },
+        "required": [
+          "short_id",
+          "type",
+          "subtype",
+          "date",
+          "created_by",
+          "created_timestamp",
+          "received_timestamp",
+          "linked_activities"
+        ],
+        "title": "ActivityOut",
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "NinjaKeycloakAuthentication": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "servers": []
+}

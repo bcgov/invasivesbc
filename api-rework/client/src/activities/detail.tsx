@@ -6,6 +6,7 @@ import JSONViewer from 'activities/json_viewer';
 import './activities.scss';
 import { AuthContext } from 'client';
 import FormViewer from './form-viewer/FormViewer';
+import * as api from 'ninja-schema/api';
 
 const Tab = ({ tab, setTab, title, tabName }) => (
   <li className={tab === tabName ? 'active' : ''}>
@@ -24,6 +25,7 @@ const ActivitiesDetail: React.FC = () => {
   const [pydanticModel, setPydanticModel] = useState(undefined);
   const [legacyModel, setLegacyModel] = useState(undefined);
   const [migrationStatus, setMigrationStatus] = useState(undefined);
+  const [ninjaModel, setNinjaModel] = useState<undefined | api.ActivityOut>(undefined);
 
   const [tab, setTab] = useState('django');
 
@@ -63,6 +65,17 @@ const ActivitiesDetail: React.FC = () => {
       }).then(async (res) => {
         if (res.status === 200) {
           setLegacyModel(await res.json());
+        } else {
+          setAnyError(true);
+        }
+      }),
+      fetch(`${API_URL}/ninja/activities/${id}`, {
+        headers: {
+          Authorization: `Bearer ${auth.token}`
+        }
+      }).then(async (res) => {
+        if (res.status === 200) {
+          setNinjaModel(await res.json());
         } else {
           setAnyError(true);
         }
@@ -115,6 +128,7 @@ const ActivitiesDetail: React.FC = () => {
           <Tab tab={tab} setTab={setTab} tabName={'legacy'} title={'Legacy Model'} />
           <Tab tab={tab} setTab={setTab} tabName={'pydantic'} title={'Pydantic Model'} />
           <Tab tab={tab} setTab={setTab} tabName={'django'} title={'Final Django Model'} />
+          <Tab tab={tab} setTab={setTab} tabName={'ninja'} title={'Ninja Model'} />
           <Tab tab={tab} setTab={setTab} tabName={'migration'} title={'Migration Status'} />
           <Tab tab={tab} setTab={setTab} tabName={'form-view'} title={'View as Form'} />
           <li>
@@ -193,6 +207,10 @@ const ActivitiesDetail: React.FC = () => {
             'Information about the migration output for this activity (if there were errors, they would be displayed here)'
           }
         />
+      </div>
+      <div className={`${tab === 'ninja' ? 'active' : 'inactive'} tab`}>
+        <p>{ninjaModel?.access_description} </p>
+        <JSONViewer data={ninjaModel} diffCandidates={[]} helpText={'Type-safe ninja model'} />
       </div>
       <div className={`${tab === 'form-view' ? 'active' : 'inactive'} tab`}>
         <FormViewer formData={djangoModel} />
