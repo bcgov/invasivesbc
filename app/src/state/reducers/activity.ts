@@ -15,6 +15,7 @@ import DrawToolActions from 'state/actions/drawtool/drawToolActions';
 import FormCode from 'interfaces/FormCode';
 import FormActions from 'state/actions/activity/FormActions';
 import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
+import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
 
 interface ActivityState {
   [MIGRATION_VERSION_KEY]: number;
@@ -28,6 +29,7 @@ interface ActivityState {
   failCode: number | null;
   formType?: ActivitySubtypes;
   formState?: FormSchema;
+  formId?: string;
   geometry_details?: {
     geom: Feature;
     area_m?: number;
@@ -201,12 +203,17 @@ function createActivityReducer() {
       } else if (Activity.refreshFormCodes.fulfilled.match(action)) {
         draftState.formCodes = action.payload;
       } else if (FormActions.createNewForm.match(action)) {
-        delete draftState.activity;
-        delete draftState.geometry_details;
-        draftState.formType = action.payload;
-      } else if (FormActions.clearFormState.match(action)) {
         delete draftState.formState;
         delete draftState.geometry_details;
+        delete draftState.formId;
+        draftState.formType = action.payload;
+      } else if (FormActions.clearFormState.match(action) && draftState.formState) {
+        delete draftState.geometry_details;
+        Object.assign(draftState.formState, {
+          ...getDefaultFormState(draftState.formType),
+          id: draftState.formId,
+          subtype: draftState.formType
+        });
       } else if (FormActions.updateState.match(action)) {
         draftState.formState = structuredClone(action.payload);
       } else if (Activity.get.match(action)) {
@@ -214,6 +221,7 @@ function createActivityReducer() {
         draftState.loading = true;
       } else if (Activity.getDjango.fulfilled.match(action)) {
         draftState.formType = action.payload?.subtype;
+        draftState.formId = action.payload?.id;
         draftState.formState = action.payload;
       } else if (Activity.getSuccess.match(action)) {
         const { activity, permissions } = action.payload;
