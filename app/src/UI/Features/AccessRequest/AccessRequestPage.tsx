@@ -19,6 +19,7 @@ import { useSelector } from 'utils/use_selector';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
 import 'UI/Features/AccessRequest/AccessRequestPage.css';
 import { useNavigate } from 'react-router';
+import { Role } from 'constants/roles';
 
 const AccessRequestPage = () => {
   enum AuthOptions {
@@ -96,7 +97,8 @@ const AccessRequestPage = () => {
   const [idirErrorText, setIdirErrorText] = useState<string>();
   const [lastNameErrorText, setLastNameErrorText] = useState<string>();
   const [requestedRolesErrorText, setRequestedRolesErrorText] = useState<string>();
-  const isUpdating = authState?.roles?.length > 0 && authState?.extendedInfo?.account_status === 1;
+  const isUpdating =
+    authState?.roles?.length > 0 && authState.roles.every(({ role_name }) => role_name !== Role.NOT_ACTIVATED);
   const idir_userid = authState?.idir_user_guid ?? '';
   const bceid_userid = authState?.bceid_user_guid ?? '';
 
