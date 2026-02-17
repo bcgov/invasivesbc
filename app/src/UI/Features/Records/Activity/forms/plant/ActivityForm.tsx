@@ -107,6 +107,8 @@ const ActivityForm = () => {
   const geometry_details = useSelector((state) => state.ActivityPage?.geometry_details);
   const initState = useSelector((state) => state.ActivityPage?.formState);
   const subtype = useSelector((state) => state.ActivityPage?.formType);
+  const formId = useSelector((state) => state.ActivityPage?.formId);
+
   // Assign Props to sole variable to pass into FormProvider
   const methods = useForm<FormSchema>({
     mode: 'all',
@@ -160,16 +162,16 @@ const ActivityForm = () => {
       const mutableState = structuredClone(initState);
       reset({ ...mutableState });
     }
-  }, [initState, subtype]);
+  }, [initState, formId]);
 
   useEffect(() => {
-    // User creates new form after their current form.
-    if (initState == undefined) {
+    // Reset form on ID change.
+    if (!initState) {
       reset(getDefaultFormState(subtype));
     }
-  }, [subtype]);
+  }, [formId]);
 
-  if (!subtype) {
+  if (!formId) {
     return (
       <div className="activity-page">
         <p>There is no Active Form, to get started please create or load a record</p>

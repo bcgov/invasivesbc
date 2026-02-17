@@ -205,7 +205,7 @@ function createActivityReducer() {
       } else if (FormActions.createNewForm.match(action)) {
         delete draftState.formState;
         delete draftState.geometry_details;
-        delete draftState.formId;
+        draftState.formId = crypto.randomUUID();
         draftState.formType = action.payload;
       } else if (FormActions.clearFormState.match(action) && draftState.formState) {
         delete draftState.geometry_details;
