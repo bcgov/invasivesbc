@@ -1,6 +1,6 @@
-import { useSelector } from 'utils/use_selector';
 import './recordMetadata.css';
 import Fieldset from '../Fieldset/Fieldset';
+import { FormSchema } from '../../plant/interfaces';
 
 type InfoProps = {
   term: string;
@@ -16,8 +16,10 @@ const Info = ({ term, definition }: InfoProps) => {
   );
 };
 
-const RecordMetadata = () => {
-  const formState = useSelector((state) => state.ActivityPage?.formState);
+type PropTypes = {
+  formState: FormSchema;
+};
+const RecordMetadata = ({ formState }: PropTypes) => {
   return (
     <Fieldset label={'Activity Metadata'}>
       <dl id="record-metadata">
