@@ -59,8 +59,7 @@ const ActivityForm = () => {
         callback: (confirmation: boolean) => {
           if (confirmation) {
             dispatch(FormActions.clearFormState());
-            const newState = getDefaultFormState(subtype);
-            reset(newState);
+            reset(getDefaultFormState(subtype));
           }
         }
       })
@@ -125,7 +124,6 @@ const ActivityForm = () => {
     reset,
     resetField,
     setValue,
-    trigger,
     watch,
     formState: { errors, isDirty, disabled }
   } = methods;
@@ -156,12 +154,20 @@ const ActivityForm = () => {
   }, [allFormValues, isDirty]);
 
   useEffect(() => {
+    // Load in form, either from fetching a new form, or switching back to form tab
     const newFormLoadedFromExisting = initState !== undefined && !isDirty;
     if (newFormLoadedFromExisting) {
       const mutableState = structuredClone(initState);
       reset({ ...mutableState });
     }
   }, [initState, subtype]);
+
+  useEffect(() => {
+    // User creates new form after their current form.
+    if (initState == undefined) {
+      reset(getDefaultFormState(subtype));
+    }
+  }, [subtype]);
 
   if (!subtype) {
     return (
@@ -174,7 +180,7 @@ const ActivityForm = () => {
     <div className="activity-page">
       <FormProvider {...methods}>
         <form autoComplete={'off'} className="activity-form" onSubmit={handleSubmit(onSubmit)}>
-          <RecordMetadata />
+          <RecordMetadata formState={getValues()} />
           {/* Start of Geometry Fields */}
           <Fieldset label={'Geometry Information'}>
             <p>To modify or update, please draw a new shape on the Map</p>
