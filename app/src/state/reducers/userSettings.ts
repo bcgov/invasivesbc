@@ -1,5 +1,6 @@
 import { createNextState, nanoid } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
+import FormActions from 'state/actions/activity/FormActions';
 import { AppConfig } from 'state/configuration/runtime-config';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import { RecordSetId, RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
@@ -333,7 +334,7 @@ function createUserSettingsReducer(_configuration: AppConfig) {
         };
       } else if (UserSettings.openNewRecordDialogue.match(action)) {
         draftState.newRecordDialogueState = { open: true, viewLayout: 'new' };
-      } else if (UserSettings.closeNewRecordDialogue.match(action)) {
+      } else if (UserSettings.closeNewRecordDialogue.match(action) || FormActions.createNewForm.match(action)) {
         draftState.newRecordDialogueState.open = false;
       } else if (UserSettings.RecordSet.setSort.match(action)) {
         // if the sort column is the same as the current sort column, toggle the sort order
