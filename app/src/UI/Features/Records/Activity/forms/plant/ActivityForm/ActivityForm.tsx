@@ -203,13 +203,14 @@ const ActivityForm = () => {
               Draw Shape
             </button>
             <NumberInput
-              label={'Area (m)'}
+              label={'Area (m²)'}
               readOnly
               error={errors?.area_m}
               required
               tooltip={tooltips.basic.area_m}
               {...register(`area_m`, {
                 required: true,
+                min: { value: 1, message: 'Area must be greater than 1m' },
                 max: { value: 500000, message: 'Area cannot exceed 500,000m' }
               })}
               width={Width.Third}
@@ -220,7 +221,7 @@ const ActivityForm = () => {
               required
               error={errors?.latitude}
               tooltip={tooltips.basic.latitude}
-              {...register(`latitude`, { required: true })}
+              {...register(`latitude`, { required: true, validate: (val) => !!val })}
               width={Width.Third}
             />
             <NumberInput
@@ -229,7 +230,7 @@ const ActivityForm = () => {
               required
               tooltip={tooltips.basic.longitude}
               error={errors?.longitude}
-              {...register(`longitude`, { required: true })}
+              {...register(`longitude`, { required: true, validate: (val) => !!val })}
               width={Width.Third}
             />
             <NumberInput
@@ -238,7 +239,7 @@ const ActivityForm = () => {
               required
               error={errors?.utm_zone}
               tooltip={tooltips.basic.utm_zone}
-              {...register(`utm_zone`, { required: true })}
+              {...register(`utm_zone`, { required: true, validate: (val) => !!val })}
               width={Width.Third}
             />
             <NumberInput
@@ -247,7 +248,7 @@ const ActivityForm = () => {
               required
               tooltip={tooltips.basic.utm_easting}
               error={errors?.utm_easting}
-              {...register(`utm_easting`, { required: true })}
+              {...register(`utm_easting`, { required: true, validate: (val) => !!val })}
               width={Width.Third}
             />
             <NumberInput
@@ -256,7 +257,7 @@ const ActivityForm = () => {
               required
               tooltip={tooltips.basic.utm_northing}
               error={errors?.utm_northing}
-              {...register(`utm_northing`, { required: true })}
+              {...register(`utm_northing`, { required: true, validate: (val) => !!val })}
               width={Width.Third}
             />
           </Fieldset>
@@ -395,7 +396,7 @@ const ActivityForm = () => {
           <div className="control">
             <input disabled={disabled || !isDirty} type="submit" value="Submit Form" />
             <button disabled={disabled || !isDirty} onClick={saveToDraft}>
-              Save to Draft
+              Save to Drafts
             </button>
             <button disabled={disabled} onClick={handleClear}>
               Clear Form
