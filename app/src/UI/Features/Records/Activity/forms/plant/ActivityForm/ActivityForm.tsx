@@ -35,6 +35,7 @@ import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces'
 import { BugReport } from '@mui/icons-material';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
+import Participants from './Participants';
 
 const FORM_UPDATE_THROTTLE_DELAY = 1000; //ms
 const FORM_UPDATE_MAX_DELAY = 5000; //ms
@@ -387,6 +388,7 @@ const ActivityForm = () => {
               {...register('comment')}
             />
           </Fieldset>
+          <Participants />
           <SubtypeComposite />
 
           {/* Submit Button is tied to react-hook-form */}
