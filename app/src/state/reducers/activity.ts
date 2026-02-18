@@ -214,6 +214,10 @@ function createActivityReducer() {
           id: draftState.formId,
           subtype: draftState.formType
         });
+      } else if (FormActions.duplicateForm.fulfilled.match(action)) {
+        draftState.formType = action.payload.subtype;
+        draftState.formId = action.payload.id;
+        draftState.formState = action.payload;
       } else if (FormActions.updateState.match(action)) {
         draftState.formState = structuredClone(action.payload);
       } else if (FormActions.sendForm.fulfilled.match(action)) {

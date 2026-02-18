@@ -85,6 +85,10 @@ const ActivityForm = () => {
     );
   };
 
+  const handleDuplicateForm = (evt: MouseEvent<HTMLButtonElement>) => {
+    evt.preventDefault();
+    dispatch(FormActions.startDuplicateForm());
+  };
   const saveToDraft = (evt: MouseEvent<HTMLButtonElement>) => {
     evt.preventDefault();
     if (!initState || !isDirty) return;
@@ -439,6 +443,7 @@ const ActivityForm = () => {
             <button disabled={disabled} onClick={handleClear}>
               Clear Form
             </button>
+            <button onClick={handleDuplicateForm}>Duplicate Form</button>
           </div>
 
           {/* Debug Information/Options */}

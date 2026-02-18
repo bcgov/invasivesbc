@@ -327,14 +327,18 @@ function createUserSettingsReducer(_configuration: AppConfig) {
         if (foundIndex != -1) {
           draftState.offlineDocs.splice(foundIndex, 1);
         }
-      } else if (Activity.copySuccess.match(action)) {
+      } else if (Activity.copySuccess.match(action) || FormActions.startDuplicateForm.match(action)) {
         draftState.newRecordDialogueState = {
           open: true,
           viewLayout: 'duplicate'
         };
       } else if (UserSettings.openNewRecordDialogue.match(action)) {
         draftState.newRecordDialogueState = { open: true, viewLayout: 'new' };
-      } else if (UserSettings.closeNewRecordDialogue.match(action) || FormActions.createNewForm.match(action)) {
+      } else if (
+        UserSettings.closeNewRecordDialogue.match(action) ||
+        FormActions.createNewForm.match(action) ||
+        FormActions.duplicateForm.fulfilled.match(action)
+      ) {
         draftState.newRecordDialogueState.open = false;
       } else if (UserSettings.RecordSet.setSort.match(action)) {
         // if the sort column is the same as the current sort column, toggle the sort order
