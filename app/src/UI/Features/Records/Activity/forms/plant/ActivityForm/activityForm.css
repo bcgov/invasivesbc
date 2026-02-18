@@ -35,6 +35,10 @@
         cursor: pointer;
       }
 
+      &:active {
+        background-color: #002050;
+      }
+
       &:disabled {
         background-color: #aaa;
         color: #111;
