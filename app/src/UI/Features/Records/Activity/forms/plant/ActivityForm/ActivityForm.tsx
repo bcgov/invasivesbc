@@ -235,15 +235,6 @@ const ActivityForm = () => {
           <RecordMetadata formState={getValues()} />
           {/* Start of Geometry Fields */}
           <Fieldset label={'Geometry Information'}>
-            <p>To modify or update, please draw a new shape on the Map</p>
-            <div className="control">
-              <button disabled={disabled} onClick={handleDrawStart}>
-                Click to Start Drawing
-              </button>
-              <button disabled={disabled} onClick={handleManualUTM}>
-                Click to Enter UTM
-              </button>
-            </div>
             <NumberInput
               label={'Area (m²)'}
               readOnly
@@ -302,6 +293,15 @@ const ActivityForm = () => {
               {...register(`utm_northing`, { required: true, validate: (val) => !!val })}
               width={Width.Third}
             />
+            <p>To modify or update, please draw a new shape on the Map</p>
+            <div className="control">
+              <button disabled={disabled} onClick={handleDrawStart}>
+                Click to Start Drawing
+              </button>
+              <button disabled={disabled} onClick={handleManualUTM}>
+                Click to Enter UTM
+              </button>
+            </div>
           </Fieldset>
 
           <Fieldset label={'Related Records'}>
