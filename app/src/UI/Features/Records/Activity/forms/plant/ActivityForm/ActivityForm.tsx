@@ -1,33 +1,40 @@
 import { useForm, SubmitHandler, useWatch, FormProvider } from 'react-hook-form';
 import { useDispatch, useSelector } from 'utils/use_selector';
-import TextInput from '../../common/TextInput/TextInput';
-import SingleSelect from '../../common/SingleSelect/SingleSelect';
-import Fieldset from '../../common/Fieldset/Fieldset';
-import DateInput from '../../common/DateInput/DateInput';
-import NumberInput from '../../common/NumberInput/NumberInput';
-import TextArea from '../../common/TextArea/TextArea';
-import { checkSum, maxValue, minArrayLength, minValue, noFutureDate, noRepeatKey } from '../../common/validators';
+import TextInput from 'UI/Features/Records/Activity/forms/common/TextInput/TextInput';
+import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
+import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
+import DateInput from 'UI/Features/Records/Activity/forms/common/DateInput/DateInput';
+import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
+import TextArea from 'UI/Features/Records/Activity/forms/common/TextArea/TextArea';
+import {
+  checkSum,
+  maxValue,
+  minArrayLength,
+  minValue,
+  noFutureDate,
+  noRepeatKey
+} from 'UI/Features/Records/Activity/forms/common/validators';
 import { MouseEvent, useCallback, useEffect, useState } from 'react';
-import ArrayField from '../../common/ArrayField/ArrayField';
-import SubtypeComposite from '../SubtypeComposite';
+import ArrayField from 'UI/Features/Records/Activity/forms/common/ArrayField/ArrayField';
+import SubtypeComposite from 'UI/Features/Records/Activity/forms/plant/subtype-component/SubtypeComposite';
 import './activityForm.css';
-import { Width } from '../../common/utils';
-import DeleteControl from '../../common/DeleteControl/DeleteControl';
-import MultiSelect from '../../common/MultiSelect/MultiSelect';
+import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
+import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
+import MultiSelect from 'UI/Features/Records/Activity/forms/common/MultiSelect/MultiSelect';
 import Spacer from 'UI/Reusable/Spacer/Spacer';
 import debounce from 'lodash.debounce';
 import FormActions from 'state/actions/activity/FormActions';
 import Alerts from 'state/actions/alerts/Alerts';
 import tripAlertMessages from 'constants/alerts/tripAlerts';
-import CreatableSelect from '../../common/CreatableSelect.tsx/CreatableSelect';
+import CreatableSelect from 'UI/Features/Records/Activity/forms/common/CreatableSelect.tsx/CreatableSelect';
 import Accordion from 'UI/Reusable/Accordion/Accordion';
 import Prompt from 'state/actions/prompts/Prompt';
 import { Debug } from 'UI/Reusable/Predicates/Debug';
-import RecordMetadata from '../../common/RecordMetadata/RecordMetadata';
-import { FormSchema } from '../interfaces';
+import RecordMetadata from 'UI/Features/Records/Activity/forms/common/RecordMetadata/RecordMetadata';
+import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import { BugReport } from '@mui/icons-material';
-import getDefaultFormState from '../builders/getDefaultState';
-import tooltips from '../content/tooltips';
+import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
+import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
 
 const FORM_UPDATE_THROTTLE_DELAY = 1000; //ms
 const FORM_UPDATE_MAX_DELAY = 5000; //ms
@@ -46,7 +53,8 @@ const ActivityForm = () => {
 
   const saveToDraft = (evt: MouseEvent<HTMLButtonElement>) => {
     evt.preventDefault();
-    alert('Not implemented');
+    if (!initState || !isDirty) return;
+    dispatch(FormActions.sendForm({ data: initState, type: 'draft' }));
   };
 
   const handleClear = (evt: MouseEvent<HTMLButtonElement>) => {
@@ -130,7 +138,11 @@ const ActivityForm = () => {
     formState: { errors, isDirty, disabled }
   } = methods;
 
-  const onSubmit: SubmitHandler<FormSchema> = (data) => alert('Form Submitted! [Not implemented]');
+  const onSubmit: SubmitHandler<FormSchema> = (data) => {
+    if (!isDirty) return;
+    dispatch(FormActions.sendForm({ data, type: 'submission' }));
+  };
+
   const formData = watch();
   const allFormValues = useWatch({ control });
 
@@ -379,8 +391,8 @@ const ActivityForm = () => {
 
           {/* Submit Button is tied to react-hook-form */}
           <div className="control">
-            <input disabled={disabled} type="submit" value="Submit Form" />
-            <button disabled={disabled} onClick={saveToDraft}>
+            <input disabled={disabled || !isDirty} type="submit" value="Submit Form" />
+            <button disabled={disabled || !isDirty} onClick={saveToDraft}>
               Save to Draft
             </button>
             <button disabled={disabled} onClick={handleClear}>

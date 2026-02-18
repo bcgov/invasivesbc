@@ -3,6 +3,8 @@ import { createNextState } from '@reduxjs/toolkit';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import { Feature } from 'geojson';
 import { ActivitySubtypes } from 'sharedAPI';
+import FormActions from 'state/actions/activity/FormActions';
+import FormCode from 'interfaces/FormCode';
 import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
 import GeoShapes from 'constants/geoShapes';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
@@ -12,8 +14,6 @@ import SuggestedTreatmentId from 'interfaces/SuggestedTreatmentId';
 import IActivityPermissions from 'interfaces/IActivityPermissions';
 import { GeoTrackingStatus } from 'constants/geoTrackingStatus';
 import DrawToolActions from 'state/actions/drawtool/drawToolActions';
-import FormCode from 'interfaces/FormCode';
-import FormActions from 'state/actions/activity/FormActions';
 import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
 
@@ -216,6 +216,11 @@ function createActivityReducer() {
         });
       } else if (FormActions.updateState.match(action)) {
         draftState.formState = structuredClone(action.payload);
+      } else if (FormActions.sendForm.fulfilled.match(action)) {
+        if (draftState.formState) {
+          // Should always exist if we just submitted a form.
+          draftState.formState.short_id = action.payload;
+        }
       } else if (Activity.get.match(action)) {
         draftState.failCode = null;
         draftState.loading = true;
