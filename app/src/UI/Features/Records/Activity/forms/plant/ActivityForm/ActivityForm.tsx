@@ -36,6 +36,11 @@ import { BugReport } from '@mui/icons-material';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
 import Participants from './Participants';
+import { Feature } from 'geojson';
+import { UtmInputObj } from 'interfaces/prompt-interfaces';
+import GeoShapes from 'constants/geoShapes';
+import MapActions from 'state/actions/map';
+import DrawToolActions from 'state/actions/drawtool/drawToolActions';
 
 const FORM_UPDATE_THROTTLE_DELAY = 1000; //ms
 const FORM_UPDATE_MAX_DELAY = 5000; //ms
@@ -50,6 +55,34 @@ const ActivityForm = () => {
     evt?.preventDefault();
     (document.getElementsByClassName('mapbox-gl-draw_polygon')?.[0] as HTMLButtonElement).click();
     dispatch(Alerts.create(tripAlertMessages.drawToolClicked));
+  };
+
+  /**
+   * @desc Handler for creating a manual UTM Entry initiated by user
+   */
+  const handleManualUTM = (evt: MouseEvent<HTMLButtonElement>) => {
+    evt.preventDefault();
+    const utmCallback = (input: UtmInputObj) => {
+      const [lng, lat] = input.results;
+      const geo: Feature = {
+        type: 'Feature',
+        geometry: {
+          type: GeoShapes.Point,
+          coordinates: [lng, lat]
+        },
+        properties: {}
+      };
+      dispatch(MapActions.centerMap({ lat, lng, zoom: 16 }));
+      dispatch(DrawToolActions.updateGeo([geo]));
+    };
+
+    dispatch(
+      Prompt.utm({
+        title: 'Enter a manual UTM',
+        prompt: 'Fill in the fields below to create your own UTM Coordinates',
+        callback: utmCallback
+      })
+    );
   };
 
   const saveToDraft = (evt: MouseEvent<HTMLButtonElement>) => {
@@ -199,9 +232,14 @@ const ActivityForm = () => {
           {/* Start of Geometry Fields */}
           <Fieldset label={'Geometry Information'}>
             <p>To modify or update, please draw a new shape on the Map</p>
-            <button disabled={disabled} onClick={handleDrawStart}>
-              Draw Shape
-            </button>
+            <div className="control">
+              <button disabled={disabled} onClick={handleDrawStart}>
+                Click to Start Drawing
+              </button>
+              <button disabled={disabled} onClick={handleManualUTM}>
+                Click to Enter UTM
+              </button>
+            </div>
             <NumberInput
               label={'Area (m²)'}
               readOnly
