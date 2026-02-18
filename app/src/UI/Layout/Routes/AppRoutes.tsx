@@ -32,7 +32,7 @@ const LegendsPopup = React.lazy(() => import('UI/Features/Legend/LegendsPopup'))
 const ManageTripsPage = React.lazy(() => import('UI/Features/ManageTripsPage/ManageTripsPage'));
 const UserGuide = React.lazy(() => import('UI/Features/UserGuide/UserGuide'));
 
-const ActivityForm = React.lazy(() => import('UI/Features/Records/Activity/forms/plant/ActivityForm'));
+const ActivityForm = React.lazy(() => import('UI/Features/Records/Activity/forms/plant/ActivityForm/ActivityForm'));
 
 const AppRoutes = () => {
   const navigate = useNavigate();
