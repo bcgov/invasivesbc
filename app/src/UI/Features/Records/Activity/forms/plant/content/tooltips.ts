@@ -7,6 +7,8 @@ const tooltips = {
     utm_easting: 'UTM Easting of the anchor point for the specified geometry',
     utm_northing: 'UTM Northing of the anchor point for the specified geometry',
     date: 'The date the activity occurred on',
+    participant: 'Details of person(s) present during the activity',
+    pac_number: 'Valid Pesticide Applicator Certificate (PAC) number.',
     employer: 'The company or agency that the person(s) completing the activity is directly employed by',
     funding_agencies:
       'Choose the organization that is paying for the work to be done. If multiple funders exist or in cases when an agency has been hired to manage the work on behalf of the primary funding agency, multiple Funding Agencies may be chosen.',

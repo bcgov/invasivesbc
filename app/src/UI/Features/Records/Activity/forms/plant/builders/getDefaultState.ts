@@ -35,6 +35,11 @@ const getDefaultFormState = (
   subtype: ActivitySubtypes = ActivitySubtypes.Observation_Plant_Terrestrial
 ): FormSchema => {
   const subtype_data = getSubtypeData(subtype);
+  const isChemical = [
+    ActivitySubtypes.Treatment_Chemical_Plant_Aquatic,
+    ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial
+  ].some((st) => st === subtype);
+
   return {
     employer: '',
     subtype: subtype,
@@ -51,7 +56,7 @@ const getDefaultFormState = (
     utm_zone: 0,
     utm_easting: 0,
     utm_northing: 0,
-    linked_activities: [],
+    participant: [{ name: '', ...(isChemical && { pac_number: '' }) }],
     subtype_data: subtype_data
   };
 };
