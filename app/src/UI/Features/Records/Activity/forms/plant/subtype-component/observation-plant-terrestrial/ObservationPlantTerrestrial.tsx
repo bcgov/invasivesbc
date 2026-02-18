@@ -1,14 +1,14 @@
 import { useSelector } from 'utils/use_selector';
-import Fieldset from '../common/Fieldset/Fieldset';
-import SingleSelect from '../common/SingleSelect/SingleSelect';
-import { YesNoUnknown } from '../enums';
-import ArrayField from '../common/ArrayField/ArrayField';
-import { Width } from '../common/utils';
-import { minArrayLength, noRepeatKey } from '../common/validators';
-import TerrestrialPlantEntry from './subtype-component/TerrestrialPlantEntry';
-import { TerrestrialPlantObservationSchema } from './interfaces';
-import tooltips from './content/tooltips';
-import getDefaultFormState from './builders/getDefaultState';
+import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
+import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
+import { YesNoUnknown } from 'UI/Features/Records/Activity/forms/enums';
+import ArrayField from 'UI/Features/Records/Activity/forms/common/ArrayField/ArrayField';
+import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
+import { minArrayLength, noRepeatKey } from 'UI/Features/Records/Activity/forms/common/validators';
+import TerrestrialPlantEntry from 'UI/Features/Records/Activity/forms/plant/subtype-component/observation-plant-terrestrial/TerrestrialPlantEntry';
+import { TerrestrialPlantObservationSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
+import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
+import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
 import { ActivitySubtypes } from 'sharedAPI';
 
 const ObservationPlantTerrestrial = () => {

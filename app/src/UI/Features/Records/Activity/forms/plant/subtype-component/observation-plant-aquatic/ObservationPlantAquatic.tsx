@@ -1,20 +1,20 @@
 import { useSelector } from 'utils/use_selector';
-import Fieldset from '../common/Fieldset/Fieldset';
-import SingleSelect from '../common/SingleSelect/SingleSelect';
-import { WaterbodyType, WaterLevelManagement, YesNoUnknown } from '../enums';
-import TextInput from '../common/TextInput/TextInput';
-import TextArea from '../common/TextArea/TextArea';
-import ArrayField from '../common/ArrayField/ArrayField';
-import NumberInput from '../common/NumberInput/NumberInput';
+import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
+import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
+import { WaterbodyType, WaterLevelManagement, YesNoUnknown } from 'UI/Features/Records/Activity/forms/enums';
+import TextInput from 'UI/Features/Records/Activity/forms/common/TextInput/TextInput';
+import TextArea from 'UI/Features/Records/Activity/forms/common/TextArea/TextArea';
+import ArrayField from 'UI/Features/Records/Activity/forms/common/ArrayField/ArrayField';
+import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
 import { useFormContext } from 'react-hook-form';
-import MultiSelect from '../common/MultiSelect/MultiSelect';
-import { minArrayLength, noRepeatKey } from '../common/validators';
-import { Width } from '../common/utils';
-import DeleteControl from '../common/DeleteControl/DeleteControl';
-import { AquaticPlantObservationSchema } from './interfaces';
-import AquaticPlantEntry from './subtype-component/AquaticPlantEntry';
-import tooltips from './content/tooltips';
-import getDefaultFormState from './builders/getDefaultState';
+import MultiSelect from 'UI/Features/Records/Activity/forms/common/MultiSelect/MultiSelect';
+import { minArrayLength, noRepeatKey } from 'UI/Features/Records/Activity/forms/common/validators';
+import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
+import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
+import { AquaticPlantObservationSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
+import AquaticPlantEntry from 'UI/Features/Records/Activity/forms/plant/subtype-component/observation-plant-aquatic/AquaticPlantEntry';
+import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
+import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
 import { ActivitySubtypes } from 'sharedAPI';
 
 const ObservationPlantAquatic = () => {

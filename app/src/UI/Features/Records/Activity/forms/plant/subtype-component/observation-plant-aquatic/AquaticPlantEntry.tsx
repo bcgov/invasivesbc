@@ -1,18 +1,18 @@
 import { useSelector } from 'utils/use_selector';
 import { useFormContext, useWatch } from 'react-hook-form';
-import SingleSelect from '../../common/SingleSelect/SingleSelect';
-import { Width } from '../../common/utils';
-import { ObservationType } from '../../enums';
-import Fieldset from '../../common/Fieldset/Fieldset';
-import TextInput from '../../common/TextInput/TextInput';
-import DateInput from '../../common/DateInput/DateInput';
 import Spacer from 'UI/Reusable/Spacer/Spacer';
-import NumberInput from '../../common/NumberInput/NumberInput';
-import DeleteControl from '../../common/DeleteControl/DeleteControl';
+import { AquaticPlantObservationSchema } from '../../interfaces';
 import { useEffect, useState } from 'react';
-import CheckboxUI from '../../uncontrolled/CheckboxUI/CheckboxUI';
-import { TerrestrialPlantObservationSchema } from '../interfaces';
-import tooltips from '../content/tooltips';
+import TextInput from 'UI/Features/Records/Activity/forms/common/TextInput/TextInput';
+import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
+import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
+import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
+import { ObservationType } from 'UI/Features/Records/Activity/forms/enums';
+import CheckboxUI from 'UI/Features/Records/Activity/forms/common/CheckboxUI/CheckboxUI';
+import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
+import DateInput from 'UI/Features/Records/Activity/forms/common/DateInput/DateInput';
+import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
+import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
 
 interface Props {
   root: string;
@@ -22,14 +22,14 @@ interface Props {
 
 type EntryBasePath = `subtype_data.entries.${number}`;
 
-const TerrestrialPlantEntry = ({ root, index, remove }: Props) => {
+const AquaticPlantEntry = ({ root, index, remove }: Props) => {
   const {
     register,
     control,
     setValue,
     watch,
     formState: { errors, disabled, isDirty }
-  } = useFormContext<TerrestrialPlantObservationSchema>();
+  } = useFormContext<AquaticPlantObservationSchema>();
   const basePath = `${root}.entries.${index}` as EntryBasePath;
   const voucherSpecimen = useWatch({
     control,
@@ -49,60 +49,65 @@ const TerrestrialPlantEntry = ({ root, index, remove }: Props) => {
 
   return (
     <>
-      <SingleSelect
-        label="Invasive Plant"
-        required
-        tooltip={tooltips.plant.invasive_plant}
-        options={codes?.TerrestrialPlantCode}
-        rules={{ required: true }}
-        name={`${basePath}.invasive_plant`}
+      <TextInput
+        label={'Sample Point ID'}
+        tooltip={
+          'For Presence Surveys. Number each sample point in the same waterbody (e.g. 001, 002, 003, etc). Do not use for Extent Surveys'
+        }
+        error={errors?.subtype_data?.entries?.[index]?.sample_point_id}
+        {...register(`subtype_data.entries.${index}.sample_point_id`)}
         width={Width.Half}
       />
-
       <SingleSelect
-        label="Observation Type"
+        label={'Invasive Plant'}
+        tooltip={tooltips.plant.aquatic_plant}
+        options={codes?.AquaticPlantCode}
+        name={`subtype_data.entries.${index}.invasive_plant`}
         required
-        tooltip={tooltips.plant.observation_type}
-        options={ObservationType}
         rules={{ required: true }}
-        name={`${basePath}.observation_type`}
+        width={Width.Half}
+      />
+      <SingleSelect
+        tooltip={tooltips.plant.observation_type}
+        label={'Observation Type'}
+        options={ObservationType}
+        required
+        rules={{ required: true }}
+        name={`subtype_data.entries.${index}.observation_type`}
         width={Width.Half}
       />
       {observationType !== 'Negative' && (
         <>
           <SingleSelect
-            label="Density (plants/m2)"
             tooltip={tooltips.plant.density}
+            label={'Density (plants/m2)'}
             rules={{ required: requiredWhenPositiveObservation }}
             required={requiredWhenPositiveObservation}
             options={codes?.DensityCode}
-            name={`${basePath}.density`}
+            name={`subtype_data.entries.${index}.density`}
             width={Width.Half}
           />
-
           <SingleSelect
-            label="Distribution"
-            options={codes?.DistributionCode}
-            rules={{ required: requiredWhenPositiveObservation }}
-            required={requiredWhenPositiveObservation}
+            label={'Distribution'}
             tooltip={tooltips.plant.distribution}
-            name={`${basePath}.distribution`}
-            width={Width.Half}
-          />
-
-          <SingleSelect
-            label="Life Stage"
-            options={codes?.PlantLifeStageCode}
             rules={{ required: requiredWhenPositiveObservation }}
             required={requiredWhenPositiveObservation}
-            tooltip={tooltips.plant.life_stage}
-            name={`${basePath}.life_stage`}
+            options={codes?.DistributionCode}
+            name={`subtype_data.entries.${index}.distribution`}
             width={Width.Half}
           />
-
+          <SingleSelect
+            tooltip={tooltips.plant.life_stage}
+            label={'Life Stage'}
+            rules={{ required: requiredWhenPositiveObservation }}
+            required={requiredWhenPositiveObservation}
+            options={codes?.PlantLifeStageCode}
+            name={`subtype_data.entries.${index}.life_stage`}
+            width={Width.Half}
+          />
           <CheckboxUI
             state={voucherCollected}
-            onChange={setVoucherCollected}
+            onChange={() => setVoucherCollected((prev) => !prev)}
             disabled={disabled}
             label="Voucher Specimen Collected"
             tooltip={tooltips.plant.voucher_specimen_collected}
@@ -187,10 +192,9 @@ const TerrestrialPlantEntry = ({ root, index, remove }: Props) => {
           </Fieldset>
         </Fieldset>
       )}
-
       <DeleteControl disabled={disabled} onClick={() => remove(index)} />
     </>
   );
 };
 
-export default TerrestrialPlantEntry;
+export default AquaticPlantEntry;

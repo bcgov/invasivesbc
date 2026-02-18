@@ -1,7 +1,7 @@
 import { ActivitySubtypes } from 'sharedAPI';
 import { useSelector } from 'utils/use_selector';
-import ObservationPlantTerrestrial from './ObservationPlantTerrestrial';
-import ObservationPlantAquatic from './ObservationPlantAquatic';
+import ObservationPlantTerrestrial from 'UI/Features/Records/Activity/forms/plant/subtype-component/observation-plant-terrestrial/ObservationPlantTerrestrial';
+import ObservationPlantAquatic from 'UI/Features/Records/Activity/forms/plant/subtype-component/observation-plant-aquatic/ObservationPlantAquatic';
 
 /**
  * @desc Handles the Branching Subtypes for Forms, matches Subtype to required Subfields
