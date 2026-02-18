@@ -27,6 +27,7 @@ const TerrestrialPlantEntry = ({ root, index, remove }: Props) => {
     register,
     control,
     setValue,
+    watch,
     formState: { errors, disabled, isDirty }
   } = useFormContext<TerrestrialPlantObservationSchema>();
   const basePath = `${root}.entries.${index}` as EntryBasePath;
@@ -37,6 +38,8 @@ const TerrestrialPlantEntry = ({ root, index, remove }: Props) => {
 
   const [voucherCollected, setVoucherCollected] = useState<boolean>(!!voucherSpecimen);
   const codes = useSelector((state) => state.ActivityPage?.formCodes);
+  const observationType = watch(`${basePath}.observation_type`);
+  const requiredWhenPositiveObservation = observationType === 'Positive';
 
   useEffect(() => {
     if (!voucherCollected && isDirty) {
@@ -65,40 +68,48 @@ const TerrestrialPlantEntry = ({ root, index, remove }: Props) => {
         name={`${basePath}.observation_type`}
         width={Width.Half}
       />
+      {observationType !== 'Negative' && (
+        <>
+          <SingleSelect
+            label="Density (plants/m2)"
+            tooltip={tooltips.plant.density}
+            rules={{ required: requiredWhenPositiveObservation }}
+            required={requiredWhenPositiveObservation}
+            options={codes?.DensityCode}
+            name={`${basePath}.density`}
+            width={Width.Half}
+          />
 
-      <SingleSelect
-        label="Density (plants/m2)"
-        tooltip={tooltips.plant.density}
-        options={codes?.DensityCode}
-        name={`${basePath}.density`}
-        width={Width.Half}
-      />
+          <SingleSelect
+            label="Distribution"
+            options={codes?.DistributionCode}
+            rules={{ required: requiredWhenPositiveObservation }}
+            required={requiredWhenPositiveObservation}
+            tooltip={tooltips.plant.distribution}
+            name={`${basePath}.distribution`}
+            width={Width.Half}
+          />
 
-      <SingleSelect
-        label="Distribution"
-        options={codes?.DistributionCode}
-        tooltip={tooltips.plant.distribution}
-        name={`${basePath}.distribution`}
-        width={Width.Half}
-      />
+          <SingleSelect
+            label="Life Stage"
+            options={codes?.PlantLifeStageCode}
+            rules={{ required: requiredWhenPositiveObservation }}
+            required={requiredWhenPositiveObservation}
+            tooltip={tooltips.plant.life_stage}
+            name={`${basePath}.life_stage`}
+            width={Width.Half}
+          />
 
-      <SingleSelect
-        label="Life Stage"
-        options={codes?.PlantLifeStageCode}
-        tooltip={tooltips.plant.life_stage}
-        name={`${basePath}.life_stage`}
-        width={Width.Half}
-      />
-
-      <CheckboxUI
-        state={voucherCollected}
-        onChange={setVoucherCollected}
-        disabled={disabled}
-        label="Voucher Specimen Collected"
-        tooltip={tooltips.plant.voucher_specimen_collected}
-        width={Width.Half}
-      />
-
+          <CheckboxUI
+            state={voucherCollected}
+            onChange={setVoucherCollected}
+            disabled={disabled}
+            label="Voucher Specimen Collected"
+            tooltip={tooltips.plant.voucher_specimen_collected}
+            width={Width.Half}
+          />
+        </>
+      )}
       {voucherCollected && (
         <Fieldset label="Voucher Collection Information">
           <TextInput
