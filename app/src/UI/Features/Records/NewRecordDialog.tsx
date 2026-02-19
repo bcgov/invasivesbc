@@ -18,12 +18,10 @@ import {
   ActivitySubtypeRelations,
   ActivitySubtypesRelations,
   ActivitySubtypes,
-  ActivitySubtypeShortLabels
+  ActivitySubtypesShortLabels
 } from 'sharedAPI';
-
 import 'UI/Features/Records/NewRecordDialog.css';
 import { useSelector } from 'utils/use_selector';
-// import Activity from 'state/actions/activity/Activity';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { useNavigate } from 'react-router';
 import FormActions from 'state/actions/activity/FormActions';
@@ -81,7 +79,7 @@ const NewRecordDialog = () => {
       setActivitySubTypeSelectOptions([]);
     } else {
       const subTypes = ActivitySubtypesRelations[recordCategory][recordType];
-      //TODO: Refactor
+      //TODO: Refactor to limit creation logic
       // const availableSubTypes = subTypes.filter((subtype) => writePrivilege.includes(subtype));
       setActivitySubTypeSelectOptions(subTypes);
     }
@@ -158,9 +156,8 @@ const NewRecordDialog = () => {
             label="Select Form Type"
           >
             {activitySubTypeSelectOptions.map((option) => (
-              // TODO: Refactor
               <MenuItem key={option} value={option}>
-                {ActivitySubtypeShortLabels[option] ?? option}
+                {ActivitySubtypesShortLabels[option] ?? option}
               </MenuItem>
             ))}
           </Select>
