@@ -40,12 +40,6 @@
   font-weight: bold;
   font-size: var(--form-input-font-size);
 
-  &:hover,
-  &:active {
-    cursor: pointer;
-    filter: brightness(90%);
-  }
-
   &:disabled {
     background-color: #aaa;
     color: #111;
@@ -53,6 +47,12 @@
     &:hover {
       cursor: not-allowed;
     }
+  }
+
+  &:hover:not(:disabled),
+  &:active:not(:disabled) {
+    cursor: pointer;
+    filter: brightness(90%);
   }
 }
 
@@ -67,7 +67,7 @@
 #form-popover-menu {
   flex-direction: column;
 
-  .control-button {
+  .control-button:not(:disabled) {
     background-color: var(--blue-primary);
   }
 }
