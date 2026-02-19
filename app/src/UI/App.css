@@ -88,6 +88,7 @@ body {
 }
 
 :root {
+  --overlay-header-z-index: 99999;
   --form-container-width: 820px;
   --form-input-height: 2.5rem;
   --form-input-font-size: 1rem;
