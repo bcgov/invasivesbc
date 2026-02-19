@@ -230,7 +230,7 @@ const ActivityForm = () => {
   return (
     <div className="activity-page">
       <FormProvider {...methods}>
-        <form autoComplete={'off'} className="activity-form" onSubmit={handleSubmit(onSubmit)}>
+        <form autoComplete={'off'} id="activity-form" onSubmit={handleSubmit(onSubmit)}>
           <RecordMetadata formState={getValues()} />
           {/* Start of Geometry Fields */}
           <Fieldset label={'Geometry Information'}>
@@ -427,7 +427,13 @@ const ActivityForm = () => {
           {/* Submit Button is tied to react-hook-form */}
           <CustomPopover buttonOverrideOptions={{ anchorEl, setAnchorEl }}>
             <div id="form-popover-menu">
-              <input disabled={disabled || !isDirty} className="control-button" type="submit" value="Submit Form" />
+              <input
+                disabled={disabled || !isDirty}
+                form="activity-form"
+                className="control-button"
+                type="submit"
+                value="Submit Form"
+              />
               <input
                 type="button"
                 className="control-button"

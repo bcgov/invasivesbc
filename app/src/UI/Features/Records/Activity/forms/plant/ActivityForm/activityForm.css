@@ -6,7 +6,7 @@
   box-sizing: border-box;
 }
 
-.activity-form {
+#activity-form {
   display: flex;
   flex-flow: row wrap;
   width: var(--form-container-width);
@@ -56,7 +56,7 @@
   }
 }
 
-.activity-form .control,
+#activity-form .control,
 #form-popover-menu {
   width: 100%;
   display: flex;
@@ -72,6 +72,6 @@
   }
 }
 
-.activity-form-control {
+#activity-form-control {
   flex-direction: row;
 }
