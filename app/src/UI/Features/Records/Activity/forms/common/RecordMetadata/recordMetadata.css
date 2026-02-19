@@ -1,12 +1,11 @@
 #record-metadata {
   display: flex;
-  margin-left: auto;
-  width: 75%;
+  width: 100%;
   flex-flow: row wrap;
   justify-content: space-between;
 
   .list-item {
-    min-width: 40%;
+    width: 32%;
     text-align: left;
 
     dt {
@@ -20,6 +19,7 @@
 
     dd {
       margin: 0 0 10px;
+      overflow-wrap: break-word;
       font-size: var(--form-input-font-size);
     }
   }
