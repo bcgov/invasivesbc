@@ -41,6 +41,8 @@ import { UtmInputObj } from 'interfaces/prompt-interfaces';
 import GeoShapes from 'constants/geoShapes';
 import MapActions from 'state/actions/map';
 import DrawToolActions from 'state/actions/drawtool/drawToolActions';
+import DebugFormData from '../../debug/DebugFormData';
+import DebugButton from '../../debug/DebugButton';
 
 const FORM_UPDATE_THROTTLE_DELAY = 1000; //ms
 const FORM_UPDATE_MAX_DELAY = 5000; //ms
@@ -181,7 +183,6 @@ const ActivityForm = () => {
     dispatch(FormActions.sendForm({ data, type: 'submission' }));
   };
 
-  const formData = watch();
   const allFormValues = useWatch({ control });
 
   /**
@@ -447,29 +448,14 @@ const ActivityForm = () => {
           </div>
 
           {/* Debug Information/Options */}
-          <Debug>
-            <div className="control">
-              <button
-                onClick={(evt) => {
-                  evt.preventDefault();
-                  setIsFormDisabled((prev) => !prev);
-                }}
-              >
-                <BugReport />
-                {`${isFormDisabled ? 'Enable' : 'Disable'} Form`}
-              </button>
-            </div>
-            <Accordion
-              title={
-                <>
-                  <BugReport />
-                  Form State (JSON)
-                </>
-              }
-            >
-              <pre style={{ display: 'flex', textWrap: 'wrap' }}>{JSON.stringify(formData, null, 2)}</pre>
-            </Accordion>
-          </Debug>
+          <DebugButton
+            label={`${isFormDisabled ? 'Enable' : 'Disable'} Form`}
+            onClick={(evt) => {
+              evt.preventDefault();
+              setIsFormDisabled((prev) => !prev);
+            }}
+          />
+          <DebugFormData />
         </form>
       </FormProvider>
     </div>
