@@ -6,7 +6,9 @@ import { useSelector } from 'utils/use_selector';
 import { useDispatch } from 'react-redux';
 import Prompt from 'state/actions/prompts/Prompt';
 import Activity from 'state/actions/activity/Activity';
-
+/*
+ * TODO: Check Manually written ID's against API to confirm existence. else cannot copy.
+ */
 const LinkedActivities = () => {
   const handleCopy = (id: string | number) =>
     dispatch(
