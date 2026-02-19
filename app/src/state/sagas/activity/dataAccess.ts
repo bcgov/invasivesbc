@@ -20,7 +20,7 @@ import {
   autoFillTotalBioAgentQuantity,
   autoFillTotalReleaseQuantity
 } from 'rjsf/business-rules/populateCalculatedFields';
-import { selectActivity } from 'state/reducers/activity';
+import { ActivityState, selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
 import { isLinkedTreatmentSubtype, populateJurisdictionArray } from 'utils/addActivity';
 import { getFieldsToCopy } from 'rjsf/business-rules/formDataCopyFields';
@@ -433,7 +433,7 @@ export function* handle_ACTIVITY_DELETE_REQUEST() {
 
 export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS() {
   try {
-    const currentState = yield select(selectActivity);
+    const currentState: ActivityState = yield select(selectActivity);
     const currentActivity = currentState.activity;
     let hasSelfIntersections = false;
     if (
@@ -447,7 +447,8 @@ export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS() {
       currentActivity?.geometry && currentActivity?.form_data?.activity_data?.reported_area < MAX_AREA;
     if (reportedAreaLessThanMaxArea && !wipLinestring && !hasSelfIntersections) {
       yield put(Activity.Suggestions.jurisdictions(currentActivity.geometry));
-      if (isLinkedTreatmentSubtype(currentActivity.activity_subtype)) {
+      if (isLinkedTreatmentSubtype(currentState.formType)) {
+        // TODO: Refactor treatment IDs Request to Thunk
         yield put(Activity.Suggestions.treatmentIdsRequest(currentActivity));
       }
     }
@@ -501,7 +502,10 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST(action) {
         case 'Activity_Monitoring_BiocontrolRelease_TerrestrialPlant':
           return [ActivitySubtypeShortLabels.Activity_Biocontrol_Release];
         default:
-          return [];
+          return [
+            ActivitySubtypeShortLabels.Activity_Treatment_ChemicalPlantTerrestrial,
+            ActivitySubtypeShortLabels.Activity_Treatment_ChemicalPlantAquatic
+          ];
       }
     })();
     const search_feature = payloadActivity.geometry?.[0]

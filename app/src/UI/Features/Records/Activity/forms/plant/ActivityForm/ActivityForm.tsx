@@ -25,7 +25,6 @@ import debounce from 'lodash.debounce';
 import FormActions from 'state/actions/activity/FormActions';
 import Alerts from 'state/actions/alerts/Alerts';
 import tripAlertMessages from 'constants/alerts/tripAlerts';
-import CreatableSelect from 'UI/Features/Records/Activity/forms/common/CreatableSelect.tsx/CreatableSelect';
 import Prompt from 'state/actions/prompts/Prompt';
 import RecordMetadata from 'UI/Features/Records/Activity/forms/common/RecordMetadata/RecordMetadata';
 import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
@@ -42,6 +41,7 @@ import DebugButton from '../../debug/DebugButton';
 import FundingAgency from './FundingAgency';
 import Employer from './Employers';
 import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
+import LinkedActivities from './LinkedActivities';
 
 const FORM_UPDATE_THROTTLE_DELAY = 1000; //ms
 const FORM_UPDATE_MAX_DELAY = 5000; //ms
@@ -310,16 +310,7 @@ const ActivityForm = () => {
               />
             </div>
           </Fieldset>
-
-          <Fieldset label={'Related Records'}>
-            <CreatableSelect<FormSchema, { short_id: string; full: string }>
-              name="linked_activities"
-              label="Linked Record ID"
-              options={[]}
-              labelKey="short_id"
-              valueKey="full"
-            />
-          </Fieldset>
+          <LinkedActivities />
           {/* Start Basic Information Fields */}
           <Fieldset label={'Basic Information'}>
             <DateInput

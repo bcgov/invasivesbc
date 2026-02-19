@@ -25,6 +25,34 @@
     top: 0;
     right: 0;
   }
+
+  .linked-activity-entry {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 0;
+
+    li {
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+      width: 80%;
+
+      span {
+        width: 100%;
+        text-align: left;
+      }
+
+      &:not(:last-child) {
+        border-bottom: 1px solid #ccc;
+        margin-bottom: 8px;
+        padding-bottom: 8px;
+      }
+    }
+  }
 }
 
 .control-button {
