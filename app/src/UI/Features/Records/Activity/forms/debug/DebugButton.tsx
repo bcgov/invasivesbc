@@ -2,14 +2,22 @@ import { BugReport } from '@mui/icons-material';
 import { Debug } from 'UI/Reusable/Predicates/Debug';
 
 const DebugButton = ({ onClick, label }) => {
+  const buttonStyle: React.CSSProperties = {
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'var(--bc-blue)',
+    color: 'white',
+    height: '3rem',
+    fontSize: '1rem'
+  };
   return (
-    <div className="control">
-      <Debug>
-        <button onClick={onClick}>
-          <BugReport /> {label}
-        </button>
-      </Debug>
-    </div>
+    <Debug>
+      <button onClick={onClick} style={buttonStyle}>
+        <BugReport /> {label}
+      </button>
+    </Debug>
   );
 };
 
