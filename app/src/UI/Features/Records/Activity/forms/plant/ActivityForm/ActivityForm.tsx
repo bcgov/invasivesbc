@@ -14,25 +14,21 @@ import {
   noFutureDate,
   noRepeatKey
 } from 'UI/Features/Records/Activity/forms/common/validators';
-import { MouseEvent, useCallback, useEffect, useState } from 'react';
+import { MouseEvent, TouchEvent, useCallback, useEffect, useState } from 'react';
 import ArrayField from 'UI/Features/Records/Activity/forms/common/ArrayField/ArrayField';
 import SubtypeComposite from 'UI/Features/Records/Activity/forms/plant/subtype-component/SubtypeComposite';
 import './activityForm.css';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
-import MultiSelect from 'UI/Features/Records/Activity/forms/common/MultiSelect/MultiSelect';
 import Spacer from 'UI/Reusable/Spacer/Spacer';
 import debounce from 'lodash.debounce';
 import FormActions from 'state/actions/activity/FormActions';
 import Alerts from 'state/actions/alerts/Alerts';
 import tripAlertMessages from 'constants/alerts/tripAlerts';
 import CreatableSelect from 'UI/Features/Records/Activity/forms/common/CreatableSelect.tsx/CreatableSelect';
-import Accordion from 'UI/Reusable/Accordion/Accordion';
 import Prompt from 'state/actions/prompts/Prompt';
-import { Debug } from 'UI/Reusable/Predicates/Debug';
 import RecordMetadata from 'UI/Features/Records/Activity/forms/common/RecordMetadata/RecordMetadata';
 import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
-import { BugReport } from '@mui/icons-material';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
 import Participants from './Participants';
@@ -45,6 +41,7 @@ import DebugFormData from '../../debug/DebugFormData';
 import DebugButton from '../../debug/DebugButton';
 import FundingAgency from './FundingAgency';
 import Employer from './Employers';
+import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
 
 const FORM_UPDATE_THROTTLE_DELAY = 1000; //ms
 const FORM_UPDATE_MAX_DELAY = 5000; //ms
@@ -52,20 +49,22 @@ const FORM_UPDATE_MAX_DELAY = 5000; //ms
 const ActivityForm = () => {
   // TODO: Replace with Permission Logic
   const [isFormDisabled, setIsFormDisabled] = useState<boolean>(false);
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   /**
    * @desc Initiate Mouseclick on Polygon draw icon, alert user to start drawing
    */
-  const handleDrawStart = (evt: MouseEvent<HTMLButtonElement>) => {
-    evt?.preventDefault();
+  const handleDrawStart = () => {
     (document.getElementsByClassName('mapbox-gl-draw_polygon')?.[0] as HTMLButtonElement).click();
     dispatch(Alerts.create(tripAlertMessages.drawToolClicked));
   };
 
+  const handleOpenMenu = (evt: MouseEvent<HTMLElement> | TouchEvent<HTMLElement>) => {
+    setAnchorEl(evt.currentTarget);
+  };
   /**
    * @desc Handler for creating a manual UTM Entry initiated by user
    */
-  const handleManualUTM = (evt: MouseEvent<HTMLButtonElement>) => {
-    evt.preventDefault();
+  const handleManualUTM = () => {
     const utmCallback = (input: UtmInputObj) => {
       const [lng, lat] = input.results;
       const geo: Feature = {
@@ -89,18 +88,15 @@ const ActivityForm = () => {
     );
   };
 
-  const handleDuplicateForm = (evt: MouseEvent<HTMLButtonElement>) => {
-    evt.preventDefault();
+  const handleDuplicateForm = () => {
     dispatch(FormActions.startDuplicateForm());
   };
-  const saveToDraft = (evt: MouseEvent<HTMLButtonElement>) => {
-    evt.preventDefault();
+  const saveToDraft = () => {
     if (!initState || !isDirty) return;
     dispatch(FormActions.sendForm({ data: initState, type: 'draft' }));
   };
 
-  const handleClear = (evt: MouseEvent<HTMLButtonElement>) => {
-    evt.preventDefault();
+  const handleClear = () => {
     dispatch(
       Prompt.confirmation({
         prompt: 'Do you want to clear your form? You will lose all progress.',
@@ -298,12 +294,20 @@ const ActivityForm = () => {
             />
             <p>To modify or update, please draw a new shape on the Map</p>
             <div className="control">
-              <button disabled={disabled} onClick={handleDrawStart}>
-                Click to Start Drawing
-              </button>
-              <button disabled={disabled} onClick={handleManualUTM}>
-                Click to Enter UTM
-              </button>
+              <input
+                type="button"
+                className="control-button"
+                disabled={disabled}
+                onClick={handleDrawStart}
+                value="Click to Start Drawing"
+              />
+              <input
+                type="button"
+                className="control-button"
+                disabled={disabled}
+                onClick={handleManualUTM}
+                value="Click to Enter UTM"
+              />
             </div>
           </Fieldset>
 
@@ -421,26 +425,36 @@ const ActivityForm = () => {
           <SubtypeComposite />
 
           {/* Submit Button is tied to react-hook-form */}
-          <div className="control">
-            <input disabled={disabled || !isDirty} type="submit" value="Submit Form" />
-            <button disabled={disabled || !isDirty} onClick={saveToDraft}>
-              Save to Drafts
-            </button>
-            <button disabled={disabled} onClick={handleClear}>
-              Clear Form
-            </button>
-            <button onClick={handleDuplicateForm}>Duplicate Form</button>
-          </div>
+          <CustomPopover buttonOverrideOptions={{ anchorEl, setAnchorEl }}>
+            <div id="form-popover-menu">
+              <input disabled={disabled || !isDirty} className="control-button" type="submit" value="Submit Form" />
+              <input
+                type="button"
+                className="control-button"
+                disabled={disabled || !isDirty}
+                onClick={saveToDraft}
+                value="Save to Drafts"
+              />
+              <input
+                type="button"
+                className="control-button"
+                disabled={disabled}
+                onClick={handleClear}
+                value="Clear Form"
+              />
+              <input type="button" className="control-button" onClick={handleDuplicateForm} value="Duplicate Form" />
+            </div>
+          </CustomPopover>
 
           {/* Debug Information/Options */}
           <DebugButton
             label={`${isFormDisabled ? 'Enable' : 'Disable'} Form`}
-            onClick={(evt) => {
-              evt.preventDefault();
+            onClick={() => {
               setIsFormDisabled((prev) => !prev);
             }}
           />
           <DebugFormData />
+          <input type="button" className="form-popover-anchor" value="Save Menu" onClick={handleOpenMenu} />
         </form>
       </FormProvider>
     </div>
