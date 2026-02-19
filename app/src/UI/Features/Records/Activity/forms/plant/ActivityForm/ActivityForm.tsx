@@ -43,6 +43,8 @@ import MapActions from 'state/actions/map';
 import DrawToolActions from 'state/actions/drawtool/drawToolActions';
 import DebugFormData from '../../debug/DebugFormData';
 import DebugButton from '../../debug/DebugButton';
+import FundingAgency from './FundingAgency';
+import Employer from './Employers';
 
 const FORM_UPDATE_THROTTLE_DELAY = 1000; //ms
 const FORM_UPDATE_MAX_DELAY = 5000; //ms
@@ -325,25 +327,8 @@ const ActivityForm = () => {
               {...register('date', { required: true, valueAsDate: true, validate: (val) => noFutureDate(val) })}
               width={Width.Half}
             />
-            <MultiSelect
-              label={'Employer'}
-              valueKey="employer"
-              options={codes.EmployerCode}
-              name={'employer'}
-              tooltip={tooltips.basic.employer}
-              rules={{ required: true }}
-              width={Width.Half}
-            />
-            <MultiSelect
-              label="Funding Agencies"
-              name={'funding_agencies'}
-              valueKey={'invasive_species_agency_code'}
-              tooltip={tooltips.basic.funding_agencies}
-              options={codes.FundingAgencyCode}
-              required
-              width={Width.Half}
-              rules={{ validate: (v) => minArrayLength(v, 1), required: true }}
-            />
+            <Employer width={Width.Half} />
+            <FundingAgency width={Width.Half} />
             <Spacer x={150} y={10} />
             {/* Start of Jurisdictions section */}
             <ArrayField<FormSchema, 'jurisdictions'>
