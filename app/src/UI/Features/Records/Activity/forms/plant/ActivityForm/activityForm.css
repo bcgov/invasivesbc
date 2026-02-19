@@ -36,20 +36,25 @@
     padding: 0;
 
     li {
+      background-color: #00336625;
       display: flex;
       align-items: center;
-      padding: 0 8px;
-      width: 80%;
+      justify-content: center;
+      padding: 4px 15px;
+      width: 95%;
 
       span {
         width: 100%;
         text-align: left;
+        margin: auto;
+      }
+
+      &:nth-child(even) {
+        background-color: #00336615;
       }
 
       &:not(:last-child) {
         border-bottom: 1px solid #ccc;
-        margin-bottom: 8px;
-        padding-bottom: 8px;
       }
     }
   }

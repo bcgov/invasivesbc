@@ -43,7 +43,7 @@ const LinkedActivities = () => {
       <ul className="linked-activity-entry">
         {activities?.map((act) => (
           <li key={act.full}>
-            <span>{act.short_id}</span>{' '}
+            <span>{act.short_id}</span>
             <input
               className="control-button"
               type="button"
