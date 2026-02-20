@@ -1,7 +1,7 @@
 import { useFormContext } from 'react-hook-form';
-import CreatableSelect from '../../common/CreatableSelect.tsx/CreatableSelect';
-import Fieldset from '../../common/Fieldset/Fieldset';
-import { FormSchema } from '../interfaces';
+import CreatableSelect from 'UI/Features/Records/Activity/forms/common/CreatableSelect.tsx/CreatableSelect';
+import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
+import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import { useSelector } from 'utils/use_selector';
 import { useDispatch } from 'react-redux';
 import Prompt from 'state/actions/prompts/Prompt';

@@ -36,12 +36,13 @@ import { UtmInputObj } from 'interfaces/prompt-interfaces';
 import GeoShapes from 'constants/geoShapes';
 import MapActions from 'state/actions/map';
 import DrawToolActions from 'state/actions/drawtool/drawToolActions';
-import DebugFormData from '../../debug/DebugFormData';
-import DebugButton from '../../debug/DebugButton';
+import DebugFormData from 'UI/Features/Records/Activity/forms/debug/DebugFormData';
+import DebugButton from 'UI/Features/Records/Activity/forms/debug/DebugButton';
 import FundingAgency from './FundingAgency';
 import Employer from './Employers';
 import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
 import LinkedActivities from './LinkedActivities';
+import { Error } from '@mui/icons-material';
 
 const FORM_UPDATE_THROTTLE_DELAY = 1000; //ms
 const FORM_UPDATE_MAX_DELAY = 5000; //ms
@@ -418,7 +419,19 @@ const ActivityForm = () => {
           {/* Submit Button is tied to react-hook-form */}
           <CustomPopover buttonOverrideOptions={{ anchorEl, setAnchorEl }}>
             <div id="form-popover-menu">
+              {!isDirty && (
+                <div className="error-warning">
+                  <p>No Changes Detected</p>
+                </div>
+              )}
+              {Object.keys(errors).length > 0 && (
+                <div className="error-warning">
+                  <Error color="error" />
+                  <p>Error(s) in form: ({Object.keys(errors).length})</p>
+                </div>
+              )}
               <input
+                // Errors don't need to be accounted for in disabling, since the rhf will pan to the error
                 disabled={disabled || !isDirty}
                 form="activity-form"
                 className="control-button"

@@ -99,6 +99,19 @@
 
 #form-popover-menu {
   flex-direction: column;
+  background-color: var(--bc-blue);
+
+  .error-warning {
+    display: flex;
+    justify-content: center;
+    padding: 5px;
+    margin: 5px;
+  }
+
+  p {
+    color: white;
+    margin: 0;
+  }
 
   .control-button:not(:disabled) {
     background-color: var(--blue-primary);
