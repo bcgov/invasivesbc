@@ -27,7 +27,10 @@ const LinkedActivities = () => {
 
   const suggestedTreatmentIDs = useSelector((state) => state.ActivityPage.suggestedTreatmentIDs);
   const dispatch = useDispatch();
-  const { watch } = useFormContext<FormSchema>();
+  const {
+    watch,
+    formState: { disabled }
+  } = useFormContext<FormSchema>();
   const activities = watch('linked_activities');
 
   return (
@@ -45,6 +48,7 @@ const LinkedActivities = () => {
           <li key={act.full}>
             <span>{act.short_id}</span>
             <input
+              disabled={disabled}
               className="control-button"
               type="button"
               value="Copy Geometry"
