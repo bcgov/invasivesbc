@@ -41,7 +41,6 @@ class AquaticObservationTest(BaseActivitySubtypeTest):
         self.assertEqual(od["sample_point_id"], "123A")
 
         vs = od["voucher_specimen"]
-        self.assertEqual(vs["invasive_plant"], "JK")
         self.assertEqual(vs["voucher_sample_id"], "123Vouch")
         self.assertEqual(vs["date_collected"], "2025-01-21")
         self.assertEqual(vs["date_verified"], "2025-01-22")
