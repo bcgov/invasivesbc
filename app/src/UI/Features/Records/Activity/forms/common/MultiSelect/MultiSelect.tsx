@@ -3,7 +3,7 @@ import Select from 'react-select';
 import FormCode from 'interfaces/FormCode';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
-import './MultiSelect.css';
+import './multiSelect.css';
 import { getInputWidth, Width } from '../utils';
 import RequiredField from '../RequiredField/RequiredField';
 
