@@ -60,6 +60,7 @@ export function SingleSelect<T extends FieldValues>({
               options={mappedOptions}
               placeholder={placeholder}
               ref={ref}
+              isClearable={!required}
               aria-invalid={!!error}
               value={mappedOptions?.find((o) => o.value === (value?.code ?? value)) || null}
             />
