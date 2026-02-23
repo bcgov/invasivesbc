@@ -171,21 +171,21 @@ const AquaticPlantEntry = ({ root, index, remove }: Props) => {
           <Fieldset label={'Exact Coordinate of Voucher Collection Site'}>
             <NumberInput
               label="UTM Zone"
-              {...register(`${basePath}.voucher_specimen.utm_zone`, { required: true })}
+              {...register(`${basePath}.voucher_specimen.utm_zone`, { required: true, valueAsNumber: true })}
               width={Width.Third}
               error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.utm_zone}
             />
 
             <NumberInput
               label="UTM Easting"
-              {...register(`${basePath}.voucher_specimen.utm_easting`, { required: true })}
+              {...register(`${basePath}.voucher_specimen.utm_easting`, { required: true, valueAsNumber: true })}
               width={Width.Third}
               error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.utm_easting}
             />
 
             <NumberInput
               label="UTM Northing"
-              {...register(`${basePath}.voucher_specimen.utm_northing`, { required: true })}
+              {...register(`${basePath}.voucher_specimen.utm_northing`, { required: true, valueAsNumber: true })}
               width={Width.Third}
               error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.utm_northing}
             />

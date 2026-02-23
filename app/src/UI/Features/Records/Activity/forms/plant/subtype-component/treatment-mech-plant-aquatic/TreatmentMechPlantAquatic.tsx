@@ -116,6 +116,7 @@ const TreatmentMechPlantAquatic = () => {
                 required
                 {...register(`${basePath}.treated_area_msq`, {
                   required: true,
+                  valueAsNumber: true,
                   min: { value: 1, message: 'Area must be greater than or equal to 1m' }
                 })}
                 error={errors?.subtype_data?.entries?.[index]?.treated_area_msq}
@@ -147,7 +148,7 @@ const TreatmentMechPlantAquatic = () => {
                 />
                 <NumberInput
                   label={'Disposed Material Amount'}
-                  {...register(`${basePath}.disposed_material_amount`)}
+                  {...register(`${basePath}.disposed_material_amount`, { valueAsNumber: true })}
                   error={errors?.subtype_data?.entries?.[index]?.disposed_material_amount}
                   width={Width.Half}
                 />
