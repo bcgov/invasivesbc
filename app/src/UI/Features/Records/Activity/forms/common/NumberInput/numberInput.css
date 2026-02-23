@@ -15,6 +15,10 @@
       background-color: #eee;
       color: black;
     }
+
+    &:disabled {
+      border: 1pt solid lightgray;
+    }
   }
 
   .top {
