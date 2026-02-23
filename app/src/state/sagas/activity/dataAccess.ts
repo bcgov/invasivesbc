@@ -20,9 +20,9 @@ import {
   autoFillTotalBioAgentQuantity,
   autoFillTotalReleaseQuantity
 } from 'rjsf/business-rules/populateCalculatedFields';
-import { ActivityState, selectActivity } from 'state/reducers/activity';
+import { ActivityState, isActivityObservation, selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
-import { isLinkedTreatmentSubtype, populateJurisdictionArray } from 'utils/addActivity';
+import { populateJurisdictionArray } from 'utils/addActivity';
 import { getFieldsToCopy } from 'rjsf/business-rules/formDataCopyFields';
 import { getClosestWells } from 'utils/closestWellsHelpers';
 import { calc_utm } from 'utils/utm';
@@ -447,7 +447,8 @@ export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS() {
       currentActivity?.geometry && currentActivity?.form_data?.activity_data?.reported_area < MAX_AREA;
     if (reportedAreaLessThanMaxArea && !wipLinestring && !hasSelfIntersections) {
       yield put(Activity.Suggestions.jurisdictions(currentActivity.geometry));
-      if (isLinkedTreatmentSubtype(currentState.formType)) {
+      const isLinkableRecord = !(yield select(isActivityObservation));
+      if (isLinkableRecord) {
         // TODO: Refactor treatment IDs Request to Thunk
         yield put(Activity.Suggestions.treatmentIdsRequest(currentActivity));
       }
@@ -576,7 +577,6 @@ export function* handle_PAN_AND_ZOOM_TO_ACTIVITY() {
 export function* handle_ACTIVITY_GET_SUCCESS(action: PayloadAction<Record<string, any>>) {
   try {
     const activityState = yield select(selectActivity);
-    const type = activityState?.activity?.activity_subtype;
 
     // needs to be latlng expression
     const isGeo = !!action.payload?.geometry?.[0]?.geometry?.coordinates;
@@ -598,7 +598,8 @@ export function* handle_ACTIVITY_GET_SUCCESS(action: PayloadAction<Record<string
     if (createdByUser) {
       yield put(Activity.Suggestions.persons());
       yield put(Activity.Suggestions.jurisdictions(activityState.activity.geometry));
-      if (isLinkedTreatmentSubtype(type)) {
+      const isLinkableRecord = !(yield select(isActivityObservation));
+      if (isLinkableRecord) {
         yield put(Activity.Suggestions.treatmentIdsRequest(action.payload));
       }
     }
