@@ -10,6 +10,7 @@ import FilterObjects from 'interfaces/FilterObjects';
 import IActivityPermissions from 'interfaces/IActivityPermissions';
 import UserRecord from 'interfaces/UserRecord';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
+import { RootState } from 'state/reducers/rootReducer';
 
 interface INewActivity {
   type: string;
@@ -101,9 +102,9 @@ class Activity {
   static readonly get = createAction<string>(`${this.PREFIX}/get`);
 
   /** Fetch Record from Django API */
-  static readonly getDjango = createAsyncThunk(`${this.PREFIX}/getDjango`, async (id: string) => {
-    // TODO: POINT DJANGO API ENV
-    const newFormat = await fetch(`http://localhost:8000/activities/${id}`, {
+  static readonly getDjango = createAsyncThunk(`${this.PREFIX}/getDjango`, async (id: string, { getState }) => {
+    const { Configuration }: RootState = getState() as RootState;
+    const newFormat = await fetch(`${Configuration.current.runtime.API_V2_BASE}/activities/${id}`, {
       headers: { Authorization: await getCurrentJWT() }
     });
     return await newFormat.json();
@@ -114,8 +115,9 @@ class Activity {
   static readonly getFailure = createAction(`${this.PREFIX}/getFailure`, (arg?: Response) => ({
     payload: arg
   }));
-  static readonly refreshFormCodes = createAsyncThunk(`${this.PREFIX}/refreshFormCodes`, async () => {
-    const response = await fetch(`http://localhost:8000/codes`, {
+  static readonly refreshFormCodes = createAsyncThunk(`${this.PREFIX}/refreshFormCodes`, async (_, { getState }) => {
+    const { Configuration }: RootState = getState() as RootState;
+    const response = await fetch(`${Configuration.current.runtime.API_V2_BASE}/codes`, {
       headers: { Authorization: await getCurrentJWT() }
     });
     const formCodes = await response.json();
