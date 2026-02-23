@@ -458,9 +458,7 @@ const ActivityForm = () => {
           {/* Debug Information/Options */}
           <DebugButton
             label={`${isFormDisabled ? 'Enable' : 'Disable'} Form`}
-            onClick={() => {
-              setIsFormDisabled((prev) => !prev);
-            }}
+            onClick={() => setIsFormDisabled((prev) => !prev)}
           />
           <DebugFormData />
           <input type="button" className="form-popover-anchor" value="Save Menu" onClick={handleOpenMenu} />

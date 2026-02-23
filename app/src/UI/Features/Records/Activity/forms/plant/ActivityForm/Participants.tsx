@@ -25,7 +25,7 @@ const Participants = () => {
       name="participants"
       label={'Participants'}
       tooltip={tooltips.basic.participant}
-      emptyValue={getDefaultFormState(subtype).participants}
+      emptyValue={getDefaultFormState(subtype).participants[0]}
       rules={{ validate: (val) => minArrayLength(val, 1) }}
       renderRow={(index, remove) => (
         <>
