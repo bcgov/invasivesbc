@@ -2,8 +2,7 @@ import './creatableSelect.css';
 import Creatable from 'react-select/creatable';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
-import { Controller, FieldValues, useFormContext, Path } from 'react-hook-form';
-import { RegisterOptions } from 'react-hook-form';
+import { Controller, FieldValues, RegisterOptions, useFormContext, Path } from 'react-hook-form';
 import { getInputWidth, Width } from '../utils';
 import RequiredField from '../RequiredField/RequiredField';
 

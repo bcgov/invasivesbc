@@ -173,7 +173,6 @@ const ActivityForm = () => {
     reset,
     resetField,
     setValue,
-    watch,
     formState: { errors, isDirty, disabled }
   } = methods;
 

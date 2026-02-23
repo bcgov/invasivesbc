@@ -1,6 +1,5 @@
-import { Controller, FieldValues, useFormContext, Path } from 'react-hook-form';
+import { Controller, FieldValues, RegisterOptions, useFormContext, Path } from 'react-hook-form';
 import Select from 'react-select';
-import { RegisterOptions } from 'react-hook-form';
 import FormCode from 'interfaces/FormCode';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
@@ -9,15 +8,15 @@ import { getInputWidth, Width } from '../utils';
 import RequiredField from '../RequiredField/RequiredField';
 
 interface PropTypes<T extends FieldValues> {
-  label?: string;
-  name: Path<T>;
-  options: Array<FormCode>;
-  placeholder?: string;
-  required?: boolean;
-  rules?: RegisterOptions<T, Path<T>>;
-  tooltip?: string;
-  valueKey?: string;
-  width?: Width;
+  readonly label?: string;
+  readonly name: Path<T>;
+  readonly options: Array<FormCode>;
+  readonly placeholder?: string;
+  readonly required?: boolean;
+  readonly rules?: RegisterOptions<T, Path<T>>;
+  readonly tooltip?: string;
+  readonly valueKey?: string;
+  readonly width?: Width;
 }
 
 export function MultiSelect<T extends FieldValues>({

@@ -26,8 +26,8 @@ class FormActions {
         Auth,
         ActivityPage: { formState }
       } = getState() as RootState;
-      if (!formState) throw Error('Formstate is null');
-      if (!Auth.username) throw Error('No authenticated user');
+      if (!formState) throw new Error('Formstate is null');
+      if (!Auth.username) throw new Error('No authenticated user');
       const duplicatedForm = structuredClone(formState);
       //Reset record specific details.
       duplicatedForm.created_by = Auth.username;

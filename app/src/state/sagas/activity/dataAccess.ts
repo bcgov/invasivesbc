@@ -502,10 +502,7 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST(action) {
         case 'Activity_Monitoring_BiocontrolRelease_TerrestrialPlant':
           return [ActivitySubtypeShortLabels.Activity_Biocontrol_Release];
         default:
-          return [
-            ActivitySubtypeShortLabels.Activity_Treatment_ChemicalPlantTerrestrial,
-            ActivitySubtypeShortLabels.Activity_Treatment_ChemicalPlantAquatic
-          ];
+          return [];
       }
     })();
     const search_feature = payloadActivity.geometry?.[0]
