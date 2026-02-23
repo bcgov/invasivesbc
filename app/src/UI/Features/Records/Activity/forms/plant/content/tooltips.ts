@@ -66,7 +66,8 @@ const tooltips = {
       depth: 'Enter the water depth in metres',
       secchi_depth:
         'Enter the secchi depth in metres. The secchi depth is the depth of water beyond which a high-contrast pattern on a submerged disk is no longer visible.'
-    }
+    },
+    disposed_material_format: 'If relevant, choose how the overall quantity/amount of removed biomass was calculated.'
   }
 };
 

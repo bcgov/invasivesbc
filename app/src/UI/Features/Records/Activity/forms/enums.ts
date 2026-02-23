@@ -119,4 +119,22 @@ const WaterLevelManagement = [
     table: 'WaterLevelManagement'
   }
 ];
-export { ObservationType, YesNo, YesNoUnknown, WaterbodyType, WaterLevelManagement };
+
+const DisposedMaterialFormat = [
+  {
+    full_name: 'Number of Plants',
+    code: 'plants',
+    table: 'PlantDisposalFormat'
+  },
+  {
+    full_name: 'Volume (Cubic Meters)',
+    code: 'm^3',
+    table: 'PlantDisposalFormat'
+  },
+  {
+    full_name: 'Weight (kg)',
+    code: 'kg',
+    table: 'PlantDisposalFormat'
+  }
+];
+export { DisposedMaterialFormat, ObservationType, YesNo, YesNoUnknown, WaterbodyType, WaterLevelManagement };
