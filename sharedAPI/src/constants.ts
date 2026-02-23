@@ -15,6 +15,41 @@ export enum ActivityType {
   FREP = 'FREP'
 }
 
+/**
+ * @desc Activity Subtype Titles
+ *       Replaces Old names after converting from API to Django.
+ * @TODO: Remove old names once work is done
+ */
+export enum ActivitySubtypes {
+  Observation_Plant_Terrestrial = 'Observation_Plant_Terrestrial',
+  Observation_Plant_Aquatic = 'Observation_Plant_Aquatic',
+  Monitoring_Chemical_Plant_Terrestrial_Aquatic = 'Monitoring_Chemical_Plant_Terrestrial_Aquatic',
+  Monitoring_Mechanical_Plant_Terrestrial_Aquatic = 'Monitoring_Mechanical_Plant_Terrestrial_Aquatic',
+  Monitoring_Biocontrol_Release_Plant_Terrestrial = 'Monitoring_Biocontrol_Release_Plant_Terrestrial',
+  Treatment_Mechanical_Plant_Terrestrial = 'Treatment_Mechanical_Plant_Terrestrial',
+  Treatment_Mechanical_Plant_Aquatic = 'Treatment_Mechanical_Plant_Aquatic',
+  Treatment_Chemical_Plant_Terrestrial = 'Treatment_Chemical_Plant_Terrestrial',
+  Treatment_Chemical_Plant_Aquatic = 'Treatment_Chemical_Plant_Aquatic',
+  Monitoring_Biocontrol_Dispersal_Plant_Terrestrial = 'Monitoring_Biocontrol_Dispersal_Plant_Terrestrial',
+  Biocontrol_Collection = 'Biocontrol_Collection',
+  Biocontrol_Release = 'Biocontrol_Release'
+}
+
+export enum ActivitySubtypesShortLabels {
+  Observation_Plant_Terrestrial = 'Terrestrial Invasive Plant Observation', //
+  Observation_Plant_Aquatic = 'Aquatic Invasive Plant Observation', //
+  Monitoring_Chemical_Plant_Terrestrial_Aquatic = 'Chemical Treatment Monitoring',
+  Monitoring_Mechanical_Plant_Terrestrial_Aquatic = 'Mechanical Treatment Monitoring',
+  Monitoring_Biocontrol_Release_Plant_Terrestrial = 'Biocontrol Release Monitoring', //
+  Treatment_Mechanical_Plant_Terrestrial = 'Terrestrial Plant Treatment - Mechanical', //
+  Treatment_Mechanical_Plant_Aquatic = 'Aquatic Plant Treatment - Mechanical', //
+  Treatment_Chemical_Plant_Terrestrial = 'Terrestrial Plant Treatment - Chemical', //
+  Treatment_Chemical_Plant_Aquatic = 'Aquatic Plant Treatment - Chemical', //
+  Monitoring_Biocontrol_Dispersal_Plant_Terrestrial = 'Biocontrol Dispersal Monitoring', //
+  Biocontrol_Collection = 'Biocontrol Collection', //
+  Biocontrol_Release = 'Biocontrol Release' //
+}
+
 export enum ActivitySubtype {
   // Observations:
   Observation_PlantTerrestrial = 'Activity_Observation_PlantTerrestrial',
@@ -76,6 +111,31 @@ export const ActivitySubtypeTargetKey = {
   [ActivitySubtype.Monitoring_MechanicalTerrestrialAquaticPlant]:
     'Monitoring_MechanicalTerrestrialAquaticPlant_Information',
   [ActivitySubtype.Monitoring_BiologicalTerrestrialPlant]: 'Monitoring_BiocontrolRelease_TerrestrialPlant_Information'
+};
+
+export const ActivitySubtypesRelations = {
+  [ActivityCategory.Plant]: {
+    [ActivityType.Observation]: [
+      ActivitySubtypes.Observation_Plant_Terrestrial,
+      ActivitySubtypes.Observation_Plant_Aquatic
+    ],
+    [ActivityType.Treatment]: [
+      ActivitySubtypes.Treatment_Chemical_Plant_Aquatic,
+      ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial,
+      ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic,
+      ActivitySubtypes.Treatment_Mechanical_Plant_Terrestrial,
+      ActivitySubtypes.Biocontrol_Release
+    ],
+    [ActivityType.Biocontrol]: [
+      ActivitySubtypes.Biocontrol_Collection,
+      ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial
+    ],
+    [ActivityType.Monitoring]: [
+      ActivitySubtypes.Monitoring_Chemical_Plant_Terrestrial_Aquatic,
+      ActivitySubtypes.Monitoring_Mechanical_Plant_Terrestrial_Aquatic,
+      ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial
+    ]
+  }
 };
 
 export const ActivitySubtypeRelations = {

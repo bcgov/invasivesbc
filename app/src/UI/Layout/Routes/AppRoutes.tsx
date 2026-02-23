@@ -32,6 +32,8 @@ const LegendsPopup = React.lazy(() => import('UI/Features/Legend/LegendsPopup'))
 const ManageTripsPage = React.lazy(() => import('UI/Features/ManageTripsPage/ManageTripsPage'));
 const UserGuide = React.lazy(() => import('UI/Features/UserGuide/UserGuide'));
 
+const ActivityForm = React.lazy(() => import('UI/Features/Records/Activity/forms/plant/ActivityForm/ActivityForm'));
+
 const AppRoutes = () => {
   const navigate = useNavigate();
   const userActivated = useSelector((state) => state.UserInfo.activated);
@@ -46,6 +48,7 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/Landing" replace />} />
+      <Route path="/Records/HookForm" element={<ActivityForm />} />
       <Route path="/Map" Component={() => <></>} />
       <Route path="/Landing" Component={() => <LandingComponent />} />
       <Route path="/Records/Activity/:id/:mode" Component={() => <Activity />}></Route>

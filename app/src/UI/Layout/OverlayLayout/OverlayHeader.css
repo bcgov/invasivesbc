@@ -6,7 +6,7 @@
     top: -1px;
     position: sticky;
     background-color: #036;
-    z-index: 99999;
+    z-index: var(--overlay-header-z-index);
     display: flex;
     flex-direction: row;
     justify-content: space-between;

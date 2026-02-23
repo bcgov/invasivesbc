@@ -142,6 +142,16 @@ function usePrimaryNavigationLinks() {
       icon: <AssignmentIcon />
     },
     {
+      id: 'HookForm',
+      path: `/Records/HookForm`,
+      activePaths: [{ path: '/Records/HookForm', end: true }],
+      label: 'Hook Form',
+      predicate: TabPredicate.AUTHENTICATED_ANY,
+      platform: PlatformPredicate.BOTH,
+      layout: LayoutMode.MAP_FOCUSED,
+      icon: <AssignmentIcon />
+    },
+    {
       id: 'iapp',
       path: `/Records/IAPP/${activeIAPP}/summary`,
       activePaths: [{ path: '/Records/IAPP/:id/*', end: true }],

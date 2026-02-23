@@ -17,6 +17,7 @@ function buildSpecificDefines() {
     defines['INJECTED_COMMIT_HASH'] = JSON.stringify(commitHash);
 
     defines['CONFIGURATION_API_BASE'] = JSON.stringify(process.env['REACT_APP_API_HOST']);
+    defines['CONFIGURATION_API_V2_BASE'] = JSON.stringify(process.env['API_V2_BASE']);
     defines['CONFIGURATION_KEYCLOAK_CLIENT_ID'] = JSON.stringify(process.env['SSO_CLIENT_ID']);
     defines['CONFIGURATION_KEYCLOAK_REALM'] = JSON.stringify(process.env['SSO_REALM']);
     defines['CONFIGURATION_KEYCLOAK_URL'] = JSON.stringify(process.env['SSO_URL']);

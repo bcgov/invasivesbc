@@ -62,6 +62,7 @@ LEGACY_DB = {
     "USER": os.getenv("LEGACY_DB_USER"),
     "PASSWORD": os.getenv("LEGACY_DB_PASSWORD"),
     "HOST": os.getenv("LEGACY_DB_HOST"),
+    "PORT": os.getenv("DB_PORT"),
 }
 
 KEYCLOAK = {
@@ -76,7 +77,7 @@ KEYCLOAK_AUDIENCE = os.getenv("KEYCLOAK_AUDIENCE", "tfrs-on-gold-4308")
 
 UNIT_TESTING_ENABLED = False
 
-LEGACY_DB_CONNECTION_STRING = f"dbname={LEGACY_DB['NAME']} host={LEGACY_DB['HOST']} user={LEGACY_DB['USER']} password={LEGACY_DB['PASSWORD']}"
+LEGACY_DB_CONNECTION_STRING = f"dbname={LEGACY_DB['NAME']} host={LEGACY_DB['HOST']} port={LEGACY_DB["PORT"]} user={LEGACY_DB['USER']} password={LEGACY_DB['PASSWORD']}"
 
 REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": [
@@ -112,6 +113,7 @@ USE_I18N = True
 USE_TZ = True
 
 CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
     "http://localhost:3001",
     "https://normalization-fe-dev-invasivesbci.apps.silver.devops.gov.bc.ca",
 ]

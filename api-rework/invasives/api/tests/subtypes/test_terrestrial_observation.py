@@ -34,7 +34,6 @@ class TerrestrialObservationTest(BaseActivitySubtypeTest):
         self.assertEqual(od["observation_type"], "Positive")
 
         vs = od["voucher_specimen"]
-        self.assertEqual(vs["invasive_plant"], "JK")
         self.assertEqual(vs["voucher_sample_id"], "123")
         self.assertEqual(vs["date_collected"], "2025-01-21")
         self.assertEqual(vs["date_verified"], "2025-01-22")

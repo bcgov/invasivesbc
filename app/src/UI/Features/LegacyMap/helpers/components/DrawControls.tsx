@@ -279,7 +279,7 @@ const DrawControls = () => {
     };
 
     if (!drawInstance.current) return;
-    if (mode === TargetMode.ACTIVITY) {
+    if (mode === TargetMode.ACTIVITY || mode === TargetMode.HOOK_FORM) {
       dispatch(
         Prompt.confirmation({
           callback,
@@ -330,6 +330,7 @@ const DrawControls = () => {
         }
         break;
       }
+      case TargetMode.HOOK_FORM:
       case TargetMode.ACTIVITY: {
         dispatch(DrawToolActions.createShape(feature));
         break;
@@ -378,6 +379,9 @@ const DrawControls = () => {
       } else {
         setMode(TargetMode.ACTIVITY);
       }
+    } else if (url?.includes('HookForm')) {
+      setMode(TargetMode.HOOK_FORM);
+      disableDrawButtons(false);
     } else {
       setMode(TargetMode.DISABLED);
       disableDrawButtons(true);

@@ -1,0 +1,32 @@
+.form-fieldset {
+  display: flex;
+  flex-flow: row wrap;
+  font-size: 1.25rem;
+  justify-content: flex-start;
+  text-wrap: wrap;
+  box-sizing: border-box;
+  align-items: stretch;
+  margin-bottom: 3rem;
+  background-color: #00336615;
+
+  & > *:not(fieldset) {
+    margin-bottom: 10px;
+    margin-right: auto;
+  }
+
+  &.full-width {
+    width: 100%;
+  }
+
+  &.half-width {
+    width: 49%;
+  }
+
+  &.third-width {
+    width: 32%;
+  }
+
+  &.quarter-width {
+    width: 24%;
+  }
+}

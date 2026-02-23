@@ -80,7 +80,10 @@ function* handle_LOAD_ACTIVITY_IF_REQUIRED(action: PayloadAction<string>) {
   // this replaces an urlChange handler with more specific handling
   const id = action.payload;
   const activityPageState = yield select(selectActivity);
-  if (id && id.length === 36 && activityPageState?.activity?.activity_id !== id) yield put(Activity.get(id));
+  if (id && id.length === 36 && activityPageState?.activity?.activity_id !== id) {
+    yield put(Activity.get(id));
+    yield put(Activity.getDjango(action.payload));
+  }
 }
 
 function* handle_ACTIVITY_DELETE_FAILURE() {

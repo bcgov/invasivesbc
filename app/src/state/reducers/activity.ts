@@ -1,6 +1,10 @@
 import { Draft } from 'immer';
 import { createNextState } from '@reduxjs/toolkit';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
+import { Feature } from 'geojson';
+import { ActivitySubtypes } from 'sharedAPI';
+import FormActions from 'state/actions/activity/FormActions';
+import FormCode from 'interfaces/FormCode';
 import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
 import GeoShapes from 'constants/geoShapes';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
@@ -10,6 +14,8 @@ import SuggestedTreatmentId from 'interfaces/SuggestedTreatmentId';
 import IActivityPermissions from 'interfaces/IActivityPermissions';
 import { GeoTrackingStatus } from 'constants/geoTrackingStatus';
 import DrawToolActions from 'state/actions/drawtool/drawToolActions';
+import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
+import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
 
 interface ActivityState {
   [MIGRATION_VERSION_KEY]: number;
@@ -17,9 +23,22 @@ interface ActivityState {
   activeActivity: string | null;
   activeActivityPermissions?: IActivityPermissions;
   activityErrors: any[];
+  formCodes: Record<PropertyKey, Array<FormCode>>;
   error: boolean;
   pasteCount: number;
   failCode: number | null;
+  formType?: ActivitySubtypes;
+  formState?: FormSchema;
+  formId?: string;
+  geometry_details?: {
+    geom: Feature;
+    area_m?: number;
+    latitude?: number;
+    longitude?: number;
+    utm_zone?: number;
+    utm_easting?: number;
+    utm_northing?: number;
+  };
   initialized: boolean;
   loading: boolean;
   suggestedJurisdictions: Record<string, any>[];
@@ -44,6 +63,7 @@ const initialState: ActivityState = {
   activeActivity: null,
   activityErrors: [],
   error: false,
+  formCodes: {},
   pasteCount: 0,
   failCode: null,
   initialized: false,
@@ -180,9 +200,38 @@ function createActivityReducer() {
         draftState.activity_copy_buffer = {
           form_data: copiedData
         };
+      } else if (Activity.refreshFormCodes.fulfilled.match(action)) {
+        draftState.formCodes = action.payload;
+      } else if (FormActions.createNewForm.match(action)) {
+        delete draftState.formState;
+        delete draftState.geometry_details;
+        draftState.formId = crypto.randomUUID();
+        draftState.formType = action.payload;
+      } else if (FormActions.clearFormState.match(action) && draftState.formState) {
+        delete draftState.geometry_details;
+        Object.assign(draftState.formState, {
+          ...getDefaultFormState(draftState.formType),
+          id: draftState.formId,
+          subtype: draftState.formType
+        });
+      } else if (FormActions.duplicateForm.fulfilled.match(action)) {
+        draftState.formType = action.payload.subtype;
+        draftState.formId = action.payload.id;
+        draftState.formState = action.payload;
+      } else if (FormActions.updateState.match(action)) {
+        draftState.formState = structuredClone(action.payload);
+      } else if (FormActions.sendForm.fulfilled.match(action)) {
+        if (draftState.formState) {
+          // Should always exist if we just submitted a form.
+          draftState.formState.short_id = action.payload;
+        }
       } else if (Activity.get.match(action)) {
         draftState.failCode = null;
         draftState.loading = true;
+      } else if (Activity.getDjango.fulfilled.match(action)) {
+        draftState.formType = action.payload?.subtype;
+        draftState.formId = action.payload?.id;
+        draftState.formState = action.payload;
       } else if (Activity.getSuccess.match(action)) {
         const { activity, permissions } = action.payload;
         draftState.activity = { ...activity };
@@ -198,8 +247,9 @@ function createActivityReducer() {
       } else if (Activity.setErrors.match(action)) {
         draftState.activityErrors = getCustomErrorTransformer()(action.payload ?? []);
       } else if (Activity.updateGeoFailure.match(action)) {
-        draftState.activity.geometry = action.payload.geometry;
+        delete draftState.geometry_details;
 
+        draftState.activity.geometry = action.payload.geometry;
         draftState.activity.form_data.activity_data.latitude = undefined;
         draftState.activity.form_data.activity_data.longitude = undefined;
         draftState.activity.form_data.activity_data.utm_zone = undefined;
@@ -209,16 +259,32 @@ function createActivityReducer() {
       } else if (Activity.buildFormSchemaSuccess.match(action)) {
         draftState.uiSchema = action.payload.uiSchema;
         draftState.schema = action.payload.schema;
+      } else if (DrawToolActions.deleteGeo.match(action)) {
+        delete draftState.geometry_details;
       } else if (DrawToolActions.updateGeoSuccess.match(action)) {
         const { geometry, lat, long, utm, reported_area, Well_Information } = action.payload;
-        draftState.activity.geometry = geometry;
-        draftState.activity.form_data.activity_data.latitude = lat;
-        draftState.activity.form_data.activity_data.longitude = long;
-        draftState.activity.form_data.activity_data.utm_zone = utm?.[0].toString(); // RJSF expects this value to be a string
-        draftState.activity.form_data.activity_data.utm_easting = utm?.[1];
-        draftState.activity.form_data.activity_data.utm_northing = utm?.[2];
-        draftState.activity.form_data.activity_data.reported_area = reported_area;
-        draftState.activity.form_data.activity_subtype_data.Well_Information = Well_Information;
+        //TODO: Make its own thing
+        draftState.geometry_details = {
+          geom: geometry?.[0] as Feature,
+          area_m: reported_area ?? undefined,
+          latitude: lat ?? undefined,
+          longitude: long ?? undefined,
+          utm_zone: utm?.[0],
+          utm_easting: utm?.[1],
+          utm_northing: utm?.[2]
+        };
+        if (draftState.activity) {
+          // Prevent Crash when using RHF and Activity state empty
+          // TODO: Remove this
+          draftState.activity.geometry = geometry;
+          draftState.activity.form_data.activity_data.latitude = lat;
+          draftState.activity.form_data.activity_data.longitude = long;
+          draftState.activity.form_data.activity_data.utm_zone = utm?.[0].toString(); // RJSF expects this value to be a string
+          draftState.activity.form_data.activity_data.utm_easting = utm?.[1];
+          draftState.activity.form_data.activity_data.utm_northing = utm?.[2];
+          draftState.activity.form_data.activity_data.reported_area = reported_area;
+          draftState.activity.form_data.activity_subtype_data.Well_Information = Well_Information;
+        }
       } else if (Activity.OnFormChangeRequestSuccess.match(action)) {
         draftState.activity.form_data = JSON.parse(JSON.stringify(action.payload.form_data));
         draftState.activity.species_positive = action.payload?.species_positive;

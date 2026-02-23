@@ -1,0 +1,123 @@
+.activity-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#activity-form {
+  display: flex;
+  flex-flow: row wrap;
+  width: var(--form-container-width);
+  max-width: 100%;
+  margin: 5vh 0;
+  box-sizing: border-box;
+  justify-content: space-around;
+
+  .form-popover-anchor {
+    background-color: white;
+    position: absolute;
+    height: var(--overlay-grip-height);
+    padding: 0 1rem;
+    z-index: calc(var(--overlay-header-z-index) + 1);
+    text-transform: uppercase;
+    top: 0;
+    right: 0;
+  }
+
+  .linked-activity-entry {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 0;
+
+    li {
+      background-color: #00336625;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 15px;
+      width: 95%;
+
+      span {
+        width: 100%;
+        text-align: left;
+        margin: auto;
+      }
+
+      &:nth-child(even) {
+        background-color: #00336615;
+      }
+
+      &:not(:last-child) {
+        border-bottom: 1px solid #ccc;
+      }
+    }
+  }
+}
+
+.control-button {
+  width: 100%;
+  height: 3em;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  border-radius: none;
+  border: 1pt solid black;
+  background-color: var(--bc-blue);
+  color: white;
+  font-weight: bold;
+  font-size: var(--form-input-font-size);
+
+  &:disabled {
+    background-color: #aaa;
+    color: #111;
+
+    &:hover {
+      cursor: not-allowed;
+    }
+  }
+
+  &:hover:not(:disabled),
+  &:active:not(:disabled) {
+    cursor: pointer;
+    filter: brightness(90%);
+  }
+}
+
+#activity-form .control,
+#form-popover-menu {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  min-width: 300px;
+}
+
+#form-popover-menu {
+  flex-direction: column;
+  background-color: var(--bc-blue);
+
+  .error-warning {
+    display: flex;
+    justify-content: center;
+    padding: 5px;
+    margin: 5px;
+  }
+
+  p {
+    color: white;
+    margin: 0;
+  }
+
+  .control-button:not(:disabled) {
+    background-color: var(--blue-primary);
+  }
+}
+
+#activity-form-control {
+  flex-direction: row;
+}

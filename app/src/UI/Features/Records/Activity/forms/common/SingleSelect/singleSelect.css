@@ -1,0 +1,45 @@
+.form-single-select-input {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 100%;
+  margin-bottom: 10px;
+
+  .select-input {
+    width: 100%;
+    text-align: left;
+    font-size: var(--form-input-font-size);
+  }
+
+  .top {
+    display: flex;
+    width: 100%;
+  }
+
+  label {
+    height: 25px;
+    font-size: var(--form-input-label-font-size);
+    font-weight: 600;
+    margin-right: auto;
+
+    &::after {
+      content: ':';
+    }
+  }
+
+  &.full-width {
+    width: 100%;
+  }
+
+  &.half-width {
+    width: 49%;
+  }
+
+  &.third-width {
+    width: 32%;
+  }
+
+  &.quarter-width {
+    width: 24%;
+  }
+}

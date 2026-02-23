@@ -96,6 +96,7 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
   } else {
     yield put(APIDocs.getRequest());
   }
+  yield put(Activity.refreshFormCodes());
   yield put(Activity.Suggestions.biocontrolOnline());
   yield put(UserSettings.InitState.getSuccess({ ...defaultRecordSet, ...recordSets }));
 }

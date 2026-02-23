@@ -1,4 +1,4 @@
-import { createAction } from '@reduxjs/toolkit';
+import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { ActivityStatus } from 'sharedAPI';
 import { FieldError } from '@rjsf/utils';
 import Offline from './Offline';
@@ -9,6 +9,8 @@ import ChemicalTreatments from './ChemicalTreatments';
 import FilterObjects from 'interfaces/FilterObjects';
 import IActivityPermissions from 'interfaces/IActivityPermissions';
 import UserRecord from 'interfaces/UserRecord';
+import { getCurrentJWT } from 'state/sagas/auth/auth';
+import { RootState } from 'state/reducers/rootReducer';
 
 interface INewActivity {
   type: string;
@@ -98,11 +100,34 @@ class Activity {
   static readonly copy = createAction(`${this.PREFIX}/copy`);
   static readonly copySuccess = createAction<Record<string, any>>(`${this.PREFIX}/copySuccess`);
   static readonly get = createAction<string>(`${this.PREFIX}/get`);
+
+  /** Fetch Record from Django API */
+  static readonly getDjango = createAsyncThunk(`${this.PREFIX}/getDjango`, async (id: string, { getState }) => {
+    const { Configuration }: RootState = getState() as RootState;
+    const newFormat = await fetch(`${Configuration.current.runtime.API_V2_BASE}/activities/${id}`, {
+      headers: { Authorization: await getCurrentJWT() }
+    });
+    return await newFormat.json();
+  });
+
   static readonly getLocal = createAction<string>(`${this.PREFIX}/getLocal`);
   static readonly getSuccess = createAction<IGetSuccess>(`${this.PREFIX}/getSuccess`);
   static readonly getFailure = createAction(`${this.PREFIX}/getFailure`, (arg?: Response) => ({
     payload: arg
   }));
+  static readonly refreshFormCodes = createAsyncThunk(`${this.PREFIX}/refreshFormCodes`, async (_, { getState }) => {
+    const { Configuration }: RootState = getState() as RootState;
+    const response = await fetch(`${Configuration.current.runtime.API_V2_BASE}/codes`, {
+      headers: { Authorization: await getCurrentJWT() }
+    });
+    const formCodes = await response.json();
+    const mappedCodes = {};
+    for (const arr of formCodes) {
+      if (arr.length === 0) continue;
+      mappedCodes[arr[0]?.table] = arr;
+    }
+    return mappedCodes;
+  });
   static readonly getRows = createAction<ActivityTableRowRequest>(`${this.PREFIX}/getRows`);
   static readonly getRowsRequest = createAction<ActivityTableRowGetRequest>(`${this.PREFIX}/getRowsRequest`);
   static readonly getRowsOnline = createAction<ActivityTableRowGetRequest>(`${this.PREFIX}/getRowsOnline`);

@@ -3,6 +3,7 @@ import moment from 'moment';
 import {
   ActivityStatus,
   ActivitySubtype,
+  ActivitySubtypes,
   ActivitySubtypeShortLabels,
   ActivitySubtypeTargetKey,
   ActivitySyncStatus,
@@ -171,12 +172,10 @@ export async function createLinkedActivity(
 /*
   function to determine if a Monitoring activity subtype requires a linked treatment ID.
 */
-export function isLinkedTreatmentSubtype(subType: ActivitySubtype): boolean {
-  return [
-    ActivitySubtype.Monitoring_ChemicalTerrestrialAquaticPlant,
-    ActivitySubtype.Monitoring_MechanicalTerrestrialAquaticPlant,
-    ActivitySubtype.Monitoring_BiologicalTerrestrialPlant
-  ].includes(subType);
+export function isLinkedTreatmentSubtype(subType: ActivitySubtypes): boolean {
+  //TODO: Remove this
+  return true;
+  return [ActivitySubtypes.Observation_Plant_Aquatic, ActivitySubtypes.Observation_Plant_Terrestrial].includes(subType);
 }
 
 // extract and set the species codes (both positive and negative) of a given activity (or POI, once they're editable)
