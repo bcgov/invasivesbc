@@ -6,6 +6,7 @@ import { useSelector } from 'utils/use_selector';
 import { useDispatch } from 'react-redux';
 import Prompt from 'state/actions/prompts/Prompt';
 import Activity from 'state/actions/activity/Activity';
+import { isActivityObservation } from 'state/reducers/activity';
 /*
  * TODO: Check Manually written ID's against API to confirm existence. else cannot copy.
  */
@@ -26,6 +27,7 @@ const LinkedActivities = () => {
     );
 
   const suggestedTreatmentIDs = useSelector((state) => state.ActivityPage.suggestedTreatmentIDs);
+  const isObservationRecord = useSelector(isActivityObservation);
   const dispatch = useDispatch();
   const {
     watch,
@@ -33,6 +35,7 @@ const LinkedActivities = () => {
   } = useFormContext<FormSchema>();
   const activities = watch('linked_activities');
 
+  if (isObservationRecord) return; // Don't link activities to others
   return (
     <Fieldset label={'Related Records'}>
       <CreatableSelect<FormSchema, { short_id: string; full: string }>
