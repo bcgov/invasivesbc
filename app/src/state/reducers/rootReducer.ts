@@ -118,7 +118,7 @@ function createRootReducer(config: UnifiedConfig) {
         storage: platformStorage,
         stateReconciler: autoMergeLevel1,
         migrate: purgeOldStateOnVersionUpgrade,
-        whitelist: [MIGRATION_VERSION_KEY, 'biocontrol']
+        whitelist: [MIGRATION_VERSION_KEY, 'biocontrol', 'formCodes']
       },
       createActivityReducer()
     ),
