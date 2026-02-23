@@ -299,5 +299,15 @@ function createActivityReducer() {
 
 const selectActivity: (state) => ActivityState = (state) => state.ActivityPage;
 
-export { createActivityReducer, selectActivity };
+const isActivityObservation: (state) => ActivityState = (state) =>
+  state.subtype &&
+  [ActivitySubtypes.Observation_Plant_Aquatic, ActivitySubtypes.Observation_Plant_Terrestrial].includes(state.subtype);
+
+const isActivityChemicalTreatment: (state) => ActivityState = (state) =>
+  state.subtype &&
+  [ActivitySubtypes.Treatment_Chemical_Plant_Aquatic, ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial].includes(
+    state.subtype
+  );
+
+export { createActivityReducer, selectActivity, isActivityChemicalTreatment, isActivityObservation };
 export type { ActivityState };
