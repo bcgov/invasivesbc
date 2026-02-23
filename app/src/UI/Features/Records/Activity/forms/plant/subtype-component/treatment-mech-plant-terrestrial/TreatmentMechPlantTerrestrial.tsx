@@ -1,17 +1,17 @@
 import { ActivitySubtypes } from 'sharedAPI';
-import ArrayField from '../../../common/ArrayField/ArrayField';
-import Fieldset from '../../../common/Fieldset/Fieldset';
-import getDefaultFormState from '../../builders/getDefaultState';
-import { TerrestrialMechTreatment } from '../../interfaces';
-import { minArrayLength, noRepeatKey } from '../../../common/validators';
+import ArrayField from 'UI/Features/Records/Activity/forms/common/ArrayField/ArrayField';
+import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
+import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
+import { TerrestrialMechTreatment } from 'UI/Features/Records/Activity/forms/plant/interfaces';
+import { minArrayLength, noRepeatKey } from 'UI/Features/Records/Activity/forms/common/validators';
 import { useSelector } from 'utils/use_selector';
-import tooltips from '../../content/tooltips';
-import { Width } from '../../../common/utils';
-import SingleSelect from '../../../common/SingleSelect/SingleSelect';
-import NumberInput from '../../../common/NumberInput/NumberInput';
+import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
+import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
+import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
+import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
 import { useFormContext } from 'react-hook-form';
-import { DisposedMaterialFormat } from '../../../enums';
-import DeleteControl from '../../../common/DeleteControl/DeleteControl';
+import { DisposedMaterialFormat } from 'UI/Features/Records/Activity/forms/enums';
+import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
 
 type EntryBasePath = `subtype_data.entries.${number}`;
 const TreatmentMechPlantTerrestrial = () => {
