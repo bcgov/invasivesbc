@@ -1,17 +1,24 @@
 import { useFormContext } from 'react-hook-form';
-import { AquaticMechTreatment } from '../../interfaces';
+import { AquaticMechTreatment } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import { useSelector } from 'utils/use_selector';
-import ArrayField from '../../../common/ArrayField/ArrayField';
+import ArrayField from 'UI/Features/Records/Activity/forms/common/ArrayField/ArrayField';
 import { ActivitySubtypes } from 'sharedAPI';
-import getDefaultFormState from '../../builders/getDefaultState';
-import { minArrayLength, noRepeatKey } from '../../../common/validators';
-import SingleSelect from '../../../common/SingleSelect/SingleSelect';
-import tooltips from '../../content/tooltips';
-import NumberInput from '../../../common/NumberInput/NumberInput';
-import { Width } from '../../../common/utils';
-import Fieldset from '../../../common/Fieldset/Fieldset';
-import { DisposedMaterialFormat } from '../../../enums';
-import DeleteControl from '../../../common/DeleteControl/DeleteControl';
+import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
+import {
+  checkSum,
+  maxValue,
+  minArrayLength,
+  minValue,
+  noRepeatKey
+} from 'UI/Features/Records/Activity/forms/common/validators';
+import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
+import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
+import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
+import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
+import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
+import { DisposedMaterialFormat } from 'UI/Features/Records/Activity/forms/enums';
+import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
+import TextInput from 'UI/Features/Records/Activity/forms/common/TextInput/TextInput';
 
 type EntryBasePath = `subtype_data.entries.${number}`;
 const TreatmentMechPlantAquatic = () => {
@@ -21,15 +28,70 @@ const TreatmentMechPlantAquatic = () => {
     formState: { errors, disabled }
   } = useFormContext<AquaticMechTreatment>();
   const codes = useSelector((state) => state.ActivityPage.formCodes);
-  console.log(codes.EmployerCode.find((c) => c.code === 'CCD'));
+
   return (
     <>
+      <Fieldset label={'Authorization'}>
+        <TextInput
+          label={'Authorization Information'}
+          tooltip={tooltips.plant.waterbody.authorization_info}
+          {...register(`${ROOT}.authorization_info`)}
+        />
+      </Fieldset>
+
+      {/* Start of Shoreline Types */}
+      <ArrayField<AquaticMechTreatment, 'subtype_data.shoreline_types'>
+        label={'Shoreline Types'}
+        name="subtype_data.shoreline_types"
+        emptyValue={
+          (
+            getDefaultFormState(ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic)
+              .subtype_data as AquaticMechTreatment['subtype_data']
+          ).shoreline_types[0]
+        }
+        rules={{
+          validate: {
+            minLength: (val) => minArrayLength(val, 1),
+            totalPercent: (val) => checkSum(val, 100, 'percent_covered'),
+            noRepeatTypes: (val) => noRepeatKey(val, 'shoreline_type', 'Shoreline Type')
+          }
+        }}
+        renderRow={(index, remove) => (
+          <>
+            <SingleSelect
+              label="Shoreline Type"
+              options={codes.ShorelineTypeCode}
+              tooltip={tooltips.plant.waterbody.shoreline_type}
+              name={`${ROOT}.shoreline_types.${index}.shoreline_type`}
+              rules={{ required: true }}
+              required
+              width={Width.Half}
+            />
+            <NumberInput
+              label="Percent Covered"
+              type="number"
+              required
+              width={Width.Half}
+              tooltip={tooltips.plant.waterbody.shoreline_percent}
+              error={errors.subtype_data?.shoreline_types?.[index]?.percent_covered}
+              {...register(`${ROOT}.shoreline_types.${index}.percent_covered`, {
+                required: true,
+                valueAsNumber: true,
+                validate: {
+                  min: (val) => minValue(val, 1),
+                  max: (val) => maxValue(val, 100)
+                }
+              })}
+            />
+            <DeleteControl disabled={disabled} onClick={() => remove(index)} />
+          </>
+        )}
+      />
+      {/* Start of Aquatic Entries  */}
       <ArrayField<AquaticMechTreatment, 'subtype_data.entries'>
         name={'subtype_data.entries'}
         label="Entries"
-        emptyValue={
-          getDefaultFormState(ActivitySubtypes.Treatment_Mechanical_Plant_Terrestrial).subtype_data.entries[0]
-        }
+        emptyValue={getDefaultFormState(ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic).subtype_data.entries[0]}
         rules={{
           validate: {
             minLength: (val) => minArrayLength(val, 1),
@@ -86,7 +148,7 @@ const TreatmentMechPlantAquatic = () => {
                 <NumberInput
                   label={'Disposed Material Amount'}
                   {...register(`${basePath}.disposed_material_amount`)}
-                  error={errors?.subtype_data?.entries?.[index]?.treated_area_msq}
+                  error={errors?.subtype_data?.entries?.[index]?.disposed_material_amount}
                   width={Width.Half}
                 />
               </Fieldset>
