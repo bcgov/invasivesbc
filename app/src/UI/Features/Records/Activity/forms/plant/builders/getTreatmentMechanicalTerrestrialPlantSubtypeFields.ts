@@ -1,10 +1,10 @@
-import { TerrestrialMechTreatment } from '../interfaces';
+import { TerrestrialMechTreatment } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 
 const getTreatmentMechanicalTerrestrialPlantSubtypeFields = (): TerrestrialMechTreatment['subtype_data'] => ({
   entries: [
     {
-      disposed_material_amount: 0,
-      disposed_material_format: '',
+      disposed_material_amount: undefined,
+      disposed_material_format: undefined,
       disposal_method: '',
       invasive_plant: '',
       mechanical_method: '',

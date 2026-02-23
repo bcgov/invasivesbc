@@ -1,10 +1,10 @@
-import { AquaticMechTreatment } from '../interfaces/AquaticMechTreatment';
+import { AquaticMechTreatment } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 
 const getTreatmentMechanicalAquaticPlantSubtypeFields = (): AquaticMechTreatment['subtype_data'] => ({
   entries: [
     {
-      disposed_material_amount: 0,
-      disposed_material_format: '',
+      disposed_material_amount: undefined,
+      disposed_material_format: undefined,
       disposal_method: '',
       invasive_plant: '',
       mechanical_method: '',
