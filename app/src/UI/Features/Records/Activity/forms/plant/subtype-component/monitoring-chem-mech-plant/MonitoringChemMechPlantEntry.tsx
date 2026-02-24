@@ -72,7 +72,7 @@ const MonitoringChemMechPlantEntry = ({ index, remove }: PropTypes) => {
         rules={{
           required: !hasTerrestrialPlant,
           validate: (_, formValues) => {
-            const { entry } = formValues.subtype_data.entries[index];
+            const entry = formValues.subtype_data.entries[index];
             if (entry.invasive_plant && entry.invasive_plant_aquatic) {
               return "Can't Specify both Aquatic and Terrestrial Plants.";
             } else if (!entry.invasive_plant && !entry.invasive_plant_aquatic) {
