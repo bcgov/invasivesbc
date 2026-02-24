@@ -4,6 +4,7 @@ import { BaseForm } from './BaseForm';
 interface MonitoringChemMech extends BaseForm {
   subtype_data: {
     entries: Array<{
+      invasive_plant: string;
       evidence_of_treatment: string;
       treatment_pass: string;
       comment: string;

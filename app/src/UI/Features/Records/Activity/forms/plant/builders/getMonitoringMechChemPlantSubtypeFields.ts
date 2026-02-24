@@ -3,6 +3,7 @@ import { MonitoringChemPlantSchema, MonitoringMechPlantSchema } from '../interfa
 const getSubtypeFields = (): MonitoringChemPlantSchema['subtype_data'] | MonitoringMechPlantSchema['subtype_data'] => ({
   entries: [
     {
+      invasive_plant: '',
       evidence_of_treatment: '',
       treatment_pass: '',
       comment: '',
