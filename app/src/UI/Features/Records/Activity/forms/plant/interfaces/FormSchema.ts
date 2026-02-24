@@ -3,14 +3,15 @@ import {
   AquaticPlantObservationSchema,
   TerrestrialMechTreatment,
   MonitoringChemPlantSchema,
-  MonitoringMechPlantSchema
+  MonitoringMechPlantSchema,
+  AquaticMechTreatment
 } from '.';
 
 type FormSchema =
   | TerrestrialPlantObservationSchema
   | AquaticPlantObservationSchema
   | TerrestrialMechTreatment
-  | AquaticPlantObservationSchema
+  | AquaticMechTreatment
   | MonitoringChemPlantSchema
   | MonitoringMechPlantSchema;
 
