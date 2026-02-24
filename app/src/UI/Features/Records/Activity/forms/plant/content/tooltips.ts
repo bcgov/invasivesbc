@@ -69,6 +69,16 @@ const tooltips = {
       authorization_info:
         'Description of authorization permit for in-stream work (e.g. In-stream Notification, private landowner authorization in private pond, etc).'
     },
+    evidence_of_treatment: 'Choose the efficacy of the treatment for the area that was treated.',
+    treatment_pass:
+      'Indicate whether you are monitoring the first or second treatment pass of the calendar year, if known',
+    invasive_plant_on_site:
+      'Choose one or more options to indicate whether target invasive plants are still found on site following the treatment.',
+    monitoring_comment:
+      'Note whether chlorosis, necrosis, curling, browning, yellow, epicormic growth etc. is observed, or any additional relevant information',
+    treatment_efficacy_rating: 'Choose the efficacy of the treatment for the area that was treated.',
+    management_efficacy_rating:
+      'Choose the efficacy rating indicating the mortality of all the target species found on the site, including those that were not treated. Eg: 50% of plants on the site have evidence of treatment = Efficacy of 5.',
     disposed_material_format: 'If relevant, choose how the overall quantity/amount of removed biomass was calculated.'
   }
 };
