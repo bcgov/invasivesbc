@@ -1,8 +1,11 @@
 import { useSelector } from 'utils/use_selector';
-import ArrayField from '../../../common/ArrayField/ArrayField';
-import { MonitoringChemPlantSchema, MonitoringMechPlantSchema } from '../../interfaces';
-import getDefaultFormState from '../../builders/getDefaultState';
-import { minArrayLength, noRepeatKey } from '../../../common/validators';
+import ArrayField from 'UI/Features/Records/Activity/forms/common/ArrayField/ArrayField';
+import {
+  MonitoringChemPlantSchema,
+  MonitoringMechPlantSchema
+} from 'UI/Features/Records/Activity/forms/plant/interfaces';
+import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
+import { minArrayLength, noRepeatKey } from 'UI/Features/Records/Activity/forms/common/validators';
 import MonitoringChemMechPlantEntry from './MonitoringChemMechPlantEntry';
 
 const MonitoringChemMechPlant = () => {
