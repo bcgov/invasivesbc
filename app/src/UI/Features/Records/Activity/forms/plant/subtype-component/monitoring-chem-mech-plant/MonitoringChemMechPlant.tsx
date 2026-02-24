@@ -16,7 +16,7 @@ const MonitoringChemMechPlant = () => {
         validate: {
           minLength: (arr) => minArrayLength(arr, 1),
           noDupePlant: (arr) => noRepeatKey(arr, 'invasive_plant', 'Terrestrial Plant'),
-          noDupeAquaticPlant: (arr) => noRepeatKey(arr, 'aquatic_invasive_plant', 'Aquatic Invasive Plant')
+          noDupeAquaticPlant: (arr) => noRepeatKey(arr, 'invasive_plant_aquatic', 'Aquatic Invasive Plant')
         }
       }}
       renderRow={(index, remove) => <MonitoringChemMechPlantEntry index={index} remove={remove} />}
