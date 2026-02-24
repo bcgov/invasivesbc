@@ -2,3 +2,7 @@ export { default as getObservationAquaticPlantSubtypeFields } from './getObserva
 export { default as getObservationPlantTerrestrialSubtypeFields } from './getObservationTerrestrialPlantSubtypeFields';
 export { default as getTreatmentMechanicalTerrestrialPlantSubtypeFields } from './getTreatmentMechanicalTerrestrialPlantSubtypeFields';
 export { default as getTreatmentAquaticTerrestrialPlantSubtypeFields } from './getTreatmentMechanicalAquaticPlantSubtypeFields';
+export {
+  getMonitoringChemPlantSubtypeFields,
+  getMonitoringMechPlantSubtypeFields
+} from './getMonitoringMechChemPlantSubtypeFields';
