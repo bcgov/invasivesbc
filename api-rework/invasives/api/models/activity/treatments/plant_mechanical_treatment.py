@@ -22,8 +22,10 @@ class PlantMechanicalTreatmentEntry(BaseOneToManyActivityTable):
         PlantMechanicalTreatmentMethodCode, on_delete=models.PROTECT
     )
     disposal_method = models.ForeignKey(DisposalMethodCode, on_delete=models.PROTECT)
-    disposed_material_format = models.CharField(choices=PlantDisposalFormat)
-    disposed_material_amount = models.PositiveIntegerField()
+    disposed_material_format = models.CharField(
+        choices=PlantDisposalFormat, blank=True, null=True
+    )
+    disposed_material_amount = models.PositiveIntegerField(blank=True, null=True)
 
     class Meta:
         abstract = True
