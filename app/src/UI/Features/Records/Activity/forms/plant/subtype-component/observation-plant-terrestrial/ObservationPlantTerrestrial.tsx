@@ -13,6 +13,15 @@ import { ActivitySubtypes } from 'sharedAPI';
 
 const ObservationPlantTerrestrial = () => {
   const ROOT = 'subtype_data';
+
+  const validateSlopeAspect = (val, formValues) => {
+    const aspect = val?.code ?? val;
+    const slope = formValues.subtype_data?.slope_percent?.code ?? formValues.subtype_data?.slope_percent;
+    if ([aspect, slope].includes('FL') && aspect !== slope)
+      return 'If either Aspect or Slope is flat, both of them must be flat.';
+    return true;
+  };
+
   const codes = useSelector((state) => state.ActivityPage?.formCodes);
 
   return (
@@ -42,13 +51,7 @@ const ObservationPlantTerrestrial = () => {
           rules={{
             deps: [`${ROOT}.aspect`],
             required: true,
-            validate: (val, formValues) => {
-              const slope = val?.code ?? val;
-              const aspect = formValues.subtype_data?.aspect?.code ?? formValues.subtype_data?.aspect;
-              if ([aspect, slope].includes('FL') && aspect !== slope)
-                return 'If either Aspect or Slope is flat, both of them must be flat.';
-              return true;
-            }
+            validate: (val, formValues) => validateSlopeAspect(val, formValues)
           }}
           tooltip={tooltips.plant.slope_percent}
           width={Width.Half}
@@ -62,13 +65,7 @@ const ObservationPlantTerrestrial = () => {
           rules={{
             required: true,
             deps: [`${ROOT}.slope_percent`],
-            validate: (val, formValues) => {
-              const aspect = val?.code ?? val;
-              const slope = formValues.subtype_data?.slope_percent?.code ?? formValues.subtype_data?.slope_percent;
-              if ([aspect, slope].includes('FL') && aspect !== slope)
-                return 'If either Aspect or Slope is flat, both of them must be flat.';
-              return true;
-            }
+            validate: (val, formValues) => validateSlopeAspect(val, formValues)
           }}
           width={Width.Half}
         />
