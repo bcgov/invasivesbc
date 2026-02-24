@@ -22,6 +22,16 @@ type PropTypes = {
 const MonitoringChemMechPlantEntry = ({ index, remove }: PropTypes) => {
   type EntryBasePath = `subtype_data.entries.${number}`;
   const BASE = `subtype_data.entries.${index}` as EntryBasePath;
+  const validatePlantRow = (formValues) => {
+    const entry = formValues.subtype_data.entries[index];
+    if (!entry.invasive_plant && !entry.invasive_plant_aquatic) {
+      return 'Either Aquatic or Terrestrial Plant must be chosen';
+    } else if (entry.invasive_plant && entry.invasive_plant_aquatic) {
+      return "Can't Specify both Aquatic and Terrestrial Plants.";
+    }
+    return true;
+  };
+
   const {
     register,
     watch,
@@ -50,15 +60,7 @@ const MonitoringChemMechPlantEntry = ({ index, remove }: PropTypes) => {
         width={Width.Half}
         rules={{
           required: !hasAquaticPlant,
-          validate: (_, formValues) => {
-            const entry = formValues.subtype_data.entries[index];
-            if (!entry.invasive_plant && !entry.invasive_plant_aquatic) {
-              return 'Either Aquatic or Terrestrial Plant must be chosen';
-            } else if (entry.invasive_plant && entry.invasive_plant_aquatic) {
-              return "Can't Specify both Aquatic and Terrestrial Plants.";
-            }
-            return true;
-          }
+          validate: (_, formValues) => validatePlantRow(formValues)
         }}
         options={codes?.TerrestrialPlantCode}
       />
@@ -71,15 +73,7 @@ const MonitoringChemMechPlantEntry = ({ index, remove }: PropTypes) => {
         width={Width.Half}
         rules={{
           required: !hasTerrestrialPlant,
-          validate: (_, formValues) => {
-            const entry = formValues.subtype_data.entries[index];
-            if (entry.invasive_plant && entry.invasive_plant_aquatic) {
-              return "Can't Specify both Aquatic and Terrestrial Plants.";
-            } else if (!entry.invasive_plant && !entry.invasive_plant_aquatic) {
-              return 'Either Aquatic or Terrestrial Plant must be chosen';
-            }
-            return true;
-          }
+          validate: (_, formValues) => validatePlantRow(formValues)
         }}
       />
       <SingleSelect
