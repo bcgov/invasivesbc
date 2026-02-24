@@ -188,7 +188,7 @@ const TerrestrialPlantEntry = ({ root, index, remove }: Props) => {
         </Fieldset>
       )}
 
-      <DeleteControl disabled={disabled} onClick={() => remove(index)} />
+      <DeleteControl onClick={() => remove(index)} />
     </>
   );
 };

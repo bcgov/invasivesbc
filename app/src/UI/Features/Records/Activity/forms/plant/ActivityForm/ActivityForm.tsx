@@ -363,7 +363,7 @@ const ActivityForm = () => {
                       }
                     })}
                   />
-                  <DeleteControl disabled={disabled} onClick={() => remove(index)} />
+                  <DeleteControl onClick={() => remove(index)} />
                 </>
               )}
             />
@@ -382,7 +382,7 @@ const ActivityForm = () => {
                     {...register(`projects.${index}.description`, { required: true })}
                     error={formState.errors.projects?.[index]?.description}
                   />
-                  <DeleteControl disabled={disabled} onClick={() => remove(index)} />
+                  <DeleteControl onClick={() => remove(index)} />
                 </>
               )}
             />

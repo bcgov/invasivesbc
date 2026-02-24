@@ -18,7 +18,7 @@ const TreatmentMechPlantTerrestrial = () => {
   const ROOT = 'subtype_data';
   const {
     register,
-    formState: { errors, disabled }
+    formState: { errors }
   } = useFormContext<TerrestrialMechTreatment>();
   const codes = useSelector((state) => state.ActivityPage.formCodes);
   return (
@@ -90,7 +90,7 @@ const TreatmentMechPlantTerrestrial = () => {
                   width={Width.Half}
                 />
               </Fieldset>
-              <DeleteControl disabled={disabled} onClick={() => remove(index)} />
+              <DeleteControl onClick={() => remove(index)} />
             </>
           );
         }}

@@ -25,7 +25,7 @@ const TreatmentMechPlantAquatic = () => {
   const ROOT = 'subtype_data';
   const {
     register,
-    formState: { errors, disabled }
+    formState: { errors }
   } = useFormContext<AquaticMechTreatment>();
   const codes = useSelector((state) => state.ActivityPage.formCodes);
 
@@ -83,7 +83,7 @@ const TreatmentMechPlantAquatic = () => {
                 }
               })}
             />
-            <DeleteControl disabled={disabled} onClick={() => remove(index)} />
+            <DeleteControl onClick={() => remove(index)} />
           </>
         )}
       />
@@ -153,7 +153,7 @@ const TreatmentMechPlantAquatic = () => {
                   width={Width.Half}
                 />
               </Fieldset>
-              <DeleteControl disabled={disabled} onClick={() => remove(index)} />
+              <DeleteControl onClick={() => remove(index)} />
             </>
           );
         }}

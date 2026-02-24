@@ -192,7 +192,7 @@ const AquaticPlantEntry = ({ root, index, remove }: Props) => {
           </Fieldset>
         </Fieldset>
       )}
-      <DeleteControl disabled={disabled} onClick={() => remove(index)} />
+      <DeleteControl onClick={() => remove(index)} />
     </>
   );
 };
