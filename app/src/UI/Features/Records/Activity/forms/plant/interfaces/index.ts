@@ -10,3 +10,4 @@ export type { AquaticMechTreatment } from './AquaticMechTreatment';
 export type { MonitoringChemPlantSchema, MonitoringMechPlantSchema } from './MechChemMonitoring';
 // FormSchema
 export type { FormSchema } from './FormSchema';
+export type { EntryBasePath } from './EntryBasePath';

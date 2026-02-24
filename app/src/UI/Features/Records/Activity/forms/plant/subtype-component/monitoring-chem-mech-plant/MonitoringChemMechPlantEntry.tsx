@@ -8,6 +8,7 @@ import { minArrayLength } from 'UI/Features/Records/Activity/forms/common/valida
 import TextInput from 'UI/Features/Records/Activity/forms/common/TextInput/TextInput';
 import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
 import {
+  EntryBasePath,
   MonitoringChemPlantSchema,
   MonitoringMechPlantSchema
 } from 'UI/Features/Records/Activity/forms/plant/interfaces';
@@ -20,7 +21,6 @@ type PropTypes = {
   index: number;
 };
 const MonitoringChemMechPlantEntry = ({ index, remove }: PropTypes) => {
-  type EntryBasePath = `subtype_data.entries.${number}`;
   const BASE = `subtype_data.entries.${index}` as EntryBasePath;
   const validatePlantRow = (formValues) => {
     const entry = formValues.subtype_data.entries[index];

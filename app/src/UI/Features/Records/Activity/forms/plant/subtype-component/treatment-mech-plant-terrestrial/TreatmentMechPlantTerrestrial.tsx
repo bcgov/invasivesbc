@@ -2,7 +2,7 @@ import { ActivitySubtypes } from 'sharedAPI';
 import ArrayField from 'UI/Features/Records/Activity/forms/common/ArrayField/ArrayField';
 import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
-import { TerrestrialMechTreatment } from 'UI/Features/Records/Activity/forms/plant/interfaces';
+import { EntryBasePath, TerrestrialMechTreatment } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import { minArrayLength, noRepeatKey } from 'UI/Features/Records/Activity/forms/common/validators';
 import { useSelector } from 'utils/use_selector';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
@@ -13,7 +13,6 @@ import { useFormContext } from 'react-hook-form';
 import { DisposedMaterialFormat } from 'UI/Features/Records/Activity/forms/enums';
 import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
 
-type EntryBasePath = `subtype_data.entries.${number}`;
 const TreatmentMechPlantTerrestrial = () => {
   const ROOT = 'subtype_data';
   const {

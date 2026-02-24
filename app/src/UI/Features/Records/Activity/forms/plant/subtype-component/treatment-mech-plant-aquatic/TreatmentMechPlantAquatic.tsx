@@ -1,5 +1,5 @@
 import { useFormContext } from 'react-hook-form';
-import { AquaticMechTreatment } from 'UI/Features/Records/Activity/forms/plant/interfaces';
+import { AquaticMechTreatment, EntryBasePath } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import { useSelector } from 'utils/use_selector';
 import ArrayField from 'UI/Features/Records/Activity/forms/common/ArrayField/ArrayField';
 import { ActivitySubtypes } from 'sharedAPI';
@@ -20,7 +20,6 @@ import { DisposedMaterialFormat } from 'UI/Features/Records/Activity/forms/enums
 import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
 import TextInput from 'UI/Features/Records/Activity/forms/common/TextInput/TextInput';
 
-type EntryBasePath = `subtype_data.entries.${number}`;
 const TreatmentMechPlantAquatic = () => {
   const ROOT = 'subtype_data';
   const {
