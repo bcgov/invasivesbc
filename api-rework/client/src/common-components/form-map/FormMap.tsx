@@ -12,7 +12,7 @@ type PropTypes = {
 const FormMap = ({ geojson }: PropTypes) => {
   const SRC = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
   const mapRef = useRef<HTMLDivElement>(null);
-  const map= useRef<maplibregl.Map | undefined>(undefined);
+  const map = useRef<maplibregl.Map | undefined>(undefined);
 
   const mapCenter: LngLatLike = (() => {
     if (!geojson) return [-121, 54] as LngLatLike;
@@ -21,31 +21,29 @@ const FormMap = ({ geojson }: PropTypes) => {
 
   useEffect(() => {
     // Init Map after load
-    map.current =
-      new maplibregl.Map({
-        container: 'map',
-        center: mapCenter,
-        zoom: 8,
-        style: {
-          sources: {
-            'raster-tiles': {
-              type: 'raster',
-              tiles: [SRC],
-              tileSize: 256,
-              maxzoom: 18
-            }
-          },
-          layers: [
-            {
-              id: 'raster-tiles',
-              type: 'raster',
-              source: 'raster-tiles'
-            }
-          ],
-          version: 8
-        }
+    map.current = new maplibregl.Map({
+      container: 'map',
+      center: mapCenter,
+      zoom: 8,
+      style: {
+        sources: {
+          'raster-tiles': {
+            type: 'raster',
+            tiles: [SRC],
+            tileSize: 256,
+            maxzoom: 18
+          }
+        },
+        layers: [
+          {
+            id: 'raster-tiles',
+            type: 'raster',
+            source: 'raster-tiles'
+          }
+        ],
+        version: 8
       }
-    );
+    });
   }, [geojson]);
 
   useEffect(() => {
@@ -68,6 +66,16 @@ const FormMap = ({ geojson }: PropTypes) => {
             'fill-opacity': 0.6
           }
         });
+        map.current?.addLayer({
+          id: 'form-feature-point',
+          type: 'circle',
+          source: 'form-feature',
+          layout: {},
+          filter: ['!=', '$type', 'Polygon'],
+          paint: {
+            'circle-color': 'orange'
+          }
+        });
         const bounds = bbox(geojson) as LngLatBoundsLike;
         map.current?.fitBounds(bounds, {
           padding: 10,
@@ -75,7 +83,6 @@ const FormMap = ({ geojson }: PropTypes) => {
         });
       }
     });
-
   }, [map]);
   return (
     <div>
