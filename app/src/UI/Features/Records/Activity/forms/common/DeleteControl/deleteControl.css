@@ -8,6 +8,10 @@
   button {
     margin-bottom: 10px;
 
+    &:hover {
+      cursor: pointer;
+    }
+
     &:disabled:hover {
       cursor: not-allowed;
     }

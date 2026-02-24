@@ -65,8 +65,11 @@ const tooltips = {
       shoreline_percent: 'Percent covered by this shoreline type',
       depth: 'Enter the water depth in metres',
       secchi_depth:
-        'Enter the secchi depth in metres. The secchi depth is the depth of water beyond which a high-contrast pattern on a submerged disk is no longer visible.'
-    }
+        'Enter the secchi depth in metres. The secchi depth is the depth of water beyond which a high-contrast pattern on a submerged disk is no longer visible.',
+      authorization_info:
+        'Description of authorization permit for in-stream work (e.g. In-stream Notification, private landowner authorization in private pond, etc).'
+    },
+    disposed_material_format: 'If relevant, choose how the overall quantity/amount of removed biomass was calculated.'
   }
 };
 

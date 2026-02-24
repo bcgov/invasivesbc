@@ -16,6 +16,7 @@ import { GeoTrackingStatus } from 'constants/geoTrackingStatus';
 import DrawToolActions from 'state/actions/drawtool/drawToolActions';
 import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
+import { RootState } from './rootReducer';
 
 interface ActivityState {
   [MIGRATION_VERSION_KEY]: number;
@@ -299,5 +300,17 @@ function createActivityReducer() {
 
 const selectActivity: (state) => ActivityState = (state) => state.ActivityPage;
 
-export { createActivityReducer, selectActivity };
+const isActivityObservation: (state: RootState) => boolean | undefined = (state) =>
+  state.ActivityPage.formType &&
+  [ActivitySubtypes.Observation_Plant_Aquatic, ActivitySubtypes.Observation_Plant_Terrestrial].includes(
+    state.ActivityPage.formType
+  );
+
+const isActivityChemicalTreatment: (state: RootState) => boolean | undefined = (state) =>
+  state.ActivityPage.formType &&
+  [ActivitySubtypes.Treatment_Chemical_Plant_Aquatic, ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial].includes(
+    state.ActivityPage.formType
+  );
+
+export { createActivityReducer, selectActivity, isActivityChemicalTreatment, isActivityObservation };
 export type { ActivityState };

@@ -158,7 +158,7 @@ const ObservationPlantAquatic = () => {
               tooltip={tooltips.plant.waterbody.shoreline_percent}
               label={'Percent Covered (%)'}
               error={errors?.subtype_data?.shoreline_types?.[index]?.percent_covered}
-              {...register(`subtype_data.shoreline_types.${index}.percent_covered`)}
+              {...register(`subtype_data.shoreline_types.${index}.percent_covered`, { valueAsNumber: true })}
               width={Width.Half}
             />
             <DeleteControl disabled={disabled} onClick={() => remove(index)} />
@@ -172,14 +172,14 @@ const ObservationPlantAquatic = () => {
           label="Maximum Depth (m)"
           tooltip={tooltips.plant.waterbody.depth}
           error={errors?.subtype_data?.max_depth_m}
-          {...register('subtype_data.max_depth_m')}
+          {...register('subtype_data.max_depth_m', { valueAsNumber: true })}
           width={Width.Half}
         />
         <NumberInput
           label="Secchi Depth (m)"
           tooltip={tooltips.plant.waterbody.secchi_depth}
           error={errors?.subtype_data?.secchi_depth}
-          {...register('subtype_data.secchi_depth')}
+          {...register('subtype_data.secchi_depth', { valueAsNumber: true })}
           width={Width.Half}
         />
         <TextInput

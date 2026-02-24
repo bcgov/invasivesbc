@@ -17,7 +17,6 @@ const ObservationPlantTerrestrial = () => {
 
   return (
     <>
-      {/* Observation Persons Goes Here */}
       <Fieldset label={'Observation Plant Terrestrial Information'}>
         <SingleSelect
           label={'Soil Texture'}

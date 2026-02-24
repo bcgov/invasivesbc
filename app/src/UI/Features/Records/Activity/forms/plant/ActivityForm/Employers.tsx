@@ -15,7 +15,7 @@ type PropTypes = {
  * @desc High order component to control the available employers based on the user and form state.
  */
 const Employer = ({ width = Width.Full }: PropTypes) => {
-  const employerCodes = useSelector((state) => state.ActivityPage.formCodes?.FundingAgencyCode) ?? [];
+  const employerCodes = useSelector((state) => state.ActivityPage.formCodes?.EmployerCode) ?? [];
   const userEmployers = useSelector((state) => state.Auth?.extendedInfo?.employer)?.split(',');
   const username = useSelector((state) => state.Auth?.username);
   const userIsAdmin = useSelector((state) => state.Auth?.roles.some((r) => r.role_name === Role.MASTER_ADMINISTRATOR));

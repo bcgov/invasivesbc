@@ -59,3 +59,22 @@
     width: 24%;
   }
 }
+
+@media screen and (width < 650px) {
+  .field-array {
+    &.third-width,
+    &.quarter-width {
+      width: 49%;
+    }
+  }
+}
+
+@media screen and (width < 425px) {
+  .field-array {
+    &.half-width,
+    &.third-width,
+    &.quarter-width {
+      width: 100%;
+    }
+  }
+}

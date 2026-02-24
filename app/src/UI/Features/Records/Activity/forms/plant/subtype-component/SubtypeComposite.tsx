@@ -2,6 +2,8 @@ import { ActivitySubtypes } from 'sharedAPI';
 import { useSelector } from 'utils/use_selector';
 import ObservationPlantTerrestrial from 'UI/Features/Records/Activity/forms/plant/subtype-component/observation-plant-terrestrial/ObservationPlantTerrestrial';
 import ObservationPlantAquatic from 'UI/Features/Records/Activity/forms/plant/subtype-component/observation-plant-aquatic/ObservationPlantAquatic';
+import TreatmentMechPlantTerrestrial from './treatment-mech-plant-terrestrial/TreatmentMechPlantTerrestrial';
+import TreatmentMechPlantAquatic from './treatment-mech-plant-aquatic/TreatmentMechPlantAquatic';
 
 /**
  * @desc Handles the Branching Subtypes for Forms, matches Subtype to required Subfields
@@ -22,10 +24,8 @@ const SubtypeComposite = () => {
     [ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial]: (
       <p>Monitoring_Biocontrol_Release_Plant_Terrestrial Not Implemented</p>
     ),
-    [ActivitySubtypes.Treatment_Mechanical_Plant_Terrestrial]: (
-      <p>Treatment_Mechanical_Plant_Terrestrial Not Implemented</p>
-    ),
-    [ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic]: <p>Treatment_Mechanical_Plant_Aquatic Not Implemented</p>,
+    [ActivitySubtypes.Treatment_Mechanical_Plant_Terrestrial]: <TreatmentMechPlantTerrestrial />,
+    [ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic]: <TreatmentMechPlantAquatic />,
     [ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial]: (
       <p>Treatment_Chemical_Plant_Terrestrial Not Implemented</p>
     ),
