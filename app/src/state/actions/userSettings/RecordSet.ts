@@ -7,6 +7,7 @@ import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { CacheDownloadMode } from 'utils/record-cache';
 import RecordCache from 'state/actions/cache/RecordCache';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
+import EFilterType from 'constants/EFilterType';
 
 interface IUpdateFilter extends Partial<IFilter> {
   setID: string | number;
@@ -19,12 +20,6 @@ interface IRemoveFilter {
   filterID: string | number;
 }
 
-enum EFilterType {
-  Drawn = 'spatialFilterDrawn',
-  Uploaded = 'spatialFilterUploaded',
-  Table = 'tableFilter',
-  MostRecentObservation = 'mostRecentObservation'
-}
 interface IFilter {
   id: string;
   field: string;
@@ -159,5 +154,4 @@ class RecordSet {
 }
 
 export default RecordSet;
-export { EFilterType };
 export type { IUpdateFilter, IRemoveFilter, IFilter, IAddFilter, ISetPageLimit, ISetSort };
