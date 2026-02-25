@@ -124,7 +124,7 @@ class Activity {
     const mappedCodes = {};
     for (const arr of formCodes) {
       if (arr.length === 0) continue;
-      mappedCodes[arr[0]?.table] = arr;
+      mappedCodes[arr[0]?.table] = arr.sort((a, b) => a?.sort_order - b?.sort_order);
     }
     return mappedCodes;
   });

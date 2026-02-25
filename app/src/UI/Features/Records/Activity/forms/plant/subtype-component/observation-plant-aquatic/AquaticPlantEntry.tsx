@@ -1,7 +1,7 @@
 import { useSelector } from 'utils/use_selector';
 import { useFormContext, useWatch } from 'react-hook-form';
 import Spacer from 'UI/Reusable/Spacer/Spacer';
-import { AquaticPlantObservationSchema } from '../../interfaces';
+import { AquaticPlantObservationSchema, EntryBasePath } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import { useEffect, useState } from 'react';
 import TextInput from 'UI/Features/Records/Activity/forms/common/TextInput/TextInput';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
@@ -19,8 +19,6 @@ interface Props {
   index: number;
   remove: (index: number) => void;
 }
-
-type EntryBasePath = `subtype_data.entries.${number}`;
 
 const AquaticPlantEntry = ({ root, index, remove }: Props) => {
   const {
@@ -192,7 +190,7 @@ const AquaticPlantEntry = ({ root, index, remove }: Props) => {
           </Fieldset>
         </Fieldset>
       )}
-      <DeleteControl disabled={disabled} onClick={() => remove(index)} />
+      <DeleteControl onClick={() => remove(index)} />
     </>
   );
 };

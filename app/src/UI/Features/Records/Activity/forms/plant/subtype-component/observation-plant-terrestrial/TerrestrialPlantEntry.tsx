@@ -11,7 +11,7 @@ import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/N
 import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
 import { useEffect, useState } from 'react';
 import CheckboxUI from 'UI/Features/Records/Activity/forms/common/CheckboxUI/CheckboxUI';
-import { TerrestrialPlantObservationSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
+import { EntryBasePath, TerrestrialPlantObservationSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
 
 interface Props {
@@ -19,8 +19,6 @@ interface Props {
   index: number;
   remove: (index: number) => void;
 }
-
-type EntryBasePath = `subtype_data.entries.${number}`;
 
 const TerrestrialPlantEntry = ({ root, index, remove }: Props) => {
   const {
@@ -188,7 +186,7 @@ const TerrestrialPlantEntry = ({ root, index, remove }: Props) => {
         </Fieldset>
       )}
 
-      <DeleteControl disabled={disabled} onClick={() => remove(index)} />
+      <DeleteControl onClick={() => remove(index)} />
     </>
   );
 };

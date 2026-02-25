@@ -137,4 +137,36 @@ const DisposedMaterialFormat = [
     table: 'PlantDisposalFormat'
   }
 ];
-export { DisposedMaterialFormat, ObservationType, YesNo, YesNoUnknown, WaterbodyType, WaterLevelManagement };
+
+const TreatmentPass = [
+  {
+    full_name: 'First',
+    code: 'First',
+    table: 'TreatmentPass'
+  },
+  {
+    full_name: 'Second',
+    code: 'Second',
+    table: 'TreatmentPass'
+  },
+  {
+    full_name: 'Third',
+    code: 'Third',
+    table: 'TreatmentPass'
+  },
+  {
+    full_name: 'Unknown',
+    code: 'Unknown',
+    table: 'TreatmentPass'
+  }
+];
+
+export {
+  DisposedMaterialFormat,
+  ObservationType,
+  TreatmentPass,
+  YesNo,
+  YesNoUnknown,
+  WaterbodyType,
+  WaterLevelManagement
+};

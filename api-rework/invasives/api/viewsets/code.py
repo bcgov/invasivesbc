@@ -47,6 +47,7 @@ class CodeViewSet(ViewSet):
         SpecificUseCode,
         SubstrateCode,
         TerrestrialPlantCode,
+        TreatmentEfficacyRatingCode,
         WaterbodyFlowCode,
         WaterbodyFlowSeasonalCode,
         WaterbodyUseCode,

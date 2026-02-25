@@ -6,5 +6,8 @@ export type { AquaticPlantObservationSchema } from './AquaticObservation';
 // Mechanical
 export type { TerrestrialMechTreatment } from './TerrestrialMechTreatment';
 export type { AquaticMechTreatment } from './AquaticMechTreatment';
+// Monitoring
+export type { MonitoringChemPlantSchema, MonitoringMechPlantSchema } from './MechChemMonitoring';
 // FormSchema
 export type { FormSchema } from './FormSchema';
+export type { EntryBasePath } from './EntryBasePath';

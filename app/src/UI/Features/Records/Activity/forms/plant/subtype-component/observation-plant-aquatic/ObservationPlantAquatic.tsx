@@ -22,7 +22,7 @@ const ObservationPlantAquatic = () => {
   const codes = useSelector((state) => state.ActivityPage?.formCodes);
   const {
     register,
-    formState: { errors, disabled }
+    formState: { errors }
   } = useFormContext<AquaticPlantObservationSchema>();
 
   return (
@@ -161,7 +161,7 @@ const ObservationPlantAquatic = () => {
               {...register(`subtype_data.shoreline_types.${index}.percent_covered`, { valueAsNumber: true })}
               width={Width.Half}
             />
-            <DeleteControl disabled={disabled} onClick={() => remove(index)} />
+            <DeleteControl onClick={() => remove(index)} />
           </>
         )}
       />

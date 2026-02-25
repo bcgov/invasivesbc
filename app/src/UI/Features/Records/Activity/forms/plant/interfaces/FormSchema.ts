@@ -1,9 +1,18 @@
-import { TerrestrialPlantObservationSchema, AquaticPlantObservationSchema, TerrestrialMechTreatment } from '.';
+import {
+  TerrestrialPlantObservationSchema,
+  AquaticPlantObservationSchema,
+  TerrestrialMechTreatment,
+  MonitoringChemPlantSchema,
+  MonitoringMechPlantSchema,
+  AquaticMechTreatment
+} from '.';
 
 type FormSchema =
   | TerrestrialPlantObservationSchema
   | AquaticPlantObservationSchema
   | TerrestrialMechTreatment
-  | AquaticPlantObservationSchema;
+  | AquaticMechTreatment
+  | MonitoringChemPlantSchema
+  | MonitoringMechPlantSchema;
 
 export type { FormSchema };

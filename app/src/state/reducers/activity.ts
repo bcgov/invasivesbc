@@ -3,6 +3,7 @@ import { createNextState } from '@reduxjs/toolkit';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import { Feature } from 'geojson';
 import { ActivitySubtypes } from 'sharedAPI';
+import { RootState } from './rootReducer';
 import FormActions from 'state/actions/activity/FormActions';
 import FormCode from 'interfaces/FormCode';
 import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
@@ -16,7 +17,6 @@ import { GeoTrackingStatus } from 'constants/geoTrackingStatus';
 import DrawToolActions from 'state/actions/drawtool/drawToolActions';
 import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
-import { RootState } from './rootReducer';
 
 interface ActivityState {
   [MIGRATION_VERSION_KEY]: number;
