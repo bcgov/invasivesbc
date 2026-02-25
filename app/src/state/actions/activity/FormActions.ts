@@ -59,7 +59,6 @@ class FormActions {
   static readonly validateManualLinkedId = createAsyncThunk(
     `${this.PREFIX}/validateManualLinkedId`,
     async ({ id }: VerifyLinkedActivity, { getState, dispatch }) => {
-      console.log('DESTINY IS CALLING ME');
       const state: RootState = getState() as RootState;
       const MOBILE = state.Configuration.current.build.MOBILE;
       const OFFLINE = !state.Network.connected;
