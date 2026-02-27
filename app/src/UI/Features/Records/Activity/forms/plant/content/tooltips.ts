@@ -79,7 +79,34 @@ const tooltips = {
     treatment_efficacy_rating: 'Choose the efficacy of the treatment for the area that was treated.',
     management_efficacy_rating:
       'Choose the efficacy rating indicating the mortality of all the target species found on the site, including those that were not treated. Eg: 50% of plants on the site have evidence of treatment = Efficacy of 5.',
-    disposed_material_format: 'If relevant, choose how the overall quantity/amount of removed biomass was calculated.'
+    disposed_material_format: 'If relevant, choose how the overall quantity/amount of removed biomass was calculated.',
+    biocontrol: {
+      weather: {
+        temperature: 'Enter the highest temperature (in Celcius) that occurred during the activity',
+        cloud_cover: 'Enter the average cloud cover over the duration of the activity',
+        precipitation: 'Enter the average precipitation over the duration of the activity',
+        wind_speed: 'Enter the average wind over the duration of the activity',
+        wind_direction: 'Enter the average wind direction over the duration of the activity'
+      },
+      microsite: {
+        mesoslope_position: 'Select the most representative mesoslope condition',
+        site_surface_shape: 'Select the most representative slope shape'
+      },
+      agent: 'Genus species code of the agent (ie ALTICAR [Altica carduorum])',
+      linear_segment: 'If the invasive plant infestation is primarily linear in nature, choose Yes.',
+      mortality: 'Number of agents dead at time of release',
+      agent_source:
+        'Details of where the agents were collected or reared. Include IAPP site ID, InvasivesBC Collection # or description of location if source is outside of BC.',
+      plant_collected_from: 'If known, choose the species from the list that the agents were collected from',
+      plant_collected_from_manual:
+        'If the plant is not listed on the drop down in the previous field, type in the name of the plant the agents were collected from. Scientific name is preferred, but can be common name if required.',
+      counts: {
+        title: 'The quantity of the biocontrol agents in the life stage present.',
+        agent_life_stage: 'Life stage of biocontrol agent',
+        quantity:
+          'Number is derived by an actual sub-sample count and multiplied by the total number of plants/plant parts the agent resides upon or within, e.g 5 larvae within a gall X 10 galls = 50 larvae'
+      }
+    }
   }
 };
 
