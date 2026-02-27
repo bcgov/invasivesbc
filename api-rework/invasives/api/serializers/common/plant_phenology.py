@@ -7,9 +7,6 @@ class TargetPlantHeightsSerializer(serializers.ModelSerializer):
         model = TargetPlantHeights
         fields = ["height_cm"]
 
-    def to_representation(self, instance):
-        return (super().to_representation(instance))["height_cm"]
-
 
 class TargetPlantPhenologySerializer(serializers.ModelSerializer):
     target_plant_heights = serializers.SerializerMethodField()

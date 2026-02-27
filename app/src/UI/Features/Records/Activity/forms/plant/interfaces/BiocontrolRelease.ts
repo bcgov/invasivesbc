@@ -31,7 +31,7 @@ interface BiocontrolReleaseSchema extends BaseForm {
       seeds_forming: number;
       senescent: number;
       target_plant_heights: Array<{
-        height: number;
+        height_cm: number;
       }>;
     };
     // Microsites

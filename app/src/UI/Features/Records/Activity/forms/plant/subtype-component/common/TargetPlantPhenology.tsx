@@ -138,8 +138,8 @@ const TargetPlantPhenology = () => {
                 <NumberInput
                   label="Height"
                   required
-                  error={errors?.subtype_data?.target_plant_phenology?.target_plant_heights?.[index]?.height}
-                  {...register(`subtype_data.target_plant_phenology.target_plant_heights.${index}.height`, {
+                  error={errors?.subtype_data?.target_plant_phenology?.target_plant_heights?.[index]?.height_cm}
+                  {...register(`subtype_data.target_plant_phenology.target_plant_heights.${index}.height_cm`, {
                     required: true,
                     valueAsNumber: true,
                     validate: (val) => minValue(val!, 1)
