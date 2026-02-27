@@ -13,6 +13,7 @@ interface PropTypes<T extends FieldValues> {
   readonly options: Array<FormCode>;
   readonly placeholder?: string;
   readonly required?: boolean;
+  readonly noOptionsMessage?: string;
   readonly rules?: RegisterOptions<T, Path<T>>;
   readonly tooltip?: string;
   readonly width?: Width;
@@ -25,6 +26,7 @@ export function SingleSelect<T extends FieldValues>({
   placeholder = label,
   required = false,
   rules,
+  noOptionsMessage,
   tooltip,
   width
 }: PropTypes<T>) {
@@ -55,12 +57,12 @@ export function SingleSelect<T extends FieldValues>({
               className="select-input"
               isDisabled={disabled}
               isSearchable={mappedOptions?.length >= MIN_OPTIONS_TO_ENABLE_SEARCH}
-              noOptionsMessage={() => 'No options available'}
-              onChange={(opt) => onChange(opt?.value)}
+              noOptionsMessage={() => noOptionsMessage ?? 'No options available'}
+              onChange={(opt) => onChange(opt?.value ?? '')}
               options={mappedOptions}
               placeholder={placeholder}
               ref={ref}
-              isClearable={!required}
+              isClearable
               aria-invalid={!!error}
               value={mappedOptions?.find((o) => o.value === (value?.code ?? value)) || null}
             />
