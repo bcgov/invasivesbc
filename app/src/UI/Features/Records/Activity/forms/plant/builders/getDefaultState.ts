@@ -7,6 +7,7 @@ import {
   getMonitoringChemPlantSubtypeFields,
   getMonitoringMechPlantSubtypeFields
 } from './getMonitoringMechChemPlantSubtypeFields';
+import getBioControlReleaseSubtypeFields from './getBiocontrolReleaseSubtypeFields';
 import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces/FormSchema';
 
 /**
@@ -27,12 +28,13 @@ const getSubtypeData = (subtype: ActivitySubtypes): FormSchema['subtype_data'] =
       return getTreatmentMechanicalTerrestrialPlantSubtypeFields();
     case ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic:
       return getTreatmentMechanicalAquaticPlantSubtypeFields();
+    case ActivitySubtypes.Biocontrol_Release:
+      return getBioControlReleaseSubtypeFields();
     case ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial:
     case ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial:
     case ActivitySubtypes.Treatment_Chemical_Plant_Aquatic:
     case ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial:
     case ActivitySubtypes.Biocontrol_Collection:
-    case ActivitySubtypes.Biocontrol_Release:
     default:
       return getObservationPlantTerrestrialSubtypeFields();
   }
@@ -66,6 +68,7 @@ const getDefaultFormState = (
     utm_zone: 0,
     utm_easting: 0,
     utm_northing: 0,
+    linked_activities: [],
     participants: [{ name: '', pac_number: isChemical ? 0 : undefined }],
     subtype_data: subtype_data
   };

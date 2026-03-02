@@ -10,7 +10,7 @@ type PropTypes = {
   state: boolean;
   tooltip?: string;
   onChange: Dispatch<SetStateAction<boolean>>;
-  width: Width;
+  width?: Width;
 };
 
 const CheckboxUI = ({ label, onChange, state, disabled = false, tooltip, width }: PropTypes) => {

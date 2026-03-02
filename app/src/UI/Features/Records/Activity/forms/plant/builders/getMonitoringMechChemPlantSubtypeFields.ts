@@ -1,4 +1,4 @@
-import { MonitoringChemPlantSchema, MonitoringMechPlantSchema } from '../interfaces';
+import { MonitoringChemPlantSchema, MonitoringMechPlantSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 
 const getSubtypeFields = (): MonitoringChemPlantSchema['subtype_data'] | MonitoringMechPlantSchema['subtype_data'] => ({
   entries: [

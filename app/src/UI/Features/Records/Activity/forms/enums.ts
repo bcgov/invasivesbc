@@ -161,7 +161,56 @@ const TreatmentPass = [
   }
 ];
 
+const CardinalDirection = [
+  {
+    full_name: 'North',
+    code: 'N',
+    table: 'CardinalDirection'
+  },
+  {
+    full_name: 'Northeast',
+    code: 'NE',
+    table: 'CardinalDirection'
+  },
+  {
+    full_name: 'East',
+    code: 'E',
+    table: 'CardinalDirection'
+  },
+  {
+    full_name: 'Southeast',
+    code: 'SE',
+    table: 'CardinalDirection'
+  },
+  {
+    full_name: 'South',
+    code: 'S',
+    table: 'CardinalDirection'
+  },
+  {
+    full_name: 'Southwest',
+    code: 'SW',
+    table: 'CardinalDirection'
+  },
+  {
+    full_name: 'West',
+    code: 'W',
+    table: 'CardinalDirection'
+  },
+  {
+    full_name: 'Northwest',
+    code: 'NW',
+    table: 'CardinalDirection'
+  },
+  {
+    full_name: 'Non-Applicable',
+    code: 'NA',
+    table: 'CardinalDirection'
+  }
+];
+
 export {
+  CardinalDirection,
   DisposedMaterialFormat,
   ObservationType,
   TreatmentPass,

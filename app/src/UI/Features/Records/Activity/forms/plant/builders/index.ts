@@ -6,3 +6,4 @@ export {
   getMonitoringChemPlantSubtypeFields,
   getMonitoringMechPlantSubtypeFields
 } from './getMonitoringMechChemPlantSubtypeFields';
+export { default as getBioControlReleaseSubtypeFields } from './getBiocontrolReleaseSubtypeFields';

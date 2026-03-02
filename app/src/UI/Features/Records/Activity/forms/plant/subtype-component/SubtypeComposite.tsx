@@ -5,6 +5,7 @@ import ObservationPlantAquatic from 'UI/Features/Records/Activity/forms/plant/su
 import TreatmentMechPlantTerrestrial from './treatment-mech-plant-terrestrial/TreatmentMechPlantTerrestrial';
 import TreatmentMechPlantAquatic from './treatment-mech-plant-aquatic/TreatmentMechPlantAquatic';
 import MonitoringChemMechPlant from './monitoring-chem-mech-plant/MonitoringChemMechPlant';
+import BiocontrolRelease from './biocontrol-release/BiocontrolRelease';
 
 /**
  * @desc Handles the Branching Subtypes for Forms, matches Subtype to required Subfields
@@ -31,7 +32,7 @@ const SubtypeComposite = () => {
       <p>Monitoring_Biocontrol_Dispersal_Plant_Terrestrial Not Implemented</p>
     ),
     [ActivitySubtypes.Biocontrol_Collection]: <p>Biocontrol_Collection Not Implemented</p>,
-    [ActivitySubtypes.Biocontrol_Release]: <p>Biocontrol_Release Not Implemented</p>
+    [ActivitySubtypes.Biocontrol_Release]: <BiocontrolRelease/>
   }[formType];
 };
 
