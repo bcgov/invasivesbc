@@ -30,7 +30,7 @@ const BiocontrolReleaseEntry = ({ index, remove }: PropTypes) => {
     register,
     watch,
     setValue,
-    formState: { errors }
+    formState: { errors, isDirty }
   } = useFormContext<BiocontrolReleaseSchema>();
   const codes = useSelector((state) => state.ActivityPage.formCodes);
   const plantToAgentMap = useSelector((state) => state.ActivityPage.biocontrol?.plantToAgentMap);
@@ -51,7 +51,7 @@ const BiocontrolReleaseEntry = ({ index, remove }: PropTypes) => {
       agentsForPlant.some((a) => a.agent_code_name === code)
     );
     const currentSelectionNoLongerValid = selectedAgent && !validAgents.some(({ code }) => code === selectedAgent);
-    if (currentSelectionNoLongerValid) {
+    if (currentSelectionNoLongerValid && isDirty) {
       setValue(`subtype_data.entries.${index}.biocontrol_agent`, '');
     }
     return validAgents;
