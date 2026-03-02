@@ -12,7 +12,7 @@ const TargetPlantPhenology = ({ targetPlantPhenology }) => (
     <TextInput label={'winter dormant'} value={targetPlantPhenology?.winter_dormant} />
     <Fieldset small label={'target plant heights'}>
       {targetPlantPhenology?.target_plant_heights.map((h) => (
-        <TextInput value={h} />
+        <TextInput value={h.height_cm} />
       ))}
     </Fieldset>
   </Fieldset>
