@@ -1,8 +1,8 @@
 import { ActivityStatus } from 'sharedAPI';
 import { RECORD_COLOURS } from './colors';
+import EFilterType from './EFilterType';
 import { RecordSetId, RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
-import { EFilterType } from 'state/actions/userSettings/RecordSet';
 
 const defaultRecordSets: Record<PropertyKey, Partial<UserRecordSet>> = {
   [RecordSetId.Drafts]: {

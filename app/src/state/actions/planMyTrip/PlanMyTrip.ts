@@ -1,6 +1,5 @@
 import { createAction, createAsyncThunk, nanoid } from '@reduxjs/toolkit';
 import { Feature, GeoJSON } from 'geojson';
-import { EFilterType } from 'state/actions/userSettings/RecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import RecordCache from 'state/actions/cache/RecordCache';
 import TileCache from 'state/actions/cache/TileCache';
@@ -11,6 +10,7 @@ import { IPlanMyTripCacheStatus, IPlanMyTripCacheStatuses } from 'utils/plan-my-
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import Alerts from 'state/actions/alerts/Alerts';
 import tripAlertMessages from 'constants/alerts/tripAlerts';
+import EFilterType from 'constants/EFilterType';
 
 /**
  * @desc Parameters for a user planning their trip

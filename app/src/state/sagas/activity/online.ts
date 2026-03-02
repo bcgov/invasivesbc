@@ -12,7 +12,7 @@ import SuggestedTreatmentId from 'interfaces/SuggestedTreatmentId';
 import { AuthActions } from 'state/actions/auth/Auth';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
 import parseActivityForPermissions from 'utils/parseActivityForPermissions';
-import { EFilterType } from 'state/actions/userSettings/RecordSet';
+import EFilterType from 'constants/EFilterType';
 import { PLATFORM_SRC } from 'constants/misc';
 
 export function* handle_ACTIVITY_CREATE_NETWORK(action: PayloadAction<Record<string, any>>) {

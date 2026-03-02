@@ -28,8 +28,8 @@ import Activity, { SwitchRecordSetPayload } from 'state/actions/activity/Activit
 import { RootState } from 'state/reducers/rootReducer';
 import TileCache from 'state/actions/cache/TileCache';
 import { RECORD_COLOURS } from 'constants/colors';
+import EFilterType from 'constants/EFilterType';
 import {
-  EFilterType,
   IAddFilter,
   IRemoveFilter,
   ISetPageLimit,

@@ -53,7 +53,7 @@ const Participants = () => {
               })}
             />
           )}
-          <DeleteControl disabled={disabled} onClick={() => remove(index)} />
+          <DeleteControl onClick={() => remove(index)} />
         </>
       )}
     />

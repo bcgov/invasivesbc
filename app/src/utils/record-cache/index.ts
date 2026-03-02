@@ -8,7 +8,7 @@ import { getCurrentJWT } from 'state/sagas/auth/auth';
 import BaseCacheService from 'utils/base-classes/BaseCacheService';
 import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
 import FilterObjects from 'interfaces/FilterObjects';
-import { EFilterType } from 'state/actions/userSettings/RecordSet';
+import EFilterType from 'constants/EFilterType';
 
 const config = await import('state/configuration/runtime-config');
 const API_BASE = config.runtimeConfig.API_BASE;

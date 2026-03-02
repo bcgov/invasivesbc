@@ -17,7 +17,7 @@ import IappTableRow from 'interfaces/IappTableRecord';
 import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import bboxToPolygon from 'utils/bboxToPolygon';
 import { getUnnestedFieldsForActivity } from 'UI/Features/Records/RecordSet/RecordTableHelpers';
-import { EFilterType } from 'state/actions/userSettings/RecordSet';
+import EFilterType from 'constants/EFilterType';
 
 class LocalForageRecordCacheService extends RecordCacheService {
   private static _instance: LocalForageRecordCacheService;

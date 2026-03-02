@@ -23,7 +23,8 @@ import {
   getUnnestedFieldsForActivity,
   getUnnestedFieldsForIAPP
 } from 'UI/Features/Records/RecordSet/RecordTableHelpers';
-import { EFilterType, IFilter } from 'state/actions/userSettings/RecordSet';
+import EFilterType from 'constants/EFilterType';
+import { IFilter } from 'state/actions/userSettings/RecordSet';
 
 const CACHE_DB_NAME = 'record_cache.db';
 const CACHE_UNAVAILABLE = 'cache not available';

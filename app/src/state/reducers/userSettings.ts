@@ -14,7 +14,7 @@ import { CacheDownloadMode } from 'utils/record-cache';
 import { APIDocs } from 'state/actions/userSettings/APIDocs';
 import { activityColumnsToDisplay, iappColumnsToDisplay } from 'UI/Features/Records/RecordSet/RecordTableHelpers';
 import defaultRecordSets from 'constants/defaultRecordSets';
-import { EFilterType } from 'state/actions/userSettings/RecordSet';
+import EFilterType from 'constants/EFilterType';
 import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
 
 interface UserSettingsState {
