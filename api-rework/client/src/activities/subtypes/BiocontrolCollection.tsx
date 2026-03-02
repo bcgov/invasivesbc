@@ -10,7 +10,7 @@ const BiocontrolCollection = ({ subtypeData }) => {
   return (
     <>
       <WeatherConditions subtypeData={subtypeData} />
-      <MicrositeConditions microsite_conditions={subtypeData?.microsite_conditions} />
+      <MicrositeConditions microsite_conditions={subtypeData} />
       <Fieldset label={'Collection Information'}>
         {!!subtypeData?.entries?.length && <p>No Data</p>}
         {subtypeData?.entries?.map((ci) => (
