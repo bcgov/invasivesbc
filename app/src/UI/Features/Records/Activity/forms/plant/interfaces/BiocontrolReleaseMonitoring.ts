@@ -15,25 +15,21 @@ interface BiocontrolReleaseMonitoringSchema extends BaseForm {
       location_agent_found: Array<string>;
       number_of_sweeps?: number;
       sign_of_biocontrol_presence: Array<string>;
-      start_time?: string;
-      stop_time?: string;
+      start_time?: Date;
+      stop_time?: Date;
       suitable_for_collection: string;
-      actual_biological_agents: [
-        {
-          quantity: number;
-          stage: string;
-          plant_position: string;
-          agent_location: string;
-        }
-      ];
-      estimated_biological_agents: [
-        {
-          quantity: number;
-          stage: string;
-          plant_position: string;
-          agent_location: string;
-        }
-      ];
+      actual_biological_agents: Array<{
+        quantity: number;
+        stage: string;
+        plant_position: string;
+        agent_location: string;
+      }>;
+      estimated_biological_agents: Array<{
+        quantity: number;
+        stage: string;
+        plant_position: string;
+        agent_location: string;
+      }>;
     }>;
     target_plant_phenology?: {
       winter_dormant: number;
