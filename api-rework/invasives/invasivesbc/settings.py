@@ -115,6 +115,7 @@ USE_TZ = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:3001",
+    "https://normalization-appv2-dev-invasivesbci.apps.silver.devops.gov.bc.ca",
     "https://normalization-fe-dev-invasivesbci.apps.silver.devops.gov.bc.ca",
 ]
 
