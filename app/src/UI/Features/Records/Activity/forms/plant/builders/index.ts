@@ -7,3 +7,5 @@ export {
   getMonitoringMechPlantSubtypeFields
 } from './getMonitoringMechChemPlantSubtypeFields';
 export { default as getBioControlReleaseSubtypeFields } from './getBiocontrolReleaseSubtypeFields';
+export { default as getMonitoringBiocontrolReleaseSubtypeFields } from './getBiocontrolReleaseSubtypeFields';
+export { default as getTreatmentMechanicalAquaticPlantSubtypeFields } from './getTreatmentMechanicalAquaticPlantSubtypeFields';

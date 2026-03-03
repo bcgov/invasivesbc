@@ -1,13 +1,14 @@
 import { ActivitySubtypes } from 'sharedAPI';
-import getObservationAquaticPlantSubtypeFields from './getObservationAquaticPlantSubtypeFields';
-import getObservationPlantTerrestrialSubtypeFields from './getObservationTerrestrialPlantSubtypeFields';
-import getTreatmentMechanicalTerrestrialPlantSubtypeFields from './getTreatmentMechanicalTerrestrialPlantSubtypeFields';
-import getTreatmentMechanicalAquaticPlantSubtypeFields from './getTreatmentMechanicalAquaticPlantSubtypeFields';
 import {
+  getBioControlReleaseSubtypeFields,
+  getMonitoringBiocontrolReleaseSubtypeFields,
   getMonitoringChemPlantSubtypeFields,
-  getMonitoringMechPlantSubtypeFields
-} from './getMonitoringMechChemPlantSubtypeFields';
-import getBioControlReleaseSubtypeFields from './getBiocontrolReleaseSubtypeFields';
+  getMonitoringMechPlantSubtypeFields,
+  getObservationAquaticPlantSubtypeFields,
+  getObservationPlantTerrestrialSubtypeFields,
+  getTreatmentMechanicalAquaticPlantSubtypeFields,
+  getTreatmentMechanicalTerrestrialPlantSubtypeFields
+} from '.';
 import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces/FormSchema';
 
 /**
@@ -31,6 +32,7 @@ const getSubtypeData = (subtype: ActivitySubtypes): FormSchema['subtype_data'] =
     case ActivitySubtypes.Biocontrol_Release:
       return getBioControlReleaseSubtypeFields();
     case ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial:
+      return getMonitoringBiocontrolReleaseSubtypeFields();
     case ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial:
     case ActivitySubtypes.Treatment_Chemical_Plant_Aquatic:
     case ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial:
