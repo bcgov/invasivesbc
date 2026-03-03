@@ -1,6 +1,6 @@
 interface FormCode {
   full_name: string;
-  code: string;
+  code: string | boolean;
   code_sort_order?: number;
   table: string;
 }
