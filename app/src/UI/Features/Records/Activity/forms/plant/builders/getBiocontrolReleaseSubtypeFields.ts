@@ -33,7 +33,7 @@ const getBioControlReleaseSubtypeFields = (): BiocontrolReleaseSchema['subtype_d
     flowering: 0,
     seeds_forming: 0,
     senescent: 0,
-    target_plant_heights: [{ height: 0 }]
+    target_plant_heights: [{ height_cm: 0 }]
   },
   mesoslope_position: '',
   site_surface_shape: '',
