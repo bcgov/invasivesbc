@@ -101,7 +101,6 @@ const BiocontrolCount = ({ index, estimate = false, extended = false }: PropType
           {extended && (
             <>
               <SingleSelect
-                tooltip={tooltips.plant.biocontrol.counts.agent_life_stage}
                 name={`${CONFIG.path}.${entryIndex}.plant_position`}
                 label={'Biological Plant Position'}
                 required
@@ -109,7 +108,6 @@ const BiocontrolCount = ({ index, estimate = false, extended = false }: PropType
                 options={codes.PlantPositionCode}
               />
               <SingleSelect
-                tooltip={tooltips.plant.biocontrol.counts.agent_life_stage}
                 name={`${CONFIG.path}.${entryIndex}.agent_location`}
                 label={'Biological Agent Location'}
                 required
