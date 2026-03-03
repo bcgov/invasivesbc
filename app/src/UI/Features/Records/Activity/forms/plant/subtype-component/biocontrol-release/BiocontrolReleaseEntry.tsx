@@ -6,26 +6,18 @@ import { YesNoUnknown } from 'UI/Features/Records/Activity/forms/enums';
 import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
 import { useFormContext } from 'react-hook-form';
 import { BiocontrolReleaseSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
-import { minValue, noFutureDate, noRepeatKey } from 'UI/Features/Records/Activity/forms/common/validators';
+import { minValue, noFutureDate } from 'UI/Features/Records/Activity/forms/common/validators';
 import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
 import TextInput from 'UI/Features/Records/Activity/forms/common/TextInput/TextInput';
 import DateInput from 'UI/Features/Records/Activity/forms/common/DateInput/DateInput';
-import ArrayField from 'UI/Features/Records/Activity/forms/common/ArrayField/ArrayField';
-import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
-import { ActivitySubtypes } from 'sharedAPI';
 import { useMemo } from 'react';
+import BiocontrolCount from '../common/BiocontrolCount';
 
 interface PropTypes {
   index: number;
   remove: (index: number) => void;
 }
 const BiocontrolReleaseEntry = ({ index, remove }: PropTypes) => {
-  const doesRowContainActualEstimatedAgents = (formValues: BiocontrolReleaseSchema) => {
-    const totalCountEntries =
-      formValues.subtype_data.entries[index].actual_biological_agents.length +
-      formValues.subtype_data.entries[index].estimated_biological_agents.length;
-    return totalCountEntries >= 1 || 'Record must contain at least one "Actual" or "Estimated" biological agents entry';
-  };
   const {
     register,
     watch,
@@ -135,87 +127,8 @@ const BiocontrolReleaseEntry = ({ index, remove }: PropTypes) => {
         {...register(`subtype_data.entries.${index}.plant_collected_from_manual`)}
       />
       {/* Biocontrol Agent Count Section (Actuals) */}
-      <ArrayField<BiocontrolReleaseSchema, `subtype_data.entries.${number}.actual_biological_agents`>
-        label={'Actual Biological Agents'}
-        name={`subtype_data.entries.${index}.actual_biological_agents`}
-        tooltip={tooltips.plant.biocontrol.counts.title}
-        width={Width.Half}
-        rules={{
-          validate: {
-            noRepeatLifeStage: (val) => noRepeatKey(val, 'stage', 'Agent Stage'),
-            mustIncludeEstimatedOrActual: (_, formValues) => doesRowContainActualEstimatedAgents(formValues)
-          }
-        }}
-        emptyValue={
-          (getDefaultFormState(ActivitySubtypes.Biocontrol_Release) as BiocontrolReleaseSchema).subtype_data.entries[0]
-            .actual_biological_agents[0]
-        }
-        renderRow={(entryIndex, removeEntry) => (
-          <>
-            <SingleSelect
-              tooltip={tooltips.plant.biocontrol.counts.agent_life_stage}
-              name={`subtype_data.entries.${index}.actual_biological_agents.${entryIndex}.stage`}
-              label={'Biological Agent Stage'}
-              required
-              rules={{ required: true }}
-              options={codes.BioAgentLifeStageCode}
-            />
-            <NumberInput
-              label={'Biological Agent Quantity'}
-              tooltip={tooltips.plant.biocontrol.counts.quantity}
-              required
-              error={errors?.subtype_data?.entries?.[index]?.actual_biological_agents?.[entryIndex]?.quantity}
-              {...register(`subtype_data.entries.${index}.actual_biological_agents.${entryIndex}.quantity`, {
-                required: true,
-                valueAsNumber: true,
-                validate: (val) => minValue(val, 1)
-              })}
-            />
-            <DeleteControl onClick={() => removeEntry(entryIndex)} />
-          </>
-        )}
-      />
-      {/* Biocontrol Agent Count Section (Estimates) */}
-      <ArrayField<BiocontrolReleaseSchema, `subtype_data.entries.${number}.estimated_biological_agents`>
-        label={'Estimated Biological Agents'}
-        name={`subtype_data.entries.${index}.estimated_biological_agents`}
-        tooltip={tooltips.plant.biocontrol.counts.title}
-        width={Width.Half}
-        rules={{
-          validate: {
-            noRepeatLifeStage: (val) => noRepeatKey(val, 'stage', 'Agent Stage'),
-            mustIncludeEstimatedOrActual: (_, formValues) => doesRowContainActualEstimatedAgents(formValues)
-          }
-        }}
-        emptyValue={
-          (getDefaultFormState(ActivitySubtypes.Biocontrol_Release) as BiocontrolReleaseSchema).subtype_data.entries[0]
-            .estimated_biological_agents[0]
-        }
-        renderRow={(entryIndex, removeEntry) => (
-          <>
-            <SingleSelect
-              tooltip={tooltips.plant.biocontrol.counts.agent_life_stage}
-              name={`subtype_data.entries.${index}.estimated_biological_agents.${entryIndex}.stage`}
-              label={'Biological Agent Stage'}
-              required
-              rules={{ required: true }}
-              options={codes.BioAgentLifeStageCode}
-            />
-            <NumberInput
-              label={'Biological Agent Quantity'}
-              tooltip={tooltips.plant.biocontrol.counts.quantity}
-              required
-              error={errors?.subtype_data?.entries?.[index]?.estimated_biological_agents?.[entryIndex]?.quantity}
-              {...register(`subtype_data.entries.${index}.estimated_biological_agents.${entryIndex}.quantity`, {
-                required: true,
-                valueAsNumber: true,
-                validate: (val) => minValue(val, 1)
-              })}
-            />
-            <DeleteControl onClick={() => removeEntry(entryIndex)} />
-          </>
-        )}
-      />
+      <BiocontrolCount index={index} />
+      <BiocontrolCount estimate index={index} />
       <DeleteControl onClick={() => remove(index)} />
     </>
   );
