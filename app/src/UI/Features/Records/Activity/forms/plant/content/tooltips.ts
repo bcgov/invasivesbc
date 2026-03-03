@@ -106,6 +106,14 @@ const tooltips = {
         quantity:
           'Number is derived by an actual sub-sample count and multiplied by the total number of plants/plant parts the agent resides upon or within, e.g 5 larvae within a gall X 10 galls = 50 larvae'
       }
+    },
+    spread_results: {
+      agent_density: 'Total # of bioagents at the site ÷ total # of plants surveyed (or sweeps) x 100',
+      plant_attack: 'Total # of plants with bioagents at the site ÷ total # of plants surveyed (or sweeps) x 100',
+      max_spread_m: 'Distance (m): Record the greatest distance the agent has spread over the site.',
+      max_spread_deg: 'Aspect (degrees): Record the direction/aspect of the greatest distance the agent has spread.',
+      recorded:
+        'Optional monitoring technique that records the distance biocontrol agents have spread beyond the release UTM. Beyond 100m is Dispersal monitoring.'
     }
   }
 };
