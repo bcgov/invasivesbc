@@ -53,12 +53,12 @@ const BiocontrolCount = ({ index, estimate = false, extended = false }: PropType
     return {
       errors: errors?.subtype_data?.entries?.[index]?.actual_biological_agents,
       path: `subtype_data.entries.${index}.actual_biological_agents` as AgentPath,
-      label: 'Actual BiologicalAgents'
+      label: 'Actual Biological Agents'
     };
   })();
   return (
     <ArrayField<BiocontrolCountingSchemas, AgentPath>
-      label={'Estimated Biological Agents'}
+      label={CONFIG.label}
       name={CONFIG.path}
       tooltip={tooltips.plant.biocontrol.counts.title}
       width={Width.Half}
