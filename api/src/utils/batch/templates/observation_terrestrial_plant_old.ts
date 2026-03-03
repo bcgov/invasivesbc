@@ -4,22 +4,19 @@ import {
   ActivityPersons,
   BasicInformation,
   BasicInformationRowValidators,
-  DuplicateInvasivePlantValidator,
-  ObservationCompleteSetValidator,
   PositiveObservationPlantValidator,
   ProjectInformation,
-  SampleCollectedNotAllowedValidator,
   SlopeAspectValidator
 } from 'utils/batch/shared-columns';
 
-const ObservationTerrestrialPlant = new Template(
-  'observation_terrestrial_plant',
-  'Observation - Terrestrial Plant',
+const ObservationTerrestrialPlantOld = new Template(
+  'observation_terrestrial_plant_old',
+  'Observation - Terrestrial Plant Old',
   null
 );
-ObservationTerrestrialPlant.subtype = 'Activity_Observation_PlantTerrestrial';
+ObservationTerrestrialPlantOld.subtype = 'Activity_Observation_PlantTerrestrial';
 
-ObservationTerrestrialPlant.columns = [
+ObservationTerrestrialPlantOld.columns = [
   ...BasicInformation,
   ...ProjectInformation,
   ...ActivityPersons,
@@ -81,7 +78,7 @@ ObservationTerrestrialPlant.columns = [
     'form_data.activity_subtype_data.Observation_PlantTerrestrial_Information.suitable_for_biocontrol_agent'
   ).build(),
   new TemplateColumnBuilder(
-    'Observation - Invasive Plant 1',
+    'Observation - Invasive Plant',
     'codeReference',
     'form_data.activity_subtype_data.TerrestrialPlants[0].invasive_plant_code'
   )
@@ -89,7 +86,7 @@ ObservationTerrestrialPlant.columns = [
     .isRequired()
     .build(),
   new TemplateColumnBuilder(
-    'Observation - Type 1',
+    'Observation - Type',
     'codeReference',
     'form_data.activity_subtype_data.TerrestrialPlants[0].observation_type'
   )
@@ -97,129 +94,97 @@ ObservationTerrestrialPlant.columns = [
     .isRequired()
     .build(),
   new TemplateColumnBuilder(
-    'Observation - Density 1',
+    'Observation - Density',
     'codeReference',
     'form_data.activity_subtype_data.TerrestrialPlants[0].invasive_plant_density_code'
   )
     .referencesCode('invasive_plant_density_code')
+    .isRequired(false)
     .build(),
   new TemplateColumnBuilder(
-    'Observation - Distribution 1',
+    'Observation - Distribution',
     'codeReference',
     'form_data.activity_subtype_data.TerrestrialPlants[0].invasive_plant_distribution_code'
   )
     .referencesCode('invasive_plant_distribution_code')
+    .isRequired(false)
     .build(),
   new TemplateColumnBuilder(
-    'Observation - Life Stage 1',
+    'Observation - Life Stage',
     'codeReference',
     'form_data.activity_subtype_data.TerrestrialPlants[0].plant_life_stage_code'
   )
     .referencesCode('plant_life_stage_code')
+    .isRequired(false)
     .build(),
 
   new TemplateColumnBuilder(
-    'Voucher - Sample Collected? 1',
+    'Voucher - Sample Collected?',
     'codeReference',
     'form_data.activity_subtype_data.TerrestrialPlants[0].voucher_specimen_collected'
   )
+    .isRequired()
     .hardcodedCodes(YES_NO_CODES)
     .build(),
   new TemplateColumnBuilder(
-    'Observation - Invasive Plant 2',
-    'codeReference',
-    'form_data.activity_subtype_data.TerrestrialPlants[1].invasive_plant_code'
-  )
-    .referencesCode('invasive_plant_code')
-    .build(),
+    'Voucher - Sample ID',
+    'text',
+    'form_data.activity_subtype_data.TerrestrialPlants[0].voucher_specimen_collection_information.voucher_sample_id'
+  ).build(),
   new TemplateColumnBuilder(
-    'Observation - Type 2',
-    'codeReference',
-    'form_data.activity_subtype_data.TerrestrialPlants[1].observation_type'
-  )
-    .hardcodedCodes(OBSERVATION_TYPE_CODES)
-    .build(),
+    'Voucher - Date Collected',
+    'date',
+    'form_data.activity_subtype_data.TerrestrialPlants[0].voucher_specimen_collection_information.date_voucher_collected'
+  ).build(),
   new TemplateColumnBuilder(
-    'Observation - Density 2',
-    'codeReference',
-    'form_data.activity_subtype_data.TerrestrialPlants[1].invasive_plant_density_code'
-  )
-    .referencesCode('invasive_plant_density_code')
-    .build(),
+    'Voucher - Date Verified',
+    'date',
+    'form_data.activity_subtype_data.TerrestrialPlants[0].voucher_specimen_collection_information.date_voucher_verified'
+  ).build(),
   new TemplateColumnBuilder(
-    'Observation - Distribution 2',
-    'codeReference',
-    'form_data.activity_subtype_data.TerrestrialPlants[1].invasive_plant_distribution_code'
-  )
-    .referencesCode('invasive_plant_distribution_code')
-    .build(),
+    'Voucher - Name of Herbarium',
+    'text',
+    'form_data.activity_subtype_data.TerrestrialPlants[0].voucher_specimen_collection_information.name_of_herbarium'
+  ).build(),
   new TemplateColumnBuilder(
-    'Observation - Life Stage 2',
-    'codeReference',
-    'form_data.activity_subtype_data.TerrestrialPlants[1].plant_life_stage_code'
-  )
-    .referencesCode('plant_life_stage_code')
-    .build(),
+    'Voucher - Accession Number',
+    'text',
+    'form_data.activity_subtype_data.TerrestrialPlants[0].voucher_specimen_collection_information.accession_number'
+  ).build(),
+  new TemplateColumnBuilder(
+    'Voucher - Verifying Person',
+    'text',
+    'form_data.activity_subtype_data.TerrestrialPlants[0].voucher_specimen_collection_information.voucher_verification_completed_by.person_name'
+  ).build(),
+  new TemplateColumnBuilder(
+    'Voucher - Verifying Organization',
+    'text',
+    'form_data.activity_subtype_data.TerrestrialPlants[0].voucher_specimen_collection_information.voucher_verification_completed_by.organization'
+  ).build(),
+
+  // utm zone is a number here and a string elsewhere. ?!?
+  new TemplateColumnBuilder(
+    'Voucher - UTM Zone',
+    'numeric',
+    'form_data.activity_subtype_data.TerrestrialPlants[0].voucher_specimen_collection_information.exact_utm_coords.utm_zone'
+  ).build(),
 
   new TemplateColumnBuilder(
-    'Voucher - Sample Collected? 2',
-    'codeReference',
-    'form_data.activity_subtype_data.TerrestrialPlants[1].voucher_specimen_collected'
-  )
-    .hardcodedCodes(YES_NO_CODES)
-    .build(),
+    'Voucher - UTM Easting',
+    'numeric',
+    'form_data.activity_subtype_data.TerrestrialPlants[0].voucher_specimen_collection_information.exact_utm_coords.utm_easting'
+  ).build(),
   new TemplateColumnBuilder(
-    'Observation - Invasive Plant 3',
-    'codeReference',
-    'form_data.activity_subtype_data.TerrestrialPlants[2].invasive_plant_code'
-  )
-    .referencesCode('invasive_plant_code')
-    .build(),
-  new TemplateColumnBuilder(
-    'Observation - Type 3',
-    'codeReference',
-    'form_data.activity_subtype_data.TerrestrialPlants[2].observation_type'
-  )
-    .hardcodedCodes(OBSERVATION_TYPE_CODES)
-    .build(),
-  new TemplateColumnBuilder(
-    'Observation - Density 3',
-    'codeReference',
-    'form_data.activity_subtype_data.TerrestrialPlants[2].invasive_plant_density_code'
-  )
-    .referencesCode('invasive_plant_density_code')
-    .build(),
-  new TemplateColumnBuilder(
-    'Observation - Distribution 3',
-    'codeReference',
-    'form_data.activity_subtype_data.TerrestrialPlants[2].invasive_plant_distribution_code'
-  )
-    .referencesCode('invasive_plant_distribution_code')
-    .build(),
-  new TemplateColumnBuilder(
-    'Observation - Life Stage 3',
-    'codeReference',
-    'form_data.activity_subtype_data.TerrestrialPlants[2].plant_life_stage_code'
-  )
-    .referencesCode('plant_life_stage_code')
-    .build(),
-
-  new TemplateColumnBuilder(
-    'Voucher - Sample Collected? 3',
-    'codeReference',
-    'form_data.activity_subtype_data.TerrestrialPlants[2].voucher_specimen_collected'
-  )
-    .hardcodedCodes(YES_NO_CODES)
-    .build()
+    'Voucher - UTM Northing',
+    'numeric',
+    'form_data.activity_subtype_data.TerrestrialPlants[0].voucher_specimen_collection_information.exact_utm_coords.utm_northing'
+  ).build()
 ];
 
-ObservationTerrestrialPlant.rowValidators = [
+ObservationTerrestrialPlantOld.rowValidators = [
   ...BasicInformationRowValidators,
   PositiveObservationPlantValidator,
-  SlopeAspectValidator,
-  DuplicateInvasivePlantValidator,
-  SampleCollectedNotAllowedValidator,
-  ObservationCompleteSetValidator
+  SlopeAspectValidator
 ];
 
-export { ObservationTerrestrialPlant };
+export { ObservationTerrestrialPlantOld };

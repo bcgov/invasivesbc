@@ -13,19 +13,53 @@ import { TreatmentMechanicalAquaticPlant } from './templates/treatment_mechanica
 import { TreatmentMechanicalTerrestrialPlant } from './templates/treatment_mechanical_terrestrial_plant';
 import { MonitoringBiocontrolReleaseTerrestrialPlant } from './templates/monitoring_biocontrol_release_terrestrial_plant';
 import { getDBConnection } from 'database/db';
+import { BiocontrolCollectionTemp } from './templates/biocontrol_collection_temp';
+import { BiocontrolReleaseTemp } from './templates/biocontrol_release_temp';
+import { MonitoringBiocontrolDispersalTerrestrialPlantTemp } from './templates/monitoring_biocontrol_dispersal_terrestrial_plant_temp';
+import { MonitoringChemicalTemp } from './templates/monitoring_chemical_treatment_temp';
+import { MonitoringMechanicalTemp } from './templates/monitoring_mechanical_treatment_temp';
+import { ObservationAquaticPlantTemp } from './templates/observation_aquatic_plant_temp';
+import { ObservationTerrestrialPlantTemp } from './templates/observation_terrestrial_plant_temp';
+import { TreatmentChemicalAquaticPlantTemp } from './templates/treatment_chemical_aquatic_plant_temp';
+import { TreatmentChemicalTerrestrialPlantTemp } from './templates/treatment_chemical_terrestrial_plant_temp';
+import { TreatmentMechanicalAquaticPlantTemp } from './templates/treatment_mechanical_aquatic_plant_temp';
+import { TreatmentMechanicalTerrestrialPlantTemp } from './templates/treatment_mechanical_terrestrial_plant_temp';
+import { MonitoringChemicalOld } from './templates/monitoring_chemical_treatment_old';
+import { MonitoringMechanicalOld } from './templates/monitoring_mechanical_treatment_old';
+import { ObservationAquaticPlantOld } from './templates/observation_aquatic_plant_old';
+import { ObservationTerrestrialPlantOld } from './templates/observation_terrestrial_plant_old';
+import { TreatmentMechanicalAquaticPlantOld } from './templates/treatment_mechanical_aquatic_plant_old';
+import { TreatmentMechanicalTerrestrialPlantOld } from './templates/treatment_mechanical_terrestrial_plant_old';
 
 const templateList: Template[] = [
   ObservationTerrestrialPlant,
+  ObservationTerrestrialPlantOld,
+  ObservationTerrestrialPlantTemp,
   ObservationAquaticPlant,
+  ObservationAquaticPlantOld,
+  ObservationAquaticPlantTemp,
   TreatmentChemicalTerrestrialPlant,
+  TreatmentChemicalTerrestrialPlantTemp,
   TreatmentChemicalAquaticPlant,
+  TreatmentChemicalAquaticPlantTemp,
   TreatmentMechanicalTerrestrialPlant,
+  TreatmentMechanicalTerrestrialPlantOld,
+  TreatmentMechanicalTerrestrialPlantTemp,
   TreatmentMechanicalAquaticPlant,
+  TreatmentMechanicalAquaticPlantOld,
+  TreatmentMechanicalAquaticPlantTemp,
   MonitoringChemical,
+  MonitoringChemicalOld,
+  MonitoringChemicalTemp,
   MonitoringMechanical,
+  MonitoringMechanicalOld,
+  MonitoringMechanicalTemp,
   BiocontrolRelease,
+  BiocontrolReleaseTemp,
   BiocontrolCollection,
+  BiocontrolCollectionTemp,
   MonitoringBiocontrolDispersalTerrestrialPlant,
+  MonitoringBiocontrolDispersalTerrestrialPlantTemp,
   MonitoringBiocontrolReleaseTerrestrialPlant
 ];
 
