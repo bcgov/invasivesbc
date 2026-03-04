@@ -31,6 +31,18 @@ const YesNo: Array<FormCode> = [
   }
 ];
 
+const YesNoBool: Array<FormCode> = [
+  {
+    full_name: 'Yes',
+    code: true,
+    table: 'YesNoUnknown'
+  },
+  {
+    full_name: 'No',
+    code: false,
+    table: 'YesNoUnknown'
+  }
+];
 const ObservationType: Array<FormCode> = [
   {
     full_name: 'Positive Observation',
@@ -160,7 +172,18 @@ const TreatmentPass = [
     table: 'TreatmentPass'
   }
 ];
-
+const MonitoringType = [
+  {
+    full_name: 'Timed',
+    code: 'Timed',
+    table: 'MonitoringType'
+  },
+  {
+    full_name: 'Count',
+    code: 'Count',
+    table: 'MonitoringType'
+  }
+];
 const CardinalDirection = [
   {
     full_name: 'North',
@@ -213,8 +236,10 @@ export {
   CardinalDirection,
   DisposedMaterialFormat,
   ObservationType,
+  MonitoringType,
   TreatmentPass,
   YesNo,
+  YesNoBool,
   YesNoUnknown,
   WaterbodyType,
   WaterLevelManagement

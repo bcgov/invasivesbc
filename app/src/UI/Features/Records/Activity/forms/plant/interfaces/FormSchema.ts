@@ -5,7 +5,8 @@ import {
   MonitoringChemPlantSchema,
   MonitoringMechPlantSchema,
   AquaticMechTreatment,
-  BiocontrolReleaseSchema
+  BiocontrolReleaseSchema,
+  BiocontrolReleaseMonitoringSchema
 } from '.';
 
 type FormSchema =
@@ -15,6 +16,7 @@ type FormSchema =
   | AquaticMechTreatment
   | MonitoringChemPlantSchema
   | MonitoringMechPlantSchema
+  | BiocontrolReleaseMonitoringSchema
   | BiocontrolReleaseSchema;
 
 export type { FormSchema };
