@@ -64,6 +64,7 @@ const BiocontrolCount = ({ index, estimate = false, extended = false }: PropType
       width={Width.Half}
       rules={{
         validate: {
+          // TODO: Add validation to crosscheck extended fields when applicable.
           noRepeatLifeStage: (val) => noRepeatKey(val, 'stage', 'Agent Stage'),
           mustIncludeEstimatedOrActual: doesRowContainActualEstimatedAgents
         }
