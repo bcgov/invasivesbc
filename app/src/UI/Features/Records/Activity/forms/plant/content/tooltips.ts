@@ -97,9 +97,21 @@ const tooltips = {
       mortality: 'Number of agents dead at time of release',
       agent_source:
         'Details of where the agents were collected or reared. Include IAPP site ID, InvasivesBC Collection # or description of location if source is outside of BC.',
+      monitoring: {
+        type: 'Choose whether the monitoring duration was timed or by the number of plants checked',
+        suitable_for_collection:
+          'Do the current biocontrol agent populations and location indicate that this may be a suitable collection site in the future? Add details in the comment field.',
+        location_found:
+          'Choose one or more general site location characteristics from the drop down to indicate where the biocontrol presence was observed.',
+        count:
+          'Enter the total duration in minutes, of all time spent monitoring by all people monitoring (added together).',
+        method: 'Choose the method used for monitoring from the drop down'
+      },
       plant_collected_from: 'If known, choose the species from the list that the agents were collected from',
       plant_collected_from_manual:
         'If the plant is not listed on the drop down in the previous field, type in the name of the plant the agents were collected from. Scientific name is preferred, but can be common name if required.',
+      sign_of_presence:
+        'Choose one or more from the drop down to indicate any visible sign of the agent(s) being present. Indicate current or prior year plus the type of evidence seen.',
       counts: {
         title: 'The quantity of the biocontrol agents in the life stage present.',
         agent_life_stage: 'Life stage of biocontrol agent',
