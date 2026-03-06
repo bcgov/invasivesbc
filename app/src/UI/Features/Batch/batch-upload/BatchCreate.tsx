@@ -61,10 +61,7 @@ const BatchCreate = () => {
       <select onChange={(e) => setSelectedTemplate(e.target.value)} value={selectedTemplate}>
         <option value={''}>Select a template</option>
         {templates
-          .filter((t) => {
-            const name = t.name.toLowerCase();
-            return !name.includes('temp') && !name.includes('old');
-          })
+          .filter((t) => t.selectable)
           .map((t) => (
             <option value={t.key} key={t.key}>
               {t.name}

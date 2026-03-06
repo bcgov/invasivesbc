@@ -10,7 +10,8 @@ import {
 const TreatmentMechanicalTerrestrialPlantOld = new Template(
   'treatment_mechanical_terrestrial_plant_old',
   'Treatment - Mechanical - Terrestrial Plant Old',
-  null
+  null,
+  false
 );
 TreatmentMechanicalTerrestrialPlantOld.type = 'Treatment';
 TreatmentMechanicalTerrestrialPlantOld.subtype = 'Activity_Treatment_MechanicalPlantTerrestrial';

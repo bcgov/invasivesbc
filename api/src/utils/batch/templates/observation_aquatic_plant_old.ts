@@ -15,7 +15,8 @@ import {
 const ObservationAquaticPlantOld = new Template(
   'observation_aquatic_plant_old',
   'Observation - Aquatic Plant Old',
-  null
+  null,
+  false
 );
 
 ObservationAquaticPlantOld.subtype = 'Activity_Observation_PlantAquatic';

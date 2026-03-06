@@ -28,17 +28,14 @@ const TemplateDownloadList = () => {
     return <p>Error</p>;
   }
 
-  const filteredTemplates = templates.filter((t) => {
-    const name = t.name.toLowerCase();
-    return !name.includes('temp') && !name.includes('old');
-  });
-
   return (
     <>
       <Typography variant={'h4'}>Available Templates</Typography>
-      {filteredTemplates.map((t) => (
-        <TemplatePreview name={t.name} id={t.key} key={t.key} />
-      ))}
+      {templates
+        .filter((t) => t.selectable)
+        .map((t) => (
+          <TemplatePreview name={t.name} id={t.key} key={t.key} />
+        ))}
     </>
   );
 };

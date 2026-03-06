@@ -12,7 +12,8 @@ import {
 const ObservationTerrestrialPlantOld = new Template(
   'observation_terrestrial_plant_old',
   'Observation - Terrestrial Plant Old',
-  null
+  null,
+  false
 );
 ObservationTerrestrialPlantOld.subtype = 'Activity_Observation_PlantTerrestrial';
 

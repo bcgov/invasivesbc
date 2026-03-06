@@ -1,3 +1,4 @@
+import { TREATMENT_PASS_CODES, YES_NO_CODES } from 'utils/batch/hard-coded-codes';
 import { Template, TemplateColumnBuilder } from 'utils/batch/definitions';
 import {
   ActivityPersons,
@@ -7,12 +8,12 @@ import {
   ProjectInformation,
   TreatmentEfficacyValidator
 } from 'utils/batch/shared-columns';
-import { TREATMENT_PASS_CODES, YES_NO_CODES } from '../hard-coded-codes';
 
 const MonitoringMechanicalOld = new Template(
   'monitoring_mechanical_treatment_old',
   'Monitoring - Mechanical Old',
-  null
+  null,
+  false
 );
 
 MonitoringMechanicalOld.type = 'Monitoring';

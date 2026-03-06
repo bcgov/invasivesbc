@@ -1,3 +1,4 @@
+import { TREATMENT_PASS_CODES, YES_NO_CODES } from '../hard-coded-codes';
 import { Template, TemplateColumnBuilder } from 'utils/batch/definitions';
 import {
   ActivityPersons,
@@ -7,9 +8,13 @@ import {
   ProjectInformation,
   TreatmentEfficacyValidator
 } from 'utils/batch/shared-columns';
-import { TREATMENT_PASS_CODES, YES_NO_CODES } from '../hard-coded-codes';
 
-const MonitoringChemicalOld = new Template('monitoring_chemical_treatment_old', 'Monitoring - Chemical Old', null);
+const MonitoringChemicalOld = new Template(
+  'monitoring_chemical_treatment_old',
+  'Monitoring - Chemical Old',
+  null,
+  false
+);
 
 MonitoringChemicalOld.type = 'Monitoring';
 MonitoringChemicalOld.subtype = 'Activity_Monitoring_ChemicalTerrestrialAquaticPlant';

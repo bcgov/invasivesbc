@@ -26,6 +26,7 @@ interface IBatchExecute {
 interface IBatchListTemplate {
   name: string;
   key: string;
+  selectable: boolean;
 }
 
 interface IBatchDownloadTemplate {

@@ -13,7 +13,8 @@ import {
 const TreatmentMechanicalAquaticPlantOld = new Template(
   'treatment_mechanical_aquatic_plant_old',
   'Treatment - Mechanical - Aquatic Plant Old',
-  null
+  null,
+  false
 );
 
 TreatmentMechanicalAquaticPlantOld.type = 'Treatment';

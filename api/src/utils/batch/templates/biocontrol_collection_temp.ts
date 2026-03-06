@@ -1,4 +1,3 @@
-import { Template, TemplateColumnBuilder } from '../definitions';
 import {
   ActivityPersons,
   BasicInformation,
@@ -11,8 +10,14 @@ import {
   WeatherInformation,
   WindDirectionValidator
 } from '../shared-columns';
+import { Template, TemplateColumnBuilder } from 'utils/batch/definitions';
 
-const BiocontrolCollectionTemp = new Template('biocontrol_collection_temp', 'Biocontrol - Collection TEMP POINT', null);
+const BiocontrolCollectionTemp = new Template(
+  'biocontrol_collection_temp',
+  'Biocontrol - Collection TEMP POINT',
+  null,
+  false
+);
 
 BiocontrolCollectionTemp.type = 'Biocontrol';
 BiocontrolCollectionTemp.subtype = 'Activity_Biocontrol_Collection';

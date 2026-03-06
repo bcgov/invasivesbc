@@ -12,7 +12,6 @@ import { TreatmentChemicalAquaticPlant } from './templates/treatment_chemical_aq
 import { TreatmentMechanicalAquaticPlant } from './templates/treatment_mechanical_aquatic_plant';
 import { TreatmentMechanicalTerrestrialPlant } from './templates/treatment_mechanical_terrestrial_plant';
 import { MonitoringBiocontrolReleaseTerrestrialPlant } from './templates/monitoring_biocontrol_release_terrestrial_plant';
-import { getDBConnection } from 'database/db';
 import { BiocontrolCollectionTemp } from './templates/biocontrol_collection_temp';
 import { BiocontrolReleaseTemp } from './templates/biocontrol_release_temp';
 import { MonitoringBiocontrolDispersalTerrestrialPlantTemp } from './templates/monitoring_biocontrol_dispersal_terrestrial_plant_temp';
@@ -30,6 +29,7 @@ import { ObservationAquaticPlantOld } from './templates/observation_aquatic_plan
 import { ObservationTerrestrialPlantOld } from './templates/observation_terrestrial_plant_old';
 import { TreatmentMechanicalAquaticPlantOld } from './templates/treatment_mechanical_aquatic_plant_old';
 import { TreatmentMechanicalTerrestrialPlantOld } from './templates/treatment_mechanical_terrestrial_plant_old';
+import { getDBConnection } from 'database/db';
 
 const templateList: Template[] = [
   ObservationTerrestrialPlant,
@@ -67,7 +67,8 @@ export const TemplateService = {
   listTemplatesShallow: async () => {
     return templateList.map((t) => ({
       name: t.name,
-      key: t.key
+      key: t.key,
+      selectable: t.selectable
     }));
   },
 
