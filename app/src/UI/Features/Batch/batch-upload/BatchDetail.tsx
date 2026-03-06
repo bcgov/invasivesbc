@@ -152,7 +152,11 @@ const BatchGlobalValidationErrors = ({ batch }) => {
   return (
     <div className={'batch-errors'}>
       <h3>Batch Validation Errors</h3>
-      <ul>{batch?.globalValidationMessages?.map((m) => <li key={m}>{m}</li>)}</ul>
+      <ul>
+        {batch?.globalValidationMessages?.map((m) => (
+          <li key={m}>{m}</li>
+        ))}
+      </ul>
     </div>
   );
 };

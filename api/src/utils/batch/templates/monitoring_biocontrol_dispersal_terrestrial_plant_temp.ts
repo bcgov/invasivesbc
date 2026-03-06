@@ -16,7 +16,8 @@ import {
 const MonitoringBiocontrolDispersalTerrestrialPlantTemp = new Template(
   'monitoring_biocontrol_dispersal_terrestrial_plant_temp',
   'Monitoring - Biocontrol Dispersal - Terrestrial Plant TEMP POINT',
-  null
+  null,
+  false
 );
 
 MonitoringBiocontrolDispersalTerrestrialPlantTemp.type = 'Biocontrol';

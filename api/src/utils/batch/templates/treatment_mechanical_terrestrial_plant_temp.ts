@@ -10,7 +10,8 @@ import {
 const TreatmentMechanicalTerrestrialPlantTemp = new Template(
   'treatment_mechanical_terrestrial_plant_temp',
   'Treatment - Mechanical - Terrestrial Plant TEMP POINT',
-  null
+  null,
+  false
 );
 TreatmentMechanicalTerrestrialPlantTemp.type = 'Treatment';
 TreatmentMechanicalTerrestrialPlantTemp.subtype = 'Activity_Treatment_MechanicalPlantTerrestrial';
