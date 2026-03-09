@@ -5,3 +5,4 @@ export { default as noRepeatKey } from './noRepeatKey';
 export { default as minValue } from './minValue';
 export { default as maxValue } from './maxValue';
 export { default as doesArrayContainUniqueBiocontrolCounts } from './doesArrayContainUniqueBiocontrolCounts';
+export { default as distinctEntries } from './distinctEntries';
