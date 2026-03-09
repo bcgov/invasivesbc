@@ -14,6 +14,8 @@ from api.models.activity import (
 class TerrestrialBiocontrolCollectionEntrySerializer(serializers.ModelSerializer):
     actual_biological_agents = serializers.SerializerMethodField()
     estimated_biological_agents = serializers.SerializerMethodField()
+    start_time_collecting = serializers.DateTimeField(format="%Y-%m-%dT%H:%M")
+    end_time_collecting = serializers.DateTimeField(format="%Y-%m-%dT%H:%M")
 
     class Meta:
         model = TerrestrialBiocontrolCollectionEntry

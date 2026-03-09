@@ -35,6 +35,8 @@ class TerrestrialBiologicalMonitoringEntriesSerializer(serializers.ModelSerializ
     location_agent_found = serializers.SerializerMethodField()
     actual_biological_agents = serializers.SerializerMethodField()
     estimated_biological_agents = serializers.SerializerMethodField()
+    start_time = serializers.DateTimeField(format="%Y-%m-%dT%H:%M")
+    stop_time = serializers.DateTimeField(format="%Y-%m-%dT%H:%M")
 
     class Meta:
         model = TerrestrialBiocontrolDispersalMonitoringEntry
