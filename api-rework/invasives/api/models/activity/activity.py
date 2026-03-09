@@ -39,12 +39,12 @@ class Activity(
         max_length=16, choices=FormStatus, default=FormStatus.Draft, db_index=True
     )
     access_description = models.TextField(
-        max_length=1024,
+        max_length=16384,
         db_comment="User directions to access location",
         blank=True,
         null=True,
     )
-    comment = models.TextField(max_length=1024, blank=True, null=True)
+    comment = models.TextField(max_length=16384, blank=True, null=True)
     created_timestamp = models.DateTimeField(auto_now_add=True)
     received_timestamp = models.DateTimeField(auto_now_add=True, editable=False)
 

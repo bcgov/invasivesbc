@@ -9,8 +9,12 @@ class WellEntry(BaseOneToManyActivityTable):
     Distance is based on the Centroid value of the Activity shape
     """
 
-    well_tag_number = models.PositiveIntegerField(
-        db_comment="Identifier of a Registered Well"
+    well_tag = models.CharField(
+        max_length=256,
+        null=False,
+        blank=False,
+        default="Unset",  # to appease Django migrations. There should not be any rows in the database with this value.
+        db_comment="Identifier of a Registered Well",
     )
     distance = models.PositiveIntegerField(
         db_comment="Distance from centroid of activity"
@@ -20,8 +24,8 @@ class WellEntry(BaseOneToManyActivityTable):
         db_table = '"activity"."well_entries"'
         constraints = [
             models.UniqueConstraint(
-                fields=["activity", "well_tag_number"],
-                name="unique_well_in_activity",
+                fields=["activity", "well_tag"],
+                name="unique_well_tag_for_activity",
             )
         ]
 

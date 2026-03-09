@@ -329,7 +329,7 @@ class LegacyDB:
                         stats.pre_existing += 1
                         pre_existing = True
                         if clobber:
-                            log.warning(
+                            log.debug(
                                 f"Clobbering old records for {row['activity_id']}"
                             )
                             migration_status.delete()

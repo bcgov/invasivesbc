@@ -31,7 +31,7 @@ class TerrestrialBiocontrolCollectionEntry(BaseOneToManyActivityTable):
     number_of_sweeps = models.PositiveIntegerField(blank=True, null=True)
     start_time_collecting = models.DateTimeField()
     end_time_collecting = models.DateTimeField()
-    comment = models.TextField(max_length=512, blank=True, null=True)
+    comment = models.TextField(max_length=16384, blank=True, null=True)
 
     class Meta:
         db_table = '"activity"."biocontrol_collection_entries_pt"'

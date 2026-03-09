@@ -1,3 +1,6 @@
+import logging
+from pprint import pformat
+
 from api.legacy_db.mappings.wells import add_well_information
 from api.legacy_db.model_serializer import (
     LegacyActivity,
@@ -10,6 +13,7 @@ from api.models.activity import (
     TerrestrialPlantObservationEntries,
     TerrestrialPlantObservationContext,
     TerrestrialVoucherSpecimen,
+    SpecificUse,
 )
 from api.models.codes import (
     AspectCode,
@@ -22,6 +26,7 @@ from api.models.codes import (
     TerrestrialPlantCode,
 )
 from api.models.enums import ObservationType
+from api.protocol.activity.api import activity_search
 
 
 def add_voucher_specimen(
@@ -29,33 +34,66 @@ def add_voucher_specimen(
     old: LegacyActivity,
     plant: LegacyActivityTerrestrialPlants,
 ):
-    TerrestrialVoucherSpecimen.objects.create(
-        activity=new,
-        date_verified=plant.voucher_specimen_collection_information.date_voucher_verified,
-        date_collected=plant.voucher_specimen_collection_information.date_voucher_verified,
-        voucher_sample_id=plant.voucher_specimen_collection_information.voucher_sample_id,
-        herbarium=plant.voucher_specimen_collection_information.name_of_herbarium,
-        completed_by_org=(
-            plant.voucher_specimen_collection_information.voucher_verification_completed_by.organization
-            if plant.voucher_specimen_collection_information.voucher_verification_completed_by
-            is not None
-            else None
-        ),
-        completed_by_person=(
-            plant.voucher_specimen_collection_information.voucher_verification_completed_by.person
-            if plant.voucher_specimen_collection_information.voucher_verification_completed_by
-            is not None
-            else None
-        ),
-        utm_zone=plant.voucher_specimen_collection_information.utm_zone,
-        utm_easting=plant.voucher_specimen_collection_information.utm_easting,
-        utm_northing=plant.voucher_specimen_collection_information.utm_northing,
-        invasive_plant=(
-            TerrestrialPlantCode.objects.get(code=plant.invasive_plant_code)
-            if plant.invasive_plant_code is not None
-            else None
-        ),
-    )
+
+    if (
+        plant.voucher_specimen_collection_information.date_voucher_verified is None
+        and plant.voucher_specimen_collection_information.date_voucher_collected is None
+        and plant.voucher_specimen_collection_information.name_of_herbarium is None
+        and plant.voucher_specimen_collection_information.voucher_sample_id is None
+    ):
+        logging.warning(
+            "This doesn't look like a valid voucher specimen record - skipping"
+        )
+        logging.warning(
+            "voucher spec" + pformat(plant.voucher_specimen_collection_information)
+        )
+    else:
+        TerrestrialVoucherSpecimen.objects.create(
+            activity=new,
+            date_verified=plant.voucher_specimen_collection_information.date_voucher_verified,
+            date_collected=plant.voucher_specimen_collection_information.date_voucher_verified,
+            voucher_sample_id=plant.voucher_specimen_collection_information.voucher_sample_id,
+            herbarium=plant.voucher_specimen_collection_information.name_of_herbarium,
+            completed_by_org=(
+                plant.voucher_specimen_collection_information.voucher_verification_completed_by.organization
+                if plant.voucher_specimen_collection_information.voucher_verification_completed_by
+                is not None
+                else None
+            ),
+            completed_by_person=(
+                plant.voucher_specimen_collection_information.voucher_verification_completed_by.person_name
+                if plant.voucher_specimen_collection_information.voucher_verification_completed_by
+                is not None
+                and plant.voucher_specimen_collection_information.voucher_verification_completed_by.person_name
+                is not None
+                and plant.voucher_specimen_collection_information.voucher_verification_completed_by.person_name.strip()
+                is not ""
+                else None
+            ),
+            utm_zone=(
+                plant.voucher_specimen_collection_information.exact_utm_coords.utm_zone
+                if plant.voucher_specimen_collection_information.exact_utm_coords
+                is not None
+                else None
+            ),
+            utm_easting=(
+                plant.voucher_specimen_collection_information.exact_utm_coords.utm_easting
+                if plant.voucher_specimen_collection_information.exact_utm_coords
+                is not None
+                else None
+            ),
+            utm_northing=(
+                plant.voucher_specimen_collection_information.exact_utm_coords.utm_northing
+                if plant.voucher_specimen_collection_information.exact_utm_coords
+                is not None
+                else None
+            ),
+            invasive_plant=(
+                TerrestrialPlantCode.objects.get(code=plant.invasive_plant_code)
+                if plant.invasive_plant_code is not None
+                else None
+            ),
+        )
 
 
 def add_persons(
@@ -88,19 +126,23 @@ def add_terrestrial_plant_observation_information(new: Activity, old: LegacyActi
             if old_information.slope_code is not None
             else None
         ),
-        specific_use=(
-            SpecificUseCode.objects.get(code=old_information.specific_use_code)
-            if old_information.specific_use_code is not None
-            else None
-        ),
         soil_texture=(
-            SoilTextureCode.objects.get(code=old_information.soil_texture_code)
+            SoilTextureCode.objects.get(code=old_information.soil_texture_code.strip())
             if old_information.soil_texture_code is not None
+            and old_information.soil_texture_code.strip() is not ""
             else None
         ),
         suitable_for_biocontrol_agent=old_information.suitable_for_biocontrol_agent,
         visible_well_nearby=old_information.well_ind,
     )
+
+    for code in old_information.specific_use_code.split(","):
+        found_code = SpecificUseCode.objects.filter(code=code).first()
+        if not found_code:
+            logging.warning(f"No matching specific use code found for {code}")
+            raise ValueError(f"No matching specific use code found for {code}")
+
+        SpecificUse.objects.update_or_create(activity=new, specific_use=found_code)
 
 
 def add_subtype_payload_for_plant_terrestrial_observation(

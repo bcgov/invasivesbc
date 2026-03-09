@@ -10,12 +10,12 @@ def add_well_information(new: Activity, old: LegacyActivity):
             well
         ) in old.activity_payload.form_data.activity_subtype_data.Well_Information:
             if well.well_id == "No wells found":
-                logging.info(
+                logging.debug(
                     "Omitting empty well spec because of magic string well id = 'No wells found'"
                 )
             else:
                 WellEntry.objects.create(
                     activity=new,
-                    well_tag_number=well.well_id,
+                    well_tag=well.well_id,
                     distance=well.well_proximity,
                 )

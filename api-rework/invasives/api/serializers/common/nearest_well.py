@@ -5,4 +5,4 @@ from api.models.activity import WellEntry
 class NearestWellSerializer(serializers.ModelSerializer):
     class Meta:
         model = WellEntry
-        fields = ("well_tag_number", "distance")
+        fields = ("well_tag", "distance")

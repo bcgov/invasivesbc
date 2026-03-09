@@ -22,7 +22,7 @@ class AquaticPlantObservationEntry(BaseOneToManyActivityTable):
         PlantLifeStageCode, on_delete=models.PROTECT, blank=True, null=True
     )
     observation_type = models.CharField(choices=ObservationType)
-    sample_point_id = models.CharField(max_length=128, blank=True, null=True)
+    sample_point_id = models.CharField(max_length=16384, blank=True, null=True)
 
     class Meta:
         db_table = '"activity"."observation_entries_pa"'

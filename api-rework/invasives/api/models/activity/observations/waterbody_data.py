@@ -13,8 +13,7 @@ class WaterbodyContext(BaseOneToOneActivityTable):
     secchi_depth = models.PositiveSmallIntegerField()
     colour = models.CharField(max_length=64)
     tidal_influence = models.CharField(choices=YesNoUnknown)
-    comment = models.TextField(max_length=512)
+    comment = models.TextField(max_length=16384)
 
     class Meta:
         db_table = '"activity"."waterbody_context"'
-        pass

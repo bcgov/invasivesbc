@@ -27,7 +27,7 @@ class PlantMonitoringBase(BaseOneToManyActivityTable):
         EfficacyManagementRatingCode, on_delete=models.PROTECT
     )
     treatment_pass = models.CharField(choices=TreatmentPass)
-    comment = models.TextField(max_length=256, blank=True, null=True)
+    comment = models.TextField(max_length=16384, blank=True, null=True)
 
     class Meta:
         abstract = True

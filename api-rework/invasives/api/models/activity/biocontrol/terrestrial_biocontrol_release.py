@@ -17,7 +17,7 @@ class TerrestrialBiocontrolReleaseEntry(BaseOneToManyActivityTable):
     biocontrol_agent = models.ForeignKey(BiocontrolAgentCode, on_delete=models.PROTECT)
     linear_segment = models.CharField(choices=YesNoUnknown)
     mortality = models.PositiveSmallIntegerField()
-    agent_source = models.CharField(max_length=256)
+    agent_source = models.CharField(max_length=16384)
     collection_date = models.DateTimeField()
     plant_collected_from = models.ForeignKey(
         TerrestrialPlantCode,
@@ -27,7 +27,7 @@ class TerrestrialBiocontrolReleaseEntry(BaseOneToManyActivityTable):
         related_name="additional_plant_found_on",
     )
     plant_collected_from_manual = models.CharField(
-        max_length=128, blank=True, null=True
+        max_length=16384, blank=True, null=True
     )
 
     class Meta:

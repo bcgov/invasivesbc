@@ -25,9 +25,7 @@ class TerrestrialPlantObservationContext(BaseOneToOneActivityTable):
         choices=YesNoUnknown,
         default="Unknown",
     )
-    specific_use = models.ForeignKey(
-        SpecificUseCode, on_delete=models.PROTECT, null=True
-    )
+
     research_observation = models.CharField(choices=YesNoUnknown, default="Unknown")
     aspect = models.ForeignKey(AspectCode, on_delete=models.PROTECT)
     visible_well_nearby = models.CharField(choices=YesNoUnknown, default="Unknown")

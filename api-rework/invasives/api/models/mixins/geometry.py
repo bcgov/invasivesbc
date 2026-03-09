@@ -23,7 +23,7 @@ class Geometry(models.Model):
     utm_northing = models.PositiveBigIntegerField(null=True)
     latitude = models.DecimalField(max_digits=10, decimal_places=7, null=True)
     longitude = models.DecimalField(max_digits=10, decimal_places=7, null=True)
-    location_description = models.CharField(max_length=512, null=True)
+    location_description = models.CharField(max_length=16384, null=True)
 
     shape = geomodels.GeometryField(
         srid=4326, geography=False, spatial_index=True, null=False

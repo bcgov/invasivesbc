@@ -20,7 +20,7 @@ class WeatherConditions(BaseOneToOneActivityTable):
     precipitation = models.ForeignKey(PrecipitationCode, on_delete=models.PROTECT)
     wind_speed_kmh = models.PositiveSmallIntegerField()
     wind_direction = models.CharField(choices=CardinalDirection)
-    comments = models.TextField(max_length=512)
+    comments = models.TextField(max_length=16384)
 
     class Meta:
         db_table = '"activity"."weather_conditions"'
