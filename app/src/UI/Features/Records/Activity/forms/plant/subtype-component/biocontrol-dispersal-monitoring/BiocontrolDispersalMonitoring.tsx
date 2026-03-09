@@ -5,8 +5,8 @@ import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builde
 import { BiocontrolDispersalMonitoringSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import MicrositeConditions from 'UI/Features/Records/Activity/forms/plant/subtype-component/common/MicrositeConditions';
 import BiocontrolWeatherConditions from 'UI/Features/Records/Activity/forms/plant/subtype-component/common/WeatherConditions';
-import BiocontrolReleaseMonitoringEntry from 'UI/Features/Records/Activity/forms/plant/subtype-component/biocontrol-release-monitoring/BiocontrolReleaseMonitoringEntry';
 import TargetPlantPhenology from 'UI/Features/Records/Activity/forms/plant/subtype-component/common/TargetPlantPhenology';
+import BiocontrolDispersalMonitoringEntry from './BiocontrolDispersalMonitoringEntry';
 
 const BiocontrolDispersalMonitoring = () => {
   return (
@@ -26,7 +26,7 @@ const BiocontrolDispersalMonitoring = () => {
             )
         }}
         emptyValue={getDefaultFormState(ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial)}
-        renderRow={(index, remove) => <BiocontrolReleaseMonitoringEntry index={index} remove={remove} />}
+        renderRow={(index, remove) => <BiocontrolDispersalMonitoringEntry index={index} remove={remove} />}
       />
       <TargetPlantPhenology />
     </>
