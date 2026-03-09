@@ -67,7 +67,7 @@ def add_voucher_specimen(
                 and plant.voucher_specimen_collection_information.voucher_verification_completed_by.person_name
                 is not None
                 and plant.voucher_specimen_collection_information.voucher_verification_completed_by.person_name.strip()
-                is not ""
+                != ""
                 else None
             ),
             utm_zone=(
@@ -129,7 +129,7 @@ def add_terrestrial_plant_observation_information(new: Activity, old: LegacyActi
         soil_texture=(
             SoilTextureCode.objects.get(code=old_information.soil_texture_code.strip())
             if old_information.soil_texture_code is not None
-            and old_information.soil_texture_code.strip() is not ""
+            and old_information.soil_texture_code.strip() != ""
             else None
         ),
         suitable_for_biocontrol_agent=old_information.suitable_for_biocontrol_agent,
