@@ -10,6 +10,7 @@ interface BiocontrolDispersalMonitoringSchema extends BaseForm {
       invasive_plant: string;
       monitoring_type: string;
       plant_count?: number;
+      linear_segment: string;
       monitoring_method: string;
       count_duration_minutes?: number;
       location_agent_found: Array<string>;

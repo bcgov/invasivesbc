@@ -11,6 +11,7 @@ const getBiocontrolDispersalMonitoringSubtypeFields = (): BiocontrolDispersalMon
       count_duration_minutes: undefined,
       plant_count: undefined,
       location_agent_found: [],
+      linear_segment: '',
       sign_of_biocontrol_presence: [],
       start_time: '',
       stop_time: '',
