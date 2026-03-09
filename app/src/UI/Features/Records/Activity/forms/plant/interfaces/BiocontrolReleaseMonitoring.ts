@@ -41,12 +41,21 @@ interface BiocontrolReleaseMonitoringSchema extends BaseForm {
       senescent: number;
       target_plant_heights: Array<{ height_cm: number }>;
     };
+    // Microsite
     mesoslope_position: string;
     site_surface_shape: string;
+    // Spread
     agent_density?: number;
     plant_attack?: number;
     max_spread_distance_m?: number;
     max_spread_aspect_deg?: number;
+    // Weather
+    comments: string;
+    cloud_cover: string;
+    precipitation: string;
+    temperature: number;
+    wind_direction: string;
+    wind_speed_kmh: number;
   };
 }
 

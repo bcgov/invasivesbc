@@ -50,7 +50,14 @@ const getMonitoringBiocontrolReleaseSubtypeFields = (): BiocontrolReleaseMonitor
   agent_density: 0,
   plant_attack: 0,
   max_spread_distance_m: 0,
-  max_spread_aspect_deg: 0
+  max_spread_aspect_deg: 0,
+  // Weather
+  comments: '',
+  cloud_cover: '',
+  precipitation: '',
+  temperature: 0,
+  wind_direction: '',
+  wind_speed_kmh: 0
 });
 
 export default getMonitoringBiocontrolReleaseSubtypeFields;
