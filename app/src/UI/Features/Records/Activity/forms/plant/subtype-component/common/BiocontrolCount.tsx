@@ -6,7 +6,7 @@ import {
   BiocontrolReleaseMonitoringSchema,
   BiocontrolReleaseSchema
 } from 'UI/Features/Records/Activity/forms/plant/interfaces';
-import { minValue, doesArrayContainUniqueBiocontrolCounts } from 'UI/Features/Records/Activity/forms/common/validators';
+import { minValue, distinctEntries } from 'UI/Features/Records/Activity/forms/common/validators';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
 import { ActivitySubtypes } from 'sharedAPI';
 import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
@@ -65,7 +65,12 @@ const BiocontrolCount = ({ index, estimate = false, extended = false }: PropType
       rules={{
         validate: {
           mustIncludeEstimatedOrActual: doesRowContainActualEstimatedAgents,
-          mustBeUnique: doesArrayContainUniqueBiocontrolCounts
+          mustBeUnique: (val) =>
+            distinctEntries(
+              val,
+              ['stage', 'plant_position', 'agent_location'],
+              'Biocontrol count entries must be unique'
+            )
         }
       }}
       emptyValue={

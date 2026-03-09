@@ -6,7 +6,7 @@
  */
 const distinctEntries = <T extends Record<string, unknown>>(
   arr: T[],
-  uniqueKeys: (keyof T)[],
+  uniqueKeys: Array<string>,
   errorMessage: string
 ): boolean | string => {
   const seen = new Set<string>();
@@ -14,7 +14,7 @@ const distinctEntries = <T extends Record<string, unknown>>(
     // Build out unique strings based on unique keys.
     const compositeId = uniqueKeys
       .map((k) => {
-        const val = entry[k];
+        const val = entry?.[k];
         // Normalize values to strings, handling nulls/undefined
         return val !== null && val !== undefined ? String(val).trim() : '';
       })
