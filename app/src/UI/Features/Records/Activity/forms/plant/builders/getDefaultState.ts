@@ -62,6 +62,7 @@ const getDefaultFormState = (
     projects: [{ description: '' }],
     location_description: '',
     access_description: '',
+    date: new Date().toISOString().slice(0, 10),
     comment: '',
     area_m: 0,
     geom: undefined,

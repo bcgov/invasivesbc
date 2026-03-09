@@ -13,7 +13,7 @@ interface BaseForm {
     full: string;
   }>;
   geom?: Feature;
-  date: Date;
+  date: string;
   area_m: number;
   latitude: number;
   longitude: number;

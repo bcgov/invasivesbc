@@ -11,8 +11,8 @@ const getMonitoringBiocontrolReleaseSubtypeFields = (): BiocontrolReleaseMonitor
       count_duration_minutes: undefined,
       location_agent_found: [],
       sign_of_biocontrol_presence: [],
-      start_time: undefined,
-      stop_time: undefined,
+      start_time: '',
+      stop_time: '',
       suitable_for_collection: '',
       actual_biological_agents: [
         {

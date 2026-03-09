@@ -7,7 +7,7 @@ interface BiocontrolReleaseSchema extends BaseForm {
     entries: Array<{
       agent_source: string;
       biocontrol_agent: string;
-      collection_date: Date;
+      collection_date: string;
       linear_segment: string;
       invasive_plant: string;
       mortality: number;

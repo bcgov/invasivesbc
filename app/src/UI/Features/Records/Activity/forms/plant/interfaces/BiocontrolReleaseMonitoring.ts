@@ -15,8 +15,8 @@ interface BiocontrolReleaseMonitoringSchema extends BaseForm {
       location_agent_found: Array<string>;
       number_of_sweeps?: number;
       sign_of_biocontrol_presence: Array<string>;
-      start_time?: Date;
-      stop_time?: Date;
+      start_time?: string;
+      stop_time?: string;
       suitable_for_collection: string;
       actual_biological_agents: Array<{
         quantity: number;
