@@ -9,6 +9,7 @@ const getMonitoringBiocontrolReleaseSubtypeFields = (): BiocontrolReleaseMonitor
       monitoring_type: '',
       monitoring_method: '',
       count_duration_minutes: undefined,
+      plant_count: undefined,
       location_agent_found: [],
       sign_of_biocontrol_presence: [],
       start_time: '',
