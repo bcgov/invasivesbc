@@ -69,6 +69,13 @@ const BiocontrolReleaseMonitoringEntry = ({ index, remove }: PropTypes) => {
   }, [selectedPlant]);
 
   useEffect(() => {
+    // Cleanup sign_of_biocontrol_presence when no biocontrol present.
+    if (isDirty && !biocontrolPresent) {
+      setValue(`subtype_data.entries.${index}.sign_of_biocontrol_presence`, []);
+    }
+  }, [biocontrolPresent]);
+
+  useEffect(() => {
     // Clean up hidden monitoring fields when value changes
     if (!isDirty) return;
     if (monitoringType === 'Count') {
@@ -76,14 +83,14 @@ const BiocontrolReleaseMonitoringEntry = ({ index, remove }: PropTypes) => {
     } else if (monitoringType === 'Timed') {
       setValue(`subtype_data.entries.${index}.plant_count`, undefined);
     }
-  }, []);
+  }, [monitoringType]);
 
   useEffect(() => {
     // Delete number_of_sweeps if no longer needed
     if (isDirty && monitoringMethod !== SWEEP_COUNT_CODE) {
       setValue(`subtype_data.entries.${index}.number_of_sweeps`, undefined);
     }
-  }, []);
+  }, [monitoringMethod]);
   return (
     <>
       <SingleSelect
@@ -190,7 +197,6 @@ const BiocontrolReleaseMonitoringEntry = ({ index, remove }: PropTypes) => {
         width={Width.Half}
         {...register(`subtype_data.entries.${index}.start_time`, {
           deps: [`subtype_data.entries.${index}.stop_time`],
-          valueAsDate: true,
           required: true,
           validate: {
             noFutureData: (val) => noFutureDate(val!),
@@ -206,7 +212,6 @@ const BiocontrolReleaseMonitoringEntry = ({ index, remove }: PropTypes) => {
         width={Width.Half}
         {...register(`subtype_data.entries.${index}.stop_time`, {
           deps: [`subtype_data.entries.${index}.start_time`],
-          valueAsDate: true,
           required: true,
           validate: {
             noFutureData: (val) => noFutureDate(val!),
