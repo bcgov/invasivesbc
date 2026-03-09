@@ -2,7 +2,10 @@ import { useSelector } from 'utils/use_selector';
 import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
 import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
 import { useFormContext } from 'react-hook-form';
-import { BiocontrolReleaseMonitoringSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
+import {
+  BiocontrolDispersalMonitoringSchema,
+  BiocontrolReleaseMonitoringSchema
+} from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import { useEffect, useMemo } from 'react';
 import { MonitoringType, YesNoBool, YesNoUnknown } from 'UI/Features/Records/Activity/forms/enums';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
@@ -24,7 +27,7 @@ const BiocontrolReleaseMonitoringEntry = ({ index, remove }: PropTypes) => {
     watch,
     setValue,
     formState: { errors, isDirty }
-  } = useFormContext<BiocontrolReleaseMonitoringSchema>();
+  } = useFormContext<BiocontrolReleaseMonitoringSchema | BiocontrolDispersalMonitoringSchema>();
 
   const validateMonitoringStartStopTimes = (_, formValues) => {
     const startTime = formValues.subtype_data?.entries?.[index]?.start_time;
