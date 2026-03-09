@@ -2,7 +2,7 @@ import Fieldset from 'common-components/inputs/Fieldset';
 import TextInput from 'common-components/inputs/TextInput';
 
 interface WellInfo {
-  well_tag_number: number;
+  well_tag: string;
   distance: number;
 }
 type PropTypes = {
@@ -14,8 +14,8 @@ const NearestWells = ({ data }: PropTypes) => {
       {!data || (data?.length === 0 && <TextInput value={'No Wells in Area'} />)}
       {data?.map((w) => (
         <div className="group-wrap">
-          <TextInput label={'well_tag_number'} value={w?.well_tag_number} />
-          <TextInput label={'distance'} value={w?.distance} />
+          <TextInput label={'well_tag_number'} value={w?.well_tag} />
+          <TextInput label={'distance'} value={`${w?.distance || 'unknown'}`} />
         </div>
       ))}
     </Fieldset>

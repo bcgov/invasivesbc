@@ -4,7 +4,7 @@
     "pk": 1,
     "fields": {
       "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
-      "well_tag_number": 1,
+      "well_tag": "1",
       "distance": 63
     }
   },
@@ -13,7 +13,7 @@
     "pk": 2,
     "fields": {
       "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
-      "well_tag_number": 2,
+      "well_tag": "2",
       "distance": 63
     }
   },
@@ -22,7 +22,7 @@
     "pk": 3,
     "fields": {
       "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
-      "well_tag_number": 3,
+      "well_tag": "3",
       "distance": 63
     }
   },
@@ -31,7 +31,7 @@
     "pk": 4,
     "fields": {
       "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
-      "well_tag_number": 1,
+      "well_tag": "1",
       "distance": 63
     }
   },
@@ -40,7 +40,7 @@
     "pk": 5,
     "fields": {
       "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
-      "well_tag_number": 2,
+      "well_tag": "2",
       "distance": 63
     }
   },
@@ -49,7 +49,7 @@
     "pk": 6,
     "fields": {
       "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
-      "well_tag_number": 3,
+      "well_tag": "3",
       "distance": 63
     }
   }

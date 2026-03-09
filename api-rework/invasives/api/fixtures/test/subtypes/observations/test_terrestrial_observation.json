@@ -99,8 +99,14 @@
       "aspect": "N",
       "slope_percent": "SS",
       "soil_texture": "M",
-      "specific_use": "NO",
       "suitable_for_biocontrol_agent": "Yes"
+    }
+  },
+  {
+    "model": "api.SpecificUse",
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "specific_use": "NO"
     }
   },
   {
@@ -113,8 +119,14 @@
       "aspect": "NA",
       "slope_percent": "VT",
       "soil_texture": "F",
-      "specific_use": "GP",
       "suitable_for_biocontrol_agent": "No"
+    }
+  },
+  {
+    "model": "api.SpecificUse",
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "specific_use": "GP"
     }
   },
   {

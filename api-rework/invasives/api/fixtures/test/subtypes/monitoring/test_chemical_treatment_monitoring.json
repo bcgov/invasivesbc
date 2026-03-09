@@ -100,7 +100,7 @@
     "pk": 1,
     "fields": {
       "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
-      "well_tag_number": 1,
+      "well_tag": "1",
       "distance": 63
     }
   }

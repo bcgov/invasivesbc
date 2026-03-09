@@ -1,8 +1,9 @@
 from abc import abstractclassmethod
 
 from rest_framework import serializers
+from rest_framework.fields import SerializerMethodField
 
-from api.models.activity import TerrestrialBiocontrolReleaseEntry
+from api.models.activity import TerrestrialBiocontrolReleaseEntry, SpecificUse
 from api.models.activity.observations import (
     TerrestrialPlantObservationEntries,
     TerrestrialVoucherSpecimen,
@@ -96,11 +97,23 @@ class TerrestrialPlantObservationContextSerializer(serializers.ModelSerializer):
             return None
 
 
-class TerrestrialPlantObservationEntriesSerializer(serializers.ModelSerializer):
+class SpecificUseSerializer(serializers.ModelSerializer):
     specific_use = SpecificUseCodeSerializer()
+
+    class Meta:
+        model = SpecificUse
+        fields = ("specific_use",)
+
+
+class TerrestrialPlantObservationEntriesSerializer(serializers.ModelSerializer):
+    specific_uses = SerializerMethodField()
     soil_texture = SoilTextureCodeSerializer()
     aspect = AspectCodeSerializer()
     slope_percent = SlopeCodeSerializer()
+
+    def get_specific_uses(self, obj):
+        # objects = SpecificUse.objects.filter(activity=obj.activity)
+        return SpecificUseSerializer(obj.activity.specificuse_set.all(), many=True).data
 
     class Meta:
         model = TerrestrialPlantObservationContext
@@ -110,7 +123,7 @@ class TerrestrialPlantObservationEntriesSerializer(serializers.ModelSerializer):
             "aspect",
             "slope_percent",
             "soil_texture",
-            "specific_use",
+            "specific_uses",
             "suitable_for_biocontrol_agent",
         )
 

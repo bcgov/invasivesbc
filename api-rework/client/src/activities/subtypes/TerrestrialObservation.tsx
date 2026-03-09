@@ -11,7 +11,7 @@ const TerrestrialObservation = ({ subtypeData }: SubtypeData) => {
         <TextInput label="aspect" value={subtypeData?.aspect} />
         <TextInput label="slope percent" value={subtypeData?.slope_percent} />
         <TextInput label="soil texture" value={subtypeData?.soil_texture} />
-        <TextInput label="specific use" value={subtypeData.specific_use} />
+        <TextInput label="specific use" value={subtypeData.specific_uses.map((su) => (su.specific_use.code)).join(', ')} />
         <TextInput label="suitable for biocontrol agent" value={subtypeData.suitable_for_biocontrol_agent} />
       </Fieldset>
       <Fieldset label={'observation details'}>

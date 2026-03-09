@@ -17,7 +17,8 @@ class TerrestrialObservationTest(BaseActivitySubtypeTest):
 
         self.assertEqual(sd["suitable_for_biocontrol_agent"], "Yes")
         self.assertEqual(sd["pretreatment_observation"], "Yes")
-        self.assertEqual(sd["specific_use"]["code"], "NO")
+        self.assertEqual(len(sd["specific_uses"]), 1)
+        self.assertEqual(sd["specific_uses"][0]["specific_use"]["code"], "NO")
         self.assertEqual(sd["research_observation"], "Yes")
         self.assertEqual(sd["visible_well_nearby"], "Unknown")
         self.assertEqual(sd["aspect"]["code"], "N")
@@ -52,7 +53,8 @@ class TerrestrialObservationTest(BaseActivitySubtypeTest):
 
         self.assertEqual(sd["suitable_for_biocontrol_agent"], "No")
         self.assertEqual(sd["pretreatment_observation"], "No")
-        self.assertEqual(sd["specific_use"]["code"], "GP")
+        self.assertEqual(len(sd["specific_uses"]), 1)
+        self.assertEqual(sd["specific_uses"][0]["specific_use"]["code"], "GP")
         self.assertEqual(sd["research_observation"], "Yes")
         self.assertEqual(sd["visible_well_nearby"], "Unknown")
         self.assertEqual(sd["aspect"]["code"], "NA")

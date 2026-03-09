@@ -35,7 +35,7 @@ class AquaticChemicalTreatmentTest(BaseActivitySubtypeTest):
         self.assertEqual(len(wells), 3)
 
         for well in wells:
-            self.assertIsNotNone(well["well_tag_number"])
+            self.assertIsNotNone(well["well_tag"])
             self.assertIsNotNone(well["distance"])
 
         if sd["entries"] != "NOT IMPLEMENTED":
