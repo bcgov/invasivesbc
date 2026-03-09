@@ -6,7 +6,7 @@ import {
   BiocontrolReleaseMonitoringSchema,
   BiocontrolReleaseSchema
 } from 'UI/Features/Records/Activity/forms/plant/interfaces';
-import { minValue, noRepeatKey } from 'UI/Features/Records/Activity/forms/common/validators';
+import { minValue, doesArrayContainUniqueBiocontrolCounts } from 'UI/Features/Records/Activity/forms/common/validators';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
 import { ActivitySubtypes } from 'sharedAPI';
 import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
@@ -64,9 +64,8 @@ const BiocontrolCount = ({ index, estimate = false, extended = false }: PropType
       width={Width.Half}
       rules={{
         validate: {
-          // TODO: Add validation to crosscheck extended fields when applicable.
-          noRepeatLifeStage: (val) => noRepeatKey(val, 'stage', 'Agent Stage'),
-          mustIncludeEstimatedOrActual: doesRowContainActualEstimatedAgents
+          mustIncludeEstimatedOrActual: doesRowContainActualEstimatedAgents,
+          mustBeUnique: doesArrayContainUniqueBiocontrolCounts
         }
       }}
       emptyValue={
