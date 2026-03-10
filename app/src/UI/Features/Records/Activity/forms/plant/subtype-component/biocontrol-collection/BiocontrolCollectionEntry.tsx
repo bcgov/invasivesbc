@@ -11,6 +11,9 @@ import { minValue } from 'UI/Features/Records/Activity/forms/common/validators';
 import TextArea from 'UI/Features/Records/Activity/forms/common/TextArea/TextArea';
 import EmptySpace from 'UI/Features/Records/Activity/forms/common/EmptySpace/EmptySpace';
 import BiocontrolCount from 'UI/Features/Records/Activity/forms/plant/subtype-component/common/BiocontrolCount';
+import useFilteredInvasivePlantCodes from '../../hooks/useFilteredInvasivePlantCodes';
+import useFilteredBiocontrolCodes from '../../hooks/useFilteredBiocontrolCodes';
+import { useEffect } from 'react';
 
 type PropTypes = {
   index: number;
@@ -20,19 +23,31 @@ const BiocontrolCollectionEntry = ({ index, remove }: PropTypes) => {
   const {
     register,
     watch,
-    formState: { errors }
+    setValue,
+    formState: { errors, isDirty }
   } = useFormContext<BiocontrolCollectionSchema>();
   const SWEEP_COUNT_CODE = 'Cs';
   const codes = useSelector((state) => state.ActivityPage.formCodes);
-
+  const selectedPlant = watch(`subtype_data.entries.${index}.invasive_plant`);
+  const selectedAgent = watch(`subtype_data.entries.${index}.biological_agent`);
   const collectionType = watch(`subtype_data.entries.${index}.collection_type`);
   const collectionMethod = watch(`subtype_data.entries.${index}.collection_method`);
+  const { terrestrialPlantOptionsWithAgents } = useFilteredInvasivePlantCodes();
+  const { agentOptionsForChosenPlant } = useFilteredBiocontrolCodes(selectedPlant);
+
+  useEffect(() => {
+    const currentSelectionNoLongerValid =
+      selectedAgent && !agentOptionsForChosenPlant.some(({ code }) => code === selectedAgent);
+    if (currentSelectionNoLongerValid && isDirty) {
+      setValue(`subtype_data.entries.${index}.biological_agent`, '');
+    }
+  }, [agentOptionsForChosenPlant]);
 
   return (
     <>
       <SingleSelect
         label={'Invasive Plant'}
-        options={codes.TerrestrialPlantCode}
+        options={terrestrialPlantOptionsWithAgents}
         tooltip={tooltips.plant.invasive_plant}
         rules={{ required: true }}
         width={Width.Half}
@@ -42,7 +57,8 @@ const BiocontrolCollectionEntry = ({ index, remove }: PropTypes) => {
       <SingleSelect
         label={'Biological Control Agent'}
         required
-        options={codes.BiocontrolAgentCode}
+        options={agentOptionsForChosenPlant}
+        noOptionsMessage="Select an Invasive Plant to see options"
         rules={{ required: true }}
         width={Width.Half}
         name={`subtype_data.entries.${index}.biological_agent`}
