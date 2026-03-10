@@ -7,19 +7,26 @@ import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips'
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
 import { MonitoringType } from 'UI/Features/Records/Activity/forms/enums';
-import { minValue } from 'UI/Features/Records/Activity/forms/common/validators';
+import { minValue, noFutureDate } from 'UI/Features/Records/Activity/forms/common/validators';
 import TextArea from 'UI/Features/Records/Activity/forms/common/TextArea/TextArea';
 import EmptySpace from 'UI/Features/Records/Activity/forms/common/EmptySpace/EmptySpace';
 import BiocontrolCount from 'UI/Features/Records/Activity/forms/plant/subtype-component/common/BiocontrolCount';
 import useFilteredInvasivePlantCodes from '../../hooks/useFilteredInvasivePlantCodes';
 import useFilteredBiocontrolCodes from '../../hooks/useFilteredBiocontrolCodes';
 import { useEffect } from 'react';
+import DateInput from '../../../common/DateInput/DateInput';
 
 type PropTypes = {
   index: number;
   remove: (idx: number) => void;
 };
 const BiocontrolCollectionEntry = ({ index, remove }: PropTypes) => {
+  const validateMonitoringStartStopTimes = (_, formValues) => {
+    const startTime = formValues.subtype_data?.entries?.[index]?.start_time;
+    const stopTime = formValues.subtype_data?.entries?.[index]?.stop_time;
+    if (!startTime || !stopTime || startTime <= stopTime) return true;
+    return 'Start time must be before stop time.';
+  };
   const {
     register,
     watch,
@@ -57,6 +64,7 @@ const BiocontrolCollectionEntry = ({ index, remove }: PropTypes) => {
       <SingleSelect
         label={'Biological Control Agent'}
         required
+        tooltip={tooltips.plant.biocontrol.agent}
         options={agentOptionsForChosenPlant}
         noOptionsMessage="Select an Invasive Plant to see options"
         rules={{ required: true }}
@@ -66,10 +74,11 @@ const BiocontrolCollectionEntry = ({ index, remove }: PropTypes) => {
       <NumberInput
         label={'Historical IAPP Site ID'}
         width={Width.Half}
-        tooltip={'TODO'}
+        tooltip={tooltips.basic.historical_iapp}
         error={errors?.subtype_data?.entries?.[index]?.historical_iapp_site}
         {...register(`subtype_data.entries.${index}.historical_iapp_site`, { valueAsNumber: true })}
       />
+      <EmptySpace width={Width.Half} />
       <SingleSelect
         label={'Collection Type'}
         name={`subtype_data.entries.${index}.collection_type`}
@@ -130,13 +139,44 @@ const BiocontrolCollectionEntry = ({ index, remove }: PropTypes) => {
       ) : (
         <EmptySpace width={Width.Half} />
       )}
+      <DateInput
+        error={errors?.subtype_data?.entries?.[index]?.start_time_collecting}
+        includeTime
+        label={'Start Time Collecting'}
+        required
+        width={Width.Half}
+        {...register(`subtype_data.entries.${index}.start_time_collecting`, {
+          deps: [`subtype_data.entries.${index}.end_time_collecting`],
+          required: true,
+          validate: {
+            noFutureData: (val) => noFutureDate(val!),
+            startBeforeStop: validateMonitoringStartStopTimes
+          }
+        })}
+      />
+      <DateInput
+        error={errors?.subtype_data?.entries?.[index]?.end_time_collecting}
+        label={'Stop Time Collecting'}
+        includeTime
+        required
+        width={Width.Half}
+        {...register(`subtype_data.entries.${index}.end_time_collecting`, {
+          deps: [`subtype_data.entries.${index}.start_time_collecting`],
+          required: true,
+          validate: {
+            noFutureData: (val) => noFutureDate(val!),
+            startBeforeStop: validateMonitoringStartStopTimes
+          }
+        })}
+      />
       <TextArea
         label={'Comment'}
-        tooltip={'TODO'}
+        tooltip={tooltips.basic.comment}
         width={Width.Half}
         error={errors?.subtype_data?.entries?.[index]?.comment}
         {...register(`subtype_data.entries.${index}.comment`)}
       />
+      <EmptySpace width={Width.Half} />
       <BiocontrolCount index={index} />
       <BiocontrolCount estimate index={index} />
       <DeleteControl onClick={() => remove(index)} />
