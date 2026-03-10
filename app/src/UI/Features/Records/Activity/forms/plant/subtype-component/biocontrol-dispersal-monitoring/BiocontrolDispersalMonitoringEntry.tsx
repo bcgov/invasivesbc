@@ -2,7 +2,7 @@ import { useSelector } from 'utils/use_selector';
 import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
 import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
 import { useFormContext } from 'react-hook-form';
-import { BiocontrolReleaseMonitoringSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
+import { BiocontrolDispersalMonitoringSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import { useEffect, useMemo } from 'react';
 import { MonitoringType, YesNoBool, YesNoUnknown } from 'UI/Features/Records/Activity/forms/enums';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
@@ -18,13 +18,13 @@ type PropTypes = {
   index: number;
   remove: (index: number) => void;
 };
-const BiocontrolReleaseMonitoringEntry = ({ index, remove }: PropTypes) => {
+const BiocontrolDispersalMonitoringEntry = ({ index, remove }: PropTypes) => {
   const {
     register,
     watch,
     setValue,
     formState: { errors, isDirty }
-  } = useFormContext<BiocontrolReleaseMonitoringSchema>();
+  } = useFormContext<BiocontrolDispersalMonitoringSchema>();
 
   const validateMonitoringStartStopTimes = (_, formValues) => {
     const startTime = formValues.subtype_data?.entries?.[index]?.start_time;
@@ -188,7 +188,14 @@ const BiocontrolReleaseMonitoringEntry = ({ index, remove }: PropTypes) => {
       ) : (
         <Spacer x={200} y={10} />
       )}
-
+      <SingleSelect
+        label={'Linear Segment'}
+        options={YesNoUnknown}
+        tooltip={tooltips.plant.biocontrol.linear_segment}
+        width={Width.Half}
+        name={`subtype_data.entries.${index}.linear_segment`}
+      />
+      <Spacer x={200} y={10} />
       <DateInput
         error={errors?.subtype_data?.entries?.[index]?.start_time}
         includeTime
@@ -244,4 +251,4 @@ const BiocontrolReleaseMonitoringEntry = ({ index, remove }: PropTypes) => {
   );
 };
 
-export default BiocontrolReleaseMonitoringEntry;
+export default BiocontrolDispersalMonitoringEntry;

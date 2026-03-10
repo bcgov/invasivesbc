@@ -4,12 +4,23 @@
  * @param key Key to compare e.g. 'invasive_plant'
  * @param keyLabel Plain language representation of key to appear in error message e.g. 'Invasive Plant'
  */
-const noRepeatKey = (arr: Record<PropertyKey, unknown>[], key: PropertyKey, keyLabel?: string): boolean | string => {
-  const removedEmpty = arr.filter((entry) => !!entry?.[key]); // Filter out empty keys
-  return (
-    new Set(removedEmpty.map((o) => o?.[key])).size === removedEmpty.length ||
-    `The same ${String(keyLabel ?? key)} cannot appear in multiple entries.`
-  );
+const noRepeatKey = <T extends Record<PropertyKey, unknown>>(
+  arr: T[],
+  key: keyof T,
+  keyLabel?: string
+): boolean | string => {
+  const seen = new Set();
+
+  for (const entry of arr) {
+    const value = entry?.[key];
+    // Skip empty fields
+    if (value === undefined || value === null || value === '') continue;
+    if (seen.has(value)) {
+      return `The same ${keyLabel ?? String(key)} cannot appear in multiple entries.`;
+    }
+    seen.add(value);
+  }
+  return true;
 };
 
 export default noRepeatKey;

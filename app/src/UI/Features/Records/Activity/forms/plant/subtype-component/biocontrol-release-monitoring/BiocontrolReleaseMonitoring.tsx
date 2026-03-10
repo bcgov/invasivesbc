@@ -8,7 +8,7 @@ import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/N
 import { useFormContext } from 'react-hook-form';
 import { BiocontrolReleaseMonitoringSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
-import { maxValue, minValue } from 'UI/Features/Records/Activity/forms/common/validators';
+import { distinctEntries, maxValue, minValue } from 'UI/Features/Records/Activity/forms/common/validators';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
 import ArrayField from 'UI/Features/Records/Activity/forms/common/ArrayField/ArrayField';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
@@ -45,6 +45,15 @@ const BiocontrolReleaseMonitoring = () => {
       <ArrayField<BiocontrolReleaseMonitoringSchema, 'subtype_data.entries'>
         name={'subtype_data.entries'}
         label={'Biological Monitoring Information'}
+        rules={{
+          required: true,
+          validate: (arr) =>
+            distinctEntries(
+              arr,
+              ['biocontrol_agent', 'invasive_plant'],
+              'Entries must contain unique Agents and Plants'
+            )
+        }}
         renderRow={(index, remove) => <BiocontrolReleaseMonitoringEntry index={index} remove={remove} />}
         emptyValue={
           getDefaultFormState(ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial).subtype_data.entries[0]

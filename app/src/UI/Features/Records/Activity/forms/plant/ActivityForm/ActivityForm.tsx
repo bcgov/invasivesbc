@@ -317,9 +317,8 @@ const ActivityForm = () => {
               label={'Date'}
               tooltip={tooltips.basic.date}
               required
-              defaultValue={new Date().toISOString().slice(0, 10)}
               error={errors?.date}
-              {...register('date', { required: true, valueAsDate: true, validate: (val) => noFutureDate(val) })}
+              {...register('date', { required: true, validate: (val) => noFutureDate(val) })}
               width={Width.Half}
             />
             <Employer width={Width.Half} />

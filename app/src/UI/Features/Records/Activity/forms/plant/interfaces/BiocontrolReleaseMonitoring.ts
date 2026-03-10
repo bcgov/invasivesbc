@@ -15,8 +15,8 @@ interface BiocontrolReleaseMonitoringSchema extends BaseForm {
       location_agent_found: Array<string>;
       number_of_sweeps?: number;
       sign_of_biocontrol_presence: Array<string>;
-      start_time?: Date;
-      stop_time?: Date;
+      start_time?: string;
+      stop_time?: string;
       suitable_for_collection: string;
       actual_biological_agents: Array<{
         quantity: number;
@@ -41,12 +41,21 @@ interface BiocontrolReleaseMonitoringSchema extends BaseForm {
       senescent: number;
       target_plant_heights: Array<{ height_cm: number }>;
     };
+    // Microsite
     mesoslope_position: string;
     site_surface_shape: string;
+    // Spread
     agent_density?: number;
     plant_attack?: number;
     max_spread_distance_m?: number;
     max_spread_aspect_deg?: number;
+    // Weather
+    comments: string;
+    cloud_cover: string;
+    precipitation: string;
+    temperature: number;
+    wind_direction: string;
+    wind_speed_kmh: number;
   };
 }
 

@@ -1,25 +1,35 @@
 import { ActivitySubtypes } from 'sharedAPI';
 import { BaseForm } from '.';
 
-interface BiocontrolReleaseSchema extends BaseForm {
-  subtype: ActivitySubtypes.Biocontrol_Release;
+interface BiocontrolDispersalMonitoringSchema extends BaseForm {
+  subtype: ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial;
   subtype_data: {
     entries: Array<{
-      agent_source: string;
       biocontrol_agent: string;
-      collection_date: string;
-      linear_segment: string;
+      biocontrol_present: boolean;
       invasive_plant: string;
-      mortality: number;
-      plant_collected_from: string;
-      plant_collected_from_manual: string;
-      estimated_biological_agents: Array<{
-        quantity: number;
-        stage: string;
-      }>;
+      monitoring_type: string;
+      plant_count?: number;
+      linear_segment: string;
+      monitoring_method: string;
+      count_duration_minutes?: number;
+      location_agent_found: Array<string>;
+      number_of_sweeps?: number;
+      sign_of_biocontrol_presence: Array<string>;
+      start_time?: string;
+      stop_time?: string;
+      suitable_for_collection: string;
       actual_biological_agents: Array<{
         quantity: number;
         stage: string;
+        plant_position: string;
+        agent_location: string;
+      }>;
+      estimated_biological_agents: Array<{
+        quantity: number;
+        stage: string;
+        plant_position: string;
+        agent_location: string;
       }>;
     }>;
     target_plant_phenology?: {
@@ -47,4 +57,4 @@ interface BiocontrolReleaseSchema extends BaseForm {
   };
 }
 
-export type { BiocontrolReleaseSchema };
+export type { BiocontrolDispersalMonitoringSchema };

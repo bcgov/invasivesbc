@@ -107,7 +107,6 @@ const BiocontrolReleaseEntry = ({ index, remove }: PropTypes) => {
         required
         width={Width.Half}
         {...register(`subtype_data.entries.${index}.collection_date`, {
-          valueAsDate: true,
           validate: (val) => noFutureDate(val)
         })}
       />

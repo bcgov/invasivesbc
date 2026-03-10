@@ -1,6 +1,6 @@
-import { BiocontrolReleaseMonitoringSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
+import { BiocontrolDispersalMonitoringSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 
-const getMonitoringBiocontrolReleaseSubtypeFields = (): BiocontrolReleaseMonitoringSchema['subtype_data'] => ({
+const getBiocontrolDispersalMonitoringSubtypeFields = (): BiocontrolDispersalMonitoringSchema['subtype_data'] => ({
   entries: [
     {
       biocontrol_agent: '',
@@ -11,6 +11,7 @@ const getMonitoringBiocontrolReleaseSubtypeFields = (): BiocontrolReleaseMonitor
       count_duration_minutes: undefined,
       plant_count: undefined,
       location_agent_found: [],
+      linear_segment: '',
       sign_of_biocontrol_presence: [],
       start_time: '',
       stop_time: '',
@@ -46,11 +47,6 @@ const getMonitoringBiocontrolReleaseSubtypeFields = (): BiocontrolReleaseMonitor
   // Microsite Condition
   mesoslope_position: '',
   site_surface_shape: '',
-  // Spread Results
-  agent_density: 0,
-  plant_attack: 0,
-  max_spread_distance_m: 0,
-  max_spread_aspect_deg: 0,
   // Weather
   comments: '',
   cloud_cover: '',
@@ -60,4 +56,4 @@ const getMonitoringBiocontrolReleaseSubtypeFields = (): BiocontrolReleaseMonitor
   wind_speed_kmh: 0
 });
 
-export default getMonitoringBiocontrolReleaseSubtypeFields;
+export default getBiocontrolDispersalMonitoringSubtypeFields;
