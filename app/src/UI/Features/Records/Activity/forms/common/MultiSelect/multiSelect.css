@@ -20,11 +20,14 @@
     }
   }
 
+  /* stylelint-disable-next-line selector-class-pattern */
+  .select-input__control,
   .select-input {
     width: 100%;
-    margin-right: 1rem;
     text-align: left;
+    margin-right: 1rem;
     font-size: var(--form-input-font-size);
+    height: var(--form-input-height);
   }
 
   &.full-width {

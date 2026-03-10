@@ -5,10 +5,13 @@
   max-width: 100%;
   margin-bottom: 10px;
 
+  /* stylelint-disable-next-line selector-class-pattern */
+  .select-input__control,
   .select-input {
     width: 100%;
     text-align: left;
     font-size: var(--form-input-font-size);
+    height: var(--form-input-height);
   }
 
   .top {

@@ -61,6 +61,7 @@ export function MultiSelect<T extends FieldValues>({
               onChange(valueKey ? val?.map((c) => ({ [valueKey]: c.value })) : val?.map((c) => c.value))
             }
             className="select-input"
+            classNamePrefix={'select-input'}
           />
           <ErrorMessage error={error} />
         </div>
