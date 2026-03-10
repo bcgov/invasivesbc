@@ -1,6 +1,6 @@
-import { BiocontrolCollection } from 'UI/Features/Records/Activity/forms/plant/interfaces';
+import { BiocontrolCollectionSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 
-const getBiocontrolCollectionSubtypeFields = (): BiocontrolCollection['subtype_data'] => ({
+const getBiocontrolCollectionSubtypeFields = (): BiocontrolCollectionSchema['subtype_data'] => ({
   entries: [
     {
       invasive_plant: '',
