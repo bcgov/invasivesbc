@@ -10,8 +10,10 @@ import { minValue, noFutureDate } from 'UI/Features/Records/Activity/forms/commo
 import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
 import TextInput from 'UI/Features/Records/Activity/forms/common/TextInput/TextInput';
 import DateInput from 'UI/Features/Records/Activity/forms/common/DateInput/DateInput';
-import { useMemo } from 'react';
-import BiocontrolCount from '../common/BiocontrolCount';
+import { useEffect } from 'react';
+import BiocontrolCount from 'UI/Features/Records/Activity/forms/plant/subtype-component/common/BiocontrolCount';
+import useFilteredInvasivePlantCodes from 'UI/Features/Records/Activity/forms/plant/hooks/useFilteredInvasivePlantCodes';
+import useFilteredBiocontrolCodes from 'UI/Features/Records/Activity/forms/plant/hooks/useFilteredBiocontrolCodes';
 
 interface PropTypes {
   index: number;
@@ -25,36 +27,25 @@ const BiocontrolReleaseEntry = ({ index, remove }: PropTypes) => {
     formState: { errors, isDirty }
   } = useFormContext<BiocontrolReleaseSchema>();
   const codes = useSelector((state) => state.ActivityPage.formCodes);
-  const plantToAgentMap = useSelector((state) => state.ActivityPage.biocontrol?.plantToAgentMap);
   const selectedPlant = watch(`subtype_data.entries.${index}.invasive_plant`);
   const selectedAgent = watch(`subtype_data.entries.${index}.biocontrol_agent`);
+  const { terrestrialPlantOptionsWithAgents } = useFilteredInvasivePlantCodes();
+  const { agentOptionsForChosenPlant } = useFilteredBiocontrolCodes(selectedPlant);
 
-  // Only Display Invasive Plants where matching agents exist
-  const plantOptionsWithAgents = useMemo(() => {
-    if (!plantToAgentMap || !codes?.TerrestrialPlantCode) return [];
-    return codes.TerrestrialPlantCode.filter(({ code }) => plantToAgentMap.some((p) => p.plant_code_name === code));
-  }, [plantToAgentMap]);
-
-  // Filter Available Agent options whenever Plant Selection changes. If agent no longer available, reset selection.
-  const agentOptionsForChosenPlant = useMemo(() => {
-    if (!codes?.BiocontrolAgentCode) return [];
-    const agentsForPlant = plantToAgentMap.filter((op) => op.plant_code_name === selectedPlant);
-    const validAgents = codes.BiocontrolAgentCode.filter(({ code }) =>
-      agentsForPlant.some((a) => a.agent_code_name === code)
-    );
-    const currentSelectionNoLongerValid = selectedAgent && !validAgents.some(({ code }) => code === selectedAgent);
+  useEffect(() => {
+    const currentSelectionNoLongerValid =
+      selectedAgent && !agentOptionsForChosenPlant.some(({ code }) => code === selectedAgent);
     if (currentSelectionNoLongerValid && isDirty) {
       setValue(`subtype_data.entries.${index}.biocontrol_agent`, '');
     }
-    return validAgents;
-  }, [selectedPlant]);
+  }, [agentOptionsForChosenPlant]);
 
   return (
     <>
       <SingleSelect
         label={'Invasive Plant'}
         name={`subtype_data.entries.${index}.invasive_plant`}
-        options={plantOptionsWithAgents}
+        options={terrestrialPlantOptionsWithAgents}
         required
         rules={{ required: true }}
         tooltip={tooltips.plant.invasive_plant}

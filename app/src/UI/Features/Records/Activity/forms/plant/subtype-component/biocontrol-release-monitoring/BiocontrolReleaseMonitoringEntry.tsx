@@ -13,6 +13,8 @@ import { minValue, noFutureDate } from 'UI/Features/Records/Activity/forms/commo
 import DateInput from 'UI/Features/Records/Activity/forms/common/DateInput/DateInput';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
 import BiocontrolCount from 'UI/Features/Records/Activity/forms/plant/subtype-component/common/BiocontrolCount';
+import useFilteredInvasivePlantCodes from 'UI/Features/Records/Activity/forms/plant/hooks/useFilteredInvasivePlantCodes';
+import useFilteredBiocontrolCodes from 'UI/Features/Records/Activity/forms/plant/hooks/useFilteredBiocontrolCodes';
 
 type PropTypes = {
   index: number;
@@ -35,38 +37,20 @@ const BiocontrolReleaseMonitoringEntry = ({ index, remove }: PropTypes) => {
 
   const SWEEP_COUNT_CODE = 'Cs';
   const codes = useSelector((state) => state.ActivityPage.formCodes);
-  const plantToAgentMap = useSelector((state) => state.ActivityPage.biocontrol?.plantToAgentMap);
 
   const selectedPlant = watch(`subtype_data.entries.${index}.invasive_plant`);
   const selectedAgent = watch(`subtype_data.entries.${index}.biocontrol_agent`);
   const biocontrolPresent = watch(`subtype_data.entries.${index}.biocontrol_present`);
   const monitoringType = watch(`subtype_data.entries.${index}.monitoring_type`);
   const monitoringMethod = watch(`subtype_data.entries.${index}.monitoring_method`);
+  const { terrestrialPlantOptionsWithAgents } = useFilteredInvasivePlantCodes();
+  const { agentOptionsForChosenPlant } = useFilteredBiocontrolCodes(selectedPlant);
 
   // Remove Sweep and Transplant Options as they are not needed for ReleaseMonitoring
   const monitoringMethodCodes = useMemo(
     () => codes?.BioAgentCollectionMethodCode.filter((c) => !['Sw', 'Tp'].includes(c.code as string)),
     [codes?.BioAgentCollectionMethodCode]
   );
-  // Only Display Invasive Plants where matching agents exist
-  const plantOptionsWithAgents = useMemo(() => {
-    if (!plantToAgentMap || !codes?.TerrestrialPlantCode) return [];
-    return codes.TerrestrialPlantCode.filter(({ code }) => plantToAgentMap.some((p) => p.plant_code_name === code));
-  }, [plantToAgentMap]);
-
-  // Filter Available Agent options whenever Plant Selection changes. If agent no longer available, reset selection.
-  const agentOptionsForChosenPlant = useMemo(() => {
-    if (!codes?.BiocontrolAgentCode) return [];
-    const agentsForPlant = plantToAgentMap.filter((op) => op.plant_code_name === selectedPlant);
-    const validAgents = codes.BiocontrolAgentCode.filter(({ code }) =>
-      agentsForPlant.some((a) => a.agent_code_name === code)
-    );
-    const currentSelectionNoLongerValid = selectedAgent && !validAgents.some(({ code }) => code === selectedAgent);
-    if (currentSelectionNoLongerValid && isDirty) {
-      setValue(`subtype_data.entries.${index}.biocontrol_agent`, '');
-    }
-    return validAgents;
-  }, [selectedPlant]);
 
   useEffect(() => {
     // Cleanup sign_of_biocontrol_presence when no biocontrol present.
@@ -91,13 +75,23 @@ const BiocontrolReleaseMonitoringEntry = ({ index, remove }: PropTypes) => {
       setValue(`subtype_data.entries.${index}.number_of_sweeps`, undefined);
     }
   }, [monitoringMethod]);
+
+  useEffect(() => {
+    const currentSelectionNoLongerValid =
+      selectedAgent && !agentOptionsForChosenPlant.some(({ code }) => code === selectedAgent);
+    if (currentSelectionNoLongerValid && isDirty) {
+      setValue(`subtype_data.entries.${index}.biocontrol_agent`, '');
+    }
+  }, [agentOptionsForChosenPlant]);
+
   return (
     <>
       <SingleSelect
         label={'Invasive Plant'}
         name={`subtype_data.entries.${index}.invasive_plant`}
-        options={plantOptionsWithAgents}
+        options={terrestrialPlantOptionsWithAgents}
         required
+        rules={{ required: true }}
         tooltip={tooltips.plant.invasive_plant}
         width={Width.Half}
       />
@@ -107,6 +101,7 @@ const BiocontrolReleaseMonitoringEntry = ({ index, remove }: PropTypes) => {
         options={agentOptionsForChosenPlant}
         tooltip={tooltips.plant.biocontrol.agent}
         required
+        rules={{ required: true }}
         width={Width.Half}
       />
       <SingleSelect
@@ -114,6 +109,7 @@ const BiocontrolReleaseMonitoringEntry = ({ index, remove }: PropTypes) => {
         name={`subtype_data.entries.${index}.biocontrol_present`}
         options={YesNoBool}
         required
+        rules={{ required: true }}
         width={Width.Half}
       />
       {biocontrolPresent ? (
@@ -122,6 +118,7 @@ const BiocontrolReleaseMonitoringEntry = ({ index, remove }: PropTypes) => {
           name={`subtype_data.entries.${index}.sign_of_biocontrol_presence`}
           options={codes?.BiocontrolPresenceCode}
           required={biocontrolPresent}
+          rules={{ required: biocontrolPresent }}
           tooltip={tooltips.plant.biocontrol.sign_of_presence}
           width={Width.Half}
         />
@@ -133,6 +130,7 @@ const BiocontrolReleaseMonitoringEntry = ({ index, remove }: PropTypes) => {
         name={`subtype_data.entries.${index}.monitoring_type`}
         options={MonitoringType}
         required
+        rules={{ required: true }}
         tooltip={tooltips.plant.biocontrol.monitoring.type}
         width={Width.Half}
       />
@@ -171,6 +169,7 @@ const BiocontrolReleaseMonitoringEntry = ({ index, remove }: PropTypes) => {
         name={`subtype_data.entries.${index}.monitoring_method`}
         options={monitoringMethodCodes}
         required
+        rules={{ required: true }}
         width={Width.Half}
       />
       {monitoringMethod === SWEEP_COUNT_CODE ? (
@@ -225,6 +224,7 @@ const BiocontrolReleaseMonitoringEntry = ({ index, remove }: PropTypes) => {
             label={'Location Agents Found'}
             name={`subtype_data.entries.${index}.location_agent_found`}
             options={codes?.AgentLocationFoundCode}
+            rules={{ required: true }}
             tooltip={tooltips.plant.biocontrol.monitoring.location_found}
             width={Width.Half}
           />
@@ -232,6 +232,7 @@ const BiocontrolReleaseMonitoringEntry = ({ index, remove }: PropTypes) => {
             label={'Suitable for Collection'}
             name={`subtype_data.entries.${index}.suitable_for_collection`}
             options={YesNoUnknown}
+            rules={{ required: true }}
             tooltip={tooltips.plant.biocontrol.monitoring.suitable_for_collection}
             width={Width.Half}
           />
