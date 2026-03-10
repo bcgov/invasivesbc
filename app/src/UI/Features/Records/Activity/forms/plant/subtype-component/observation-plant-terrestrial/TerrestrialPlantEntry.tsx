@@ -12,7 +12,7 @@ import { useEffect, useState } from 'react';
 import CheckboxUI from 'UI/Features/Records/Activity/forms/common/CheckboxUI/CheckboxUI';
 import { EntryBasePath, TerrestrialPlantObservationSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
-import EmptySpace from 'UI/Features/Records/Activity/forms/common/EmptySpace/EmptySpace';
+import FormSpacer from 'UI/Features/Records/Activity/forms/common/FormSpacer/FormSpacer';
 
 interface Props {
   root: string;
@@ -140,7 +140,7 @@ const TerrestrialPlantEntry = ({ root, index, remove }: Props) => {
             width={Width.Half}
             error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.accession_number}
           />
-          <EmptySpace width={Width.Half} />
+          <FormSpacer width={Width.Half} />
 
           <DateInput
             label="Date Voucher Collected"

@@ -9,7 +9,7 @@ import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/N
 import { MonitoringType } from 'UI/Features/Records/Activity/forms/enums';
 import { minValue, noFutureDate } from 'UI/Features/Records/Activity/forms/common/validators';
 import TextArea from 'UI/Features/Records/Activity/forms/common/TextArea/TextArea';
-import EmptySpace from 'UI/Features/Records/Activity/forms/common/EmptySpace/EmptySpace';
+import FormSpacer from 'UI/Features/Records/Activity/forms/common/FormSpacer/FormSpacer';
 import BiocontrolCount from 'UI/Features/Records/Activity/forms/plant/subtype-component/common/BiocontrolCount';
 import useFilteredInvasivePlantCodes from 'UI/Features/Records/Activity/forms/plant/hooks/useFilteredInvasivePlantCodes';
 import useFilteredBiocontrolCodes from 'UI/Features/Records/Activity/forms/plant/hooks/useFilteredBiocontrolCodes';
@@ -78,7 +78,7 @@ const BiocontrolCollectionEntry = ({ index, remove }: PropTypes) => {
         error={errors?.subtype_data?.entries?.[index]?.historical_iapp_site}
         {...register(`subtype_data.entries.${index}.historical_iapp_site`, { valueAsNumber: true })}
       />
-      <EmptySpace width={Width.Half} />
+      <FormSpacer width={Width.Half} />
       <SingleSelect
         label={'Collection Type'}
         name={`subtype_data.entries.${index}.collection_type`}
@@ -116,7 +116,7 @@ const BiocontrolCollectionEntry = ({ index, remove }: PropTypes) => {
         />
       )}
       {/* Leave empty slot if none selected to avoid whole section changing slot position */}
-      {!collectionType && <EmptySpace width={Width.Half} />}
+      {!collectionType && <FormSpacer width={Width.Half} />}
       <SingleSelect
         label={'Collection Method'}
         name={`subtype_data.entries.${index}.collection_method`}
@@ -137,7 +137,7 @@ const BiocontrolCollectionEntry = ({ index, remove }: PropTypes) => {
           })}
         />
       ) : (
-        <EmptySpace width={Width.Half} />
+        <FormSpacer width={Width.Half} />
       )}
       <DateInput
         error={errors?.subtype_data?.entries?.[index]?.start_time_collecting}
@@ -176,7 +176,7 @@ const BiocontrolCollectionEntry = ({ index, remove }: PropTypes) => {
         error={errors?.subtype_data?.entries?.[index]?.comment}
         {...register(`subtype_data.entries.${index}.comment`)}
       />
-      <EmptySpace width={Width.Half} />
+      <FormSpacer width={Width.Half} />
       <BiocontrolCount index={index} />
       <BiocontrolCount estimate index={index} />
       <DeleteControl onClick={() => remove(index)} />

@@ -42,7 +42,7 @@ import Employer from './Employers';
 import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
 import LinkedActivities from './LinkedActivities';
 import { Error } from '@mui/icons-material';
-import EmptySpace from 'UI/Features/Records/Activity/forms/common/EmptySpace/EmptySpace';
+import FormSpacer from 'UI/Features/Records/Activity/forms/common/FormSpacer/FormSpacer';
 
 const FORM_UPDATE_THROTTLE_DELAY = 1000; //ms
 const FORM_UPDATE_MAX_DELAY = 5000; //ms
@@ -323,7 +323,7 @@ const ActivityForm = () => {
             />
             <Employer width={Width.Half} />
             <FundingAgency width={Width.Half} />
-            <EmptySpace width={Width.Half} />
+            <FormSpacer width={Width.Half} />
             {/* Start of Jurisdictions section */}
             <ArrayField<FormSchema, 'jurisdictions'>
               name="jurisdictions"

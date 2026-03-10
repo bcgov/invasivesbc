@@ -12,7 +12,7 @@ import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldse
 import DateInput from 'UI/Features/Records/Activity/forms/common/DateInput/DateInput';
 import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
 import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
-import EmptySpace from 'UI/Features/Records/Activity/forms/common/EmptySpace/EmptySpace';
+import FormSpacer from 'UI/Features/Records/Activity/forms/common/FormSpacer/FormSpacer';
 
 interface Props {
   root: string;
@@ -136,7 +136,7 @@ const AquaticPlantEntry = ({ root, index, remove }: Props) => {
             width={Width.Half}
             error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.accession_number}
           />
-          <EmptySpace width={Width.Half} />
+          <FormSpacer width={Width.Half} />
 
           <DateInput
             label="Date Voucher Collected"

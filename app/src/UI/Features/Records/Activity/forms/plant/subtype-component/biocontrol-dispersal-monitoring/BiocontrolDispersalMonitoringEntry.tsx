@@ -14,7 +14,7 @@ import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips'
 import BiocontrolCount from 'UI/Features/Records/Activity/forms/plant/subtype-component/common/BiocontrolCount';
 import useFilteredInvasivePlantCodes from 'UI/Features/Records/Activity/forms/plant/hooks/useFilteredInvasivePlantCodes';
 import useFilteredBiocontrolCodes from 'UI/Features/Records/Activity/forms/plant/hooks/useFilteredBiocontrolCodes';
-import EmptySpace from 'UI/Features/Records/Activity/forms/common/EmptySpace/EmptySpace';
+import FormSpacer from 'UI/Features/Records/Activity/forms/common/FormSpacer/FormSpacer';
 
 type PropTypes = {
   index: number;
@@ -122,7 +122,7 @@ const BiocontrolDispersalMonitoringEntry = ({ index, remove }: PropTypes) => {
           width={Width.Half}
         />
       ) : (
-        <EmptySpace width={Width.Half} />
+        <FormSpacer width={Width.Half} />
       )}
       <SingleSelect
         label={'Monitoring Type'}
@@ -162,7 +162,7 @@ const BiocontrolDispersalMonitoringEntry = ({ index, remove }: PropTypes) => {
         />
       )}
       {/* Leave empty slot if none selected to avoid whole section changing slot position */}
-      {!monitoringType && <EmptySpace width={Width.Half} />}
+      {!monitoringType && <FormSpacer width={Width.Half} />}
       <SingleSelect
         label={'Monitoring Method'}
         name={`subtype_data.entries.${index}.monitoring_method`}
@@ -184,7 +184,7 @@ const BiocontrolDispersalMonitoringEntry = ({ index, remove }: PropTypes) => {
           })}
         />
       ) : (
-        <EmptySpace width={Width.Half} />
+        <FormSpacer width={Width.Half} />
       )}
       <SingleSelect
         label={'Linear Segment'}
@@ -193,7 +193,7 @@ const BiocontrolDispersalMonitoringEntry = ({ index, remove }: PropTypes) => {
         width={Width.Half}
         name={`subtype_data.entries.${index}.linear_segment`}
       />
-      <EmptySpace width={Width.Half} />
+      <FormSpacer width={Width.Half} />
       <DateInput
         error={errors?.subtype_data?.entries?.[index]?.start_time}
         includeTime

@@ -14,7 +14,7 @@ import {
 } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import { useFormContext } from 'react-hook-form';
 import { useEffect } from 'react';
-import EmptySpace from 'UI/Features/Records/Activity/forms/common/EmptySpace/EmptySpace';
+import FormSpacer from 'UI/Features/Records/Activity/forms/common/FormSpacer/FormSpacer';
 
 type PropTypes = {
   remove: Function;
@@ -94,7 +94,7 @@ const MonitoringChemMechPlantEntry = ({ index, remove }: PropTypes) => {
           width={Width.Half}
         />
       ) : (
-        <EmptySpace width={Width.Half} />
+        <FormSpacer width={Width.Half} />
       )}
       <SingleSelect
         label={'Management Efficacy Rating'}
