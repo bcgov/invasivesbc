@@ -8,7 +8,7 @@ import ArrayField from 'UI/Features/Records/Activity/forms/common/ArrayField/Arr
 import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
 import { useFormContext } from 'react-hook-form';
 import MultiSelect from 'UI/Features/Records/Activity/forms/common/MultiSelect/MultiSelect';
-import { minArrayLength, noRepeatKey } from 'UI/Features/Records/Activity/forms/common/validators';
+import { checkSum, minArrayLength, noRepeatKey } from 'UI/Features/Records/Activity/forms/common/validators';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
 import { AquaticPlantObservationSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
@@ -142,7 +142,17 @@ const ObservationPlantAquatic = () => {
       <ArrayField<AquaticPlantObservationSchema, 'subtype_data.shoreline_types'>
         name="subtype_data.shoreline_types"
         label={'Shoreline Types'}
-        emptyValue={{}}
+        rules={{
+          validate: {
+            minLength: (val) => minArrayLength(val, 1),
+            totalPercent: (val) => checkSum(val, 100, 'percent_covered'),
+            noRepeatType: (val) => noRepeatKey(val, 'shoreline_type', 'Shoreline Type')
+          }
+        }}
+        emptyValue={
+          (getDefaultFormState(ActivitySubtypes.Observation_Plant_Aquatic) as AquaticPlantObservationSchema)
+            .subtype_data.shoreline_types[0]
+        }
         renderRow={(index, remove) => (
           <>
             <SingleSelect
