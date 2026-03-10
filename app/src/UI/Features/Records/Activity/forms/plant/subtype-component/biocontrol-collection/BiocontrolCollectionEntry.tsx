@@ -11,10 +11,10 @@ import { minValue, noFutureDate } from 'UI/Features/Records/Activity/forms/commo
 import TextArea from 'UI/Features/Records/Activity/forms/common/TextArea/TextArea';
 import EmptySpace from 'UI/Features/Records/Activity/forms/common/EmptySpace/EmptySpace';
 import BiocontrolCount from 'UI/Features/Records/Activity/forms/plant/subtype-component/common/BiocontrolCount';
-import useFilteredInvasivePlantCodes from '../../hooks/useFilteredInvasivePlantCodes';
-import useFilteredBiocontrolCodes from '../../hooks/useFilteredBiocontrolCodes';
+import useFilteredInvasivePlantCodes from 'UI/Features/Records/Activity/forms/plant/hooks/useFilteredInvasivePlantCodes';
+import useFilteredBiocontrolCodes from 'UI/Features/Records/Activity/forms/plant/hooks/useFilteredBiocontrolCodes';
 import { useEffect } from 'react';
-import DateInput from '../../../common/DateInput/DateInput';
+import DateInput from 'UI/Features/Records/Activity/forms/common/DateInput/DateInput';
 
 type PropTypes = {
   index: number;
