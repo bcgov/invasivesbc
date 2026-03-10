@@ -1,6 +1,5 @@
 import { useSelector } from 'utils/use_selector';
 import { useFormContext, useWatch } from 'react-hook-form';
-import Spacer from 'UI/Reusable/Spacer/Spacer';
 import { AquaticPlantObservationSchema, EntryBasePath } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import { useEffect, useState } from 'react';
 import TextInput from 'UI/Features/Records/Activity/forms/common/TextInput/TextInput';
@@ -13,6 +12,7 @@ import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldse
 import DateInput from 'UI/Features/Records/Activity/forms/common/DateInput/DateInput';
 import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
 import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
+import EmptySpace from 'UI/Features/Records/Activity/forms/common/EmptySpace/EmptySpace';
 
 interface Props {
   root: string;
@@ -136,7 +136,7 @@ const AquaticPlantEntry = ({ root, index, remove }: Props) => {
             width={Width.Half}
             error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.accession_number}
           />
-          <Spacer x={200} y={10} />
+          <EmptySpace width={Width.Half} />
 
           <DateInput
             label="Date Voucher Collected"

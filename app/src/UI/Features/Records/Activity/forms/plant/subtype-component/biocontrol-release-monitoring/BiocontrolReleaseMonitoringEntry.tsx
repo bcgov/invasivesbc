@@ -6,7 +6,6 @@ import { BiocontrolReleaseMonitoringSchema } from 'UI/Features/Records/Activity/
 import { useEffect, useMemo } from 'react';
 import { MonitoringType, YesNoBool, YesNoUnknown } from 'UI/Features/Records/Activity/forms/enums';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
-import Spacer from 'UI/Reusable/Spacer/Spacer';
 import MultiSelect from 'UI/Features/Records/Activity/forms/common/MultiSelect/MultiSelect';
 import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
 import { minValue, noFutureDate } from 'UI/Features/Records/Activity/forms/common/validators';
@@ -15,6 +14,7 @@ import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips'
 import BiocontrolCount from 'UI/Features/Records/Activity/forms/plant/subtype-component/common/BiocontrolCount';
 import useFilteredInvasivePlantCodes from 'UI/Features/Records/Activity/forms/plant/hooks/useFilteredInvasivePlantCodes';
 import useFilteredBiocontrolCodes from 'UI/Features/Records/Activity/forms/plant/hooks/useFilteredBiocontrolCodes';
+import EmptySpace from 'UI/Features/Records/Activity/forms/common/EmptySpace/EmptySpace';
 
 type PropTypes = {
   index: number;
@@ -123,7 +123,7 @@ const BiocontrolReleaseMonitoringEntry = ({ index, remove }: PropTypes) => {
           width={Width.Half}
         />
       ) : (
-        <Spacer x={250} y={20} />
+        <EmptySpace width={Width.Half} />
       )}
       <SingleSelect
         label={'Monitoring Type'}
@@ -163,7 +163,7 @@ const BiocontrolReleaseMonitoringEntry = ({ index, remove }: PropTypes) => {
         />
       )}
       {/* Leave empty slot if none selected to avoid whole section changing slot position */}
-      {!monitoringType && <Spacer x={200} y={10} />}
+      {!monitoringType && <EmptySpace width={Width.Half} />}
       <SingleSelect
         label={'Monitoring Method'}
         name={`subtype_data.entries.${index}.monitoring_method`}
@@ -185,7 +185,7 @@ const BiocontrolReleaseMonitoringEntry = ({ index, remove }: PropTypes) => {
           })}
         />
       ) : (
-        <Spacer x={200} y={10} />
+        <EmptySpace width={Width.Half} />
       )}
 
       <DateInput
