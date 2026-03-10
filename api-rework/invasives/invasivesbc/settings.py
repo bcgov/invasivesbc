@@ -5,7 +5,8 @@ import sys
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = "django-insecure-&3i*dwyfxin1+336nfgz861&1z(56@qod5mq!^9f&-8y(r8qio"
-
+GDAL_LIBRARY_PATH = "/opt/homebrew/opt/gdal/lib/libgdal.dylib"
+GEOS_LIBRARY_PATH = "/opt/homebrew/lib/libgeos_c.dylib"
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]

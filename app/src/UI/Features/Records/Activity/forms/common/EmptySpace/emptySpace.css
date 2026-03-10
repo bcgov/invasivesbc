@@ -1,6 +1,5 @@
 .empty-space {
   display: flex;
-  background-color: red;
 
   &.full-width {
     width: 100%;
