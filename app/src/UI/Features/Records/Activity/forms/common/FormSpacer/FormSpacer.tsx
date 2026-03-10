@@ -1,4 +1,4 @@
-import { getInputWidth, Width } from '../utils';
+import { getInputWidth, Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import './formSpacer.css';
 
 type PropTypes = {
