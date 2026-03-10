@@ -91,6 +91,7 @@ body {
   --overlay-header-z-index: 99999;
   --form-container-width: 950px;
   --form-input-height: 2.75rem;
+  --form-legend-font-size: 1.33rem;
   --form-input-font-size: 1.1rem;
   --form-input-label-font-size: 1rem;
   --form-input-error-font-size: 0.95rem;

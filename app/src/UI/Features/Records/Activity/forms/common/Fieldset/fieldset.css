@@ -1,13 +1,29 @@
 .form-fieldset {
   display: flex;
   flex-flow: row wrap;
-  font-size: 1.25rem;
   justify-content: flex-start;
   text-wrap: wrap;
   box-sizing: border-box;
   align-items: stretch;
   margin-bottom: 3rem;
-  background-color: #00336615;
+  background-color: #fff;
+  border: 0;
+
+  legend {
+    border-bottom: 1pt solid #ccc;
+    font-size: var(--form-legend-font-size);
+    width: 100%;
+  }
+
+  &.nested {
+    border: 1pt solid black;
+    background-color: #00336610;
+
+    legend {
+      width: auto;
+      border: 0;
+    }
+  }
 
   & > *:not(fieldset) {
     margin-bottom: 10px;

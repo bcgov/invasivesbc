@@ -4,11 +4,14 @@
   justify-content: center;
   width: 100%;
   box-sizing: border-box;
+  background-color: #f1f1f1;
 }
 
 #activity-form {
   display: flex;
   flex-flow: row wrap;
+  background-color: white;
+  padding: 1em;
   width: var(--form-container-width);
   max-width: 100%;
   margin: 5vh 0;
@@ -36,7 +39,7 @@
     padding: 0;
 
     li {
-      background-color: #00336625;
+      background-color: var(--odd-list-item-bg-color);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -50,7 +53,7 @@
       }
 
       &:nth-child(even) {
-        background-color: #00336615;
+        background-color: var(--even-list-item-bg-color);
       }
 
       &:not(:last-child) {
