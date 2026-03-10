@@ -9,6 +9,7 @@ export type { AquaticMechTreatment } from './AquaticMechTreatment';
 // Biocontrol
 export type { BiocontrolReleaseSchema } from './BiocontrolRelease';
 export type { BiocontrolDispersalMonitoringSchema } from './BiocontrolDispersalMonitoring';
+export type { BiocontrolCollection } from './BiocontrolCollection';
 // Monitoring
 export type { MonitoringChemPlantSchema, MonitoringMechPlantSchema } from './MechChemMonitoring';
 export type { BiocontrolReleaseMonitoringSchema } from './BiocontrolReleaseMonitoring';
