@@ -1,7 +1,7 @@
 import { ActivitySubtypes } from 'sharedAPI';
 import { BaseForm } from '.';
 
-interface BiocontrolCollection extends BaseForm {
+interface BiocontrolCollectionSchema extends BaseForm {
   subtype: ActivitySubtypes.Biocontrol_Collection;
   subtype_data: {
     entries: Array<{
@@ -50,4 +50,4 @@ interface BiocontrolCollection extends BaseForm {
   };
 }
 
-export type { BiocontrolCollection };
+export type { BiocontrolCollectionSchema };
