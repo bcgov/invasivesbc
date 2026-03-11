@@ -1,0 +1,5 @@
+.form-advisory {
+  color: rgb(227 168 43);
+  font-size: var(--form-input-error-font-size);
+  text-align: left;
+}
