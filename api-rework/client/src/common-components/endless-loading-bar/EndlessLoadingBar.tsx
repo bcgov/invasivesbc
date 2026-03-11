@@ -17,8 +17,8 @@ const EndlessLoadingBar = () => {
       <div className="bar">
         {Array(count)
           .fill(0)
-          .map(() => (
-            <div className="progress" />
+          .map((_, i) => (
+            <div key={i} className="progress" />
           ))}
       </div>
     </div>

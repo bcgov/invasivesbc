@@ -14,7 +14,7 @@ def add_well_information(new: Activity, old: LegacyActivity):
                     "Omitting empty well spec because of magic string well id = 'No wells found'"
                 )
             else:
-                WellEntry.objects.create(
+                WellEntry.objects.update_or_create(
                     activity=new,
                     well_tag=well.well_id,
                     distance=well.well_proximity,

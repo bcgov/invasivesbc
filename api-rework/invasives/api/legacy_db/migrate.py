@@ -49,10 +49,46 @@ def migrate(old: LegacyActivity):
     new.form_status = old.activity_payload.form_status
     new.comment = old.activity_payload.form_data.activity_data.general_comment
 
-    if old.activity_payload.geometry is None or len(old.activity_payload.geometry) > 1:
-        logging.error(
-            "geometry cannot be understood: " + pformat(old.activity_payload.geometry)
+    if old.activity_payload.geometry is None:
+        logging.warning("geometry is null -- this is almost certainly an error")
+        if (
+            old.activity_payload.form_data.activity_data.latitude is not None
+            and old.activity_payload.form_data.activity_data.longitude is not None
+        ):
+            if new.migration_remarks is None:
+                new.migration_remarks = ""
+                new.migration_remarks += f"Source activity has a null geometry field, but does have lat and long specified. Creating a zero-radius point geometry as a placeholder.\n\n"
+                logging.warning(
+                    "activity coordinates exist, using as zero-radius point geometry"
+                )
+                new.shape = json.dumps(
+                    {
+                        "type": "Point",
+                        "coordinates": [
+                            old.activity_payload.form_data.activity_data.longitude,
+                            old.activity_payload.form_data.activity_data.latitude,
+                        ],
+                    }
+                )
+
+    elif len(old.activity_payload.geometry) > 1:
+        logging.warning(
+            "geometry contains multiple objects, attempting to convert to multipolygon"
         )
+        for shape in old.activity_payload.geometry:
+            if any(
+                [
+                    shape["geometry"]["type"] != "Polygon"
+                    for shape in old.activity_payload.geometry
+                ]
+            ):
+                logging.error(
+                    "at least one array element in a geometry list is not a polygon, cannot attempt conversion to multipolygon. geo: "
+                    + pformat(old.activity_payload.geometry)
+                )
+            else:
+                logging.info("looks ok, proceeding with conversion attempt")
+
     else:
         new.shape = json.dumps((old.activity_payload.geometry[0]["geometry"]))
         properties = (

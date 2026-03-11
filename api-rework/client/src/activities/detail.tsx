@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { API_URL } from 'constants';
-import { NavLink, useParams } from 'react-router';
+import {Link, NavLink, Outlet, Route, Routes, useParams} from 'react-router';
 import Spinner from 'activities/spinner';
 import JSONViewer from 'activities/json_viewer';
 import './activities.scss';
@@ -125,12 +125,12 @@ const ActivitiesDetail: React.FC = () => {
 
       <nav className={'tabs'}>
         <ul>
-          <Tab tab={tab} setTab={setTab} tabName={'legacy'} title={'Legacy Model'} />
-          <Tab tab={tab} setTab={setTab} tabName={'pydantic'} title={'Pydantic Model'} />
-          <Tab tab={tab} setTab={setTab} tabName={'django'} title={'Final Django Model'} />
-          <Tab tab={tab} setTab={setTab} tabName={'ninja'} title={'Ninja Model'} />
-          <Tab tab={tab} setTab={setTab} tabName={'migration'} title={'Migration Status'} />
-          <Tab tab={tab} setTab={setTab} tabName={'form-view'} title={'View as Form'} />
+          <NavLink className={({isActive}) => (isActive ? 'active' : 'inactive')} to={`/activities/${id}/legacy`}>Legacy Model</NavLink>
+          <NavLink className={({isActive}) => (isActive ? 'active' : 'inactive')} to={`/activities/${id}/pydantic`}>Pydantic Model</NavLink>
+          <NavLink className={({isActive}) => (isActive ? 'active' : 'inactive')} to={`/activities/${id}/django`}>Final Django Model</NavLink>
+          <NavLink className={({isActive}) => (isActive ? 'active' : 'inactive')} to={`/activities/${id}/ninja`}>Ninja Model</NavLink>
+          <NavLink className={({isActive}) => (isActive ? 'active' : 'inactive')} to={`/activities/${id}/migration`}>Migration Status</NavLink>
+          <NavLink className={({isActive}) => (isActive ? 'active' : 'inactive')} to={`/activities/${id}/form`}>View as Form</NavLink>
           <li>
             <a
               onClick={() => {
@@ -141,26 +141,25 @@ const ActivitiesDetail: React.FC = () => {
           </li>
         </ul>
       </nav>
-      <div className={`${tab === 'django' ? 'active' : 'inactive'} tab`}>
-        <JSONViewer
-          data={djangoModel}
-          helpText={
-            'Serialized JSON form of the model in Django. You can use this to verify that it was copied correctly.'
-          }
-          diffCandidates={[
-            {
-              data: pydanticModel,
-              title: 'Pydantic Model'
-            },
-            {
-              data: legacyModel,
-              title: 'Legacy Model'
+      <Outlet/>
+      <Routes>
+        <Route path="/django" element={<JSONViewer
+            data={djangoModel}
+            helpText={
+              'Serialized JSON form of the model in Django. You can use this to verify that it was copied correctly.'
             }
-          ]}
-        />
-      </div>
-      <div className={`${tab === 'pydantic' ? 'active' : 'inactive'} tab`}>
-        <JSONViewer
+            diffCandidates={[
+              {
+                data: pydanticModel,
+                title: 'Pydantic Model'
+              },
+              {
+                data: legacyModel,
+                title: 'Legacy Model'
+              }
+            ]}
+          />}/>
+        <Route path="/pydantic" element={        <JSONViewer
           data={pydanticModel}
           helpText={
             'This is the activity in the intermediate format generated with Pydantic, used as the intermediate step in producing the final Django model. It is not saved anywhere in this format -- this is generated live from the legacy data. You can use this to check that the intermediate format looks reasonable.'
@@ -175,10 +174,8 @@ const ActivitiesDetail: React.FC = () => {
               title: 'Legacy Model'
             }
           ]}
-        />
-      </div>
-      <div className={`${tab === 'legacy' ? 'active' : 'inactive'} tab`}>
-        <JSONViewer
+        />}/>
+        <Route path="/legacy" element={        <JSONViewer
           data={legacyModel}
           helpText={'This is the activity exactly as it exists in the legacy database (served up fresh, by Django)'}
           diffCandidates={[
@@ -191,30 +188,31 @@ const ActivitiesDetail: React.FC = () => {
               title: 'Django Model'
             }
           ]}
-        />
-      </div>
-      <div className={`${tab === 'migration' ? 'active' : 'inactive'} tab`}>
-        <button
-          onClick={() => {
-            rerunImport();
-          }}>
-          Rerun Import
-        </button>
-        <JSONViewer
-          data={migrationStatus}
-          diffCandidates={[]}
-          helpText={
-            'Information about the migration output for this activity (if there were errors, they would be displayed here)'
-          }
-        />
-      </div>
-      <div className={`${tab === 'ninja' ? 'active' : 'inactive'} tab`}>
-        <p>{ninjaModel?.access_description} </p>
-        <JSONViewer data={ninjaModel} diffCandidates={[]} helpText={'Type-safe ninja model'} />
-      </div>
-      <div className={`${tab === 'form-view' ? 'active' : 'inactive'} tab`}>
-        <FormViewer formData={djangoModel} />
-      </div>
+        />}/>
+        <Route path="/migration" element={<>
+          <button
+            onClick={() => {
+              rerunImport();
+            }}>
+            Rerun Import
+          </button>
+          <JSONViewer
+            data={migrationStatus}
+            diffCandidates={[]}
+            helpText={
+              'Information about the migration output for this activity (if there were errors, they would be displayed here)'
+            }
+          /></>}/>
+        <Route path="/ninja" element={
+          <>
+            <p>{ninjaModel?.access_description} </p>
+          <JSONViewer data={ninjaModel} diffCandidates={[]} helpText={'Type-safe ninja model'} />
+          </>
+        }/>
+        <Route path="/form" element={   <FormViewer formData={djangoModel} />}/>
+        <Route index element={<p>click a link for details</p>}/>
+      </Routes>
+
     </div>
   );
 };

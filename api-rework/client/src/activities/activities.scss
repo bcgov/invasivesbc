@@ -40,12 +40,23 @@ div.activities-detail {
       gap: 1.5em;
 
       li {
+        outline: #1b6d85;
         display: inline-block;
-        border: blueviolet;
+
+      }
+
+      a {
+        display: inline-block;
         outline: #1b6d85;
 
+        color: black;
+        text-decoration: none;
+
         &.active {
-          text-decoration: underline;
+          border-bottom: 2px solid black;
+        }
+        &.inactive {
+
         }
       }
     }

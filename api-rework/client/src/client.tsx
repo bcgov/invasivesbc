@@ -1,16 +1,20 @@
-import React, { createContext, useEffect, useReducer } from 'react';
+import React, {createContext, useEffect, useReducer, useState} from 'react';
 import ActivitiesList from 'activities/list';
-import { BrowserRouter, Route, Routes } from 'react-router';
+import {BrowserRouter, Route, Routes, useNavigate} from 'react-router';
 import ActivitiesDetail from 'activities/detail';
 import Keycloak from 'keycloak-js';
-import { produce } from 'immer';
+import {produce} from 'immer';
 import Header from 'common-components/header/Header';
 import Footer from 'common-components/footer/Footer';
 import Logo from 'common-components/logo/Logo';
 import './client.css';
 import EndlessLoadingBar from 'common-components/endless-loading-bar/EndlessLoadingBar';
+import {AgGridProvider} from "ag-grid-react";
+import {AllCommunityModule} from "ag-grid-community";
+import MigrationStatusList from "activities/migration-status";
 
 const MIN_FRESHNESS = 60;
+const SESSION_STORE_PATH_KEY = "post-auth-redirect-path";
 
 const keycloakInstance = new Keycloak({
   clientId: import.meta.env.VITE_SSO_CLIENT_ID || 'invasives-bc-4565',
@@ -41,7 +45,21 @@ const AuthContext = createContext<{ state: AuthState }>({
   }
 });
 
+const SavedRouteRestorer: React.FC<{ savedRoute: string | null }> = ({savedRoute}) => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (savedRoute !== null)
+      navigate(savedRoute)
+  }, [savedRoute]);
+
+  return null;
+}
+
 const Client: React.FC = () => {
+
+  const [savedPath, setSavedPath] = useState<string | null>(null);
+
   const [auth, dispatch] = useReducer(
     (state, action) => {
       switch (action.type) {
@@ -81,8 +99,9 @@ const Client: React.FC = () => {
             draft.user_details = null;
           });
         case 'do_authentication':
+          sessionStorage.setItem(SESSION_STORE_PATH_KEY, window.location.pathname)
           keycloakInstance.login().then((kcr) => {
-            dispatch({ type: 'authentication_complete', payload: kcr });
+            dispatch({type: 'authentication_complete', payload: kcr});
           });
           return produce(state, (draft) => {
             draft.authenticated = false;
@@ -90,7 +109,7 @@ const Client: React.FC = () => {
           });
         case 'do_logout':
           keycloakInstance.logout().then(() => {
-            dispatch({ type: 'logged_out' });
+            dispatch({type: 'logged_out'});
           });
           return state;
         case 'update_stored_token':
@@ -108,7 +127,7 @@ const Client: React.FC = () => {
         case 'keep_token_fresh':
           if (keycloakInstance.authenticated) {
             if (keycloakInstance.isTokenExpired(MIN_FRESHNESS)) {
-              keycloakInstance.updateToken(MIN_FRESHNESS).then(() => dispatch({ type: 'update_stored_token' }));
+              keycloakInstance.updateToken(MIN_FRESHNESS).then(() => dispatch({type: 'update_stored_token'}));
             }
           } else {
             return produce(state, (draft) => {
@@ -134,6 +153,11 @@ const Client: React.FC = () => {
   );
 
   useEffect(() => {
+    const restoredPath = sessionStorage.getItem(SESSION_STORE_PATH_KEY)
+    if (!restoredPath) {
+      sessionStorage.setItem(SESSION_STORE_PATH_KEY, window.location.pathname)
+    }
+
     keycloakInstance
       .init({
         adapter: 'default',
@@ -144,28 +168,30 @@ const Client: React.FC = () => {
         pkceMethod: 'S256'
       })
       .then((auth) => {
-        dispatch({ type: 'initialized', payload: auth });
+        sessionStorage.removeItem(SESSION_STORE_PATH_KEY);
+        dispatch({type: 'initialized', payload: auth});
+        setSavedPath(restoredPath)
       });
   }, []);
 
-  const handleLogin = () => dispatch({ type: 'do_authentication' });
-  const handleLogout = () => dispatch({ type: 'do_logout' });
+  const handleLogin = () => dispatch({type: 'do_authentication'});
+  const handleLogout = () => dispatch({type: 'do_logout'});
   useEffect(() => {
     /* check every 5 seconds to see if we are going to expire */
     const id = setInterval(() => {
-      dispatch({ type: 'keep_token_fresh' });
+      dispatch({type: 'keep_token_fresh'});
     }, 5000);
     return () => clearInterval(id);
   }, []);
 
   if (!auth.initialized) {
-    return <EndlessLoadingBar />;
+    return <EndlessLoadingBar/>;
   }
 
   if (!auth.authenticated) {
     return (
       <>
-        <Header authenticated={auth.authenticated} handleLogout={handleLogout} handleLogin={handleLogin} />
+        <Header authenticated={auth.authenticated} handleLogout={handleLogout} handleLogin={handleLogin}/>
         <div className="main">
           <div className="content landing">
             <p>
@@ -176,10 +202,10 @@ const Client: React.FC = () => {
               If you arrived here searching for the official InvasivesBC application, please head to{' '}
               <a href="https://invasivesbc.gov.bc.ca/">https://invasivesbc.gov.bc.ca/</a>
             </p>
-            <Logo className="logo" />
+            <Logo className="logo"/>
           </div>
         </div>
-        <Footer />
+        <Footer/>
       </>
     );
   }
@@ -188,23 +214,29 @@ const Client: React.FC = () => {
       value={{
         state: auth
       }}>
-      <Header authenticated={auth.authenticated} handleLogout={handleLogout} handleLogin={handleLogin} />
-      <div className="main">
+      <BrowserRouter>
+
+        <Header authenticated={auth.authenticated} handleLogout={handleLogout} handleLogin={handleLogin}/>
+        <div className="main">
         <pre>
           Welcome, {auth.user_details?.given_name} [{keycloakInstance.idTokenParsed?.sub}] [
           {keycloakInstance.idTokenParsed?.aud}]
         </pre>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<ActivitiesList />} />
-            <Route path="/activities" element={<ActivitiesList />} />
-            <Route path="/activities/:id" element={<ActivitiesDetail />} />
-          </Routes>
-        </BrowserRouter>
-      </div>
+          <AgGridProvider modules={[AllCommunityModule]}>
+
+            <SavedRouteRestorer savedRoute={savedPath}/>
+            <Routes>
+              <Route path="/" element={<ActivitiesList/>}/>
+              <Route path="/migration-status" element={<MigrationStatusList/>}/>
+              <Route path="/activities" element={<ActivitiesList/>}/>
+              <Route path="/activities/:id/*" element={<ActivitiesDetail/>}/>
+            </Routes>
+          </AgGridProvider>
+        </div>
+      </BrowserRouter>
     </AuthContext>
   );
 };
 
-export { AuthContext };
+export {AuthContext};
 export default Client;

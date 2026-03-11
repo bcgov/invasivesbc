@@ -36,6 +36,15 @@ header {
     border-radius: 5px;
   }
 
+  a {
+    display: inline-block;
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    padding: 0 1em;
+
+  }
+
   button {
     margin-left: auto;
     margin-right: 1rem;

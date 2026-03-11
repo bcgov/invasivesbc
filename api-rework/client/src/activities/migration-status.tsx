@@ -7,17 +7,13 @@ import {ColDef} from "ag-grid-community";
 import {AgGridReact} from "ag-grid-react";
 import {customizedAgTheme} from "ag-theme";
 
-interface ActivitySummary {
-  id: string;
-  type: string;
-  subtype: string;
-  date: string;
-  has_migration_remarks: boolean;
+interface MigrationStatus {
+  activity_id: string;
+  timestamp: string;
 }
 
-
-const ActivitiesList: React.FC = () => {
-  const [activities, setActivities] = useState<ActivitySummary[]>([]);
+const MigrationStatusList: React.FC = () => {
+  const [migrations, setMigrations] = useState<MigrationStatus[]>([]);
 
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<boolean>(false);
@@ -28,11 +24,12 @@ const ActivitiesList: React.FC = () => {
 
   // Column Definitions: Defines the columns to be displayed.
   const [colDefs, setColDefs] = useState<ColDef[]>([
-    {field: "id", onCellClicked: (e) => (navigate(`/activities/${e.value}/django`)), headerName: "ID"},
-    {field: "type"},
-    {field: "subtype"},
-    {field: "date", headerName: "Activity Date"},
-    {field: "has_migration_remarks", headerName: "Has Migration Remarks?"}
+    {
+      field: "activity_id",
+      onCellClicked: (e) => (navigate(`/activities/${e.value}/migration`)),
+      headerName: "ID"
+    },
+    {field: "timestamp", headerName: "Import Timestamp"},
   ]);
 
   useEffect(() => {
@@ -40,7 +37,7 @@ const ActivitiesList: React.FC = () => {
     setErrorMessage('');
     setError(false);
 
-    fetch(`${API_URL}/activities`, {
+    fetch(`${API_URL}/migrations/failed`, {
       headers: {
         Authorization: `Bearer ${auth.token}`
       },
@@ -49,9 +46,9 @@ const ActivitiesList: React.FC = () => {
       .then(async (res) => {
         setLoading(false);
         if (res.status === 200) {
-          setActivities(await res.json());
+          setMigrations(await res.json());
         } else {
-          setActivities([]);
+          setMigrations([]);
           setError(true);
           let extraMessage = '';
           if (res.status === 403) {
@@ -70,19 +67,19 @@ const ActivitiesList: React.FC = () => {
   return (
     <>
       {error && <pre>{errorMessage}</pre>}
-      <div style={{ height: '80dvh' }}>
-      <AgGridReact
-        loading={loading}
-        rowData={activities}
-        columnDefs={colDefs}
-        defaultColDef={{
-          flex: 1
-        }}
-        theme={customizedAgTheme}
-        pagination
-      />
+      <div style={{height: '80dvh'}}>
+        <AgGridReact
+          loading={loading}
+          rowData={migrations}
+          columnDefs={colDefs}
+          defaultColDef={{
+            flex: 1
+          }}
+          theme={customizedAgTheme}
+          pagination
+        />
       </div>
     </>
   )
 };
-export default ActivitiesList;
+export default MigrationStatusList;

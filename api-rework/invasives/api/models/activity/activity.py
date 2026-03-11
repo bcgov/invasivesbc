@@ -52,6 +52,8 @@ class Activity(
         "api.Activity", db_table='"activity"."linked_activities"'
     )
 
+    migration_remarks = models.TextField(max_length=16384, blank=True, null=True)
+
     class Meta:
         db_table = '"activity"."activity"'
         db_table_comment = (
