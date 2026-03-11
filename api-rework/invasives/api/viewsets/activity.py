@@ -1,9 +1,10 @@
 import json
 import logging
 
-from django.contrib.gis.db.models.functions import Centroid, AsGeoJSON
-from django.http.response import HttpResponse
 import psycopg
+from django.contrib.gis.db.models.functions import Centroid, AsGeoJSON
+from django.db.models import Q
+from django.http.response import HttpResponse
 from psycopg.rows import dict_row
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
@@ -22,7 +23,9 @@ from invasivesbc.settings import LEGACY_DB_CONNECTION_STRING
 
 class ActivityViewSet(ReadOnlyModelViewSet):
     querysets = {
-        "list": Activity.objects.values("id", "type", "subtype", "date"),
+        "list": Activity.objects.annotate(
+            has_migration_remarks=Q(migration_remarks__isnull=False)
+        ).values("id", "type", "subtype", "date", "has_migration_remarks"),
         "default": Activity.objects.annotate(centroid=AsGeoJSON(Centroid("shape")))
         .prefetch_related()
         .all(),

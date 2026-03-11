@@ -5,6 +5,7 @@ from django.contrib.gis.db.models.functions import AsGeoJSON
 from django.contrib.gis.serializers.geojson import JSONSerializer as GeoJSONSerializer
 
 from rest_framework import serializers
+from rest_framework.fields import SerializerMethodField
 
 from api.models.activity import (
     ActivitySubtypes,
@@ -15,7 +16,9 @@ from api.models.activity import (
     ProjectCode,
 )
 from api.models.activity.activity import Activity
+from api.models.migrator import ActivityMigrationStatus
 from api.models.mixins.geometry import Geometry
+from api.protocol.activity.api import activity_search
 from api.serializers.type.subtype import (
     AquaticChemicalTreatmentSerializer,
     AquaticObservationSerializer,
@@ -83,14 +86,11 @@ class ProjectCodeSerializer(serializers.ModelSerializer):
 
 
 class ActivityListSerializer(serializers.ModelSerializer):
+    has_migration_remarks = serializers.BooleanField(read_only=True)
+
     class Meta:
         model = Activity
-        fields = (
-            "id",
-            "type",
-            "subtype",
-            "date",
-        )
+        fields = ("id", "type", "subtype", "date", "has_migration_remarks")
 
 
 class ActivitySerializer(serializers.ModelSerializer):
@@ -141,6 +141,7 @@ class ActivitySerializer(serializers.ModelSerializer):
             "location_description",
             "shape",
             "centroid",
+            "migration_remarks",
         )
 
     def get_linked_activities(self, obj):

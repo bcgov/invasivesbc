@@ -36,18 +36,33 @@ def add_voucher_specimen(
 ):
 
     if (
-        plant.voucher_specimen_collection_information.date_voucher_verified is None
-        and plant.voucher_specimen_collection_information.date_voucher_collected is None
-        and plant.voucher_specimen_collection_information.name_of_herbarium is None
-        and plant.voucher_specimen_collection_information.voucher_sample_id is None
+        plant.voucher_specimen_collected is not None
+        and plant.voucher_specimen_collected == "No"
     ):
+        # skip, but don't log it
+        pass
+    elif (
+        plant.voucher_specimen_collection_information.date_voucher_verified is None
+        or plant.voucher_specimen_collection_information.date_voucher_collected is None
+        or plant.voucher_specimen_collection_information.name_of_herbarium is None
+        or plant.voucher_specimen_collection_information.voucher_sample_id is None
+    ):
+        # something is unusual about this record
         logging.warning(
             "This doesn't look like a valid voucher specimen record - skipping"
         )
         logging.warning(
+            f"Voucher Specimen Collected is: {plant.voucher_specimen_collected}"
+        )
+        logging.warning(
             "voucher spec" + pformat(plant.voucher_specimen_collection_information)
         )
+        if new.migration_remarks is None:
+            new.migration_remarks = ""
+        new.migration_remarks += f"Source activity seems to indicate a voucher was collected, but there is not enough data to create a valid voucher specification record for this activity.\n\n"
+
     else:
+        logging.warning(pformat(plant.voucher_specimen_collection_information))
         TerrestrialVoucherSpecimen.objects.create(
             activity=new,
             date_verified=plant.voucher_specimen_collection_information.date_voucher_verified,
