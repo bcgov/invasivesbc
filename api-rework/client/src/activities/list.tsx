@@ -27,13 +27,13 @@ const ActivitiesList: React.FC = () => {
   const navigate = useNavigate();
 
   // Column Definitions: Defines the columns to be displayed.
-  const [colDefs, setColDefs] = useState<ColDef[]>([
+  const colDefs: ColDef[] = [
     {field: "id", onCellClicked: (e) => (navigate(`/activities/${e.value}/django`)), headerName: "ID"},
     {field: "type"},
     {field: "subtype"},
     {field: "date", headerName: "Activity Date"},
     {field: "has_migration_remarks", headerName: "Has Migration Remarks?"}
-  ]);
+  ];
 
   useEffect(() => {
     setLoading(true);

@@ -48,15 +48,15 @@ div.activities-detail {
       a {
         display: inline-block;
         outline: #1b6d85;
-
         color: black;
         text-decoration: none;
 
         &.active {
           border-bottom: 2px solid black;
         }
+        
         &.inactive {
-
+          border-bottom: none;
         }
       }
     }

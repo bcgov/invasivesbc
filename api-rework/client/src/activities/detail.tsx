@@ -1,18 +1,13 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { API_URL } from 'constants';
-import {Link, NavLink, Outlet, Route, Routes, useParams} from 'react-router';
+import React, {useContext, useEffect, useState} from 'react';
+import {API_URL} from 'constants';
+import {NavLink, Outlet, Route, Routes, useParams} from 'react-router';
 import Spinner from 'activities/spinner';
 import JSONViewer from 'activities/json_viewer';
 import './activities.scss';
-import { AuthContext } from 'client';
+import {AuthContext} from 'client';
 import FormViewer from './form-viewer/FormViewer';
 import * as api from 'ninja-schema/api';
 
-const Tab = ({ tab, setTab, title, tabName }) => (
-  <li className={tab === tabName ? 'active' : ''}>
-    <a onClick={() => setTab(tabName)}>{title}</a>
-  </li>
-);
 
 const ActivitiesDetail: React.FC = () => {
   const { id } = useParams();
@@ -26,8 +21,6 @@ const ActivitiesDetail: React.FC = () => {
   const [legacyModel, setLegacyModel] = useState(undefined);
   const [migrationStatus, setMigrationStatus] = useState(undefined);
   const [ninjaModel, setNinjaModel] = useState<undefined | api.ActivityOut>(undefined);
-
-  const [tab, setTab] = useState('django');
 
   const { state: auth } = useContext(AuthContext);
 

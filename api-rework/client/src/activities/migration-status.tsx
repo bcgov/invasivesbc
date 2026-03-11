@@ -23,14 +23,14 @@ const MigrationStatusList: React.FC = () => {
   const navigate = useNavigate();
 
   // Column Definitions: Defines the columns to be displayed.
-  const [colDefs, setColDefs] = useState<ColDef[]>([
+  const colDefs: ColDef[] = [
     {
       field: "activity_id",
       onCellClicked: (e) => (navigate(`/activities/${e.value}/migration`)),
       headerName: "ID"
     },
     {field: "timestamp", headerName: "Import Timestamp"},
-  ]);
+  ];
 
   useEffect(() => {
     setLoading(true);
