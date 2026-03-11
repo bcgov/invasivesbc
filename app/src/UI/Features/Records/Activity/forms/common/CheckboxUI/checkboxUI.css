@@ -20,18 +20,23 @@
     width: calc(var(--form-input-height) * 0.75);
     box-sizing: border-box;
     padding: 0.25rem 0.5rem;
+    margin-right: 1rem;
     font-size: var(--form-input-font-size);
   }
 
   label {
     font-size: var(--form-input-label-font-size);
     margin-right: auto;
-    height: 25px;
     font-weight: 600;
 
     & > * {
       margin-left: 3px;
     }
+  }
+
+  &.warning {
+    background-color: var(--warning-orange);
+    padding: 1rem;
   }
 
   &.full-width {
