@@ -16,7 +16,7 @@ interface PropTypes extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 // Use forwardRef so Hook Form can manage the input focus
-export const DateInput = forwardRef<HTMLInputElement, PropTypes>(
+const DateInput = forwardRef<HTMLInputElement, PropTypes>(
   ({ includeTime = false, width, label, required = false, error, tooltip, ...props }, ref) => {
     return (
       <div className={`form-date-input ${getInputWidth(width)}`}>
