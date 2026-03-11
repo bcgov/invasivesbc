@@ -1,0 +1,38 @@
+.empty-space {
+  display: flex;
+
+  &.full-width {
+    width: 100%;
+  }
+
+  &.half-width {
+    width: 49%;
+  }
+
+  &.third-width {
+    width: 32%;
+  }
+
+  &.quarter-width {
+    width: 24%;
+  }
+}
+
+@media screen and (width < 650px) {
+  .empty-space {
+    &.third-width,
+    &.quarter-width {
+      width: 49%;
+    }
+  }
+}
+
+@media screen and (width < 450px) {
+  .empty-space {
+    &.half-width,
+    &.third-width,
+    &.quarter-width {
+      width: 100%;
+    }
+  }
+}

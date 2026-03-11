@@ -10,3 +10,4 @@ export { default as getBioControlReleaseSubtypeFields } from './getBiocontrolRel
 export { default as getMonitoringBiocontrolReleaseSubtypeFields } from './getMonitoringBiocontrolReleaseSubtypeFields';
 export { default as getTreatmentMechanicalAquaticPlantSubtypeFields } from './getTreatmentMechanicalAquaticPlantSubtypeFields';
 export { default as getBiocontrolDispersalMonitoringSubtypeFields } from './getBiocontrolDispersalMonitoringSubtypeFields';
+export { default as getBiocontrolCollectionSubtypeFields } from './getBiocontrolCollectionSubtypeFields';

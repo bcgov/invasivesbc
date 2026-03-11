@@ -8,7 +8,8 @@ import {
   getObservationPlantTerrestrialSubtypeFields,
   getTreatmentMechanicalAquaticPlantSubtypeFields,
   getTreatmentMechanicalTerrestrialPlantSubtypeFields,
-  getBiocontrolDispersalMonitoringSubtypeFields
+  getBiocontrolDispersalMonitoringSubtypeFields,
+  getBiocontrolCollectionSubtypeFields
 } from '.';
 import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces/FormSchema';
 
@@ -36,9 +37,10 @@ const getSubtypeData = (subtype: ActivitySubtypes): FormSchema['subtype_data'] =
       return getMonitoringBiocontrolReleaseSubtypeFields();
     case ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial:
       return getBiocontrolDispersalMonitoringSubtypeFields();
+    case ActivitySubtypes.Biocontrol_Collection:
+      return getBiocontrolCollectionSubtypeFields();
     case ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial:
     case ActivitySubtypes.Treatment_Chemical_Plant_Aquatic:
-    case ActivitySubtypes.Biocontrol_Collection:
     default:
       return getObservationPlantTerrestrialSubtypeFields();
   }

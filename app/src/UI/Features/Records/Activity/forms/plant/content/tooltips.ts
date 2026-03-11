@@ -20,10 +20,13 @@ const tooltips = {
       'Text entry to provide location directions. Locations should start general and get more specific',
     access_description: 'Text entry to provide access directions.',
     general_comments:
-      'Plain text description of any supporting information about the observation that is not captured elsewhere'
+      'Plain text description of any supporting information about the observation that is not captured elsewhere',
+    comment: 'Any comments of particular interest regarding this collection that does not fit elsewhere.',
+    historical_iapp:
+      'Record number from historical Invasive Alien Plant Program (IAPP) data, if known, to enable tracing to historical biocontrol records. '
   },
   plant: {
-    invasive_plant: 'Target invasive plant species for this observation at this location.',
+    invasive_plant: 'Target invasive plant species at this location.',
     observation_type: 'Presence or absence of target invasive plants within a defined area.',
     density: 'Average number of individual plants per square meter expressed as a density class code',
     distribution:

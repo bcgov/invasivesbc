@@ -6,13 +6,13 @@ import { ObservationType } from 'UI/Features/Records/Activity/forms/enums';
 import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
 import TextInput from 'UI/Features/Records/Activity/forms/common/TextInput/TextInput';
 import DateInput from 'UI/Features/Records/Activity/forms/common/DateInput/DateInput';
-import Spacer from 'UI/Reusable/Spacer/Spacer';
 import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
 import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
 import { useEffect, useState } from 'react';
 import CheckboxUI from 'UI/Features/Records/Activity/forms/common/CheckboxUI/CheckboxUI';
 import { EntryBasePath, TerrestrialPlantObservationSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
+import FormSpacer from 'UI/Features/Records/Activity/forms/common/FormSpacer/FormSpacer';
 
 interface Props {
   root: string;
@@ -45,6 +45,15 @@ const TerrestrialPlantEntry = ({ root, index, remove }: Props) => {
     }
   }, [voucherCollected]);
 
+  useEffect(() => {
+    if (observationType === 'Negative' && isDirty) {
+      setVoucherCollected(false);
+      setValue(`${basePath}.voucher_specimen`, undefined);
+      setValue(`${basePath}.density`, '');
+      setValue(`${basePath}.distribution`, '');
+      setValue(`${basePath}.life_stage`, '');
+    }
+  }, [observationType]);
   return (
     <>
       <SingleSelect
@@ -131,7 +140,7 @@ const TerrestrialPlantEntry = ({ root, index, remove }: Props) => {
             width={Width.Half}
             error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.accession_number}
           />
-          <Spacer x={200} y={10} />
+          <FormSpacer width={Width.Half} />
 
           <DateInput
             label="Date Voucher Collected"

@@ -20,7 +20,6 @@ import SubtypeComposite from 'UI/Features/Records/Activity/forms/plant/subtype-c
 import './activityForm.css';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
-import Spacer from 'UI/Reusable/Spacer/Spacer';
 import debounce from 'lodash.debounce';
 import FormActions from 'state/actions/activity/FormActions';
 import Alerts from 'state/actions/alerts/Alerts';
@@ -43,6 +42,7 @@ import Employer from './Employers';
 import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
 import LinkedActivities from './LinkedActivities';
 import { Error } from '@mui/icons-material';
+import FormSpacer from 'UI/Features/Records/Activity/forms/common/FormSpacer/FormSpacer';
 
 const FORM_UPDATE_THROTTLE_DELAY = 1000; //ms
 const FORM_UPDATE_MAX_DELAY = 5000; //ms
@@ -323,7 +323,7 @@ const ActivityForm = () => {
             />
             <Employer width={Width.Half} />
             <FundingAgency width={Width.Half} />
-            <Spacer x={150} y={10} />
+            <FormSpacer width={Width.Half} />
             {/* Start of Jurisdictions section */}
             <ArrayField<FormSchema, 'jurisdictions'>
               name="jurisdictions"

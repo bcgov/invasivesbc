@@ -6,7 +6,6 @@ import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips'
 
 const MicrositeConditions = () => {
   const codes = useSelector((state) => state.ActivityPage.formCodes);
-  // TODO: Enforce both filled or neither filled.
   return (
     <Fieldset label={'Microsite Condition'}>
       <SingleSelect

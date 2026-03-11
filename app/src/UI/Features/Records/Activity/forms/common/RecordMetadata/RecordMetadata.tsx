@@ -22,7 +22,7 @@ type PropTypes = {
 };
 const RecordMetadata = ({ formState }: PropTypes) => {
   return (
-    <Fieldset label={'Activity Metadata'}>
+    <Fieldset label={'Overview'}>
       <dl id="record-metadata">
         <Info term={'Record ID'} definition={formState?.short_id} />
         <Info term={'Form Status'} definition={formState?.form_status} />

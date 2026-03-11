@@ -58,7 +58,7 @@ export function ArrayField<T extends FieldValues, Name extends FieldArrayPath<T>
 
   const rootError = getNestedError(errors, name)?.root;
   return (
-    <Fieldset label={label} tooltip={tooltip} width={width}>
+    <Fieldset nested label={label} tooltip={tooltip} width={width}>
       <div className="field-array">
         <div className="field-array-entries">
           {fields.map((field, index) => (

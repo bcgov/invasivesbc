@@ -55,6 +55,8 @@ export function SingleSelect<T extends FieldValues>({
             )}
             <Select
               className="select-input"
+              classNamePrefix={'select-input'}
+              inputId={name}
               isDisabled={disabled}
               isSearchable={mappedOptions?.length >= MIN_OPTIONS_TO_ENABLE_SEARCH}
               noOptionsMessage={() => noOptionsMessage ?? 'No options available'}
