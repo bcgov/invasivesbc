@@ -1,0 +1,77 @@
+.form-checkbox-input {
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+  margin-bottom: 10px;
+  max-width: 100%;
+  box-sizing: border-box;
+
+  .row {
+    display: flex;
+    flex-direction: row;
+    text-wrap: wrap;
+    align-items: center;
+    width: 100%;
+
+    .label-section {
+      display: flex;
+      align-items: flex-start;
+      flex-direction: row;
+      width: 100%;
+    }
+  }
+
+  input[type='checkbox'] {
+    height: calc(var(--form-input-height) * 0.75);
+    margin-right: 1rem;
+    width: calc(var(--form-input-height) * 0.75);
+    box-sizing: border-box;
+    padding: 0.25rem 0.5rem;
+    font-size: var(--form-input-font-size);
+  }
+
+  label {
+    font-size: var(--form-input-label-font-size);
+    font-weight: 600;
+
+    & > * {
+      margin-left: 3px;
+    }
+  }
+
+  &.full-width {
+    width: 100%;
+  }
+
+  &.half-width {
+    width: 49%;
+  }
+
+  &.third-width {
+    width: 32%;
+  }
+
+  &.quarter-width {
+    width: 24%;
+  }
+}
+
+@media screen and (width < 650px) {
+  .form-ui-checkbox {
+    &.third-width,
+    &.quarter-width {
+      width: 49%;
+    }
+  }
+}
+
+@media screen and (width < 450px) {
+  .form-ui-checkbox {
+    &.half-width,
+    &.third-width,
+    &.quarter-width {
+      width: 100%;
+    }
+  }
+}

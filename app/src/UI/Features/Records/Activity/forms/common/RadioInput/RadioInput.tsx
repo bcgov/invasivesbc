@@ -1,11 +1,11 @@
 import { Controller, FieldValues, Path, RegisterOptions, useFormContext } from 'react-hook-form';
-import { getInputWidth, Width } from '../utils';
-import RequiredField from '../RequiredField/RequiredField';
+import { getInputWidth, Width } from 'UI/Features/Records/Activity/forms/common/utils';
+import RequiredField from 'UI/Features/Records/Activity/forms/common/RequiredField/RequiredField';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
-import ErrorMessage from '../ErrorMessage/ErrorMessage';
+import ErrorMessage from 'UI/Features/Records/Activity/forms/common/ErrorMessage/ErrorMessage';
 import FormCode from 'interfaces/FormCode';
+import AdvisoryMessage from 'UI/Features/Records/Activity/forms/common/AdvisoryMessage/AdvisoryMessage';
 import './radioInput.css';
-import AdvisoryMessage from '../AdvisoryMessage/AdvisoryMessage';
 
 interface PropTypes<T extends FieldValues> {
   readonly label?: string;
@@ -34,10 +34,7 @@ export function RadioInput<T extends FieldValues>({
     <Controller
       name={name}
       control={control}
-      rules={{
-        ...rules,
-        required: required ? rules?.required || 'This field is required' : rules?.required
-      }}
+      rules={rules}
       render={({ field: { onChange, onBlur, value, ref }, fieldState: { error } }) => {
         /**
          * @desc Transform bool strings back into booleans (radio inputs don't support)
