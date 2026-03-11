@@ -8,7 +8,9 @@ import {
   BiocontrolReleaseSchema,
   BiocontrolReleaseMonitoringSchema,
   BiocontrolDispersalMonitoringSchema,
-  BiocontrolCollectionSchema
+  BiocontrolCollectionSchema,
+  TerrestrialChemicalTreatmentSchema,
+  AquaticChemicalTreatmentSchema
 } from '.';
 
 type FormSchema =
@@ -21,6 +23,8 @@ type FormSchema =
   | BiocontrolReleaseMonitoringSchema
   | BiocontrolReleaseSchema
   | BiocontrolDispersalMonitoringSchema
-  | BiocontrolCollectionSchema;
+  | BiocontrolCollectionSchema
+  | TerrestrialChemicalTreatmentSchema
+  | AquaticChemicalTreatmentSchema;
 
 export type { FormSchema };
