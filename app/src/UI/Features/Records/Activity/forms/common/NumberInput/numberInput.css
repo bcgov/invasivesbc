@@ -5,6 +5,7 @@
   align-items: flex-start;
 
   input[type='number'] {
+    font-family: BCSans, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif;
     height: var(--form-input-height);
     width: 100%;
     box-sizing: border-box;
