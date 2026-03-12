@@ -3,6 +3,8 @@ from api.models.activity import ChemTreatmentContext
 
 
 class ChemicalTreatmentContextSerializer(serializers.ModelSerializer):
+    application_start_time = serializers.DateTimeField(format="%Y-%m-%dT%H:%M")
+
     class Meta:
         model = ChemTreatmentContext
         fields = (
