@@ -18,7 +18,7 @@ import FormSpacer from 'UI/Features/Records/Activity/forms/common/FormSpacer/For
 import CheckboxInput from 'UI/Features/Records/Activity/forms/common/CheckboxInput/CheckboxInput';
 import { maxValue, minValue, noFutureDate } from 'UI/Features/Records/Activity/forms/common/validators';
 import CheckboxUI from 'UI/Features/Records/Activity/forms/common/CheckboxUI/CheckboxUI';
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 
 type PropTypes = {
   type: 'terrestrial' | 'aquatic';
@@ -117,7 +117,7 @@ const TreatmentChemicalPlant = ({ type }: PropTypes) => {
           </p>
         )}
         {well_entries?.map((we) => (
-          <>
+          <Fragment key={we.well_tag}>
             <TextInput
               label={'Well ID'}
               readOnly
@@ -132,7 +132,7 @@ const TreatmentChemicalPlant = ({ type }: PropTypes) => {
               value={we.distance}
               width={Width.Half}
             />
-          </>
+          </Fragment>
         ))}
       </Fieldset>
 
