@@ -10,7 +10,7 @@ import {
   MAX_AREA,
   populateSpeciesArrays
 } from 'sharedAPI';
-import { kinks } from '@turf/turf';
+import { circle, kinks } from '@turf/turf';
 import { Feature, FeatureCollection } from 'geojson';
 
 import { PayloadAction } from '@reduxjs/toolkit';
@@ -120,8 +120,11 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: PayloadAction<Featur
             min: 1,
             max: 10,
             callback: (userEnteredArea: number) => {
-              const radiusBasedOnArea = Math.sqrt(userEnteredArea / Math.PI);
-              modifiedPayload[0].properties.radius = radiusBasedOnArea;
+              // For a Hexagon (6 steps) to have exactly 'finalArea'
+              const STEPS = 8;
+              const adjustedRadius = Math.sqrt((2 * userEnteredArea) / (STEPS * Math.sin((2 * Math.PI) / STEPS)));
+              const buffered = circle(modifiedPayload[0], adjustedRadius, { units: 'meters', steps: STEPS }) as Feature;
+              modifiedPayload[0] = buffered;
               return [DrawToolActions.updateGeo(modifiedPayload)];
             }
           })

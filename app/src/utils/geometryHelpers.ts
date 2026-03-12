@@ -49,7 +49,7 @@ export function calculateGeometryArea(geometry: Feature[]) {
     totalArea = area(turf.polygon(geo.geometry['coordinates']));
   }
 
-  return Math.floor(totalArea);
+  return Math.round(totalArea);
 }
 
 /**
