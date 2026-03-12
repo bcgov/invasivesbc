@@ -8,10 +8,8 @@ import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
 import { ObservationType } from 'UI/Features/Records/Activity/forms/enums';
 import CheckboxUI from 'UI/Features/Records/Activity/forms/common/CheckboxUI/CheckboxUI';
-import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
-import DateInput from 'UI/Features/Records/Activity/forms/common/DateInput/DateInput';
-import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
 import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
+import VoucherCollection from 'UI/Features/Records/Activity/forms/plant/subtype-component/common/VoucherCollection';
 import FormSpacer from 'UI/Features/Records/Activity/forms/common/FormSpacer/FormSpacer';
 
 interface Props {
@@ -33,7 +31,6 @@ const AquaticPlantEntry = ({ root, index, remove }: Props) => {
     control,
     name: `${basePath}.voucher_specimen`
   });
-
   const [voucherCollected, setVoucherCollected] = useState<boolean>(!!voucherSpecimen);
   const codes = useSelector((state) => state.ActivityPage?.formCodes);
   const observationType = watch(`${basePath}.observation_type`);
@@ -45,13 +42,21 @@ const AquaticPlantEntry = ({ root, index, remove }: Props) => {
     }
   }, [voucherCollected]);
 
+  useEffect(() => {
+    if (observationType === 'Negative' && isDirty) {
+      setVoucherCollected(false);
+      setValue(`${basePath}.voucher_specimen`, undefined);
+      setValue(`${basePath}.density`, '');
+      setValue(`${basePath}.distribution`, '');
+      setValue(`${basePath}.life_stage`, '');
+    }
+  }, [observationType]);
+
   return (
     <>
       <TextInput
         label={'Sample Point ID'}
-        tooltip={
-          'For Presence Surveys. Number each sample point in the same waterbody (e.g. 001, 002, 003, etc). Do not use for Extent Surveys'
-        }
+        tooltip={tooltips.plant.sample_point_id}
         error={errors?.subtype_data?.entries?.[index]?.sample_point_id}
         {...register(`subtype_data.entries.${index}.sample_point_id`)}
         width={Width.Half}
@@ -113,83 +118,8 @@ const AquaticPlantEntry = ({ root, index, remove }: Props) => {
           />
         </>
       )}
-      {voucherCollected && (
-        <Fieldset label="Voucher Collection Information">
-          <TextInput
-            label="Voucher Sample ID"
-            tooltip={tooltips.plant.voucher_sample_id}
-            {...register(`${basePath}.voucher_specimen.voucher_sample_id`, { required: true })}
-            width={Width.Half}
-            error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.voucher_sample_id}
-          />
-
-          <TextInput
-            label="Herbarium"
-            {...register(`${basePath}.voucher_specimen.herbarium`, { required: true })}
-            width={Width.Half}
-            error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.herbarium}
-          />
-
-          <TextInput
-            label="Accession Number"
-            {...register(`${basePath}.voucher_specimen.accession_number`, { required: true })}
-            width={Width.Half}
-            error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.accession_number}
-          />
-          <FormSpacer width={Width.Half} />
-
-          <DateInput
-            label="Date Voucher Collected"
-            {...register(`${basePath}.voucher_specimen.date_collected`, { required: true })}
-            width={Width.Half}
-            error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.date_collected}
-          />
-
-          <DateInput
-            label="Date Voucher Verified"
-            {...register(`${basePath}.voucher_specimen.date_verified`, { required: true })}
-            width={Width.Half}
-            error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.date_verified}
-          />
-          <Fieldset label={'Voucher Verification Completed By'}>
-            <TextInput
-              label="Completed By (Person)"
-              {...register(`${basePath}.voucher_specimen.completed_by_person`, { required: true })}
-              width={Width.Half}
-              error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.completed_by_person}
-            />
-            <TextInput
-              label="Completed By (Org)"
-              {...register(`${basePath}.voucher_specimen.completed_by_org`, { required: true })}
-              width={Width.Half}
-              error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.completed_by_org}
-            />
-          </Fieldset>
-
-          <Fieldset label={'Exact Coordinate of Voucher Collection Site'}>
-            <NumberInput
-              label="UTM Zone"
-              {...register(`${basePath}.voucher_specimen.utm_zone`, { required: true, valueAsNumber: true })}
-              width={Width.Third}
-              error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.utm_zone}
-            />
-
-            <NumberInput
-              label="UTM Easting"
-              {...register(`${basePath}.voucher_specimen.utm_easting`, { required: true, valueAsNumber: true })}
-              width={Width.Third}
-              error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.utm_easting}
-            />
-
-            <NumberInput
-              label="UTM Northing"
-              {...register(`${basePath}.voucher_specimen.utm_northing`, { required: true, valueAsNumber: true })}
-              width={Width.Third}
-              error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.utm_northing}
-            />
-          </Fieldset>
-        </Fieldset>
-      )}
+      <FormSpacer width={Width.Half} />
+      {voucherCollected && <VoucherCollection index={index} />}
       <DeleteControl onClick={() => remove(index)} />
     </>
   );
