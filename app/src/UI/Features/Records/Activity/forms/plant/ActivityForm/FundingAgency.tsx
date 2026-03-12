@@ -25,7 +25,7 @@ const FundingAgency = ({ width = Width.Full }: PropTypes) => {
 
   const optionsAvailableToUser = useMemo(() => {
     if (createdBy !== username || userIsAdmin) return agencyCodes;
-    return agencyCodes.filter(({ code }) => userAgencies?.includes(code));
+    return agencyCodes.filter(({ code }) => userAgencies?.includes(code as string));
   }, [agencyCodes, userAgencies, createdBy, username]);
 
   return (
