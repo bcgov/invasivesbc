@@ -1,4 +1,5 @@
-const minValue = (val: number | string, min: number) => {
+const minValue = (val: number | string | undefined, min: number) => {
+  if (val == undefined) return true;
   if (typeof val === 'string') {
     return val.length >= min || `Enter at least ${min} characters.`;
   }
