@@ -59,6 +59,8 @@ const TreatmentChemicalPlant = ({ type }: PropTypes) => {
     formState: { isDirty, errors, disabled }
   } = useFormContext<ChemTreatment>();
   const codes = useSelector((state) => state.ActivityPage.formCodes);
+  const wellsInArea = useSelector((state) => state.ActivityPage?.wellsInRecordArea);
+
   const well_entries = watch('subtype_data.well_entries');
   const ntz_bool = watch('subtype_data.ntz_reduction_bool');
   const temp_c = watch('subtype_data.temperature_c');
@@ -107,6 +109,13 @@ const TreatmentChemicalPlant = ({ type }: PropTypes) => {
       setValue('subtype_data.rationale_for_ntz_reduction', '');
     }
   }, [ntz_bool]);
+
+  // Update Nearest Wells when values change
+  useEffect(() => {
+    if (wellsInArea) {
+      setValue('subtype_data.well_entries', wellsInArea);
+    }
+  }, [wellsInArea]);
 
   return (
     <>
