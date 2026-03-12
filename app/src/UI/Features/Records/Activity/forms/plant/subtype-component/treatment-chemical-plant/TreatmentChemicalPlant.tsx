@@ -71,6 +71,10 @@ const TreatmentChemicalPlant = ({ type }: PropTypes) => {
   const [isTemperatureAccurate, setIsTemperatureAccurate] = useState<boolean>(coerceLocalBool('isTemperatureAccurate'));
   const [isWindSpeedAccurate, setIsWindSpeedAccurate] = useState<boolean>(coerceLocalBool('isWindSpeedAccurate'));
 
+  const shouldVerifyWindSpeedAccuracy = !disabled && wind_speed != undefined && wind_speed > MAX_WIND_SPEED;
+  const shouldVerifyTemperatureAccuracy =
+    !disabled && temp_c != undefined && (temp_c > MAX_ALLOWED_TEMP || temp_c < MIN_ALLOWED_TEMP);
+
   useEffect(() => {
     // Uncheck confirmation if temperature is changed
     if (!isDirty) return;
@@ -153,10 +157,10 @@ const TreatmentChemicalPlant = ({ type }: PropTypes) => {
           })}
         />
         <NumberInput
-          label={'Wind Speed (km/h)'}
           error={errors?.subtype_data?.wind_speed_kmh}
-          tooltip={tooltips.plant.chemical.weather.wind_speed_kmh}
+          label={'Wind Speed (km/h)'}
           required
+          tooltip={tooltips.plant.chemical.weather.wind_speed_kmh}
           width={Width.Half}
           {...register('subtype_data.wind_speed_kmh', {
             required: true,
@@ -170,8 +174,11 @@ const TreatmentChemicalPlant = ({ type }: PropTypes) => {
         />
         <SingleSelect
           label={'Wind Direction'}
-          required
           name={'subtype_data.wind_direction'}
+          options={CardinalDirection}
+          required
+          tooltip={tooltips.plant.chemical.weather.wind_direction}
+          width={Width.Half}
           rules={{
             required: true,
             deps: ['subtype_data.wind_speed_kmh'],
@@ -183,37 +190,34 @@ const TreatmentChemicalPlant = ({ type }: PropTypes) => {
               return true;
             }
           }}
-          options={CardinalDirection}
-          width={Width.Half}
-          tooltip={tooltips.plant.chemical.weather.wind_direction}
         />
         <NumberInput
-          label={'Humidity (%)'}
           error={errors?.subtype_data?.humidity}
+          label={'Humidity (%)'}
           tooltip={tooltips.plant.chemical.weather.humidity}
           width={Width.Half}
           {...register('subtype_data.humidity', { valueAsNumber: true })}
         />
-        {!disabled && temp_c > MAX_ALLOWED_TEMP && (
+        {shouldVerifyTemperatureAccuracy && (
           <CheckboxUI
             label={
               'The temperature recorded at the time of treatment is an accurate representation of site conditions.'
             }
-            warningConfirmation
             required
             state={isTemperatureAccurate}
+            warningConfirmation
             onChange={() => {
               localStorage.setItem('isTemperatureAccurate', 'true');
               setIsTemperatureAccurate((prev) => !prev);
             }}
           />
         )}
-        {!disabled && wind_speed > MAX_WIND_SPEED && (
+        {shouldVerifyWindSpeedAccuracy && (
           <CheckboxUI
-            warningConfirmation
             label={'The wind speed recorded at the time of treatment is an accurate representation of site conditions.'}
             required
             state={isWindSpeedAccurate}
+            warningConfirmation
             onChange={() => {
               localStorage.setItem('isWindSpeedAccurate', 'true');
               setIsWindSpeedAccurate((prev) => !prev);
@@ -226,36 +230,36 @@ const TreatmentChemicalPlant = ({ type }: PropTypes) => {
       <Fieldset label={'Chemical Treatment Information'}>
         <SingleSelect
           label={'Service License Number and Company Name'}
-          options={codes?.ServiceLicenseNumberAndCompany}
           name={'subtype_data.service_license_number'}
+          options={codes?.ServiceLicenseNumberAndCompany}
           required
           rules={{ required: true }}
           tooltip={tooltips.plant.chemical.service_license_number_and_company}
           width={Width.Half}
         />
         <TextInput
+          error={errors?.subtype_data?.pesticide_use_permit}
           label={'Pesticide Use Permit'}
           tooltip={tooltips.plant.chemical.pesticide_use_permit}
           width={Width.Half}
-          error={errors?.subtype_data?.pesticide_use_permit}
           {...register('subtype_data.pesticide_use_permit')}
         />
         <SingleSelect
           label={'Pest Management Plan (PMP)'}
           name={'subtype_data.pest_management_plan'}
-          width={Width.Half}
-          tooltip={tooltips.plant.chemical.pest_management_plan}
           options={codes?.PestManagementPlan}
+          tooltip={tooltips.plant.chemical.pest_management_plan}
+          width={Width.Half}
           rules={{
             deps: ['subtype_data.pest_management_plan_manual'],
             validate: validatePMPSelection
           }}
         />
         <TextInput
+          error={errors?.subtype_data?.pest_management_plan_manual}
           label={'PMP # Not in Dropdown'}
           tooltip={tooltips.plant.chemical.pest_management_plan_manual}
           width={Width.Half}
-          error={errors?.subtype_data?.pest_management_plan_manual}
           {...register('subtype_data.pest_management_plan_manual', {
             deps: ['subtype_data.pest_management_plan'],
             validate: validatePMPSelection
@@ -263,28 +267,28 @@ const TreatmentChemicalPlant = ({ type }: PropTypes) => {
         />
         <SingleSelect
           label={'Treatment Notice Signs'}
-          required
           name={'subtype_data.treatment_notice_signs'}
-          rules={{ required: true }}
           options={YesNoUnknown}
-          width={Width.Half}
+          required
+          rules={{ required: true }}
           tooltip={tooltips.plant.chemical.treatment_notice_signs}
+          width={Width.Half}
         />
         <SingleSelect
           label={'Precautionary Statement'}
-          required
           name={'subtype_data.precautionary_statement'}
-          rules={{ required: true }}
           options={codes?.ChemicalPrecautionaryStatement}
-          width={Width.Half}
+          required
+          rules={{ required: true }}
           tooltip={tooltips.plant.chemical.required_under_license}
+          width={Width.Half}
         />
         <DateInput
+          error={errors?.subtype_data?.application_start_time}
+          includeTime
           label={'Application Start Time'}
           required
-          includeTime
           width={Width.Half}
-          error={errors?.subtype_data?.application_start_time}
           {...register('subtype_data.application_start_time', { required: true, validate: noFutureDate })}
         />
         <CheckboxInput
@@ -295,11 +299,11 @@ const TreatmentChemicalPlant = ({ type }: PropTypes) => {
         />
         <RadioInput
           label={'NTZ Reduction'}
+          name={'subtype_data.ntz_reduction_bool'}
+          required
+          rules={{ validate: (value) => value !== undefined || 'NTZ reduction is required' }}
           tooltip={tooltips.plant.chemical.required_under_license}
           width={Width.Half}
-          rules={{ validate: (value) => value !== undefined || 'NTZ reduction is required' }}
-          required
-          name={'subtype_data.ntz_reduction_bool'}
           options={[
             { code: 'true', full_name: 'Yes', table: 'NTZ' },
             { code: 'false', full_name: 'No', table: 'NTZ' }
@@ -307,12 +311,12 @@ const TreatmentChemicalPlant = ({ type }: PropTypes) => {
         />
         {ntz_bool ? (
           <TextInput
+            advisoryText="Only the PMP or permit holder may approve an NTZ reduction on public lands."
+            error={errors?.subtype_data?.rationale_for_ntz_reduction}
             label={'Rationale for NTZ Reduction'}
             tooltip={tooltips.plant.chemical.required_under_license}
-            width={Width.Half}
-            error={errors?.subtype_data?.rationale_for_ntz_reduction}
-            advisoryText="Only the PMP or permit holder may approve an NTZ reduction on public lands."
             required
+            width={Width.Half}
             {...register('subtype_data.rationale_for_ntz_reduction', { required: true })}
           />
         ) : (
@@ -324,10 +328,10 @@ const TreatmentChemicalPlant = ({ type }: PropTypes) => {
       <Fieldset label={'Pest Injury Threshold Determination'}>
         <RadioInput
           label={'Choose either option'}
-          tooltip={tooltips.plant.chemical.required_under_license}
-          rules={{ validate: (value) => value !== undefined || 'NTZ reduction is required' }}
-          required
           name={'subtype_data.pest_injury_threshold_determination_bool'}
+          required
+          rules={{ validate: (value) => value !== undefined || 'NTZ reduction is required' }}
+          tooltip={tooltips.plant.chemical.required_under_license}
           options={[
             {
               code: 'true',
@@ -339,6 +343,7 @@ const TreatmentChemicalPlant = ({ type }: PropTypes) => {
           ]}
         />
       </Fieldset>
+
       <p>TODO: Calculation Fields for {type}</p>
     </>
   );
