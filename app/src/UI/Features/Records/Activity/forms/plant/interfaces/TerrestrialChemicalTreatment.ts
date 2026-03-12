@@ -8,22 +8,22 @@ interface TerrestrialChemicalTreatmentSchema extends BaseForm {
       well_tag: string;
       distance: number;
     }>;
-    entries: Array<unknown>;
     service_license_number: string;
     pesticide_use_permit: string;
     pest_management_plan: string;
     pest_management_plan_manual: string;
-    temperature_c: number;
-    wind_speed_kmh: number;
+    temperature_c?: number;
+    wind_speed_kmh?: number;
     application_start_time: string;
     wind_direction: string;
-    humidity: number;
+    humidity?: number;
     treatment_notice_signs: string;
     precautionary_statement: string;
     ntz_reduction_bool: boolean;
     rationale_for_ntz_reduction?: string;
     additional_unmapped_well_water_bool: boolean;
     pest_injury_threshold_determination_bool: boolean;
+    // TODO: Chemical Treatment Details (Pesticides, Type, Herbicides, etc)
   };
 }
 

@@ -9,7 +9,8 @@ import {
   getTreatmentMechanicalAquaticPlantSubtypeFields,
   getTreatmentMechanicalTerrestrialPlantSubtypeFields,
   getBiocontrolDispersalMonitoringSubtypeFields,
-  getBiocontrolCollectionSubtypeFields
+  getBiocontrolCollectionSubtypeFields,
+  getTreatmentChemicalPlantSubtypeFields
 } from '.';
 import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces/FormSchema';
 
@@ -40,7 +41,9 @@ const getSubtypeData = (subtype: ActivitySubtypes): FormSchema['subtype_data'] =
     case ActivitySubtypes.Biocontrol_Collection:
       return getBiocontrolCollectionSubtypeFields();
     case ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial:
+    // Intentional fallthrough as state is same for Aquatic/Terrestrial
     case ActivitySubtypes.Treatment_Chemical_Plant_Aquatic:
+      return getTreatmentChemicalPlantSubtypeFields();
     default:
       return getObservationPlantTerrestrialSubtypeFields();
   }
@@ -78,7 +81,7 @@ const getDefaultFormState = (
     linked_activities: [],
     participants: [{ name: '', pac_number: isChemical ? 0 : undefined }],
     subtype_data: subtype_data
-  };
+  } as FormSchema;
 };
 
 export default getDefaultFormState;

@@ -8,7 +8,6 @@ interface AquaticChemicalTreatmentSchema extends BaseForm {
       well_tag: string;
       distance: number;
     }>;
-    entries: Array<unknown>;
     service_license_number: string;
     pesticide_use_permit: string;
     pest_management_plan: string;
@@ -24,6 +23,7 @@ interface AquaticChemicalTreatmentSchema extends BaseForm {
     rationale_for_ntz_reduction?: string;
     additional_unmapped_well_water_bool: boolean;
     pest_injury_threshold_determination_bool: boolean;
+    // TODO: Chemical Treatment Details (Pesticides, Type, Herbicides, etc)
   };
 }
 
