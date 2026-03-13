@@ -25,6 +25,14 @@
     }
   }
 
+  &.transparent {
+    background-color: transparent;
+
+    legend {
+      font-size: var(--form-legend-font-size);
+    }
+  }
+
   & > *:not(fieldset) {
     margin-bottom: 10px;
     margin-right: auto;

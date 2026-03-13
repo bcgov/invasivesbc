@@ -18,7 +18,7 @@ import FormSpacer from 'UI/Features/Records/Activity/forms/common/FormSpacer/For
 import CheckboxInput from 'UI/Features/Records/Activity/forms/common/CheckboxInput/CheckboxInput';
 import { maxValue, minValue, noFutureDate } from 'UI/Features/Records/Activity/forms/common/validators';
 import CheckboxUI from 'UI/Features/Records/Activity/forms/common/CheckboxUI/CheckboxUI';
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 
 type PropTypes = {
   type: 'terrestrial' | 'aquatic';
@@ -59,6 +59,8 @@ const TreatmentChemicalPlant = ({ type }: PropTypes) => {
     formState: { isDirty, errors, disabled }
   } = useFormContext<ChemTreatment>();
   const codes = useSelector((state) => state.ActivityPage.formCodes);
+  const wellsInArea = useSelector((state) => state.ActivityPage?.wellsInRecordArea);
+
   const well_entries = watch('subtype_data.well_entries');
   const ntz_bool = watch('subtype_data.ntz_reduction_bool');
   const temp_c = watch('subtype_data.temperature_c');
@@ -108,6 +110,13 @@ const TreatmentChemicalPlant = ({ type }: PropTypes) => {
     }
   }, [ntz_bool]);
 
+  // Update Nearest Wells when values change
+  useEffect(() => {
+    if (wellsInArea) {
+      setValue('subtype_data.well_entries', wellsInArea);
+    }
+  }, [wellsInArea]);
+
   return (
     <>
       <Fieldset label={'Well Information'} tooltip={tooltips.plant.chemical.wells.section_disclaimer}>
@@ -117,7 +126,7 @@ const TreatmentChemicalPlant = ({ type }: PropTypes) => {
           </p>
         )}
         {well_entries?.map((we) => (
-          <>
+          <Fragment key={we.well_tag}>
             <TextInput
               label={'Well ID'}
               readOnly
@@ -132,7 +141,7 @@ const TreatmentChemicalPlant = ({ type }: PropTypes) => {
               value={we.distance}
               width={Width.Half}
             />
-          </>
+          </Fragment>
         ))}
       </Fieldset>
 
