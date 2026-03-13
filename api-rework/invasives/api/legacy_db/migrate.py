@@ -1,8 +1,14 @@
-from decimal import Decimal, ROUND_DOWN
 import json
 import logging
+
+import geojson
+import shapely
+
+from decimal import Decimal, ROUND_DOWN
 from pprint import pformat
 
+from django.contrib.gis.geos import GEOSGeometry
+from django.db import DatabaseError
 from pydantic_core._pydantic_core import ValidationError
 
 from api.legacy_db.mappings.plants import (
@@ -57,37 +63,54 @@ def migrate(old: LegacyActivity):
         ):
             if new.migration_remarks is None:
                 new.migration_remarks = ""
-                new.migration_remarks += f"Source activity has a null geometry field, but does have lat and long specified. Creating a zero-radius point geometry as a placeholder.\n\n"
-                logging.warning(
-                    "activity coordinates exist, using as zero-radius point geometry"
-                )
-                new.shape = json.dumps(
-                    {
-                        "type": "Point",
-                        "coordinates": [
-                            old.activity_payload.form_data.activity_data.longitude,
-                            old.activity_payload.form_data.activity_data.latitude,
-                        ],
-                    }
-                )
+            new.migration_remarks += f"Source activity has a null geometry field, but does have lat and long specified. Creating a zero-radius point geometry as a placeholder.\n\n"
+            logging.warning(
+                "activity coordinates exist, using as zero-radius point geometry"
+            )
+            new.shape = json.dumps(
+                {
+                    "type": "Point",
+                    "coordinates": [
+                        old.activity_payload.form_data.activity_data.longitude,
+                        old.activity_payload.form_data.activity_data.latitude,
+                    ],
+                }
+            )
 
     elif len(old.activity_payload.geometry) > 1:
+        if new.migration_remarks is None:
+            new.migration_remarks = ""
+
         logging.warning(
-            "geometry contains multiple objects, attempting to convert to multipolygon"
+            "geometry contains multiple objects, attempting union_all (will result in polygon or multipolygon, situationally)"
         )
-        for shape in old.activity_payload.geometry:
-            if any(
+
+        new.migration_remarks += "geometry contains multiple objects, attempting union_all (will result in polygon or multipolygon, situationally)\n\n"
+
+        if any(
+            [
+                shape["geometry"]["type"] != "Polygon"
+                for shape in old.activity_payload.geometry
+            ]
+        ):
+            logging.error(
+                "at least one array element in a geometry list is not a polygon, cannot attempt conversion to multipolygon. geo: "
+                + pformat(old.activity_payload.geometry)
+            )
+        else:
+            final_shape = shapely.union_all(
                 [
-                    shape["geometry"]["type"] != "Polygon"
+                    shapely.geometry.shape(shape["geometry"])
                     for shape in old.activity_payload.geometry
                 ]
-            ):
-                logging.error(
-                    "at least one array element in a geometry list is not a polygon, cannot attempt conversion to multipolygon. geo: "
-                    + pformat(old.activity_payload.geometry)
-                )
-            else:
-                logging.info("looks ok, proceeding with conversion attempt")
+            )
+            final_geojson = geojson.Feature(geometry=final_shape, properties={})
+            logging.info("looks ok, proceeding with conversion attempt")
+            logging.info("final shape: " + pformat(final_geojson))
+            new.shape = json.dumps(final_geojson.geometry)
+            warning_message = f"final geometry {final_geojson} created from sources: {[geojson.Feature(shapely.geometry.shape(shape["geometry"])) for shape in old.activity_payload.geometry]}\n\nTHIS SHOULD BE HAND-VERIFIED!"
+            logging.warning(warning_message)
+            new.migration_remarks += warning_message + "\n\n"
 
     else:
         new.shape = json.dumps((old.activity_payload.geometry[0]["geometry"]))
@@ -189,13 +212,18 @@ def migrate(old: LegacyActivity):
 
             FundingAgency.objects.update_or_create(activity=new, agency=found_code)
 
-    add_subtype_payload(new, old)
-
     try:
+        add_subtype_payload(new, old)
         new.full_clean()
         new.save()
     except ValidationError as e:
         logging.error("validation error after subtype data mapped", exc_info=True)
+        raise
+    except DatabaseError as e:
+        logging.error(
+            "database error (probably missing subtype data - see details)",
+            exc_info=True,
+        )
         raise
 
     return new
