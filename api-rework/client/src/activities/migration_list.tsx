@@ -1,35 +1,34 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {API_URL} from 'constants';
+import React, { useContext, useEffect, useState } from 'react';
+import { API_URL } from 'constants';
 import './activities.scss';
-import {useNavigate} from 'react-router';
-import {AuthContext} from 'client';
-import {ColDef} from "ag-grid-community";
-import {AgGridReact} from "ag-grid-react";
-import {customizedAgTheme} from "ag-theme";
+import { useNavigate } from 'react-router';
+import { AuthContext } from 'client';
+import { ColDef } from 'ag-grid-community';
+import { AgGridReact } from 'ag-grid-react';
+import { customizedAgTheme } from 'ag-theme';
 
-interface MigrationStatus {
+interface Migration_list {
   activity_id: string;
   timestamp: string;
 }
 
 const MigrationStatusList: React.FC = () => {
-  const [migrations, setMigrations] = useState<MigrationStatus[]>([]);
+  const [migrations, setMigrations] = useState<Migration_list[]>([]);
 
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const {state: auth} = useContext(AuthContext);
+  const { state: auth } = useContext(AuthContext);
 
   const navigate = useNavigate();
 
   // Column Definitions: Defines the columns to be displayed.
   const colDefs: ColDef[] = [
     {
-      field: "activity_id",
-      onCellClicked: (e) => (navigate(`/activities/${e.value}/migration`)),
-      headerName: "ID"
+      field: 'activity_id',
+      headerName: 'ID'
     },
-    {field: "timestamp", headerName: "Import Timestamp"},
+    { field: 'timestamp', headerName: 'Import Timestamp' }
   ];
 
   useEffect(() => {
@@ -40,7 +39,7 @@ const MigrationStatusList: React.FC = () => {
     fetch(`${API_URL}/migrations/failed`, {
       headers: {
         Authorization: `Bearer ${auth.token}`
-      },
+      }
       // method: 'POST',
     })
       .then(async (res) => {
@@ -67,7 +66,7 @@ const MigrationStatusList: React.FC = () => {
   return (
     <>
       {error && <pre>{errorMessage}</pre>}
-      <div style={{height: '80dvh'}}>
+      <div style={{ height: '80dvh' }}>
         <AgGridReact
           loading={loading}
           rowData={migrations}
@@ -75,11 +74,14 @@ const MigrationStatusList: React.FC = () => {
           defaultColDef={{
             flex: 1
           }}
+          onRowClicked={(e) => {
+            navigate(`/activities/${e.data.activity_id}/migration`);
+          }}
           theme={customizedAgTheme}
           pagination
         />
       </div>
     </>
-  )
+  );
 };
 export default MigrationStatusList;

@@ -49,7 +49,8 @@ class ActivityViewSet(ReadOnlyModelViewSet):
             found = ActivityMigrationStatus.objects.get(activity_id=self.kwargs["pk"])
             serialized = ActivityMigrationStatusSerializer(found)
             return Response(data=serialized.data, status=HTTP_200_OK)
-        except:
+        except Exception as e:
+            logging.error(e)
             return Response(status=404)
 
     @action(detail=True, methods=["post"])

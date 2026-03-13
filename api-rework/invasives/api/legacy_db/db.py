@@ -3,6 +3,7 @@ import logging
 from typing import Literal
 
 from django.core.exceptions import ValidationError as DjangoValidationError
+from django.db import DatabaseError
 from django.db.models import Q
 import django.db.transaction as transaction
 import psycopg
@@ -374,11 +375,19 @@ class LegacyDB:
                                 )
                                 errors.errors.append(("validation", e.__str__()))
                                 stats.failed_validate += 1
-                            except Exception as e:
+                            except DatabaseError as e:
                                 log.warning(
-                                    f"building model for {row['activity_id']} failed",
+                                    f"database exception while saving new activity {row['activity_id']}",
                                     exc_info=True,
                                 )
+                                errors.errors.append(("database error", e.__str__()))
+                                stats.failed_validate += 1
+                            except Exception as e:
+                                log.warning(
+                                    f"{row['activity_id']} failed to migrate",
+                                    exc_info=True,
+                                )
+                                errors.errors.append(("general failure", e.__str__()))
                                 stats.failed_for_any_reason += 1
 
                     except ValidationError as e:

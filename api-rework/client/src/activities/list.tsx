@@ -1,11 +1,11 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {API_URL} from 'constants';
+import React, { useContext, useEffect, useState } from 'react';
+import { API_URL } from 'constants';
 import './activities.scss';
-import {useNavigate} from 'react-router';
-import {AuthContext} from 'client';
-import {ColDef} from "ag-grid-community";
-import {AgGridReact} from "ag-grid-react";
-import {customizedAgTheme} from "ag-theme";
+import { useNavigate } from 'react-router';
+import { AuthContext } from 'client';
+import { ColDef } from 'ag-grid-community';
+import { AgGridReact } from 'ag-grid-react';
+import { customizedAgTheme } from 'ag-theme';
 
 interface ActivitySummary {
   id: string;
@@ -15,24 +15,29 @@ interface ActivitySummary {
   has_migration_remarks: boolean;
 }
 
-
 const ActivitiesList: React.FC = () => {
   const [activities, setActivities] = useState<ActivitySummary[]>([]);
 
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const {state: auth} = useContext(AuthContext);
+  const { state: auth } = useContext(AuthContext);
 
   const navigate = useNavigate();
 
   // Column Definitions: Defines the columns to be displayed.
   const colDefs: ColDef[] = [
-    {field: "id", onCellClicked: (e) => (navigate(`/activities/${e.value}/django`)), headerName: "ID"},
-    {field: "type"},
-    {field: "subtype"},
-    {field: "date", headerName: "Activity Date"},
-    {field: "has_migration_remarks", headerName: "Has Migration Remarks?"}
+    { field: 'id', headerName: 'ID' },
+    { field: 'type' },
+    { field: 'subtype' },
+    { field: 'date', headerName: 'Activity Date' },
+    {
+      field: 'has_migration_remarks',
+      headerName: 'Has Migration Remarks?',
+      cellRenderer: (params) => {
+        return <span className={params.value ? 'warning' : ''}>{params.value ? 'Yes' : 'No'}</span>;
+      }
+    }
   ];
 
   useEffect(() => {
@@ -43,7 +48,7 @@ const ActivitiesList: React.FC = () => {
     fetch(`${API_URL}/activities`, {
       headers: {
         Authorization: `Bearer ${auth.token}`
-      },
+      }
       // method: 'POST',
     })
       .then(async (res) => {
@@ -71,18 +76,21 @@ const ActivitiesList: React.FC = () => {
     <>
       {error && <pre>{errorMessage}</pre>}
       <div style={{ height: '80dvh' }}>
-      <AgGridReact
-        loading={loading}
-        rowData={activities}
-        columnDefs={colDefs}
-        defaultColDef={{
-          flex: 1
-        }}
-        theme={customizedAgTheme}
-        pagination
-      />
+        <AgGridReact
+          loading={loading}
+          rowData={activities}
+          columnDefs={colDefs}
+          onRowClicked={(e) => {
+            navigate(`/activities/${e.data.id}/django`);
+          }}
+          defaultColDef={{
+            flex: 1
+          }}
+          theme={customizedAgTheme}
+          pagination
+        />
       </div>
     </>
-  )
+  );
 };
 export default ActivitiesList;

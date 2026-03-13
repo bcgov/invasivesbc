@@ -21,7 +21,10 @@ class MigrationError(models.Model):
     id = models.BigAutoField(primary_key=True)
 
     migration_status = models.ForeignKey(
-        ActivityMigrationStatus, null=False, on_delete=models.CASCADE
+        ActivityMigrationStatus,
+        null=False,
+        on_delete=models.CASCADE,
+        related_name="migration_error_set",
     )
 
     reason = models.TextField(blank=False, null=False)
