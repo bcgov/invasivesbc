@@ -3,26 +3,40 @@ import { getInputWidth, Width } from '../../common/utils';
 import { nanoid } from '@reduxjs/toolkit';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
 import './checkboxUI.css';
+import RequiredField from '../RequiredField/RequiredField';
 
 type PropTypes = {
   label: string;
   disabled?: boolean;
   state: boolean;
   tooltip?: string;
+  warningConfirmation?: boolean;
+  required?: boolean;
   onChange: Dispatch<SetStateAction<boolean>>;
   width?: Width;
 };
 
-const CheckboxUI = ({ label, onChange, state, disabled = false, tooltip, width }: PropTypes) => {
+const CheckboxUI = ({
+  label,
+  onChange,
+  warningConfirmation = false,
+  required = false,
+  state,
+  disabled = false,
+  tooltip,
+  width
+}: PropTypes) => {
   const handleClick = () => onChange((prev: boolean) => !prev);
-
   const [id] = useState(nanoid());
 
   return (
-    <div className={`form-ui-checkbox ${getInputWidth(width)}`}>
+    <div className={`form-ui-checkbox ${getInputWidth(width)} ${warningConfirmation && 'warning'}`}>
       <input id={id} onChange={handleClick} type="checkbox" disabled={disabled} checked={state} />
       <div className="label-section">
-        <label htmlFor={id}>{label}</label>
+        <label htmlFor={id}>
+          {label}
+          {required && <RequiredField />}
+        </label>
         {tooltip && <TooltipWithIcon tooltipText={tooltip} />}
       </div>
     </div>

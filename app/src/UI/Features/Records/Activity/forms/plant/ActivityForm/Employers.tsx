@@ -25,7 +25,7 @@ const Employer = ({ width = Width.Full }: PropTypes) => {
 
   const optionsAvailableToUser = useMemo(() => {
     if (createdBy !== username || userIsAdmin) return employerCodes;
-    return employerCodes.filter(({ code }) => userEmployers?.includes(code));
+    return employerCodes.filter(({ code }) => userEmployers?.includes(code as string));
   }, [employerCodes, userEmployers, createdBy, username]);
 
   return (
@@ -34,6 +34,7 @@ const Employer = ({ width = Width.Full }: PropTypes) => {
       valueKey="employer"
       options={optionsAvailableToUser}
       name={'employer'}
+      required
       tooltip={tooltips.basic.employer}
       rules={{ required: true, validate: (val) => minArrayLength(val, 1) }}
       width={width}

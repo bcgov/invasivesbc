@@ -3,16 +3,12 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import { ObservationType } from 'UI/Features/Records/Activity/forms/enums';
-import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
-import TextInput from 'UI/Features/Records/Activity/forms/common/TextInput/TextInput';
-import DateInput from 'UI/Features/Records/Activity/forms/common/DateInput/DateInput';
-import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
 import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
 import { useEffect, useState } from 'react';
 import CheckboxUI from 'UI/Features/Records/Activity/forms/common/CheckboxUI/CheckboxUI';
 import { EntryBasePath, TerrestrialPlantObservationSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
-import FormSpacer from 'UI/Features/Records/Activity/forms/common/FormSpacer/FormSpacer';
+import VoucherCollection from 'UI/Features/Records/Activity/forms/plant/subtype-component/common/VoucherCollection';
 
 interface Props {
   root: string;
@@ -22,11 +18,10 @@ interface Props {
 
 const TerrestrialPlantEntry = ({ root, index, remove }: Props) => {
   const {
-    register,
     control,
     setValue,
     watch,
-    formState: { errors, disabled, isDirty }
+    formState: { disabled, isDirty }
   } = useFormContext<TerrestrialPlantObservationSchema>();
   const basePath = `${root}.entries.${index}` as EntryBasePath;
   const voucherSpecimen = useWatch({
@@ -117,84 +112,7 @@ const TerrestrialPlantEntry = ({ root, index, remove }: Props) => {
           />
         </>
       )}
-      {voucherCollected && (
-        <Fieldset label="Voucher Collection Information">
-          <TextInput
-            label="Voucher Sample ID"
-            tooltip={tooltips.plant.voucher_sample_id}
-            {...register(`${basePath}.voucher_specimen.voucher_sample_id`, { required: true })}
-            width={Width.Half}
-            error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.voucher_sample_id}
-          />
-
-          <TextInput
-            label="Herbarium"
-            {...register(`${basePath}.voucher_specimen.herbarium`, { required: true })}
-            width={Width.Half}
-            error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.herbarium}
-          />
-
-          <TextInput
-            label="Accession Number"
-            {...register(`${basePath}.voucher_specimen.accession_number`, { required: true })}
-            width={Width.Half}
-            error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.accession_number}
-          />
-          <FormSpacer width={Width.Half} />
-
-          <DateInput
-            label="Date Voucher Collected"
-            {...register(`${basePath}.voucher_specimen.date_collected`, { required: true })}
-            width={Width.Half}
-            error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.date_collected}
-          />
-
-          <DateInput
-            label="Date Voucher Verified"
-            {...register(`${basePath}.voucher_specimen.date_verified`, { required: true })}
-            width={Width.Half}
-            error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.date_verified}
-          />
-          <Fieldset label={'Voucher Verification Completed By'}>
-            <TextInput
-              label="Completed By (Person)"
-              {...register(`${basePath}.voucher_specimen.completed_by_person`, { required: true })}
-              width={Width.Half}
-              error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.completed_by_person}
-            />
-            <TextInput
-              label="Completed By (Org)"
-              {...register(`${basePath}.voucher_specimen.completed_by_org`, { required: true })}
-              width={Width.Half}
-              error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.completed_by_org}
-            />
-          </Fieldset>
-
-          <Fieldset label={'Exact Coordinate of Voucher Collection Site'}>
-            <NumberInput
-              label="UTM Zone"
-              {...register(`${basePath}.voucher_specimen.utm_zone`, { required: true, valueAsNumber: true })}
-              width={Width.Third}
-              error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.utm_zone}
-            />
-
-            <NumberInput
-              label="UTM Easting"
-              {...register(`${basePath}.voucher_specimen.utm_easting`, { required: true, valueAsNumber: true })}
-              width={Width.Third}
-              error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.utm_easting}
-            />
-
-            <NumberInput
-              label="UTM Northing"
-              {...register(`${basePath}.voucher_specimen.utm_northing`, { required: true, valueAsNumber: true })}
-              width={Width.Third}
-              error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.utm_northing}
-            />
-          </Fieldset>
-        </Fieldset>
-      )}
-
+      {voucherCollected && <VoucherCollection index={index} />}
       <DeleteControl onClick={() => remove(index)} />
     </>
   );

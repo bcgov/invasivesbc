@@ -12,11 +12,17 @@
   }
 
   input[type='text'] {
+    font-family: BCSans, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif;
     height: var(--form-input-height);
     width: 100%;
     box-sizing: border-box;
     padding: 0.25rem 0.5rem;
     font-size: var(--form-input-font-size);
+
+    &:read-only {
+      background-color: #eee;
+      color: black;
+    }
   }
 
   .top {

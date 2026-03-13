@@ -15,7 +15,7 @@ import SuggestedTreatmentId from 'interfaces/SuggestedTreatmentId';
 import IActivityPermissions from 'interfaces/IActivityPermissions';
 import { GeoTrackingStatus } from 'constants/geoTrackingStatus';
 import DrawToolActions from 'state/actions/drawtool/drawToolActions';
-import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
+import { FormSchema, TerrestrialChemicalTreatmentSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
 
 interface ActivityState {
@@ -30,6 +30,7 @@ interface ActivityState {
   failCode: number | null;
   formType?: ActivitySubtypes;
   formState?: FormSchema;
+  wellsInRecordArea?: TerrestrialChemicalTreatmentSchema['subtype_data']['well_entries'];
   formId?: string;
   geometry_details?: {
     geom: Feature;
@@ -206,10 +207,14 @@ function createActivityReducer() {
       } else if (FormActions.createNewForm.match(action)) {
         delete draftState.formState;
         delete draftState.geometry_details;
+        delete draftState.wellsInRecordArea;
+
         draftState.formId = crypto.randomUUID();
         draftState.formType = action.payload;
       } else if (FormActions.clearFormState.match(action) && draftState.formState) {
         delete draftState.geometry_details;
+        delete draftState.wellsInRecordArea;
+
         Object.assign(draftState.formState, {
           ...getDefaultFormState(draftState.formType),
           id: draftState.formId,
@@ -249,6 +254,7 @@ function createActivityReducer() {
         draftState.activityErrors = getCustomErrorTransformer()(action.payload ?? []);
       } else if (Activity.updateGeoFailure.match(action)) {
         delete draftState.geometry_details;
+        delete draftState.wellsInRecordArea;
 
         draftState.activity.geometry = action.payload.geometry;
         draftState.activity.form_data.activity_data.latitude = undefined;
@@ -262,9 +268,16 @@ function createActivityReducer() {
         draftState.schema = action.payload.schema;
       } else if (DrawToolActions.deleteGeo.match(action)) {
         delete draftState.geometry_details;
+        delete draftState.wellsInRecordArea;
       } else if (DrawToolActions.updateGeoSuccess.match(action)) {
         const { geometry, lat, long, utm, reported_area, Well_Information } = action.payload;
-        //TODO: Make its own thing
+        //TODO: Refactor Well information and Geometry_Details to be more cleanly implemented as old source removed
+        const formattedWells = Well_Information?.slice(0, 5).map((well) => ({
+          well_tag: well.well_id,
+          distance: parseInt(well.well_proximity)
+        }));
+        console.log(formattedWells);
+        draftState.wellsInRecordArea = structuredClone(formattedWells);
         draftState.geometry_details = {
           geom: geometry?.[0] as Feature,
           area_m: reported_area ?? undefined,

@@ -4,6 +4,7 @@ import { getInputWidth, Width } from '../utils';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
 
 interface PropTypes extends PropsWithChildren {
+  className?: string;
   children: ReactNode;
   label: string;
   tooltip?: string;
@@ -11,9 +12,9 @@ interface PropTypes extends PropsWithChildren {
   width?: Width;
 }
 
-const Fieldset = ({ label, width, tooltip, children, nested }: PropTypes) => {
+const Fieldset = ({ label, width, tooltip, children, nested, className }: PropTypes) => {
   return (
-    <fieldset className={`form-fieldset ${getInputWidth(width)} ${nested ? 'nested' : ''}`}>
+    <fieldset className={`form-fieldset ${getInputWidth(width)} ${nested ? 'nested' : ''} ${className}`}>
       <legend>
         {label} {tooltip && <TooltipWithIcon tooltipText={tooltip} />}
       </legend>

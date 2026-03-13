@@ -1,41 +1,42 @@
-.form-textarea-input {
+.form-checkbox-input {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
   margin-bottom: 10px;
-  min-height: 137px;
+  max-width: 100%;
   box-sizing: border-box;
 
-  div {
+  .row {
     display: flex;
+    flex-direction: row;
+    text-wrap: wrap;
+    align-items: center;
     width: 100%;
-    box-sizing: border-box;
-    font-size: var(--form-input-font-size);
+
+    .label-section {
+      display: flex;
+      align-items: flex-start;
+      flex-direction: row;
+      width: 100%;
+    }
   }
 
-  textarea {
-    font-family: BCSans, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif;
-    resize: none;
-    width: 100%;
-    height: 100%;
+  input[type='checkbox'] {
+    height: calc(var(--form-input-height) * 0.75);
+    margin-right: 1rem;
+    width: calc(var(--form-input-height) * 0.75);
     box-sizing: border-box;
     padding: 0.25rem 0.5rem;
     font-size: var(--form-input-font-size);
   }
 
-  .top {
-    display: flex;
-    width: 100%;
-  }
-
   label {
-    height: 25px;
     font-size: var(--form-input-label-font-size);
     font-weight: 600;
-    margin-right: auto;
 
-    &::after {
-      content: ':';
+    & > * {
+      margin-left: 3px;
     }
   }
 
@@ -57,7 +58,7 @@
 }
 
 @media screen and (width < 650px) {
-  .form-textarea-input {
+  .form-ui-checkbox {
     &.third-width,
     &.quarter-width {
       width: 49%;
@@ -66,7 +67,7 @@
 }
 
 @media screen and (width < 450px) {
-  .form-textarea-input {
+  .form-ui-checkbox {
     &.half-width,
     &.third-width,
     &.quarter-width {

@@ -48,6 +48,31 @@ const tooltips = {
       'For Presence Surveys. Number each sample point in the same waterbody (e.g. 001, 002, 003, etc). Do not use for Extent Surveys',
     aquatic_plant:
       'For Presence survey: select species observed at coordinates. For Extent Survey: select target species for survey',
+    chemical: {
+      wells: {
+        field_disclaimer:
+          'Autofilled field when InvasivesBC detects a mapped well within the location of the treatment area. If nothing is entered, there are no mapped wells found however this does NOT mean there are no wells present. It is the applicators responsibility to confirm the absence of wells prior to applying herbicide at all times.',
+        section_disclaimer:
+          'These fields are autofilled if InvasivesBC detects a mapped well within the vicinity of a treatment. If nothing is entered, there are no mapped wells found however this does NOT mean there are no wells present. It is the applicators responsibility to confirm the absence of wells prior to applying herbicide at all times.'
+      },
+      service_license_number_and_company: 'Select from current/valid employer/organization names',
+      pesticide_use_permit: 'Enter applicable number if treatment is being completed under pesticide use permit',
+      pest_management_plan: 'Enter applicable number if treatment is being completed under a pest management plan',
+      pest_management_plan_manual:
+        'Include a PMP number here if it is not available on the drop down in the "Pest Management Plan',
+      weather: {
+        temperature_c: 'Measured in degrees celcius at time of treatment (ideally between 10 and 28 degrees)',
+        wind_speed_kmh: 'Wind speed in km/hr at time of treatment (ideally less than 9km/hr)',
+        wind_direction: 'Cardinal wind direction at time of treatment',
+        humidity: 'Relative humidity expressed as a percentage'
+      },
+      treatment_notice_signs:
+        'Indicate if treatment sign(s) were installed at entrance point to the treatment area. If no, indicate in the comments why not',
+      required_under_license:
+        'Required field under the BC Integrated Pest Management Regulation when working under a license or authorization',
+      additional_unmapped_water:
+        'Check this box as an indicator that there are wells or water licenses that will need to be considered if chemical treatment is planned for this area in the future. If unknown, leave unchecked. Additional information can be added into the comments (no names or addresses).'
+    },
     waterbody: {
       type: 'Select best description of waterbody type',
       name_gazetted: 'Legal gazetted name of waterbody',

@@ -16,7 +16,7 @@ type PropTypes = {
  */
 const FundingAgency = ({ width = Width.Full }: PropTypes) => {
   const agencyCodes = useSelector((state) => state.ActivityPage.formCodes?.FundingAgencyCode) ?? [];
-  const userAgencies = useSelector((state) => state.Auth?.extendedInfo?.funding_agencies)?.split(',');
+  const userAgencies = useSelector((state) => state.Auth?.extendedInfo?.funding_agencies)?.split?.(',');
   const username = useSelector((state) => state.Auth?.username);
   const userIsAdmin = useSelector((state) => state.Auth?.roles.some((r) => r.role_name === Role.MASTER_ADMINISTRATOR));
 
@@ -25,7 +25,7 @@ const FundingAgency = ({ width = Width.Full }: PropTypes) => {
 
   const optionsAvailableToUser = useMemo(() => {
     if (createdBy !== username || userIsAdmin) return agencyCodes;
-    return agencyCodes.filter(({ code }) => userAgencies?.includes(code));
+    return agencyCodes.filter(({ code }) => userAgencies?.includes(code as string));
   }, [agencyCodes, userAgencies, createdBy, username]);
 
   return (

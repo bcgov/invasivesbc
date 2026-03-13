@@ -21,7 +21,7 @@ class TerrestrialChemicalTreatmentTest(BaseActivitySubtypeTest):
         self.assertEqual(sd["pest_management_plan"], "BCGOV")
         self.assertEqual(sd["temperature_c"], 23)
         self.assertEqual(sd["wind_speed_kmh"], 33)
-        self.assertEqual(sd["application_start_time"], "2025-01-01T00:00:00Z")
+        self.assertEqual(sd["application_start_time"], "2025-01-01T00:00")
         self.assertEqual(sd["wind_direction"], "NW")
         self.assertEqual(sd["humidity"], 30)
         self.assertEqual(sd["treatment_notice_signs"], "Yes")

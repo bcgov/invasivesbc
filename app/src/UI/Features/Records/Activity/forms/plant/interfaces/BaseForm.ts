@@ -4,7 +4,7 @@ import { ActivitySubtypes, ActivityType } from 'sharedAPI';
 interface BaseForm {
   id?: string;
   subtype: ActivitySubtypes;
-  type: ActivityType;
+  type?: ActivityType;
   short_id?: string;
   form_status?: string;
   created_by?: string;

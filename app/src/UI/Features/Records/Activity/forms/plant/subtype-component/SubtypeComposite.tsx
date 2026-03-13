@@ -9,6 +9,7 @@ import BiocontrolRelease from './biocontrol-release/BiocontrolRelease';
 import BiocontrolReleaseMonitoring from './biocontrol-release-monitoring/BiocontrolReleaseMonitoring';
 import BiocontrolDispersalMonitoring from './biocontrol-dispersal-monitoring/BiocontrolDispersalMonitoring';
 import BiocontrolCollection from './biocontrol-collection/BiocontrolCollection';
+import TreatmentChemicalPlant from './treatment-chemical-plant/TreatmentChemicalPlant';
 
 /**
  * @desc Handles the Branching Subtypes for Forms, matches Subtype to required Subfields
@@ -25,10 +26,8 @@ const SubtypeComposite = () => {
     [ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial]: <BiocontrolReleaseMonitoring />,
     [ActivitySubtypes.Treatment_Mechanical_Plant_Terrestrial]: <TreatmentMechPlantTerrestrial />,
     [ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic]: <TreatmentMechPlantAquatic />,
-    [ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial]: (
-      <p>Treatment_Chemical_Plant_Terrestrial Not Implemented</p>
-    ),
-    [ActivitySubtypes.Treatment_Chemical_Plant_Aquatic]: <p>Treatment_Chemical_Plant_Aquatic Not Implemented</p>,
+    [ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial]: <TreatmentChemicalPlant type={'terrestrial'} />,
+    [ActivitySubtypes.Treatment_Chemical_Plant_Aquatic]: <TreatmentChemicalPlant type={'aquatic'} />,
     [ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial]: <BiocontrolDispersalMonitoring />,
     [ActivitySubtypes.Biocontrol_Collection]: <BiocontrolCollection />,
     [ActivitySubtypes.Biocontrol_Release]: <BiocontrolRelease />

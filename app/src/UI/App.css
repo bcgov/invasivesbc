@@ -100,11 +100,18 @@ body {
   --map-button-bar-height: 45px;
   --extra-top-padding: 0px;
   --extra-bottom-padding: 0px;
+
+  /*
+    Documentation for BC Style System Colors:
+    https://www2.gov.bc.ca/gov/content/digital/design-system/foundations/colour
+  */
+
   --bc-blue: #036;
   --error-red: #f44336;
   --deep-red: #b2102f;
   --success-green: #357a38;
-  --warning-orange: #ffc107;
+  --warning-orange: #f8bb47;
+  --warning-bg-orange: #fef1d8;
   --bc-yellow: #fcba19;
   --blue-primary: #1976d2;
   --eigengrau: #16161d;

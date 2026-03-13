@@ -17,7 +17,7 @@ class ChemTreatmentContext(BaseOneToOneActivityTable):
     service_license_number = models.ForeignKey(
         ServiceLicenseNumberAndCompany, on_delete=models.PROTECT
     )
-    pesticide_use_permit = models.CharField(max_length=128)
+    pesticide_use_permit = models.CharField(max_length=128, blank=True, null=True)
     pest_management_plan = models.ForeignKey(
         PestManagementPlan, on_delete=models.PROTECT, blank=True, null=True
     )
