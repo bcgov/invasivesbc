@@ -13,10 +13,12 @@ django-stubs==5.2.8
 django-stubs-ext==5.2.8
 djangorestframework==3.16.1
 djangorestframework-stubs==3.16.6
+geojson==3.2.0
 idna==3.11
 markdown-it-py==4.0.0
 mdurl==0.1.2
 mypy_extensions==1.1.0
+numpy==2.4.3
 packaging==25.0
 pathspec==1.0.0
 platformdirs==4.5.1
@@ -32,6 +34,8 @@ PyJWT==2.10.1
 pytokens==0.3.0
 requests==2.32.5
 rich==14.2.0
+setuptools==82.0.0
+shapely==2.1.2
 sqlparse==0.5.5
 types-PyYAML==6.0.12.20250915
 types-requests==2.32.4.20260107
