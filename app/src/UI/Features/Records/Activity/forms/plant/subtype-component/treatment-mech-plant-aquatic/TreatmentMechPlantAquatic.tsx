@@ -137,7 +137,7 @@ const TreatmentMechPlantAquatic = () => {
                 name={`${basePath}.disposal_method`}
                 width={Width.Half}
               />
-              <Fieldset nested label={'Disposed Material'}>
+              <Fieldset label={'Disposed Material'}>
                 <SingleSelect
                   label={'Disposed Material Format'}
                   options={DisposedMaterialFormat}

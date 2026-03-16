@@ -19,7 +19,7 @@ const VoucherCollection = ({ index }) => {
     formState: { errors }
   } = useFormContext<Observation>();
   return (
-    <>
+    <Fieldset label={'Voucher Specimen Collection Information'}>
       <TextInput
         required
         label="Voucher Sample ID"
@@ -61,7 +61,7 @@ const VoucherCollection = ({ index }) => {
         width={Width.Half}
         error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.date_verified}
       />
-      <Fieldset nested label={'Voucher Verification Completed By'}>
+      <Fieldset label={'Voucher Verification Completed By'}>
         <TextInput
           required
           label="Completed By (Person)"
@@ -78,7 +78,7 @@ const VoucherCollection = ({ index }) => {
         />
       </Fieldset>
 
-      <Fieldset nested label={'Exact Coordinate of Voucher Collection Site'}>
+      <Fieldset label={'Exact Coordinate of Voucher Collection Site'}>
         <NumberInput
           label="UTM Zone"
           required
@@ -112,7 +112,7 @@ const VoucherCollection = ({ index }) => {
           error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.utm_northing}
         />
       </Fieldset>
-    </>
+    </Fieldset>
   );
 };
 
