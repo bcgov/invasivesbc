@@ -1,8 +1,8 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from api.models.activity.abstract_sub_tables import BaseOneToOneActivityTable
+from api.models.codes import WindDirectionCode
 from api.models.codes.code_tables import CloudCoverCode, PrecipitationCode
-from api.models.enums.cardinal_direction import CardinalDirection
 
 
 class WeatherConditions(BaseOneToOneActivityTable):
@@ -19,7 +19,7 @@ class WeatherConditions(BaseOneToOneActivityTable):
     cloud_cover = models.ForeignKey(CloudCoverCode, on_delete=models.PROTECT)
     precipitation = models.ForeignKey(PrecipitationCode, on_delete=models.PROTECT)
     wind_speed_kmh = models.PositiveSmallIntegerField()
-    wind_direction = models.CharField(choices=CardinalDirection)
+    wind_direction = models.ForeignKey(WindDirectionCode, on_delete=models.PROTECT)
     comments = models.TextField(max_length=16384)
 
     class Meta:
@@ -27,7 +27,9 @@ class WeatherConditions(BaseOneToOneActivityTable):
         pass
 
     def clean(self):
-        if self.wind_direction is None and self.wind_speed_kmh > 0:
+        if (
+            self.wind_direction is None or self.wind_direction.code == "No Wind"
+        ) and self.wind_speed_kmh > 0:
             raise ValidationError(
                 {"wind_direction": "Must specify a wind direction when wind speed > 0"}
             )

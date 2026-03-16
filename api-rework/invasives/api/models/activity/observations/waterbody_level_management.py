@@ -1,10 +1,13 @@
 from django.db import models
-from api.models.enums.water_level_management import WaterLevelManagement
+
 from api.models.activity.abstract_sub_tables import BaseOneToManyActivityTable
+from api.models.codes import WaterLevelManagement
 
 
 class WaterbodyLevelManagement(BaseOneToManyActivityTable):
-    waterlevel_management = models.CharField(WaterLevelManagement)
+    waterlevel_management = models.ForeignKey(
+        WaterLevelManagement, on_delete=models.PROTECT
+    )
 
     class Meta:
         db_table = '"activity"."water_level_management"'

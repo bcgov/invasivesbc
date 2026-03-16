@@ -8,8 +8,8 @@ from api.models.codes.code_tables import (
     ChemicalPrecautionaryStatement,
     PestManagementPlan,
     ServiceLicenseNumberAndCompany,
+    WindDirectionCode,
 )
-from api.models.enums.cardinal_direction import CardinalDirection
 from api.models.enums.yes_no_unknown import YesNoUnknown
 
 
@@ -31,9 +31,8 @@ class ChemTreatmentContext(BaseOneToOneActivityTable):
         validators=[MaxValueValidator(99)]
     )
     application_start_time = models.DateTimeField()
-    wind_direction = models.CharField(
-        choices=CardinalDirection, default=CardinalDirection.NonApplicable
-    )
+    wind_direction = models.ForeignKey(WindDirectionCode, on_delete=models.PROTECT)
+
     humidity = models.SmallIntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(100)]
     )
@@ -75,9 +74,8 @@ class ChemTreatmentContext(BaseOneToOneActivityTable):
             errors["pest_management_plan_manual"] = (
                 "You must only fill either Pest Management Plan or Unlisted Drop Down field."
             )
-        if (
-            self.wind_speed_kmh > 0
-            and self.wind_direction == CardinalDirection.NonApplicable
+        if self.wind_speed_kmh > 0 and (
+            self.wind_direction is None or self.wind_direction.code == "No Wind"
         ):
             errors["wind_direction"] = (
                 "Must specify a wind direction when wind speed is > 0"

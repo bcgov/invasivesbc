@@ -1,12 +1,12 @@
-from dataclasses import dataclass
 import logging
+from dataclasses import dataclass
 from typing import Literal
 
+import django.db.transaction as transaction
+import psycopg
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import DatabaseError
 from django.db.models import Q
-import django.db.transaction as transaction
-import psycopg
 from psycopg.rows import dict_row
 from pydantic_core._pydantic_core import ValidationError
 
@@ -53,6 +53,10 @@ from api.models.codes import (
     WaterbodyFlowCode,
     WaterbodyFlowSeasonalCode,
     WaterbodyUseCode,
+    WindDirectionCode,
+    WaterLevelManagement,
+    WaterbodyTypeCode,
+    WaterbodySubstrateCode,
 )
 from api.models.migrator import ActivityPendingLink, MigrationError
 from api.models.migrator.activity_migration_status import ActivityMigrationStatus
@@ -235,6 +239,93 @@ class LegacyDB:
                 return None
 
     @staticmethod
+    def add_hardcoded_codes():
+        WindDirectionCode.objects.update_or_create(
+            code="No Wind", full="No Wind", code_sort_order=10
+        )
+        WindDirectionCode.objects.update_or_create(
+            code="N", full="North", code_sort_order=20
+        )
+        WindDirectionCode.objects.update_or_create(
+            code="NE", full="Northeast", code_sort_order=30
+        )
+        WindDirectionCode.objects.update_or_create(
+            code="E", full="East", code_sort_order=40
+        )
+        WindDirectionCode.objects.update_or_create(
+            code="SE", full="Southeast", code_sort_order=50
+        )
+        WindDirectionCode.objects.update_or_create(
+            code="S", full="South", code_sort_order=60
+        )
+        WindDirectionCode.objects.update_or_create(
+            code="SW", full="Southwest", code_sort_order=70
+        )
+        WindDirectionCode.objects.update_or_create(
+            code="W", full="West", code_sort_order=80
+        )
+        WindDirectionCode.objects.update_or_create(
+            code="NW", full="Northwest", code_sort_order=90
+        )
+
+        WaterLevelManagement.objects.create(
+            code="None", full="None", code_sort_order=10
+        )
+        WaterLevelManagement.objects.create(code="Dam", full="Dam", code_sort_order=20)
+        WaterLevelManagement.objects.create(
+            code="Other", full="Other", code_sort_order=30
+        )
+        WaterLevelManagement.objects.create(
+            code="Station", full="Station", code_sort_order=40
+        )
+        WaterLevelManagement.objects.create(
+            code="Weir", full="Weir", code_sort_order=50
+        )
+
+        WaterbodyTypeCode.objects.create(code="Bog", full="Bog", code_sort_order=10)
+
+        WaterbodyTypeCode.objects.create(
+            code="Confined Pond", full="Confined Pond", code_sort_order=20
+        )
+        WaterbodyTypeCode.objects.create(
+            code="Discharging Pond", full="Discharging Pond", code_sort_order=30
+        )
+        WaterbodyTypeCode.objects.create(code="Ditch", full="Ditch", code_sort_order=40)
+        WaterbodyTypeCode.objects.create(
+            code="Intertidal", full="Intertidal", code_sort_order=50
+        )
+        WaterbodyTypeCode.objects.create(code="Lake", full="Lake", code_sort_order=60)
+        WaterbodyTypeCode.objects.create(code="River", full="River", code_sort_order=70)
+        WaterbodyTypeCode.objects.create(
+            code="Slough", full="Slough", code_sort_order=80
+        )
+        WaterbodyTypeCode.objects.create(
+            code="Stream", full="Stream", code_sort_order=90
+        )
+        WaterbodyTypeCode.objects.create(
+            code="Wetland", full="Wetland", code_sort_order=100
+        )
+
+        WaterbodySubstrateCode.objects.create(
+            code="Clay", full="Clay", code_sort_order=10
+        )
+        WaterbodySubstrateCode.objects.create(
+            code="Cobble", full="Cobble", code_sort_order=20
+        )
+        WaterbodySubstrateCode.objects.create(
+            code="Gravel", full="Gravel", code_sort_order=30
+        )
+        WaterbodySubstrateCode.objects.create(
+            code="Rip-rap", full="Rip-rap", code_sort_order=40
+        )
+        WaterbodySubstrateCode.objects.create(
+            code="Sand", full="Sand", code_sort_order=50
+        )
+        WaterbodySubstrateCode.objects.create(
+            code="Silt/Organic", full="Silt/Organic", code_sort_order=60
+        )
+
+    @staticmethod
     def migrate_codes(dry_run=False):
         # language=PostgreSQL
         query = """select c.code_name                  as code_name,
@@ -250,6 +341,9 @@ class LegacyDB:
                order by code_category_title, code_header_name;"""
 
         stats = CodeMigrationStatistics()
+
+        if not dry_run:
+            LegacyDB.add_hardcoded_codes()
 
         with psycopg.connect(LEGACY_DB_CONNECTION_STRING, row_factory=dict_row) as conn:
             with conn.cursor() as cursor:

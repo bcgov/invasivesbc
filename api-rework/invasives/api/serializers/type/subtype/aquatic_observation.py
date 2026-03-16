@@ -1,4 +1,6 @@
 from rest_framework import serializers
+
+from api.models.codes import WaterbodyTypeCode
 from api.serializers.common import ShorelineTypesSerializer
 from api.models.activity import (
     AquaticPlantObservationContext,
@@ -9,7 +11,6 @@ from api.models.activity import (
     WaterbodyOutflowSeasonal,
     WaterbodyInflowPermanent,
     WaterbodyInflowSeasonal,
-    WaterbodyType,
     WaterbodyContext,
     WaterbodyUse,
     WaterbodyLevelManagement,
@@ -76,7 +77,7 @@ class WaterbodySubstrateTypeSerializer(serializers.ModelSerializer):
 
 class WaterbodyTypeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = WaterbodyType
+        model = WaterbodyTypeCode
         fields = ["flow_code"]
 
 
