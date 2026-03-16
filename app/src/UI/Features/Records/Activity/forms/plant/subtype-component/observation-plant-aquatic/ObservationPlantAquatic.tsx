@@ -64,16 +64,12 @@ const ObservationPlantAquatic = () => {
           tooltip={tooltips.plant.waterbody.use}
           options={codes?.WaterbodyUseCode}
           name={'subtype_data.water_use'}
-          required
-          rules={{ required: true, validate: (val) => minArrayLength(val, 1) }}
           width={Width.Half}
         />
         <MultiSelect
           label={'Water Level Management'}
           tooltip={tooltips.plant.waterbody.waterlevel_management}
           options={WaterLevelManagement}
-          required
-          rules={{ required: true, validate: (val) => minArrayLength(val, 1) }}
           name={'subtype_data.waterlevel_management'}
           width={Width.Half}
         />
