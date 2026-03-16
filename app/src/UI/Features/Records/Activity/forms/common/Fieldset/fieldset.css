@@ -6,7 +6,6 @@
   box-sizing: border-box;
   align-items: stretch;
   margin-bottom: 3rem;
-  background-color: #fff;
   border: 0;
 
   legend {
@@ -19,7 +18,7 @@
     border: 1pt solid black;
     background-color: #00336610;
 
-    legend {
+    legend.nested {
       width: auto;
       border: 0;
     }
@@ -28,7 +27,7 @@
   &.transparent {
     background-color: transparent;
 
-    legend {
+    legend.nested {
       font-size: var(--form-legend-font-size);
     }
   }
