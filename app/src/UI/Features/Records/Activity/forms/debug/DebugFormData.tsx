@@ -17,6 +17,7 @@ const DebugFormData = () => {
   };
   const { watch } = useFormContext<FormSchema>();
   const formData = watch();
+
   return (
     <Debug>
       <Accordion
@@ -27,7 +28,19 @@ const DebugFormData = () => {
           </>
         }
       >
-        <pre style={style}>{JSON.stringify(formData, null, 2)}</pre>
+        <pre style={style}>
+          {/* Truncate any Encoded media Files to avoid massive print outs  */}
+          {JSON.stringify(
+            formData,
+            (key, value) => {
+              if (key === 'encoded_file') {
+                return value.slice(0, 25) + '... [Truncated]';
+              }
+              return value;
+            },
+            2
+          )}
+        </pre>
       </Accordion>
     </Debug>
   );
