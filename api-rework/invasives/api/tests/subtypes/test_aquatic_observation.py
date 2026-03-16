@@ -4,6 +4,10 @@ from .base import BaseActivitySubtypeTest
 class AquaticObservationTest(BaseActivitySubtypeTest):
     fixtures = [
         "test/common/test_invasive_plant_codes",
+        "test/common/test_wind",
+        "test/common/test_waterlevel_management",
+        "test/common/test_waterbody_substrate",
+        "test/common/test_waterbody_type",
         "test/subtypes/observations/test_aquatic_observation_codes",
         "test/subtypes/observations/test_aquatic_observation",
         "test/common/test_participants",
@@ -25,7 +29,7 @@ class AquaticObservationTest(BaseActivitySubtypeTest):
         self.assertIn("WET", sd["outflow_seasonal"])
         self.assertIn("Dam", sd["waterlevel_management"])
         self.assertIn("AI", sd["water_use"])
-        self.assertIn("GR", sd["substrate_type"])
+        self.assertIn("Gravel", sd["substrate_type"])
         self.assertIn("H", sd["adjacent_land_use"])
 
         st = sd["shoreline_types"][0]
