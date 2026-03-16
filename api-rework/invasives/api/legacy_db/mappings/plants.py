@@ -357,7 +357,7 @@ def add_subtype_payload_for_plant_aquatic_observation(
     add_persons(new, old)
     add_well_information(new, old)
     add_aquatic_plant_observation_information(new, old)
-
+    add_shoreline_types(new, old)
     add_waterbody_data(new, old)
 
     if old.activity_payload.form_data.activity_type_data.pre_treatment_observation:
