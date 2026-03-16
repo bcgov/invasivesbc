@@ -79,7 +79,7 @@ const ObservationPlantAquatic = () => {
         />
         <MultiSelect
           label={'Substrate Type'}
-          options={codes?.SubstrateCode}
+          options={codes?.WaterbodySubstrateCode}
           tooltip={tooltips.plant.waterbody.substrate_type}
           name={'subtype_data.substrate_type'}
           required
