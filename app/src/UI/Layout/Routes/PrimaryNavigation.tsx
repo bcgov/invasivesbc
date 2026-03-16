@@ -141,10 +141,11 @@ function usePrimaryNavigationLinks() {
       layout: LayoutMode.MAP_FOCUSED,
       icon: <AssignmentIcon />
     },
+    // TODO: Replace above ^ with Hookform
     {
       id: 'HookForm',
-      path: `/Records/HookForm`,
-      activePaths: [{ path: '/Records/HookForm', end: true }],
+      path: `/Records/HookForm/${activeActivity}/form`,
+      activePaths: [{ path: `/Records/HookForm/:id/*`, end: true }],
       label: 'Hook Form',
       predicate: TabPredicate.AUTHENTICATED_ANY,
       platform: PlatformPredicate.BOTH,

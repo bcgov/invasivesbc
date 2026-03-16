@@ -48,7 +48,7 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/Landing" replace />} />
-      <Route path="/Records/HookForm" element={<ActivityForm />} />
+      <Route path="/Records/HookForm/:id/:mode" element={<ActivityForm />} />
       <Route path="/Map" Component={() => <></>} />
       <Route path="/Landing" Component={() => <LandingComponent />} />
       <Route path="/Records/Activity/:id/:mode" Component={() => <Activity />}></Route>
