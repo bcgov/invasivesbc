@@ -16,6 +16,7 @@ const Photo = ({ photo, index, remove }) => {
    * @desc Apply Photo Description changes to form, remove text input from view and reset the state.
    */
   const changeDescription = () => {
+    if (!newPhotoDesc) return;
     update(index, {
       ...photo,
       description: newPhotoDesc
@@ -41,17 +42,29 @@ const Photo = ({ photo, index, remove }) => {
             onChange={(e) => setNewPhotoDesc(e.target.value)}
             onKeyDown={(e) => {
               if (e.code === 'Enter' && !disabled) {
-                e.preventDefault();
+                e.preventDefault(); // Prevent Enter from triggering a form submission
                 changeDescription();
               }
             }}
           />
-          <input type="button" onClick={changeDescription} value="Save" />
+          <input
+            type="button"
+            className="control-button"
+            disabled={!!newPhotoDesc}
+            onClick={changeDescription}
+            value="Save"
+          />
         </div>
       )}
       <div className="photo-control">
-        <input type="button" disabled={disabled} onClick={remove} value="Delete" />
-        <input type="button" disabled={disabled} onClick={() => setIsEditing((prev) => !prev)} value="Edit" />
+        <input type="button" className="control-button" disabled={disabled} onClick={remove} value="Delete" />
+        <input
+          type="button"
+          className="control-button"
+          disabled={disabled}
+          onClick={() => setIsEditing((prev) => !prev)}
+          value="Edit"
+        />
       </div>
     </div>
   );

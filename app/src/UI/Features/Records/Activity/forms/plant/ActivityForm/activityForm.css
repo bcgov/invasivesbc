@@ -1,3 +1,7 @@
+input[type='button']:hover {
+  cursor: pointer;
+}
+
 .activity-page {
   display: flex;
   flex-direction: column;
@@ -256,22 +260,13 @@
 
   .control {
     border-top: 1px solid #ccc;
-
-    input[type='button'] {
-      width: 100%;
-      border: 1px solid black;
-      font-size: var(--form-input-font-size);
-      padding: 8px;
-      margin: 5px;
-
-      &:not(:disabled) {
-        background-color: var(--bc-blue);
-        color: white;
-      }
-    }
+    display: flex;
   }
 }
 
-input[type='button']:hover {
-  cursor: pointer;
+@media only screen and (width < 800px) {
+  #activity-form #photo-cont .control,
+  #activity-form #photo-cont .photo-control {
+    flex-flow: row wrap;
+  }
 }

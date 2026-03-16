@@ -19,7 +19,6 @@ const Photos = () => {
       })
     );
 
-  const processImage = async () => {};
   async function convertWebPathToDataUrl(webPath: string): Promise<string> {
     const response = await fetch(webPath);
     const blob = await response.blob();
@@ -136,8 +135,20 @@ const Photos = () => {
           ))}
         </div>
         <div className="control">
-          <input type="button" disabled={disabled} onClick={takePhotoFromCamera} value={'Capture Photo'} />
-          <input type="button" disabled={disabled} onClick={choosePhotosFromLibrary} value="Choose from Gallery" />
+          <input
+            type="button"
+            className="control-button"
+            disabled={disabled}
+            onClick={takePhotoFromCamera}
+            value={'Capture Photo'}
+          />
+          <input
+            type="button"
+            className="control-button"
+            disabled={disabled}
+            onClick={choosePhotosFromLibrary}
+            value="Choose from Gallery"
+          />
         </div>
       </section>
     </>
