@@ -38,6 +38,10 @@ interface BaseForm {
   projects: Array<{
     description: string;
   }>;
+  media: Array<{
+    description: string;
+    encoded_file: string;
+  }>;
   comment: string;
 }
 

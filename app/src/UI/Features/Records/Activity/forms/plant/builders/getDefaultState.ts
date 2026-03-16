@@ -80,7 +80,8 @@ const getDefaultFormState = (
     utm_northing: 0,
     linked_activities: [],
     participants: [{ name: '', pac_number: isChemical ? 0 : undefined }],
-    subtype_data: subtype_data
+    subtype_data: subtype_data,
+    media: []
   } as FormSchema;
 };
 
