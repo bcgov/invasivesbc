@@ -1,18 +1,16 @@
 import json
 import logging
-
-import geojson
-import shapely
-
 from decimal import Decimal, ROUND_DOWN
 from pprint import pformat
 
-from django.contrib.gis.geos import GEOSGeometry
+import geojson
+import shapely
 from django.db import DatabaseError
 from pydantic_core._pydantic_core import ValidationError
 
 from api.legacy_db.mappings.plants import (
     add_subtype_payload_for_plant_terrestrial_observation,
+    add_subtype_payload_for_plant_aquatic_observation,
 )
 from api.legacy_db.model_serializer import LegacyActivity
 from api.models.activity import (
@@ -35,6 +33,8 @@ def add_subtype_payload(new: Activity, old: LegacyActivity) -> None:
     match old.activity_payload.activity_subtype:
         case ActivitySubtypes.Observation_Plant_Terrestrial:
             add_subtype_payload_for_plant_terrestrial_observation(new, old)
+        case ActivitySubtypes.Observation_Plant_Aquatic:
+            add_subtype_payload_for_plant_aquatic_observation(new, old)
         case _:
             pass
 

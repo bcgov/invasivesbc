@@ -1,5 +1,3 @@
-from django.db import models
-
 from .base_code import BaseCode
 
 
@@ -224,3 +222,23 @@ class WaterbodyFlowSeasonalCode(BaseCode):
 class WaterbodyUseCode(BaseCode):
     class Meta:
         db_table = '"codes"."waterbody_use"'
+
+
+class WaterbodyTypeCode(BaseCode):
+    class Meta:
+        db_table = '"codes"."waterbody_type"'
+
+
+class WaterbodySubstrateCode(BaseCode):
+    class Meta:
+        db_table = '"codes"."waterbody_substrate"'
+
+
+class WindDirectionCode(BaseCode):
+    class Meta:
+        db_table = '"codes"."wind_direction"'
+
+
+class WaterLevelManagement(BaseCode):
+    class Meta:
+        db_table = '"codes"."water_level_management"'

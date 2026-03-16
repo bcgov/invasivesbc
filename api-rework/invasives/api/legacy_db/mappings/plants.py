@@ -14,6 +14,18 @@ from api.models.activity import (
     TerrestrialPlantObservationContext,
     TerrestrialVoucherSpecimen,
     SpecificUse,
+    AquaticPlantObservationEntry,
+    AquaticPlantObservationContext,
+    WaterbodyUse,
+    WaterbodyContext,
+    WaterbodyAdjacentLandUse,
+    WaterbodySubstrateType,
+    WaterbodyOutflowSeasonal,
+    WaterbodyOutflowPermanent,
+    WaterbodyInflowSeasonal,
+    WaterbodyInflowPermanent,
+    WaterbodyLevelManagement,
+    ShorelineTypes,
 )
 from api.models.codes import (
     AspectCode,
@@ -24,9 +36,17 @@ from api.models.codes import (
     SoilTextureCode,
     SpecificUseCode,
     TerrestrialPlantCode,
+    AquaticPlantCode,
+    AdjacentLandUseCode,
+    WaterbodyUseCode,
+    WaterbodyFlowCode,
+    WaterbodyFlowSeasonalCode,
+    WaterbodyTypeCode,
+    WaterbodySubstrateCode,
+    WaterLevelManagement,
+    ShorelineTypeCode,
 )
 from api.models.enums import ObservationType
-from api.protocol.activity.api import activity_search
 
 
 def add_voucher_specimen(
@@ -201,6 +221,178 @@ def add_subtype_payload_for_plant_terrestrial_observation(
             ),
             invasive_plant=(
                 TerrestrialPlantCode.objects.get(code=plant.invasive_plant_code)
+                if plant.invasive_plant_code is not None
+                else None
+            ),
+        )
+
+        if plant.voucher_specimen_collection_information is not None:
+            add_voucher_specimen(new, old, plant)
+
+
+def add_aquatic_plant_observation_information(new: Activity, old: LegacyActivity):
+    old_information = (
+        old.activity_payload.form_data.activity_subtype_data.Observation_PlantAquatic_Information
+    )
+
+    AquaticPlantObservationContext.objects.create(
+        activity=new,
+        suitable_for_biocontrol=old_information.suitable_for_biocontrol_agent,
+    )
+
+
+def add_shoreline_types(new: Activity, old: LegacyActivity):
+    st_data = old.activity_payload.form_data.activity_subtype_data.ShorelineTypes
+
+    if st_data is None:
+        if new.migration_remarks is None:
+            new.migration_remarks = ""
+        new.migration_remarks += "Shoreline type data on legacy activity is null\n\n"
+        return
+
+    for shoreline in st_data:
+        ShorelineTypes.objects.create(
+            activity=new,
+            shoreline_type=ShorelineTypeCode.objects.get(code=shoreline.shoreline_type),
+            percent_covered=shoreline.percent_covered,
+        )
+
+
+def add_waterbody_data(new: Activity, old: LegacyActivity):
+    wb_data = old.activity_payload.form_data.activity_subtype_data.WaterbodyData
+    wq_data = old.activity_payload.form_data.activity_subtype_data.WaterQuality
+
+    if wb_data is None:
+        if new.migration_remarks is None:
+            new.migration_remarks = ""
+        new.migration_remarks += "Legacy activity does not provide waterbody data\n\n"
+        return
+
+    WaterbodyContext.objects.create(
+        activity=new,
+        name_gazetted=wb_data.waterbody_name_gazetted,
+        name_local=wb_data.waterbody_name_local,
+        access=wb_data.waterbody_access,
+        type=(
+            WaterbodyTypeCode.objects.get(code=wb_data.waterbody_type)
+            if wb_data.waterbody_type is not None
+            else None
+        ),
+        secchi_depth=(
+            wq_data.secchi_depth
+            if wq_data is not None and wq_data.secchi_depth is not None
+            else None
+        ),
+        colour=(
+            wq_data.water_colour
+            if wq_data is not None and wq_data.water_colour is not None
+            else (wb_data.water_colour if wb_data.water_colour is not None else None)
+        ),
+        tidal_influence=wb_data.tidal_influence,
+        comment=wb_data.comment,
+    )
+
+    if wb_data.adjacent_land_use is not None:
+        for code in wb_data.adjacent_land_use.split(","):
+            WaterbodyAdjacentLandUse.objects.create(
+                activity=new,
+                waterbody_adjacent_land_use=AdjacentLandUseCode.objects.get(code=code),
+            )
+
+    if wb_data.water_level_management:
+        wlm = wb_data.water_level_management
+        if wlm == "Pumping Station":
+            wlm = "Station"
+
+            WaterbodyLevelManagement.objects.create(
+                activity=new,
+                waterlevel_management=WaterLevelManagement.objects.get(code=wlm),
+            )
+
+    if wb_data.waterbody_use is not None:
+        for code in wb_data.waterbody_use.split(","):
+            WaterbodyUse.objects.create(
+                activity=new,
+                waterbody_use=WaterbodyUseCode.objects.get(code=code),
+            )
+    else:
+        if new.migration_remarks is None:
+            new.migration_remarks = ""
+        new.migration_remarks += "Waterbody use code was null on legacy activity"
+
+    if wb_data.substrate_type is not None:
+        for code in wb_data.substrate_type.split(","):
+            WaterbodySubstrateType.objects.create(
+                activity=new,
+                substrate_type=WaterbodySubstrateCode.objects.get(code=code),
+            )
+
+    if wb_data.outflow_other is not None:
+        WaterbodyOutflowSeasonal.objects.create(
+            activity=new,
+            flow_code=WaterbodyFlowCode.objects.get(code=wb_data.outflow_other),
+        )
+    if wb_data.outflow is not None:
+        WaterbodyOutflowPermanent.objects.create(
+            activity=new, flow_code=WaterbodyFlowCode.objects.get(code=wb_data.outflow)
+        )
+
+    if wb_data.inflow_other is not None:
+        WaterbodyInflowSeasonal.objects.create(
+            activity=new,
+            flow_code=WaterbodyFlowSeasonalCode.objects.get(code=wb_data.inflow_other),
+        )
+
+    if wb_data.inflow_permanent is not None:
+        WaterbodyInflowPermanent.objects.create(
+            activity=new,
+            flow_code=WaterbodyFlowCode.objects.get(code=wb_data.inflow_permanent),
+        )
+
+
+def add_subtype_payload_for_plant_aquatic_observation(
+    new: Activity, old: LegacyActivity
+):
+
+    add_persons(new, old)
+    add_well_information(new, old)
+    add_aquatic_plant_observation_information(new, old)
+
+    add_waterbody_data(new, old)
+
+    if old.activity_payload.form_data.activity_type_data.pre_treatment_observation:
+        PretreatmentObservation.objects.create(
+            activity=new,
+            pre_treatment_observation=old.activity_payload.form_data.activity_type_data.pre_treatment_observation,
+        )
+
+    for plant in old.activity_payload.form_data.activity_subtype_data.AquaticPlants:
+        AquaticPlantObservationEntry.objects.create(
+            activity=new,
+            observation_type=(
+                ObservationType.Positive.value
+                if plant.observation_type == "Positive Observation"
+                else ObservationType.Negative.value
+            ),
+            life_stage=(
+                PlantLifeStageCode.objects.get(code=plant.plant_life_stage_code)
+                if plant.plant_life_stage_code is not None
+                else None
+            ),
+            density=(
+                DensityCode.objects.get(code=plant.invasive_plant_density_code)
+                if plant.invasive_plant_density_code is not None
+                else None
+            ),
+            distribution=(
+                DistributionCode.objects.get(
+                    code=plant.invasive_plant_distribution_code
+                )
+                if plant.invasive_plant_distribution_code is not None
+                else None
+            ),
+            invasive_plant=(
+                AquaticPlantCode.objects.get(code=plant.invasive_plant_code)
                 if plant.invasive_plant_code is not None
                 else None
             ),

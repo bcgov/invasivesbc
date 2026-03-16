@@ -5,6 +5,7 @@ class BiocontrolReleaseTest(BaseActivitySubtypeTest):
 
     fixtures = [
         "test/common/test_invasive_plant_codes",
+        "test/common/test_wind",
         "test/subtypes/monitoring/test_biocontrol_release_monitoring_codes",
         "test/subtypes/monitoring/test_biocontrol_release_monitoring",
         "test/common/test_participants",
