@@ -1,9 +1,10 @@
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
-import { FeatureCollection, Geometry, GeoJSON } from 'geojson';
+import { FeatureCollection, Geometry, GeoJSON, Feature } from 'geojson';
 import { ActivitySubtypeShortLabels } from 'sharedAPI';
 import SuggestedTreatmentId from 'interfaces/SuggestedTreatmentId';
 import { RootState } from 'state/reducers/rootReducer';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
+import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 
 interface TreatmentIdsRequestOnline {
   activity_subtype: ActivitySubtypeShortLabels[];
@@ -40,21 +41,38 @@ class Suggestions {
     `${this.PREFIX}/treatmentIdsRequestOnline`
   );
 
+  /**
+   * Query the current Subtype / Shape to get records of interest in Area
+   */
   static readonly getLinkedRecordIDs = createAsyncThunk(
     `${this.PREFIX}/getLinkedRecordIDs`,
     async (spec: LinkedRecordIdsRequest, { getState }) => {
       const { Configuration, Network }: RootState = getState() as RootState;
       const MOBILE = Configuration.current.build.MOBILE;
-      const OFFLINE = !Network.connected;
-      if (MOBILE && OFFLINE) {
-        //Do the offline thing;
+
+      if (Network.connected) {
+        try {
+          const res = await fetch(`${Configuration.current.runtime.API_V2_BASE}/ids-within-bounds`, {
+            method: 'POST',
+            headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' },
+            body: JSON.stringify(spec)
+          });
+
+          return await res.json();
+        } catch (e) {
+          console.error('Error Occurred, attempting Mobile Cache', e);
+        }
       }
-      const res = await fetch(`${Configuration.current.runtime.API_V2_BASE}/ids-within-bounds`, {
-        method: 'POST',
-        headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' },
-        body: JSON.stringify(spec)
-      });
-      return await res.json();
+      if (MOBILE) {
+        // Fetch Records from Cache [If applicable]
+        const service = await RecordCacheServiceFactory.getPlatformInstance();
+        const overlappingRecords = await service.getRecordIdsOverlappingFeature(spec.bounds as Feature);
+        const treatmentRecords = await service.getPaginatedCachedActivityRecords(overlappingRecords, 0, 10000);
+        return treatmentRecords.map((r) => ({
+          full: r.activity_id,
+          label: `${r.short_id} | ${r.created_by}`
+        }));
+      }
     }
   );
   static readonly treatmentIdsSuccess = createAction<SuggestedTreatmentId[]>(`${this.PREFIX}/treatmentIdsSuccess`);
