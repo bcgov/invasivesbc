@@ -63,7 +63,7 @@ export function MultiSelect<T extends FieldValues>({
             className="select-input"
             classNamePrefix={'select-input'}
           />
-          <ErrorMessage error={error} />
+          <ErrorMessage error={error} label={label} />
         </div>
       )}
     />

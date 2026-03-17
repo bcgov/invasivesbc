@@ -89,9 +89,9 @@ const NewRecordDialog = () => {
     if (mode === 'new') {
       dispatch(FormActions.createNewForm(recordSubtype as ActivitySubtypes));
     } else {
-      dispatch(FormActions.duplicateForm({ subtype: recordSubtype }));
+      dispatch(FormActions.duplicateForm({ subtype: recordSubtype as ActivitySubtypes }));
     }
-    navigate('/Records/HookForm');
+    navigate('/Records/HookForm/new/form');
   };
 
   const handleRecordCategoryChange = (event) => {

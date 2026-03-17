@@ -50,6 +50,7 @@ class CodeViewSet(ViewSet):
         TreatmentEfficacyRatingCode,
         WaterbodyFlowCode,
         WaterbodyFlowSeasonalCode,
+        WaterbodySubstrateCode,
         WaterbodyUseCode,
     ]
 

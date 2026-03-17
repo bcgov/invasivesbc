@@ -42,7 +42,7 @@ class FormActions {
       //Reset record specific details.
       duplicatedForm.created_by = Auth.username;
       duplicatedForm.short_id = ''; // Gets assigned when API receives it.
-      duplicatedForm.date = new Date();
+      duplicatedForm.date = new Date().toISOString().substring(0, 10);
       duplicatedForm.id = crypto.randomUUID();
       if (duplicatedForm.subtype !== subtype) {
         //For mismatched subtype, remove all the subtype_data

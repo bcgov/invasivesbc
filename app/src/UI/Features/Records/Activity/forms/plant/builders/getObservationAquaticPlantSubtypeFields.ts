@@ -5,7 +5,7 @@ import { AquaticPlantObservationSchema } from 'UI/Features/Records/Activity/form
  * Used for Form Creation/Reset
  */
 const getObservationAquaticPlantSubtypeFields = (): AquaticPlantObservationSchema['subtype_data'] => ({
-  adjacent_land_use: [''],
+  adjacent_land_use: [],
   entries: [
     {
       density: '',
@@ -17,19 +17,19 @@ const getObservationAquaticPlantSubtypeFields = (): AquaticPlantObservationSchem
     }
   ],
   pretreatment_observation: '',
-  substrate_type: [''],
-  water_use: [''],
-  waterlevel_management: [''],
+  substrate_type: [],
+  water_use: [],
+  waterlevel_management: [],
   shoreline_types: [
     {
       shoreline_type: '',
       percent_covered: 0
     }
   ],
-  inflow_permanent: [''],
-  inflow_seasonal: [''],
-  outflow_permanent: [''],
-  outflow_seasonal: [''],
+  inflow_permanent: [],
+  inflow_seasonal: [],
+  outflow_permanent: [],
+  outflow_seasonal: [],
   access: '',
   colour: '',
   comment: '',

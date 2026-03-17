@@ -85,7 +85,7 @@ const TreatmentMechPlantTerrestrial = () => {
                 <NumberInput
                   label={'Disposed Material Amount'}
                   {...register(`${basePath}.disposed_material_amount`, { valueAsNumber: true })}
-                  error={errors?.subtype_data?.entries?.[index]?.treated_area_msq}
+                  error={errors?.subtype_data?.entries?.[index]?.disposed_material_amount}
                   width={Width.Half}
                 />
               </Fieldset>
