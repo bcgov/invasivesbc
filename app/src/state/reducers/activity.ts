@@ -43,6 +43,10 @@ interface ActivityState {
   };
   initialized: boolean;
   loading: boolean;
+  suggestions: {
+    jurisdictions: Array<{ label: string; full: string }>;
+    recordsInArea: Array<{ label: string; full: string }>;
+  };
   suggestedJurisdictions: Record<string, any>[];
   biocontrol: {
     plantToAgentMap: Record<string, any>[];
@@ -78,7 +82,11 @@ const initialState: ActivityState = {
   biocontrol: {
     plantToAgentMap: []
   },
-  suggestedJurisdictions: [],
+  suggestedJurisdictions: [], // TODO: REMOVE
+  suggestions: {
+    jurisdictions: [],
+    recordsInArea: []
+  },
   suggestedPersons: [],
   suggestedTreatmentIDs: [],
   activity_copy_buffer: null,
@@ -144,6 +152,9 @@ function createActivityReducer() {
         draftState.suggestedPersons = [...action.payload];
       } else if (Activity.Suggestions.treatmentIdsSuccess.match(action)) {
         draftState.suggestedTreatmentIDs = [...action.payload];
+      } else if (Activity.Suggestions.getLinkedRecordIDs.fulfilled.match(action)) {
+        console.log(action);
+        draftState.suggestions.recordsInArea = action.payload;
       } else if (Activity.createReq.match(action)) {
         const activity_copy_buffer = JSON.parse(JSON.stringify(draftState.activity_copy_buffer));
         Object.assign(draftState, {
