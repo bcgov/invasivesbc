@@ -453,6 +453,12 @@ export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS() {
       const isLinkableRecord = !(yield select(isActivityObservation));
       if (isLinkableRecord) {
         // TODO: Refactor treatment IDs Request to Thunk
+        yield put(
+          Activity.Suggestions.getLinkedRecordIDs({
+            subtype: currentActivity.formType,
+            bounds: currentActivity.geometry?.[0]?.geometry
+          })
+        );
         yield put(Activity.Suggestions.treatmentIdsRequest(currentActivity));
       }
     }
