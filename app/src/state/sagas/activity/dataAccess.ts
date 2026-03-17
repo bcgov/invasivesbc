@@ -438,27 +438,20 @@ export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS() {
   try {
     const currentState: ActivityState = yield select(selectActivity);
     const currentActivity = currentState.activity;
-    let hasSelfIntersections = false;
-    if (
-      currentActivity?.geometry?.[0]?.geometry &&
-      currentActivity?.geometry?.[0]?.geometry?.type !== GeoShapes.Point
-    ) {
-      hasSelfIntersections = kinks(currentActivity?.geometry?.[0]?.geometry).features.length > 0;
-    }
     const wipLinestring = currentActivity?.geometry?.[0]?.geometry?.type === GeoShapes.LineString;
     const reportedAreaLessThanMaxArea =
       currentActivity?.geometry && currentActivity?.form_data?.activity_data?.reported_area < MAX_AREA;
-    if (reportedAreaLessThanMaxArea && !wipLinestring && !hasSelfIntersections) {
+    if (reportedAreaLessThanMaxArea && !wipLinestring) {
       yield put(Activity.Suggestions.jurisdictions(currentActivity.geometry));
       const isLinkableRecord = !(yield select(isActivityObservation));
-      if (isLinkableRecord) {
-        // TODO: Refactor treatment IDs Request to Thunk
+      if (isLinkableRecord && currentState.geometry_details) {
         yield put(
           Activity.Suggestions.getLinkedRecordIDs({
-            subtype: currentActivity.formType,
-            bounds: currentActivity.geometry?.[0]?.geometry
+            subtype: currentState.formType,
+            bounds: currentState.geometry_details.geom.geometry
           })
         );
+        // TODO: Remove this
         yield put(Activity.Suggestions.treatmentIdsRequest(currentActivity));
       }
     }
