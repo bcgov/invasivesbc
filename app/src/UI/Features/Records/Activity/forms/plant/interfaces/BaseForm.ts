@@ -9,7 +9,7 @@ interface BaseForm {
   form_status?: string;
   created_by?: string;
   linked_activities: Array<{
-    short_id: string;
+    label: string;
     full: string;
   }>;
   geom?: Feature;
