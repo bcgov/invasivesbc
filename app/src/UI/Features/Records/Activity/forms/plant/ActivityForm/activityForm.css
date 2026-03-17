@@ -164,7 +164,7 @@ input[type='button']:hover {
 
   .content {
     display: flex;
-    box-sizing: content-box;
+    box-sizing: border-box;
     justify-content: space-around;
     width: 100%;
     flex-wrap: wrap;

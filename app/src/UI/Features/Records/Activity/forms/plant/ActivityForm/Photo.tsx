@@ -37,9 +37,22 @@ const Photo = ({ photo, index, remove }) => {
    */
   const createSafeLink = (dataUri) => {
     try {
-      const [header, base64] = dataUri.split(',');
-      const mime = header.match(/:(.*?);/)[1];
+      const parts = dataUri.split(',');
+      if (parts.length < 2) throw new Error('Invalid Data URI format');
 
+      const header = parts[0];
+      const base64 = parts[1];
+
+      const colonIndex = header.indexOf(':');
+      const semiIndex = header.indexOf(';');
+
+      if (colonIndex === -1 || semiIndex === -1 || semiIndex < colonIndex) {
+        throw new Error('Could not parse MIME type from header');
+      }
+
+      const mime = header.substring(colonIndex + 1, semiIndex);
+
+      // Convert Base64 to Blob
       const binaryStr = atob(base64);
       const len = binaryStr.length;
       const bytes = new Uint8Array(len);
@@ -47,10 +60,11 @@ const Photo = ({ photo, index, remove }) => {
       for (let i = 0; i < len; i++) {
         bytes[i] = binaryStr.charCodeAt(i);
       }
+
       const blob = new Blob([bytes], { type: mime });
       return URL.createObjectURL(blob);
     } catch (e) {
-      console.error('Invalid dynamic image format', e);
+      console.error('Invalid dynamic image format:', e);
       return '#';
     }
   };
