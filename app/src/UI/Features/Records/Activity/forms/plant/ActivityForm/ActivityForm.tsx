@@ -130,7 +130,7 @@ const ActivityForm = () => {
     if (id && formId !== id) {
       dispatch(ActivityActions.loadActivityIfRequired(id));
     }
-  }, [id]);
+  }, [id, formId]);
   /**
    * After Form is loaded,
    *  - Register jurisdiction Validation (applies to Array),
