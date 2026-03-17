@@ -60,7 +60,7 @@ const Photo = ({ photo, index, remove }) => {
       <StyledModal variant="primary" open={isModalOpen} onClose={handleClose}>
         <div className="header">{photo.description}</div>
         <div className="content">
-          <img src={photo.encoded_file} />
+          <img src={photo.encoded_file} alt={photo.description} />
         </div>
         <div className="control">
           <WebOnly>
@@ -72,7 +72,7 @@ const Photo = ({ photo, index, remove }) => {
         </div>
       </StyledModal>
       <div className="photo">
-        <img src={photo.encoded_file} onClick={handleOpen} />
+        <img src={photo.encoded_file} onClick={handleOpen} alt={photo.description} />
       </div>
       <div className="description">
         <p>{photo.description}</p>
