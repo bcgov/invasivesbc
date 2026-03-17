@@ -70,7 +70,7 @@ class Suggestions {
         const treatmentRecords = await service.getPaginatedCachedActivityRecords(overlappingRecords, 0, 10000);
         return treatmentRecords.map((r) => ({
           full: r.activity_id,
-          label: `${r.short_id} | ${r.created_by}`
+          label: `${r.short_id} | ${r.created_by}` // TODO Refactor to include Date when schema changes
         }));
       }
     }
