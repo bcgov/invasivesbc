@@ -80,9 +80,11 @@ function* handle_LOAD_ACTIVITY_IF_REQUIRED(action: PayloadAction<string>) {
   // this replaces an urlChange handler with more specific handling
   const id = action.payload;
   const activityPageState = yield select(selectActivity);
-  if (id && id.length === 36 && activityPageState?.activity?.activity_id !== id) {
+  const isValidIdMismatch =
+    id && id.length === 36 && (activityPageState?.activity?.activity_id !== id || id !== activityPageState.formId);
+  if (isValidIdMismatch) {
     yield put(Activity.get(id));
-    yield put(Activity.getDjango(action.payload));
+    yield put(Activity.getDjango(id));
   }
 }
 

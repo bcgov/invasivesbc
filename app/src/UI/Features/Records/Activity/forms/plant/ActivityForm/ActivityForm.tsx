@@ -123,16 +123,14 @@ const ActivityForm = () => {
     if (!isDirty) return;
     dispatch(FormActions.sendForm({ data, type: 'submission' }));
   };
-  if (id) {
-    dispatch(ActivityActions.loadActivityIfRequired(id));
-  }
+
   const allFormValues = useWatch({ control });
 
   useEffect(() => {
-    if (id) {
+    if (id && formId !== id) {
       dispatch(ActivityActions.loadActivityIfRequired(id));
     }
-  }, [id]);
+  }, [id, formId]);
   /**
    * After Form is loaded,
    *  - Register jurisdiction Validation (applies to Array),

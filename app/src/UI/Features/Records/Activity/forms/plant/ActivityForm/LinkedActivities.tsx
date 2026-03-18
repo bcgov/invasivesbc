@@ -27,7 +27,7 @@ const LinkedActivities = () => {
       })
     );
 
-  const suggestedTreatmentIDs = useSelector((state) => state.ActivityPage.suggestedTreatmentIDs);
+  const suggestedTreatmentRecords = useSelector((state) => state.ActivityPage.suggestions.recordsInArea);
   const isObservationRecord = useSelector(isActivityObservation);
   const dispatch = useDispatch();
   const {
@@ -42,11 +42,11 @@ const LinkedActivities = () => {
     (async () => {
       if (!activities) return;
       const indicesToProcess = activities
-        ?.map((act, idx) => (act.full === act.short_id ? idx : -1))
+        ?.map((act, idx) => (act.full === act.label ? idx : -1))
         .filter((idx) => idx !== -1);
       for (const indices of indicesToProcess) {
-        const { short_id } = activities[indices];
-        const { payload } = await dispatch(FormActions.validateManualLinkedId({ id: short_id }));
+        const { label } = activities[indices];
+        const { payload } = await dispatch(FormActions.validateManualLinkedId({ id: label }));
         if (!payload) {
           const updatedActivities = structuredClone(activities);
           updatedActivities.splice(indices, 1);
@@ -61,19 +61,19 @@ const LinkedActivities = () => {
   if (isObservationRecord) return; // Don't link observation activities to others
   return (
     <Fieldset label={'Related Records'}>
-      <CreatableSelect<FormSchema, { short_id: string; full: string }>
+      <CreatableSelect<FormSchema, { label: string; full: string }>
         name="linked_activities"
         label="Linked Record ID"
-        options={suggestedTreatmentIDs.map(({ label, value }) => ({ short_id: label, full: value }))}
-        labelKey="short_id"
+        options={suggestedTreatmentRecords}
+        labelKey="label"
         valueKey="full"
       />
 
       <ul className="linked-activity-entry">
         {activities?.map((act) => (
           <li key={act.full}>
-            <span>{act.short_id}</span>
-            {act.short_id !== act.full && (
+            <span>{act.label}</span>
+            {act.label !== act.full && (
               <input
                 disabled={disabled}
                 className="control-button"

@@ -4,6 +4,7 @@ from rest_framework.routers import DefaultRouter
 from api.viewsets.activity import ActivityViewSet
 from api.viewsets.code import CodeViewSet
 from api.viewsets.migration import MigrationStatusViewSet
+from api.viewsets.ids_within_bounds import IdsWithinBoundsViewSet
 
 from api.protocol.activity.api import router as activity_router
 
@@ -14,6 +15,7 @@ ROUTER = DefaultRouter(trailing_slash=False)
 ROUTER.register(r"activities", ActivityViewSet, "activity")
 ROUTER.register(r"codes", CodeViewSet, "code")
 ROUTER.register(r"migrations", MigrationStatusViewSet, "migration")
+ROUTER.register(r"ids-within-bounds", IdsWithinBoundsViewSet, "ids-within-bounds")
 
 ninja_api = NinjaAPI()
 ninja_api.add_router("/activities", activity_router)

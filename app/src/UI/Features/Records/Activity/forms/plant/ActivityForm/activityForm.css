@@ -81,6 +81,10 @@ input[type='button']:hover {
         margin: auto;
       }
 
+      input[type='button'] {
+        width: auto;
+      }
+
       &:nth-child(even) {
         background-color: var(--even-list-item-bg-color);
       }
