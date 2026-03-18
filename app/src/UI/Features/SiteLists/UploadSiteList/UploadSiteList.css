@@ -5,13 +5,18 @@
 
 #upload-site-list {
   .content {
+    width: 600px;
+    max-width: 100%;
+
     .form-inputs {
       label {
         margin-right: 5pt;
       }
+
       display: flex;
       justify-content: flex-start;
       flex-direction: column;
+
       div {
         display: flex;
         align-items: center;
@@ -28,11 +33,13 @@
         color: var(--bc-blue);
         padding: 5pt;
         border-radius: 5pt;
+
         &:hover {
           cursor: pointer;
           background-color: #efefef;
         }
       }
+
       .file-name {
         overflow: hidden;
         text-overflow: ellipsis;

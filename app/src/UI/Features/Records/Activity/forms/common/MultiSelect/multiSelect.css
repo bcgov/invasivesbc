@@ -27,7 +27,7 @@
     text-align: left;
     margin-right: 1rem;
     font-size: var(--form-input-font-size);
-    height: var(--form-input-height);
+    min-height: var(--form-input-height);
   }
 
   &.full-width {

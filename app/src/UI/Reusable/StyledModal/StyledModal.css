@@ -1,4 +1,4 @@
-.styled-modal-outter {
+#styled-modal-outter {
   display: flex;
   z-index: 100000000;
   position: fixed;
@@ -14,10 +14,8 @@
 
   .styled-modal {
     --title-control-height: 45px;
-    overflow: hidden;
+
     background-color: white;
-    width: 100%;
-    max-width: 550px;
     box-sizing: border-box;
 
     /* Set Colour Variables depending on Variant Choice */
@@ -43,13 +41,25 @@
       display: flex;
       padding-left: 0.5rem;
       font-size: 1.25rem;
+      box-sizing: border-box;
       text-transform: capitalize;
     }
 
     .content {
+      display: flex;
+      flex-direction: column;
       min-height: 115px;
+      max-height: 80vh;
+      box-sizing: border-box;
       padding: 0.75rem 0.5rem;
       text-align: left;
+      margin: 0;
+
+      img {
+        object-fit: contain;
+        height: 100%;
+        width: 100%;
+      }
     }
 
     .control {
@@ -58,11 +68,21 @@
       height: var(--title-control-height);
       padding: 5pt;
       border-top: 1pt solid #cdcdcd;
-      width: 100%;
       justify-content: flex-end;
 
-      button:not(:first-child) {
+      button:not(:first-child),
+      input[type='button']:not(:first-child) {
         margin-left: 5pt;
+      }
+
+      .close-button {
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        font-size: 26px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
     }
   }
