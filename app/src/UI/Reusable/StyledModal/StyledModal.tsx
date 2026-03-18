@@ -18,7 +18,7 @@ type PropTypes = {
 const StyledModal = ({ open, variant = 'primary', onClose, className = '', children }: PropTypes) => {
   if (!open) return;
   return (
-    <div className="styled-modal-outter" data-testid="styled-modal" onClick={onClose}>
+    <div id="styled-modal-outter" data-testid="styled-modal" onClick={onClose}>
       <div className={`styled-modal ${variant} ${className}`} onClick={(evt) => evt.stopPropagation()}>
         {children}
       </div>
