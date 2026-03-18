@@ -15,7 +15,7 @@ ROUTER = DefaultRouter(trailing_slash=False)
 ROUTER.register(r"activities", ActivityViewSet, "activity")
 ROUTER.register(r"codes", CodeViewSet, "code")
 ROUTER.register(r"migrations", MigrationStatusViewSet, "migration")
-ROUTER.register(r"ids-within-bounds", IdsWithinBoundsViewSet,"ids-within-bounds")
+ROUTER.register(r"ids-within-bounds", IdsWithinBoundsViewSet, "ids-within-bounds")
 
 ninja_api = NinjaAPI()
 ninja_api.add_router("/activities", activity_router)

@@ -6,6 +6,7 @@ from api.models.activity.activity_subtypes import ActivitySubtypes, SubtypePrima
 from api.models.activity import Activity
 import json
 
+
 class IdsWithinBoundsViewSet(viewsets.GenericViewSet):
     queryset = Activity.objects.all()
     serializer_class = LinkedRecordQuerySerializer
@@ -23,13 +24,13 @@ class IdsWithinBoundsViewSet(viewsets.GenericViewSet):
                 pass
 
     def create(self, request):
-        subtype = request.data.get('subtype')
-        bounds = request.data.get('bounds')
+        subtype = request.data.get("subtype")
+        bounds = request.data.get("bounds")
 
         if not bounds:
             return Response(
                 {"error": "The 'bounds' GeoJSON field is required."},
-                status=status.HTTP_400_BAD_REQUEST
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         try:
@@ -46,5 +47,5 @@ class IdsWithinBoundsViewSet(viewsets.GenericViewSet):
         except Exception as e:
             return Response(
                 {"error": f"Invalid Geometry or Query Error: {str(e)}"},
-                status=status.HTTP_400_BAD_REQUEST
+                status=status.HTTP_400_BAD_REQUEST,
             )

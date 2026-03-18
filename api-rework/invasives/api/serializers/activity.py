@@ -147,7 +147,12 @@ class ActivitySerializer(serializers.ModelSerializer):
     def get_linked_activities(self, obj):
         arr = []
         for linked_id in obj.linked_activities.all():
-            arr.append({"label": f"{linked_id.short_id} | {linked_id.date} | {linked_id.created_by}", "full": linked_id.id})
+            arr.append(
+                {
+                    "label": f"{linked_id.short_id} | {linked_id.date} | {linked_id.created_by}",
+                    "full": linked_id.id,
+                }
+            )
         return arr
 
     def get_shape(self, obj: Activity):
