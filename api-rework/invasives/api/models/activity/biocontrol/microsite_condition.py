@@ -14,10 +14,10 @@ class MicrositeCondition(BaseOneToOneActivityTable):
     """
 
     mesoslope_position = models.ForeignKey(
-        MesoslopePositionCode, on_delete=models.PROTECT
+        MesoslopePositionCode, on_delete=models.PROTECT, blank=True, null=True
     )
     site_surface_shape = models.ForeignKey(
-        SiteSurfaceShapeCode, on_delete=models.PROTECT
+        SiteSurfaceShapeCode, on_delete=models.PROTECT, blank=True, null=True
     )
 
     class Meta:

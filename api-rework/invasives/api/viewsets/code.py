@@ -20,6 +20,7 @@ class CodeViewSet(ViewSet):
         AquaticPlantCode,
         AspectCode,
         BioAgentCollectionMethodCode,
+        BioAgentMonitoringMethodCode,
         BioAgentLifeStageCode,
         BiocontrolAgentCode,
         BiocontrolPresenceCode,

@@ -29,7 +29,7 @@ class BiocontrolReleaseTest(BaseActivitySubtypeTest):
         self.assertEqual(mi["stop_time"], "2026-01-02T08:00")
         self.assertEqual(mi["suitable_for_collection"], "No")
         self.assertEqual(mi["biocontrol_agent"], "CHEIURB")
-        self.assertEqual(mi["monitoring_method"], "Cs")
+        self.assertEqual(mi["monitoring_method"], "Ob")
         self.assertEqual(mi["invasive_plant"], "CT")
         self.assertEqual(mi["linear_segment"], "Yes")
         eba = mi["estimated_biological_agents"][0]
