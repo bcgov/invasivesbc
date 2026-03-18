@@ -13,7 +13,6 @@ import {
   noFutureDate,
   noRepeatKey
 } from 'UI/Features/Records/Activity/forms/common/validators';
-import { MouseEvent, TouchEvent, useState } from 'react';
 import ArrayField from 'UI/Features/Records/Activity/forms/common/ArrayField/ArrayField';
 import SubtypeComposite from 'UI/Features/Records/Activity/forms/plant/subtype-component/SubtypeComposite';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
@@ -43,7 +42,6 @@ const Form = () => {
   } = useFormContext<FormSchema>();
   const dispatch = useDispatch();
   const codes = useSelector((state) => state.ActivityPage.formCodes);
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   /**
    * @desc Initiate Mouseclick on Polygon draw icon, alert user to start drawing
    */
@@ -52,9 +50,6 @@ const Form = () => {
     dispatch(Alerts.create(tripAlertMessages.drawToolClicked));
   };
 
-  const handleOpenMenu = (evt: MouseEvent<HTMLElement> | TouchEvent<HTMLElement>) => {
-    setAnchorEl(evt.currentTarget);
-  };
   /**
    * @desc Handler for creating a manual UTM Entry initiated by user
    */
