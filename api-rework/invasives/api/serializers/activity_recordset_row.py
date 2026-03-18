@@ -1,39 +1,7 @@
 from django.contrib.gis.serializers.geojson import JSONSerializer as GeoJSONSerializer
 from rest_framework import serializers
 from api.models.activity.activity import Activity
-from api.models.activity import (
-    ActivitySubtypes,
-    FundingAgency,
-    Jurisdiction,
-    ProjectCode,
-)
-
-class FundingAgencySerializer(serializers.ModelSerializer):
-    invasive_species_agency_code = serializers.CharField(source="agency_id")
-    class Meta:
-        model = FundingAgency
-        fields = ["invasive_species_agency_code"]
-    def to_representation(self, obj):
-        return obj.agency.full
-
-
-class JurisdictionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Jurisdiction
-        fields = ("jurisdiction", "percent_covered")
-
-    def to_representation(self, obj):
-        return f"{obj.jurisdiction.full} ({obj.percent_covered}%)"
-
-
-class ProjectCodeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ProjectCode
-        fields = ["description"]
-
-    def to_representation(self, obj):
-        return obj.description
-
+from api.models.activity import ActivitySubtypes
 
 
 class ActivityRecordsetRowSerializer(serializers.ModelSerializer):
@@ -45,10 +13,10 @@ class ActivityRecordsetRowSerializer(serializers.ModelSerializer):
     species_negative_full = serializers.SerializerMethodField()
     species_treated_full = serializers.SerializerMethodField()
     species_biocontrol_full = serializers.SerializerMethodField()
-    jurisdiction_display = JurisdictionSerializer(source="jurisdiction_set", many=True, read_only=True)
-    project_code = ProjectCodeSerializer(source="projectcode_set", many=True, read_only=True)
-    agency = FundingAgencySerializer(source="fundingagency_set", many=True, read_only=True)
-    updated_by = serializers.CharField(source='created_by', read_only=True)
+    jurisdiction_display = serializers.SerializerMethodField()
+    project_code = serializers.SerializerMethodField()
+    agency = serializers.SerializerMethodField()
+    updated_by = serializers.SerializerMethodField()
     regional_invasive_species_organization_areas = serializers.CharField(source='computed_regional_invasive_species_organization_areas', read_only=True)
     regional_districts = serializers.CharField(source='computed_regional_districts', read_only=True)
     invasive_plant_management_areas = serializers.CharField(source='computed_invasive_plant_management_areas', read_only=True)
@@ -58,9 +26,7 @@ class ActivityRecordsetRowSerializer(serializers.ModelSerializer):
     activity_subtype = serializers.CharField(source='subtype', read_only=True)
     activity_date = serializers.CharField(source='date', read_only=True)
 
-    def get_entry_destination(self, subtype):
-        """Given an Activity Subtype, map to the set where invasive_plant keys will be"""
-        mapping = {
+    PATH_TO_PLANT_MAP = {
             ActivitySubtypes.Observation_Plant_Aquatic.name: 'aquaticplantobservationentry_set',
             ActivitySubtypes.Observation_Plant_Terrestrial.name: 'terrestrialplantobservationentries_set',
             ActivitySubtypes.Treatment_Chemical_Plant_Aquatic.name: '', # TODO when calculations added
@@ -73,10 +39,22 @@ class ActivityRecordsetRowSerializer(serializers.ModelSerializer):
             ActivitySubtypes.Monitoring_Mechanical_Plant_Terrestrial_Aquatic.name: 'terrestrialtreatmentmonitoringentry_set',
             ActivitySubtypes.Biocontrol_Collection.name: 'terrestrialbiocontrolcollectionentry_set',
             ActivitySubtypes.Biocontrol_Release.name: 'terrestrialbiocontrolreleaseentry_set',
-        }
-        record_entry_location = mapping.get(subtype)
-        if record_entry_location:
-            return record_entry_location
+    }
+
+    PATH_TO_AGENT_MAP = {
+        ActivitySubtypes.Biocontrol_Collection.name: {
+            "set": "terrestrialbiocontrolcollectionentry_set",
+            "key": "biological_agent"
+        },
+        ActivitySubtypes.Biocontrol_Release.name: {
+            "set": "terrestrialbiocontrolreleaseentry_set",
+            "key": "biocontrol_agent"
+        },
+        ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial.name: {
+            "set": "terrestrialbiocontroldispersalmonitoringentry_set",
+            "key": "biocontrol_agent"
+        },
+    }
 
     class Meta:
         model = Activity
@@ -102,6 +80,9 @@ class ActivityRecordsetRowSerializer(serializers.ModelSerializer):
             'elevation',
             'batch_id',
         )
+
+    def get_entry_destination(self, subtype):
+        return self.PATH_TO_PLANT_MAP.get(subtype)
 
     def build_response_value(self, values):
         """Join response values to return to client"""
@@ -151,34 +132,25 @@ class ActivityRecordsetRowSerializer(serializers.ModelSerializer):
                 return self.build_response_value(set(plants))
 
     def get_species_biocontrol_full(self, obj):
-        """Transform Biocontrol records into stringified full names"""
-        mapping = {
-            ActivitySubtypes.Biocontrol_Collection.name: {
-                "set": "terrestrialbiocontrolcollectionentry_set",
-                "key": "biological_agent__full"
-            },
-            ActivitySubtypes.Biocontrol_Release.name: {
-                "set": "terrestrialbiocontrolreleaseentry_set",
-                "key": "biocontrol_agent__full"
-            },
-            ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial.name: {
-                "set": "terrestrialbiocontroldispersalmonitoringentry_set",
-                "key": "biocontrol_agent__full"
-            },
-            ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial.name: {
-                "set": "terrestrialbiocontroldispersalmonitoringentry_set",
-                "key": "biocontrol_agent__full"
-            },
-        }
-        destination = mapping.get(obj.subtype)
-        if destination:
-            manager = getattr(obj, destination['set'])
-            agents = manager.values_list(destination['key'], flat=True)
-            return self.build_response_value(agents)
+        """Transform Biocontrol records into stringified agent names"""
+        config = self.PATH_TO_AGENT_MAP.get(obj.subtype)
+        if config:
+            entries = getattr(obj, config['set']).all()
+            agents = [getattr(getattr(e, config['key']), 'full', None) for e in entries]
+            return self.build_response_value(set(agents))
+        return None
 
-    def to_representation(self, obj):
-        rep = super().to_representation(obj)
-        rep['project_code'] = ", ".join(rep.get('project_code', [])) or None
-        rep['jurisdiction_display'] = ", ".join(rep.get('jurisdiction_display', [])) or None
-        rep['agency'] = ", ".join(rep.get('agency', [])) or None
-        return rep
+    def get_jurisdiction_display(self, obj):
+        # Accessing prefetched data in memory
+        items = [f"{j.jurisdiction.full} ({j.percent_covered}%)" for j in obj.jurisdiction_set.all()]
+        return ", ".join(items) or None
+
+    def get_project_code(self, obj):
+        return ", ".join([p.description for p in obj.projectcode_set.all()]) or None
+
+    def get_agency(self, obj):
+        return ", ".join([a.agency.full for a in obj.fundingagency_set.all()]) or None
+
+    def get_updated_by(self, obj):
+        # TODO: Update when Auditing is added
+        return obj.created_by
