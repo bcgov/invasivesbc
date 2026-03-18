@@ -32,7 +32,7 @@ interface TerrestrialPlantObservationSchema extends BaseForm {
     aspect: string;
     slope_percent: string;
     soil_texture: string;
-    specific_use: string;
+    specific_uses: Array<string>;
     suitable_for_biocontrol_agent: string;
   };
 }

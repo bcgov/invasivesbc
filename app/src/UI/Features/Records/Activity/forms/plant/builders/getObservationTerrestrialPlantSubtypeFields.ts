@@ -21,7 +21,7 @@ const getObservationPlantTerrestrialSubtypeFields = (): TerrestrialPlantObservat
   aspect: '',
   slope_percent: '',
   soil_texture: '',
-  specific_use: '',
+  specific_uses: [],
   suitable_for_biocontrol_agent: ''
 });
 
