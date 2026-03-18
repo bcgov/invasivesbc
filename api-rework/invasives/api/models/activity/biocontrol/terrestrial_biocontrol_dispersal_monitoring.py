@@ -1,11 +1,12 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
+
 from api.models.activity import BaseOneToManyActivityTable, ActivitySubtypes
 from api.models.codes.code_tables import (
     BiocontrolAgentCode,
+    BioAgentMonitoringMethodCode,
     TerrestrialPlantCode,
-    BioAgentCollectionMethodCode,
 )
 from api.models.enums import CollectionType, YesNoUnknown
 
@@ -24,14 +25,16 @@ class TerrestrialBiocontrolDispersalMonitoringEntry(BaseOneToManyActivityTable):
     monitoring_type = models.CharField(choices=CollectionType)
     plant_count = models.PositiveIntegerField(null=True, blank=True)
     monitoring_method = models.ForeignKey(
-        BioAgentCollectionMethodCode, on_delete=models.PROTECT
+        BioAgentMonitoringMethodCode, on_delete=models.PROTECT
     )
     count_duration_minutes = models.SmallIntegerField(blank=True, null=True)
     number_of_sweeps = models.PositiveSmallIntegerField(blank=True, null=True)
     start_time = models.DateTimeField()
     stop_time = models.DateTimeField()
     linear_segment = models.CharField(choices=YesNoUnknown, blank=True, null=True)
-    suitable_for_collection = models.CharField(choices=YesNoUnknown)
+    suitable_for_collection = models.CharField(
+        choices=YesNoUnknown, blank=True, null=True
+    )
 
     class Meta:
         db_table = '"activity"."monitoring_biocontrol_dispersal_entries_pt"'

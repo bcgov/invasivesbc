@@ -135,7 +135,7 @@
       "stop_time": "2026-01-02 00:00:00.000 -0800",
       "suitable_for_collection": "No",
       "biocontrol_agent": "CHEIURB",
-      "monitoring_method": "Cs",
+      "monitoring_method": "Ob",
       "invasive_plant": "CT"
     }
   },
@@ -154,7 +154,7 @@
       "stop_time": "2026-01-02 00:00:00.000 -0800",
       "suitable_for_collection": "Yes",
       "biocontrol_agent": "CHEIURB",
-      "monitoring_method": "Cs",
+      "monitoring_method": "Ob",
       "invasive_plant": "CT"
     }
   },

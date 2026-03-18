@@ -18,7 +18,7 @@ class TerrestrialBiocontrolReleaseEntry(BaseOneToManyActivityTable):
     linear_segment = models.CharField(choices=YesNoUnknown)
     mortality = models.PositiveSmallIntegerField()
     agent_source = models.CharField(max_length=16384)
-    collection_date = models.DateTimeField()
+    collection_date = models.DateTimeField(null=True, blank=True)
     plant_collected_from = models.ForeignKey(
         TerrestrialPlantCode,
         on_delete=models.PROTECT,
@@ -41,7 +41,7 @@ class TerrestrialBiocontrolReleaseEntry(BaseOneToManyActivityTable):
 
     def clean(self):
         super().clean()
-        if self.collection_date > timezone.now():
+        if self.collection_date is not None and self.collection_date > timezone.now():
             raise ValidationError(
                 {
                     "start_time_collecting": "Start time for collection cannot occur in the future"

@@ -57,6 +57,7 @@ from api.models.codes import (
     WaterLevelManagement,
     WaterbodyTypeCode,
     WaterbodySubstrateCode,
+    BioAgentMonitoringMethodCode,
 )
 from api.models.migrator import ActivityPendingLink, MigrationError
 from api.models.migrator.activity_migration_status import ActivityMigrationStatus
@@ -120,6 +121,9 @@ class LegacyDB:
 
             case "biocontrol_collection_code":
                 return BioAgentCollectionMethodCode
+
+            case "biocontrol_monitoring_methods_code":
+                return BioAgentMonitoringMethodCode
 
             case "biological_agent_code":
                 return BiocontrolAgentCode
@@ -268,60 +272,70 @@ class LegacyDB:
             code="NW", full="Northwest", code_sort_order=90
         )
 
-        WaterLevelManagement.objects.create(
+        WaterLevelManagement.objects.update_or_create(
             code="None", full="None", code_sort_order=10
         )
-        WaterLevelManagement.objects.create(code="Dam", full="Dam", code_sort_order=20)
-        WaterLevelManagement.objects.create(
+        WaterLevelManagement.objects.update_or_create(
+            code="Dam", full="Dam", code_sort_order=20
+        )
+        WaterLevelManagement.objects.update_or_create(
             code="Other", full="Other", code_sort_order=30
         )
-        WaterLevelManagement.objects.create(
+        WaterLevelManagement.objects.update_or_create(
             code="Station", full="Station", code_sort_order=40
         )
-        WaterLevelManagement.objects.create(
+        WaterLevelManagement.objects.update_or_create(
             code="Weir", full="Weir", code_sort_order=50
         )
 
-        WaterbodyTypeCode.objects.create(code="Bog", full="Bog", code_sort_order=10)
+        WaterbodyTypeCode.objects.update_or_create(
+            code="Bog", full="Bog", code_sort_order=10
+        )
 
-        WaterbodyTypeCode.objects.create(
+        WaterbodyTypeCode.objects.update_or_create(
             code="Confined Pond", full="Confined Pond", code_sort_order=20
         )
-        WaterbodyTypeCode.objects.create(
+        WaterbodyTypeCode.objects.update_or_create(
             code="Discharging Pond", full="Discharging Pond", code_sort_order=30
         )
-        WaterbodyTypeCode.objects.create(code="Ditch", full="Ditch", code_sort_order=40)
-        WaterbodyTypeCode.objects.create(
+        WaterbodyTypeCode.objects.update_or_create(
+            code="Ditch", full="Ditch", code_sort_order=40
+        )
+        WaterbodyTypeCode.objects.update_or_create(
             code="Intertidal", full="Intertidal", code_sort_order=50
         )
-        WaterbodyTypeCode.objects.create(code="Lake", full="Lake", code_sort_order=60)
-        WaterbodyTypeCode.objects.create(code="River", full="River", code_sort_order=70)
-        WaterbodyTypeCode.objects.create(
+        WaterbodyTypeCode.objects.update_or_create(
+            code="Lake", full="Lake", code_sort_order=60
+        )
+        WaterbodyTypeCode.objects.update_or_create(
+            code="River", full="River", code_sort_order=70
+        )
+        WaterbodyTypeCode.objects.update_or_create(
             code="Slough", full="Slough", code_sort_order=80
         )
-        WaterbodyTypeCode.objects.create(
+        WaterbodyTypeCode.objects.update_or_create(
             code="Stream", full="Stream", code_sort_order=90
         )
-        WaterbodyTypeCode.objects.create(
+        WaterbodyTypeCode.objects.update_or_create(
             code="Wetland", full="Wetland", code_sort_order=100
         )
 
-        WaterbodySubstrateCode.objects.create(
+        WaterbodySubstrateCode.objects.update_or_create(
             code="Clay", full="Clay", code_sort_order=10
         )
-        WaterbodySubstrateCode.objects.create(
+        WaterbodySubstrateCode.objects.update_or_create(
             code="Cobble", full="Cobble", code_sort_order=20
         )
-        WaterbodySubstrateCode.objects.create(
+        WaterbodySubstrateCode.objects.update_or_create(
             code="Gravel", full="Gravel", code_sort_order=30
         )
-        WaterbodySubstrateCode.objects.create(
+        WaterbodySubstrateCode.objects.update_or_create(
             code="Rip-rap", full="Rip-rap", code_sort_order=40
         )
-        WaterbodySubstrateCode.objects.create(
+        WaterbodySubstrateCode.objects.update_or_create(
             code="Sand", full="Sand", code_sort_order=50
         )
-        WaterbodySubstrateCode.objects.create(
+        WaterbodySubstrateCode.objects.update_or_create(
             code="Silt/Organic", full="Silt/Organic", code_sort_order=60
         )
 

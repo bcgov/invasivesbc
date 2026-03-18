@@ -8,6 +8,12 @@ import shapely
 from django.db import DatabaseError
 from pydantic_core._pydantic_core import ValidationError
 
+from api.legacy_db.mappings.biocontrol import (
+    add_subtype_payload_for_biocontrol_release,
+    add_subtype_payload_for_biocontrol_collection,
+    add_subtype_payload_for_biocontrol_dispersal_monitoring_terrestrial_plant,
+    add_subtype_payload_for_biocontrol_release_monitoring_terrestrial_plant,
+)
 from api.legacy_db.mappings.plants import (
     add_subtype_payload_for_plant_terrestrial_observation,
     add_subtype_payload_for_plant_aquatic_observation,
@@ -28,13 +34,24 @@ from api.models.enums import PlatformSource
 
 
 def add_subtype_payload(new: Activity, old: LegacyActivity) -> None:
-    # temporarily stripped out
 
     match old.activity_payload.activity_subtype:
         case ActivitySubtypes.Observation_Plant_Terrestrial:
             add_subtype_payload_for_plant_terrestrial_observation(new, old)
         case ActivitySubtypes.Observation_Plant_Aquatic:
             add_subtype_payload_for_plant_aquatic_observation(new, old)
+        case ActivitySubtypes.Biocontrol_Release:
+            add_subtype_payload_for_biocontrol_release(new, old)
+        case ActivitySubtypes.Biocontrol_Collection:
+            add_subtype_payload_for_biocontrol_collection(new, old)
+        case ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial:
+            add_subtype_payload_for_biocontrol_dispersal_monitoring_terrestrial_plant(
+                new, old
+            )
+        case ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial:
+            add_subtype_payload_for_biocontrol_release_monitoring_terrestrial_plant(
+                new, old
+            )
         case _:
             pass
 

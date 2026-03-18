@@ -40,6 +40,12 @@ class BioAgentCollectionMethodCode(BaseCode):
         pass
 
 
+class BioAgentMonitoringMethodCode(BaseCode):
+    class Meta:
+        db_table = '"codes"."bio_agent_monitoring_method"'
+        pass
+
+
 class BioAgentLifeStageCode(BaseCode):
     class Meta:
         db_table = '"codes"."bio_agent_life_stage"'
