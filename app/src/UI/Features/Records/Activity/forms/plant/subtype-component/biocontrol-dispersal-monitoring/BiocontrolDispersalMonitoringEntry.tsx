@@ -108,7 +108,7 @@ const BiocontrolDispersalMonitoringEntry = ({ index, remove }: PropTypes) => {
         name={`subtype_data.entries.${index}.biocontrol_present`}
         options={YesNoBool}
         required
-        rules={{ required: true }}
+        rules={{ validate: (val) => val != undefined }}
         width={Width.Half}
       />
       {biocontrolPresent ? (
