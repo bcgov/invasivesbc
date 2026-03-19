@@ -3,8 +3,6 @@ from .treatment_monitoring_information import (
     TreatmentMonitoringEntriesSerializer,
     AquaticMechanicalMonitoringSerializer,
     TerrestrialTreatmentMonitoringSerializer,
-    AquaticInvasivePlantOnSiteSerializer,
-    TerrestrialInvasivePlantOnSiteSerializer,
 )
 from .nearest_well import NearestWellSerializer
 from .plant_phenology import TargetPlantPhenologySerializer

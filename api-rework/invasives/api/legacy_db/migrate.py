@@ -14,6 +14,13 @@ from api.legacy_db.mappings.biocontrol import (
     add_subtype_payload_for_biocontrol_dispersal_monitoring_terrestrial_plant,
     add_subtype_payload_for_biocontrol_release_monitoring_terrestrial_plant,
 )
+from api.legacy_db.mappings.mechanical_treatment import (
+    add_subtype_payload_for_plant_terrestrial_treatment,
+    add_subtype_payload_for_plant_aquatic_treatment,
+)
+from api.legacy_db.mappings.monitoring import (
+    add_subtype_payload_for_plant_mechanical_monitoring,
+)
 from api.legacy_db.mappings.plants import (
     add_subtype_payload_for_plant_terrestrial_observation,
     add_subtype_payload_for_plant_aquatic_observation,
@@ -52,6 +59,12 @@ def add_subtype_payload(new: Activity, old: LegacyActivity) -> None:
             add_subtype_payload_for_biocontrol_release_monitoring_terrestrial_plant(
                 new, old
             )
+        case ActivitySubtypes.Treatment_Mechanical_Plant_Terrestrial:
+            add_subtype_payload_for_plant_terrestrial_treatment(new, old)
+        case ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic:
+            add_subtype_payload_for_plant_aquatic_treatment(new, old)
+        case ActivitySubtypes.Monitoring_Mechanical_Plant_Terrestrial_Aquatic:
+            add_subtype_payload_for_plant_mechanical_monitoring(new, old)
         case _:
             pass
 

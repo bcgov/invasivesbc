@@ -78,24 +78,6 @@
     }
   },
   {
-    "model": "api.AquaticInvasivePlantOnSite",
-    "pk": 1,
-    "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
-      "invasive_plant": "RC",
-      "invasive_plant_on_site": "ROP"
-    }
-  },
-  {
-    "model": "api.AquaticInvasivePlantOnSite",
-    "pk": 2,
-    "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
-      "invasive_plant": "RC",
-      "invasive_plant_on_site": "SWOS"
-    }
-  },
-  {
     "model": "api.WellEntry",
     "pk": 1,
     "fields": {

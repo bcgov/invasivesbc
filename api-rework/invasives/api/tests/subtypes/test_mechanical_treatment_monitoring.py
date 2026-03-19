@@ -21,33 +21,3 @@ class MechanicalTreatmentMonitoringTest(BaseActivitySubtypeTest):
         self.assertEqual(tmi["invasive_plant"], "JK")
         self.assertEqual(tmi["evidence_of_treatment"], "No")
         self.assertEqual(tmi["management_efficacy_rating"], "6M")
-
-    def test_monitoring_info_keys_serialize_out(self):
-        """
-        Test the Serialization for Monitoring Info correctly changes the invasive plant code depending on type
-        To Pass: One entry must use the invasive_plant_aquatic key, the other uses invasive_plant. Matching semantic of frontend form
-        """
-        payload = [
-            {
-                "comment": None,
-                "evidence_of_treatment": "N",
-                "invasive_plant_aquatic": "RC",
-                "invasive_plants_on_site": ["ROP", "SWOS"],
-                "management_efficacy_rating": "6M",
-                "treatment_pass": "Third",
-                "treatment_efficacy_rating": None,
-            },
-            {
-                "comment": None,
-                "evidence_of_treatment": "N",
-                "invasive_plant": "CT",
-                "invasive_plants_on_site": [],
-                "management_efficacy_rating": "1M",
-                "treatment_efficacy_rating": None,
-                "treatment_pass": "Second",
-            },
-        ]
-
-        response_object = self.fetch_b().json()
-        tmi = response_object["subtype_data"]["entries"]
-        self.assertListEqual(payload, tmi)
