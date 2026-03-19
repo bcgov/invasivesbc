@@ -100,7 +100,27 @@ class FormActions {
   );
 
   static readonly sendForm = createAsyncThunk(`${this.PREFIX}/sendForm`, async ({ type, data }: FormSubmission) => {
-    console.info('Type:', type, 'Data:', data);
+    // Iterates Payload and Converts any {code, full} pairs into the code string.
+    const drillAndSimplify = (data: unknown) => {
+      if (Array.isArray(data)) {
+        return data.map(drillAndSimplify);
+      }
+      if (data !== null && typeof data === 'object') {
+        const isCodeObj = 'code' in data && 'full' in data && Object.keys(data).length === 2;
+        if (isCodeObj) {
+          return data.code;
+        }
+        const result: Record<string, unknown> = {};
+        for (const key in data) {
+          if (Object.hasOwn(data, key)) {
+            result[key] = drillAndSimplify(data[key]);
+          }
+        }
+        return result;
+      }
+      return data;
+    };
+    console.info('Type:', type, 'Data:', drillAndSimplify(data));
     // TODO: Add API Call, Return Short ID generated from form, branch Draft/Submission logic'
     return '12PTO12345678';
   });
