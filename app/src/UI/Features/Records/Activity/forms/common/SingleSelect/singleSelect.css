@@ -11,7 +11,7 @@
     width: 100%;
     text-align: left;
     font-size: var(--form-input-font-size);
-    height: var(--form-input-height);
+    min-height: var(--form-input-height);
   }
 
   .top {
