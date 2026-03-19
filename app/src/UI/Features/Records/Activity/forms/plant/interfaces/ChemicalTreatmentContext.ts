@@ -17,6 +17,8 @@ interface ApplicationRateHerbicide extends BaseHerbicide {
 }
 interface ProductApplicationRate {
   herbicide: Array<ApplicationRateHerbicide>;
+  delivery_rate: number;
+  application_rate: number;
   amount_mix_used_l: number;
 }
 
@@ -29,10 +31,10 @@ interface ProductDilutionRate {
 interface TankMixChemicalContext extends BaseChemicalContext, ProductApplicationRate {
   tank_mix: true;
 }
-interface ChemicalContextDilution extends BaseChemicalContext, ProductApplicationRate {
+interface ChemicalContextDilution extends BaseChemicalContext, ProductDilutionRate {
   tank_mix: false;
 }
-interface ChemicalContextApplicationRate extends BaseChemicalContext, ProductDilutionRate {
+interface ChemicalContextApplicationRate extends BaseChemicalContext, ProductApplicationRate {
   tank_mix: false;
 }
 
