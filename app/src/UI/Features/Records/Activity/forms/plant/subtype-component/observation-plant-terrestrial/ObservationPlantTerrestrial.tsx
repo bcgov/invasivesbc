@@ -10,6 +10,7 @@ import { TerrestrialPlantObservationSchema } from 'UI/Features/Records/Activity/
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
 import { ActivitySubtypes } from 'sharedAPI';
+import MultiSelect from 'UI/Features/Records/Activity/forms/common/MultiSelect/MultiSelect';
 
 const ObservationPlantTerrestrial = () => {
   const ROOT = 'subtype_data';
@@ -34,10 +35,10 @@ const ObservationPlantTerrestrial = () => {
           width={Width.Half}
           name={`${ROOT}.soil_texture`}
         />
-        <SingleSelect
+        <MultiSelect
           label={'Specific Use'}
           options={codes?.SpecificUseCode}
-          name={`${ROOT}.specific_use`}
+          name={`${ROOT}.specific_uses`}
           required
           tooltip={tooltips.plant.terrestrial_specific_use}
           rules={{ required: true }}
