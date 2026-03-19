@@ -26,8 +26,8 @@ const SubtypeComposite = () => {
     [ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial]: <BiocontrolReleaseMonitoring />,
     [ActivitySubtypes.Treatment_Mechanical_Plant_Terrestrial]: <TreatmentMechPlantTerrestrial />,
     [ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic]: <TreatmentMechPlantAquatic />,
-    [ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial]: <TreatmentChemicalPlant type={'terrestrial'} />,
-    [ActivitySubtypes.Treatment_Chemical_Plant_Aquatic]: <TreatmentChemicalPlant type={'aquatic'} />,
+    [ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial]: <TreatmentChemicalPlant />,
+    [ActivitySubtypes.Treatment_Chemical_Plant_Aquatic]: <TreatmentChemicalPlant />,
     [ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial]: <BiocontrolDispersalMonitoring />,
     [ActivitySubtypes.Biocontrol_Collection]: <BiocontrolCollection />,
     [ActivitySubtypes.Biocontrol_Release]: <BiocontrolRelease />

@@ -21,8 +21,14 @@ const getTreatmentChemicalPlantSubtypeFields = (): ChemTreatment['subtype_data']
   ntz_reduction_bool: false,
   rationale_for_ntz_reduction: '',
   additional_unmapped_well_water_bool: false,
-  pest_injury_threshold_determination_bool: true
-  // TODO: Chemical Treatment Details (Pesticides, Type, Herbicides, etc)
+  pest_injury_threshold_determination_bool: true,
+  treatment_context: {
+    tank_mix: false,
+    application_method: '',
+    calculation_type: '',
+    herbicide: [],
+    plants_treated: [{ invasive_plant: '', percent_covered: 100 }]
+  }
 });
 
 export default getTreatmentChemicalPlantSubtypeFields;

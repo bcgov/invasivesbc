@@ -12,3 +12,9 @@ export type { MonitoringChemPlantSchema, MonitoringMechPlantSchema } from './Mec
 export type { BiocontrolReleaseMonitoringSchema } from './BiocontrolReleaseMonitoring';
 export type { FormSchema } from './FormSchema';
 export type { EntryBasePath } from './EntryBasePath';
+export type {
+  ChemicalTreatmentContext,
+  TankMixChemicalContext,
+  ChemicalContextDilution,
+  ChemicalContextApplicationRate
+} from './ChemicalTreatmentContext';

@@ -1,5 +1,5 @@
 import { ActivitySubtypes } from 'sharedAPI';
-import { BaseForm } from './BaseForm';
+import { BaseForm, ChemicalTreatmentContext } from '.';
 
 interface AquaticChemicalTreatmentSchema extends BaseForm {
   subtype: ActivitySubtypes.Treatment_Chemical_Plant_Aquatic;
@@ -23,7 +23,7 @@ interface AquaticChemicalTreatmentSchema extends BaseForm {
     rationale_for_ntz_reduction?: string;
     additional_unmapped_well_water_bool: boolean;
     pest_injury_threshold_determination_bool: boolean;
-    // TODO: Chemical Treatment Details (Pesticides, Type, Herbicides, etc)
+    treatment_context: ChemicalTreatmentContext;
   };
 }
 
