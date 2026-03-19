@@ -2,33 +2,7 @@ from rest_framework import serializers
 from api.models.activity import (
     AquaticTreatmentMonitoringEntry,
     TerrestrialTreatmentMonitoringEntry,
-    AquaticInvasivePlantOnSite,
-    TerrestrialInvasivePlantOnSite,
 )
-
-
-###
-# Invasive Plan on Site serializer
-###
-class BaseInvasivePlantOnSiteSerializer(serializers.ModelSerializer):
-    class Meta:
-        fields = ["invasive_plant_on_site"]
-
-    def to_representation(self, instance):
-        ret = super().to_representation(instance)
-        if ret is not None:
-            return ret["invasive_plant_on_site"]
-        return None
-
-
-class TerrestrialInvasivePlantOnSiteSerializer(BaseInvasivePlantOnSiteSerializer):
-    class Meta(BaseInvasivePlantOnSiteSerializer.Meta):
-        model = TerrestrialInvasivePlantOnSite
-
-
-class AquaticInvasivePlantOnSiteSerializer(BaseInvasivePlantOnSiteSerializer):
-    class Meta(BaseInvasivePlantOnSiteSerializer.Meta):
-        model = AquaticInvasivePlantOnSite
 
 
 ###
@@ -41,57 +15,22 @@ class BaseTreatmentMonitoringSerializer(serializers.ModelSerializer):
             "treatment_pass",
             "comment",
             "invasive_plant",
-            "invasive_plants_on_site",
+            "monitoring_evidence_codes",
             "management_efficacy_rating",
             "treatment_efficacy_rating",
         )
 
 
 class TerrestrialTreatmentMonitoringSerializer(BaseTreatmentMonitoringSerializer):
-    invasive_plants_on_site = serializers.SerializerMethodField()
 
     class Meta(BaseTreatmentMonitoringSerializer.Meta):
         model = TerrestrialTreatmentMonitoringEntry
 
-    def get_invasive_plants_on_site(self, obj):
-        """Search for invasive plants on site matching the record"""
-        activity = getattr(obj, "activity", None)
-        invasive_plant = obj.invasive_plant
-
-        if not activity or not invasive_plant:
-            return None
-
-        try:
-            invasive_plants_on_site = TerrestrialInvasivePlantOnSite.objects.filter(
-                activity=activity, invasive_plant=invasive_plant
-            )
-            return TerrestrialInvasivePlantOnSiteSerializer(
-                invasive_plants_on_site, many=True
-            ).data
-        except TerrestrialInvasivePlantOnSite.DoesNotExist:
-            return None
-
 
 class AquaticMechanicalMonitoringSerializer(BaseTreatmentMonitoringSerializer):
-    invasive_plants_on_site = serializers.SerializerMethodField()
 
     class Meta(BaseTreatmentMonitoringSerializer.Meta):
         model = AquaticTreatmentMonitoringEntry
-
-    def get_invasive_plants_on_site(self, obj):
-        """Search for invasive plants on site matching the record"""
-        activity = getattr(obj, "activity", None)
-        invasive_plant = obj.invasive_plant
-
-        if not activity or not invasive_plant:
-            return None
-
-        invasive_plants_on_site = AquaticInvasivePlantOnSite.objects.filter(
-            activity=activity, invasive_plant=invasive_plant
-        )
-        return AquaticInvasivePlantOnSiteSerializer(
-            invasive_plants_on_site, many=True
-        ).data
 
     def to_representation(self, instance):
         """

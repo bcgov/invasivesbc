@@ -26,8 +26,14 @@ class PlantMonitoringBase(BaseOneToManyActivityTable):
     management_efficacy_rating = models.ForeignKey(
         EfficacyManagementRatingCode, on_delete=models.PROTECT
     )
-    treatment_pass = models.CharField(choices=TreatmentPass)
+    treatment_pass = models.CharField(choices=TreatmentPass, blank=True, null=True)
     comment = models.TextField(max_length=16384, blank=True, null=True)
+
+    monitoring_evidence_codes = models.CharField(
+        blank=True,
+        null=True,
+        db_comment="This should be refactored as an FK, but it is multivalued (comma-separated)",
+    )
 
     class Meta:
         abstract = True
@@ -43,19 +49,20 @@ class PlantMonitoringBase(BaseOneToManyActivityTable):
 
     def clean(self):
         super().clean()
-        if (
-            self.evidence_of_treatment == YesNo.Yes
-            and self.treatment_efficacy_rating is None
-        ):
-            error = "Must include treatment efficacy rating if evidence of treatment is 'Yes'"
-            raise ValidationError(
-                {"treatment_efficacy_rating": error, "evidence_of_treatment": error}
-            )
-        elif (
-            self.evidence_of_treatment == YesNo.No
-            and self.treatment_efficacy_rating is not None
-        ):
-            self.treatment_efficacy_rating = None
+        # temporarily disable this check due to non-conforming existing records
+        # if (
+        #     self.evidence_of_treatment == YesNo.Yes
+        #     and self.treatment_efficacy_rating is None
+        # ):
+        #     error = "Must include treatment efficacy rating if evidence of treatment is 'Yes'"
+        #     raise ValidationError(
+        #         {"treatment_efficacy_rating": error, "evidence_of_treatment": error}
+        #     )
+        # elif (
+        #     self.evidence_of_treatment == YesNo.No
+        #     and self.treatment_efficacy_rating is not None
+        # ):
+        #     self.treatment_efficacy_rating = None
 
 
 class TerrestrialTreatmentMonitoringEntry(PlantMonitoringBase):
