@@ -28,7 +28,10 @@ export function RadioInput<T extends FieldValues>({
   tooltip,
   width
 }: PropTypes<T>) {
-  const { control } = useFormContext<T>();
+  const {
+    control,
+    formState: { disabled }
+  } = useFormContext<T>();
 
   return (
     <Controller
@@ -65,6 +68,7 @@ export function RadioInput<T extends FieldValues>({
                   <li key={optionValue}>
                     <input
                       type="radio"
+                      disabled={disabled}
                       id={`${name}-${optionValue}`}
                       name={name}
                       value={optionValue}
