@@ -109,7 +109,7 @@ const ObservationPlantTerrestrial = () => {
             noRepeatPlants: (val) => noRepeatKey(val, 'invasive_plant', 'Invasive Plant')
           }
         }}
-        renderRow={(index, remove) => <TerrestrialPlantEntry root={ROOT} index={index} remove={remove} />}
+        renderRow={(index) => <TerrestrialPlantEntry root={ROOT} index={index} />}
       />
     </>
   );

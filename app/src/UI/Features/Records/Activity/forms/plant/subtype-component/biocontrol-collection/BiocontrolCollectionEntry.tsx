@@ -1,6 +1,5 @@
 import { useFormContext } from 'react-hook-form';
 import { BiocontrolCollectionSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
-import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
 import { useSelector } from 'utils/use_selector';
 import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
@@ -18,9 +17,8 @@ import DateInput from 'UI/Features/Records/Activity/forms/common/DateInput/DateI
 
 type PropTypes = {
   index: number;
-  remove: (idx: number) => void;
 };
-const BiocontrolCollectionEntry = ({ index, remove }: PropTypes) => {
+const BiocontrolCollectionEntry = ({ index }: PropTypes) => {
   const validateMonitoringStartStopTimes = (_, formValues) => {
     const startTime = formValues.subtype_data?.entries?.[index]?.start_time;
     const stopTime = formValues.subtype_data?.entries?.[index]?.stop_time;
@@ -179,7 +177,6 @@ const BiocontrolCollectionEntry = ({ index, remove }: PropTypes) => {
       <FormSpacer width={Width.Half} />
       <BiocontrolCount index={index} />
       <BiocontrolCount estimate index={index} />
-      <DeleteControl onClick={() => remove(index)} />
     </>
   );
 };

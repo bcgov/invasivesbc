@@ -22,7 +22,7 @@ const MonitoringChemMechPlant = () => {
           noDupeAquaticPlant: (arr) => noRepeatKey(arr, 'invasive_plant_aquatic', 'Aquatic Invasive Plant')
         }
       }}
-      renderRow={(index, remove) => <MonitoringChemMechPlantEntry index={index} remove={remove} />}
+      renderRow={(index) => <MonitoringChemMechPlantEntry index={index} />}
     />
   );
 };

@@ -8,17 +8,15 @@ import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
 import { ObservationType } from 'UI/Features/Records/Activity/forms/enums';
 import CheckboxUI from 'UI/Features/Records/Activity/forms/common/CheckboxUI/CheckboxUI';
-import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
 import VoucherCollection from 'UI/Features/Records/Activity/forms/plant/subtype-component/common/VoucherCollection';
 import FormSpacer from 'UI/Features/Records/Activity/forms/common/FormSpacer/FormSpacer';
 
 interface Props {
   root: string;
   index: number;
-  remove: (index: number) => void;
 }
 
-const AquaticPlantEntry = ({ root, index, remove }: Props) => {
+const AquaticPlantEntry = ({ root, index }: Props) => {
   const {
     register,
     control,
@@ -120,7 +118,6 @@ const AquaticPlantEntry = ({ root, index, remove }: Props) => {
       )}
       <FormSpacer width={Width.Half} />
       {voucherCollected && <VoucherCollection index={index} />}
-      <DeleteControl onClick={() => remove(index)} />
     </>
   );
 };

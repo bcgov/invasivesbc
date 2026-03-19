@@ -54,7 +54,7 @@ const BiocontrolReleaseMonitoring = () => {
               'Entries must contain unique Agents and Plants'
             )
         }}
-        renderRow={(index, remove) => <BiocontrolReleaseMonitoringEntry index={index} remove={remove} />}
+        renderRow={(index) => <BiocontrolReleaseMonitoringEntry index={index} />}
         emptyValue={
           getDefaultFormState(ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial).subtype_data.entries[0]
         }

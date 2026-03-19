@@ -16,7 +16,6 @@ import {
 import ArrayField from 'UI/Features/Records/Activity/forms/common/ArrayField/ArrayField';
 import SubtypeComposite from 'UI/Features/Records/Activity/forms/plant/subtype-component/SubtypeComposite';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
-import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
 import Alerts from 'state/actions/alerts/Alerts';
 import tripAlertMessages from 'constants/alerts/tripAlerts';
 import Prompt from 'state/actions/prompts/Prompt';
@@ -183,7 +182,7 @@ const Form = () => {
           }}
           width={Width.Half}
           emptyValue={{ jurisdiction: '', percent_covered: 0 }}
-          renderRow={(index, remove) => (
+          renderRow={(index) => (
             <>
               <SingleSelect
                 label="Jurisdiction"
@@ -208,7 +207,6 @@ const Form = () => {
                   }
                 })}
               />
-              <DeleteControl onClick={() => remove(index)} />
             </>
           )}
         />
@@ -219,16 +217,13 @@ const Form = () => {
           tooltip={tooltips.basic.projects}
           emptyValue={{ description: '' }}
           width={Width.Half}
-          renderRow={(index, remove) => (
-            <>
-              <TextInput
-                label={'Description'}
-                id={`projects.${index}.description`}
-                {...register(`projects.${index}.description`, { required: true })}
-                error={errors.projects?.[index]?.description}
-              />
-              <DeleteControl onClick={() => remove(index)} />
-            </>
+          renderRow={(index) => (
+            <TextInput
+              label={'Description'}
+              id={`projects.${index}.description`}
+              {...register(`projects.${index}.description`, { required: true })}
+              error={errors.projects?.[index]?.description}
+            />
           )}
         />
 

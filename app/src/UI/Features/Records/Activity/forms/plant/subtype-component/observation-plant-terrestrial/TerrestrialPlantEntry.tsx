@@ -3,7 +3,6 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import { ObservationType } from 'UI/Features/Records/Activity/forms/enums';
-import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
 import { useEffect, useState } from 'react';
 import CheckboxUI from 'UI/Features/Records/Activity/forms/common/CheckboxUI/CheckboxUI';
 import { EntryBasePath, TerrestrialPlantObservationSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
@@ -13,10 +12,9 @@ import VoucherCollection from 'UI/Features/Records/Activity/forms/plant/subtype-
 interface Props {
   root: string;
   index: number;
-  remove: (index: number) => void;
 }
 
-const TerrestrialPlantEntry = ({ root, index, remove }: Props) => {
+const TerrestrialPlantEntry = ({ root, index }: Props) => {
   const {
     control,
     setValue,
@@ -113,7 +111,6 @@ const TerrestrialPlantEntry = ({ root, index, remove }: Props) => {
         </>
       )}
       {voucherCollected && <VoucherCollection index={index} />}
-      <DeleteControl onClick={() => remove(index)} />
     </>
   );
 };

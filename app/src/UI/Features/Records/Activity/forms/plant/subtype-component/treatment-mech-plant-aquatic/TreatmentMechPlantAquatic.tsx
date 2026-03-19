@@ -17,7 +17,6 @@ import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/N
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
 import { DisposedMaterialFormat } from 'UI/Features/Records/Activity/forms/enums';
-import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
 import TextInput from 'UI/Features/Records/Activity/forms/common/TextInput/TextInput';
 
 const TreatmentMechPlantAquatic = () => {
@@ -55,7 +54,7 @@ const TreatmentMechPlantAquatic = () => {
             noRepeatTypes: (val) => noRepeatKey(val, 'shoreline_type', 'Shoreline Type')
           }
         }}
-        renderRow={(index, remove) => (
+        renderRow={(index) => (
           <>
             <SingleSelect
               label="Shoreline Type"
@@ -82,7 +81,6 @@ const TreatmentMechPlantAquatic = () => {
                 }
               })}
             />
-            <DeleteControl onClick={() => remove(index)} />
           </>
         )}
       />
@@ -97,7 +95,7 @@ const TreatmentMechPlantAquatic = () => {
             noRepeatPlants: (val) => noRepeatKey(val, 'invasive_plant', 'Invasive Plant')
           }
         }}
-        renderRow={(index, remove) => {
+        renderRow={(index) => {
           const basePath = `${ROOT}.entries.${index}` as EntryBasePath;
           return (
             <>
@@ -152,7 +150,6 @@ const TreatmentMechPlantAquatic = () => {
                   width={Width.Half}
                 />
               </Fieldset>
-              <DeleteControl onClick={() => remove(index)} />
             </>
           );
         }}

@@ -11,7 +11,6 @@ import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect
 import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
 import { useFormContext } from 'react-hook-form';
 import { DisposedMaterialFormat } from 'UI/Features/Records/Activity/forms/enums';
-import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
 
 const TreatmentMechPlantTerrestrial = () => {
   const ROOT = 'subtype_data';
@@ -34,7 +33,7 @@ const TreatmentMechPlantTerrestrial = () => {
             noRepeatPlants: (val) => noRepeatKey(val, 'invasive_plant', 'Invasive Plant')
           }
         }}
-        renderRow={(index, remove) => {
+        renderRow={(index) => {
           const basePath = `${ROOT}.entries.${index}` as EntryBasePath;
           return (
             <>
@@ -89,7 +88,6 @@ const TreatmentMechPlantTerrestrial = () => {
                   width={Width.Half}
                 />
               </Fieldset>
-              <DeleteControl onClick={() => remove(index)} />
             </>
           );
         }}

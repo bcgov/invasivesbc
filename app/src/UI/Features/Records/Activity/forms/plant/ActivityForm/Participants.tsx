@@ -5,7 +5,6 @@ import ArrayField from 'UI/Features/Records/Activity/forms/common/ArrayField/Arr
 import { minArrayLength, minValue } from '../../common/validators';
 import TextInput from 'UI/Features/Records/Activity/forms/common/TextInput/TextInput';
 import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
-import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
 import getDefaultFormState from '../builders/getDefaultState';
@@ -27,7 +26,7 @@ const Participants = () => {
       tooltip={tooltips.basic.participant}
       emptyValue={getDefaultFormState(subtype).participants[0]}
       rules={{ validate: (val) => minArrayLength(val, 1) }}
-      renderRow={(index, remove) => (
+      renderRow={(index) => (
         <>
           <TextInput
             disabled={disabled}
@@ -53,7 +52,6 @@ const Participants = () => {
               })}
             />
           )}
-          <DeleteControl onClick={() => remove(index)} />
         </>
       )}
     />

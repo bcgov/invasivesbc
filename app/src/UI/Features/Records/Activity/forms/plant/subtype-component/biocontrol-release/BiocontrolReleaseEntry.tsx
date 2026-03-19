@@ -7,7 +7,6 @@ import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/N
 import { useFormContext } from 'react-hook-form';
 import { BiocontrolReleaseSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import { minValue, noFutureDate } from 'UI/Features/Records/Activity/forms/common/validators';
-import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
 import TextInput from 'UI/Features/Records/Activity/forms/common/TextInput/TextInput';
 import DateInput from 'UI/Features/Records/Activity/forms/common/DateInput/DateInput';
 import { useEffect } from 'react';
@@ -17,9 +16,8 @@ import useFilteredBiocontrolCodes from 'UI/Features/Records/Activity/forms/plant
 
 interface PropTypes {
   index: number;
-  remove: (index: number) => void;
 }
-const BiocontrolReleaseEntry = ({ index, remove }: PropTypes) => {
+const BiocontrolReleaseEntry = ({ index }: PropTypes) => {
   const {
     register,
     watch,
@@ -119,7 +117,6 @@ const BiocontrolReleaseEntry = ({ index, remove }: PropTypes) => {
       {/* Biocontrol Agent Count Section (Actuals) */}
       <BiocontrolCount index={index} />
       <BiocontrolCount estimate index={index} />
-      <DeleteControl onClick={() => remove(index)} />
     </>
   );
 };

@@ -1,5 +1,4 @@
 import { useSelector } from 'utils/use_selector';
-import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
 import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
 import { useFormContext } from 'react-hook-form';
 import { BiocontrolReleaseMonitoringSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
@@ -18,9 +17,8 @@ import FormSpacer from 'UI/Features/Records/Activity/forms/common/FormSpacer/For
 
 type PropTypes = {
   index: number;
-  remove: (index: number) => void;
 };
-const BiocontrolReleaseMonitoringEntry = ({ index, remove }: PropTypes) => {
+const BiocontrolReleaseMonitoringEntry = ({ index }: PropTypes) => {
   const {
     register,
     watch,
@@ -240,7 +238,6 @@ const BiocontrolReleaseMonitoringEntry = ({ index, remove }: PropTypes) => {
           <BiocontrolCount estimate extended index={index} />
         </>
       )}
-      <DeleteControl onClick={() => remove(index)} />
     </>
   );
 };

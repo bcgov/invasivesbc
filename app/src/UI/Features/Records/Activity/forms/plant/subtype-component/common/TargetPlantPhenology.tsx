@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
 import ArrayField from 'UI/Features/Records/Activity/forms/common/ArrayField/ArrayField';
-import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
 import { minArrayLength, minValue } from 'UI/Features/Records/Activity/forms/common/validators';
 import { ActivitySubtypes } from 'sharedAPI';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
@@ -65,21 +64,18 @@ const TargetPlantPhenology = () => {
               (getDefaultFormState(ActivitySubtypes.Biocontrol_Release) as BiocontrolReleaseSchema).subtype_data
                 .target_plant_phenology?.target_plant_heights[0]
             }
-            renderRow={(index, remove) => (
-              <>
-                <NumberInput
-                  label="Height"
-                  required
-                  error={errors?.subtype_data?.target_plant_phenology?.target_plant_heights?.[index]?.height_cm}
-                  {...register(`subtype_data.target_plant_phenology.target_plant_heights.${index}.height_cm`, {
-                    required: true,
-                    onChange: handleChange,
-                    valueAsNumber: true,
-                    validate: (val) => minValue(val!, 1)
-                  })}
-                />
-                <DeleteControl onClick={() => remove(index)} />
-              </>
+            renderRow={(index) => (
+              <NumberInput
+                label="Height"
+                required
+                error={errors?.subtype_data?.target_plant_phenology?.target_plant_heights?.[index]?.height_cm}
+                {...register(`subtype_data.target_plant_phenology.target_plant_heights.${index}.height_cm`, {
+                  required: true,
+                  onChange: handleChange,
+                  valueAsNumber: true,
+                  validate: (val) => minValue(val!, 1)
+                })}
+              />
             )}
           />
           <NumberInput

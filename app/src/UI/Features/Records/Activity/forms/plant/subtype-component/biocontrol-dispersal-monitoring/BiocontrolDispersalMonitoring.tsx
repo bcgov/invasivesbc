@@ -26,7 +26,7 @@ const BiocontrolDispersalMonitoring = () => {
             )
         }}
         emptyValue={getDefaultFormState(ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial)}
-        renderRow={(index, remove) => <BiocontrolDispersalMonitoringEntry index={index} remove={remove} />}
+        renderRow={(index) => <BiocontrolDispersalMonitoringEntry index={index} />}
       />
       <TargetPlantPhenology />
     </>

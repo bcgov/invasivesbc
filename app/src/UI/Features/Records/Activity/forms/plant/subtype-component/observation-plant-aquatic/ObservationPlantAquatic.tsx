@@ -10,7 +10,6 @@ import { useFormContext } from 'react-hook-form';
 import MultiSelect from 'UI/Features/Records/Activity/forms/common/MultiSelect/MultiSelect';
 import { checkSum, minArrayLength, noRepeatKey } from 'UI/Features/Records/Activity/forms/common/validators';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
-import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
 import { AquaticPlantObservationSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import AquaticPlantEntry from 'UI/Features/Records/Activity/forms/plant/subtype-component/observation-plant-aquatic/AquaticPlantEntry';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
@@ -149,7 +148,7 @@ const ObservationPlantAquatic = () => {
           (getDefaultFormState(ActivitySubtypes.Observation_Plant_Aquatic) as AquaticPlantObservationSchema)
             .subtype_data.shoreline_types[0]
         }
-        renderRow={(index, remove) => (
+        renderRow={(index) => (
           <>
             <SingleSelect
               label={'Shoreline Type'}
@@ -167,7 +166,6 @@ const ObservationPlantAquatic = () => {
               {...register(`subtype_data.shoreline_types.${index}.percent_covered`, { valueAsNumber: true })}
               width={Width.Half}
             />
-            <DeleteControl onClick={() => remove(index)} />
           </>
         )}
       />
@@ -218,7 +216,7 @@ const ObservationPlantAquatic = () => {
         }}
         // Use builder to get empty entry. Less optimal but keeps declarations in one spot.
         emptyValue={getDefaultFormState(ActivitySubtypes.Observation_Plant_Aquatic).subtype_data.entries[0]}
-        renderRow={(index, remove) => <AquaticPlantEntry root={ROOT} index={index} remove={remove} />}
+        renderRow={(index) => <AquaticPlantEntry root={ROOT} index={index} />}
       />
     </>
   );
