@@ -19,14 +19,11 @@ import CheckboxInput from 'UI/Features/Records/Activity/forms/common/CheckboxInp
 import { maxValue, minValue, noFutureDate } from 'UI/Features/Records/Activity/forms/common/validators';
 import CheckboxUI from 'UI/Features/Records/Activity/forms/common/CheckboxUI/CheckboxUI';
 import { Fragment, useEffect, useState } from 'react';
-
-type PropTypes = {
-  type: 'terrestrial' | 'aquatic';
-};
+import TreatmentChemicalPlantDetails from './TreatmentChemicalPlantDetails';
 
 type ChemTreatment = AquaticChemicalTreatmentSchema | TerrestrialChemicalTreatmentSchema;
 
-const TreatmentChemicalPlant = ({ type }: PropTypes) => {
+const TreatmentChemicalPlant = () => {
   const MAX_ALLOWED_TEMP = 28;
   const MIN_ALLOWED_TEMP = 10;
   const MAX_WIND_SPEED = 9;
@@ -353,7 +350,7 @@ const TreatmentChemicalPlant = ({ type }: PropTypes) => {
         />
       </Fieldset>
 
-      <p>TODO: Calculation Fields for {type}</p>
+      <TreatmentChemicalPlantDetails />
     </>
   );
 };
