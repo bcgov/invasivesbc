@@ -20,79 +20,75 @@ const TreatmentMechPlantTerrestrial = () => {
   } = useFormContext<TerrestrialMechTreatment>();
   const codes = useSelector((state) => state.ActivityPage.formCodes);
   return (
-    <>
-      <ArrayField<TerrestrialMechTreatment, 'subtype_data.entries'>
-        name={'subtype_data.entries'}
-        label="Entries"
-        emptyValue={
-          getDefaultFormState(ActivitySubtypes.Treatment_Mechanical_Plant_Terrestrial).subtype_data.entries[0]
+    <ArrayField<TerrestrialMechTreatment, 'subtype_data.entries'>
+      name={'subtype_data.entries'}
+      label="Entries"
+      emptyValue={getDefaultFormState(ActivitySubtypes.Treatment_Mechanical_Plant_Terrestrial).subtype_data.entries[0]}
+      rules={{
+        validate: {
+          minLength: (val) => minArrayLength(val, 1),
+          noRepeatPlants: (val) => noRepeatKey(val, 'invasive_plant', 'Invasive Plant')
         }
-        rules={{
-          validate: {
-            minLength: (val) => minArrayLength(val, 1),
-            noRepeatPlants: (val) => noRepeatKey(val, 'invasive_plant', 'Invasive Plant')
-          }
-        }}
-        renderRow={(index) => {
-          const basePath = `${ROOT}.entries.${index}` as EntryBasePath;
-          return (
-            <>
+      }}
+      renderRow={(index) => {
+        const basePath = `${ROOT}.entries.${index}` as EntryBasePath;
+        return (
+          <>
+            <SingleSelect
+              label={'Invasive Plant'}
+              options={codes.TerrestrialPlantCode}
+              tooltip={tooltips.plant.invasive_plant}
+              rules={{ required: true }}
+              required
+              name={`${basePath}.invasive_plant`}
+              width={Width.Half}
+            />
+            <NumberInput
+              label={'Treated Area (m2)'}
+              required
+              {...register(`${basePath}.treated_area_msq`, {
+                required: true,
+                valueAsNumber: true,
+                min: { value: 1, message: 'Area must be greater than or equal to 1m' }
+              })}
+              error={errors?.subtype_data?.entries?.[index]?.treated_area_msq}
+              width={Width.Half}
+            />
+            <SingleSelect
+              label={'Mechanical Method'}
+              options={codes?.PlantMechanicalTreatmentMethodCode}
+              rules={{ required: true }}
+              required
+              name={`${basePath}.mechanical_method`}
+              width={Width.Half}
+            />
+            <SingleSelect
+              label={'Disposal Method'}
+              options={codes.DisposalMethodCode}
+              rules={{ required: true }}
+              required
+              name={`${basePath}.disposal_method`}
+              width={Width.Half}
+            />
+            <Fieldset label={'Disposed Material'}>
               <SingleSelect
-                label={'Invasive Plant'}
-                options={codes.TerrestrialPlantCode}
-                tooltip={tooltips.plant.invasive_plant}
-                rules={{ required: true }}
-                required
-                name={`${basePath}.invasive_plant`}
+                label={'Disposed Material Format'}
+                options={DisposedMaterialFormat}
+                tooltip={tooltips.plant.disposed_material_format}
+                name={`${basePath}.disposed_material_format`}
                 width={Width.Half}
               />
               <NumberInput
-                label={'Treated Area (m2)'}
-                required
-                {...register(`${basePath}.treated_area_msq`, {
-                  required: true,
-                  valueAsNumber: true,
-                  min: { value: 1, message: 'Area must be greater than or equal to 1m' }
-                })}
-                error={errors?.subtype_data?.entries?.[index]?.treated_area_msq}
+                label={'Disposed Material Amount'}
+                {...register(`${basePath}.disposed_material_amount`, { valueAsNumber: true })}
+                error={errors?.subtype_data?.entries?.[index]?.disposed_material_amount}
                 width={Width.Half}
               />
-              <SingleSelect
-                label={'Mechanical Method'}
-                options={codes?.PlantMechanicalTreatmentMethodCode}
-                rules={{ required: true }}
-                required
-                name={`${basePath}.mechanical_method`}
-                width={Width.Half}
-              />
-              <SingleSelect
-                label={'Disposal Method'}
-                options={codes.DisposalMethodCode}
-                rules={{ required: true }}
-                required
-                name={`${basePath}.disposal_method`}
-                width={Width.Half}
-              />
-              <Fieldset label={'Disposed Material'}>
-                <SingleSelect
-                  label={'Disposed Material Format'}
-                  options={DisposedMaterialFormat}
-                  tooltip={tooltips.plant.disposed_material_format}
-                  name={`${basePath}.disposed_material_format`}
-                  width={Width.Half}
-                />
-                <NumberInput
-                  label={'Disposed Material Amount'}
-                  {...register(`${basePath}.disposed_material_amount`, { valueAsNumber: true })}
-                  error={errors?.subtype_data?.entries?.[index]?.disposed_material_amount}
-                  width={Width.Half}
-                />
-              </Fieldset>
-            </>
-          );
-        }}
-      />
-    </>
+            </Fieldset>
+          </>
+        );
+      }}
+    />
   );
 };
 export default TreatmentMechPlantTerrestrial;

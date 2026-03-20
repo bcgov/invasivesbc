@@ -59,7 +59,7 @@ const TreatmentChemicalPlantDetails = () => {
 
   const application_method_codes = useMemo(() => {
     if (tank_mix) return codes?.ChemicalApplicationMethodSprayCode;
-    return [...codes?.ChemicalApplicationMethodSprayCode, ...codes?.ChemicalApplicationMethodDirectCode];
+    return [...codes.ChemicalApplicationMethodSprayCode, ...codes.ChemicalApplicationMethodDirectCode];
   }, [tank_mix, codes]);
 
   // Calculation methods available depending on if a tank mix or not
