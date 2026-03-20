@@ -138,7 +138,6 @@ class LiquidHerbicideCode(BaseCode):
         db_table = '"codes"."herbicide_liquid"'
 
 
-
 class MesoslopePositionCode(BaseCode):
     class Meta:
         db_table = '"codes"."mesoslope_position"'
