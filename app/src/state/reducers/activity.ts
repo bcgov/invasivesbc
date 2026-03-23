@@ -1,5 +1,5 @@
 import { Draft } from 'immer';
-import { createNextState } from '@reduxjs/toolkit';
+import { createNextState, isRejectedWithValue } from '@reduxjs/toolkit';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import { Feature } from 'geojson';
 import { ActivitySubtypes } from 'sharedAPI';
@@ -30,6 +30,7 @@ interface ActivityState {
   failCode: number | null;
   formType?: ActivitySubtypes;
   formState?: FormSchema;
+  recordNotFound?: boolean;
   wellsInRecordArea?: TerrestrialChemicalTreatmentSchema['subtype_data']['well_entries'];
   formId?: string;
   geometry_details?: {
@@ -215,9 +216,11 @@ function createActivityReducer() {
       } else if (Activity.refreshFormCodes.fulfilled.match(action)) {
         draftState.formCodes = action.payload;
       } else if (FormActions.createNewForm.match(action)) {
+        // Clear stale formstate if exists.
         delete draftState.formState;
         delete draftState.geometry_details;
         delete draftState.wellsInRecordArea;
+        delete draftState.recordNotFound;
 
         draftState.formId = crypto.randomUUID();
         draftState.formType = action.payload;
@@ -244,10 +247,20 @@ function createActivityReducer() {
       } else if (Activity.get.match(action)) {
         draftState.failCode = null;
         draftState.loading = true;
+      } else if (Activity.getDjango.pending.match(action)) {
+        // Clear Form State at beginning of fetch
+        delete draftState.formState;
+        delete draftState.geometry_details;
+        delete draftState.wellsInRecordArea;
+        delete draftState.formId;
+        delete draftState.formType;
+        delete draftState.recordNotFound;
       } else if (Activity.getDjango.fulfilled.match(action)) {
         draftState.formType = action.payload?.subtype;
         draftState.formId = action.payload?.id;
         draftState.formState = action.payload;
+      } else if (Activity.getDjango.rejected.match(action) && isRejectedWithValue(action) && action.payload === 404) {
+        draftState.recordNotFound = true;
       } else if (Activity.getSuccess.match(action)) {
         const { activity, permissions } = action.payload;
         draftState.activity = { ...activity };
