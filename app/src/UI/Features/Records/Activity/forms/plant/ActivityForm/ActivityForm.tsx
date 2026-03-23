@@ -14,6 +14,7 @@ import Form from './Form';
 import './activityForm.css';
 import Photos from './Photos';
 import FormControl from './FormControl';
+import RecordNotFound from './RecordNotFound/RecordNotFound';
 
 const FORM_UPDATE_THROTTLE_DELAY = 1000; //ms
 const FORM_UPDATE_MAX_DELAY = 5000; //ms
@@ -69,7 +70,7 @@ const ActivityForm = () => {
   const initState = useSelector((state) => state.ActivityPage?.formState);
   const subtype = useSelector((state) => state.ActivityPage?.formType);
   const formId = useSelector((state) => state.ActivityPage?.formId);
-
+  const recordNotFound = useSelector((state) => state.ActivityPage?.recordNotFound);
   // Assign Props to sole variable to pass into FormProvider
   const methods = useForm<FormSchema>({
     mode: 'all',
@@ -86,7 +87,7 @@ const ActivityForm = () => {
     reset,
     resetField,
     setValue,
-    formState: { errors, isDirty, disabled }
+    formState: { isDirty }
   } = methods;
 
   const onSubmit: SubmitHandler<FormSchema> = (data) => {
@@ -136,6 +137,7 @@ const ActivityForm = () => {
     }
   }, [formId]);
 
+  if (recordNotFound) return <RecordNotFound />;
   if (!formId) {
     return (
       <div className="activity-page">
@@ -143,6 +145,7 @@ const ActivityForm = () => {
       </div>
     );
   }
+
   return (
     <div className="activity-page">
       <nav>
