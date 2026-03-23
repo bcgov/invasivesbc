@@ -132,9 +132,7 @@ const ActivityForm = () => {
     }
   }, [id, formId]);
   /**
-   * After Form is loaded,
-   *  - Register jurisdiction Validation (applies to Array),
-   *  - Register geom key (Shape on map, not assigned to component)
+   *  Register geom key (Shape appearing on map, not values assigned to components)
    */
   useEffect(() => {
     register('geom');
@@ -146,7 +144,7 @@ const ActivityForm = () => {
   }, [geometry_details]);
 
   useEffect(() => {
-    // Only sync with redux when user changes something
+    // Only sync with redux when user changes something. Enables users to tab in/out of form section without loss.
     if (isDirty) {
       debouncedFormChange();
     }
@@ -192,7 +190,6 @@ const ActivityForm = () => {
               [Mode.Form]: <Form />,
               [Mode.Photo]: <Photos />
             }[mode]}
-          {/* Submit Button is tied to react-hook-form */}
           <CustomPopover buttonOverrideOptions={{ anchorEl, setAnchorEl }}>
             <div id="form-popover-menu">
               {!isDirty && (
@@ -206,6 +203,7 @@ const ActivityForm = () => {
                   <p>Error(s) in form: ({Object.keys(errors).length})</p>
                 </div>
               )}
+              {/* Submit Button is tied to react-hook-form */}
               <input
                 // Errors don't need to be accounted for in disabling, since the rhf will pan to the error
                 disabled={disabled || !isDirty}

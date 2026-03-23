@@ -99,31 +99,45 @@ class FormActions {
     }
   );
 
-  static readonly sendForm = createAsyncThunk(`${this.PREFIX}/sendForm`, async ({ type, data }: FormSubmission) => {
-    // Iterates Payload and Converts any {code, full} pairs into the code string.
-    const drillAndSimplify = (data: unknown) => {
-      if (Array.isArray(data)) {
-        return data.map(drillAndSimplify);
+  /**
+   * @desc Iterate payload object and convert {code, full} pairs into code strings, reducing payload size.
+   */
+  private static readonly drillAndSimplify = (data: unknown) => {
+    if (Array.isArray(data)) {
+      return data.map(this.drillAndSimplify);
+    }
+    if (data !== null && typeof data === 'object') {
+      const isCodeObj = 'code' in data && 'full' in data && Object.keys(data).length === 2;
+      if (isCodeObj) {
+        return data.code;
       }
-      if (data !== null && typeof data === 'object') {
-        const isCodeObj = 'code' in data && 'full' in data && Object.keys(data).length === 2;
-        if (isCodeObj) {
-          return data.code;
+      const result: Record<string, unknown> = {};
+      for (const key in data) {
+        if (Object.hasOwn(data, key)) {
+          result[key] = this.drillAndSimplify(data[key]);
         }
-        const result: Record<string, unknown> = {};
-        for (const key in data) {
-          if (Object.hasOwn(data, key)) {
-            result[key] = drillAndSimplify(data[key]);
-          }
-        }
-        return result;
       }
-      return data;
-    };
-    console.info('Type:', type, 'Data:', drillAndSimplify(data));
-    // TODO: Add API Call, Return Short ID generated from form, branch Draft/Submission logic'
-    return '12PTO12345678';
-  });
+      return result;
+    }
+    return data;
+  };
+  static readonly sendForm = createAsyncThunk(
+    `${this.PREFIX}/sendForm`,
+    async ({ type, data }: FormSubmission, { dispatch }) => {
+      const simplifiedData = this.drillAndSimplify(data);
+      console.info('Type:', type, 'Data:', simplifiedData);
+      // TODO: Add API Call, Return Short ID generated from form, branch Draft/Submission logic
+      dispatch(
+        Alerts.create({
+          severity: AlertSeverity.Success,
+          subject: AlertSubjects.Form,
+          content: 'Form submitted successfully.',
+          autoClose: 8
+        })
+      );
+      return '12PTO12345678';
+    }
+  );
   static readonly updateState = createAction<FormSchema>(`${this.PREFIX}/updateState`);
 }
 
