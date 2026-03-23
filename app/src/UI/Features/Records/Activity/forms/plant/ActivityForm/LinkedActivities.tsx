@@ -8,9 +8,7 @@ import Activity from 'state/actions/activity/Activity';
 import { isActivityObservation } from 'state/reducers/activity';
 import { useEffect } from 'react';
 import FormActions from 'state/actions/activity/FormActions';
-/*
- * TODO: Check Manually written ID's against API to confirm existence. else cannot copy.
- */
+
 const LinkedActivities = () => {
   const handleCopy = (id: string | number) =>
     dispatch(
