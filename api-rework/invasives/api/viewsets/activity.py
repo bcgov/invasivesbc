@@ -102,7 +102,7 @@ class ActivityViewSet(ReadOnlyModelViewSet):
                 content_type="application/json",
             )
 
-    @action(detail=False, methods=["get"], url_path=r'resolve/(?P<short_id>[^/.]+)')
+    @action(detail=False, methods=["get"], url_path=r"resolve/(?P<short_id>[^/.]+)")
     def resolve(self, _, short_id=None):
         """Search for activity by short_id (case insensitive)"""
         try:
