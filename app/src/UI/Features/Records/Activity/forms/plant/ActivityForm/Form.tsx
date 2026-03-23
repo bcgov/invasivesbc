@@ -1,4 +1,4 @@
-import { useDispatch, useSelector } from 'utils/use_selector';
+import { useDispatch } from 'utils/use_selector';
 import TextInput from 'UI/Features/Records/Activity/forms/common/TextInput/TextInput';
 import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
 import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
@@ -32,6 +32,7 @@ import Employer from './Employers';
 import LinkedActivities from './LinkedActivities';
 import FormSpacer from 'UI/Features/Records/Activity/forms/common/FormSpacer/FormSpacer';
 import { useFormContext } from 'react-hook-form';
+import useSuggestedJurisdictionCodes from 'UI/Features/Records/Activity/forms/plant/hooks/useSuggestedJurisdictionCodes';
 import './activityForm.css';
 
 const Form = () => {
@@ -40,7 +41,7 @@ const Form = () => {
     formState: { disabled, errors }
   } = useFormContext<FormSchema>();
   const dispatch = useDispatch();
-  const codes = useSelector((state) => state.ActivityPage.formCodes);
+  const { jurisdictionCodes } = useSuggestedJurisdictionCodes();
   /**
    * @desc Initiate Mouseclick on Polygon draw icon, alert user to start drawing
    */
@@ -207,7 +208,7 @@ const Form = () => {
             <>
               <SingleSelect
                 label="Jurisdiction"
-                options={codes.JurisdictionCode}
+                options={jurisdictionCodes}
                 tooltip={tooltips.basic.jurisdiction}
                 name={`jurisdictions.${index}.jurisdiction`}
                 rules={{ required: true }}
