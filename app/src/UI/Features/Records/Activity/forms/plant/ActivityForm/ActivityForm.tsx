@@ -1,21 +1,19 @@
 import { useForm, SubmitHandler, useWatch, FormProvider } from 'react-hook-form';
 import { useDispatch, useSelector } from 'utils/use_selector';
-import { MouseEvent, TouchEvent, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import debounce from 'lodash.debounce';
 import FormActions from 'state/actions/activity/FormActions';
-import Prompt from 'state/actions/prompts/Prompt';
 import RecordMetadata from 'UI/Features/Records/Activity/forms/common/RecordMetadata/RecordMetadata';
 import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
 import DebugFormData from 'UI/Features/Records/Activity/forms/debug/DebugFormData';
 import DebugButton from 'UI/Features/Records/Activity/forms/debug/DebugButton';
-import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
-import { Error } from '@mui/icons-material';
 import { NavLink, useParams } from 'react-router';
 import ActivityActions from 'state/actions/activity/Activity';
 import Form from './Form';
 import './activityForm.css';
 import Photos from './Photos';
+import FormControl from './FormControl';
 
 const FORM_UPDATE_THROTTLE_DELAY = 1000; //ms
 const FORM_UPDATE_MAX_DELAY = 5000; //ms
@@ -27,36 +25,8 @@ const ActivityForm = () => {
   }
   // TODO: Replace with Permission Logic
   const [isFormDisabled, setIsFormDisabled] = useState<boolean>(false);
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const { id, mode } = useParams<{ id: string; mode: Mode }>();
 
-  const handleOpenMenu = (evt: MouseEvent<HTMLElement> | TouchEvent<HTMLElement>) => {
-    setAnchorEl(evt.currentTarget);
-  };
-
-  const handleDuplicateForm = () => {
-    dispatch(FormActions.startDuplicateForm());
-  };
-  const saveToDraft = () => {
-    if (!initState || !isDirty) return;
-    dispatch(FormActions.sendForm({ data: initState, type: 'draft' }));
-  };
-
-  const handleClear = () => {
-    dispatch(
-      Prompt.confirmation({
-        prompt: 'Do you want to clear your form? You will lose all progress.',
-        title: 'Clear Form',
-        confirmText: 'Clear form',
-        callback: (confirmation: boolean) => {
-          if (confirmation) {
-            dispatch(FormActions.clearFormState());
-            reset(getDefaultFormState(subtype));
-          }
-        }
-      })
-    );
-  };
   /**
    * Update Geometry related fields when Redux state of Geom changes
    */
@@ -190,45 +160,7 @@ const ActivityForm = () => {
               [Mode.Form]: <Form />,
               [Mode.Photo]: <Photos />
             }[mode]}
-          <CustomPopover buttonOverrideOptions={{ anchorEl, setAnchorEl }}>
-            <div id="form-popover-menu">
-              {!isDirty && (
-                <div className="error-warning">
-                  <p>No Changes Detected</p>
-                </div>
-              )}
-              {Object.keys(errors).length > 0 && (
-                <div className="error-warning">
-                  <Error color="error" />
-                  <p>Error(s) in form: ({Object.keys(errors).length})</p>
-                </div>
-              )}
-              {/* Submit Button is tied to react-hook-form */}
-              <input
-                // Errors don't need to be accounted for in disabling, since the rhf will pan to the error
-                disabled={disabled || !isDirty}
-                form="activity-form"
-                className="control-button"
-                type="submit"
-                value="Submit Form"
-              />
-              <input
-                type="button"
-                className="control-button"
-                disabled={disabled || !isDirty}
-                onClick={saveToDraft}
-                value="Save to Drafts"
-              />
-              <input
-                type="button"
-                className="control-button"
-                disabled={disabled}
-                onClick={handleClear}
-                value="Clear Form"
-              />
-              <input type="button" className="control-button" onClick={handleDuplicateForm} value="Duplicate Form" />
-            </div>
-          </CustomPopover>
+          <FormControl />
 
           {/* Debug Information/Options */}
           <DebugButton
@@ -236,7 +168,6 @@ const ActivityForm = () => {
             onClick={() => setIsFormDisabled((prev) => !prev)}
           />
           <DebugFormData />
-          <input type="button" className="form-popover-anchor" value="Save Menu" onClick={handleOpenMenu} />
         </form>
       </FormProvider>
     </div>
