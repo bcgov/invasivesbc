@@ -247,7 +247,7 @@ function createActivityReducer() {
       } else if (Activity.get.match(action)) {
         draftState.failCode = null;
         draftState.loading = true;
-      } else if (Activity.getDjango.pending.match(action)) {
+      } else if (Activity.getActivity.pending.match(action)) {
         // Clear Form State at beginning of fetch
         delete draftState.formState;
         delete draftState.geometry_details;
@@ -255,11 +255,11 @@ function createActivityReducer() {
         delete draftState.formId;
         delete draftState.formType;
         delete draftState.recordNotFound;
-      } else if (Activity.getDjango.fulfilled.match(action)) {
+      } else if (Activity.getActivity.fulfilled.match(action)) {
         draftState.formType = action.payload?.subtype;
         draftState.formId = action.payload?.id;
         draftState.formState = action.payload;
-      } else if (Activity.getDjango.rejected.match(action) && isRejectedWithValue(action) && action.payload === 404) {
+      } else if (Activity.getActivity.rejected.match(action) && isRejectedWithValue(action) && action.payload === 404) {
         draftState.recordNotFound = true;
       } else if (Activity.getSuccess.match(action)) {
         const { activity, permissions } = action.payload;
