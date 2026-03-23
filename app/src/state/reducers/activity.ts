@@ -299,7 +299,6 @@ function createActivityReducer() {
           well_tag: well.well_id,
           distance: parseInt(well.well_proximity)
         }));
-        console.log(formattedWells);
         draftState.wellsInRecordArea = structuredClone(formattedWells);
         draftState.geometry_details = {
           geom: geometry?.[0] as Feature,
