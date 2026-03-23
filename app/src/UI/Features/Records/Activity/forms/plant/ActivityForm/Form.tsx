@@ -87,6 +87,7 @@ const Form = () => {
           tooltip={tooltips.basic.area_m}
           {...register(`area_m`, {
             required: true,
+            valueAsNumber: true,
             min: { value: 1, message: 'Area must be greater than 1m' },
             max: { value: 500000, message: 'Area cannot exceed 500,000m' }
           })}
@@ -98,7 +99,11 @@ const Form = () => {
           required
           error={errors?.latitude}
           tooltip={tooltips.basic.latitude}
-          {...register(`latitude`, { required: true, validate: (val) => !!val })}
+          {...register(`latitude`, {
+            required: true,
+            valueAsNumber: true,
+            validate: (val) => !!val
+          })}
           width={Width.Third}
         />
         <NumberInput
@@ -107,7 +112,11 @@ const Form = () => {
           required
           tooltip={tooltips.basic.longitude}
           error={errors?.longitude}
-          {...register(`longitude`, { required: true, validate: (val) => !!val })}
+          {...register(`longitude`, {
+            required: true,
+            valueAsNumber: true,
+            validate: (val) => !!val
+          })}
           width={Width.Third}
         />
         <NumberInput
@@ -116,7 +125,11 @@ const Form = () => {
           required
           error={errors?.utm_zone}
           tooltip={tooltips.basic.utm_zone}
-          {...register(`utm_zone`, { required: true, validate: (val) => !!val })}
+          {...register(`utm_zone`, {
+            required: true,
+            valueAsNumber: true,
+            validate: (val) => !!val
+          })}
           width={Width.Third}
         />
         <NumberInput
@@ -125,7 +138,11 @@ const Form = () => {
           required
           tooltip={tooltips.basic.utm_easting}
           error={errors?.utm_easting}
-          {...register(`utm_easting`, { required: true, validate: (val) => !!val })}
+          {...register(`utm_easting`, {
+            required: true,
+            valueAsNumber: true,
+            validate: (val) => !!val
+          })}
           width={Width.Third}
         />
         <NumberInput
@@ -134,7 +151,11 @@ const Form = () => {
           required
           tooltip={tooltips.basic.utm_northing}
           error={errors?.utm_northing}
-          {...register(`utm_northing`, { required: true, validate: (val) => !!val })}
+          {...register(`utm_northing`, {
+            required: true,
+            valueAsNumber: true,
+            validate: (val) => !!val
+          })}
           width={Width.Third}
         />
         <p>To modify or update, please draw a new shape on the Map</p>
@@ -235,7 +256,10 @@ const Form = () => {
           required
           tooltip={tooltips.basic.location_description}
           width={Width.Third}
-          {...register('location_description', { required: true, validate: (val) => minValue(val, 10) })}
+          {...register('location_description', {
+            required: true,
+            validate: (val) => minValue(val, 10)
+          })}
         />
         <TextArea
           width={Width.Third}

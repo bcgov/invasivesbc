@@ -175,6 +175,7 @@ const TreatmentChemicalPlantDetails = () => {
               tooltip={tooltips.plant.chemical.calculation_fields.area_covered}
               {...register(`subtype_data.treatment_context.plants_treated.${index}.percent_covered`, {
                 required: true,
+                valueAsNumber: true,
                 validate: {
                   min: (val) => greaterThan(val, 0),
                   max: (val) => maxValue(val, 100)

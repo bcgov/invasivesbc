@@ -19,7 +19,7 @@ const BiocontrolWeatherConditions = () => {
         required
         tooltip={tooltips.plant.biocontrol.weather.temperature}
         width={Width.Half}
-        {...register('subtype_data.temperature', { required: true })}
+        {...register('subtype_data.temperature', { required: true, valueAsNumber: true })}
       />
       <SingleSelect
         label={'Cloud Cover'}
@@ -44,7 +44,7 @@ const BiocontrolWeatherConditions = () => {
         required
         tooltip={tooltips.plant.biocontrol.weather.wind_speed}
         width={Width.Half}
-        {...register('subtype_data.wind_speed_kmh', { required: true })}
+        {...register('subtype_data.wind_speed_kmh', { required: true, valueAsNumber: true })}
       />
       <SingleSelect
         label={'Wind Direction'}
