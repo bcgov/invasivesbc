@@ -101,3 +101,14 @@ class ActivityViewSet(ReadOnlyModelViewSet):
                 status=500,
                 content_type="application/json",
             )
+
+    @action(detail=False, methods=["get"], url_path=r'resolve/(?P<short_id>[^/.]+)')
+    def resolve(self, _, short_id=None):
+        """Search for activity by short_id (case insensitive)"""
+        try:
+            queryset = self.get_queryset()
+            instance = queryset.get(short_id__iexact=short_id)
+            serializer = self.get_serializer(instance)
+            return Response(serializer.data, status=200)
+        except Activity.DoesNotExist:
+            return Response({"error": "Short ID not found"}, status=404)
