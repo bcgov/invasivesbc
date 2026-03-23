@@ -153,7 +153,6 @@ function createActivityReducer() {
       } else if (Activity.Suggestions.treatmentIdsSuccess.match(action)) {
         draftState.suggestedTreatmentIDs = [...action.payload];
       } else if (Activity.Suggestions.getLinkedRecordIDs.fulfilled.match(action)) {
-        console.log(action);
         draftState.suggestions.recordsInArea = action.payload;
       } else if (Activity.createReq.match(action)) {
         const activity_copy_buffer = JSON.parse(JSON.stringify(draftState.activity_copy_buffer));
