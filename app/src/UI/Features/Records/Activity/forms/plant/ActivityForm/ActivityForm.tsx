@@ -98,10 +98,9 @@ const ActivityForm = () => {
   const allFormValues = useWatch({ control });
 
   useEffect(() => {
-    if (id && formId !== id) {
-      dispatch(ActivityActions.loadActivityIfRequired(id));
-    }
-  }, [id, formId]);
+    if (!id || id.length !== 36) return;
+    dispatch(ActivityActions.loadActivityIfRequired(id));
+  }, [id]);
   /**
    *  Register geom key (Shape appearing on map, not values assigned to components)
    */
