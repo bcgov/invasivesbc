@@ -155,7 +155,7 @@ const TreatmentChemicalPlantDetails = () => {
           required: true,
           validate: {
             minEntries: (val) => minArrayLength(val, 1),
-            sumHundred: (val) => checkSum(val, 100, 'percent_covered'),
+            sumHundred: (val) => checkSum(val, 100, { key: 'percent_covered', readable: 'percent covered' }),
             noRepeatPlant: (val) => noRepeatKey(val, 'invasive_plant', 'Invasive plant')
           }
         }}

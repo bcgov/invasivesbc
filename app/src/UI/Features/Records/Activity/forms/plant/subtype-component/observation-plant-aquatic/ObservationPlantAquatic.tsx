@@ -140,7 +140,7 @@ const ObservationPlantAquatic = () => {
         rules={{
           validate: {
             minLength: (val) => minArrayLength(val, 1),
-            totalPercent: (val) => checkSum(val, 100, 'percent_covered'),
+            totalPercent: (val) => checkSum(val, 100, { key: 'percent_covered', readable: 'percent covered' }),
             noRepeatType: (val) => noRepeatKey(val, 'shoreline_type', 'Shoreline Type')
           }
         }}
