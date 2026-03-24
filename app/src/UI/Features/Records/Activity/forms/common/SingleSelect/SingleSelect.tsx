@@ -1,11 +1,11 @@
 import FormCode from 'interfaces/FormCode';
-import './singleSelect.css';
 import Select from 'react-select';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
-import ErrorMessage from '../ErrorMessage/ErrorMessage';
+import ErrorMessage from 'UI/Features/Records/Activity/forms/common/ErrorMessage/ErrorMessage';
 import { Controller, FieldValues, RegisterOptions, useFormContext, Path } from 'react-hook-form';
-import { getInputWidth, Width } from '../utils';
-import RequiredField from '../RequiredField/RequiredField';
+import { getInputWidth, Width } from 'UI/Features/Records/Activity/forms/common/utils';
+import OptionalField from 'UI/Features/Records/Activity/forms/common/OptionalField/OptionalField';
+import './singleSelect.css';
 
 interface PropTypes<T extends FieldValues> {
   readonly label?: string;
@@ -48,7 +48,7 @@ export function SingleSelect<T extends FieldValues>({
               <div className="top">
                 <label htmlFor={name}>
                   {label}
-                  {required && <RequiredField />}
+                  {!required && <OptionalField />}
                 </label>
                 {tooltip && <TooltipWithIcon tooltipText={tooltip} />}
               </div>

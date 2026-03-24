@@ -1,10 +1,10 @@
 import { Controller, FieldValues, Path, RegisterOptions, useFormContext } from 'react-hook-form';
 import { getInputWidth, Width } from 'UI/Features/Records/Activity/forms/common/utils';
-import RequiredField from 'UI/Features/Records/Activity/forms/common/RequiredField/RequiredField';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
 import ErrorMessage from 'UI/Features/Records/Activity/forms/common/ErrorMessage/ErrorMessage';
 import FormCode from 'interfaces/FormCode';
 import AdvisoryMessage from 'UI/Features/Records/Activity/forms/common/AdvisoryMessage/AdvisoryMessage';
+import OptionalField from 'UI/Features/Records/Activity/forms/common/OptionalField/OptionalField';
 import './radioInput.css';
 
 interface PropTypes<T extends FieldValues> {
@@ -55,7 +55,7 @@ export function RadioInput<T extends FieldValues>({
               <div className="top">
                 <label>
                   {label}
-                  {required && <RequiredField />}
+                  {!required && <OptionalField />}
                 </label>
                 {tooltip && <TooltipWithIcon tooltipText={tooltip} />}
               </div>

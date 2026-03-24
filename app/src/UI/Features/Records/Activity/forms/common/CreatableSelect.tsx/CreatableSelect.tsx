@@ -1,10 +1,11 @@
 import './creatableSelect.css';
 import Creatable from 'react-select/creatable';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
-import ErrorMessage from '../ErrorMessage/ErrorMessage';
+import ErrorMessage from 'UI/Features/Records/Activity/forms/common/ErrorMessage/ErrorMessage';
 import { Controller, FieldValues, RegisterOptions, useFormContext, Path } from 'react-hook-form';
-import { getInputWidth, Width } from '../utils';
-import RequiredField from '../RequiredField/RequiredField';
+import { getInputWidth, Width } from 'UI/Features/Records/Activity/forms/common/utils';
+import OptionalField from 'UI/Features/Records/Activity/forms/common/OptionalField/OptionalField';
+import { cps } from 'redux-saga/effects';
 
 interface PropTypes<T extends FieldValues, TOption> {
   label?: string;
@@ -51,7 +52,7 @@ export function CreatableSelect<T extends FieldValues, TOption>({
             {label && (
               <div className="top">
                 <label htmlFor={name}>
-                  {label} {required && <RequiredField />}
+                  {label} {!required && <OptionalField />}
                 </label>
                 {tooltip && <TooltipWithIcon tooltipText={tooltip} />}
               </div>
