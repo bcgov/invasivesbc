@@ -73,7 +73,7 @@ const ActivityForm = () => {
   const recordNotFound = useSelector((state) => state.ActivityPage?.recordNotFound);
   // Assign Props to sole variable to pass into FormProvider
   const methods = useForm<FormSchema>({
-    mode: 'all',
+    mode: 'onChange',
     disabled: isFormDisabled,
     defaultValues: getDefaultFormState(subtype)
   });
