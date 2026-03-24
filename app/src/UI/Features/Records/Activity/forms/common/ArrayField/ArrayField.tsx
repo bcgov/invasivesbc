@@ -40,21 +40,26 @@ export function ArrayField<T extends FieldValues, Name extends FieldArrayPath<T>
   const getNestedError = (errorObj: any, name: string) =>
     name.split('.').reduce((acc, part) => acc && acc[part], errorObj);
 
-  const debouncedTrigger = useCallback(
-    debounce(() => trigger(name as any), TRIGGER_DELAY),
-    []
-  );
   const {
     control,
     formState: { errors, disabled },
     trigger
   } = useFormContext<T>();
+
   const { fields, append, remove } = useFieldArray({ control, name, rules });
   const watchedValues = useWatch({ control, name: name as any });
+
+  const debouncedTrigger = useCallback(
+    debounce(() => {
+      if (rules) trigger(name as any);
+    }, TRIGGER_DELAY),
+    [name, trigger, rules]
+  );
 
   // Trigger Array level validation when any internal values change
   useEffect(() => {
     if (watchedValues) debouncedTrigger();
+    return () => debouncedTrigger.cancel();
   }, [watchedValues, trigger, name]);
 
   const rootError = getNestedError(errors, name)?.root;
