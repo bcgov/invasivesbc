@@ -74,10 +74,12 @@ export function ArrayField<T extends FieldValues, Name extends FieldArrayPath<T>
             </div>
           ))}
         </div>
-        <button disabled={disabled} type="button" className="add-entry" onClick={() => append(emptyValue)}>
-          + Add {label}
-        </button>
-        {rootError && <ErrorMessage error={rootError} label={label} />}
+        <div className="control">
+          {rootError && <ErrorMessage error={rootError} label={label} />}
+          <button disabled={disabled} type="button" className="add-entry" onClick={() => append(emptyValue)}>
+            + Add {label}
+          </button>
+        </div>
       </div>
     </Fieldset>
   );
