@@ -33,6 +33,7 @@ import LinkedActivities from './LinkedActivities';
 import FormSpacer from 'UI/Features/Records/Activity/forms/common/FormSpacer/FormSpacer';
 import { useFormContext } from 'react-hook-form';
 import useSuggestedJurisdictionCodes from 'UI/Features/Records/Activity/forms/plant/hooks/useSuggestedJurisdictionCodes';
+import AdvisoryMessage from 'UI/Features/Records/Activity/forms/common/AdvisoryMessage/AdvisoryMessage';
 import './activityForm.css';
 
 const Form = () => {
@@ -78,6 +79,11 @@ const Form = () => {
   };
   return (
     <>
+      {!disabled && (
+        <span className="required-advisory">
+          <AdvisoryMessage text={'All fields are required unless otherwise indicated.'} />
+        </span>
+      )}
       {/* Start of Geometry Fields */}
       <Fieldset label={'Geometry Information'}>
         <NumberInput
@@ -166,14 +172,14 @@ const Form = () => {
             className="control-button"
             disabled={disabled}
             onClick={handleDrawStart}
-            value="Click to Start Drawing"
+            value="Start Drawing"
           />
           <input
             type="button"
             className="control-button"
             disabled={disabled}
             onClick={handleManualUTM}
-            value="Click to Enter UTM"
+            value="Enter UTM"
           />
         </div>
       </Fieldset>
@@ -241,7 +247,9 @@ const Form = () => {
           width={Width.Half}
           renderRow={(index) => (
             <TextInput
-              label={'Description'}
+              label="Description"
+              required
+              placeholder="Project Code"
               id={`projects.${index}.description`}
               {...register(`projects.${index}.description`, { required: true })}
               error={errors.projects?.[index]?.description}

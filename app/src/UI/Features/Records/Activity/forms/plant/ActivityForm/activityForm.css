@@ -12,6 +12,10 @@ input[type='button']:hover {
   box-sizing: border-box;
   background-color: #f1f1f1;
 
+  .required-advisory {
+    margin-bottom: 15px;
+  }
+
   nav {
     display: flex;
     flex-direction: 100%;
