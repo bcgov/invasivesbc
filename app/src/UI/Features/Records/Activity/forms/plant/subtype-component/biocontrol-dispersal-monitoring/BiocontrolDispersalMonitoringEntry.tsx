@@ -1,6 +1,6 @@
 import { useSelector } from 'utils/use_selector';
 import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
-import { useFormContext } from 'react-hook-form';
+import { get, useFormContext } from 'react-hook-form';
 import { BiocontrolDispersalMonitoringSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import { useEffect, useMemo } from 'react';
 import { MonitoringType, YesNoBool, YesNoUnknown } from 'UI/Features/Records/Activity/forms/enums';
@@ -134,7 +134,7 @@ const BiocontrolDispersalMonitoringEntry = ({ index }: PropTypes) => {
       {/* Monitoring Type Follow Up Fields */}
       {monitoringType === 'Timed' && (
         <NumberInput
-          error={errors?.subtype_data?.[index]?.count_duration_minutes}
+          error={get(errors, `subtype_data.entries.${index}.count_duration_minutes`)}
           label={'Count duration (Minutes)'}
           required
           tooltip={tooltips.plant.biocontrol.monitoring.count}
@@ -148,7 +148,7 @@ const BiocontrolDispersalMonitoringEntry = ({ index }: PropTypes) => {
       )}
       {monitoringType === 'Count' && (
         <NumberInput
-          error={errors?.subtype_data?.[index]?.plant_count}
+          error={get(errors, `subtype_data.entries.${index}.plant_count`)}
           label={'Plant Count'}
           required
           width={Width.Half}
@@ -171,7 +171,7 @@ const BiocontrolDispersalMonitoringEntry = ({ index }: PropTypes) => {
       />
       {monitoringMethod === SWEEP_COUNT_CODE ? (
         <NumberInput
-          error={errors?.subtype_data?.entries?.[index]?.number_of_sweeps}
+          error={get(errors, `subtype_data.entries.${index}.number_of_sweeps`)}
           label={'Number of Sweeps'}
           required
           width={Width.Half}
@@ -193,7 +193,7 @@ const BiocontrolDispersalMonitoringEntry = ({ index }: PropTypes) => {
       />
       <FormSpacer width={Width.Half} />
       <DateInput
-        error={errors?.subtype_data?.entries?.[index]?.start_time}
+        error={get(errors, `subtype_data.entries.${index}.start_time`)}
         includeTime
         label={'Monitoring Start Time'}
         required
@@ -208,7 +208,7 @@ const BiocontrolDispersalMonitoringEntry = ({ index }: PropTypes) => {
         })}
       />
       <DateInput
-        error={errors?.subtype_data?.entries?.[index]?.stop_time}
+        error={get(errors, `subtype_data.entries.${index}.stop_time`)}
         label={'Monitoring Stop Time'}
         includeTime
         required

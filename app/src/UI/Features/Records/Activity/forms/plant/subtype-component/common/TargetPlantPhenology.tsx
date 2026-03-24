@@ -1,4 +1,4 @@
-import { FieldError, useFormContext, useWatch } from 'react-hook-form';
+import { FieldError, get, useFormContext, useWatch } from 'react-hook-form';
 import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
 import { BiocontrolReleaseSchema, EntryBasePath } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import CheckboxUI from 'UI/Features/Records/Activity/forms/common/CheckboxUI/CheckboxUI';
@@ -68,7 +68,7 @@ const TargetPlantPhenology = () => {
               <NumberInput
                 label="Height"
                 required
-                error={errors?.subtype_data?.target_plant_phenology?.target_plant_heights?.[index]?.height_cm}
+                error={get(errors, `subtype_data.target_plant_phenology.target_plant_heights.${index}.height_cm`)}
                 {...register(`subtype_data.target_plant_phenology.target_plant_heights.${index}.height_cm`, {
                   required: true,
                   onChange: handleChange,
@@ -82,7 +82,7 @@ const TargetPlantPhenology = () => {
             label="Winter Dormant (%)"
             required
             width={Width.Half}
-            error={errors?.subtype_data?.target_plant_phenology?.winter_dormant}
+            error={get(errors, 'subtype_data.target_plant_phenology.winter_dormant')}
             {...register('subtype_data.target_plant_phenology.winter_dormant', {
               required: true,
               onChange: handleChange,
@@ -93,7 +93,7 @@ const TargetPlantPhenology = () => {
             label="Seedlings (%)"
             required
             width={Width.Half}
-            error={errors?.subtype_data?.target_plant_phenology?.seedlings}
+            error={get(errors, 'subtype_data.target_plant_phenology.seedlings')}
             {...register('subtype_data.target_plant_phenology.seedlings', {
               required: true,
               onChange: handleChange,
@@ -104,7 +104,7 @@ const TargetPlantPhenology = () => {
             label="Rosettes (%)"
             required
             width={Width.Half}
-            error={errors?.subtype_data?.target_plant_phenology?.rosettes}
+            error={get(errors, 'subtype_data.target_plant_phenology.rosettes')}
             {...register('subtype_data.target_plant_phenology.rosettes', {
               required: true,
               onChange: handleChange,
@@ -115,7 +115,7 @@ const TargetPlantPhenology = () => {
             label="Bolts (%)"
             required
             width={Width.Half}
-            error={errors?.subtype_data?.target_plant_phenology?.bolts}
+            error={get(errors, 'subtype_data.target_plant_phenology.bolts')}
             {...register('subtype_data.target_plant_phenology.bolts', {
               required: true,
               onChange: handleChange,
@@ -126,7 +126,7 @@ const TargetPlantPhenology = () => {
             label="Flowering (%)"
             required
             width={Width.Half}
-            error={errors?.subtype_data?.target_plant_phenology?.flowering}
+            error={get(errors, 'subtype_data.target_plant_phenology.flowering')}
             {...register('subtype_data.target_plant_phenology.flowering', {
               required: true,
               onChange: handleChange,
@@ -137,7 +137,7 @@ const TargetPlantPhenology = () => {
             label="Seeds Forming (%)"
             required
             width={Width.Half}
-            error={errors?.subtype_data?.target_plant_phenology?.seeds_forming}
+            error={get(errors, 'subtype_data.target_plant_phenology.seeds_forming')}
             {...register('subtype_data.target_plant_phenology.seeds_forming', {
               required: true,
               onChange: handleChange,
@@ -148,7 +148,7 @@ const TargetPlantPhenology = () => {
             label="Senescent (%)"
             required
             width={Width.Half}
-            error={errors?.subtype_data?.target_plant_phenology?.senescent}
+            error={get(errors, 'subtype_data.target_plant_phenology.senescent')}
             {...register('subtype_data.target_plant_phenology.senescent', {
               required: true,
               onChange: handleChange,
@@ -157,7 +157,7 @@ const TargetPlantPhenology = () => {
           />
           {errors?.subtype_data?.target_plant_phenology?.root && (
             <ErrorMessage
-              error={errors.subtype_data.target_plant_phenology.root as FieldError}
+              error={get(errors, 'subtype_data.target_plant_phenology.root') as FieldError}
               label="Phenology Total"
             />
           )}

@@ -1,4 +1,4 @@
-import { useFormContext } from 'react-hook-form';
+import { get, useFormContext } from 'react-hook-form';
 import { useSelector } from 'utils/use_selector';
 import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import ArrayField from 'UI/Features/Records/Activity/forms/common/ArrayField/ArrayField';
@@ -30,7 +30,7 @@ const Participants = () => {
         <>
           <TextInput
             disabled={disabled}
-            error={errors?.participants?.[index]?.name}
+            error={get(errors, `errors.participants.${index}.name`)}
             id={`participants.${index}.name`}
             label={'Name'}
             required

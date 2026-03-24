@@ -1,5 +1,5 @@
 import { useSelector } from 'utils/use_selector';
-import { useFormContext, useWatch } from 'react-hook-form';
+import { get, useFormContext, useWatch } from 'react-hook-form';
 import { AquaticPlantObservationSchema, EntryBasePath } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import { useEffect, useState } from 'react';
 import TextInput from 'UI/Features/Records/Activity/forms/common/TextInput/TextInput';
@@ -55,7 +55,7 @@ const AquaticPlantEntry = ({ root, index }: Props) => {
       <TextInput
         label={'Sample Point ID'}
         tooltip={tooltips.plant.sample_point_id}
-        error={errors?.subtype_data?.entries?.[index]?.sample_point_id}
+        error={get(errors, `subtype_data.entries.${index}.sample_point_id`)}
         {...register(`subtype_data.entries.${index}.sample_point_id`)}
         width={Width.Half}
       />

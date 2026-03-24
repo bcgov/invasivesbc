@@ -32,7 +32,7 @@ import FundingAgency from './FundingAgency';
 import Employer from './Employers';
 import LinkedActivities from './LinkedActivities';
 import FormSpacer from 'UI/Features/Records/Activity/forms/common/FormSpacer/FormSpacer';
-import { useFormContext } from 'react-hook-form';
+import { get, useFormContext } from 'react-hook-form';
 import useSuggestedJurisdictionCodes from 'UI/Features/Records/Activity/forms/plant/hooks/useSuggestedJurisdictionCodes';
 import AdvisoryMessage from 'UI/Features/Records/Activity/forms/common/AdvisoryMessage/AdvisoryMessage';
 import './activityForm.css';
@@ -90,7 +90,7 @@ const Form = () => {
         <NumberInput
           label={'Area (m²)'}
           readOnly
-          error={errors?.area_m}
+          error={get(errors, 'area_m')}
           required
           tooltip={tooltips.basic.area_m}
           {...register(`area_m`, {
@@ -105,7 +105,7 @@ const Form = () => {
           label={'Latitude'}
           readOnly
           required
-          error={errors?.latitude}
+          error={get(errors, 'latitude')}
           tooltip={tooltips.basic.latitude}
           {...register(`latitude`, {
             required: true,
@@ -119,7 +119,7 @@ const Form = () => {
           readOnly
           required
           tooltip={tooltips.basic.longitude}
-          error={errors?.longitude}
+          error={get(errors, 'longitude')}
           {...register(`longitude`, {
             required: true,
             valueAsNumber: true,
@@ -131,7 +131,7 @@ const Form = () => {
           label={'UTM Zone'}
           readOnly
           required
-          error={errors?.utm_zone}
+          error={get(errors, 'utm_zone')}
           tooltip={tooltips.basic.utm_zone}
           {...register(`utm_zone`, {
             required: true,
@@ -145,7 +145,7 @@ const Form = () => {
           readOnly
           required
           tooltip={tooltips.basic.utm_easting}
-          error={errors?.utm_easting}
+          error={get(errors, 'utm_easting')}
           {...register(`utm_easting`, {
             required: true,
             valueAsNumber: true,
@@ -158,7 +158,7 @@ const Form = () => {
           readOnly
           required
           tooltip={tooltips.basic.utm_northing}
-          error={errors?.utm_northing}
+          error={get(errors, 'utm_northing')}
           {...register(`utm_northing`, {
             required: true,
             valueAsNumber: true,
@@ -191,7 +191,7 @@ const Form = () => {
           label={'Date'}
           tooltip={tooltips.basic.date}
           required
-          error={errors?.date}
+          error={get(errors, 'date')}
           {...register('date', { required: true, validate: (val) => noFutureDate(val) })}
           width={Width.Half}
         />
@@ -262,7 +262,7 @@ const Form = () => {
         <TextArea
           label={'Location Description'}
           id="location_description"
-          error={errors?.location_description}
+          error={get(errors, 'location_description')}
           required
           tooltip={tooltips.basic.location_description}
           width={Width.Third}
@@ -274,13 +274,13 @@ const Form = () => {
         <TextArea
           width={Width.Third}
           label={'Access Description'}
-          error={errors?.access_description}
+          error={get(errors, 'access_description')}
           tooltip={tooltips.basic.access_description}
           {...register('access_description')}
         />
         <TextArea
           label={'Comment'}
-          error={errors?.comment}
+          error={get(errors, 'comment')}
           tooltip={tooltips.basic.general_comments}
           width={Width.Third}
           {...register('comment')}

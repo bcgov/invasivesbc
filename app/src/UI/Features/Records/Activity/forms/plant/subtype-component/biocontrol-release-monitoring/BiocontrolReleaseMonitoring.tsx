@@ -5,7 +5,7 @@ import TargetPlantPhenology from 'UI/Features/Records/Activity/forms/plant/subty
 import BiocontrolWeatherConditions from 'UI/Features/Records/Activity/forms/plant/subtype-component/common/WeatherConditions';
 import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
 import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
-import { useFormContext } from 'react-hook-form';
+import { get, useFormContext } from 'react-hook-form';
 import { BiocontrolReleaseMonitoringSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import { distinctEntries, lessThanEqual, greaterThanEqual } from 'UI/Features/Records/Activity/forms/common/validators';
@@ -73,7 +73,7 @@ const BiocontrolReleaseMonitoring = () => {
               label={'Agent Density %'}
               width={Width.Half}
               tooltip={tooltips.plant.spread_results.max_spread_deg}
-              error={errors?.subtype_data?.agent_density}
+              error={get(errors, 'subtype_data.agent_density')}
               {...register('subtype_data.agent_density', {
                 valueAsNumber: true,
                 validate: (val) => lessThanEqual(val, 100)
@@ -83,7 +83,7 @@ const BiocontrolReleaseMonitoring = () => {
               label={'Plant Attack %'}
               width={Width.Half}
               tooltip={tooltips.plant.spread_results.plant_attack}
-              error={errors?.subtype_data?.plant_attack}
+              error={get(errors, 'subtype_data.plant_attack')}
               {...register('subtype_data.plant_attack', {
                 valueAsNumber: true,
                 validate: (val) => lessThanEqual(val, 100)
@@ -94,7 +94,7 @@ const BiocontrolReleaseMonitoring = () => {
               required={isSpreadResultsPresent}
               width={Width.Half}
               tooltip={tooltips.plant.spread_results.max_spread_m}
-              error={errors?.subtype_data?.max_spread_distance_m}
+              error={get(errors, 'subtype_data.max_spread_distance_m')}
               {...register('subtype_data.max_spread_distance_m', {
                 required: isSpreadResultsPresent,
                 valueAsNumber: true,
@@ -106,7 +106,7 @@ const BiocontrolReleaseMonitoring = () => {
               required={isSpreadResultsPresent}
               width={Width.Half}
               tooltip={tooltips.plant.spread_results.max_spread_deg}
-              error={errors?.subtype_data?.max_spread_aspect_deg}
+              error={get(errors, 'subtype_data.max_spread_aspect_deg')}
               {...register('subtype_data.max_spread_aspect_deg', {
                 valueAsNumber: true,
                 required: isSpreadResultsPresent,

@@ -23,7 +23,6 @@ export function SingleSelect<T extends FieldValues>({
   label,
   name,
   options,
-  placeholder = label,
   required = false,
   rules,
   noOptionsMessage,

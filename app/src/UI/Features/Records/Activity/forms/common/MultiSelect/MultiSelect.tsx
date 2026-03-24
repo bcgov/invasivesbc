@@ -23,7 +23,6 @@ export function MultiSelect<T extends FieldValues>({
   label,
   name,
   options,
-  placeholder,
   required = false,
   rules,
   tooltip,

@@ -1,4 +1,4 @@
-import { useFormContext } from 'react-hook-form';
+import { get, useFormContext } from 'react-hook-form';
 import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
 import {
   AquaticChemicalTreatmentSchema,
@@ -150,7 +150,7 @@ const TreatmentChemicalPlant = () => {
       {/* Weather Information */}
       <Fieldset label={'Weather Information'}>
         <NumberInput
-          error={errors?.subtype_data?.temperature_c}
+          error={get(errors, 'subtype_data.temperature_c')}
           label={'Temperature (C°)'}
           required
           tooltip={tooltips.plant.chemical.weather.temperature_c}
@@ -168,7 +168,7 @@ const TreatmentChemicalPlant = () => {
           })}
         />
         <NumberInput
-          error={errors?.subtype_data?.wind_speed_kmh}
+          error={get(errors, 'subtype_data.wind_speed_kmh')}
           label={'Wind Speed (km/h)'}
           required
           tooltip={tooltips.plant.chemical.weather.wind_speed_kmh}
@@ -203,7 +203,7 @@ const TreatmentChemicalPlant = () => {
           }}
         />
         <NumberInput
-          error={errors?.subtype_data?.humidity}
+          error={get(errors, 'subtype_data.humidity')}
           label={'Humidity (%)'}
           tooltip={tooltips.plant.chemical.weather.humidity}
           width={Width.Half}
@@ -249,7 +249,7 @@ const TreatmentChemicalPlant = () => {
           width={Width.Half}
         />
         <TextInput
-          error={errors?.subtype_data?.pesticide_use_permit}
+          error={get(errors, 'subtype_data.pesticide_use_permit')}
           label={'Pesticide Use Permit'}
           tooltip={tooltips.plant.chemical.pesticide_use_permit}
           width={Width.Half}
@@ -267,7 +267,7 @@ const TreatmentChemicalPlant = () => {
           }}
         />
         <TextInput
-          error={errors?.subtype_data?.pest_management_plan_manual}
+          error={get(errors, 'subtype_data.pest_management_plan_manual')}
           label={'PMP # Not in Dropdown'}
           tooltip={tooltips.plant.chemical.pest_management_plan_manual}
           width={Width.Half}
@@ -295,7 +295,7 @@ const TreatmentChemicalPlant = () => {
           width={Width.Half}
         />
         <DateInput
-          error={errors?.subtype_data?.application_start_time}
+          error={get(errors, 'subtype_data.application_start_time')}
           includeTime
           label={'Application Start Time'}
           required
@@ -323,7 +323,7 @@ const TreatmentChemicalPlant = () => {
         {ntz_bool ? (
           <TextInput
             advisoryText="Only the PMP or permit holder may approve an NTZ reduction on public lands."
-            error={errors?.subtype_data?.rationale_for_ntz_reduction}
+            error={get(errors, 'subtype_data.rationale_for_ntz_reduction')}
             label={'Rationale for NTZ Reduction'}
             tooltip={tooltips.plant.chemical.required_under_license}
             required
