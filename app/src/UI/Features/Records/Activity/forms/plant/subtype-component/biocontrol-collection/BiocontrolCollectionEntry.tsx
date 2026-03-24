@@ -6,7 +6,7 @@ import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips'
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
 import { MonitoringType } from 'UI/Features/Records/Activity/forms/enums';
-import { minValue, noFutureDate } from 'UI/Features/Records/Activity/forms/common/validators';
+import { greaterThanEqual, noFutureDate } from 'UI/Features/Records/Activity/forms/common/validators';
 import TextArea from 'UI/Features/Records/Activity/forms/common/TextArea/TextArea';
 import FormSpacer from 'UI/Features/Records/Activity/forms/common/FormSpacer/FormSpacer';
 import BiocontrolCount from 'UI/Features/Records/Activity/forms/plant/subtype-component/common/BiocontrolCount';
@@ -96,7 +96,7 @@ const BiocontrolCollectionEntry = ({ index }: PropTypes) => {
           {...register(`subtype_data.entries.${index}.time_collection_duration_minutes`, {
             required: true,
             valueAsNumber: true,
-            validate: (val) => minValue(val!, 1)
+            validate: (val) => greaterThanEqual(val, 1)
           })}
         />
       )}
@@ -109,7 +109,7 @@ const BiocontrolCollectionEntry = ({ index }: PropTypes) => {
           {...register(`subtype_data.entries.${index}.plant_count_collection`, {
             required: true,
             valueAsNumber: true,
-            validate: (val) => minValue(val!, 1)
+            validate: (val) => greaterThanEqual(val, 1)
           })}
         />
       )}
@@ -131,7 +131,7 @@ const BiocontrolCollectionEntry = ({ index }: PropTypes) => {
           {...register(`subtype_data.entries.${index}.number_of_sweeps`, {
             required: true,
             valueAsNumber: true,
-            validate: (val) => minValue(val!, 1)
+            validate: (val) => greaterThanEqual(val, 1)
           })}
         />
       ) : (
@@ -147,7 +147,7 @@ const BiocontrolCollectionEntry = ({ index }: PropTypes) => {
           deps: [`subtype_data.entries.${index}.end_time_collecting`],
           required: true,
           validate: {
-            noFutureData: (val) => noFutureDate(val!),
+            noFutureData: (val) => noFutureDate(val),
             startBeforeStop: validateMonitoringStartStopTimes
           }
         })}
@@ -162,7 +162,7 @@ const BiocontrolCollectionEntry = ({ index }: PropTypes) => {
           deps: [`subtype_data.entries.${index}.start_time_collecting`],
           required: true,
           validate: {
-            noFutureData: (val) => noFutureDate(val!),
+            noFutureData: (val) => noFutureDate(val),
             startBeforeStop: validateMonitoringStartStopTimes
           }
         })}

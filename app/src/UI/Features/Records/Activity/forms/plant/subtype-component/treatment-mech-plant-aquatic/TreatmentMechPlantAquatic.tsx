@@ -6,10 +6,10 @@ import { ActivitySubtypes } from 'sharedAPI';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
 import {
   checkSum,
-  maxValue,
+  lessThanEqual,
   minArrayLength,
-  minValue,
-  noRepeatKey
+  noRepeatKey,
+  greaterThan
 } from 'UI/Features/Records/Activity/forms/common/validators';
 import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
@@ -76,8 +76,8 @@ const TreatmentMechPlantAquatic = () => {
                 required: true,
                 valueAsNumber: true,
                 validate: {
-                  min: (val) => minValue(val, 1),
-                  max: (val) => maxValue(val, 100)
+                  min: (val) => greaterThan(val, 0),
+                  max: (val) => lessThanEqual(val, 100)
                 }
               })}
             />

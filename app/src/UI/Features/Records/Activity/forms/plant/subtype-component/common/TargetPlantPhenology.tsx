@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
 import ArrayField from 'UI/Features/Records/Activity/forms/common/ArrayField/ArrayField';
-import { minArrayLength, minValue } from 'UI/Features/Records/Activity/forms/common/validators';
+import { minArrayLength, greaterThan } from 'UI/Features/Records/Activity/forms/common/validators';
 import { ActivitySubtypes } from 'sharedAPI';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
 import ErrorMessage from 'UI/Features/Records/Activity/forms/common/ErrorMessage/ErrorMessage';
@@ -73,7 +73,7 @@ const TargetPlantPhenology = () => {
                   required: true,
                   onChange: handleChange,
                   valueAsNumber: true,
-                  validate: (val) => minValue(val!, 1)
+                  validate: (val) => greaterThan(val, 0)
                 })}
               />
             )}

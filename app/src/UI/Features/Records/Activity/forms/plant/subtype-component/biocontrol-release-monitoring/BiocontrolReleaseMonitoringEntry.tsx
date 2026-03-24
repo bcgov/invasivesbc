@@ -7,7 +7,7 @@ import { MonitoringType, YesNoBool, YesNoUnknown } from 'UI/Features/Records/Act
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import MultiSelect from 'UI/Features/Records/Activity/forms/common/MultiSelect/MultiSelect';
 import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
-import { minValue, noFutureDate } from 'UI/Features/Records/Activity/forms/common/validators';
+import { greaterThanEqual, noFutureDate } from 'UI/Features/Records/Activity/forms/common/validators';
 import DateInput from 'UI/Features/Records/Activity/forms/common/DateInput/DateInput';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
 import BiocontrolCount from 'UI/Features/Records/Activity/forms/plant/subtype-component/common/BiocontrolCount';
@@ -143,7 +143,7 @@ const BiocontrolReleaseMonitoringEntry = ({ index }: PropTypes) => {
           {...register(`subtype_data.entries.${index}.count_duration_minutes`, {
             required: true,
             valueAsNumber: true,
-            validate: (val) => minValue(val!, 1)
+            validate: (val) => greaterThanEqual(val, 1)
           })}
         />
       )}
@@ -156,7 +156,7 @@ const BiocontrolReleaseMonitoringEntry = ({ index }: PropTypes) => {
           {...register(`subtype_data.entries.${index}.plant_count`, {
             required: true,
             valueAsNumber: true,
-            validate: (val) => minValue(val!, 1)
+            validate: (val) => greaterThanEqual(val, 1)
           })}
         />
       )}
@@ -179,7 +179,7 @@ const BiocontrolReleaseMonitoringEntry = ({ index }: PropTypes) => {
           {...register(`subtype_data.entries.${index}.number_of_sweeps`, {
             required: true,
             valueAsNumber: true,
-            validate: (val) => minValue(val!, 1)
+            validate: (val) => greaterThanEqual(val, 1)
           })}
         />
       ) : (
@@ -196,7 +196,7 @@ const BiocontrolReleaseMonitoringEntry = ({ index }: PropTypes) => {
           deps: [`subtype_data.entries.${index}.stop_time`],
           required: true,
           validate: {
-            noFutureData: (val) => noFutureDate(val!),
+            noFutureData: (val) => noFutureDate(val),
             startBeforeStop: validateMonitoringStartStopTimes
           }
         })}
@@ -211,7 +211,7 @@ const BiocontrolReleaseMonitoringEntry = ({ index }: PropTypes) => {
           deps: [`subtype_data.entries.${index}.start_time`],
           required: true,
           validate: {
-            noFutureData: (val) => noFutureDate(val!),
+            noFutureData: (val) => noFutureDate(val),
             startBeforeStop: validateMonitoringStartStopTimes
           }
         })}

@@ -16,7 +16,12 @@ import DateInput from 'UI/Features/Records/Activity/forms/common/DateInput/DateI
 import RadioInput from 'UI/Features/Records/Activity/forms/common/RadioInput/RadioInput';
 import FormSpacer from 'UI/Features/Records/Activity/forms/common/FormSpacer/FormSpacer';
 import CheckboxInput from 'UI/Features/Records/Activity/forms/common/CheckboxInput/CheckboxInput';
-import { maxValue, minValue, noFutureDate } from 'UI/Features/Records/Activity/forms/common/validators';
+import {
+  lessThanEqual,
+  lessThan,
+  greaterThanEqual,
+  noFutureDate
+} from 'UI/Features/Records/Activity/forms/common/validators';
 import CheckboxUI from 'UI/Features/Records/Activity/forms/common/CheckboxUI/CheckboxUI';
 import { Fragment, useEffect, useState } from 'react';
 import TreatmentChemicalPlantDetails from './TreatmentChemicalPlantDetails';
@@ -154,11 +159,11 @@ const TreatmentChemicalPlant = () => {
             required: true,
             valueAsNumber: true,
             validate: {
-              minValueBeforeVerify: (val) => isTemperatureAccurate || minValue(val, MIN_ALLOWED_TEMP),
+              minValueBeforeVerify: (val) => isTemperatureAccurate || greaterThanEqual(val, MIN_ALLOWED_TEMP),
               maxValueBeforeVerify: (val) =>
                 isTemperatureAccurate
-                  ? maxValue(val, 99) // If user verifies weather accuracy, check for clearly accidental values (extra digits)
-                  : maxValue(val, MAX_ALLOWED_TEMP)
+                  ? lessThan(val, 100) // If user verifies weather accuracy, check for clearly accidental values (extra digits)
+                  : lessThanEqual(val, MAX_ALLOWED_TEMP)
             }
           })}
         />
@@ -173,8 +178,8 @@ const TreatmentChemicalPlant = () => {
             valueAsNumber: true,
             // If user verifies weather accurate, check for clearly accidental values (extra digits)
             validate: {
-              minSpeed: (val) => minValue(val, 0),
-              maxSpeed: (val) => (isWindSpeedAccurate ? maxValue(val, 99) : maxValue(val, MAX_WIND_SPEED))
+              minSpeed: (val) => greaterThanEqual(val, 0),
+              maxSpeed: (val) => (isWindSpeedAccurate ? lessThan(val, 100) : lessThanEqual(val, MAX_WIND_SPEED))
             }
           })}
         />

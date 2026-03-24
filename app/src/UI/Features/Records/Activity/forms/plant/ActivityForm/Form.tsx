@@ -7,11 +7,12 @@ import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/N
 import TextArea from 'UI/Features/Records/Activity/forms/common/TextArea/TextArea';
 import {
   checkSum,
-  maxValue,
+  lessThanEqual,
   minArrayLength,
-  minValue,
+  greaterThanEqual,
   noFutureDate,
-  noRepeatKey
+  noRepeatKey,
+  greaterThan
 } from 'UI/Features/Records/Activity/forms/common/validators';
 import ArrayField from 'UI/Features/Records/Activity/forms/common/ArrayField/ArrayField';
 import SubtypeComposite from 'UI/Features/Records/Activity/forms/plant/subtype-component/SubtypeComposite';
@@ -230,8 +231,8 @@ const Form = () => {
                   required: true,
                   valueAsNumber: true,
                   validate: {
-                    min: (val) => minValue(val, 1),
-                    max: (val) => maxValue(val, 100)
+                    min: (val) => greaterThan(val, 0),
+                    max: (val) => lessThanEqual(val, 100)
                   }
                 })}
               />
@@ -267,7 +268,7 @@ const Form = () => {
           width={Width.Third}
           {...register('location_description', {
             required: true,
-            validate: (val) => minValue(val, 10)
+            validate: (val) => greaterThanEqual(val, 10)
           })}
         />
         <TextArea

@@ -6,7 +6,7 @@ import { YesNoUnknown } from 'UI/Features/Records/Activity/forms/enums';
 import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
 import { useFormContext } from 'react-hook-form';
 import { BiocontrolReleaseSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
-import { minValue, noFutureDate } from 'UI/Features/Records/Activity/forms/common/validators';
+import { greaterThanEqual, noFutureDate } from 'UI/Features/Records/Activity/forms/common/validators';
 import TextInput from 'UI/Features/Records/Activity/forms/common/TextInput/TextInput';
 import DateInput from 'UI/Features/Records/Activity/forms/common/DateInput/DateInput';
 import { useEffect } from 'react';
@@ -77,7 +77,7 @@ const BiocontrolReleaseEntry = ({ index }: PropTypes) => {
         {...register(`subtype_data.entries.${index}.mortality`, {
           required: true,
           valueAsNumber: true,
-          validate: (val) => minValue(val, 0)
+          validate: (val) => greaterThanEqual(val, 0)
         })}
       />
       <TextInput

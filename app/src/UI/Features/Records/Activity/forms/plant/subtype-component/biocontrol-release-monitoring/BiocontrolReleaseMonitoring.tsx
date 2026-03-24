@@ -8,7 +8,7 @@ import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/N
 import { useFormContext } from 'react-hook-form';
 import { BiocontrolReleaseMonitoringSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
-import { distinctEntries, maxValue, minValue } from 'UI/Features/Records/Activity/forms/common/validators';
+import { distinctEntries, lessThanEqual, greaterThanEqual } from 'UI/Features/Records/Activity/forms/common/validators';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
 import ArrayField from 'UI/Features/Records/Activity/forms/common/ArrayField/ArrayField';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
@@ -76,7 +76,7 @@ const BiocontrolReleaseMonitoring = () => {
               error={errors?.subtype_data?.agent_density}
               {...register('subtype_data.agent_density', {
                 valueAsNumber: true,
-                validate: (val) => maxValue(val!, 100)
+                validate: (val) => lessThanEqual(val, 100)
               })}
             />
             <NumberInput
@@ -86,7 +86,7 @@ const BiocontrolReleaseMonitoring = () => {
               error={errors?.subtype_data?.plant_attack}
               {...register('subtype_data.plant_attack', {
                 valueAsNumber: true,
-                validate: (val) => maxValue(val!, 100)
+                validate: (val) => lessThanEqual(val, 100)
               })}
             />
             <NumberInput
@@ -98,7 +98,7 @@ const BiocontrolReleaseMonitoring = () => {
               {...register('subtype_data.max_spread_distance_m', {
                 required: isSpreadResultsPresent,
                 valueAsNumber: true,
-                validate: { minDistance: (val) => minValue(val!, 0) }
+                validate: { minDistance: (val) => greaterThanEqual(val, 0) }
               })}
             />
             <NumberInput
@@ -111,8 +111,8 @@ const BiocontrolReleaseMonitoring = () => {
                 valueAsNumber: true,
                 required: isSpreadResultsPresent,
                 validate: {
-                  minDegrees: (val) => minValue(val!, 0),
-                  maxDegrees: (val) => maxValue(val!, 360)
+                  minDegrees: (val) => greaterThanEqual(val, 0),
+                  maxDegrees: (val) => lessThanEqual(val, 360)
                 }
               })}
             />
