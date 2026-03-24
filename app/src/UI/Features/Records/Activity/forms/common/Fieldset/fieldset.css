@@ -33,7 +33,7 @@
   }
 
   & > *:not(fieldset) {
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     margin-right: auto;
   }
 
