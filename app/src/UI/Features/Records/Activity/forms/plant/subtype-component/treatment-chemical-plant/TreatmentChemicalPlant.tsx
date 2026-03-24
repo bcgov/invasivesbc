@@ -25,6 +25,7 @@ import {
 import CheckboxUI from 'UI/Features/Records/Activity/forms/common/CheckboxUI/CheckboxUI';
 import { Fragment, useEffect, useState } from 'react';
 import TreatmentChemicalPlantDetails from './TreatmentChemicalPlantDetails';
+import useFilteredServiceLicenseCodes from 'UI/Features/Records/Activity/forms/plant/hooks/useFilteredServiceLicenseCodes';
 
 type ChemTreatment = AquaticChemicalTreatmentSchema | TerrestrialChemicalTreatmentSchema;
 
@@ -74,6 +75,7 @@ const TreatmentChemicalPlant = () => {
   */
   const [isTemperatureAccurate, setIsTemperatureAccurate] = useState<boolean>(coerceLocalBool('isTemperatureAccurate'));
   const [isWindSpeedAccurate, setIsWindSpeedAccurate] = useState<boolean>(coerceLocalBool('isWindSpeedAccurate'));
+  const { serviceLicenseCodes } = useFilteredServiceLicenseCodes(disabled);
 
   const shouldVerifyWindSpeedAccuracy = !disabled && wind_speed != undefined && wind_speed > MAX_WIND_SPEED;
   const shouldVerifyTemperatureAccuracy =
@@ -242,7 +244,7 @@ const TreatmentChemicalPlant = () => {
         <SingleSelect
           label={'Service License Number and Company Name'}
           name={'subtype_data.service_license_number'}
-          options={codes?.ServiceLicenseNumberAndCompany}
+          options={serviceLicenseCodes}
           required
           rules={{ required: true }}
           tooltip={tooltips.plant.chemical.service_license_number_and_company}
