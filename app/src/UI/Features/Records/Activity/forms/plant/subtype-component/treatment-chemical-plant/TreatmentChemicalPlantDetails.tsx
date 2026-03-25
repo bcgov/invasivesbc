@@ -246,20 +246,18 @@ const TreatmentChemicalPlantDetails = () => {
         </>
       )}
       {calculation_type === CalculationType.ApplicationRate && (
-        <>
-          <NumberInput
-            label={`Delivery Rate of Mix (L)`}
-            width={Width.Half}
-            tooltip={tooltips.plant.chemical.calculation_fields.delivery_rate_of_mix}
-            required
-            error={get(errors, 'subtype_data.treatment_context.delivery_rate')}
-            {...register('subtype_data.treatment_context.delivery_rate', {
-              required: true,
-              valueAsNumber: true,
-              validate: (val) => greaterThan(val, 0)
-            })}
-          />
-        </>
+        <NumberInput
+          label={`Delivery Rate of Mix (L)`}
+          width={Width.Half}
+          tooltip={tooltips.plant.chemical.calculation_fields.delivery_rate_of_mix}
+          required
+          error={get(errors, 'subtype_data.treatment_context.delivery_rate')}
+          {...register('subtype_data.treatment_context.delivery_rate', {
+            required: true,
+            valueAsNumber: true,
+            validate: (val) => greaterThan(val, 0)
+          })}
+        />
       )}
       <TreatmentChemicalPlantCalculations />
     </Fieldset>
