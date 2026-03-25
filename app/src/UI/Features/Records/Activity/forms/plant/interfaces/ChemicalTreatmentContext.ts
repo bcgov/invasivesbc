@@ -18,7 +18,6 @@ interface ApplicationRateHerbicide extends BaseHerbicide {
 interface ProductApplicationRate {
   herbicide: Array<ApplicationRateHerbicide>;
   delivery_rate: number;
-  application_rate: number;
   amount_mix_used_l: number;
 }
 
@@ -45,8 +44,10 @@ type ChemicalTreatmentContext =
   | ChemicalContextApplicationRate;
 
 export type {
+  BaseChemicalContext,
   ChemicalTreatmentContext,
   TankMixChemicalContext,
   ChemicalContextDilution,
-  ChemicalContextApplicationRate
+  ChemicalContextApplicationRate,
+  ApplicationRateHerbicide
 };
