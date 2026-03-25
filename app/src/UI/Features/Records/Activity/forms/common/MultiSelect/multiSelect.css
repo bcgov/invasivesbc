@@ -30,6 +30,11 @@
     min-height: var(--form-input-height);
   }
 
+  /* stylelint-disable-next-line selector-class-pattern */
+  .select-input__multi-value__label {
+    white-space: unset;
+  }
+
   &.full-width {
     width: 100%;
   }

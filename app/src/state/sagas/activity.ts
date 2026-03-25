@@ -84,7 +84,7 @@ function* handle_LOAD_ACTIVITY_IF_REQUIRED(action: PayloadAction<string>) {
     id && id.length === 36 && (activityPageState?.activity?.activity_id !== id || id !== activityPageState.formId);
   if (isValidIdMismatch) {
     yield put(Activity.get(id));
-    yield put(Activity.getDjango(id));
+    yield put(Activity.getActivity(id));
   }
 }
 

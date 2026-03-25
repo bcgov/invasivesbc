@@ -2,10 +2,10 @@ import { Controller, FieldValues, RegisterOptions, useFormContext, Path } from '
 import Select from 'react-select';
 import FormCode from 'interfaces/FormCode';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
-import ErrorMessage from '../ErrorMessage/ErrorMessage';
-import './multiSelect.css';
+import ErrorMessage from 'UI/Features/Records/Activity/forms/common/ErrorMessage/ErrorMessage';
 import { getInputWidth, Width } from '../utils';
-import RequiredField from '../RequiredField/RequiredField';
+import OptionalField from 'UI/Features/Records/Activity/forms/common/OptionalField/OptionalField';
+import './multiSelect.css';
 
 interface PropTypes<T extends FieldValues> {
   readonly label?: string;
@@ -23,7 +23,6 @@ export function MultiSelect<T extends FieldValues>({
   label,
   name,
   options,
-  placeholder,
   required = false,
   rules,
   tooltip,
@@ -42,7 +41,7 @@ export function MultiSelect<T extends FieldValues>({
           <div className="top">
             <label htmlFor={name}>
               {label}
-              {required && <RequiredField />}
+              {!required && <OptionalField />}
             </label>
             {tooltip && <TooltipWithIcon tooltipText={tooltip} />}
           </div>
@@ -51,7 +50,7 @@ export function MultiSelect<T extends FieldValues>({
             isMulti
             isDisabled={disabled}
             aria-invalid={!!error}
-            placeholder={placeholder}
+            placeholder={'Select one or more...'}
             isSearchable={options?.length >= MIN_OPTIONS_TO_ENABLE_SEARCH}
             options={options?.map((o) => ({ label: o.full_name, value: o.code })) ?? []}
             value={options

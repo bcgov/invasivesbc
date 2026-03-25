@@ -18,9 +18,9 @@ import HerbicideEntry from './HerbicideEntry';
 import {
   checkSum,
   greaterThan,
-  maxValue,
+  lessThanEqual,
   minArrayLength,
-  minValue,
+  greaterThanEqual,
   noRepeatKey
 } from 'UI/Features/Records/Activity/forms/common/validators';
 
@@ -155,7 +155,7 @@ const TreatmentChemicalPlantDetails = () => {
           required: true,
           validate: {
             minEntries: (val) => minArrayLength(val, 1),
-            sumHundred: (val) => checkSum(val, 100, 'percent_covered'),
+            sumHundred: (val) => checkSum(val, 100, { key: 'percent_covered', readable: 'percent covered' }),
             noRepeatPlant: (val) => noRepeatKey(val, 'invasive_plant', 'Invasive plant')
           }
         }}
@@ -175,9 +175,10 @@ const TreatmentChemicalPlantDetails = () => {
               tooltip={tooltips.plant.chemical.calculation_fields.area_covered}
               {...register(`subtype_data.treatment_context.plants_treated.${index}.percent_covered`, {
                 required: true,
+                valueAsNumber: true,
                 validate: {
                   min: (val) => greaterThan(val, 0),
-                  max: (val) => maxValue(val, 100)
+                  max: (val) => lessThanEqual(val, 100)
                 }
               })}
             />
@@ -193,8 +194,8 @@ const TreatmentChemicalPlantDetails = () => {
         rules={{
           required: true,
           validate: {
-            min: (val) => minValue(val.length, 1),
-            max: (val) => tank_mix || maxValue(val.length, 1) // Only limit on non-tank mixes
+            min: (val) => greaterThanEqual(val.length, 1),
+            max: (val) => tank_mix || lessThanEqual(val.length, 1) // Only limit on non-tank mixes
           }
         }}
         renderRow={(index) => <HerbicideEntry idx={index} type={calculation_type as CalculationType} />}
@@ -225,7 +226,7 @@ const TreatmentChemicalPlantDetails = () => {
               valueAsNumber: true,
               validate: {
                 min: (val) => greaterThan(val, 0),
-                max: (val) => maxValue(val, 100)
+                max: (val) => lessThanEqual(val, 100)
               }
             })}
           />

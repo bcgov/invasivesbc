@@ -1,0 +1,31 @@
+#record-not-found {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  background-color: #f1f1f1;
+  height: 100%;
+  box-sizing: border-box;
+
+  .content {
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: var(--form-container-width);
+    margin: 1rem;
+    height: auto;
+    padding: 25px;
+    box-sizing: border-box;
+
+    p {
+      font-size: 20px;
+      overflow-wrap: anywhere;
+
+      span {
+        font-weight: bold;
+      }
+    }
+  }
+}

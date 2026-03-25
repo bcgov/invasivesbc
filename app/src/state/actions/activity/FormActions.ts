@@ -11,6 +11,7 @@ import { IQueryParams } from 'utils/record-cache';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import EFilterType from 'constants/EFilterType';
+import { getCurrentJWT } from 'state/sagas/auth/auth';
 
 interface FormSubmission {
   data: FormSchema;
@@ -60,34 +61,42 @@ class FormActions {
     `${this.PREFIX}/validateManualLinkedId`,
     async ({ id }: VerifyLinkedActivity, { getState, dispatch }) => {
       const state: RootState = getState() as RootState;
+      const BASE_API = state.Configuration.current.runtime.API_V2_BASE;
       const MOBILE = state.Configuration.current.build.MOBILE;
-      const OFFLINE = !state.Network.connected;
-      /*
-    TODO: implement
-    if Online:
-      Ping API using the shortID, if response comes back valid, return the full ID of the record
-    */
-      // if (MOBILE && OFFLINE) {
-      const service = await RecordCacheServiceFactory.getPlatformInstance();
-      const queryObj: IQueryParams = {
-        limit: 1,
-        tableFilters: [
-          {
-            field: 'short_id',
-            filter: id,
-            filterType: EFilterType.Table,
-            id: '1',
-            operator: 'CONTAINS',
-            operator2: 'AND'
-          }
-        ],
-        recordSetType: RecordSetType.Activity,
-        selectColumns: ['id', 'short_id']
-      };
-      const data = (await service.query(queryObj))[0];
-      // Confirm the match in case of partial string matching returns
-      if (data.short_id === id) return data.id;
-      // }
+      const ONLINE = state.Network.connected;
+      if (ONLINE) {
+        // Check online for records existence
+        const res = await fetch(`${BASE_API}/activities/resolve/${id}`, {
+          headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' }
+        });
+        if (res.ok) {
+          const record = await res.json();
+          return record.id;
+        }
+      }
+      if (MOBILE) {
+        // Check Cache for records existence
+        const service = await RecordCacheServiceFactory.getPlatformInstance();
+        const queryObj: IQueryParams = {
+          limit: 1,
+          tableFilters: [
+            {
+              field: 'short_id',
+              filter: id,
+              filterType: EFilterType.Table,
+              id: '1',
+              operator: 'CONTAINS',
+              operator2: 'AND'
+            }
+          ],
+          recordSetType: RecordSetType.Activity,
+          selectColumns: ['id', 'short_id']
+        };
+        const data = (await service.query(queryObj))[0];
+        // Confirm the match in case of partial string matching returns
+        if (data.short_id === id) return data.id;
+      }
+      // No Record Found Matching ID.
       dispatch(
         Alerts.create({
           severity: AlertSeverity.Error,
@@ -99,31 +108,45 @@ class FormActions {
     }
   );
 
-  static readonly sendForm = createAsyncThunk(`${this.PREFIX}/sendForm`, async ({ type, data }: FormSubmission) => {
-    // Iterates Payload and Converts any {code, full} pairs into the code string.
-    const drillAndSimplify = (data: unknown) => {
-      if (Array.isArray(data)) {
-        return data.map(drillAndSimplify);
+  /**
+   * @desc Iterate payload object and convert {code, full} pairs into code strings, reducing payload size.
+   */
+  private static readonly drillAndSimplify = (data: unknown) => {
+    if (Array.isArray(data)) {
+      return data.map(this.drillAndSimplify);
+    }
+    if (data !== null && typeof data === 'object') {
+      const isCodeObj = 'code' in data && 'full' in data && Object.keys(data).length === 2;
+      if (isCodeObj) {
+        return data.code;
       }
-      if (data !== null && typeof data === 'object') {
-        const isCodeObj = 'code' in data && 'full' in data && Object.keys(data).length === 2;
-        if (isCodeObj) {
-          return data.code;
+      const result: Record<string, unknown> = {};
+      for (const key in data) {
+        if (Object.hasOwn(data, key)) {
+          result[key] = this.drillAndSimplify(data[key]);
         }
-        const result: Record<string, unknown> = {};
-        for (const key in data) {
-          if (Object.hasOwn(data, key)) {
-            result[key] = drillAndSimplify(data[key]);
-          }
-        }
-        return result;
       }
-      return data;
-    };
-    console.info('Type:', type, 'Data:', drillAndSimplify(data));
-    // TODO: Add API Call, Return Short ID generated from form, branch Draft/Submission logic'
-    return '12PTO12345678';
-  });
+      return result;
+    }
+    return data;
+  };
+  static readonly sendForm = createAsyncThunk(
+    `${this.PREFIX}/sendForm`,
+    async ({ type, data }: FormSubmission, { dispatch }) => {
+      const simplifiedData = this.drillAndSimplify(data);
+      console.info('Type:', type, 'Data:', simplifiedData);
+      // TODO: Add API Call, Return Short ID generated from form, branch Draft/Submission logic
+      dispatch(
+        Alerts.create({
+          severity: AlertSeverity.Success,
+          subject: AlertSubjects.Form,
+          content: 'Form submitted successfully.',
+          autoClose: 8
+        })
+      );
+      return '12PTO12345678';
+    }
+  );
   static readonly updateState = createAction<FormSchema>(`${this.PREFIX}/updateState`);
 }
 

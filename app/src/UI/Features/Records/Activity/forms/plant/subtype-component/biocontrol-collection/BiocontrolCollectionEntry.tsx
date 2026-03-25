@@ -1,4 +1,4 @@
-import { useFormContext } from 'react-hook-form';
+import { get, useFormContext } from 'react-hook-form';
 import { BiocontrolCollectionSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import { useSelector } from 'utils/use_selector';
 import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
@@ -6,7 +6,7 @@ import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips'
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
 import { MonitoringType } from 'UI/Features/Records/Activity/forms/enums';
-import { minValue, noFutureDate } from 'UI/Features/Records/Activity/forms/common/validators';
+import { greaterThanEqual, noFutureDate } from 'UI/Features/Records/Activity/forms/common/validators';
 import TextArea from 'UI/Features/Records/Activity/forms/common/TextArea/TextArea';
 import FormSpacer from 'UI/Features/Records/Activity/forms/common/FormSpacer/FormSpacer';
 import BiocontrolCount from 'UI/Features/Records/Activity/forms/plant/subtype-component/common/BiocontrolCount';
@@ -73,7 +73,7 @@ const BiocontrolCollectionEntry = ({ index }: PropTypes) => {
         label={'Historical IAPP Site ID'}
         width={Width.Half}
         tooltip={tooltips.basic.historical_iapp}
-        error={errors?.subtype_data?.entries?.[index]?.historical_iapp_site}
+        error={get(errors, `errors.subtype_data.entries.${index}.historical_iapp_site`)}
         {...register(`subtype_data.entries.${index}.historical_iapp_site`, { valueAsNumber: true })}
       />
       <FormSpacer width={Width.Half} />
@@ -88,7 +88,7 @@ const BiocontrolCollectionEntry = ({ index }: PropTypes) => {
       {/* Collection Type Follow Up Fields */}
       {collectionType === 'Timed' && (
         <NumberInput
-          error={errors?.subtype_data?.[index]?.count_duration_minutes}
+          error={get(errors, `subtype_data.entries.${index}.time_collection_duration_minutes`)}
           label={'Count duration (Minutes)'}
           required
           tooltip={tooltips.plant.biocontrol.monitoring.count}
@@ -96,20 +96,20 @@ const BiocontrolCollectionEntry = ({ index }: PropTypes) => {
           {...register(`subtype_data.entries.${index}.time_collection_duration_minutes`, {
             required: true,
             valueAsNumber: true,
-            validate: (val) => minValue(val!, 1)
+            validate: (val) => greaterThanEqual(val, 1)
           })}
         />
       )}
       {collectionType === 'Count' && (
         <NumberInput
-          error={errors?.subtype_data?.[index]?.plant_count}
+          error={get(errors, `subtype_data.entries.${index}.plant_count_collection`)}
           label={'Plant Count'}
           required
           width={Width.Half}
           {...register(`subtype_data.entries.${index}.plant_count_collection`, {
             required: true,
             valueAsNumber: true,
-            validate: (val) => minValue(val!, 1)
+            validate: (val) => greaterThanEqual(val, 1)
           })}
         />
       )}
@@ -124,21 +124,21 @@ const BiocontrolCollectionEntry = ({ index }: PropTypes) => {
       />
       {collectionMethod === SWEEP_COUNT_CODE ? (
         <NumberInput
-          error={errors?.subtype_data?.entries?.[index]?.number_of_sweeps}
+          error={get(errors, `subtype_data.entries.${index}.number_of_sweeps`)}
           label={'Number of Sweeps'}
           required
           width={Width.Half}
           {...register(`subtype_data.entries.${index}.number_of_sweeps`, {
             required: true,
             valueAsNumber: true,
-            validate: (val) => minValue(val!, 1)
+            validate: (val) => greaterThanEqual(val, 1)
           })}
         />
       ) : (
         <FormSpacer width={Width.Half} />
       )}
       <DateInput
-        error={errors?.subtype_data?.entries?.[index]?.start_time_collecting}
+        error={get(errors, `subtype_data.entries.${index}.start_time_collecting`)}
         includeTime
         label={'Start Time Collecting'}
         required
@@ -147,13 +147,13 @@ const BiocontrolCollectionEntry = ({ index }: PropTypes) => {
           deps: [`subtype_data.entries.${index}.end_time_collecting`],
           required: true,
           validate: {
-            noFutureData: (val) => noFutureDate(val!),
+            noFutureData: (val) => noFutureDate(val),
             startBeforeStop: validateMonitoringStartStopTimes
           }
         })}
       />
       <DateInput
-        error={errors?.subtype_data?.entries?.[index]?.end_time_collecting}
+        error={get(errors, `subtype_data.entries.${index}.end_time_collecting`)}
         label={'Stop Time Collecting'}
         includeTime
         required
@@ -162,7 +162,7 @@ const BiocontrolCollectionEntry = ({ index }: PropTypes) => {
           deps: [`subtype_data.entries.${index}.start_time_collecting`],
           required: true,
           validate: {
-            noFutureData: (val) => noFutureDate(val!),
+            noFutureData: (val) => noFutureDate(val),
             startBeforeStop: validateMonitoringStartStopTimes
           }
         })}
@@ -171,7 +171,7 @@ const BiocontrolCollectionEntry = ({ index }: PropTypes) => {
         label={'Comment'}
         tooltip={tooltips.basic.comment}
         width={Width.Half}
-        error={errors?.subtype_data?.entries?.[index]?.comment}
+        error={get(errors, `subtype_data.entries.${index}.comment`)}
         {...register(`subtype_data.entries.${index}.comment`)}
       />
       <FormSpacer width={Width.Half} />

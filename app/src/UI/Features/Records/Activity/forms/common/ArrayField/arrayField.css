@@ -21,14 +21,21 @@
     }
   }
 
+  .control {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
   .add-entry {
     background-color: #036;
+    width: 100%;
     color: white;
     border: none;
     border-radius: none;
     height: var(--form-input-height);
     font-size: 1rem;
-    margin-top: auto;
+    margin-top: 5px;
 
     &:hover {
       cursor: pointer;

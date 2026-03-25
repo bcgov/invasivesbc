@@ -11,6 +11,7 @@ import IActivityPermissions from 'interfaces/IActivityPermissions';
 import UserRecord from 'interfaces/UserRecord';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import { RootState } from 'state/reducers/rootReducer';
+import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 
 interface INewActivity {
   type: string;
@@ -102,13 +103,17 @@ class Activity {
   static readonly get = createAction<string>(`${this.PREFIX}/get`);
 
   /** Fetch Record from Django API */
-  static readonly getDjango = createAsyncThunk(`${this.PREFIX}/getDjango`, async (id: string, { getState }) => {
-    const { Configuration }: RootState = getState() as RootState;
-    const newFormat = await fetch(`${Configuration.current.runtime.API_V2_BASE}/activities/${id}`, {
-      headers: { Authorization: await getCurrentJWT() }
-    });
-    return await newFormat.json();
-  });
+  static readonly getActivity = createAsyncThunk(
+    `${this.PREFIX}/getActivity`,
+    async (id: string, { getState, rejectWithValue }) => {
+      const { Configuration }: RootState = getState() as RootState;
+      const req = await fetch(`${Configuration.current.runtime.API_V2_BASE}/activities/${id}`, {
+        headers: { Authorization: await getCurrentJWT() }
+      });
+      if (req.status === 404) return rejectWithValue(404);
+      return (await req.json()) as FormSchema;
+    }
+  );
 
   static readonly getLocal = createAction<string>(`${this.PREFIX}/getLocal`);
   static readonly getSuccess = createAction<IGetSuccess>(`${this.PREFIX}/getSuccess`);
@@ -147,7 +152,7 @@ class Activity {
   static readonly onFormChangeRequest = createAction<UserRecord>(`${this.PREFIX}/onFormChangeRequest`);
   static readonly OnFormChangeRequestSuccess = createAction<UserRecord>(`${this.PREFIX}/onFormChangeRequestSuccess`);
 
-  static readonly loadActivityIfRequired = createAction<string>(`${this.PREFIX}/loadActivity`);
+  static readonly loadActivityIfRequired = createAction<string>(`${this.PREFIX}/loadActivityIfRequired`);
   static readonly switchRecordSet = createAction<SwitchRecordSetPayload>(`${this.PREFIX}/switchRecordSet`);
 }
 
