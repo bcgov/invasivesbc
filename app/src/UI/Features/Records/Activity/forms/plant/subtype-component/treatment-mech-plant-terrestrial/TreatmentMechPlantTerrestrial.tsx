@@ -9,7 +9,7 @@ import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips'
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
 import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
-import { useFormContext } from 'react-hook-form';
+import { get, useFormContext } from 'react-hook-form';
 import { DisposedMaterialFormat } from 'UI/Features/Records/Activity/forms/enums';
 
 const TreatmentMechPlantTerrestrial = () => {
@@ -36,53 +36,53 @@ const TreatmentMechPlantTerrestrial = () => {
           <>
             <SingleSelect
               label={'Invasive Plant'}
+              name={`${basePath}.invasive_plant`}
               options={codes.TerrestrialPlantCode}
-              tooltip={tooltips.plant.invasive_plant}
               rules={{ required: true }}
               required
-              name={`${basePath}.invasive_plant`}
+              tooltip={tooltips.plant.invasive_plant}
               width={Width.Half}
             />
             <NumberInput
+              error={get(errors, `${basePath}.treated_area_msq`)}
               label={'Treated Area (m2)'}
               required
+              width={Width.Half}
               {...register(`${basePath}.treated_area_msq`, {
                 required: true,
                 valueAsNumber: true,
                 min: { value: 1, message: 'Area must be greater than or equal to 1m' }
               })}
-              error={errors?.subtype_data?.entries?.[index]?.treated_area_msq}
-              width={Width.Half}
             />
             <SingleSelect
               label={'Mechanical Method'}
+              name={`${basePath}.mechanical_method`}
               options={codes?.PlantMechanicalTreatmentMethodCode}
               rules={{ required: true }}
               required
-              name={`${basePath}.mechanical_method`}
               width={Width.Half}
             />
             <SingleSelect
               label={'Disposal Method'}
-              options={codes.DisposalMethodCode}
-              rules={{ required: true }}
-              required
               name={`${basePath}.disposal_method`}
+              options={codes.DisposalMethodCode}
+              required
+              rules={{ required: true }}
               width={Width.Half}
             />
             <Fieldset label={'Disposed Material'}>
               <SingleSelect
                 label={'Disposed Material Format'}
+                name={`${basePath}.disposed_material_format`}
                 options={DisposedMaterialFormat}
                 tooltip={tooltips.plant.disposed_material_format}
-                name={`${basePath}.disposed_material_format`}
                 width={Width.Half}
               />
               <NumberInput
+                error={get(errors, `${basePath}.disposed_material_amount`)}
                 label={'Disposed Material Amount'}
-                {...register(`${basePath}.disposed_material_amount`, { valueAsNumber: true })}
-                error={errors?.subtype_data?.entries?.[index]?.disposed_material_amount}
                 width={Width.Half}
+                {...register(`${basePath}.disposed_material_amount`, { valueAsNumber: true })}
               />
             </Fieldset>
           </>

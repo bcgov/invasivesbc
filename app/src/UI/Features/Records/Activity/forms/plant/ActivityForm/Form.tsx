@@ -7,11 +7,12 @@ import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/N
 import TextArea from 'UI/Features/Records/Activity/forms/common/TextArea/TextArea';
 import {
   checkSum,
-  maxValue,
+  lessThanEqual,
   minArrayLength,
-  minValue,
+  greaterThanEqual,
   noFutureDate,
-  noRepeatKey
+  noRepeatKey,
+  greaterThan
 } from 'UI/Features/Records/Activity/forms/common/validators';
 import ArrayField from 'UI/Features/Records/Activity/forms/common/ArrayField/ArrayField';
 import SubtypeComposite from 'UI/Features/Records/Activity/forms/plant/subtype-component/SubtypeComposite';
@@ -31,8 +32,9 @@ import FundingAgency from './FundingAgency';
 import Employer from './Employers';
 import LinkedActivities from './LinkedActivities';
 import FormSpacer from 'UI/Features/Records/Activity/forms/common/FormSpacer/FormSpacer';
-import { useFormContext } from 'react-hook-form';
+import { get, useFormContext } from 'react-hook-form';
 import useSuggestedJurisdictionCodes from 'UI/Features/Records/Activity/forms/plant/hooks/useSuggestedJurisdictionCodes';
+import AdvisoryMessage from 'UI/Features/Records/Activity/forms/common/AdvisoryMessage/AdvisoryMessage';
 import './activityForm.css';
 
 const Form = () => {
@@ -78,12 +80,17 @@ const Form = () => {
   };
   return (
     <>
+      {!disabled && (
+        <span className="required-advisory">
+          <AdvisoryMessage text={'All fields are required unless otherwise indicated.'} />
+        </span>
+      )}
       {/* Start of Geometry Fields */}
       <Fieldset label={'Geometry Information'}>
         <NumberInput
           label={'Area (m²)'}
           readOnly
-          error={errors?.area_m}
+          error={get(errors, 'area_m')}
           required
           tooltip={tooltips.basic.area_m}
           {...register(`area_m`, {
@@ -98,7 +105,7 @@ const Form = () => {
           label={'Latitude'}
           readOnly
           required
-          error={errors?.latitude}
+          error={get(errors, 'latitude')}
           tooltip={tooltips.basic.latitude}
           {...register(`latitude`, {
             required: true,
@@ -112,7 +119,7 @@ const Form = () => {
           readOnly
           required
           tooltip={tooltips.basic.longitude}
-          error={errors?.longitude}
+          error={get(errors, 'longitude')}
           {...register(`longitude`, {
             required: true,
             valueAsNumber: true,
@@ -124,7 +131,7 @@ const Form = () => {
           label={'UTM Zone'}
           readOnly
           required
-          error={errors?.utm_zone}
+          error={get(errors, 'utm_zone')}
           tooltip={tooltips.basic.utm_zone}
           {...register(`utm_zone`, {
             required: true,
@@ -138,7 +145,7 @@ const Form = () => {
           readOnly
           required
           tooltip={tooltips.basic.utm_easting}
-          error={errors?.utm_easting}
+          error={get(errors, 'utm_easting')}
           {...register(`utm_easting`, {
             required: true,
             valueAsNumber: true,
@@ -151,7 +158,7 @@ const Form = () => {
           readOnly
           required
           tooltip={tooltips.basic.utm_northing}
-          error={errors?.utm_northing}
+          error={get(errors, 'utm_northing')}
           {...register(`utm_northing`, {
             required: true,
             valueAsNumber: true,
@@ -166,14 +173,14 @@ const Form = () => {
             className="control-button"
             disabled={disabled}
             onClick={handleDrawStart}
-            value="Click to Start Drawing"
+            value="Start Drawing"
           />
           <input
             type="button"
             className="control-button"
             disabled={disabled}
             onClick={handleManualUTM}
-            value="Click to Enter UTM"
+            value="Enter UTM"
           />
         </div>
       </Fieldset>
@@ -184,7 +191,7 @@ const Form = () => {
           label={'Date'}
           tooltip={tooltips.basic.date}
           required
-          error={errors?.date}
+          error={get(errors, 'date')}
           {...register('date', { required: true, validate: (val) => noFutureDate(val) })}
           width={Width.Half}
         />
@@ -198,7 +205,7 @@ const Form = () => {
           rules={{
             validate: {
               minimumItems: (val) => minArrayLength(val, 1),
-              totalPercent: (val) => checkSum(val, 100, 'percent_covered'),
+              totalPercent: (val) => checkSum(val, 100, { key: 'percent_covered', readable: 'percent covered' }),
               noRepeatJurisdiction: (val) => noRepeatKey(val, 'jurisdiction')
             }
           }}
@@ -224,8 +231,8 @@ const Form = () => {
                   required: true,
                   valueAsNumber: true,
                   validate: {
-                    min: (val) => minValue(val, 1),
-                    max: (val) => maxValue(val, 100)
+                    min: (val) => greaterThan(val, 0),
+                    max: (val) => lessThanEqual(val, 100)
                   }
                 })}
               />
@@ -241,7 +248,9 @@ const Form = () => {
           width={Width.Half}
           renderRow={(index) => (
             <TextInput
-              label={'Description'}
+              label="Description"
+              required
+              placeholder="Project Code"
               id={`projects.${index}.description`}
               {...register(`projects.${index}.description`, { required: true })}
               error={errors.projects?.[index]?.description}
@@ -253,25 +262,25 @@ const Form = () => {
         <TextArea
           label={'Location Description'}
           id="location_description"
-          error={errors?.location_description}
+          error={get(errors, 'location_description')}
           required
           tooltip={tooltips.basic.location_description}
           width={Width.Third}
           {...register('location_description', {
             required: true,
-            validate: (val) => minValue(val, 10)
+            validate: (val) => greaterThanEqual(val, 10)
           })}
         />
         <TextArea
           width={Width.Third}
           label={'Access Description'}
-          error={errors?.access_description}
+          error={get(errors, 'access_description')}
           tooltip={tooltips.basic.access_description}
           {...register('access_description')}
         />
         <TextArea
           label={'Comment'}
-          error={errors?.comment}
+          error={get(errors, 'comment')}
           tooltip={tooltips.basic.general_comments}
           width={Width.Third}
           {...register('comment')}

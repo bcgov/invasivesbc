@@ -1,9 +1,9 @@
 import { Dispatch, SetStateAction, useState } from 'react';
-import { getInputWidth, Width } from '../../common/utils';
+import { getInputWidth, Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import { nanoid } from '@reduxjs/toolkit';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
+import OptionalField from 'UI/Features/Records/Activity/forms/common/OptionalField/OptionalField';
 import './checkboxUI.css';
-import RequiredField from '../RequiredField/RequiredField';
 
 type PropTypes = {
   label: string;
@@ -35,7 +35,7 @@ const CheckboxUI = ({
       <div className="label-section">
         <label htmlFor={id}>
           {label}
-          {required && <RequiredField />}
+          {!required && <OptionalField />}
         </label>
         {tooltip && <TooltipWithIcon tooltipText={tooltip} />}
       </div>

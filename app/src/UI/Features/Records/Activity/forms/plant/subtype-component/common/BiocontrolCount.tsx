@@ -6,7 +6,7 @@ import {
   BiocontrolReleaseMonitoringSchema,
   BiocontrolReleaseSchema
 } from 'UI/Features/Records/Activity/forms/plant/interfaces';
-import { minValue, distinctEntries } from 'UI/Features/Records/Activity/forms/common/validators';
+import { distinctEntries, greaterThan } from 'UI/Features/Records/Activity/forms/common/validators';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
 import { ActivitySubtypes } from 'sharedAPI';
 import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
@@ -99,7 +99,7 @@ const BiocontrolCount = ({ index, estimate = false, extended = false }: PropType
             {...register(`${CONFIG.path}.${entryIndex}.quantity`, {
               required: true,
               valueAsNumber: true,
-              validate: (val) => minValue(val, 1)
+              validate: (val) => greaterThan(val, 0)
             })}
           />
           {extended && (

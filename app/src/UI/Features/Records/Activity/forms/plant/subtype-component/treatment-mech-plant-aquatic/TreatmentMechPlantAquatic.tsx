@@ -1,4 +1,4 @@
-import { useFormContext } from 'react-hook-form';
+import { get, useFormContext } from 'react-hook-form';
 import { AquaticMechTreatment, EntryBasePath } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import { useSelector } from 'utils/use_selector';
 import ArrayField from 'UI/Features/Records/Activity/forms/common/ArrayField/ArrayField';
@@ -6,10 +6,10 @@ import { ActivitySubtypes } from 'sharedAPI';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
 import {
   checkSum,
-  maxValue,
+  lessThanEqual,
   minArrayLength,
-  minValue,
-  noRepeatKey
+  noRepeatKey,
+  greaterThan
 } from 'UI/Features/Records/Activity/forms/common/validators';
 import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
@@ -50,7 +50,7 @@ const TreatmentMechPlantAquatic = () => {
         rules={{
           validate: {
             minLength: (val) => minArrayLength(val, 1),
-            totalPercent: (val) => checkSum(val, 100, 'percent_covered'),
+            totalPercent: (val) => checkSum(val, 100, { key: 'percent_covered', readable: 'percent covered' }),
             noRepeatTypes: (val) => noRepeatKey(val, 'shoreline_type', 'Shoreline Type')
           }
         }}
@@ -76,8 +76,8 @@ const TreatmentMechPlantAquatic = () => {
                 required: true,
                 valueAsNumber: true,
                 validate: {
-                  min: (val) => minValue(val, 1),
-                  max: (val) => maxValue(val, 100)
+                  min: (val) => greaterThan(val, 0),
+                  max: (val) => lessThanEqual(val, 100)
                 }
               })}
             />
@@ -109,15 +109,15 @@ const TreatmentMechPlantAquatic = () => {
                 width={Width.Half}
               />
               <NumberInput
+                error={get(errors, `${basePath}.treated_area_msq`)}
                 label={'Treated Area (m2)'}
                 required
+                width={Width.Half}
                 {...register(`${basePath}.treated_area_msq`, {
                   required: true,
                   valueAsNumber: true,
                   min: { value: 1, message: 'Area must be greater than or equal to 1m' }
                 })}
-                error={errors?.subtype_data?.entries?.[index]?.treated_area_msq}
-                width={Width.Half}
               />
               <SingleSelect
                 label={'Mechanical Method'}
@@ -145,9 +145,9 @@ const TreatmentMechPlantAquatic = () => {
                 />
                 <NumberInput
                   label={'Disposed Material Amount'}
-                  {...register(`${basePath}.disposed_material_amount`, { valueAsNumber: true })}
-                  error={errors?.subtype_data?.entries?.[index]?.disposed_material_amount}
+                  error={get(errors, `${basePath}.disposed_material_amount`)}
                   width={Width.Half}
+                  {...register(`${basePath}.disposed_material_amount`, { valueAsNumber: true })}
                 />
               </Fieldset>
             </>

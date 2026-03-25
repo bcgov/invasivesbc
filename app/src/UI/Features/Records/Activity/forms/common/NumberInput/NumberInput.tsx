@@ -1,11 +1,11 @@
 import { forwardRef, InputHTMLAttributes } from 'react';
 import { FieldError } from 'react-hook-form';
-import './numberInput.css';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
-import ErrorMessage from '../ErrorMessage/ErrorMessage';
-import { getInputWidth, Width } from '../utils';
-import RequiredField from '../RequiredField/RequiredField';
-import AdvisoryMessage from '../AdvisoryMessage/AdvisoryMessage';
+import ErrorMessage from 'UI/Features/Records/Activity/forms/common/ErrorMessage/ErrorMessage';
+import { getInputWidth, Width } from 'UI/Features/Records/Activity/forms/common/utils';
+import AdvisoryMessage from 'UI/Features/Records/Activity/forms/common/AdvisoryMessage/AdvisoryMessage';
+import OptionalField from 'UI/Features/Records/Activity/forms/common/OptionalField/OptionalField';
+import './numberInput.css';
 
 interface PropTypes extends InputHTMLAttributes<HTMLInputElement> {
   error?: FieldError;
@@ -27,7 +27,7 @@ export const NumberInput = forwardRef<HTMLInputElement, PropTypes>(
           <div className="top">
             <label>
               {label}
-              {required && <RequiredField />}
+              {!required && <OptionalField />}
             </label>
             {tooltip && <TooltipWithIcon tooltipText={tooltip} />}
           </div>
