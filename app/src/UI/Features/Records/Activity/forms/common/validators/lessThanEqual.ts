@@ -1,4 +1,4 @@
-const maxValue = (val: number | string | undefined, max: number) => {
+const lessThanEqual = (val: number | string | undefined, max: number) => {
   if (val == undefined) return true;
   if (typeof val === 'string') {
     return val.length <= max || `Maximum ${max} characters allowed.`;
@@ -6,4 +6,4 @@ const maxValue = (val: number | string | undefined, max: number) => {
   return val <= max || `Value cannot be greater than ${max}`;
 };
 
-export default maxValue;
+export default lessThanEqual;

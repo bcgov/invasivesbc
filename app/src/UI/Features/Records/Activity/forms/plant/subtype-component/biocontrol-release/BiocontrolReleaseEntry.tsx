@@ -4,10 +4,9 @@ import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
 import { YesNoUnknown } from 'UI/Features/Records/Activity/forms/enums';
 import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
-import { useFormContext } from 'react-hook-form';
+import { get, useFormContext } from 'react-hook-form';
 import { BiocontrolReleaseSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
-import { minValue, noFutureDate } from 'UI/Features/Records/Activity/forms/common/validators';
-import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
+import { greaterThanEqual, noFutureDate } from 'UI/Features/Records/Activity/forms/common/validators';
 import TextInput from 'UI/Features/Records/Activity/forms/common/TextInput/TextInput';
 import DateInput from 'UI/Features/Records/Activity/forms/common/DateInput/DateInput';
 import { useEffect } from 'react';
@@ -17,9 +16,8 @@ import useFilteredBiocontrolCodes from 'UI/Features/Records/Activity/forms/plant
 
 interface PropTypes {
   index: number;
-  remove: (index: number) => void;
 }
-const BiocontrolReleaseEntry = ({ index, remove }: PropTypes) => {
+const BiocontrolReleaseEntry = ({ index }: PropTypes) => {
   const {
     register,
     watch,
@@ -72,18 +70,18 @@ const BiocontrolReleaseEntry = ({ index, remove }: PropTypes) => {
       />
       <NumberInput
         label={'Mortality'}
-        error={errors?.subtype_data?.entries?.[index]?.mortality}
+        error={get(errors, `subtype_data.entries.${index}.mortality`)}
         required
         tooltip={tooltips.plant.biocontrol.mortality}
         width={Width.Half}
         {...register(`subtype_data.entries.${index}.mortality`, {
           required: true,
           valueAsNumber: true,
-          validate: (val) => minValue(val, 0)
+          validate: (val) => greaterThanEqual(val, 0)
         })}
       />
       <TextInput
-        error={errors?.subtype_data?.entries?.[index]?.agent_source}
+        error={get(errors, `subtype_data.entries.${index}.agent_source`)}
         label={'Agent Source'}
         required
         tooltip={tooltips.plant.biocontrol.agent_source}
@@ -92,7 +90,7 @@ const BiocontrolReleaseEntry = ({ index, remove }: PropTypes) => {
       />
       <DateInput
         defaultValue={new Date().toISOString().slice(0, 10)}
-        error={errors?.subtype_data?.entries?.[index]?.collection_date}
+        error={get(errors, `subtype_data.entries.${index}.collection_date`)}
         includeTime
         label={'Collection Date'}
         required
@@ -119,7 +117,6 @@ const BiocontrolReleaseEntry = ({ index, remove }: PropTypes) => {
       {/* Biocontrol Agent Count Section (Actuals) */}
       <BiocontrolCount index={index} />
       <BiocontrolCount estimate index={index} />
-      <DeleteControl onClick={() => remove(index)} />
     </>
   );
 };

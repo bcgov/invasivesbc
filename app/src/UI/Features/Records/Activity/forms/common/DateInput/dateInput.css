@@ -61,15 +61,6 @@
 
 @media screen and (width < 650px) {
   .form-date-input {
-    &.third-width,
-    &.quarter-width {
-      width: 49%;
-    }
-  }
-}
-
-@media screen and (width < 450px) {
-  .form-date-input {
     &.half-width,
     &.third-width,
     &.quarter-width {

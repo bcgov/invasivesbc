@@ -16,7 +16,7 @@ const BiocontrolCollection = () => {
         name={'subtype_data.entries'}
         label={'Biocontrol Collection'}
         emptyValue={getDefaultFormState(ActivitySubtypes.Biocontrol_Collection).subtype_data.entries[0]}
-        renderRow={(index, remove) => <BiocontrolCollectionEntry index={index} remove={remove} />}
+        renderRow={(index) => <BiocontrolCollectionEntry index={index} />}
       />
       <TargetPlantPhenology />
     </>

@@ -1,4 +1,4 @@
-import { useFormContext } from 'react-hook-form';
+import { get, useFormContext } from 'react-hook-form';
 import {
   AquaticPlantObservationSchema,
   TerrestrialPlantObservationSchema
@@ -21,95 +21,96 @@ const VoucherCollection = ({ index }) => {
   return (
     <Fieldset label={'Voucher Specimen Collection Information'}>
       <TextInput
-        required
+        error={get(errors, `subtype_data.entries.${index}.voucher_specimen.voucher_sample_id`)}
         label="Voucher Sample ID"
-        tooltip={tooltips.plant.voucher_sample_id}
-        {...register(`subtype_data.entries.${index}.voucher_specimen.voucher_sample_id`, { required: true })}
-        width={Width.Half}
-        error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.voucher_sample_id}
-      />
-
-      <TextInput
         required
-        label="Herbarium"
-        {...register(`subtype_data.entries.${index}.voucher_specimen.herbarium`, { required: true })}
+        tooltip={tooltips.plant.voucher_sample_id}
         width={Width.Half}
-        error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.herbarium}
+        {...register(`subtype_data.entries.${index}.voucher_specimen.voucher_sample_id`, { required: true })}
       />
 
       <TextInput
+        error={get(errors, `subtype_data.entries.${index}.voucher_specimen.herbarium`)}
+        label="Herbarium"
+        required
+        width={Width.Half}
+        {...register(`subtype_data.entries.${index}.voucher_specimen.herbarium`, { required: true })}
+      />
+
+      <TextInput
+        error={get(errors, `subtype_data.entries.${index}.voucher_specimen.accession_number`)}
         required
         label="Accession Number"
-        {...register(`subtype_data.entries.${index}.voucher_specimen.accession_number`, { required: true })}
         width={Width.Half}
-        error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.accession_number}
+        {...register(`subtype_data.entries.${index}.voucher_specimen.accession_number`, { required: true })}
       />
+
       <FormSpacer width={Width.Half} />
 
       <DateInput
-        required
+        error={get(errors, `subtype_data.entries.${index}.voucher_specimen.date_collected`)}
         label="Date Voucher Collected"
-        {...register(`subtype_data.entries.${index}.voucher_specimen.date_collected`, { required: true })}
+        required
         width={Width.Half}
-        error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.date_collected}
+        {...register(`subtype_data.entries.${index}.voucher_specimen.date_collected`, { required: true })}
       />
 
       <DateInput
-        required
+        error={get(errors, `subtype_data.entries.${index}.voucher_specimen.date_verified`)}
         label="Date Voucher Verified"
-        {...register(`subtype_data.entries.${index}.voucher_specimen.date_verified`, { required: true })}
+        required
         width={Width.Half}
-        error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.date_verified}
+        {...register(`subtype_data.entries.${index}.voucher_specimen.date_verified`, { required: true })}
       />
       <Fieldset label={'Voucher Verification Completed By'}>
         <TextInput
-          required
+          error={get(errors, `subtype_data.entries.${index}.voucher_specimen.completed_by_person`)}
           label="Completed By (Person)"
-          {...register(`subtype_data.entries.${index}.voucher_specimen.completed_by_person`, { required: true })}
+          required
           width={Width.Half}
-          error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.completed_by_person}
+          {...register(`subtype_data.entries.${index}.voucher_specimen.completed_by_person`, { required: true })}
         />
         <TextInput
+          error={get(errors, `subtype_data.entries.${index}.voucher_specimen.completed_by_org`)}
           label="Completed By (Org)"
           required
-          {...register(`subtype_data.entries.${index}.voucher_specimen.completed_by_org`, { required: true })}
           width={Width.Half}
-          error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.completed_by_org}
+          {...register(`subtype_data.entries.${index}.voucher_specimen.completed_by_org`, { required: true })}
         />
       </Fieldset>
 
       <Fieldset label={'Exact Coordinate of Voucher Collection Site'}>
         <NumberInput
+          error={get(errors, `subtype_data.entries.${index}.voucher_specimen.utm_zone`)}
           label="UTM Zone"
           required
+          width={Width.Third}
           {...register(`subtype_data.entries.${index}.voucher_specimen.utm_zone`, {
             required: true,
             valueAsNumber: true
           })}
-          width={Width.Third}
-          error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.utm_zone}
         />
 
         <NumberInput
+          error={get(errors, `subtype_data.entries.${index}.voucher_specimen.utm_easting`)}
           label="UTM Easting"
           required
+          width={Width.Third}
           {...register(`subtype_data.entries.${index}.voucher_specimen.utm_easting`, {
             required: true,
             valueAsNumber: true
           })}
-          width={Width.Third}
-          error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.utm_easting}
         />
 
         <NumberInput
+          error={get(errors, `subtype_data.entries.${index}.voucher_specimen.utm_northing`)}
           label="UTM Northing"
           required
+          width={Width.Third}
           {...register(`subtype_data.entries.${index}.voucher_specimen.utm_northing`, {
             required: true,
             valueAsNumber: true
           })}
-          width={Width.Third}
-          error={errors?.subtype_data?.entries?.[index]?.voucher_specimen?.utm_northing}
         />
       </Fieldset>
     </Fieldset>

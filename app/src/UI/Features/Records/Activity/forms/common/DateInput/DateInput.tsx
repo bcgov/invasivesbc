@@ -2,9 +2,9 @@ import { forwardRef, InputHTMLAttributes } from 'react';
 import { FieldError } from 'react-hook-form';
 import './dateInput.css';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
-import ErrorMessage from '../ErrorMessage/ErrorMessage';
-import { getInputWidth, Width } from '../utils';
-import RequiredField from '../RequiredField/RequiredField';
+import ErrorMessage from 'UI/Features/Records/Activity/forms/common/ErrorMessage/ErrorMessage';
+import { getInputWidth, Width } from 'UI/Features/Records/Activity/forms/common/utils';
+import OptionalField from 'UI/Features/Records/Activity/forms/common/OptionalField/OptionalField';
 
 interface PropTypes extends InputHTMLAttributes<HTMLInputElement> {
   error?: FieldError;
@@ -24,7 +24,7 @@ const DateInput = forwardRef<HTMLInputElement, PropTypes>(
           <div className="top">
             <label>
               {label}
-              {required && <RequiredField />}
+              {!required && <OptionalField />}
             </label>
             {tooltip && <TooltipWithIcon tooltipText={tooltip} />}
           </div>

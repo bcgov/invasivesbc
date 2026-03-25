@@ -1,14 +1,13 @@
 import { useSelector } from 'utils/use_selector';
-import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
 import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
-import { useFormContext } from 'react-hook-form';
+import { get, useFormContext } from 'react-hook-form';
 import { BiocontrolDispersalMonitoringSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import { useEffect, useMemo } from 'react';
 import { MonitoringType, YesNoBool, YesNoUnknown } from 'UI/Features/Records/Activity/forms/enums';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import MultiSelect from 'UI/Features/Records/Activity/forms/common/MultiSelect/MultiSelect';
 import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
-import { minValue, noFutureDate } from 'UI/Features/Records/Activity/forms/common/validators';
+import { greaterThanEqual, noFutureDate } from 'UI/Features/Records/Activity/forms/common/validators';
 import DateInput from 'UI/Features/Records/Activity/forms/common/DateInput/DateInput';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
 import BiocontrolCount from 'UI/Features/Records/Activity/forms/plant/subtype-component/common/BiocontrolCount';
@@ -18,9 +17,8 @@ import FormSpacer from 'UI/Features/Records/Activity/forms/common/FormSpacer/For
 
 type PropTypes = {
   index: number;
-  remove: (index: number) => void;
 };
-const BiocontrolDispersalMonitoringEntry = ({ index, remove }: PropTypes) => {
+const BiocontrolDispersalMonitoringEntry = ({ index }: PropTypes) => {
   const {
     register,
     watch,
@@ -108,7 +106,7 @@ const BiocontrolDispersalMonitoringEntry = ({ index, remove }: PropTypes) => {
         name={`subtype_data.entries.${index}.biocontrol_present`}
         options={YesNoBool}
         required
-        rules={{ required: true }}
+        rules={{ validate: (val) => val != undefined }}
         width={Width.Half}
       />
       {biocontrolPresent ? (
@@ -136,7 +134,7 @@ const BiocontrolDispersalMonitoringEntry = ({ index, remove }: PropTypes) => {
       {/* Monitoring Type Follow Up Fields */}
       {monitoringType === 'Timed' && (
         <NumberInput
-          error={errors?.subtype_data?.[index]?.count_duration_minutes}
+          error={get(errors, `subtype_data.entries.${index}.count_duration_minutes`)}
           label={'Count duration (Minutes)'}
           required
           tooltip={tooltips.plant.biocontrol.monitoring.count}
@@ -144,20 +142,20 @@ const BiocontrolDispersalMonitoringEntry = ({ index, remove }: PropTypes) => {
           {...register(`subtype_data.entries.${index}.count_duration_minutes`, {
             required: true,
             valueAsNumber: true,
-            validate: (val) => minValue(val!, 1)
+            validate: (val) => greaterThanEqual(val, 1)
           })}
         />
       )}
       {monitoringType === 'Count' && (
         <NumberInput
-          error={errors?.subtype_data?.[index]?.plant_count}
+          error={get(errors, `subtype_data.entries.${index}.plant_count`)}
           label={'Plant Count'}
           required
           width={Width.Half}
           {...register(`subtype_data.entries.${index}.plant_count`, {
             required: true,
             valueAsNumber: true,
-            validate: (val) => minValue(val!, 1)
+            validate: (val) => greaterThanEqual(val, 1)
           })}
         />
       )}
@@ -173,14 +171,14 @@ const BiocontrolDispersalMonitoringEntry = ({ index, remove }: PropTypes) => {
       />
       {monitoringMethod === SWEEP_COUNT_CODE ? (
         <NumberInput
-          error={errors?.subtype_data?.entries?.[index]?.number_of_sweeps}
+          error={get(errors, `subtype_data.entries.${index}.number_of_sweeps`)}
           label={'Number of Sweeps'}
           required
           width={Width.Half}
           {...register(`subtype_data.entries.${index}.number_of_sweeps`, {
             required: true,
             valueAsNumber: true,
-            validate: (val) => minValue(val!, 1)
+            validate: (val) => greaterThanEqual(val, 1)
           })}
         />
       ) : (
@@ -195,7 +193,7 @@ const BiocontrolDispersalMonitoringEntry = ({ index, remove }: PropTypes) => {
       />
       <FormSpacer width={Width.Half} />
       <DateInput
-        error={errors?.subtype_data?.entries?.[index]?.start_time}
+        error={get(errors, `subtype_data.entries.${index}.start_time`)}
         includeTime
         label={'Monitoring Start Time'}
         required
@@ -204,13 +202,13 @@ const BiocontrolDispersalMonitoringEntry = ({ index, remove }: PropTypes) => {
           deps: [`subtype_data.entries.${index}.stop_time`],
           required: true,
           validate: {
-            noFutureData: (val) => noFutureDate(val!),
+            noFutureData: (val) => noFutureDate(val),
             startBeforeStop: validateMonitoringStartStopTimes
           }
         })}
       />
       <DateInput
-        error={errors?.subtype_data?.entries?.[index]?.stop_time}
+        error={get(errors, `subtype_data.entries.${index}.stop_time`)}
         label={'Monitoring Stop Time'}
         includeTime
         required
@@ -219,7 +217,7 @@ const BiocontrolDispersalMonitoringEntry = ({ index, remove }: PropTypes) => {
           deps: [`subtype_data.entries.${index}.start_time`],
           required: true,
           validate: {
-            noFutureData: (val) => noFutureDate(val!),
+            noFutureData: (val) => noFutureDate(val),
             startBeforeStop: validateMonitoringStartStopTimes
           }
         })}
@@ -248,7 +246,6 @@ const BiocontrolDispersalMonitoringEntry = ({ index, remove }: PropTypes) => {
           <BiocontrolCount estimate extended index={index} />
         </>
       )}
-      <DeleteControl onClick={() => remove(index)} />
     </>
   );
 };

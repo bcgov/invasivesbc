@@ -30,6 +30,11 @@
     min-height: var(--form-input-height);
   }
 
+  /* stylelint-disable-next-line selector-class-pattern */
+  .select-input__multi-value__label {
+    white-space: unset;
+  }
+
   &.full-width {
     width: 100%;
   }
@@ -48,15 +53,6 @@
 }
 
 @media screen and (width < 650px) {
-  .form-multi-select-input {
-    &.third-width,
-    &.quarter-width {
-      width: 49%;
-    }
-  }
-}
-
-@media screen and (width < 450px) {
   .form-multi-select-input {
     &.half-width,
     &.third-width,

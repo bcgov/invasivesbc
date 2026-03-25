@@ -6,7 +6,6 @@ import { TreatmentPass, YesNo } from 'UI/Features/Records/Activity/forms/enums';
 import MultiSelect from 'UI/Features/Records/Activity/forms/common/MultiSelect/MultiSelect';
 import { minArrayLength } from 'UI/Features/Records/Activity/forms/common/validators';
 import TextInput from 'UI/Features/Records/Activity/forms/common/TextInput/TextInput';
-import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
 import {
   EntryBasePath,
   MonitoringChemPlantSchema,
@@ -17,10 +16,9 @@ import { useEffect } from 'react';
 import FormSpacer from 'UI/Features/Records/Activity/forms/common/FormSpacer/FormSpacer';
 
 type PropTypes = {
-  remove: Function;
   index: number;
 };
-const MonitoringChemMechPlantEntry = ({ index, remove }: PropTypes) => {
+const MonitoringChemMechPlantEntry = ({ index }: PropTypes) => {
   const BASE = `subtype_data.entries.${index}` as EntryBasePath;
   const validatePlantRow = (formValues) => {
     const entry = formValues.subtype_data.entries[index];
@@ -128,7 +126,6 @@ const MonitoringChemMechPlantEntry = ({ index, remove }: PropTypes) => {
         width={Width.Half}
         {...register(`subtype_data.entries.${index}.comment`)}
       />
-      <DeleteControl onClick={() => remove(index)} />
     </>
   );
 };
