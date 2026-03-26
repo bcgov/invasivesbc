@@ -1,5 +1,6 @@
 const lessThanEqual = (val: number | string | undefined, max: number) => {
-  if (val == undefined) return true;
+  console.log(val);
+  if (val == undefined || Number.isNaN(val)) return true;
   if (typeof val === 'string') {
     return val.length <= max || `Maximum ${max} characters allowed.`;
   }
