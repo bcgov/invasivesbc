@@ -196,7 +196,8 @@ const TreatmentChemicalPlantDetails = () => {
           required: true,
           validate: {
             min: (val) => greaterThanEqual(val.length, 1),
-            max: (val) => tank_mix || lessThanEqual(val.length, 1) // Only limit on non-tank mixes
+            max: (val) => tank_mix || lessThanEqual(val.length, 1), // Only limit on non-tank mixes
+            noDuplicateHerbicide: (val) => noRepeatKey(val, 'name', 'name')
           }
         }}
         renderRow={(index) => <HerbicideEntry idx={index} type={calculation_type as CalculationType} />}
