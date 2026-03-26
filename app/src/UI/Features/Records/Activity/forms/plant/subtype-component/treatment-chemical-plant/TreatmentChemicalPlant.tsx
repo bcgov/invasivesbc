@@ -26,6 +26,7 @@ import CheckboxUI from 'UI/Features/Records/Activity/forms/common/CheckboxUI/Che
 import { Fragment, useEffect, useState } from 'react';
 import TreatmentChemicalPlantDetails from './TreatmentChemicalPlantDetails';
 import useFilteredServiceLicenseCodes from 'UI/Features/Records/Activity/forms/plant/hooks/useFilteredServiceLicenseCodes';
+import useLocalStorage from '../../hooks/useLocalStorage';
 
 type ChemTreatment = AquaticChemicalTreatmentSchema | TerrestrialChemicalTreatmentSchema;
 
@@ -34,15 +35,6 @@ const TreatmentChemicalPlant = () => {
   const MIN_ALLOWED_TEMP = 10;
   const MAX_WIND_SPEED = 9;
 
-  /**
-   * @desc Cast localStorage value to boolean from string.
-   * @param key localStorage Key
-   */
-  const coerceLocalBool = (key: string): boolean => {
-    const bool = localStorage.getItem(key);
-    if (bool === 'true') return true;
-    return false;
-  };
   /**
    * @desc Validate only PMP or Manual PMP are filled in, not both.
    */
@@ -69,12 +61,14 @@ const TreatmentChemicalPlant = () => {
   const temp_c = watch('subtype_data.temperature_c');
   const wind_speed = watch('subtype_data.wind_speed_kmh');
 
+  const temperatureConsent = useLocalStorage('isTemperatureAccurate');
+  const windSpeedConsent = useLocalStorage('isWindSpeedAccurate');
   /*
     Entry Policy: Out-of-range values (temperature, wind speed) are permitted only if the user has manually flagged them as accurate.
     This prevents data entry errors without blocking edge-case submissions.
   */
-  const [isTemperatureAccurate, setIsTemperatureAccurate] = useState<boolean>(coerceLocalBool('isTemperatureAccurate'));
-  const [isWindSpeedAccurate, setIsWindSpeedAccurate] = useState<boolean>(coerceLocalBool('isWindSpeedAccurate'));
+  const [isTemperatureAccurate, setIsTemperatureAccurate] = useState<boolean>(temperatureConsent.getConfirmation());
+  const [isWindSpeedAccurate, setIsWindSpeedAccurate] = useState<boolean>(windSpeedConsent.getConfirmation());
   const { serviceLicenseCodes } = useFilteredServiceLicenseCodes(disabled);
 
   const shouldVerifyWindSpeedAccuracy = !disabled && wind_speed != undefined && wind_speed > MAX_WIND_SPEED;
@@ -85,14 +79,14 @@ const TreatmentChemicalPlant = () => {
     // Uncheck confirmation if temperature is changed
     if (!isDirty) return;
     setIsTemperatureAccurate(false);
-    localStorage.setItem('isTemperatureAccurate', 'false');
+    temperatureConsent.decline();
   }, [temp_c]);
 
   useEffect(() => {
     // Uncheck confirmation if Wind speed is changed
     if (!isDirty) return;
     setIsWindSpeedAccurate(false);
-    localStorage.setItem('isWindSpeedAccurate', 'false');
+    windSpeedConsent.decline();
   }, [wind_speed]);
 
   useEffect(() => {
@@ -220,8 +214,8 @@ const TreatmentChemicalPlant = () => {
             state={isTemperatureAccurate}
             warningConfirmation
             onChange={() => {
-              localStorage.setItem('isTemperatureAccurate', 'true');
-              setIsTemperatureAccurate((prev) => !prev);
+              isTemperatureAccurate ? temperatureConsent.decline() : temperatureConsent.confirm();
+              setIsTemperatureAccurate(temperatureConsent.getConfirmation());
             }}
           />
         )}
@@ -232,8 +226,8 @@ const TreatmentChemicalPlant = () => {
             state={isWindSpeedAccurate}
             warningConfirmation
             onChange={() => {
-              localStorage.setItem('isWindSpeedAccurate', 'true');
-              setIsWindSpeedAccurate((prev) => !prev);
+              isWindSpeedAccurate ? windSpeedConsent.decline() : windSpeedConsent.confirm();
+              setIsWindSpeedAccurate(windSpeedConsent.getConfirmation());
             }}
           />
         )}
