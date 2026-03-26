@@ -67,8 +67,12 @@ const TreatmentChemicalPlant = () => {
     Entry Policy: Out-of-range values (temperature, wind speed) are permitted only if the user has manually flagged them as accurate.
     This prevents data entry errors without blocking edge-case submissions.
   */
-  const [isTemperatureAccurate, setIsTemperatureAccurate] = useState<boolean>(temperatureConsent.getConfirmation());
-  const [isWindSpeedAccurate, setIsWindSpeedAccurate] = useState<boolean>(windSpeedConsent.getConfirmation());
+  const [userVerifiedTemperatureAccurate, setUserVerifiedTemperatureAccurate] = useState<boolean>(
+    temperatureConsent.getConfirmation()
+  );
+  const [userVerifiedWindspeedAccurate, setUserVerifiedWindspeedAccurate] = useState<boolean>(
+    windSpeedConsent.getConfirmation()
+  );
   const { serviceLicenseCodes } = useFilteredServiceLicenseCodes(disabled);
 
   const shouldVerifyWindSpeedAccuracy = !disabled && wind_speed != undefined && wind_speed > MAX_WIND_SPEED;
@@ -78,28 +82,28 @@ const TreatmentChemicalPlant = () => {
   useEffect(() => {
     // Uncheck confirmation if temperature is changed
     if (!isDirty) return;
-    setIsTemperatureAccurate(false);
-    temperatureConsent.decline();
+    temperatureConsent.remove();
+    setUserVerifiedTemperatureAccurate(false);
   }, [temp_c]);
 
   useEffect(() => {
     // Uncheck confirmation if Wind speed is changed
     if (!isDirty) return;
-    setIsWindSpeedAccurate(false);
-    windSpeedConsent.decline();
+    windSpeedConsent.remove();
+    setUserVerifiedWindspeedAccurate(false);
   }, [wind_speed]);
 
   useEffect(() => {
     // Refire Temperature validation when confirmation changes
     if (!isDirty) return;
     trigger('subtype_data.temperature_c');
-  }, [isTemperatureAccurate]);
+  }, [userVerifiedTemperatureAccurate]);
 
   useEffect(() => {
     // Refire Temperature validation when confirmation changes
     if (!isDirty) return;
     trigger('subtype_data.wind_speed_kmh');
-  }, [isWindSpeedAccurate]);
+  }, [userVerifiedWindspeedAccurate]);
 
   // Cleanup NTZ Reduction Rationale if Reduction is changed to False
   useEffect(() => {
@@ -155,9 +159,9 @@ const TreatmentChemicalPlant = () => {
             required: true,
             valueAsNumber: true,
             validate: {
-              minValueBeforeVerify: (val) => isTemperatureAccurate || greaterThanEqual(val, MIN_ALLOWED_TEMP),
+              minValueBeforeVerify: (val) => userVerifiedTemperatureAccurate || greaterThanEqual(val, MIN_ALLOWED_TEMP),
               maxValueBeforeVerify: (val) =>
-                isTemperatureAccurate
+                userVerifiedTemperatureAccurate
                   ? lessThan(val, 100) // If user verifies weather accuracy, check for clearly accidental values (extra digits)
                   : lessThanEqual(val, MAX_ALLOWED_TEMP)
             }
@@ -175,7 +179,8 @@ const TreatmentChemicalPlant = () => {
             // If user verifies weather accurate, check for clearly accidental values (extra digits)
             validate: {
               minSpeed: (val) => greaterThanEqual(val, 0),
-              maxSpeed: (val) => (isWindSpeedAccurate ? lessThan(val, 100) : lessThanEqual(val, MAX_WIND_SPEED))
+              maxSpeed: (val) =>
+                userVerifiedWindspeedAccurate ? lessThan(val, 100) : lessThanEqual(val, MAX_WIND_SPEED)
             }
           })}
         />
@@ -211,24 +216,28 @@ const TreatmentChemicalPlant = () => {
               'The temperature recorded at the time of treatment is an accurate representation of site conditions.'
             }
             required
-            state={isTemperatureAccurate}
+            state={userVerifiedTemperatureAccurate}
             warningConfirmation
-            onChange={() => {
-              isTemperatureAccurate ? temperatureConsent.decline() : temperatureConsent.confirm();
-              setIsTemperatureAccurate(temperatureConsent.getConfirmation());
-            }}
+            onChange={() =>
+              setUserVerifiedTemperatureAccurate((prev) => {
+                prev ? temperatureConsent.remove() : temperatureConsent.confirm();
+                return !prev;
+              })
+            }
           />
         )}
         {shouldVerifyWindSpeedAccuracy && (
           <CheckboxUI
             label={'The wind speed recorded at the time of treatment is an accurate representation of site conditions.'}
             required
-            state={isWindSpeedAccurate}
+            state={userVerifiedWindspeedAccurate}
             warningConfirmation
-            onChange={() => {
-              isWindSpeedAccurate ? windSpeedConsent.decline() : windSpeedConsent.confirm();
-              setIsWindSpeedAccurate(windSpeedConsent.getConfirmation());
-            }}
+            onChange={() =>
+              setUserVerifiedWindspeedAccurate((prev) => {
+                prev ? windSpeedConsent.remove() : windSpeedConsent.confirm();
+                return !prev;
+              })
+            }
           />
         )}
       </Fieldset>
