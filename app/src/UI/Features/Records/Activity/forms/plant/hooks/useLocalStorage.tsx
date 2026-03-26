@@ -4,7 +4,18 @@ const useLocalStorage = (key: string) => {
   const get = (): string | null => localStorage.getItem(key);
   const set = (val: string): void => localStorage.setItem(key, val);
 
-  return { get, set, confirm, decline };
+  /**
+   * @desc Cast localStorage value to boolean from string.
+   * @param key localStorage Key
+   */
+  const getConfirmation = (): boolean => {
+    const bool = localStorage.getItem(key);
+    if (bool === 'true') return true;
+    if (bool === 'false') return false;
+    return false;
+  };
+
+  return { get, set, confirm, decline, getConfirmation };
 };
 
 export default useLocalStorage;
