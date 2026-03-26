@@ -3,6 +3,7 @@ const useLocalStorage = (key: string) => {
   const decline = (): void => localStorage.setItem(key, 'false');
   const get = (): string | null => localStorage.getItem(key);
   const set = (val: string): void => localStorage.setItem(key, val);
+  const remove = (): void => localStorage.removeItem(key);
 
   /**
    * @desc Cast localStorage value to boolean from string.
@@ -15,7 +16,7 @@ const useLocalStorage = (key: string) => {
     return false;
   };
 
-  return { get, set, confirm, decline, getConfirmation };
+  return { get, set, confirm, decline, getConfirmation, remove };
 };
 
 export default useLocalStorage;
