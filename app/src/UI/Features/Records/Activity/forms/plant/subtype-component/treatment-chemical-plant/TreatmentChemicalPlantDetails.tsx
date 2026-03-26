@@ -23,6 +23,7 @@ import {
   greaterThanEqual,
   noRepeatKey
 } from 'UI/Features/Records/Activity/forms/common/validators';
+import TreatmentChemicalPlantCalculations from './TreatmentChemicalPlantCalculations';
 
 type ChemTreatment = AquaticChemicalTreatmentSchema | TerrestrialChemicalTreatmentSchema;
 
@@ -88,6 +89,7 @@ const TreatmentChemicalPlantDetails = () => {
 
   // Trigger Validation on Herbicides when tank mix changes (modifies maxLength Constraints)
   useEffect(() => {
+    if (!isDirty) return;
     trigger('subtype_data.treatment_context.herbicide');
   }, [tank_mix]);
 
@@ -107,7 +109,6 @@ const TreatmentChemicalPlantDetails = () => {
       unregister('subtype_data.treatment_context.dilution_percent');
       unregister('subtype_data.treatment_context.area_treated_sqm');
     } else if (calculation_type === CalculationType.Dilution) {
-      unregister('subtype_data.treatment_context.application_rate');
       unregister('subtype_data.treatment_context.delivery_rate');
     }
   }, [calculation_type]);
@@ -202,7 +203,7 @@ const TreatmentChemicalPlantDetails = () => {
       />
       <NumberInput
         label={`Amount of Mix Used (L)`}
-        width={Width.Third}
+        width={Width.Half}
         tooltip={tooltips.plant.chemical.calculation_fields.amount_mix_used}
         required
         error={get(errors, 'subtype_data.treatment_context.amount_mix_used_l')}
@@ -217,7 +218,7 @@ const TreatmentChemicalPlantDetails = () => {
         <>
           <NumberInput
             label={`Dilution (%)`} // Figure out G/L measurement
-            width={Width.Third}
+            width={Width.Half}
             tooltip={tooltips.plant.chemical.calculation_fields.dilution_percent}
             required
             error={get(errors, 'subtype_data.treatment_context.dilution_percent')}
@@ -232,7 +233,7 @@ const TreatmentChemicalPlantDetails = () => {
           />
           <NumberInput
             label={`Area Treated (m²)`}
-            width={Width.Third}
+            width={Width.Half}
             tooltip={tooltips.plant.chemical.calculation_fields.area_treated_msq}
             error={get(errors, 'subtype_data.treatment_context.area_treated_sqm')}
             required
@@ -245,33 +246,20 @@ const TreatmentChemicalPlantDetails = () => {
         </>
       )}
       {calculation_type === CalculationType.ApplicationRate && (
-        <>
-          <NumberInput
-            label={`Delivery Rate of Mix (L)`}
-            width={Width.Third}
-            tooltip={tooltips.plant.chemical.calculation_fields.delivery_rate_of_mix}
-            required
-            error={get(errors, 'subtype_data.treatment_context.delivery_rate')}
-            {...register('subtype_data.treatment_context.delivery_rate', {
-              required: true,
-              valueAsNumber: true,
-              validate: (val) => greaterThan(val, 0)
-            })}
-          />
-          <NumberInput
-            label={`Product Application Rate`} // TODO: Add Units
-            width={Width.Third}
-            tooltip={tooltips.plant.chemical.calculation_fields.application_rate}
-            required
-            error={get(errors, 'subtype_data.treatment_context.application_rate')}
-            {...register('subtype_data.treatment_context.application_rate', {
-              required: true,
-              valueAsNumber: true,
-              validate: (val) => greaterThan(val, 0)
-            })}
-          />
-        </>
+        <NumberInput
+          label={`Delivery Rate of Mix (L)`}
+          width={Width.Half}
+          tooltip={tooltips.plant.chemical.calculation_fields.delivery_rate_of_mix}
+          required
+          error={get(errors, 'subtype_data.treatment_context.delivery_rate')}
+          {...register('subtype_data.treatment_context.delivery_rate', {
+            required: true,
+            valueAsNumber: true,
+            validate: (val) => greaterThan(val, 0)
+          })}
+        />
       )}
+      <TreatmentChemicalPlantCalculations />
     </Fieldset>
   );
 };
