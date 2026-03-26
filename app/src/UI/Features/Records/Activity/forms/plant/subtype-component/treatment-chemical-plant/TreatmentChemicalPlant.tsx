@@ -1,9 +1,6 @@
 import { get, useFormContext } from 'react-hook-form';
 import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
-import {
-  AquaticChemicalTreatmentSchema,
-  TerrestrialChemicalTreatmentSchema
-} from 'UI/Features/Records/Activity/forms/plant/interfaces';
+import { ChemTreatment } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
 import TextInput from 'UI/Features/Records/Activity/forms/common/TextInput/TextInput';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
@@ -28,8 +25,6 @@ import TreatmentChemicalPlantDetails from './TreatmentChemicalPlantDetails';
 import useFilteredServiceLicenseCodes from 'UI/Features/Records/Activity/forms/plant/hooks/useFilteredServiceLicenseCodes';
 import useLocalStorage from 'UI/Features/Records/Activity/forms/plant/hooks/useLocalStorage';
 import useFieldPath from 'UI/Features/Records/Activity/forms/plant/hooks/useFieldPath';
-
-type ChemTreatment = AquaticChemicalTreatmentSchema | TerrestrialChemicalTreatmentSchema;
 
 const TreatmentChemicalPlant = () => {
   const MAX_ALLOWED_TEMP = 28;

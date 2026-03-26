@@ -1,9 +1,4 @@
-import {
-  AquaticChemicalTreatmentSchema,
-  TerrestrialChemicalTreatmentSchema
-} from 'UI/Features/Records/Activity/forms/plant/interfaces/';
-
-type ChemTreatment = AquaticChemicalTreatmentSchema | TerrestrialChemicalTreatmentSchema;
+import { ChemTreatment } from 'UI/Features/Records/Activity/forms/plant/interfaces/ChemTreatment';
 
 const getTreatmentChemicalPlantSubtypeFields = (): ChemTreatment['subtype_data'] => ({
   well_entries: [],

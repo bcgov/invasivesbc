@@ -1,10 +1,7 @@
 import { get, useFormContext } from 'react-hook-form';
 import { useSelector } from 'utils/use_selector';
 import { useEffect, useMemo } from 'react';
-import {
-  AquaticChemicalTreatmentSchema,
-  TerrestrialChemicalTreatmentSchema
-} from 'UI/Features/Records/Activity/forms/plant/interfaces';
+import { ChemTreatment } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
 import RadioInput from 'UI/Features/Records/Activity/forms/common/RadioInput/RadioInput';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
@@ -24,8 +21,6 @@ import {
   noRepeatKey
 } from 'UI/Features/Records/Activity/forms/common/validators';
 import TreatmentChemicalPlantCalculations from './TreatmentChemicalPlantCalculations';
-
-type ChemTreatment = AquaticChemicalTreatmentSchema | TerrestrialChemicalTreatmentSchema;
 
 const TreatmentChemicalPlantDetails = () => {
   enum CalculationType {
