@@ -38,7 +38,6 @@ const TreatmentChemicalPlantDetails = () => {
     watch,
     setValue,
     trigger,
-    unregister,
     formState: { isDirty, errors }
   } = useFormContext<ChemTreatment>();
 
@@ -101,17 +100,6 @@ const TreatmentChemicalPlantDetails = () => {
       setValue('subtype_data.treatment_context.calculation_type', '', { shouldDirty: true });
     }
   }, [calculationOptions]);
-
-  // When Calculation Type is changed, unregister any stale fields
-  useEffect(() => {
-    if (!isDirty) return;
-    if (calculation_type === CalculationType.ApplicationRate) {
-      unregister('subtype_data.treatment_context.dilution_percent');
-      unregister('subtype_data.treatment_context.area_treated_sqm');
-    } else if (calculation_type === CalculationType.Dilution) {
-      unregister('subtype_data.treatment_context.delivery_rate');
-    }
-  }, [calculation_type]);
 
   return (
     <Fieldset label={'Chemical Treatment Details'}>
@@ -226,6 +214,7 @@ const TreatmentChemicalPlantDetails = () => {
             {...register('subtype_data.treatment_context.dilution_percent', {
               required: true,
               valueAsNumber: true,
+              shouldUnregister: true,
               validate: {
                 min: (val) => greaterThan(val, 0),
                 max: (val) => lessThanEqual(val, 100)
@@ -241,6 +230,7 @@ const TreatmentChemicalPlantDetails = () => {
             {...register('subtype_data.treatment_context.area_treated_sqm', {
               required: true,
               valueAsNumber: true,
+              shouldUnregister: true,
               validate: (val) => greaterThan(val, 0)
             })}
           />
@@ -256,6 +246,7 @@ const TreatmentChemicalPlantDetails = () => {
           {...register('subtype_data.treatment_context.delivery_rate', {
             required: true,
             valueAsNumber: true,
+            shouldUnregister: true,
             validate: (val) => greaterThan(val, 0)
           })}
         />
