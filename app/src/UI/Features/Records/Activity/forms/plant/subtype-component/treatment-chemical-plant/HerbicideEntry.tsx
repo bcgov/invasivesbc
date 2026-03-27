@@ -1,22 +1,32 @@
-import { useEffect, useMemo } from 'react';
-import { FieldPath, get, useFormContext, useWatch } from 'react-hook-form';
+import { useEffect, useMemo, useState } from 'react';
+import { get, useFormContext, useWatch } from 'react-hook-form';
 import { useSelector } from 'utils/use_selector';
-import { AquaticChemicalTreatmentSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
+import { ChemTreatment } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
 import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
 import { greaterThan } from 'UI/Features/Records/Activity/forms/common/validators';
 import { CalculationType } from 'UI/Features/Records/Activity/forms/enums';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
+import { HerbicideApplicationRates } from 'sharedAPI';
+import CheckboxUI from 'UI/Features/Records/Activity/forms/common/CheckboxUI/CheckboxUI';
+import useLocalStorage from 'UI/Features/Records/Activity/forms/plant/hooks/useLocalStorage';
+import useFieldPath from 'UI/Features/Records/Activity/forms/plant/hooks/useFieldPath';
 
 type PropTypes = {
   idx?: number;
   type: CalculationType;
 };
 
-/**
- * @desc Component Herbicide Entries in a Chemical Treatment Form.
- */
+/** @desc Component Herbicide Entries in a Chemical Treatment Form. */
 const HerbicideEntry = ({ idx, type }: PropTypes) => {
+  /** @desc Validates the Application Rate against the (if known) Max Product Application Rate for an herbicide */
+  const verifyApplicationRate = (val: number) => {
+    const maxRate = HerbicideApplicationRates?.[herbicideEntry.name];
+    if (!maxRate || !val || val <= maxRate) return true;
+    const full = herbicideCodes.find(({ code }) => code === herbicideEntry.name)?.full_name;
+    return `Application rate of ${full} exceeds maximum application rate of ${maxRate}L/ha`;
+  };
+
   enum HerbicideType {
     Granular = 'granular',
     Liquid = 'liquid'
@@ -24,25 +34,36 @@ const HerbicideEntry = ({ idx, type }: PropTypes) => {
 
   const {
     control,
-    unregister,
     register,
     setValue,
-    formState: { isDirty, errors }
-  } = useFormContext<AquaticChemicalTreatmentSchema>();
+    trigger,
+    formState: { isDirty, errors, disabled }
+  } = useFormContext<ChemTreatment>();
 
-  const herbicideEntry = useWatch({
-    control,
-    name: `subtype_data.treatment_context.herbicide.${idx}` as FieldPath<AquaticChemicalTreatmentSchema>
-  });
-
+  const { basePath, getPath } = useFieldPath<ChemTreatment>(`subtype_data.treatment_context.herbicide.${idx}`);
   const codes = useSelector((state) => state.ActivityPage.formCodes);
+  const herbicideEntry = useWatch({ control, name: basePath });
+  const productApplicationRateConsent = useLocalStorage(`applicationRateConsent-${idx}`);
+  const [userConfirmedApplicationRate, setUserConfirmedApplicationRate] = useState<boolean>(
+    productApplicationRateConsent.getConfirmation()
+  );
 
-  // Set Available Herbicide Codes based on Type
+  // Set Herbicide Codes based on Type
   const herbicideCodes = useMemo(() => {
     if (herbicideEntry.type === HerbicideType.Granular) return codes?.GranularHerbicideCode;
     if (herbicideEntry.type === HerbicideType.Liquid) return codes?.LiquidHerbicideCode;
     return [];
   }, [herbicideEntry?.type, codes]);
+
+  // Check if an Application Value exceeds the Allotted amount.
+  const doesProductApplicationRateRequireConfirmation = useMemo(() => {
+    if (disabled || !herbicideEntry.application_rate) return false;
+    const maximumApplicationRate = HerbicideApplicationRates?.[herbicideEntry.name];
+    const rateIsAboveLimit = Boolean(
+      maximumApplicationRate && herbicideEntry.application_rate > maximumApplicationRate
+    );
+    return rateIsAboveLimit;
+  }, [disabled, herbicideEntry?.application_rate, herbicideEntry.name]);
 
   // Clear Herbicide Codes if selection is no longer valid. (e.g. User changed from Solid -> Liquid)
   useEffect(() => {
@@ -50,28 +71,28 @@ const HerbicideEntry = ({ idx, type }: PropTypes) => {
     const currentSelectionNoLongerValid =
       herbicideEntry.name && !herbicideCodes.some(({ code }) => code === herbicideEntry.name);
     if (currentSelectionNoLongerValid) {
-      setValue(
-        `subtype_data.treatment_context.herbicide.${idx}.name` as FieldPath<AquaticChemicalTreatmentSchema>,
-        '',
-        { shouldDirty: true }
-      );
+      setValue(getPath('name'), '', { shouldDirty: true });
     }
   }, [herbicideCodes]);
 
-  // Remove Application Rate from Form Payload if Calculation Type changes to Dilution. (No longer applicable)
+  // Remove any previous confirmation if user changes fields
   useEffect(() => {
     if (!isDirty) return;
-    if (type === CalculationType.Dilution)
-      unregister(
-        `subtype_data.treatment_context.herbicide.${idx}.application_rate` as FieldPath<AquaticChemicalTreatmentSchema>
-      );
-  }, [type]);
+    setUserConfirmedApplicationRate(false);
+    productApplicationRateConsent.remove();
+  }, [herbicideEntry.name, herbicideEntry.code, herbicideEntry.application_rate, idx]);
+
+  // Refire Validation if user confirms/denies accuracy of field.
+  useEffect(() => {
+    if (!isDirty) return;
+    trigger(getPath('application_rate'));
+  }, [userConfirmedApplicationRate]);
 
   return (
     <>
       <SingleSelect
         label={'Herbicide Type'}
-        name={`subtype_data.treatment_context.herbicide.${idx}.type`}
+        name={getPath('type')}
         required
         tooltip={tooltips.plant.chemical.calculation_fields.herbicide_type}
         options={[
@@ -82,23 +103,45 @@ const HerbicideEntry = ({ idx, type }: PropTypes) => {
       />
       <SingleSelect
         label={'Herbicide'}
-        name={`subtype_data.treatment_context.herbicide.${idx}.name`}
+        name={getPath('name')}
         tooltip={tooltips.plant.chemical.calculation_fields.herbicide}
         noOptionsMessage="Select Herbicide Type First"
         options={herbicideCodes}
         rules={{ required: true }}
       />
       {type === CalculationType.ApplicationRate && (
-        <NumberInput
-          label={'Product Application Rate'}
-          tooltip={tooltips.plant.chemical.calculation_fields.application_rate}
-          required
-          error={get(errors, `subtype_data.treatment_context.herbicide.${idx}.application_rate`)}
-          {...register(
-            `subtype_data.treatment_context.herbicide.${idx}.application_rate` as FieldPath<AquaticChemicalTreatmentSchema>,
-            { required: true, valueAsNumber: true, validate: (val) => greaterThan(val, 0) }
+        <>
+          <NumberInput
+            label={'Product Application Rate'}
+            tooltip={tooltips.plant.chemical.calculation_fields.application_rate}
+            required
+            error={get(errors, getPath('application_rate'))}
+            {...register(getPath('application_rate'), {
+              required: true,
+              valueAsNumber: true,
+              shouldUnregister: true,
+              deps: [getPath('name')],
+              validate: {
+                minValue: (val) => greaterThan(val, 0),
+                verifyApplicationRate: (val) => userConfirmedApplicationRate || verifyApplicationRate(val)
+              }
+            })}
+          />
+          {doesProductApplicationRateRequireConfirmation && (
+            <CheckboxUI
+              label={`I verify that this application rate was intentionally applied and accurately recorded.`}
+              required
+              state={userConfirmedApplicationRate}
+              warningConfirmation
+              onChange={() => {
+                setUserConfirmedApplicationRate((prev) => {
+                  prev ? productApplicationRateConsent.remove() : productApplicationRateConsent.confirm();
+                  return !prev;
+                });
+              }}
+            />
           )}
-        />
+        </>
       )}
     </>
   );

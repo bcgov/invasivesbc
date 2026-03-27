@@ -1,10 +1,7 @@
 import { useMemo } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
-import {
-  AquaticChemicalTreatmentSchema,
-  TerrestrialChemicalTreatmentSchema
-} from 'UI/Features/Records/Activity/forms/plant/interfaces';
+import { ChemTreatment } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import {
   mSpecie_mLGHerb_spray_usingProdAppRate,
   mSpecie_sGHerb_spray_usingDilutionPercent,
@@ -17,7 +14,6 @@ import {
 } from './calculations';
 import { useSelector } from 'utils/use_selector';
 
-type ChemTreatment = AquaticChemicalTreatmentSchema | TerrestrialChemicalTreatmentSchema;
 enum CalculationType {
   Dilution = 'Dilution',
   ApplicationRate = 'Product Application Rate'
@@ -63,9 +59,51 @@ const TreatmentChemicalPlantCalculations = () => {
     }
 
     if (!isMultiplePlants && isHerbicideLiquid && isApplicationCalculation) {
-      return sSpecie_sLHerb_spray_usingProdAppRate(area_m, application_rate, amount_mix_used_l, delivery_rate);
+      /**
+       * TODO: Finalize and remove.
+       * Original: Single Species response.
+       *
+       * This Scenario anticipates the singleSpecies result. but is near identical to the multipleSpecies result.
+       * Leaving both as a return for stakeholders to test and visualize before a proper ui component is created.
+       */
+      return {
+        singleSpecies: sSpecie_sLHerb_spray_usingProdAppRate(
+          area_m,
+          application_rate,
+          amount_mix_used_l,
+          delivery_rate
+        ),
+        multiSpecies: mSpecie_sLHerb_spray_usingProdAppRate(
+          area_m,
+          application_rate,
+          amount_mix_used_l,
+          delivery_rate,
+          plants_treated
+        )
+      };
     } else if (!isMultiplePlants && isHerbicideLiquid && isDilutionCalculation) {
-      return sSpecie_sLHerb_spray_usingDilutionPercent(area_m, amount_mix_used_l, dilution_percent, area_treated_sqm);
+      /**
+       * TODO: Finalize and remove.
+       * Original: Single Species response.
+       *
+       * This Scenario anticipates the singleSpecies result. but is near identical to the multipleSpecies result.
+       * Leaving both as a return for stakeholders to test and visualize before a proper ui component is created.
+       */
+      return {
+        singleSpecies: sSpecie_sLHerb_spray_usingDilutionPercent(
+          area_m,
+          amount_mix_used_l,
+          dilution_percent,
+          area_treated_sqm
+        ),
+        multiSpecies: mSpecie_sLHerb_spray_usingDilutionPercent(
+          area_m,
+          amount_mix_used_l,
+          dilution_percent,
+          area_treated_sqm,
+          plants_treated
+        )
+      };
     } else if (isHerbicideSolid && isApplicationCalculation) {
       return mSpecie_sGHerb_spray_usingProdAppRate(
         area_m,

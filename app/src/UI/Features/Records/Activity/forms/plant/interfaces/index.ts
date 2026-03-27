@@ -18,3 +18,4 @@ export type {
   ChemicalContextDilution,
   ChemicalContextApplicationRate
 } from './ChemicalTreatmentContext';
+export type { ChemTreatment } from './ChemTreatment';

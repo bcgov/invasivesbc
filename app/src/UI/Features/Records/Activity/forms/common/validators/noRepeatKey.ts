@@ -4,11 +4,7 @@
  * @param key Key to compare e.g. 'invasive_plant'
  * @param keyLabel Plain language representation of key to appear in error message e.g. 'Invasive Plant'
  */
-const noRepeatKey = <T extends Record<PropertyKey, unknown>>(
-  arr: T[],
-  key: keyof T,
-  keyLabel?: string
-): boolean | string => {
+const noRepeatKey = <T extends object>(arr: T[], key: keyof T, keyLabel?: string): boolean | string => {
   const seen = new Set();
 
   for (const entry of arr) {

@@ -84,7 +84,7 @@ const mSpecie_sLHerb_spray_usingProdAppRate = (
       index,
       amount_of_mix_used,
       area_covered_pct,
-      area_treates_sqm: trunc(area_treated_hectares * HECTARE_TO_SQM),
+      area_treated_sqm: trunc(area_treated_hectares * HECTARE_TO_SQM),
       undiluted_herbicide_used_l
     };
   });

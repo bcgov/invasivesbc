@@ -59,7 +59,7 @@ interface AuthState {
   loggedInOrWorkingOffline: boolean;
   loginInProgress: boolean;
 
-  roles: { role_id: number; role_name: string }[];
+  roles: Array<{ role_id: number; role_name: string; role_description: string }>;
   writePrivilege: Array<ActivitySubtype>;
   accessRoles: { role_id: number; role_name: string }[];
   rolesInitialized: boolean;
