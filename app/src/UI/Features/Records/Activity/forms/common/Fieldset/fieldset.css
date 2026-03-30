@@ -6,6 +6,7 @@
   box-sizing: border-box;
   align-items: stretch;
   margin-bottom: 3rem;
+  min-width: 0; /* Override default fieldset behaviour */
   border: 0;
 
   legend {
