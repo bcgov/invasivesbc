@@ -18,22 +18,22 @@ import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
 import { DisposedMaterialFormat } from 'UI/Features/Records/Activity/forms/enums';
 import TextInput from 'UI/Features/Records/Activity/forms/common/TextInput/TextInput';
+import useFieldPath from 'UI/Features/Records/Activity/forms/plant/hooks/useFieldPath';
 
 const TreatmentMechPlantAquatic = () => {
-  const ROOT = 'subtype_data';
   const {
     register,
     formState: { errors }
   } = useFormContext<AquaticMechTreatment>();
   const codes = useSelector((state) => state.ActivityPage.formCodes);
-
+  const { getPath } = useFieldPath<AquaticMechTreatment>('subtype_data');
   return (
     <>
       <Fieldset label={'Authorization'}>
         <TextInput
           label={'Authorization Information'}
           tooltip={tooltips.plant.waterbody.authorization_info}
-          {...register(`${ROOT}.authorization_info`)}
+          {...register(getPath('authorization_info'))}
         />
       </Fieldset>
 
@@ -60,7 +60,7 @@ const TreatmentMechPlantAquatic = () => {
               label="Shoreline Type"
               options={codes.ShorelineTypeCode}
               tooltip={tooltips.plant.waterbody.shoreline_type}
-              name={`${ROOT}.shoreline_types.${index}.shoreline_type`}
+              name={getPath(`shoreline_types.${index}.shoreline_type`)}
               rules={{ required: true }}
               required
               width={Width.Half}
@@ -72,7 +72,7 @@ const TreatmentMechPlantAquatic = () => {
               width={Width.Half}
               tooltip={tooltips.plant.waterbody.shoreline_percent}
               error={errors.subtype_data?.shoreline_types?.[index]?.percent_covered}
-              {...register(`${ROOT}.shoreline_types.${index}.percent_covered`, {
+              {...register(getPath(`shoreline_types.${index}.percent_covered`), {
                 required: true,
                 valueAsNumber: true,
                 validate: {
@@ -88,7 +88,10 @@ const TreatmentMechPlantAquatic = () => {
       <ArrayField<AquaticMechTreatment, 'subtype_data.entries'>
         name={'subtype_data.entries'}
         label="Entries"
-        emptyValue={getDefaultFormState(ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic).subtype_data.entries[0]}
+        emptyValue={
+          (getDefaultFormState(ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic) as AquaticMechTreatment)
+            .subtype_data.entries[0]
+        }
         rules={{
           validate: {
             minLength: (val) => minArrayLength(val, 1),
@@ -96,7 +99,7 @@ const TreatmentMechPlantAquatic = () => {
           }
         }}
         renderRow={(index) => {
-          const basePath = `${ROOT}.entries.${index}` as EntryBasePath;
+          const basePath = getPath(`entries.${index}`) as EntryBasePath;
           return (
             <>
               <SingleSelect
