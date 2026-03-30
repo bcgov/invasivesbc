@@ -11,9 +11,10 @@ import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips'
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
 import { ActivitySubtypes } from 'sharedAPI';
 import MultiSelect from 'UI/Features/Records/Activity/forms/common/MultiSelect/MultiSelect';
+import useFieldPath from 'UI/Features/Records/Activity/forms/plant/hooks/useFieldPath';
 
 const ObservationPlantTerrestrial = () => {
-  const ROOT = 'subtype_data';
+  const { getPath } = useFieldPath<TerrestrialPlantObservationSchema>('subtype_data');
 
   const validateSlopeAspect = (val, formValues) => {
     const aspect = val?.code ?? val;
@@ -33,12 +34,12 @@ const ObservationPlantTerrestrial = () => {
           tooltip={tooltips.plant.soil_texture}
           options={codes?.SoilTextureCode}
           width={Width.Half}
-          name={`${ROOT}.soil_texture`}
+          name={getPath('soil_texture')}
         />
         <MultiSelect
           label={'Specific Use'}
           options={codes?.SpecificUseCode}
-          name={`${ROOT}.specific_uses`}
+          name={getPath('specific_uses')}
           required
           tooltip={tooltips.plant.terrestrial_specific_use}
           rules={{ required: true }}
@@ -47,10 +48,10 @@ const ObservationPlantTerrestrial = () => {
         <SingleSelect
           label={'Slope (%)'}
           options={codes?.SlopePercentCode}
-          name={`${ROOT}.slope_percent`}
+          name={getPath('slope_percent')}
           required
           rules={{
-            deps: [`${ROOT}.aspect`],
+            deps: [getPath('aspect')],
             required: true,
             validate: (val, formValues) => validateSlopeAspect(val, formValues)
           }}
@@ -60,12 +61,12 @@ const ObservationPlantTerrestrial = () => {
         <SingleSelect
           label={'Aspect'}
           options={codes?.AspectCode}
-          name={`${ROOT}.aspect`}
+          name={getPath('aspect')}
           tooltip={tooltips.plant.aspect}
           required
           rules={{
             required: true,
-            deps: [`${ROOT}.slope_percent`],
+            deps: [getPath('slope_percent')],
             validate: (val, formValues) => validateSlopeAspect(val, formValues)
           }}
           width={Width.Half}
@@ -73,7 +74,7 @@ const ObservationPlantTerrestrial = () => {
         <SingleSelect
           label={'Research Observation'}
           options={YesNoUnknown}
-          name={`${ROOT}.research_observation`}
+          name={getPath('research_observation')}
           required
           tooltip={tooltips.plant.research_observation}
           rules={{ required: true }}
@@ -82,7 +83,7 @@ const ObservationPlantTerrestrial = () => {
         <SingleSelect
           label={'Visible Well Nearby'}
           options={YesNoUnknown}
-          name={`${ROOT}.visible_well_nearby`}
+          name={getPath('visible_well_nearby')}
           required
           tooltip={tooltips.plant.visible_well_nearby}
           rules={{ required: true }}
@@ -91,7 +92,7 @@ const ObservationPlantTerrestrial = () => {
         <SingleSelect
           label={'Suitable For Biocontrol Agent'}
           options={YesNoUnknown}
-          name={`${ROOT}.suitable_for_biocontrol_agent`}
+          name={getPath('suitable_for_biocontrol_agent')}
           required
           tooltip={tooltips.plant.suitable_for_biocontrol_agent}
           rules={{ required: true }}
@@ -99,17 +100,20 @@ const ObservationPlantTerrestrial = () => {
         />
       </Fieldset>
       <ArrayField<TerrestrialPlantObservationSchema, 'subtype_data.entries'>
-        name={`subtype_data.entries`}
+        name={'subtype_data.entries'}
         label="Terrestrial Invasive Plants"
         // Use builder to get empty entry. Less optimal but keeps declarations in one spot.
-        emptyValue={getDefaultFormState(ActivitySubtypes.Observation_Plant_Aquatic).subtype_data.entries[0]}
+        emptyValue={
+          (getDefaultFormState(ActivitySubtypes.Observation_Plant_Aquatic) as TerrestrialPlantObservationSchema)
+            .subtype_data.entries[0]
+        }
         rules={{
           validate: {
             minLength: (val) => minArrayLength(val, 1),
             noRepeatPlants: (val) => noRepeatKey(val, 'invasive_plant', 'Invasive Plant')
           }
         }}
-        renderRow={(index) => <TerrestrialPlantEntry root={ROOT} index={index} />}
+        renderRow={(index) => <TerrestrialPlantEntry index={index} />}
       />
     </>
   );

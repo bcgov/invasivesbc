@@ -14,12 +14,12 @@ import ArrayField from 'UI/Features/Records/Activity/forms/common/ArrayField/Arr
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
 import { ActivitySubtypes } from 'sharedAPI';
 import BiocontrolReleaseMonitoringEntry from './BiocontrolReleaseMonitoringEntry';
+import useFieldPath from 'UI/Features/Records/Activity/forms/plant/hooks/useFieldPath';
 
 const BiocontrolReleaseMonitoring = () => {
   const {
     register,
     getValues,
-    setValue,
     formState: { errors, isDirty }
   } = useFormContext<BiocontrolReleaseMonitoringSchema>();
   const [isSpreadResultsPresent, setIsSpreadResultsPresent] = useState<boolean>(false);
@@ -29,15 +29,8 @@ const BiocontrolReleaseMonitoring = () => {
     setIsSpreadResultsPresent(isResults);
   }, []);
 
-  useEffect(() => {
-    // Clear Spread results section if unchecked.
-    if (!isSpreadResultsPresent && isDirty) {
-      setValue('subtype_data.agent_density', undefined);
-      setValue('subtype_data.plant_attack', undefined);
-      setValue('subtype_data.max_spread_aspect_deg', undefined);
-      setValue('subtype_data.max_spread_distance_m', undefined);
-    }
-  }, [isSpreadResultsPresent]);
+  const { getPath } = useFieldPath<BiocontrolReleaseMonitoringSchema>('subtype_data');
+
   return (
     <>
       <BiocontrolWeatherConditions />
@@ -56,7 +49,11 @@ const BiocontrolReleaseMonitoring = () => {
         }}
         renderRow={(index) => <BiocontrolReleaseMonitoringEntry index={index} />}
         emptyValue={
-          getDefaultFormState(ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial).subtype_data.entries[0]
+          (
+            getDefaultFormState(
+              ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial
+            ) as BiocontrolReleaseMonitoringSchema
+          ).subtype_data.entries[0]
         }
       />
 
@@ -73,9 +70,10 @@ const BiocontrolReleaseMonitoring = () => {
               label={'Agent Density %'}
               width={Width.Half}
               tooltip={tooltips.plant.spread_results.max_spread_deg}
-              error={get(errors, 'subtype_data.agent_density')}
-              {...register('subtype_data.agent_density', {
+              error={get(errors, getPath('agent_density'))}
+              {...register(getPath('agent_density'), {
                 valueAsNumber: true,
+                shouldUnregister: true,
                 validate: (val) => lessThanEqual(val, 100)
               })}
             />
@@ -83,9 +81,10 @@ const BiocontrolReleaseMonitoring = () => {
               label={'Plant Attack %'}
               width={Width.Half}
               tooltip={tooltips.plant.spread_results.plant_attack}
-              error={get(errors, 'subtype_data.plant_attack')}
-              {...register('subtype_data.plant_attack', {
+              error={get(errors, getPath('plant_attack'))}
+              {...register(getPath('plant_attack'), {
                 valueAsNumber: true,
+                shouldUnregister: true,
                 validate: (val) => lessThanEqual(val, 100)
               })}
             />
@@ -94,10 +93,11 @@ const BiocontrolReleaseMonitoring = () => {
               required={isSpreadResultsPresent}
               width={Width.Half}
               tooltip={tooltips.plant.spread_results.max_spread_m}
-              error={get(errors, 'subtype_data.max_spread_distance_m')}
-              {...register('subtype_data.max_spread_distance_m', {
+              error={get(errors, getPath('max_spread_distance_m'))}
+              {...register(getPath('max_spread_distance_m'), {
                 required: isSpreadResultsPresent,
                 valueAsNumber: true,
+                shouldUnregister: true,
                 validate: { minDistance: (val) => greaterThanEqual(val, 0) }
               })}
             />
@@ -106,9 +106,10 @@ const BiocontrolReleaseMonitoring = () => {
               required={isSpreadResultsPresent}
               width={Width.Half}
               tooltip={tooltips.plant.spread_results.max_spread_deg}
-              error={get(errors, 'subtype_data.max_spread_aspect_deg')}
-              {...register('subtype_data.max_spread_aspect_deg', {
+              error={get(errors, getPath('max_spread_aspect_deg'))}
+              {...register(getPath('max_spread_aspect_deg'), {
                 valueAsNumber: true,
+                shouldUnregister: true,
                 required: isSpreadResultsPresent,
                 validate: {
                   minDegrees: (val) => greaterThanEqual(val, 0),

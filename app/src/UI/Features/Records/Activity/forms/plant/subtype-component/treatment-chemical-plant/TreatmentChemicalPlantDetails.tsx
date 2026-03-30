@@ -21,6 +21,7 @@ import {
   noRepeatKey
 } from 'UI/Features/Records/Activity/forms/common/validators';
 import TreatmentChemicalPlantCalculations from './TreatmentChemicalPlantCalculations';
+import useFieldPath from 'UI/Features/Records/Activity/forms/plant/hooks/useFieldPath';
 
 const TreatmentChemicalPlantDetails = () => {
   enum CalculationType {
@@ -28,6 +29,7 @@ const TreatmentChemicalPlantDetails = () => {
     ApplicationRate = 'Product Application Rate'
   }
 
+  const { getPath } = useFieldPath<ChemTreatment>('subtype_data.treatment_context');
   const {
     register,
     watch,
@@ -41,9 +43,9 @@ const TreatmentChemicalPlantDetails = () => {
   const subtype = useSelector((state) => state.ActivityPage.formType);
 
   // Watched form values
-  const calculation_type = watch('subtype_data.treatment_context.calculation_type');
-  const tank_mix = watch('subtype_data.treatment_context.tank_mix');
-  const application_method = watch('subtype_data.treatment_context.application_method');
+  const calculation_type = watch(getPath('calculation_type'));
+  const tank_mix = watch(getPath('tank_mix'));
+  const application_method = watch(getPath('application_method'));
 
   // Filter plant codes based on if subtype is Aquatic or Terrestrial.
   const invasivePlantCodes = useMemo(() => {
@@ -77,14 +79,14 @@ const TreatmentChemicalPlantDetails = () => {
     const currentSelectionNoLongerValid =
       application_method && !application_method_codes.some(({ code }) => code === application_method);
     if (currentSelectionNoLongerValid) {
-      setValue('subtype_data.treatment_context.application_method', '', { shouldDirty: true });
+      setValue(getPath('application_method'), '', { shouldDirty: true });
     }
   }, [application_method_codes, application_method]);
 
   // Trigger Validation on Herbicides when tank mix changes (modifies maxLength Constraints)
   useEffect(() => {
     if (!isDirty) return;
-    trigger('subtype_data.treatment_context.herbicide');
+    trigger(getPath('herbicide'));
   }, [tank_mix]);
 
   useEffect(() => {
@@ -92,7 +94,7 @@ const TreatmentChemicalPlantDetails = () => {
     const currentSelectionNoLongerValid =
       calculationOptions && !calculationOptions.some(({ code }) => code === calculation_type);
     if (currentSelectionNoLongerValid) {
-      setValue('subtype_data.treatment_context.calculation_type', '', { shouldDirty: true });
+      setValue(getPath('calculation_type'), '', { shouldDirty: true });
     }
   }, [calculationOptions]);
 
@@ -100,7 +102,7 @@ const TreatmentChemicalPlantDetails = () => {
     <Fieldset label={'Chemical Treatment Details'}>
       <RadioInput
         label={'Tank Mix'}
-        name={'subtype_data.treatment_context.tank_mix'}
+        name={getPath('tank_mix')}
         required
         rules={{ validate: (value) => value !== undefined || 'Tank mix is required' }}
         tooltip={tooltips.plant.chemical.calculation_fields.tank_mix}
@@ -112,7 +114,7 @@ const TreatmentChemicalPlantDetails = () => {
       />
       <SingleSelect
         label="Chemical Application Method"
-        name={'subtype_data.treatment_context.application_method'}
+        name={getPath('application_method')}
         options={application_method_codes}
         required
         rules={{ required: true }}
@@ -121,7 +123,7 @@ const TreatmentChemicalPlantDetails = () => {
       />
       <SingleSelect
         label={'Calculation Type'}
-        name={'subtype_data.treatment_context.calculation_type'}
+        name={getPath('calculation_type')}
         options={calculationOptions}
         required
         rules={{ required: true }}
@@ -147,17 +149,17 @@ const TreatmentChemicalPlantDetails = () => {
           <>
             <SingleSelect
               label="Invasive Plant"
-              name={`subtype_data.treatment_context.plants_treated.${index}.invasive_plant`}
+              name={getPath(`plants_treated.${index}.invasive_plant`)}
               options={invasivePlantCodes}
               required
               rules={{ required: true }}
               tooltip={tooltips.plant.invasive_plant}
             />
             <NumberInput
-              error={get(errors, `subtype_data.treatment_context.plants_treated.${index}.percent_covered`)}
+              error={get(errors, getPath(`plants_treated.${index}.percent_covered`))}
               label={'Percent Area Covered'}
               tooltip={tooltips.plant.chemical.calculation_fields.area_covered}
-              {...register(`subtype_data.treatment_context.plants_treated.${index}.percent_covered`, {
+              {...register(getPath(`plants_treated.${index}.percent_covered`), {
                 required: true,
                 valueAsNumber: true,
                 validate: {
@@ -190,8 +192,8 @@ const TreatmentChemicalPlantDetails = () => {
         width={Width.Half}
         tooltip={tooltips.plant.chemical.calculation_fields.amount_mix_used}
         required
-        error={get(errors, 'subtype_data.treatment_context.amount_mix_used_l')}
-        {...register('subtype_data.treatment_context.amount_mix_used_l', {
+        error={get(errors, getPath('amount_mix_used_l'))}
+        {...register(getPath('amount_mix_used_l'), {
           valueAsNumber: true,
           required: true,
           validate: (val) => greaterThan(val, 0)
@@ -205,8 +207,8 @@ const TreatmentChemicalPlantDetails = () => {
             width={Width.Half}
             tooltip={tooltips.plant.chemical.calculation_fields.dilution_percent}
             required
-            error={get(errors, 'subtype_data.treatment_context.dilution_percent')}
-            {...register('subtype_data.treatment_context.dilution_percent', {
+            error={get(errors, getPath('dilution_percent'))}
+            {...register(getPath('dilution_percent'), {
               required: true,
               valueAsNumber: true,
               shouldUnregister: true,
@@ -220,9 +222,9 @@ const TreatmentChemicalPlantDetails = () => {
             label={`Area Treated (m²)`}
             width={Width.Half}
             tooltip={tooltips.plant.chemical.calculation_fields.area_treated_msq}
-            error={get(errors, 'subtype_data.treatment_context.area_treated_sqm')}
+            error={get(errors, getPath('area_treated_sqm'))}
             required
-            {...register('subtype_data.treatment_context.area_treated_sqm', {
+            {...register(getPath('area_treated_sqm'), {
               required: true,
               valueAsNumber: true,
               shouldUnregister: true,
@@ -237,8 +239,8 @@ const TreatmentChemicalPlantDetails = () => {
           width={Width.Half}
           tooltip={tooltips.plant.chemical.calculation_fields.delivery_rate_of_mix}
           required
-          error={get(errors, 'subtype_data.treatment_context.delivery_rate')}
-          {...register('subtype_data.treatment_context.delivery_rate', {
+          error={get(errors, getPath('delivery_rate'))}
+          {...register(getPath('delivery_rate'), {
             required: true,
             valueAsNumber: true,
             shouldUnregister: true,

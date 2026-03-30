@@ -15,7 +15,10 @@ const BiocontrolCollection = () => {
       <ArrayField<BiocontrolCollectionSchema, 'subtype_data.entries'>
         name={'subtype_data.entries'}
         label={'Biocontrol Collection'}
-        emptyValue={getDefaultFormState(ActivitySubtypes.Biocontrol_Collection).subtype_data.entries[0]}
+        emptyValue={
+          (getDefaultFormState(ActivitySubtypes.Biocontrol_Collection) as BiocontrolCollectionSchema).subtype_data
+            .entries[0]
+        }
         renderRow={(index) => <BiocontrolCollectionEntry index={index} />}
       />
       <TargetPlantPhenology />

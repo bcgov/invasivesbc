@@ -13,6 +13,7 @@ import { useEffect } from 'react';
 import BiocontrolCount from 'UI/Features/Records/Activity/forms/plant/subtype-component/common/BiocontrolCount';
 import useFilteredInvasivePlantCodes from 'UI/Features/Records/Activity/forms/plant/hooks/useFilteredInvasivePlantCodes';
 import useFilteredBiocontrolCodes from 'UI/Features/Records/Activity/forms/plant/hooks/useFilteredBiocontrolCodes';
+import useFieldPath from 'UI/Features/Records/Activity/forms/plant/hooks/useFieldPath';
 
 interface PropTypes {
   index: number;
@@ -24,9 +25,11 @@ const BiocontrolReleaseEntry = ({ index }: PropTypes) => {
     setValue,
     formState: { errors, isDirty }
   } = useFormContext<BiocontrolReleaseSchema>();
+  const { getPath } = useFieldPath<BiocontrolReleaseSchema>(`subtype_data.entries.${index}`);
+
   const codes = useSelector((state) => state.ActivityPage.formCodes);
-  const selectedPlant = watch(`subtype_data.entries.${index}.invasive_plant`);
-  const selectedAgent = watch(`subtype_data.entries.${index}.biocontrol_agent`);
+  const selectedPlant = watch(getPath('invasive_plant'));
+  const selectedAgent = watch(getPath('biocontrol_agent'));
   const { terrestrialPlantOptionsWithAgents } = useFilteredInvasivePlantCodes();
   const { agentOptionsForChosenPlant } = useFilteredBiocontrolCodes(selectedPlant);
 
@@ -34,7 +37,7 @@ const BiocontrolReleaseEntry = ({ index }: PropTypes) => {
     const currentSelectionNoLongerValid =
       selectedAgent && !agentOptionsForChosenPlant.some(({ code }) => code === selectedAgent);
     if (currentSelectionNoLongerValid && isDirty) {
-      setValue(`subtype_data.entries.${index}.biocontrol_agent`, '');
+      setValue(getPath('biocontrol_agent'), '');
     }
   }, [agentOptionsForChosenPlant]);
 
@@ -42,7 +45,7 @@ const BiocontrolReleaseEntry = ({ index }: PropTypes) => {
     <>
       <SingleSelect
         label={'Invasive Plant'}
-        name={`subtype_data.entries.${index}.invasive_plant`}
+        name={getPath('invasive_plant')}
         options={terrestrialPlantOptionsWithAgents}
         required
         rules={{ required: true }}
@@ -51,7 +54,7 @@ const BiocontrolReleaseEntry = ({ index }: PropTypes) => {
       />
       <SingleSelect
         label={'Biological Agent'}
-        name={`subtype_data.entries.${index}.biocontrol_agent`}
+        name={getPath('biocontrol_agent')}
         options={agentOptionsForChosenPlant}
         required
         noOptionsMessage={'Select an Invasive Plant to see options'}
@@ -61,7 +64,7 @@ const BiocontrolReleaseEntry = ({ index }: PropTypes) => {
       />
       <SingleSelect
         label={'Linear Segment'}
-        name={`subtype_data.entries.${index}.linear_segment`}
+        name={getPath('linear_segment')}
         options={YesNoUnknown}
         required
         rules={{ required: true }}
@@ -70,38 +73,38 @@ const BiocontrolReleaseEntry = ({ index }: PropTypes) => {
       />
       <NumberInput
         label={'Mortality'}
-        error={get(errors, `subtype_data.entries.${index}.mortality`)}
+        error={get(errors, getPath('mortality'))}
         required
         tooltip={tooltips.plant.biocontrol.mortality}
         width={Width.Half}
-        {...register(`subtype_data.entries.${index}.mortality`, {
+        {...register(getPath('mortality'), {
           required: true,
           valueAsNumber: true,
           validate: (val) => greaterThanEqual(val, 0)
         })}
       />
       <TextInput
-        error={get(errors, `subtype_data.entries.${index}.agent_source`)}
+        error={get(errors, getPath('agent_source'))}
         label={'Agent Source'}
         required
         tooltip={tooltips.plant.biocontrol.agent_source}
         width={Width.Half}
-        {...register(`subtype_data.entries.${index}.agent_source`, { required: true })}
+        {...register(getPath('agent_source'), { required: true })}
       />
       <DateInput
         defaultValue={new Date().toISOString().slice(0, 10)}
-        error={get(errors, `subtype_data.entries.${index}.collection_date`)}
+        error={get(errors, getPath('collection_date'))}
         includeTime
         label={'Collection Date'}
         required
         width={Width.Half}
-        {...register(`subtype_data.entries.${index}.collection_date`, {
+        {...register(getPath('collection_date'), {
           validate: (val) => noFutureDate(val)
         })}
       />
       <SingleSelect
         label={'Plant Collected From'}
-        name={`subtype_data.entries.${index}.plant_collected_from`}
+        name={getPath('plant_collected_from')}
         options={codes?.TerrestrialPlantCode}
         required
         rules={{ required: true }}
@@ -111,8 +114,9 @@ const BiocontrolReleaseEntry = ({ index }: PropTypes) => {
       <TextInput
         label={'Plant Collected From (Unlisted)'}
         tooltip={tooltips.plant.biocontrol.plant_collected_from_manual}
+        error={get(errors, getPath('plant_collected_from_manual'))}
         width={Width.Half}
-        {...register(`subtype_data.entries.${index}.plant_collected_from_manual`)}
+        {...register(getPath('plant_collected_from_manual'))}
       />
       {/* Biocontrol Agent Count Section (Actuals) */}
       <BiocontrolCount index={index} />

@@ -23,7 +23,10 @@ const TreatmentMechPlantTerrestrial = () => {
     <ArrayField<TerrestrialMechTreatment, 'subtype_data.entries'>
       name={'subtype_data.entries'}
       label="Entries"
-      emptyValue={getDefaultFormState(ActivitySubtypes.Treatment_Mechanical_Plant_Terrestrial).subtype_data.entries[0]}
+      emptyValue={
+        (getDefaultFormState(ActivitySubtypes.Treatment_Mechanical_Plant_Terrestrial) as TerrestrialMechTreatment)
+          .subtype_data.entries[0]
+      }
       rules={{
         validate: {
           minLength: (val) => minArrayLength(val, 1),
