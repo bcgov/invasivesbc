@@ -87,6 +87,7 @@ const HerbicideEntry = ({ idx, type }: PropTypes) => {
     if (!isDirty) return;
     trigger(getPath('application_rate'));
   }, [userConfirmedApplicationRate]);
+  const units = herbicideEntry?.type === HerbicideType.Granular ? 'g' : 'L';
 
   return (
     <>
@@ -104,6 +105,7 @@ const HerbicideEntry = ({ idx, type }: PropTypes) => {
       <SingleSelect
         label={'Herbicide'}
         name={getPath('name')}
+        required
         tooltip={tooltips.plant.chemical.calculation_fields.herbicide}
         noOptionsMessage="Select Herbicide Type First"
         options={herbicideCodes}
@@ -112,7 +114,7 @@ const HerbicideEntry = ({ idx, type }: PropTypes) => {
       {type === CalculationType.ApplicationRate && (
         <>
           <NumberInput
-            label={'Product Application Rate'}
+            label={`Product Application Rate (${units}/ha)`}
             tooltip={tooltips.plant.chemical.calculation_fields.application_rate}
             required
             error={get(errors, getPath('application_rate'))}
