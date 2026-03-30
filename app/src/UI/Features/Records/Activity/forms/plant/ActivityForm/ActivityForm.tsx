@@ -167,7 +167,10 @@ const ActivityForm = () => {
           {/* Debug Information/Options */}
           <DebugButton
             label={`${isFormDisabled ? 'Enable' : 'Disable'} Form`}
-            onClick={() => setIsFormDisabled((prev) => !prev)}
+            onClick={(e) => {
+              e.preventDefault();
+              setIsFormDisabled((prev) => !prev);
+            }}
           />
           <DebugFormData />
         </form>
