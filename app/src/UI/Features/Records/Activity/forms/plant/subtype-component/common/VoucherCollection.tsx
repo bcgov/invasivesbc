@@ -15,7 +15,7 @@ import useFieldPath from 'UI/Features/Records/Activity/forms/plant/hooks/useFiel
 type Observation = TerrestrialPlantObservationSchema | AquaticPlantObservationSchema;
 
 const VoucherCollection = ({ index }) => {
-  const { basePath, getPath } = useFieldPath<Observation>(`subtype_data.entries.${index}.voucher_specimen`);
+  const { getPath } = useFieldPath<Observation>(`subtype_data.entries.${index}.voucher_specimen`);
   const {
     register,
     formState: { errors }
