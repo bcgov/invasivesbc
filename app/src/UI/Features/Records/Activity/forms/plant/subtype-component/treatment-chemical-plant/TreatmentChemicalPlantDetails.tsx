@@ -159,6 +159,7 @@ const TreatmentChemicalPlantDetails = () => {
               error={get(errors, getPath(`plants_treated.${index}.percent_covered`))}
               label={'Percent Area Covered'}
               tooltip={tooltips.plant.chemical.calculation_fields.area_covered}
+              required
               {...register(getPath(`plants_treated.${index}.percent_covered`), {
                 required: true,
                 valueAsNumber: true,
@@ -235,7 +236,7 @@ const TreatmentChemicalPlantDetails = () => {
       )}
       {calculation_type === CalculationType.ApplicationRate && (
         <NumberInput
-          label={`Delivery Rate of Mix (L)`}
+          label={`Delivery Rate of Mix (L/ha)`}
           width={Width.Half}
           tooltip={tooltips.plant.chemical.calculation_fields.delivery_rate_of_mix}
           required
