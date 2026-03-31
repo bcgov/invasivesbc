@@ -78,12 +78,12 @@ const TreatmentChemicalPlantCalculations = () => {
     const NUM_INVASIVE_PLANTS = plants_treated.length;
     const NUM_HERBICIDES = herbicide.length;
 
-    if (!NUM_HERBICIDES || !NUM_INVASIVE_PLANTS) return 'Violation: Missing Herbicides and/or Invasive Plants';
+    if (!NUM_HERBICIDES || !NUM_INVASIVE_PLANTS) throw new Error('Missing Herbicides and/or Invasive Plants');
 
     const isMultipleHerbicides = NUM_HERBICIDES > 1;
     const isMultiplePlants = NUM_INVASIVE_PLANTS > 1;
 
-    if (tank_mix && !isMultipleHerbicides) return 'Violation: Tank mix requires multiple herbicides';
+    if (tank_mix && !isMultipleHerbicides) throw new Error('Tank mix requires multiple herbicides');
     if (tank_mix && isMultipleHerbicides) {
       return mSpecie_mLGHerb_spray_usingProdAppRate(
         area_m,
@@ -93,7 +93,7 @@ const TreatmentChemicalPlantCalculations = () => {
         herbicide
       );
     }
-    if (isMultipleHerbicides) return 'Violation: Only tank mix may have multiple herbicides.';
+    if (isMultipleHerbicides) throw new Error('Only tank mix may have multiple herbicides.');
 
     const { type: herbicide_type, application_rate, name: herbicide_name } = herbicide[0];
     const applicationMethod = (() => {
@@ -183,10 +183,12 @@ const TreatmentChemicalPlantCalculations = () => {
           (v) => typeof v === 'number' && (Number.isNaN(v) || !Number.isFinite(v)) // Parse NaN and infinity values
         )
       );
-      if (areMissingValuesPresent) setViolation('Violation: Calculation fields are missing or invalid.');
+      if (areMissingValuesPresent) throw new Error('Calculation fields are missing or invalid.');
       return calculations as Array<object>;
     } catch (e) {
-      console.error(e);
+      if (e instanceof Error) {
+        setViolation(e.toString());
+      }
       return [];
     }
   }, [
@@ -204,34 +206,32 @@ const TreatmentChemicalPlantCalculations = () => {
 
   return (
     <Fieldset label={'Calculations'}>
-      {typeof calculations !== 'string' && calculations.length > 0 && (
-        <div id="calculation-table">
-          {violation ? (
-            <AdvisoryMessage text={violation} />
-          ) : (
-            <div className="wrapper">
-              <table>
-                <thead>
-                  <tr>
-                    {Object.keys(calculations[0]).map((key) => (
-                      <th key={key}>{columnKeyToLabel(key)}</th>
+      <div id="calculation-table">
+        {violation ? (
+          <AdvisoryMessage text={violation} />
+        ) : (
+          <div className="wrapper">
+            <table>
+              <thead>
+                <tr>
+                  {Object.keys(calculations[0] ?? {}).map((key) => (
+                    <th key={key}>{columnKeyToLabel(key)}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {calculations.map((c, index) => (
+                  <tr key={index}>
+                    {Object.entries(c).map(([k, v]) => (
+                      <td key={k}>{formattedColumn(v, k as keyof typeof columnLabelMap)}</td>
                     ))}
                   </tr>
-                </thead>
-                <tbody>
-                  {calculations.map((c, index) => (
-                    <tr key={index}>
-                      {Object.entries(c).map(([k, v]) => (
-                        <td key={k}>{formattedColumn(v, k as keyof typeof columnLabelMap)}</td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      )}
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
       <Debug>
         <Accordion
           title={
