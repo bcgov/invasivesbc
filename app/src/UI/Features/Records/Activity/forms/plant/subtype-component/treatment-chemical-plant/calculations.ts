@@ -36,6 +36,18 @@ type CalculationResponseValues = {
 const HECTARE_TO_SQM = 10000;
 const trunc = (value: number) => Number(value.toFixed(10));
 
+/**
+ * Sort Order for Return Values
+ * - invasive_plant
+ * - herbicide_name
+ * - amount_of_mix_used
+ * - product_application_rate
+ * - dilution
+ * - area_treated_sqm
+ * - undiluted_herbicide_used_l
+ * - percentage_area_covered
+ */
+
 type ApplicationCalculationVariables = {
   area_m: number;
   product_application_rate_lha: number;
@@ -83,13 +95,13 @@ const mSpecie_sLHerb_spray_usingProdAppRate = ({
     const percentage_area_covered = trunc((area_treated_by_plant / area_m) * 100);
     const undiluted_herbicide_used_l = trunc((dilution / 100) * amount_mix_used_l * (plant.percent_covered / 100));
     return {
-      herbicide_name,
       invasive_plant: plant.invasive_plant,
-      dilution: trunc(dilution),
+      herbicide_name,
       amount_of_mix_used,
-      percentage_area_covered,
+      dilution: trunc(dilution),
       area_treated_sqm: trunc(area_treated_hectares * HECTARE_TO_SQM),
-      undiluted_herbicide_used_l
+      undiluted_herbicide_used_l,
+      percentage_area_covered
     } as CalculationResponseValues;
   });
 };
@@ -121,11 +133,11 @@ const mSpecie_sLHerb_spray_usingDilutionPercent = ({
       (dilution_percent / 100) * amount_mix_used_l * (plant.percent_covered / 100)
     );
     return {
-      herbicide_name,
       invasive_plant: plant.invasive_plant,
+      herbicide_name,
       area_treated_sqm: plant_area_treated_sqm,
-      percentage_area_covered: percentage_area_covered,
-      undiluted_herbicide_used_l: undiluted_herbicide_used_l
+      undiluted_herbicide_used_l: undiluted_herbicide_used_l,
+      percentage_area_covered: percentage_area_covered
     } as CalculationResponseValues;
   });
 };
@@ -162,10 +174,11 @@ const mSpecie_sGHerb_spray_usingProdAppRate = ({
       invasive_plant: plant.invasive_plant,
       herbicide_name,
       amount_of_mix_used: trunc(amount_of_mix_used),
-      area_treated_sqm: trunc(area_treated_sqm),
+      product_application_rate: product_application_rate_lha,
       dilution: trunc(dilution),
-      percentage_area_covered,
-      undiluted_herbicide_used_l
+      area_treated_sqm: trunc(area_treated_sqm),
+      undiluted_herbicide_used_l,
+      percentage_area_covered
     } as CalculationResponseValues;
   });
   return calculations;
@@ -198,11 +211,11 @@ const mSpecie_sGHerb_spray_usingDilutionPercent = ({
       (dilution_percent / 100) * amount_mix_used_l * (plant.percent_covered / 100)
     );
     return {
-      herbicide_name,
       invasive_plant: plant.invasive_plant,
+      herbicide_name,
       area_treated_sqm: trunc(area_treated_by_plant),
-      percentage_area_covered,
-      undiluted_herbicide_used_l
+      undiluted_herbicide_used_l,
+      percentage_area_covered
     } as CalculationResponseValues;
   });
   return calculations;
@@ -235,8 +248,8 @@ const sSpecie_sLHerb_direct_usingDilutionPercent = ({
       invasive_plant: plants_treated[0].invasive_plant,
       herbicide_name,
       area_treated_sqm,
-      percentage_area_covered: area_covered_pct,
-      undiluted_herbicide_used_l
+      undiluted_herbicide_used_l,
+      percentage_area_covered: area_covered_pct
     } as CalculationResponseValues
   ];
 };
@@ -273,11 +286,11 @@ const mSpecie_mLGHerb_spray_usingProdAppRate = (
       return {
         invasive_plant,
         herbicide_name: name,
-        dilution: trunc(dilution),
-        percentage_area_covered: trunc(area_covered_pct),
-        undiluted_herbicide_used_l: trunc(undiluted_herbicide_used_l),
         product_application_rate: application_rate,
-        area_treated_sqm: trunc(area_treated_sqm)
+        dilution: trunc(dilution),
+        area_treated_sqm: trunc(area_treated_sqm),
+        undiluted_herbicide_used_l: trunc(undiluted_herbicide_used_l),
+        percentage_area_covered: trunc(area_covered_pct)
       } as CalculationResponseValues;
     });
   });
