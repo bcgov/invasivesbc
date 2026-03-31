@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useSelector } from 'utils/use_selector';
+import { BugReport } from '@mui/icons-material';
+import { ActivitySubtypes } from 'sharedAPI';
 import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
 import { ChemTreatment } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import AdvisoryMessage from 'UI/Features/Records/Activity/forms/common/AdvisoryMessage/AdvisoryMessage';
@@ -17,7 +19,6 @@ import {
 import './treatmentChemicalPlantCalculations.css';
 import Accordion from 'UI/Reusable/Accordion/Accordion';
 import { Debug } from 'UI/Reusable/Predicates/Debug';
-import { ActivitySubtypes } from 'sharedAPI';
 
 enum CalculationType {
   Dilution = 'Dilution',
@@ -232,7 +233,13 @@ const TreatmentChemicalPlantCalculations = () => {
         </div>
       )}
       <Debug>
-        <Accordion title={'JSON Format - Calculations'}>
+        <Accordion
+          title={
+            <>
+              <BugReport /> JSON Format - Calculations
+            </>
+          }
+        >
           <pre>{JSON.stringify(calculations, null, 2)}</pre>
         </Accordion>
       </Debug>
