@@ -2,6 +2,7 @@ pre {
   text-align: left;
   background-color: lightgray;
   width: 100%;
+  text-wrap: wrap;
 }
 
 #calculation-table {
@@ -35,6 +36,7 @@ pre {
     }
 
     tr th {
+      text-transform: capitalize;
       white-space: nowrap;
       padding: 5px 5px 5px 3px;
       text-align: left;

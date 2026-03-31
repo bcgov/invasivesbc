@@ -17,6 +17,7 @@ import {
 import './treatmentChemicalPlantCalculations.css';
 import Accordion from 'UI/Reusable/Accordion/Accordion';
 import { Debug } from 'UI/Reusable/Predicates/Debug';
+import { ActivitySubtypes } from 'sharedAPI';
 
 enum CalculationType {
   Dilution = 'Dilution',
@@ -24,15 +25,15 @@ enum CalculationType {
 }
 const TreatmentChemicalPlantCalculations = () => {
   const columnLabelMap = {
-    herbicide: 'Herbicide #',
+    herbicide_name: 'Herbicide',
     dilution: 'Dilution',
-    invasive_plant: 'Plant Code',
-    amount_of_mix_used: 'Mix Used (L)',
+    invasive_plant: 'Invasive Plant',
+    amount_of_mix_used: 'Mix Used',
     area_treated_sqm: 'Area Treated',
     percentage_area_covered: 'Area Covered',
     undiluted_herbicide_used_l: 'Undiluted Herbicide Used',
     product_application_rate: 'Product Application Rate'
-  } as const;
+  };
 
   /**
    * @desc Coerce keys in calculation object to readable column header.
@@ -47,10 +48,26 @@ const TreatmentChemicalPlantCalculations = () => {
       case 'percentage_area_covered':
         return <span className={Number(value) > 100 ? 'deep-red' : ''}>{value.toLocaleString()}%</span>;
       case 'area_treated_sqm':
-        return `${value.toLocaleString()}m²`;
+        return `${value.toLocaleString()}\u00a0m²`; // Whitespace between Value and unit requested.
       case 'amount_of_mix_used':
+      case 'invasive_plant': {
+        // Convert Plant code to readable title. strip latin from title.
+        const plant =
+          subtype === ActivitySubtypes.Treatment_Chemical_Plant_Aquatic
+            ? (codes.AquaticPlantCode.find(({ code }) => code === value)?.full_name ?? value)
+            : (codes.TerrestrialPlantCode.find(({ code }) => code === value)?.full_name ?? value);
+        return plant.toString().replace(/\s*\(.*/, '');
+      }
+      case 'herbicide_name': {
+        // Convert Herbicide name to readable title. Strip ingredients / number from title.
+        const herbName =
+          codes?.LiquidHerbicideCode.find(({ code }) => code === value)?.full_name ??
+          codes?.GranularHerbicideCode.find(({ code }) => code === value)?.full_name ??
+          value;
+        return herbName.toString().replace(/\s*\[.*/, '');
+      }
       case 'undiluted_herbicide_used_l':
-        return `${value}L`;
+        return `${value}\u00a0L`; // Whitespace between Value and unit requested.
       default:
         return value;
     }
@@ -131,6 +148,7 @@ const TreatmentChemicalPlantCalculations = () => {
   };
 
   const codes = useSelector((state) => state.ActivityPage.formCodes);
+  const subtype = useSelector((state) => state.ActivityPage.formType);
   const { control, watch } = useFormContext<ChemTreatment>();
 
   const {
@@ -195,9 +213,7 @@ const TreatmentChemicalPlantCalculations = () => {
                 <thead>
                   <tr>
                     {Object.keys(calculations[0]).map((key) => (
-                      <th style={{ textTransform: 'capitalize' }} key={key}>
-                        {columnKeyToLabel(key)}
-                      </th>
+                      <th key={key}>{columnKeyToLabel(key)}</th>
                     ))}
                   </tr>
                 </thead>
@@ -217,7 +233,7 @@ const TreatmentChemicalPlantCalculations = () => {
       )}
       <Debug>
         <Accordion title={'JSON Format - Calculations'}>
-          <pre style={{ textAlign: 'left' }}>{JSON.stringify(calculations, null, 2)}</pre>
+          <pre>{JSON.stringify(calculations, null, 2)}</pre>
         </Accordion>
       </Debug>
     </Fieldset>
