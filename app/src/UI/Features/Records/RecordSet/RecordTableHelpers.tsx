@@ -1,49 +1,20 @@
 import IActivityTableRow from 'interfaces/TableRows/IActivityTableRow';
 import IIappTableRow from 'interfaces/TableRows/IIappTableRow';
-import { ActivitySubtypeShortLabels } from 'sharedAPI/src/constants';
+import { ActivitySubtypesShortLabels } from 'sharedAPI/src/constants';
 
 export const getUnnestedFieldsForActivity = (activity): IActivityTableRow => {
-  const getArrayString = (inputArray: [], subProp?) => {
-    let output = '';
-    if (subProp) {
-      inputArray.map((item, index) => {
-        if (item?.[subProp]) {
-          output += item?.[subProp];
-          if (index < inputArray.length - 1) output += ', ';
-        }
-      });
-    } else {
-      inputArray.map((item) => {
-        output += ', ' + item;
-      });
-    }
-    return output;
-  };
-
   // needs to be consistent with API column names
-  const root = activity?.activity_payload ?? activity;
   const columns = {
     activity_id: activity?.activity_id,
     short_id: activity?.short_id,
     activity_type: activity?.activity_type,
-    activity_subtype: ActivitySubtypeShortLabels[root?.activity_subtype ?? activity?.activity_subtype],
-    activity_date: new Date(
-      root?.form_data?.activity_data?.activity_date_time ?? root?.form_data?.activity_data?.activity_date_time ?? null
-    )
-      .toISOString()
-      .substring(0, 10),
-    project_code: getArrayString(
-      Array.isArray(root?.form_data?.activity_data?.project_code) ? root?.form_data?.activity_data?.project_code : [],
-      'description'
-    ),
+    activity_subtype: ActivitySubtypesShortLabels[activity?.activity_subtype],
+    activity_date: activity?.activity_date,
+    project_code: activity.project_code,
     jurisdiction_display: activity?.jurisdiction_display,
     invasive_plant: activity?.invasive_plant,
     species_positive_full: activity?.species_positive_full,
     species_negative_full: activity?.species_negative_full,
-    has_current_positive: activity?.has_current_positive ? 'Yes' : 'No',
-    current_positive_species: activity?.current_positive_species,
-    has_current_negative: activity?.has_current_negative ? 'Yes' : 'No',
-    current_negative_species: activity?.current_negative_species,
     species_treated_full: activity?.species_treated_full,
     species_biocontrol_full: activity?.species_biocontrol_full,
     created_by: activity?.created_by,
@@ -54,8 +25,7 @@ export const getUnnestedFieldsForActivity = (activity): IActivityTableRow => {
     invasive_plant_management_areas: activity?.invasive_plant_management_areas,
     biogeoclimatic_zones: activity?.biogeoclimatic_zones,
     elevation: activity?.elevation,
-    batch_id: activity?.batch_id,
-    geometry: root?.geometry
+    batch_id: activity?.batch_id
   };
 
   return JSON.parse(JSON.stringify(columns));
@@ -95,10 +65,10 @@ export const activityColumnsToDisplay = [
   { key: 'invasive_plant', name: 'Invasive Plant', hide: false },
   { key: 'species_positive_full', name: 'All Positive', hide: false },
   { key: 'species_negative_full', name: 'All Negative', hide: false },
-  { key: 'has_current_positive', name: 'Has Current Positive', hide: false },
-  { key: 'current_positive_species', name: 'Current Positive Species', hide: false },
-  { key: 'has_current_negative', name: 'Has Current Negative', hide: false },
-  { key: 'current_negative_species', name: 'Current Negative Species', hide: false },
+  // { key: 'has_current_positive', name: 'Has Current Positive', hide: false },
+  // { key: 'current_positive_species', name: 'Current Positive Species', hide: false },
+  // { key: 'has_current_negative', name: 'Has Current Negative', hide: false },
+  // { key: 'current_negative_species', name: 'Current Negative Species', hide: false },
   { key: 'species_treated_full', name: 'Species Treated', hide: false },
   { key: 'species_biocontrol_full', name: 'Biocontrol Species', hide: false },
   { key: 'created_by', name: 'Created By', hide: false },
