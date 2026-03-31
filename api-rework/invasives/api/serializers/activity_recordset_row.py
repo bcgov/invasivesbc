@@ -31,9 +31,10 @@ class ActivityRecordsetRowSerializer(serializers.ModelSerializer):
         source="computed_biogeoclimactic_zone", read_only=True
     )
     elevation = serializers.IntegerField(source="computed_elevation_m", read_only=True)
-    activity_type = serializers.CharField(source="id", read_only=True)
+    activity_type = serializers.CharField(source="type", read_only=True)
     activity_subtype = serializers.CharField(source="subtype", read_only=True)
     activity_date = serializers.CharField(source="date", read_only=True)
+    activity_id = serializers.CharField(source="id", read_only=True)
 
     PATH_TO_PLANT_MAP = {
         ActivitySubtypes.Observation_Plant_Aquatic.name: "aquaticplantobservationentry_set",
@@ -69,6 +70,7 @@ class ActivityRecordsetRowSerializer(serializers.ModelSerializer):
         model = Activity
         fields = (
             "short_id",
+            "activity_id",
             "activity_type",
             "activity_subtype",
             "activity_date",
