@@ -134,12 +134,12 @@ input[type='button']:hover {
   width: 100%;
   display: flex;
   align-items: center;
-  min-width: 300px;
 }
 
 #form-popover-menu {
   flex-direction: column;
   background-color: var(--bc-blue);
+  min-width: 300px;
 
   .error-warning {
     display: flex;
