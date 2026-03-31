@@ -19,6 +19,7 @@ import {
 import './treatmentChemicalPlantCalculations.css';
 import Accordion from 'UI/Reusable/Accordion/Accordion';
 import { Debug } from 'UI/Reusable/Predicates/Debug';
+import getDefaultFormState from '../../builders/getDefaultState';
 
 enum CalculationType {
   Dilution = 'Dilution',
@@ -163,6 +164,7 @@ const TreatmentChemicalPlantCalculations = () => {
     area_treated_sqm,
     delivery_rate
   } = useWatch<ChemTreatment>({
+    defaultValue: (getDefaultFormState(subtype) as ChemTreatment).subtype_data.treatment_context, // protect against information missing
     control,
     name: 'subtype_data.treatment_context'
   });
