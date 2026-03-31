@@ -53,6 +53,7 @@ pre {
       td {
         border: 1px solid black;
         white-space: nowrap;
+        padding: 5px 8px;
       }
     }
 
