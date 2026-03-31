@@ -7,6 +7,8 @@ import Activity, { ActivityTableRowGetRequest } from 'state/actions/activity/Act
 import { buildTimeConfig } from 'state/configuration/build-time-config';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
+import Alerts from 'state/actions/alerts/Alerts';
+import networkAlertMessages from 'constants/alerts/networkAlerts';
 
 export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action: PayloadAction<ActivityTableRowGetRequest>) {
   const mapState = yield select((state) => state.Map);
@@ -35,10 +37,13 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action: PayloadAction<A
         limit: action.payload.limit
       })
     );
+    return;
   } else if (MOBILE) {
     // API Request Failed, see if we can rows from a cache
     yield getRowsFromCachedRecordset(action.payload);
+    return;
   }
+  yield put(Alerts.create(networkAlertMessages.fetchFailed));
 }
 
 export function* handle_IAPP_TABLE_ROWS_GET_ONLINE(action: PayloadAction<IappTableRowGetRequest>) {
