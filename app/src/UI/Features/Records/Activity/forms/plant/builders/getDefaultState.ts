@@ -53,7 +53,8 @@ const getSubtypeData = (subtype: ActivitySubtypes): FormSchema['subtype_data'] =
  * Get the default values needed for a form, used for form create/reset logic.
  */
 const getDefaultFormState = (
-  subtype: ActivitySubtypes = ActivitySubtypes.Observation_Plant_Terrestrial
+  subtype: ActivitySubtypes = ActivitySubtypes.Observation_Plant_Terrestrial,
+  created_by?: string
 ): FormSchema => {
   const subtype_data = getSubtypeData(subtype);
   const isChemical = [
@@ -81,7 +82,8 @@ const getDefaultFormState = (
     linked_activities: [],
     participants: [{ name: '', pac_number: isChemical ? 0 : undefined }],
     subtype_data: subtype_data,
-    media: []
+    media: [],
+    created_by
   } as FormSchema;
 };
 
