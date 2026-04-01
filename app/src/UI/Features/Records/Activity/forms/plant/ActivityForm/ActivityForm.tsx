@@ -71,6 +71,7 @@ const ActivityForm = () => {
   const subtype = useSelector((state) => state.ActivityPage?.formType);
   const formId = useSelector((state) => state.ActivityPage?.formId);
   const recordNotFound = useSelector((state) => state.ActivityPage?.recordNotFound);
+  const currentUser = useSelector((state) => state.Auth?.username) ?? undefined;
   // Assign Props to sole variable to pass into FormProvider
   const methods = useForm<FormSchema>({
     mode: 'onChange',
@@ -92,7 +93,7 @@ const ActivityForm = () => {
 
   const onSubmit: SubmitHandler<FormSchema> = (data) => {
     if (!isDirty) return;
-    dispatch(FormActions.sendForm({ data, type: 'submission' }));
+    dispatch(FormActions.sendForm({ data, type: 'submit' }));
   };
 
   const allFormValues = useWatch({ control });
@@ -131,16 +132,14 @@ const ActivityForm = () => {
 
   useEffect(() => {
     // Reset form on ID change.
-    if (!initState) {
-      reset(getDefaultFormState(subtype));
-    }
+    if (!initState) reset(getDefaultFormState(subtype, currentUser));
   }, [formId]);
 
   if (recordNotFound) return <RecordNotFound />;
   if (!formId) {
     return (
       <div className="activity-page">
-        <p>There is no Active Form, to get started please create or load a record</p>
+        <p>No active form found. Please create one or select an existing record to begin.</p>
       </div>
     );
   }
