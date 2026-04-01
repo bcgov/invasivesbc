@@ -1,0 +1,70 @@
+pre {
+  text-align: left;
+  background-color: lightgray;
+  width: 100%;
+  text-wrap: wrap;
+}
+
+#calculation-table {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+
+  .wrapper {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    font-size: 1rem;
+    margin-bottom: var(--record-table-footer-height);
+    max-height: 300pt;
+    overflow-x: auto;
+    width: 100%;
+    text-size-adjust: 100%;
+  }
+
+  table {
+    white-space: nowrap;
+    border-collapse: collapse;
+  }
+
+  table thead {
+    tr {
+      background-color: var(--th-background-color);
+    }
+
+    tr th {
+      text-transform: capitalize;
+      white-space: nowrap;
+      padding: 5px 5px 5px 3px;
+      text-align: left;
+      font-weight: normal;
+      font-size: 0.95rem;
+    }
+  }
+
+  table tbody {
+    tr {
+      text-align: left;
+      align-items: start;
+      background-color: var(--even-list-item-bg-color);
+      height: var(--tr-height);
+
+      td {
+        border: 1px solid black;
+        white-space: nowrap;
+        padding: 5px 8px;
+      }
+    }
+
+    tr:nth-child(odd) {
+      background-color: var(--odd-list-item-bg-color);
+    }
+
+    tr:hover {
+      background-color: var(--hovered-list-item-bg-color);
+    }
+  }
+}

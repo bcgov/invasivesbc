@@ -63,15 +63,13 @@ const RecordTablePopoverContent = ({ recordDisplayId: id, recordLookupId, record
       <p>
         {label}: {id}
       </p>
+      {/* // TODO: Remove RJSF Option */}
       <Button onClick={handleOpenRecordInRJSF} variant="contained">
-        Open <Debug>- RJSF Form</Debug>
+        Open - RJSF Form
       </Button>
-      {/* // TODO: Remove Debug Gate */}
-      <Debug>
-        <Button onClick={handleOpenRecordInRHF} variant="contained">
-          Open - RHF
-        </Button>
-      </Debug>
+      <Button onClick={handleOpenRecordInRHF} variant="contained">
+        Open - RHF
+      </Button>
       {!!geom && (
         <Button onClick={handleMarkGeometryOnMap.bind(this, true)} variant="contained">
           Pan to record

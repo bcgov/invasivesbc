@@ -15,7 +15,7 @@ interface PropTypes extends PropsWithChildren {
 const Fieldset = ({ label, width, tooltip, children, nested, className }: PropTypes) => {
   const nestedClass = nested ? 'nested' : '';
   return (
-    <fieldset className={`form-fieldset ${getInputWidth(width)} ${nestedClass} ${className}`}>
+    <fieldset className={`form-fieldset ${getInputWidth(width)} ${nestedClass} ${className ?? ''}`}>
       <legend className={nestedClass}>
         {label} {tooltip && <TooltipWithIcon tooltipText={tooltip} />}
       </legend>

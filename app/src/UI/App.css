@@ -117,10 +117,14 @@ body {
   --eigengrau: #16161d;
   --popover-list-bg-color: #1e5189;
 
-  /* List Item Colors */
-  --even-list-item-bg-color: #eceae8;
+  /* List Item Styles */
+  --th-background-color: #fff;
+  --th-border-bottom-color: #bcb9b7;
+  --even-list-item-bg-color: #f1f0ee;
   --odd-list-item-bg-color: #fff;
   --hovered-list-item-bg-color: #d1cfcd;
+  --tr-height: 40px;
+  --td-padding: 5px 8px;
 }
 
 /* Color Classes */
