@@ -15,6 +15,7 @@ type PropTypes = {
  * @desc High order component to control the available Agencies based on the user and form state.
  */
 const FundingAgency = ({ width = Width.Full }: PropTypes) => {
+  const NOT_REQUIRED = 'NRQ';
   const agencyCodes = useSelector((state) => state.ActivityPage.formCodes?.FundingAgencyCode) ?? [];
   const userAgencies = useSelector((state) => state.Auth?.extendedInfo?.funding_agencies)?.split?.(',');
   const username = useSelector((state) => state.Auth?.username);
@@ -25,7 +26,7 @@ const FundingAgency = ({ width = Width.Full }: PropTypes) => {
 
   const optionsAvailableToUser = useMemo(() => {
     if (createdBy !== username || userIsAdmin) return agencyCodes;
-    return agencyCodes.filter(({ code }) => userAgencies?.includes(code as string));
+    return agencyCodes.filter(({ code }) => userAgencies?.includes(code as string) || code === NOT_REQUIRED);
   }, [agencyCodes, userAgencies, createdBy, username]);
 
   return (
