@@ -1,11 +1,41 @@
-#new_record_dialog .content {
-  box-sizing: border-box;
-  width: 450px;
-  max-width: 100%;
-  padding: 1rem;
-}
+#new-record-dialog-content {
+  .content {
+    box-sizing: border-box;
+    width: 550px;
+    max-width: 100%;
+    padding: 20px;
 
-#new_record_dialog .vertical_grid {
-  display: grid;
-  grid-row-gap: 1.75rem;
+    p {
+      font-size: var(--form-input-font-size);
+      margin-left: 1rem;
+    }
+
+    form {
+      padding: 5px 15px;
+    }
+  }
+
+  .control {
+    display: flex;
+
+    input[type='button'],
+    input[type='submit'] {
+      border: 1pt solid black;
+      margin: 0 5px;
+      border-radius: 3px;
+      padding: 5px 8px;
+      font-size: var(--form-input-font-size);
+      text-transform: capitalize;
+    }
+
+    input[type='button'] {
+      background-color: white;
+      border-color: lightgray;
+    }
+
+    input[type='submit'] {
+      background-color: var(--blue-primary);
+      color: white;
+    }
+  }
 }
