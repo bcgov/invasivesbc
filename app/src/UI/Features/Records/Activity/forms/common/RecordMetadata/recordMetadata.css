@@ -1,12 +1,22 @@
-#record-metadata {
+.metadata-wrapper {
   display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
-  flex-flow: row wrap;
-  justify-content: space-between;
+  margin: 0 !important;
+}
+
+#record-metadata {
+  display: grid;
+  width: calc(var(--form-container-width) * 0.75);
+  grid-template-columns: 1fr 1fr;
+  box-sizing: border-box;
 
   .list-item {
-    width: 32%;
+    background-color: #fff;
+    padding: 5px 10px;
     text-align: left;
+    margin: 1px;
 
     dt {
       font-size: 1.15rem;
@@ -18,7 +28,7 @@
     }
 
     dd {
-      margin: 0 0 10px;
+      margin: 0;
       overflow-wrap: break-word;
       font-size: var(--form-input-font-size);
     }
