@@ -50,7 +50,7 @@ pre {
       text-align: left;
       align-items: start;
       background-color: var(--even-list-item-bg-color);
-      height: 45px;
+      height: var(--tr-height);
 
       td {
         border: 1px solid black;
