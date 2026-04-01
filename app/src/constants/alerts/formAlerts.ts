@@ -11,7 +11,7 @@ const formAlerts: Record<PropertyKey, AlertMessage> = {
   recordSubmittedFailure: {
     severity: AlertSeverity.Error,
     subject: AlertSubjects.Form,
-    content: 'An error ocurred during submission',
+    content: 'An error occurred during submission',
     autoClose: 8
   }
 };
