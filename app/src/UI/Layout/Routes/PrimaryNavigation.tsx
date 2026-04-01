@@ -133,20 +133,10 @@ function usePrimaryNavigationLinks() {
     },
     {
       id: 'activity',
-      path: `/Records/Activity/${activeActivity}/form`,
-      activePaths: [{ path: '/Records/Activity/:id/*', end: true }],
-      label: isCellPhoneWidth ? 'Activity' : 'Current Activity',
-      predicate: TabPredicate.AUTHENTICATED_ANY,
-      platform: PlatformPredicate.BOTH,
-      layout: LayoutMode.MAP_FOCUSED,
-      icon: <AssignmentIcon />
-    },
-    // TODO: Replace above ^ with Hookform
-    {
-      id: 'HookForm',
+      // TODO: Replace 'HookForm' with 'Activity'
       path: `/Records/HookForm/${activeActivity}/form`,
       activePaths: [{ path: `/Records/HookForm/:id/*`, end: true }],
-      label: 'Hook Form',
+      label: isCellPhoneWidth ? 'Activity' : 'Current Activity',
       predicate: TabPredicate.AUTHENTICATED_ANY,
       platform: PlatformPredicate.BOTH,
       layout: LayoutMode.MAP_FOCUSED,
