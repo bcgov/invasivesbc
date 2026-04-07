@@ -1,9 +1,9 @@
 from django.db import models
-from api.models.activity.abstract_sub_tables import BaseOneToOneActivityTable
+from api.models.activity import UnrepeatedFormData
 from api.models.enums import YesNoUnknown
 
 
-class AquaticPlantObservationContext(BaseOneToOneActivityTable):
+class AquaticPlantObservationContext(UnrepeatedFormData):
     suitable_for_biocontrol = models.CharField(
         choices=YesNoUnknown,
     )

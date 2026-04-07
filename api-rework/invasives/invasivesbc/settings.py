@@ -91,6 +91,8 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticated",
     ],
     "UNAUTHENTICATED_USER": None,
+    "DEFAULT_PAGINATION_CLASS": None,
+    "PAGE_SIZE": 999999999,
 }
 
 AUTH_USER_MODEL = "api.User"

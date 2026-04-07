@@ -1,9 +1,9 @@
 from django.db import models
 
-from api.models.activity.abstract_sub_tables import BaseOneToManyActivityTable
+from api.models.activity import RepeatedFormData
 
 
-class UploadedImage(BaseOneToManyActivityTable):
+class UploadedImage(RepeatedFormData):
     """
     Details for User Uploaded Photos
     """
@@ -19,6 +19,3 @@ class UploadedImage(BaseOneToManyActivityTable):
     class Meta:
         db_table = '"activity"."uploaded_image"'
         db_table_comment = "Image uploads for IBC Records"
-
-    def __str__(self):
-        return f"{self.activity.short_id}: {self.description}"

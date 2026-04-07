@@ -41,11 +41,24 @@
     }
   },
   {
-    "model": "api.ChemTreatmentContext",
+    "model": "api.ActivityDataRecord",
+    "pk": 1000,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7"
+    }
+  },
+  {
+    "model": "api.ActivityDataRecord",
+    "pk": 1001,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D"
+    }
+  },
+  {
+    "model": "api.ChemicalTreatmentContext",
     "pk": 1,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
-      "service_license_number": "0",
+      "activity_data_record_id": 1000,
       "pesticide_use_permit": "none",
       "pest_management_plan": "BCGOV",
       "temperature_c": 23,
@@ -55,20 +68,18 @@
       "humidity": 30,
       "treatment_notice_signs": "Yes",
       "precautionary_statement": "COM",
-      "ntz_reduction_bool": true,
+      "ntz_reduction": true,
       "rationale_for_ntz_reduction": "stated rationale",
-      "additional_unmapped_well_water_bool": true,
-      "pest_injury_threshold_determination_bool": true
+      "additional_unmapped_well_water": true,
+      "pest_injury_threshold_determination": true
     }
   },
   {
-    "model": "api.ChemTreatmentContext",
+    "model": "api.ChemicalTreatmentContext",
     "pk": 2,
     "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
-      "service_license_number": "1",
+      "activity_data_record_id": 1001,
       "pesticide_use_permit": "none",
-      "pest_management_plan_manual": "Manual - Mocktown",
       "temperature_c": 98,
       "wind_speed_kmh": 89,
       "application_start_time": "2025-01-01T00:00:00Z",
@@ -76,9 +87,9 @@
       "humidity": 20,
       "treatment_notice_signs": "No",
       "precautionary_statement": "2W",
-      "ntz_reduction_bool": false,
-      "additional_unmapped_well_water_bool": false,
-      "pest_injury_threshold_determination_bool": false
+      "ntz_reduction": false,
+      "additional_unmapped_well_water": false,
+      "pest_injury_threshold_determination": false
     }
   }
 ]

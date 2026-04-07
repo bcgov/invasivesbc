@@ -1,6 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
-from api.models.activity.abstract_sub_tables import BaseOneToManyActivityTable
+from api.models.activity import RepeatedFormData
 from api.models.codes.code_tables import (
     DensityCode,
     DistributionCode,
@@ -10,7 +10,7 @@ from api.models.codes.code_tables import (
 from api.models.enums.observation_type import ObservationType
 
 
-class TerrestrialPlantObservationEntries(BaseOneToManyActivityTable):
+class TerrestrialPlantObservationEntries(RepeatedFormData):
     """
     section title:
       Terrestrial Invasive Plants
@@ -35,12 +35,6 @@ class TerrestrialPlantObservationEntries(BaseOneToManyActivityTable):
 
     class Meta:
         db_table = '"activity"."observation_entries_pt"'
-        constraints = [
-            models.UniqueConstraint(
-                fields=["activity", "invasive_plant"],
-                name="terrestrialplant_observation_detail_unique_plant",
-            )
-        ]
 
     def clean(self):
         super().clean()

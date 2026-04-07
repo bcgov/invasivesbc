@@ -19,6 +19,7 @@ from api.models.activity import (
     AquaticPlantObservationContext,
     TargetPlantPhenology,
     TargetPlantHeights,
+    ActivityDataRecord,
 )
 from api.models.codes import (
     AspectCode,
@@ -49,8 +50,9 @@ def add_target_plant_phenology(new: Activity, old: LegacyActivity):
         # there is nothing to record
         return
 
+    adr = ActivityDataRecord.objects.create(activity=new)
     TargetPlantPhenology.objects.create(
-        activity=new,
+        activity_data_record=adr,
         winter_dormant=phenology.winter_dormant,
         seedlings=phenology.seedlings,
         rosettes=phenology.rosettes,
@@ -62,12 +64,15 @@ def add_target_plant_phenology(new: Activity, old: LegacyActivity):
 
     if phenology.target_plant_heights is not None:
         for height in phenology.target_plant_heights:
-            TargetPlantHeights.objects.create(activity=new, height_cm=height)
+            adr = ActivityDataRecord.objects.create(activity=new)
+            TargetPlantHeights.objects.create(
+                activity_data_record=adr, height_cm=height
+            )
 
 
 def add_voucher_specimen(
     new: Activity,
-    old: LegacyActivity,
+    adr: ActivityDataRecord,
     plant: LegacyActivityTerrestrialPlants,
 ):
 
@@ -100,7 +105,7 @@ def add_voucher_specimen(
     else:
         logging.warning(pformat(plant.voucher_specimen_collection_information))
         TerrestrialVoucherSpecimen.objects.create(
-            activity=new,
+            activity_data_record=adr,
             date_verified=plant.voucher_specimen_collection_information.date_voucher_verified,
             date_collected=plant.voucher_specimen_collection_information.date_voucher_verified,
             voucher_sample_id=plant.voucher_specimen_collection_information.voucher_sample_id,
@@ -152,8 +157,9 @@ def add_terrestrial_plant_observation_information(new: Activity, old: LegacyActi
         old.activity_payload.form_data.activity_subtype_data.Observation_PlantTerrestrial_Information
     )
 
+    adr = ActivityDataRecord.objects.create(activity=new)
     TerrestrialPlantObservationContext.objects.create(
-        activity=new,
+        activity_data_record=adr,
         research_observation=old_information.research_detection_ind,
         aspect=(
             AspectCode.objects.get(code=old_information.aspect_code)
@@ -181,7 +187,9 @@ def add_terrestrial_plant_observation_information(new: Activity, old: LegacyActi
             logging.warning(f"No matching specific use code found for {code}")
             raise ValueError(f"No matching specific use code found for {code}")
 
-        SpecificUse.objects.update_or_create(activity=new, specific_use=found_code)
+        SpecificUse.objects.update_or_create(
+            activity_data_record=adr, specific_use=found_code
+        )
 
 
 def add_subtype_payload_for_plant_terrestrial_observation(
@@ -191,16 +199,17 @@ def add_subtype_payload_for_plant_terrestrial_observation(
     add_persons(new, old)
     add_well_information(new, old)
     add_terrestrial_plant_observation_information(new, old)
+    adr = ActivityDataRecord.objects.create(activity=new)
 
     if old.activity_payload.form_data.activity_type_data.pre_treatment_observation:
         PretreatmentObservation.objects.create(
-            activity=new,
+            activity_data_record=adr,
             pre_treatment_observation=old.activity_payload.form_data.activity_type_data.pre_treatment_observation,
         )
 
     for plant in old.activity_payload.form_data.activity_subtype_data.TerrestrialPlants:
         TerrestrialPlantObservationEntries.objects.create(
-            activity=new,
+            activity_data_record=adr,
             observation_type=(
                 ObservationType.Positive.value
                 if plant.observation_type == "Positive Observation"
@@ -231,7 +240,7 @@ def add_subtype_payload_for_plant_terrestrial_observation(
         )
 
         if plant.voucher_specimen_collection_information is not None:
-            add_voucher_specimen(new, old, plant)
+            add_voucher_specimen(new, adr, plant)
 
 
 def add_aquatic_plant_observation_information(new: Activity, old: LegacyActivity):
@@ -239,8 +248,9 @@ def add_aquatic_plant_observation_information(new: Activity, old: LegacyActivity
         old.activity_payload.form_data.activity_subtype_data.Observation_PlantAquatic_Information
     )
 
+    adr = ActivityDataRecord.objects.create(activity=new)
     AquaticPlantObservationContext.objects.create(
-        activity=new,
+        activity_data_record=adr,
         suitable_for_biocontrol=old_information.suitable_for_biocontrol_agent,
     )
 
@@ -256,14 +266,16 @@ def add_subtype_payload_for_plant_aquatic_observation(
     add_waterbody_data(new, old)
 
     if old.activity_payload.form_data.activity_type_data.pre_treatment_observation:
+        adr = ActivityDataRecord.objects.create(activity=new)
         PretreatmentObservation.objects.create(
-            activity=new,
+            activity_data_record=adr,
             pre_treatment_observation=old.activity_payload.form_data.activity_type_data.pre_treatment_observation,
         )
 
     for plant in old.activity_payload.form_data.activity_subtype_data.AquaticPlants:
+        adr = ActivityDataRecord.objects.create(activity=new)
         AquaticPlantObservationEntry.objects.create(
-            activity=new,
+            activity_data_record=adr,
             observation_type=(
                 ObservationType.Positive.value
                 if plant.observation_type == "Positive Observation"
@@ -294,4 +306,4 @@ def add_subtype_payload_for_plant_aquatic_observation(
         )
 
         if plant.voucher_specimen_collection_information is not None:
-            add_voucher_specimen(new, old, plant)
+            add_voucher_specimen(new, adr, plant)

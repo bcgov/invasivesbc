@@ -41,10 +41,24 @@
     }
   },
   {
+    "model": "api.ActivityDataRecord",
+    "pk": 1000,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7"
+    }
+  },
+  {
+    "model": "api.ActivityDataRecord",
+    "pk": 1001,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D"
+    }
+  },
+  {
     "model": "api.AquaticPlantMechanicalTreatmentEntry",
     "pk": 1,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "activity_data_record_id": 1000,
       "disposed_material_amount": 544,
       "disposed_material_format": "kg",
       "disposal_method": "II",
@@ -57,7 +71,7 @@
     "model": "api.AquaticPlantMechanicalTreatmentEntry",
     "pk": 2,
     "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "activity_data_record_id": 1001,
       "disposed_material_amount": 544,
       "disposed_material_format": "m^3",
       "disposal_method": "II",
@@ -70,7 +84,7 @@
     "model": "api.AquaticPlantMechanicalTreatmentEntry",
     "pk": 3,
     "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "activity_data_record_id": 1001,
       "invasive_plant": "JK",
       "disposed_material_amount": 544,
       "disposed_material_format": "plants",
@@ -83,7 +97,7 @@
     "model": "api.ShorelineTypes",
     "pk": 1,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "activity_data_record_id": 1000,
       "percent_covered": 100,
       "shoreline_type": "RR"
     }
@@ -92,7 +106,7 @@
     "model": "api.ShorelineTypes",
     "pk": 2,
     "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "activity_data_record_id": 1001,
       "percent_covered": 66,
       "shoreline_type": "RR"
     }
@@ -101,7 +115,7 @@
     "model": "api.ShorelineTypes",
     "pk": 3,
     "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "activity_data_record_id": 1001,
       "percent_covered": 33,
       "shoreline_type": "T"
     }
@@ -110,7 +124,7 @@
     "model": "api.AquaticMechanicalAuthorization",
     "pk": 1,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "activity_data_record_id": 1000,
       "authorization_information": "The test looks for this"
     }
   },
@@ -118,7 +132,7 @@
     "model": "api.AquaticMechanicalAuthorization",
     "pk": 2,
     "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "activity_data_record_id": 1001,
       "authorization_information": "The test looks for this"
     }
   }

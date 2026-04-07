@@ -25,5 +25,7 @@ class TargetPlantPhenologySerializer(serializers.ModelSerializer):
         )
 
     def get_target_plant_heights(self, obj):
-        tph = TargetPlantHeights.objects.filter(activity=obj.activity)
+        tph = TargetPlantHeights.objects.filter(
+            activity_data_record=obj.activity_data_record
+        )
         return TargetPlantHeightsSerializer(tph, many=True).data

@@ -1,9 +1,9 @@
 from django.db import models
 
-from api.models.activity.abstract_sub_tables import BaseOneToManyActivityTable
+from api.models.activity import RepeatedFormData
 
 
-class WellEntry(BaseOneToManyActivityTable):
+class WellEntry(RepeatedFormData):
     """
     Identifier for Registered wells in proximity of a Chemical Treatment Site.
     Distance is based on the Centroid value of the Activity shape
@@ -22,12 +22,3 @@ class WellEntry(BaseOneToManyActivityTable):
 
     class Meta:
         db_table = '"activity"."well_entries"'
-        constraints = [
-            models.UniqueConstraint(
-                fields=["activity", "well_tag"],
-                name="unique_well_tag_for_activity",
-            )
-        ]
-
-    def __str__(self):
-        return f"{self.activity.short_id}: {self.distance}m ID: {self.well_tag_number}"

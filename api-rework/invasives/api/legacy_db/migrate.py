@@ -14,23 +14,32 @@ from api.legacy_db.mappings.biocontrol import (
     add_subtype_payload_for_biocontrol_dispersal_monitoring_terrestrial_plant,
     add_subtype_payload_for_biocontrol_release_monitoring_terrestrial_plant,
 )
+from api.legacy_db.mappings.chemical import (
+    add_subtype_payload_for_plant_terrestrial_chemical_treatment,
+    add_subtype_payload_for_plant_aquatic_chemical_treatment,
+)
 from api.legacy_db.mappings.mechanical_treatment import (
     add_subtype_payload_for_plant_terrestrial_treatment,
     add_subtype_payload_for_plant_aquatic_treatment,
 )
 from api.legacy_db.mappings.monitoring import (
     add_subtype_payload_for_plant_mechanical_monitoring,
+    add_subtype_payload_for_plant_chemical_monitoring,
 )
 from api.legacy_db.mappings.plants import (
     add_subtype_payload_for_plant_terrestrial_observation,
     add_subtype_payload_for_plant_aquatic_observation,
 )
 from api.legacy_db.model_serializer import LegacyActivity
+from api.models import activity
 from api.models.activity import (
     Activity,
     ActivitySubtypes,
     FundingAgency,
     ProjectCode,
+    ActivityDataRecord,
+    Jurisdiction,
+    Employer,
 )
 from api.models.codes import (
     EmployerCode,
@@ -65,6 +74,12 @@ def add_subtype_payload(new: Activity, old: LegacyActivity) -> None:
             add_subtype_payload_for_plant_aquatic_treatment(new, old)
         case ActivitySubtypes.Monitoring_Mechanical_Plant_Terrestrial_Aquatic:
             add_subtype_payload_for_plant_mechanical_monitoring(new, old)
+        case ActivitySubtypes.Monitoring_Chemical_Plant_Terrestrial_Aquatic:
+            add_subtype_payload_for_plant_chemical_monitoring(new, old)
+        case ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial:
+            add_subtype_payload_for_plant_terrestrial_chemical_treatment(new, old)
+        case ActivitySubtypes.Treatment_Chemical_Plant_Aquatic:
+            add_subtype_payload_for_plant_aquatic_chemical_treatment(new, old)
         case _:
             pass
 
@@ -186,6 +201,7 @@ def migrate(old: LegacyActivity):
         raise
 
     if old.activity_payload.form_data.activity_data.jurisdictions:
+        adr = ActivityDataRecord.objects.create(activity=new)
         for jurisdiction in old.activity_payload.form_data.activity_data.jurisdictions:
             jur_code = JurisdictionCode.objects.filter(
                 code=jurisdiction.jurisdiction_code
@@ -197,15 +213,18 @@ def migrate(old: LegacyActivity):
                 raise ValueError(
                     f"No matching jurisdiction code found for {jurisdiction.jurisdiction_code}"
                 )
-            new.jurisdiction_set.update_or_create(
-                jurisdiction=jur_code, percent_covered=jurisdiction.percent_covered
+            Jurisdiction.objects.create(
+                jurisdiction=jur_code,
+                activity_data_record=adr,
+                percent_covered=jurisdiction.percent_covered,
             )
 
     if old.activity_payload.form_data.activity_data.project_code:
         for project_code in old.activity_payload.form_data.activity_data.project_code:
+            adr = ActivityDataRecord.objects.create(activity=new)
             if project_code.description is not None:
-                ProjectCode.objects.update_or_create(
-                    description=project_code.description, activity=new
+                ProjectCode.objects.create(
+                    description=project_code.description, activity_data_record=adr
                 )
 
     if old.activity_payload.form_data.activity_data.employer_code:
@@ -219,7 +238,8 @@ def migrate(old: LegacyActivity):
             raise ValueError(
                 f"No matching employer code found for {old.activity_payload.form_data.activity_data.employer_code}"
             )
-        new.employer_set.update_or_create(employer=found_code)
+        adr = ActivityDataRecord.objects.create(activity=new)
+        Employer.objects.create(activity_data_record=adr, employer=found_code)
 
     try:
         new.full_clean()
@@ -234,13 +254,17 @@ def migrate(old: LegacyActivity):
         codes = old.activity_payload.form_data.activity_data.invasive_species_agency_code.split(
             ","
         )
+        adr = ActivityDataRecord.objects.create(activity=new)
+
         for ag in codes:
             found_code = FundingAgencyCode.objects.filter(code=ag).first()
             if not found_code:
                 logging.warning(f"No matching funding agency code found for {ag}")
                 raise ValueError(f"No matching funding agency code found for {ag}")
 
-            FundingAgency.objects.update_or_create(activity=new, agency=found_code)
+            FundingAgency.objects.update_or_create(
+                activity_data_record=adr, agency=found_code
+            )
 
     try:
         add_subtype_payload(new, old)

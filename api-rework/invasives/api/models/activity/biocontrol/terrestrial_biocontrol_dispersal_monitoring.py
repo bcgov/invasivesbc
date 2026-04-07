@@ -2,7 +2,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 
-from api.models.activity import BaseOneToManyActivityTable, ActivitySubtypes
+from api.models.activity import RepeatedFormData, ActivitySubtypes
 from api.models.codes.code_tables import (
     BiocontrolAgentCode,
     BioAgentMonitoringMethodCode,
@@ -11,7 +11,7 @@ from api.models.codes.code_tables import (
 from api.models.enums import CollectionType, YesNoUnknown
 
 
-class TerrestrialBiocontrolDispersalMonitoringEntry(BaseOneToManyActivityTable):
+class TerrestrialBiocontrolDispersalMonitoringEntry(RepeatedFormData):
     """
     Biocontrol 1:M Monitoring Information
     Used in:
@@ -38,12 +38,6 @@ class TerrestrialBiocontrolDispersalMonitoringEntry(BaseOneToManyActivityTable):
 
     class Meta:
         db_table = '"activity"."monitoring_biocontrol_dispersal_entries_pt"'
-        constraints = [
-            models.UniqueConstraint(
-                fields=["activity", "invasive_plant", "biocontrol_agent"],
-                name="unique_dispersal_monitoring",
-            )
-        ]
 
     def clean(self):
         super().clean()

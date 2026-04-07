@@ -1,7 +1,6 @@
 from .shoreline_type import ShorelineTypesSerializer
 from .treatment_monitoring_information import (
-    TreatmentMonitoringEntriesSerializer,
-    AquaticMechanicalMonitoringSerializer,
+    AquaticTreatmentMonitoringSerializer,
     TerrestrialTreatmentMonitoringSerializer,
 )
 from .nearest_well import NearestWellSerializer

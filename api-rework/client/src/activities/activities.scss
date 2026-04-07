@@ -54,7 +54,7 @@ div.activities-detail {
         &.active {
           border-bottom: 2px solid black;
         }
-        
+
         &.inactive {
           border-bottom: none;
         }
@@ -71,4 +71,14 @@ div.activities-detail {
 
 .warning {
   color: #b2102f;
+}
+
+a.id-ink {
+  text-decoration: none;
+  color: #1976d2;
+
+  &:visited {
+    color: #036;
+  }
+
 }

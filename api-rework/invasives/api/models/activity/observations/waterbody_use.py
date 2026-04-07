@@ -1,31 +1,19 @@
 from django.db import models
 from api.models.codes.code_tables import WaterbodyUseCode, AdjacentLandUseCode
-from api.models.activity.abstract_sub_tables import BaseOneToManyActivityTable
+from api.models.activity import RepeatedFormData
 
 
-class WaterbodyUse(BaseOneToManyActivityTable):
+class WaterbodyUse(RepeatedFormData):
     waterbody_use = models.ForeignKey(WaterbodyUseCode, on_delete=models.PROTECT)
 
     class Meta:
         db_table = '"activity"."water_use"'
-        constraints = [
-            models.UniqueConstraint(
-                fields=["activity", "waterbody_use"],
-                name="waterbody_use_activity_waterbody_use",
-            )
-        ]
 
 
-class WaterbodyAdjacentLandUse(BaseOneToManyActivityTable):
+class WaterbodyAdjacentLandUse(RepeatedFormData):
     waterbody_adjacent_land_use = models.ForeignKey(
         AdjacentLandUseCode, on_delete=models.PROTECT
     )
 
     class Meta:
         db_table = '"activity"."water_adjacent_land_use"'
-        constraints = [
-            models.UniqueConstraint(
-                fields=["activity", "waterbody_adjacent_land_use"],
-                name="adjacent_land_use_activity",
-            )
-        ]
