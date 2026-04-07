@@ -8,8 +8,8 @@ import TextInput from 'common-components/inputs/TextInput';
 const BiocontrolRelease = ({ subtypeData }: SubtypeData) => {
   return (
     <>
-      <WeatherConditions subtypeData={subtypeData} />
-      <MicrositeConditions microsite_conditions={subtypeData} />
+      <WeatherConditions subtypeData={subtypeData.weather_conditions} />
+      <MicrositeConditions microsite_conditions={subtypeData.microsite_conditions} />
       <Fieldset label={'Treatment Information'}>
         {!!subtypeData?.entries?.length && <p>No Data</p>}
         {subtypeData?.entries?.map((ti) => (
