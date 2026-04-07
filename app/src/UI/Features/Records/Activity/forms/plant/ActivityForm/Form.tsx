@@ -1,4 +1,4 @@
-import { useDispatch, useSelector } from 'utils/use_selector';
+import { useDispatch } from 'utils/use_selector';
 import TextInput from 'UI/Features/Records/Activity/forms/common/TextInput/TextInput';
 import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
 import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
@@ -7,16 +7,16 @@ import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/N
 import TextArea from 'UI/Features/Records/Activity/forms/common/TextArea/TextArea';
 import {
   checkSum,
-  maxValue,
+  lessThanEqual,
   minArrayLength,
-  minValue,
+  greaterThanEqual,
   noFutureDate,
-  noRepeatKey
+  noRepeatKey,
+  greaterThan
 } from 'UI/Features/Records/Activity/forms/common/validators';
 import ArrayField from 'UI/Features/Records/Activity/forms/common/ArrayField/ArrayField';
 import SubtypeComposite from 'UI/Features/Records/Activity/forms/plant/subtype-component/SubtypeComposite';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
-import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
 import Alerts from 'state/actions/alerts/Alerts';
 import tripAlertMessages from 'constants/alerts/tripAlerts';
 import Prompt from 'state/actions/prompts/Prompt';
@@ -32,7 +32,9 @@ import FundingAgency from './FundingAgency';
 import Employer from './Employers';
 import LinkedActivities from './LinkedActivities';
 import FormSpacer from 'UI/Features/Records/Activity/forms/common/FormSpacer/FormSpacer';
-import { useFormContext } from 'react-hook-form';
+import { get, useFormContext } from 'react-hook-form';
+import useSuggestedJurisdictionCodes from 'UI/Features/Records/Activity/forms/plant/hooks/useSuggestedJurisdictionCodes';
+import AdvisoryMessage from 'UI/Features/Records/Activity/forms/common/AdvisoryMessage/AdvisoryMessage';
 import './activityForm.css';
 
 const Form = () => {
@@ -41,7 +43,7 @@ const Form = () => {
     formState: { disabled, errors }
   } = useFormContext<FormSchema>();
   const dispatch = useDispatch();
-  const codes = useSelector((state) => state.ActivityPage.formCodes);
+  const { jurisdictionCodes } = useSuggestedJurisdictionCodes();
   /**
    * @desc Initiate Mouseclick on Polygon draw icon, alert user to start drawing
    */
@@ -78,16 +80,22 @@ const Form = () => {
   };
   return (
     <>
+      {!disabled && (
+        <span className="required-advisory">
+          <AdvisoryMessage text={'All fields are required unless otherwise indicated.'} />
+        </span>
+      )}
       {/* Start of Geometry Fields */}
       <Fieldset label={'Geometry Information'}>
         <NumberInput
           label={'Area (m²)'}
           readOnly
-          error={errors?.area_m}
+          error={get(errors, 'area_m')}
           required
           tooltip={tooltips.basic.area_m}
           {...register(`area_m`, {
             required: true,
+            valueAsNumber: true,
             min: { value: 1, message: 'Area must be greater than 1m' },
             max: { value: 500000, message: 'Area cannot exceed 500,000m' }
           })}
@@ -97,9 +105,13 @@ const Form = () => {
           label={'Latitude'}
           readOnly
           required
-          error={errors?.latitude}
+          error={get(errors, 'latitude')}
           tooltip={tooltips.basic.latitude}
-          {...register(`latitude`, { required: true, validate: (val) => !!val })}
+          {...register(`latitude`, {
+            required: true,
+            valueAsNumber: true,
+            validate: (val) => !!val
+          })}
           width={Width.Third}
         />
         <NumberInput
@@ -107,17 +119,25 @@ const Form = () => {
           readOnly
           required
           tooltip={tooltips.basic.longitude}
-          error={errors?.longitude}
-          {...register(`longitude`, { required: true, validate: (val) => !!val })}
+          error={get(errors, 'longitude')}
+          {...register(`longitude`, {
+            required: true,
+            valueAsNumber: true,
+            validate: (val) => !!val
+          })}
           width={Width.Third}
         />
         <NumberInput
           label={'UTM Zone'}
           readOnly
           required
-          error={errors?.utm_zone}
+          error={get(errors, 'utm_zone')}
           tooltip={tooltips.basic.utm_zone}
-          {...register(`utm_zone`, { required: true, validate: (val) => !!val })}
+          {...register(`utm_zone`, {
+            required: true,
+            valueAsNumber: true,
+            validate: (val) => !!val
+          })}
           width={Width.Third}
         />
         <NumberInput
@@ -125,8 +145,12 @@ const Form = () => {
           readOnly
           required
           tooltip={tooltips.basic.utm_easting}
-          error={errors?.utm_easting}
-          {...register(`utm_easting`, { required: true, validate: (val) => !!val })}
+          error={get(errors, 'utm_easting')}
+          {...register(`utm_easting`, {
+            required: true,
+            valueAsNumber: true,
+            validate: (val) => !!val
+          })}
           width={Width.Third}
         />
         <NumberInput
@@ -134,8 +158,12 @@ const Form = () => {
           readOnly
           required
           tooltip={tooltips.basic.utm_northing}
-          error={errors?.utm_northing}
-          {...register(`utm_northing`, { required: true, validate: (val) => !!val })}
+          error={get(errors, 'utm_northing')}
+          {...register(`utm_northing`, {
+            required: true,
+            valueAsNumber: true,
+            validate: (val) => !!val
+          })}
           width={Width.Third}
         />
         <p>To modify or update, please draw a new shape on the Map</p>
@@ -145,14 +173,14 @@ const Form = () => {
             className="control-button"
             disabled={disabled}
             onClick={handleDrawStart}
-            value="Click to Start Drawing"
+            value="Start Drawing"
           />
           <input
             type="button"
             className="control-button"
             disabled={disabled}
             onClick={handleManualUTM}
-            value="Click to Enter UTM"
+            value="Enter UTM"
           />
         </div>
       </Fieldset>
@@ -163,7 +191,7 @@ const Form = () => {
           label={'Date'}
           tooltip={tooltips.basic.date}
           required
-          error={errors?.date}
+          error={get(errors, 'date')}
           {...register('date', { required: true, validate: (val) => noFutureDate(val) })}
           width={Width.Half}
         />
@@ -177,17 +205,17 @@ const Form = () => {
           rules={{
             validate: {
               minimumItems: (val) => minArrayLength(val, 1),
-              totalPercent: (val) => checkSum(val, 100, 'percent_covered'),
+              totalPercent: (val) => checkSum(val, 100, { key: 'percent_covered', readable: 'percent covered' }),
               noRepeatJurisdiction: (val) => noRepeatKey(val, 'jurisdiction')
             }
           }}
           width={Width.Half}
           emptyValue={{ jurisdiction: '', percent_covered: 0 }}
-          renderRow={(index, remove) => (
+          renderRow={(index) => (
             <>
               <SingleSelect
                 label="Jurisdiction"
-                options={codes.JurisdictionCode}
+                options={jurisdictionCodes}
                 tooltip={tooltips.basic.jurisdiction}
                 name={`jurisdictions.${index}.jurisdiction`}
                 rules={{ required: true }}
@@ -203,12 +231,11 @@ const Form = () => {
                   required: true,
                   valueAsNumber: true,
                   validate: {
-                    min: (val) => minValue(val, 1),
-                    max: (val) => maxValue(val, 100)
+                    min: (val) => greaterThan(val, 0),
+                    max: (val) => lessThanEqual(val, 100)
                   }
                 })}
               />
-              <DeleteControl onClick={() => remove(index)} />
             </>
           )}
         />
@@ -219,16 +246,15 @@ const Form = () => {
           tooltip={tooltips.basic.projects}
           emptyValue={{ description: '' }}
           width={Width.Half}
-          renderRow={(index, remove) => (
-            <>
-              <TextInput
-                label={'Description'}
-                id={`projects.${index}.description`}
-                {...register(`projects.${index}.description`, { required: true })}
-                error={errors.projects?.[index]?.description}
-              />
-              <DeleteControl onClick={() => remove(index)} />
-            </>
+          renderRow={(index) => (
+            <TextInput
+              label="Description"
+              required
+              placeholder="Project Code"
+              id={`projects.${index}.description`}
+              {...register(`projects.${index}.description`, { required: true })}
+              error={errors.projects?.[index]?.description}
+            />
           )}
         />
 
@@ -236,22 +262,25 @@ const Form = () => {
         <TextArea
           label={'Location Description'}
           id="location_description"
-          error={errors?.location_description}
+          error={get(errors, 'location_description')}
           required
           tooltip={tooltips.basic.location_description}
           width={Width.Third}
-          {...register('location_description', { required: true, validate: (val) => minValue(val, 10) })}
+          {...register('location_description', {
+            required: true,
+            validate: (val) => greaterThanEqual(val, 10)
+          })}
         />
         <TextArea
           width={Width.Third}
           label={'Access Description'}
-          error={errors?.access_description}
+          error={get(errors, 'access_description')}
           tooltip={tooltips.basic.access_description}
           {...register('access_description')}
         />
         <TextArea
           label={'Comment'}
-          error={errors?.comment}
+          error={get(errors, 'comment')}
           tooltip={tooltips.basic.general_comments}
           width={Width.Third}
           {...register('comment')}

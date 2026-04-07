@@ -22,7 +22,7 @@ const BiocontrolRelease = () => {
             minLength: (val) => minArrayLength(val, 1)
           }
         }}
-        renderRow={(index, remove) => <BiocontrolReleaseEntry index={index} remove={remove} />}
+        renderRow={(index) => <BiocontrolReleaseEntry index={index} />}
       />
       <TargetPlantPhenology />
     </>

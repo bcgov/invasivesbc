@@ -5,21 +5,21 @@ import TargetPlantPhenology from 'UI/Features/Records/Activity/forms/plant/subty
 import BiocontrolWeatherConditions from 'UI/Features/Records/Activity/forms/plant/subtype-component/common/WeatherConditions';
 import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
 import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
-import { useFormContext } from 'react-hook-form';
+import { get, useFormContext } from 'react-hook-form';
 import { BiocontrolReleaseMonitoringSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
-import { distinctEntries, maxValue, minValue } from 'UI/Features/Records/Activity/forms/common/validators';
+import { distinctEntries, lessThanEqual, greaterThanEqual } from 'UI/Features/Records/Activity/forms/common/validators';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
 import ArrayField from 'UI/Features/Records/Activity/forms/common/ArrayField/ArrayField';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
 import { ActivitySubtypes } from 'sharedAPI';
 import BiocontrolReleaseMonitoringEntry from './BiocontrolReleaseMonitoringEntry';
+import useFieldPath from 'UI/Features/Records/Activity/forms/plant/hooks/useFieldPath';
 
 const BiocontrolReleaseMonitoring = () => {
   const {
     register,
     getValues,
-    setValue,
     formState: { errors, isDirty }
   } = useFormContext<BiocontrolReleaseMonitoringSchema>();
   const [isSpreadResultsPresent, setIsSpreadResultsPresent] = useState<boolean>(false);
@@ -29,15 +29,8 @@ const BiocontrolReleaseMonitoring = () => {
     setIsSpreadResultsPresent(isResults);
   }, []);
 
-  useEffect(() => {
-    // Clear Spread results section if unchecked.
-    if (!isSpreadResultsPresent && isDirty) {
-      setValue('subtype_data.agent_density', undefined);
-      setValue('subtype_data.plant_attack', undefined);
-      setValue('subtype_data.max_spread_aspect_deg', undefined);
-      setValue('subtype_data.max_spread_distance_m', undefined);
-    }
-  }, [isSpreadResultsPresent]);
+  const { getPath } = useFieldPath<BiocontrolReleaseMonitoringSchema>('subtype_data');
+
   return (
     <>
       <BiocontrolWeatherConditions />
@@ -54,9 +47,13 @@ const BiocontrolReleaseMonitoring = () => {
               'Entries must contain unique Agents and Plants'
             )
         }}
-        renderRow={(index, remove) => <BiocontrolReleaseMonitoringEntry index={index} remove={remove} />}
+        renderRow={(index) => <BiocontrolReleaseMonitoringEntry index={index} />}
         emptyValue={
-          getDefaultFormState(ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial).subtype_data.entries[0]
+          (
+            getDefaultFormState(
+              ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial
+            ) as BiocontrolReleaseMonitoringSchema
+          ).subtype_data.entries[0]
         }
       />
 
@@ -73,20 +70,22 @@ const BiocontrolReleaseMonitoring = () => {
               label={'Agent Density %'}
               width={Width.Half}
               tooltip={tooltips.plant.spread_results.max_spread_deg}
-              error={errors?.subtype_data?.agent_density}
-              {...register('subtype_data.agent_density', {
+              error={get(errors, getPath('agent_density'))}
+              {...register(getPath('agent_density'), {
                 valueAsNumber: true,
-                validate: (val) => maxValue(val!, 100)
+                shouldUnregister: true,
+                validate: (val) => lessThanEqual(val, 100)
               })}
             />
             <NumberInput
               label={'Plant Attack %'}
               width={Width.Half}
               tooltip={tooltips.plant.spread_results.plant_attack}
-              error={errors?.subtype_data?.plant_attack}
-              {...register('subtype_data.plant_attack', {
+              error={get(errors, getPath('plant_attack'))}
+              {...register(getPath('plant_attack'), {
                 valueAsNumber: true,
-                validate: (val) => maxValue(val!, 100)
+                shouldUnregister: true,
+                validate: (val) => lessThanEqual(val, 100)
               })}
             />
             <NumberInput
@@ -94,11 +93,12 @@ const BiocontrolReleaseMonitoring = () => {
               required={isSpreadResultsPresent}
               width={Width.Half}
               tooltip={tooltips.plant.spread_results.max_spread_m}
-              error={errors?.subtype_data?.max_spread_distance_m}
-              {...register('subtype_data.max_spread_distance_m', {
+              error={get(errors, getPath('max_spread_distance_m'))}
+              {...register(getPath('max_spread_distance_m'), {
                 required: isSpreadResultsPresent,
                 valueAsNumber: true,
-                validate: { minDistance: (val) => minValue(val!, 0) }
+                shouldUnregister: true,
+                validate: { minDistance: (val) => greaterThanEqual(val, 0) }
               })}
             />
             <NumberInput
@@ -106,13 +106,14 @@ const BiocontrolReleaseMonitoring = () => {
               required={isSpreadResultsPresent}
               width={Width.Half}
               tooltip={tooltips.plant.spread_results.max_spread_deg}
-              error={errors?.subtype_data?.max_spread_aspect_deg}
-              {...register('subtype_data.max_spread_aspect_deg', {
+              error={get(errors, getPath('max_spread_aspect_deg'))}
+              {...register(getPath('max_spread_aspect_deg'), {
                 valueAsNumber: true,
+                shouldUnregister: true,
                 required: isSpreadResultsPresent,
                 validate: {
-                  minDegrees: (val) => minValue(val!, 0),
-                  maxDegrees: (val) => maxValue(val!, 360)
+                  minDegrees: (val) => greaterThanEqual(val, 0),
+                  maxDegrees: (val) => lessThanEqual(val, 360)
                 }
               })}
             />

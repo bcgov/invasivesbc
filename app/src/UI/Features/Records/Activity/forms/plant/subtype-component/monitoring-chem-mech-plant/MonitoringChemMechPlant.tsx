@@ -14,7 +14,7 @@ const MonitoringChemMechPlant = () => {
     <ArrayField<MonitoringChemPlantSchema | MonitoringMechPlantSchema, 'subtype_data.entries'>
       name={'subtype_data.entries'}
       label={'Monitoring Information'}
-      emptyValue={getDefaultFormState(subtype).subtype_data.entries[0]}
+      emptyValue={(getDefaultFormState(subtype) as MonitoringChemPlantSchema).subtype_data.entries[0]}
       rules={{
         validate: {
           minLength: (arr) => minArrayLength(arr, 1),
@@ -22,7 +22,7 @@ const MonitoringChemMechPlant = () => {
           noDupeAquaticPlant: (arr) => noRepeatKey(arr, 'invasive_plant_aquatic', 'Aquatic Invasive Plant')
         }
       }}
-      renderRow={(index, remove) => <MonitoringChemMechPlantEntry index={index} remove={remove} />}
+      renderRow={(index) => <MonitoringChemMechPlantEntry index={index} />}
     />
   );
 };

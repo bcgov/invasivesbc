@@ -1,32 +1,32 @@
 import { useSelector } from 'utils/use_selector';
-import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
 import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
-import { useFormContext } from 'react-hook-form';
+import { get, useFormContext } from 'react-hook-form';
 import { BiocontrolDispersalMonitoringSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import { useEffect, useMemo } from 'react';
 import { MonitoringType, YesNoBool, YesNoUnknown } from 'UI/Features/Records/Activity/forms/enums';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import MultiSelect from 'UI/Features/Records/Activity/forms/common/MultiSelect/MultiSelect';
 import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
-import { minValue, noFutureDate } from 'UI/Features/Records/Activity/forms/common/validators';
+import { greaterThanEqual, noFutureDate } from 'UI/Features/Records/Activity/forms/common/validators';
 import DateInput from 'UI/Features/Records/Activity/forms/common/DateInput/DateInput';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
 import BiocontrolCount from 'UI/Features/Records/Activity/forms/plant/subtype-component/common/BiocontrolCount';
 import useFilteredInvasivePlantCodes from 'UI/Features/Records/Activity/forms/plant/hooks/useFilteredInvasivePlantCodes';
 import useFilteredBiocontrolCodes from 'UI/Features/Records/Activity/forms/plant/hooks/useFilteredBiocontrolCodes';
 import FormSpacer from 'UI/Features/Records/Activity/forms/common/FormSpacer/FormSpacer';
+import useFieldPath from 'UI/Features/Records/Activity/forms/plant/hooks/useFieldPath';
 
 type PropTypes = {
   index: number;
-  remove: (index: number) => void;
 };
-const BiocontrolDispersalMonitoringEntry = ({ index, remove }: PropTypes) => {
+const BiocontrolDispersalMonitoringEntry = ({ index }: PropTypes) => {
   const {
     register,
     watch,
     setValue,
     formState: { errors, isDirty }
   } = useFormContext<BiocontrolDispersalMonitoringSchema>();
+  const { getPath } = useFieldPath<BiocontrolDispersalMonitoringSchema>(`subtype_data.entries.${index}`);
 
   const validateMonitoringStartStopTimes = (_, formValues) => {
     const startTime = formValues.subtype_data?.entries?.[index]?.start_time;
@@ -38,11 +38,11 @@ const BiocontrolDispersalMonitoringEntry = ({ index, remove }: PropTypes) => {
   const SWEEP_COUNT_CODE = 'Cs';
   const codes = useSelector((state) => state.ActivityPage.formCodes);
 
-  const selectedPlant = watch(`subtype_data.entries.${index}.invasive_plant`);
-  const selectedAgent = watch(`subtype_data.entries.${index}.biocontrol_agent`);
-  const biocontrolPresent = watch(`subtype_data.entries.${index}.biocontrol_present`);
-  const monitoringType = watch(`subtype_data.entries.${index}.monitoring_type`);
-  const monitoringMethod = watch(`subtype_data.entries.${index}.monitoring_method`);
+  const selectedPlant = watch(getPath('invasive_plant'));
+  const selectedAgent = watch(getPath('biocontrol_agent'));
+  const biocontrolPresent = watch(getPath('biocontrol_present'));
+  const monitoringType = watch(getPath('monitoring_type'));
+  const monitoringMethod = watch(getPath('monitoring_method'));
   const { terrestrialPlantOptionsWithAgents } = useFilteredInvasivePlantCodes();
   const { agentOptionsForChosenPlant } = useFilteredBiocontrolCodes(selectedPlant);
 
@@ -55,39 +55,29 @@ const BiocontrolDispersalMonitoringEntry = ({ index, remove }: PropTypes) => {
   useEffect(() => {
     // Cleanup sign_of_biocontrol_presence when no biocontrol present.
     if (isDirty && !biocontrolPresent) {
-      setValue(`subtype_data.entries.${index}.sign_of_biocontrol_presence`, []);
+      setValue(getPath('sign_of_biocontrol_presence'), []);
     }
   }, [biocontrolPresent]);
-
-  useEffect(() => {
-    // Clean up hidden monitoring fields when value changes
-    if (!isDirty) return;
-    if (monitoringType === 'Count') {
-      setValue(`subtype_data.entries.${index}.count_duration_minutes`, undefined);
-    } else if (monitoringType === 'Timed') {
-      setValue(`subtype_data.entries.${index}.plant_count`, undefined);
-    }
-  }, [monitoringType]);
 
   useEffect(() => {
     const currentSelectionNoLongerValid =
       selectedAgent && !agentOptionsForChosenPlant.some(({ code }) => code === selectedAgent);
     if (currentSelectionNoLongerValid && isDirty) {
-      setValue(`subtype_data.entries.${index}.biocontrol_agent`, '');
+      setValue(getPath('biocontrol_agent'), '');
     }
   }, [agentOptionsForChosenPlant]);
 
   useEffect(() => {
     // Delete number_of_sweeps if no longer needed
     if (isDirty && monitoringMethod !== SWEEP_COUNT_CODE) {
-      setValue(`subtype_data.entries.${index}.number_of_sweeps`, undefined);
+      setValue(getPath('number_of_sweeps'), undefined);
     }
   }, [monitoringMethod]);
   return (
     <>
       <SingleSelect
         label={'Invasive Plant'}
-        name={`subtype_data.entries.${index}.invasive_plant`}
+        name={getPath('invasive_plant')}
         options={terrestrialPlantOptionsWithAgents}
         required
         rules={{ required: true }}
@@ -96,7 +86,7 @@ const BiocontrolDispersalMonitoringEntry = ({ index, remove }: PropTypes) => {
       />
       <SingleSelect
         label="Biological Agent"
-        name={`subtype_data.entries.${index}.biocontrol_agent`}
+        name={getPath('biocontrol_agent')}
         options={agentOptionsForChosenPlant}
         tooltip={tooltips.plant.biocontrol.agent}
         required
@@ -105,16 +95,16 @@ const BiocontrolDispersalMonitoringEntry = ({ index, remove }: PropTypes) => {
       />
       <SingleSelect
         label={'Biocontrol Present'}
-        name={`subtype_data.entries.${index}.biocontrol_present`}
+        name={getPath('biocontrol_present')}
         options={YesNoBool}
         required
-        rules={{ required: true }}
+        rules={{ validate: (val) => val != undefined }}
         width={Width.Half}
       />
       {biocontrolPresent ? (
         <MultiSelect
           label={'Sign of Biocontrol Presence'}
-          name={`subtype_data.entries.${index}.sign_of_biocontrol_presence`}
+          name={getPath('sign_of_biocontrol_presence')}
           options={codes?.BiocontrolPresenceCode}
           required={biocontrolPresent}
           rules={{ required: true }}
@@ -126,7 +116,7 @@ const BiocontrolDispersalMonitoringEntry = ({ index, remove }: PropTypes) => {
       )}
       <SingleSelect
         label={'Monitoring Type'}
-        name={`subtype_data.entries.${index}.monitoring_type`}
+        name={getPath('monitoring_type')}
         options={MonitoringType}
         required
         rules={{ required: true }}
@@ -136,28 +126,30 @@ const BiocontrolDispersalMonitoringEntry = ({ index, remove }: PropTypes) => {
       {/* Monitoring Type Follow Up Fields */}
       {monitoringType === 'Timed' && (
         <NumberInput
-          error={errors?.subtype_data?.[index]?.count_duration_minutes}
+          error={get(errors, getPath('count_duration_minutes'))}
           label={'Count duration (Minutes)'}
           required
           tooltip={tooltips.plant.biocontrol.monitoring.count}
           width={Width.Half}
-          {...register(`subtype_data.entries.${index}.count_duration_minutes`, {
+          {...register(getPath('count_duration_minutes'), {
             required: true,
             valueAsNumber: true,
-            validate: (val) => minValue(val!, 1)
+            shouldUnregister: true,
+            validate: (val) => greaterThanEqual(val, 1)
           })}
         />
       )}
       {monitoringType === 'Count' && (
         <NumberInput
-          error={errors?.subtype_data?.[index]?.plant_count}
+          error={get(errors, getPath('plant_count'))}
           label={'Plant Count'}
           required
           width={Width.Half}
-          {...register(`subtype_data.entries.${index}.plant_count`, {
+          {...register(getPath('plant_count'), {
             required: true,
             valueAsNumber: true,
-            validate: (val) => minValue(val!, 1)
+            shouldUnregister: true,
+            validate: (val) => greaterThanEqual(val, 1)
           })}
         />
       )}
@@ -165,7 +157,7 @@ const BiocontrolDispersalMonitoringEntry = ({ index, remove }: PropTypes) => {
       {!monitoringType && <FormSpacer width={Width.Half} />}
       <SingleSelect
         label={'Monitoring Method'}
-        name={`subtype_data.entries.${index}.monitoring_method`}
+        name={getPath('monitoring_method')}
         options={monitoringMethodCodes}
         required
         rules={{ required: true }}
@@ -173,14 +165,15 @@ const BiocontrolDispersalMonitoringEntry = ({ index, remove }: PropTypes) => {
       />
       {monitoringMethod === SWEEP_COUNT_CODE ? (
         <NumberInput
-          error={errors?.subtype_data?.entries?.[index]?.number_of_sweeps}
+          error={get(errors, getPath('number_of_sweeps'))}
           label={'Number of Sweeps'}
           required
           width={Width.Half}
-          {...register(`subtype_data.entries.${index}.number_of_sweeps`, {
+          {...register(getPath('number_of_sweeps'), {
             required: true,
             valueAsNumber: true,
-            validate: (val) => minValue(val!, 1)
+            shouldUnregister: true,
+            validate: (val) => greaterThanEqual(val, 1)
           })}
         />
       ) : (
@@ -191,35 +184,35 @@ const BiocontrolDispersalMonitoringEntry = ({ index, remove }: PropTypes) => {
         options={YesNoUnknown}
         tooltip={tooltips.plant.biocontrol.linear_segment}
         width={Width.Half}
-        name={`subtype_data.entries.${index}.linear_segment`}
+        name={getPath('linear_segment')}
       />
       <FormSpacer width={Width.Half} />
       <DateInput
-        error={errors?.subtype_data?.entries?.[index]?.start_time}
+        error={get(errors, getPath('start_time'))}
         includeTime
         label={'Monitoring Start Time'}
         required
         width={Width.Half}
-        {...register(`subtype_data.entries.${index}.start_time`, {
-          deps: [`subtype_data.entries.${index}.stop_time`],
+        {...register(getPath('start_time'), {
+          deps: [getPath('stop_time')],
           required: true,
           validate: {
-            noFutureData: (val) => noFutureDate(val!),
+            noFutureData: (val) => noFutureDate(val),
             startBeforeStop: validateMonitoringStartStopTimes
           }
         })}
       />
       <DateInput
-        error={errors?.subtype_data?.entries?.[index]?.stop_time}
+        error={get(errors, getPath('stop_time'))}
         label={'Monitoring Stop Time'}
         includeTime
         required
         width={Width.Half}
-        {...register(`subtype_data.entries.${index}.stop_time`, {
-          deps: [`subtype_data.entries.${index}.start_time`],
+        {...register(getPath('stop_time'), {
+          deps: [getPath('start_time')],
           required: true,
           validate: {
-            noFutureData: (val) => noFutureDate(val!),
+            noFutureData: (val) => noFutureDate(val),
             startBeforeStop: validateMonitoringStartStopTimes
           }
         })}
@@ -228,7 +221,7 @@ const BiocontrolDispersalMonitoringEntry = ({ index, remove }: PropTypes) => {
         <>
           <MultiSelect
             label={'Location Agents Found'}
-            name={`subtype_data.entries.${index}.location_agent_found`}
+            name={getPath('location_agent_found')}
             options={codes?.AgentLocationFoundCode}
             required
             rules={{ required: true }}
@@ -237,7 +230,7 @@ const BiocontrolDispersalMonitoringEntry = ({ index, remove }: PropTypes) => {
           />
           <SingleSelect
             label={'Suitable for Collection'}
-            name={`subtype_data.entries.${index}.suitable_for_collection`}
+            name={getPath('suitable_for_collection')}
             rules={{ required: true }}
             required
             options={YesNoUnknown}
@@ -248,7 +241,6 @@ const BiocontrolDispersalMonitoringEntry = ({ index, remove }: PropTypes) => {
           <BiocontrolCount estimate extended index={index} />
         </>
       )}
-      <DeleteControl onClick={() => remove(index)} />
     </>
   );
 };

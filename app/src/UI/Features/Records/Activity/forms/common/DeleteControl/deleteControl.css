@@ -7,6 +7,18 @@
 
   button {
     margin-bottom: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid black;
+    border-radius: 3px;
+    background-color: #fff;
+    padding: 5px 8px;
+
+    span {
+      text-transform: capitalize;
+    }
 
     &:hover {
       cursor: pointer;

@@ -49,6 +49,21 @@ const tooltips = {
     aquatic_plant:
       'For Presence survey: select species observed at coordinates. For Extent Survey: select target species for survey',
     chemical: {
+      calculation_fields: {
+        invasive_plant: '',
+        area_covered: 'Percent of area covered by this species',
+        tank_mix: '', // Was on the original form, but no details provided. Placeholding in case of change
+        application_method: 'Choose treatment application method',
+        herbicide_type: 'Choose whether the herbicide being used is liquid or granular',
+        herbicide: 'Choose which herbicide you are using',
+        calculation_type:
+          'Product application rate: the label recommended rate for treatment of this species that was used to mix the treatment solution. In litres per hectare. Dilution % : the label recommended percent solution used to treat this species that was used to mix the treatment solution. Expressed as the percent of herbicide in the solution.',
+        amount_mix_used: 'Volume in litres (ie 5.1 L) of herbicide and water mix',
+        delivery_rate_of_mix: 'Calibrated delivery rate of the device used to apply herbicide in L/ha',
+        application_rate: 'Recommended label rate for herbicide (L/ha) used for this treatment',
+        dilution_percent: 'Percent (%) of product in the mix',
+        area_treated_msq: 'Area Treated in square meters'
+      },
       wells: {
         field_disclaimer:
           'Autofilled field when InvasivesBC detects a mapped well within the location of the treatment area. If nothing is entered, there are no mapped wells found however this does NOT mean there are no wells present. It is the applicators responsibility to confirm the absence of wells prior to applying herbicide at all times.',

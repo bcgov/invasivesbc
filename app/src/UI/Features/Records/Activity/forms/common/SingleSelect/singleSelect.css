@@ -2,7 +2,8 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  max-width: 100%;
+  box-sizing: border-box;
+  width: 100%;
   margin-bottom: 10px;
 
   /* stylelint-disable-next-line selector-class-pattern */
@@ -11,7 +12,12 @@
     width: 100%;
     text-align: left;
     font-size: var(--form-input-font-size);
-    height: var(--form-input-height);
+    min-height: var(--form-input-height);
+  }
+
+  /* stylelint-disable-next-line selector-class-pattern */
+  .select-input__single-value {
+    white-space: unset;
   }
 
   .top {
@@ -48,15 +54,6 @@
 }
 
 @media screen and (width < 650px) {
-  .form-single-select-input {
-    &.third-width,
-    &.quarter-width {
-      width: 49%;
-    }
-  }
-}
-
-@media screen and (width < 450px) {
   .form-single-select-input {
     &.half-width,
     &.third-width,

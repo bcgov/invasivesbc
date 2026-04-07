@@ -1,6 +1,6 @@
 import { useSelector } from 'utils/use_selector';
-import { useFormContext, useWatch } from 'react-hook-form';
-import { AquaticPlantObservationSchema, EntryBasePath } from 'UI/Features/Records/Activity/forms/plant/interfaces';
+import { get, useFormContext, useWatch } from 'react-hook-form';
+import { AquaticPlantObservationSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import { useEffect, useState } from 'react';
 import TextInput from 'UI/Features/Records/Activity/forms/common/TextInput/TextInput';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
@@ -8,17 +8,15 @@ import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
 import { ObservationType } from 'UI/Features/Records/Activity/forms/enums';
 import CheckboxUI from 'UI/Features/Records/Activity/forms/common/CheckboxUI/CheckboxUI';
-import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
 import VoucherCollection from 'UI/Features/Records/Activity/forms/plant/subtype-component/common/VoucherCollection';
 import FormSpacer from 'UI/Features/Records/Activity/forms/common/FormSpacer/FormSpacer';
+import useFieldPath from 'UI/Features/Records/Activity/forms/plant/hooks/useFieldPath';
 
 interface Props {
-  root: string;
   index: number;
-  remove: (index: number) => void;
 }
 
-const AquaticPlantEntry = ({ root, index, remove }: Props) => {
+const AquaticPlantEntry = ({ index }: Props) => {
   const {
     register,
     control,
@@ -26,29 +24,29 @@ const AquaticPlantEntry = ({ root, index, remove }: Props) => {
     watch,
     formState: { errors, disabled, isDirty }
   } = useFormContext<AquaticPlantObservationSchema>();
-  const basePath = `${root}.entries.${index}` as EntryBasePath;
+  const { getPath } = useFieldPath<AquaticPlantObservationSchema>(`subtype_data.entries.${index}`);
   const voucherSpecimen = useWatch({
     control,
-    name: `${basePath}.voucher_specimen`
+    name: getPath('voucher_specimen')
   });
   const [voucherCollected, setVoucherCollected] = useState<boolean>(!!voucherSpecimen);
   const codes = useSelector((state) => state.ActivityPage?.formCodes);
-  const observationType = watch(`${basePath}.observation_type`);
+  const observationType = watch(getPath('observation_type'));
   const requiredWhenPositiveObservation = observationType === 'Positive';
 
   useEffect(() => {
     if (!voucherCollected && isDirty) {
-      setValue(`${basePath}.voucher_specimen`, undefined);
+      setValue(getPath('voucher_specimen'), undefined);
     }
   }, [voucherCollected]);
 
   useEffect(() => {
     if (observationType === 'Negative' && isDirty) {
       setVoucherCollected(false);
-      setValue(`${basePath}.voucher_specimen`, undefined);
-      setValue(`${basePath}.density`, '');
-      setValue(`${basePath}.distribution`, '');
-      setValue(`${basePath}.life_stage`, '');
+      setValue(getPath('voucher_specimen'), undefined);
+      setValue(getPath('density'), '');
+      setValue(getPath('distribution'), '');
+      setValue(getPath('life_stage'), '');
     }
   }, [observationType]);
 
@@ -57,15 +55,15 @@ const AquaticPlantEntry = ({ root, index, remove }: Props) => {
       <TextInput
         label={'Sample Point ID'}
         tooltip={tooltips.plant.sample_point_id}
-        error={errors?.subtype_data?.entries?.[index]?.sample_point_id}
-        {...register(`subtype_data.entries.${index}.sample_point_id`)}
+        error={get(errors, getPath('sample_point_id'))}
+        {...register(getPath('sample_point_id'))}
         width={Width.Half}
       />
       <SingleSelect
         label={'Invasive Plant'}
         tooltip={tooltips.plant.aquatic_plant}
         options={codes?.AquaticPlantCode}
-        name={`subtype_data.entries.${index}.invasive_plant`}
+        name={getPath('invasive_plant')}
         required
         rules={{ required: true }}
         width={Width.Half}
@@ -76,7 +74,7 @@ const AquaticPlantEntry = ({ root, index, remove }: Props) => {
         options={ObservationType}
         required
         rules={{ required: true }}
-        name={`subtype_data.entries.${index}.observation_type`}
+        name={getPath('observation_type')}
         width={Width.Half}
       />
       {observationType !== 'Negative' && (
@@ -87,7 +85,7 @@ const AquaticPlantEntry = ({ root, index, remove }: Props) => {
             rules={{ required: requiredWhenPositiveObservation }}
             required={requiredWhenPositiveObservation}
             options={codes?.DensityCode}
-            name={`subtype_data.entries.${index}.density`}
+            name={getPath('density')}
             width={Width.Half}
           />
           <SingleSelect
@@ -96,7 +94,7 @@ const AquaticPlantEntry = ({ root, index, remove }: Props) => {
             rules={{ required: requiredWhenPositiveObservation }}
             required={requiredWhenPositiveObservation}
             options={codes?.DistributionCode}
-            name={`subtype_data.entries.${index}.distribution`}
+            name={getPath('distribution')}
             width={Width.Half}
           />
           <SingleSelect
@@ -105,7 +103,7 @@ const AquaticPlantEntry = ({ root, index, remove }: Props) => {
             rules={{ required: requiredWhenPositiveObservation }}
             required={requiredWhenPositiveObservation}
             options={codes?.PlantLifeStageCode}
-            name={`subtype_data.entries.${index}.life_stage`}
+            name={getPath('life_stage')}
             width={Width.Half}
           />
           <CheckboxUI
@@ -120,7 +118,6 @@ const AquaticPlantEntry = ({ root, index, remove }: Props) => {
       )}
       <FormSpacer width={Width.Half} />
       {voucherCollected && <VoucherCollection index={index} />}
-      <DeleteControl onClick={() => remove(index)} />
     </>
   );
 };

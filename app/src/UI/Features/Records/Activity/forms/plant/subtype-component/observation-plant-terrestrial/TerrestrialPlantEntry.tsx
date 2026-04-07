@@ -3,50 +3,49 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import { ObservationType } from 'UI/Features/Records/Activity/forms/enums';
-import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
 import { useEffect, useState } from 'react';
 import CheckboxUI from 'UI/Features/Records/Activity/forms/common/CheckboxUI/CheckboxUI';
-import { EntryBasePath, TerrestrialPlantObservationSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
+import { TerrestrialPlantObservationSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
 import VoucherCollection from 'UI/Features/Records/Activity/forms/plant/subtype-component/common/VoucherCollection';
+import useFieldPath from 'UI/Features/Records/Activity/forms/plant/hooks/useFieldPath';
 
 interface Props {
-  root: string;
   index: number;
-  remove: (index: number) => void;
 }
 
-const TerrestrialPlantEntry = ({ root, index, remove }: Props) => {
+const TerrestrialPlantEntry = ({ index }: Props) => {
+  const { getPath } = useFieldPath<TerrestrialPlantObservationSchema>(`subtype_data.entries.${index}`);
   const {
     control,
     setValue,
     watch,
     formState: { disabled, isDirty }
   } = useFormContext<TerrestrialPlantObservationSchema>();
-  const basePath = `${root}.entries.${index}` as EntryBasePath;
+
   const voucherSpecimen = useWatch({
     control,
-    name: `${basePath}.voucher_specimen`
+    name: getPath('voucher_specimen')
   });
 
   const [voucherCollected, setVoucherCollected] = useState<boolean>(!!voucherSpecimen);
   const codes = useSelector((state) => state.ActivityPage?.formCodes);
-  const observationType = watch(`${basePath}.observation_type`);
+  const observationType = watch(getPath('observation_type'));
   const requiredWhenPositiveObservation = observationType === 'Positive';
 
   useEffect(() => {
     if (!voucherCollected && isDirty) {
-      setValue(`${basePath}.voucher_specimen`, undefined);
+      setValue(getPath('voucher_specimen'), undefined);
     }
   }, [voucherCollected]);
 
   useEffect(() => {
     if (observationType === 'Negative' && isDirty) {
       setVoucherCollected(false);
-      setValue(`${basePath}.voucher_specimen`, undefined);
-      setValue(`${basePath}.density`, '');
-      setValue(`${basePath}.distribution`, '');
-      setValue(`${basePath}.life_stage`, '');
+      setValue(getPath('voucher_specimen'), undefined);
+      setValue(getPath('density'), '');
+      setValue(getPath('distribution'), '');
+      setValue(getPath('life_stage'), '');
     }
   }, [observationType]);
   return (
@@ -57,7 +56,7 @@ const TerrestrialPlantEntry = ({ root, index, remove }: Props) => {
         tooltip={tooltips.plant.invasive_plant}
         options={codes?.TerrestrialPlantCode}
         rules={{ required: true }}
-        name={`${basePath}.invasive_plant`}
+        name={getPath('invasive_plant')}
         width={Width.Half}
       />
 
@@ -67,7 +66,7 @@ const TerrestrialPlantEntry = ({ root, index, remove }: Props) => {
         tooltip={tooltips.plant.observation_type}
         options={ObservationType}
         rules={{ required: true }}
-        name={`${basePath}.observation_type`}
+        name={getPath('observation_type')}
         width={Width.Half}
       />
       {observationType !== 'Negative' && (
@@ -78,7 +77,7 @@ const TerrestrialPlantEntry = ({ root, index, remove }: Props) => {
             rules={{ required: requiredWhenPositiveObservation }}
             required={requiredWhenPositiveObservation}
             options={codes?.DensityCode}
-            name={`${basePath}.density`}
+            name={getPath('density')}
             width={Width.Half}
           />
 
@@ -88,7 +87,7 @@ const TerrestrialPlantEntry = ({ root, index, remove }: Props) => {
             rules={{ required: requiredWhenPositiveObservation }}
             required={requiredWhenPositiveObservation}
             tooltip={tooltips.plant.distribution}
-            name={`${basePath}.distribution`}
+            name={getPath('distribution')}
             width={Width.Half}
           />
 
@@ -98,7 +97,7 @@ const TerrestrialPlantEntry = ({ root, index, remove }: Props) => {
             rules={{ required: requiredWhenPositiveObservation }}
             required={requiredWhenPositiveObservation}
             tooltip={tooltips.plant.life_stage}
-            name={`${basePath}.life_stage`}
+            name={getPath('life_stage')}
             width={Width.Half}
           />
 
@@ -113,7 +112,6 @@ const TerrestrialPlantEntry = ({ root, index, remove }: Props) => {
         </>
       )}
       {voucherCollected && <VoucherCollection index={index} />}
-      <DeleteControl onClick={() => remove(index)} />
     </>
   );
 };

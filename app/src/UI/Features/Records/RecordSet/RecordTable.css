@@ -17,7 +17,6 @@
 
 .record_table_container {
   box-sizing: border-box;
-  border: 1pt solid black;
   display: flex;
   flex-direction: column;
   font-size: 1rem;
@@ -29,7 +28,8 @@
 
   .record_table {
     white-space: nowrap;
-    border-collapse: separate;
+    border-collapse: separate; /* Change from collapse to separate */
+    border-spacing: 0; /* Removes the gaps between cells */
   }
 
   .record_table_header {
@@ -40,6 +40,7 @@
   .record_table_header_column {
     text-align: left;
     padding-left: 5px;
+    background-color: lightgray;
   }
 
   .record_table_row_column {
@@ -50,35 +51,42 @@
   tr {
     border-width: 2px;
     border-spacing: 10px;
-    border: solid;
+    height: var(--tr-height);
+    background-color: var(--even-list-item-bg-color);
   }
 
-  tr:nth-child(even) {
-    background-color: white;
-    border-left: white;
-    border-right: white;
+  tbody tr:nth-child(odd) {
+    background-color: var(--odd-list-item-bg-color);
   }
 
-  tr:nth-child(odd) {
-    background-color: rgb(227 227 227);
-    border-left: rgb(227 227 227);
-    border-right: rgb(227 227 227);
-    border-style: solid;
+  tbody tr:hover {
+    background-color: var(--hovered-list-item-bg-color);
   }
 
-  tr:hover {
-    background-color: rgb(160 160 160);
-    color: white;
+  td,
+  th {
+    padding: var(--td-padding);
   }
 
   th {
     position: sticky;
     top: 0;
-    border-bottom: 1pt solid black;
-    background-color: inherit;
+    padding: var(--td-padding);
+    font-size: 0.95rem;
+    border: 1px solid black;
+
+    /* Prevent Borders from doubling up due to border-collapse: separate */
+    &:not(:last-child) {
+      border-right: none;
+    }
   }
 
   td {
-    width: 50px;
+    border-top: 1px solid lightgray;
+    border-left: 1px solid lightgray;
+
+    &:last-child {
+      border-right: 1px solid lightgray;
+    }
   }
 }

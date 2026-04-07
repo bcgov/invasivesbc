@@ -25,6 +25,8 @@ from api.models.codes import (
     BioAgentLifeStageCode,
     BiocontrolAgentCode,
     BiocontrolPresenceCode,
+    ChemicalApplicationMethodDirectCode,
+    ChemicalApplicationMethodSprayCode,
     ChemicalPrecautionaryStatement,
     CloudCoverCode,
     DensityCode,
@@ -33,8 +35,10 @@ from api.models.codes import (
     EfficacyManagementRatingCode,
     EmployerCode,
     FundingAgencyCode,
+    GranularHerbicideCode,
     InvasivePlantsOnSiteCode,
     JurisdictionCode,
+    LiquidHerbicideCode,
     MesoslopePositionCode,
     PestManagementPlan,
     PlantLifeStageCode,
@@ -138,6 +142,12 @@ class LegacyDB:
             case "biological_agent_stage_code":
                 return BioAgentLifeStageCode
 
+            case "chemical_method_direct":
+                return ChemicalApplicationMethodDirectCode
+
+            case "chemical_method_spray":
+                return ChemicalApplicationMethodSprayCode
+
             case "cloud_cover_code":
                 return CloudCoverCode
 
@@ -149,6 +159,9 @@ class LegacyDB:
 
             case "employer_code":
                 return EmployerCode
+
+            case "granular_herbicide_code":
+                return GranularHerbicideCode
 
             case "inflow_permanent_code":
                 return WaterbodyFlowCode
@@ -182,6 +195,9 @@ class LegacyDB:
 
             case "jurisdiction_code":
                 return JurisdictionCode
+
+            case "liquid_herbicide_code":
+                return LiquidHerbicideCode
 
             case "location_agents_found_code":
                 return AgentLocationFoundTerrainCode

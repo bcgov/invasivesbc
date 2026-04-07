@@ -6,13 +6,12 @@ import {
   BiocontrolReleaseMonitoringSchema,
   BiocontrolReleaseSchema
 } from 'UI/Features/Records/Activity/forms/plant/interfaces';
-import { minValue, distinctEntries } from 'UI/Features/Records/Activity/forms/common/validators';
+import { distinctEntries, greaterThan } from 'UI/Features/Records/Activity/forms/common/validators';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
 import { ActivitySubtypes } from 'sharedAPI';
 import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
 import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
 import { useSelector } from 'utils/use_selector';
-import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
 
 type BiocontrolCountingSchemas = BiocontrolReleaseMonitoringSchema | BiocontrolReleaseSchema;
 
@@ -82,7 +81,7 @@ const BiocontrolCount = ({ index, estimate = false, extended = false }: PropType
           ) as BiocontrolReleaseMonitoringSchema
         ).subtype_data.entries[0].estimated_biological_agents[0]
       }
-      renderRow={(entryIndex, removeEntry) => (
+      renderRow={(entryIndex) => (
         <>
           <SingleSelect
             tooltip={tooltips.plant.biocontrol.counts.agent_life_stage}
@@ -100,7 +99,7 @@ const BiocontrolCount = ({ index, estimate = false, extended = false }: PropType
             {...register(`${CONFIG.path}.${entryIndex}.quantity`, {
               required: true,
               valueAsNumber: true,
-              validate: (val) => minValue(val, 1)
+              validate: (val) => greaterThan(val, 0)
             })}
           />
           {extended && (
@@ -121,7 +120,6 @@ const BiocontrolCount = ({ index, estimate = false, extended = false }: PropType
               />
             </>
           )}
-          <DeleteControl onClick={() => removeEntry(entryIndex)} />
         </>
       )}
     />

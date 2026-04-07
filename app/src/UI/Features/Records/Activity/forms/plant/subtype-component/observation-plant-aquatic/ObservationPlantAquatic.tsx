@@ -6,20 +6,20 @@ import TextInput from 'UI/Features/Records/Activity/forms/common/TextInput/TextI
 import TextArea from 'UI/Features/Records/Activity/forms/common/TextArea/TextArea';
 import ArrayField from 'UI/Features/Records/Activity/forms/common/ArrayField/ArrayField';
 import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
-import { useFormContext } from 'react-hook-form';
+import { get, useFormContext } from 'react-hook-form';
 import MultiSelect from 'UI/Features/Records/Activity/forms/common/MultiSelect/MultiSelect';
 import { checkSum, minArrayLength, noRepeatKey } from 'UI/Features/Records/Activity/forms/common/validators';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
-import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
 import { AquaticPlantObservationSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import AquaticPlantEntry from 'UI/Features/Records/Activity/forms/plant/subtype-component/observation-plant-aquatic/AquaticPlantEntry';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
 import { ActivitySubtypes } from 'sharedAPI';
+import useFieldPath from 'UI/Features/Records/Activity/forms/plant/hooks/useFieldPath';
 
 const ObservationPlantAquatic = () => {
-  const ROOT = 'subtype_data';
   const codes = useSelector((state) => state.ActivityPage?.formCodes);
+  const { getPath } = useFieldPath<AquaticPlantObservationSchema>('subtype_data');
   const {
     register,
     formState: { errors }
@@ -34,59 +34,59 @@ const ObservationPlantAquatic = () => {
           options={WaterbodyType}
           tooltip={tooltips.plant.waterbody.type}
           required
-          name={'subtype_data.type'}
+          name={getPath('type')}
           rules={{ required: true }}
           width={Width.Half}
         />
         <TextInput
           label={'Waterbody Name (Gazetted)'}
           tooltip={tooltips.plant.waterbody.name_gazetted}
-          error={errors?.subtype_data?.name_gazetted}
-          {...register('subtype_data.name_gazetted')}
+          error={get(errors, getPath('name_gazetted'))}
+          {...register(getPath('name_gazetted'))}
           width={Width.Half}
         />
         <TextInput
           label={'Waterbody Name (Local)'}
           tooltip={tooltips.plant.waterbody.name_local}
-          error={errors?.subtype_data?.name_local}
-          {...register('subtype_data.name_local')}
+          error={get(errors, getPath('name_local'))}
+          {...register(getPath('name_local'))}
           width={Width.Half}
         />
         <TextInput
           label={'Waterbody Access'}
           tooltip={tooltips.plant.waterbody.access}
-          error={errors?.subtype_data?.access}
-          {...register('subtype_data.access')}
+          error={get(errors, getPath('access'))}
+          {...register(getPath('access'))}
           width={Width.Half}
         />
         <MultiSelect
           label={'Waterbody Use'}
           tooltip={tooltips.plant.waterbody.use}
           options={codes?.WaterbodyUseCode}
-          name={'subtype_data.water_use'}
+          name={getPath('water_use')}
           width={Width.Half}
         />
         <MultiSelect
           label={'Water Level Management'}
           tooltip={tooltips.plant.waterbody.waterlevel_management}
           options={WaterLevelManagement}
-          name={'subtype_data.waterlevel_management'}
+          name={getPath('waterlevel_management')}
           width={Width.Half}
         />
         <MultiSelect
           label={'Substrate Type'}
+          name={getPath('substrate_type')}
           options={codes?.WaterbodySubstrateCode}
-          tooltip={tooltips.plant.waterbody.substrate_type}
-          name={'subtype_data.substrate_type'}
           required
           rules={{ required: true, validate: (val) => minArrayLength(val, 1) }}
+          tooltip={tooltips.plant.waterbody.substrate_type}
           width={Width.Half}
         />
         <SingleSelect
           label={'Tidal Influence'}
           tooltip={tooltips.plant.waterbody.tidal_influence}
           options={YesNoUnknown}
-          name={'subtype_data.tidal_influence'}
+          name={getPath('tidal_influence')}
           required
           rules={{ required: true }}
           width={Width.Half}
@@ -95,42 +95,42 @@ const ObservationPlantAquatic = () => {
           label={'Adjacent Land Use'}
           tooltip={tooltips.plant.waterbody.adjancent_land_use}
           options={codes?.AdjacentLandUseCode}
-          name={'subtype_data.adjacent_land_use'}
+          name={getPath('adjacent_land_use')}
           width={Width.Half}
         />
         <MultiSelect
           tooltip={tooltips.plant.waterbody.inflow}
           label={'Inflow (Permanent)'}
+          name={getPath('inflow_permanent')}
           options={codes?.WaterbodyFlowCode}
-          name={'subtype_data.inflow_permanent'}
           width={Width.Half}
         />
         <MultiSelect
           label={'Inflow (Temp. or Seasonal)'}
           tooltip={tooltips.plant.waterbody.inflow}
+          name={getPath('inflow_seasonal')}
           options={codes?.WaterbodyFlowSeasonalCode}
-          name={'subtype_data.inflow_seasonal'}
           width={Width.Half}
         />
         <MultiSelect
           label={'Outflow (Permanent)'}
           options={codes?.WaterbodyFlowCode}
+          name={getPath('outflow_permanent')}
           tooltip={tooltips.plant.waterbody.outflow}
-          name={'subtype_data.outflow_permanent'}
           width={Width.Half}
         />
         <MultiSelect
           label={'Outflow (Seasonal)'}
           options={codes?.WaterbodyFlowCode}
+          name={getPath('outflow_seasonal')}
           tooltip={tooltips.plant.waterbody.outflow}
-          name={'subtype_data.outflow_seasonal'}
           width={Width.Half}
         />
         <TextArea
+          error={get(errors, getPath('comment'))}
           label={'Comment'}
-          error={errors?.subtype_data?.comment}
-          {...register('subtype_data.comment')}
           width={Width.Half}
+          {...register(getPath('comment'))}
         />
       </Fieldset>
 
@@ -141,7 +141,7 @@ const ObservationPlantAquatic = () => {
         rules={{
           validate: {
             minLength: (val) => minArrayLength(val, 1),
-            totalPercent: (val) => checkSum(val, 100, 'percent_covered'),
+            totalPercent: (val) => checkSum(val, 100, { key: 'percent_covered', readable: 'percent covered' }),
             noRepeatType: (val) => noRepeatKey(val, 'shoreline_type', 'Shoreline Type')
           }
         }}
@@ -149,25 +149,24 @@ const ObservationPlantAquatic = () => {
           (getDefaultFormState(ActivitySubtypes.Observation_Plant_Aquatic) as AquaticPlantObservationSchema)
             .subtype_data.shoreline_types[0]
         }
-        renderRow={(index, remove) => (
+        renderRow={(index) => (
           <>
             <SingleSelect
               label={'Shoreline Type'}
-              tooltip={tooltips.plant.waterbody.shoreline_type}
+              name={getPath(`shoreline_types.${index}.shoreline_type`)}
               options={codes?.ShorelineTypeCode}
-              name={`subtype_data.shoreline_types.${index}.shoreline_type`}
               required
               rules={{ required: true }}
+              tooltip={tooltips.plant.waterbody.shoreline_type}
               width={Width.Half}
             />
             <NumberInput
-              tooltip={tooltips.plant.waterbody.shoreline_percent}
+              error={get(errors, getPath(`shoreline_types.${index}.percent_covered`))}
               label={'Percent Covered (%)'}
-              error={errors?.subtype_data?.shoreline_types?.[index]?.percent_covered}
-              {...register(`subtype_data.shoreline_types.${index}.percent_covered`, { valueAsNumber: true })}
+              tooltip={tooltips.plant.waterbody.shoreline_percent}
               width={Width.Half}
+              {...register(getPath(`shoreline_types.${index}.percent_covered`), { valueAsNumber: true })}
             />
-            <DeleteControl onClick={() => remove(index)} />
           </>
         )}
       />
@@ -175,24 +174,24 @@ const ObservationPlantAquatic = () => {
       {/* Water Quality Start */}
       <Fieldset label={'Water Quality'}>
         <NumberInput
+          error={get(errors, getPath('max_depth_m'))}
           label="Maximum Depth (m)"
           tooltip={tooltips.plant.waterbody.depth}
-          error={errors?.subtype_data?.max_depth_m}
-          {...register('subtype_data.max_depth_m', { valueAsNumber: true })}
           width={Width.Half}
+          {...register(getPath('max_depth_m'), { valueAsNumber: true })}
         />
         <NumberInput
+          error={get(errors, getPath('secchi_depth'))}
           label="Secchi Depth (m)"
           tooltip={tooltips.plant.waterbody.secchi_depth}
-          error={errors?.subtype_data?.secchi_depth}
-          {...register('subtype_data.secchi_depth', { valueAsNumber: true })}
           width={Width.Half}
+          {...register(getPath('secchi_depth'), { valueAsNumber: true })}
         />
         <TextInput
+          error={get(errors, getPath('colour'))}
           label="Water Colour"
-          error={errors?.subtype_data?.colour}
-          {...register('subtype_data.colour')}
           width={Width.Half}
+          {...register(getPath('colour'))}
         />
       </Fieldset>
       <Fieldset label={'Observation Information'}>
@@ -200,7 +199,7 @@ const ObservationPlantAquatic = () => {
           label="Suitable For Biocontrol Agent(s)"
           options={YesNoUnknown}
           tooltip={tooltips.plant.suitable_for_biocontrol_agent}
-          name={'subtype_data.suitable_for_biocontrol'}
+          name={getPath('suitable_for_biocontrol')}
           required
           rules={{ required: true }}
         />
@@ -216,9 +215,11 @@ const ObservationPlantAquatic = () => {
             noRepeatPlants: (val) => noRepeatKey(val, 'invasive_plant', 'Invasive Plant')
           }
         }}
-        // Use builder to get empty entry. Less optimal but keeps declarations in one spot.
-        emptyValue={getDefaultFormState(ActivitySubtypes.Observation_Plant_Aquatic).subtype_data.entries[0]}
-        renderRow={(index, remove) => <AquaticPlantEntry root={ROOT} index={index} remove={remove} />}
+        emptyValue={
+          (getDefaultFormState(ActivitySubtypes.Observation_Plant_Aquatic) as AquaticPlantObservationSchema)
+            .subtype_data.entries[0]
+        }
+        renderRow={(index) => <AquaticPlantEntry index={index} />}
       />
     </>
   );

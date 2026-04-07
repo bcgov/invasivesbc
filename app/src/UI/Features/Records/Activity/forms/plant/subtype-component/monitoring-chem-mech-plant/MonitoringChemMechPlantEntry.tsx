@@ -6,24 +6,22 @@ import { TreatmentPass, YesNo } from 'UI/Features/Records/Activity/forms/enums';
 import MultiSelect from 'UI/Features/Records/Activity/forms/common/MultiSelect/MultiSelect';
 import { minArrayLength } from 'UI/Features/Records/Activity/forms/common/validators';
 import TextInput from 'UI/Features/Records/Activity/forms/common/TextInput/TextInput';
-import DeleteControl from 'UI/Features/Records/Activity/forms/common/DeleteControl/DeleteControl';
 import {
-  EntryBasePath,
   MonitoringChemPlantSchema,
   MonitoringMechPlantSchema
 } from 'UI/Features/Records/Activity/forms/plant/interfaces';
-import { useFormContext } from 'react-hook-form';
+import { get, useFormContext } from 'react-hook-form';
 import { useEffect } from 'react';
 import FormSpacer from 'UI/Features/Records/Activity/forms/common/FormSpacer/FormSpacer';
+import useFieldPath from 'UI/Features/Records/Activity/forms/plant/hooks/useFieldPath';
 
 type PropTypes = {
-  remove: Function;
   index: number;
 };
-const MonitoringChemMechPlantEntry = ({ index, remove }: PropTypes) => {
-  const BASE = `subtype_data.entries.${index}` as EntryBasePath;
+
+const MonitoringChemMechPlantEntry = ({ index }: PropTypes) => {
   const validatePlantRow = (formValues) => {
-    const entry = formValues.subtype_data.entries[index];
+    const entry = get(formValues, basePath);
     if (!entry.invasive_plant && !entry.invasive_plant_aquatic) {
       return 'Either Aquatic or Terrestrial Plant must be chosen';
     } else if (entry.invasive_plant && entry.invasive_plant_aquatic) {
@@ -32,6 +30,9 @@ const MonitoringChemMechPlantEntry = ({ index, remove }: PropTypes) => {
     return true;
   };
 
+  const { basePath, getPath } = useFieldPath<MonitoringChemPlantSchema | MonitoringMechPlantSchema>(
+    `subtype_data.entries.${index}`
+  );
   const {
     register,
     watch,
@@ -40,13 +41,13 @@ const MonitoringChemMechPlantEntry = ({ index, remove }: PropTypes) => {
   } = useFormContext<MonitoringChemPlantSchema | MonitoringMechPlantSchema>();
 
   const codes = useSelector((state) => state.ActivityPage?.formCodes);
-  const wasEvidenceOfTreatment = watch(`${BASE}.evidence_of_treatment`) === 'Yes';
-  const hasAquaticPlant = watch(`${BASE}.invasive_plant_aquatic`);
-  const hasTerrestrialPlant = watch(`${BASE}.invasive_plant`);
+  const wasEvidenceOfTreatment = watch(getPath('evidence_of_treatment')) === 'Yes';
+  const hasAquaticPlant = watch(getPath('invasive_plant_aquatic'));
+  const hasTerrestrialPlant = watch(getPath('invasive_plant'));
 
   useEffect(() => {
     if (!wasEvidenceOfTreatment) {
-      setValue(`${BASE}.treatment_efficacy_rating`, '');
+      setValue(getPath('treatment_efficacy_rating'), '');
     }
   }, [wasEvidenceOfTreatment]);
 
@@ -54,7 +55,7 @@ const MonitoringChemMechPlantEntry = ({ index, remove }: PropTypes) => {
     <>
       <SingleSelect
         label={'Terrestrial Invasive Plant'}
-        name={`subtype_data.entries.${index}.invasive_plant`}
+        name={getPath('invasive_plant')}
         required={!hasAquaticPlant}
         tooltip={tooltips.plant.invasive_plant}
         width={Width.Half}
@@ -66,7 +67,7 @@ const MonitoringChemMechPlantEntry = ({ index, remove }: PropTypes) => {
       />
       <SingleSelect
         label={'Aquatic Invasive Plant'}
-        name={`subtype_data.entries.${index}.invasive_plant_aquatic`}
+        name={getPath('invasive_plant_aquatic')}
         options={codes?.AquaticPlantCode}
         required={!hasTerrestrialPlant}
         tooltip={tooltips.plant.invasive_plant}
@@ -78,7 +79,7 @@ const MonitoringChemMechPlantEntry = ({ index, remove }: PropTypes) => {
       />
       <SingleSelect
         label={'Evidence of Treatment'}
-        name={`subtype_data.entries.${index}.evidence_of_treatment`}
+        name={getPath('evidence_of_treatment')}
         options={YesNo}
         required
         rules={{ required: true }}
@@ -89,7 +90,7 @@ const MonitoringChemMechPlantEntry = ({ index, remove }: PropTypes) => {
         <SingleSelect
           label={'Treatment Efficacy Rating'}
           options={codes?.TreatmentEfficacyRatingCode}
-          name={`subtype_data.entries.${index}.treatment_efficacy_rating`}
+          name={getPath('treatment_efficacy_rating')}
           tooltip={tooltips.plant.treatment_efficacy_rating}
           width={Width.Half}
         />
@@ -98,7 +99,7 @@ const MonitoringChemMechPlantEntry = ({ index, remove }: PropTypes) => {
       )}
       <SingleSelect
         label={'Management Efficacy Rating'}
-        name={`subtype_data.entries.${index}.management_efficacy_rating`}
+        name={getPath('management_efficacy_rating')}
         options={codes?.EfficacyManagementRatingCode}
         required
         rules={{ required: true }}
@@ -107,7 +108,7 @@ const MonitoringChemMechPlantEntry = ({ index, remove }: PropTypes) => {
       />
       <MultiSelect
         label={'Invasive Plants on Site'}
-        name={`subtype_data.entries.${index}.invasive_plants_on_site`}
+        name={getPath('invasive_plants_on_site')}
         options={codes?.InvasivePlantsOnSiteCode}
         required
         rules={{ validate: (arr) => minArrayLength(arr, 1) }}
@@ -116,7 +117,7 @@ const MonitoringChemMechPlantEntry = ({ index, remove }: PropTypes) => {
       />
       <SingleSelect
         label={'Treatment Pass'}
-        name={`subtype_data.entries.${index}.treatment_pass`}
+        name={getPath('treatment_pass')}
         options={TreatmentPass}
         tooltip={tooltips.plant.treatment_pass}
         width={Width.Half}
@@ -126,9 +127,8 @@ const MonitoringChemMechPlantEntry = ({ index, remove }: PropTypes) => {
         error={errors.subtype_data?.entries?.[index]?.comment}
         tooltip={tooltips.plant.monitoring_comment}
         width={Width.Half}
-        {...register(`subtype_data.entries.${index}.comment`)}
+        {...register(getPath('comment'))}
       />
-      <DeleteControl onClick={() => remove(index)} />
     </>
   );
 };

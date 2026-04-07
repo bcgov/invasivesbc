@@ -1,9 +1,9 @@
-const minValue = (val: number | string | undefined, min: number) => {
-  if (val == undefined) return true;
+const greaterThanEqual = (val: number | string | undefined, min: number) => {
+  if (val == undefined || Number.isNaN(val)) return true;
   if (typeof val === 'string') {
     return val.length >= min || `Enter at least ${min} characters.`;
   }
   return val >= min || `Value cannot be less than ${min}`;
 };
 
-export default minValue;
+export default greaterThanEqual;

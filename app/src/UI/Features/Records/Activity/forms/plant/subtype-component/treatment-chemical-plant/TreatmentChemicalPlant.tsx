@@ -1,9 +1,6 @@
-import { useFormContext } from 'react-hook-form';
+import { get, useFormContext } from 'react-hook-form';
 import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
-import {
-  AquaticChemicalTreatmentSchema,
-  TerrestrialChemicalTreatmentSchema
-} from 'UI/Features/Records/Activity/forms/plant/interfaces';
+import { ChemTreatment } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
 import TextInput from 'UI/Features/Records/Activity/forms/common/TextInput/TextInput';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
@@ -16,30 +13,24 @@ import DateInput from 'UI/Features/Records/Activity/forms/common/DateInput/DateI
 import RadioInput from 'UI/Features/Records/Activity/forms/common/RadioInput/RadioInput';
 import FormSpacer from 'UI/Features/Records/Activity/forms/common/FormSpacer/FormSpacer';
 import CheckboxInput from 'UI/Features/Records/Activity/forms/common/CheckboxInput/CheckboxInput';
-import { maxValue, minValue, noFutureDate } from 'UI/Features/Records/Activity/forms/common/validators';
+import {
+  lessThanEqual,
+  lessThan,
+  greaterThanEqual,
+  noFutureDate
+} from 'UI/Features/Records/Activity/forms/common/validators';
 import CheckboxUI from 'UI/Features/Records/Activity/forms/common/CheckboxUI/CheckboxUI';
 import { Fragment, useEffect, useState } from 'react';
+import TreatmentChemicalPlantDetails from './TreatmentChemicalPlantDetails';
+import useFilteredServiceLicenseCodes from 'UI/Features/Records/Activity/forms/plant/hooks/useFilteredServiceLicenseCodes';
+import useLocalStorage from 'UI/Features/Records/Activity/forms/plant/hooks/useLocalStorage';
+import useFieldPath from 'UI/Features/Records/Activity/forms/plant/hooks/useFieldPath';
 
-type PropTypes = {
-  type: 'terrestrial' | 'aquatic';
-};
-
-type ChemTreatment = AquaticChemicalTreatmentSchema | TerrestrialChemicalTreatmentSchema;
-
-const TreatmentChemicalPlant = ({ type }: PropTypes) => {
+const TreatmentChemicalPlant = () => {
   const MAX_ALLOWED_TEMP = 28;
   const MIN_ALLOWED_TEMP = 10;
   const MAX_WIND_SPEED = 9;
 
-  /**
-   * @desc Cast localStorage value to boolean from string.
-   * @param key localStorage Key
-   */
-  const coerceLocalBool = (key: string): boolean => {
-    const bool = localStorage.getItem(key);
-    if (bool === 'true') return true;
-    return false;
-  };
   /**
    * @desc Validate only PMP or Manual PMP are filled in, not both.
    */
@@ -58,20 +49,29 @@ const TreatmentChemicalPlant = ({ type }: PropTypes) => {
     setValue,
     formState: { isDirty, errors, disabled }
   } = useFormContext<ChemTreatment>();
+
+  const { getPath } = useFieldPath<ChemTreatment>('subtype_data');
   const codes = useSelector((state) => state.ActivityPage.formCodes);
   const wellsInArea = useSelector((state) => state.ActivityPage?.wellsInRecordArea);
 
-  const well_entries = watch('subtype_data.well_entries');
-  const ntz_bool = watch('subtype_data.ntz_reduction_bool');
-  const temp_c = watch('subtype_data.temperature_c');
-  const wind_speed = watch('subtype_data.wind_speed_kmh');
+  const well_entries = watch(getPath('well_entries'));
+  const ntz_bool = watch(getPath('ntz_reduction_bool'));
+  const temp_c = watch(getPath('temperature_c'));
+  const wind_speed = watch(getPath('wind_speed_kmh'));
 
+  const temperatureConsent = useLocalStorage('isTemperatureAccurate');
+  const windSpeedConsent = useLocalStorage('isWindSpeedAccurate');
   /*
     Entry Policy: Out-of-range values (temperature, wind speed) are permitted only if the user has manually flagged them as accurate.
     This prevents data entry errors without blocking edge-case submissions.
   */
-  const [isTemperatureAccurate, setIsTemperatureAccurate] = useState<boolean>(coerceLocalBool('isTemperatureAccurate'));
-  const [isWindSpeedAccurate, setIsWindSpeedAccurate] = useState<boolean>(coerceLocalBool('isWindSpeedAccurate'));
+  const [userVerifiedTemperatureAccurate, setUserVerifiedTemperatureAccurate] = useState<boolean>(
+    temperatureConsent.getConfirmation()
+  );
+  const [userVerifiedWindspeedAccurate, setUserVerifiedWindspeedAccurate] = useState<boolean>(
+    windSpeedConsent.getConfirmation()
+  );
+  const { serviceLicenseCodes } = useFilteredServiceLicenseCodes(disabled);
 
   const shouldVerifyWindSpeedAccuracy = !disabled && wind_speed != undefined && wind_speed > MAX_WIND_SPEED;
   const shouldVerifyTemperatureAccuracy =
@@ -80,40 +80,40 @@ const TreatmentChemicalPlant = ({ type }: PropTypes) => {
   useEffect(() => {
     // Uncheck confirmation if temperature is changed
     if (!isDirty) return;
-    setIsTemperatureAccurate(false);
-    localStorage.setItem('isTemperatureAccurate', 'false');
+    temperatureConsent.remove();
+    setUserVerifiedTemperatureAccurate(false);
   }, [temp_c]);
 
   useEffect(() => {
     // Uncheck confirmation if Wind speed is changed
     if (!isDirty) return;
-    setIsWindSpeedAccurate(false);
-    localStorage.setItem('isWindSpeedAccurate', 'false');
+    windSpeedConsent.remove();
+    setUserVerifiedWindspeedAccurate(false);
   }, [wind_speed]);
 
   useEffect(() => {
     // Refire Temperature validation when confirmation changes
     if (!isDirty) return;
-    trigger('subtype_data.temperature_c');
-  }, [isTemperatureAccurate]);
+    trigger(getPath('temperature_c'));
+  }, [userVerifiedTemperatureAccurate]);
 
   useEffect(() => {
     // Refire Temperature validation when confirmation changes
     if (!isDirty) return;
-    trigger('subtype_data.wind_speed_kmh');
-  }, [isWindSpeedAccurate]);
+    trigger(getPath('wind_speed_kmh'));
+  }, [userVerifiedWindspeedAccurate]);
 
   // Cleanup NTZ Reduction Rationale if Reduction is changed to False
   useEffect(() => {
     if (isDirty && !ntz_bool) {
-      setValue('subtype_data.rationale_for_ntz_reduction', '');
+      setValue(getPath('rationale_for_ntz_reduction'), '');
     }
   }, [ntz_bool]);
 
   // Update Nearest Wells when values change
   useEffect(() => {
     if (wellsInArea) {
-      setValue('subtype_data.well_entries', wellsInArea);
+      setValue(getPath('well_entries'), wellsInArea);
     }
   }, [wellsInArea]);
 
@@ -148,49 +148,50 @@ const TreatmentChemicalPlant = ({ type }: PropTypes) => {
       {/* Weather Information */}
       <Fieldset label={'Weather Information'}>
         <NumberInput
-          error={errors?.subtype_data?.temperature_c}
+          error={get(errors, getPath('temperature_c'))}
           label={'Temperature (C°)'}
           required
           tooltip={tooltips.plant.chemical.weather.temperature_c}
           width={Width.Half}
-          {...register('subtype_data.temperature_c', {
+          {...register(getPath('temperature_c'), {
             required: true,
             valueAsNumber: true,
             validate: {
-              minValueBeforeVerify: (val) => isTemperatureAccurate || minValue(val, MIN_ALLOWED_TEMP),
+              minValueBeforeVerify: (val) => userVerifiedTemperatureAccurate || greaterThanEqual(val, MIN_ALLOWED_TEMP),
               maxValueBeforeVerify: (val) =>
-                isTemperatureAccurate
-                  ? maxValue(val, 99) // If user verifies weather accuracy, check for clearly accidental values (extra digits)
-                  : maxValue(val, MAX_ALLOWED_TEMP)
+                userVerifiedTemperatureAccurate
+                  ? lessThan(val, 100) // If user verifies weather accuracy, check for clearly accidental values (extra digits)
+                  : lessThanEqual(val, MAX_ALLOWED_TEMP)
             }
           })}
         />
         <NumberInput
-          error={errors?.subtype_data?.wind_speed_kmh}
+          error={get(errors, getPath('wind_speed_kmh'))}
           label={'Wind Speed (km/h)'}
           required
           tooltip={tooltips.plant.chemical.weather.wind_speed_kmh}
           width={Width.Half}
-          {...register('subtype_data.wind_speed_kmh', {
+          {...register(getPath('wind_speed_kmh'), {
             required: true,
             valueAsNumber: true,
             // If user verifies weather accurate, check for clearly accidental values (extra digits)
             validate: {
-              minSpeed: (val) => minValue(val, 0),
-              maxSpeed: (val) => (isWindSpeedAccurate ? maxValue(val, 99) : maxValue(val, MAX_WIND_SPEED))
+              minSpeed: (val) => greaterThanEqual(val, 0),
+              maxSpeed: (val) =>
+                userVerifiedWindspeedAccurate ? lessThan(val, 100) : lessThanEqual(val, MAX_WIND_SPEED)
             }
           })}
         />
         <SingleSelect
           label={'Wind Direction'}
-          name={'subtype_data.wind_direction'}
+          name={getPath('wind_direction')}
           options={CardinalDirection}
           required
           tooltip={tooltips.plant.chemical.weather.wind_direction}
           width={Width.Half}
           rules={{
             required: true,
-            deps: ['subtype_data.wind_speed_kmh'],
+            deps: [getPath('wind_speed_kmh')],
             validate: (direction, formValues) => {
               const windSpeed = formValues.subtype_data?.wind_speed_kmh;
               if (direction === 'NA' && windSpeed > 0) {
@@ -201,11 +202,17 @@ const TreatmentChemicalPlant = ({ type }: PropTypes) => {
           }}
         />
         <NumberInput
-          error={errors?.subtype_data?.humidity}
+          error={get(errors, getPath('humidity'))}
           label={'Humidity (%)'}
           tooltip={tooltips.plant.chemical.weather.humidity}
           width={Width.Half}
-          {...register('subtype_data.humidity', { valueAsNumber: true })}
+          {...register(getPath('humidity'), {
+            valueAsNumber: true,
+            validate: {
+              min: (val) => greaterThanEqual(val, 0),
+              max: (val) => lessThanEqual(val, 100)
+            }
+          })}
         />
         {shouldVerifyTemperatureAccuracy && (
           <CheckboxUI
@@ -213,24 +220,28 @@ const TreatmentChemicalPlant = ({ type }: PropTypes) => {
               'The temperature recorded at the time of treatment is an accurate representation of site conditions.'
             }
             required
-            state={isTemperatureAccurate}
+            state={userVerifiedTemperatureAccurate}
             warningConfirmation
-            onChange={() => {
-              localStorage.setItem('isTemperatureAccurate', 'true');
-              setIsTemperatureAccurate((prev) => !prev);
-            }}
+            onChange={() =>
+              setUserVerifiedTemperatureAccurate((prev) => {
+                prev ? temperatureConsent.remove() : temperatureConsent.confirm();
+                return !prev;
+              })
+            }
           />
         )}
         {shouldVerifyWindSpeedAccuracy && (
           <CheckboxUI
             label={'The wind speed recorded at the time of treatment is an accurate representation of site conditions.'}
             required
-            state={isWindSpeedAccurate}
+            state={userVerifiedWindspeedAccurate}
             warningConfirmation
-            onChange={() => {
-              localStorage.setItem('isWindSpeedAccurate', 'true');
-              setIsWindSpeedAccurate((prev) => !prev);
-            }}
+            onChange={() =>
+              setUserVerifiedWindspeedAccurate((prev) => {
+                prev ? windSpeedConsent.remove() : windSpeedConsent.confirm();
+                return !prev;
+              })
+            }
           />
         )}
       </Fieldset>
@@ -239,44 +250,44 @@ const TreatmentChemicalPlant = ({ type }: PropTypes) => {
       <Fieldset label={'Chemical Treatment Information'}>
         <SingleSelect
           label={'Service License Number and Company Name'}
-          name={'subtype_data.service_license_number'}
-          options={codes?.ServiceLicenseNumberAndCompany}
+          name={getPath('service_license_number')}
+          options={serviceLicenseCodes}
           required
           rules={{ required: true }}
           tooltip={tooltips.plant.chemical.service_license_number_and_company}
           width={Width.Half}
         />
         <TextInput
-          error={errors?.subtype_data?.pesticide_use_permit}
+          error={get(errors, getPath('pesticide_use_permit'))}
           label={'Pesticide Use Permit'}
           tooltip={tooltips.plant.chemical.pesticide_use_permit}
           width={Width.Half}
-          {...register('subtype_data.pesticide_use_permit')}
+          {...register(getPath('pesticide_use_permit'))}
         />
         <SingleSelect
           label={'Pest Management Plan (PMP)'}
-          name={'subtype_data.pest_management_plan'}
+          name={getPath('pest_management_plan')}
           options={codes?.PestManagementPlan}
           tooltip={tooltips.plant.chemical.pest_management_plan}
           width={Width.Half}
           rules={{
-            deps: ['subtype_data.pest_management_plan_manual'],
+            deps: [getPath('pest_management_plan_manual')],
             validate: validatePMPSelection
           }}
         />
         <TextInput
-          error={errors?.subtype_data?.pest_management_plan_manual}
+          error={get(errors, getPath('pest_management_plan_manual'))}
           label={'PMP # Not in Dropdown'}
           tooltip={tooltips.plant.chemical.pest_management_plan_manual}
           width={Width.Half}
-          {...register('subtype_data.pest_management_plan_manual', {
-            deps: ['subtype_data.pest_management_plan'],
+          {...register(getPath('pest_management_plan_manual'), {
+            deps: [getPath('pest_management_plan')],
             validate: validatePMPSelection
           })}
         />
         <SingleSelect
           label={'Treatment Notice Signs'}
-          name={'subtype_data.treatment_notice_signs'}
+          name={getPath('treatment_notice_signs')}
           options={YesNoUnknown}
           required
           rules={{ required: true }}
@@ -285,7 +296,7 @@ const TreatmentChemicalPlant = ({ type }: PropTypes) => {
         />
         <SingleSelect
           label={'Precautionary Statement'}
-          name={'subtype_data.precautionary_statement'}
+          name={getPath('precautionary_statement')}
           options={codes?.ChemicalPrecautionaryStatement}
           required
           rules={{ required: true }}
@@ -293,22 +304,22 @@ const TreatmentChemicalPlant = ({ type }: PropTypes) => {
           width={Width.Half}
         />
         <DateInput
-          error={errors?.subtype_data?.application_start_time}
+          error={get(errors, getPath('application_start_time'))}
           includeTime
           label={'Application Start Time'}
           required
           width={Width.Half}
-          {...register('subtype_data.application_start_time', { required: true, validate: noFutureDate })}
+          {...register(getPath('application_start_time'), { required: true, validate: noFutureDate })}
         />
         <CheckboxInput
           label={'Additional/Unmapped Wells or Water License intakes within 30m'}
           tooltip={tooltips.plant.chemical.additional_unmapped_water}
           width={Width.Half}
-          {...register('subtype_data.additional_unmapped_well_water_bool')}
+          {...register(getPath('additional_unmapped_well_water_bool'))}
         />
         <RadioInput
           label={'NTZ Reduction'}
-          name={'subtype_data.ntz_reduction_bool'}
+          name={getPath('ntz_reduction_bool')}
           required
           rules={{ validate: (value) => value !== undefined || 'NTZ reduction is required' }}
           tooltip={tooltips.plant.chemical.required_under_license}
@@ -321,12 +332,12 @@ const TreatmentChemicalPlant = ({ type }: PropTypes) => {
         {ntz_bool ? (
           <TextInput
             advisoryText="Only the PMP or permit holder may approve an NTZ reduction on public lands."
-            error={errors?.subtype_data?.rationale_for_ntz_reduction}
+            error={get(errors, getPath('rationale_for_ntz_reduction'))}
             label={'Rationale for NTZ Reduction'}
             tooltip={tooltips.plant.chemical.required_under_license}
             required
             width={Width.Half}
-            {...register('subtype_data.rationale_for_ntz_reduction', { required: true })}
+            {...register(getPath('rationale_for_ntz_reduction'), { required: true })}
           />
         ) : (
           <FormSpacer width={Width.Half} />
@@ -337,7 +348,7 @@ const TreatmentChemicalPlant = ({ type }: PropTypes) => {
       <Fieldset label={'Pest Injury Threshold Determination'}>
         <RadioInput
           label={'Choose either option'}
-          name={'subtype_data.pest_injury_threshold_determination_bool'}
+          name={getPath('pest_injury_threshold_determination_bool')}
           required
           rules={{ validate: (value) => value !== undefined || 'NTZ reduction is required' }}
           tooltip={tooltips.plant.chemical.required_under_license}
@@ -353,7 +364,7 @@ const TreatmentChemicalPlant = ({ type }: PropTypes) => {
         />
       </Fieldset>
 
-      <p>TODO: Calculation Fields for {type}</p>
+      <TreatmentChemicalPlantDetails />
     </>
   );
 };

@@ -8,8 +8,10 @@ import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect
 import { CardinalDirection } from 'UI/Features/Records/Activity/forms/enums';
 import TextArea from 'UI/Features/Records/Activity/forms/common/TextArea/TextArea';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
+import useFieldPath from 'UI/Features/Records/Activity/forms/plant/hooks/useFieldPath';
 
 const BiocontrolWeatherConditions = () => {
+  const { getPath } = useFieldPath<BiocontrolReleaseSchema>('subtype_data');
   const { register } = useFormContext<BiocontrolReleaseSchema>();
   const codes = useSelector((state) => state.ActivityPage.formCodes);
   return (
@@ -19,11 +21,14 @@ const BiocontrolWeatherConditions = () => {
         required
         tooltip={tooltips.plant.biocontrol.weather.temperature}
         width={Width.Half}
-        {...register('subtype_data.temperature', { required: true })}
+        {...register(getPath('temperature'), {
+          required: true,
+          valueAsNumber: true
+        })}
       />
       <SingleSelect
         label={'Cloud Cover'}
-        name={'subtype_data.cloud_cover'}
+        name={getPath('cloud_cover')}
         options={codes?.CloudCoverCode}
         required
         width={Width.Half}
@@ -32,7 +37,7 @@ const BiocontrolWeatherConditions = () => {
       />
       <SingleSelect
         label={'Precipitation'}
-        name={'subtype_data.precipitation'}
+        name={getPath('precipitation')}
         options={codes?.PrecipitationCode}
         required
         width={Width.Half}
@@ -44,18 +49,18 @@ const BiocontrolWeatherConditions = () => {
         required
         tooltip={tooltips.plant.biocontrol.weather.wind_speed}
         width={Width.Half}
-        {...register('subtype_data.wind_speed_kmh', { required: true })}
+        {...register(getPath('wind_speed_kmh'), { required: true, valueAsNumber: true })}
       />
       <SingleSelect
         label={'Wind Direction'}
-        name={'subtype_data.wind_direction'}
+        name={getPath('wind_direction')}
         options={CardinalDirection}
         required
         width={Width.Half}
         rules={{ required: true }}
         tooltip={tooltips.plant.biocontrol.weather.wind_direction}
       />
-      <TextArea label={'Weather Comments'} width={Width.Half} {...register('subtype_data.comments')} />
+      <TextArea label={'Weather Comments'} width={Width.Half} {...register(getPath('comments'))} />
     </Fieldset>
   );
 };

@@ -232,7 +232,13 @@ const CardinalDirection = [
   }
 ];
 
+enum CalculationType {
+  Dilution = 'Dilution',
+  ApplicationRate = 'Product Application Rate'
+}
+
 export {
+  CalculationType,
   CardinalDirection,
   DisposedMaterialFormat,
   ObservationType,
