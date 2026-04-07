@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
-from api.models.activity.abstract_sub_tables import BaseOneToManyActivityTable
+from api.models.activity import RepeatedFormData
+from api.models.codes import InvasivePlantsOnSiteCode
 from api.models.codes.code_tables import (
     AquaticPlantCode,
     EfficacyManagementRatingCode,
@@ -11,7 +12,7 @@ from api.models.enums.treatment_pass import TreatmentPass
 from api.models.enums.yes_no import YesNo
 
 
-class PlantMonitoringBase(BaseOneToManyActivityTable):
+class PlantMonitoringBase(RepeatedFormData):
     """
     1:M Relationship between for an Activity. PlantMonitoringBase covers Chemical and Mechanical Treatment Monitoring
     Plant Monitoring Base covers the 1:M relationship to an Activity where Monitoring was from a
@@ -29,19 +30,8 @@ class PlantMonitoringBase(BaseOneToManyActivityTable):
     treatment_pass = models.CharField(choices=TreatmentPass, blank=True, null=True)
     comment = models.TextField(max_length=16384, blank=True, null=True)
 
-    monitoring_evidence_codes = models.CharField(
-        blank=True,
-        null=True,
-        db_comment="This should be refactored as an FK, but it is multivalued (comma-separated)",
-    )
-
     class Meta:
         abstract = True
-        constraints = [
-            models.UniqueConstraint(
-                fields=["activity", "invasive_plant"], name="u_mech_plant_monitoring"
-            )
-        ]
 
     def save(self, *args, **kwargs):
         self.full_clean()
@@ -85,3 +75,13 @@ class AquaticTreatmentMonitoringEntry(PlantMonitoringBase):
 
     class Meta:
         db_table = '"activity"."monitoring_treatment_entries_pa"'
+
+
+class InvasivePlantsOnSite(RepeatedFormData):
+
+    invasive_plants_on_site = models.ForeignKey(
+        InvasivePlantsOnSiteCode, on_delete=models.PROTECT
+    )
+
+    class Meta:
+        db_table = '"activity"."invasive_plants_on_site"'

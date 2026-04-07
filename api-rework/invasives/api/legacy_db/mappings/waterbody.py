@@ -11,6 +11,7 @@ from api.models.activity import (
     WaterbodyContext,
     Activity,
     ShorelineTypes,
+    ActivityDataRecord,
 )
 from api.models.codes import (
     WaterbodyFlowSeasonalCode,
@@ -39,8 +40,9 @@ def add_shoreline_types(new: Activity, old: LegacyActivity):
                 new.migration_remarks = ""
             new.migration_remarks += "Shoreline type code not specified for shoreline entry. Not creating shorelines entry in new record\n\n"
         else:
+            adr = ActivityDataRecord.objects.create(activity=new)
             ShorelineTypes.objects.create(
-                activity=new,
+                activity_data_record=adr,
                 shoreline_type=(
                     ShorelineTypeCode.objects.get(code=shoreline.shoreline_type)
                 ),
@@ -57,9 +59,9 @@ def add_waterbody_data(new: Activity, old: LegacyActivity):
             new.migration_remarks = ""
         new.migration_remarks += "Legacy activity does not provide waterbody data\n\n"
         return
-
+    adr = ActivityDataRecord.objects.create(activity=new)
     WaterbodyContext.objects.create(
-        activity=new,
+        activity_data_record=adr,
         name_gazetted=wb_data.waterbody_name_gazetted,
         name_local=wb_data.waterbody_name_local,
         access=wb_data.waterbody_access,
@@ -85,7 +87,7 @@ def add_waterbody_data(new: Activity, old: LegacyActivity):
     if wb_data.adjacent_land_use is not None:
         for code in wb_data.adjacent_land_use.split(","):
             WaterbodyAdjacentLandUse.objects.create(
-                activity=new,
+                activity_data_record=adr,
                 waterbody_adjacent_land_use=AdjacentLandUseCode.objects.get(code=code),
             )
 
@@ -95,14 +97,15 @@ def add_waterbody_data(new: Activity, old: LegacyActivity):
             wlm = "Station"
 
             WaterbodyLevelManagement.objects.create(
-                activity=new,
+                activity_data_record=adr,
                 waterlevel_management=WaterLevelManagement.objects.get(code=wlm),
             )
 
     if wb_data.waterbody_use is not None:
         for code in wb_data.waterbody_use.split(","):
+
             WaterbodyUse.objects.create(
-                activity=new,
+                activity_data_record=adr,
                 waterbody_use=WaterbodyUseCode.objects.get(code=code),
             )
     else:
@@ -113,28 +116,29 @@ def add_waterbody_data(new: Activity, old: LegacyActivity):
     if wb_data.substrate_type is not None:
         for code in wb_data.substrate_type.split(","):
             WaterbodySubstrateType.objects.create(
-                activity=new,
+                activity_data_record=adr,
                 substrate_type=WaterbodySubstrateCode.objects.get(code=code),
             )
 
     if wb_data.outflow_other is not None:
         WaterbodyOutflowSeasonal.objects.create(
-            activity=new,
+            activity_data_record=adr,
             flow_code=WaterbodyFlowCode.objects.get(code=wb_data.outflow_other),
         )
     if wb_data.outflow is not None:
         WaterbodyOutflowPermanent.objects.create(
-            activity=new, flow_code=WaterbodyFlowCode.objects.get(code=wb_data.outflow)
+            activity_data_record=adr,
+            flow_code=WaterbodyFlowCode.objects.get(code=wb_data.outflow),
         )
 
     if wb_data.inflow_other is not None:
         WaterbodyInflowSeasonal.objects.create(
-            activity=new,
+            activity_data_record=adr,
             flow_code=WaterbodyFlowSeasonalCode.objects.get(code=wb_data.inflow_other),
         )
 
     if wb_data.inflow_permanent is not None:
         WaterbodyInflowPermanent.objects.create(
-            activity=new,
+            activity_data_record=adr,
             flow_code=WaterbodyFlowCode.objects.get(code=wb_data.inflow_permanent),
         )

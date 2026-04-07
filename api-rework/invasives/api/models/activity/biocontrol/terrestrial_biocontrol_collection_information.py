@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
-from api.models.activity.abstract_sub_tables import BaseOneToManyActivityTable
+from api.models.activity import RepeatedFormData
 from api.models.codes.code_tables import (
     BiocontrolAgentCode,
     TerrestrialPlantCode,
@@ -10,7 +10,7 @@ from api.models.codes.code_tables import (
 from api.models.enums.collection_type import CollectionType
 
 
-class TerrestrialBiocontrolCollectionEntry(BaseOneToManyActivityTable):
+class TerrestrialBiocontrolCollectionEntry(RepeatedFormData):
     """
     Biocontrol 1:M Collection Information for Activities
     Used in:

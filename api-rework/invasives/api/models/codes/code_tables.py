@@ -248,3 +248,23 @@ class WindDirectionCode(BaseCode):
 class WaterLevelManagement(BaseCode):
     class Meta:
         db_table = '"codes"."water_level_management"'
+
+
+class GranularHerbicideCode(BaseCode):
+    class Meta:
+        db_table = '"codes"."granular_herbicide"'
+
+
+class LiquidHerbicideCode(BaseCode):
+    class Meta:
+        db_table = '"codes"."liquid_herbicide"'
+
+
+class HerbicideTypeCode(BaseCode):
+    class Meta:
+        db_table = '"codes"."herbicide_type"'
+
+
+class HerbicideApplicationMethodCode(BaseCode):
+    class Meta:
+        db_table = '"codes"."herbicide_application_method"'

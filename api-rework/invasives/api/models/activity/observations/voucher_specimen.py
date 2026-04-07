@@ -1,9 +1,9 @@
 from django.db import models
-from api.models.activity.abstract_sub_tables import BaseOneToOneActivityTable
+from api.models.activity import UnrepeatedFormData
 from api.models.codes.code_tables import TerrestrialPlantCode, AquaticPlantCode
 
 
-class VoucherSpecimen(BaseOneToOneActivityTable):
+class VoucherSpecimen(UnrepeatedFormData):
     invasive_plant = models.ForeignKey("PlantCodes", on_delete=models.PROTECT)
     voucher_sample_id = models.CharField(max_length=128)
     date_collected = models.DateField()
@@ -18,12 +18,6 @@ class VoucherSpecimen(BaseOneToOneActivityTable):
 
     class Meta:
         abstract = True
-        constraints = [
-            models.UniqueConstraint(
-                fields=["activity", "invasive_plant"],
-                name="voucher_specimen_unique_plant",
-            )
-        ]
 
 
 class TerrestrialVoucherSpecimen(VoucherSpecimen):

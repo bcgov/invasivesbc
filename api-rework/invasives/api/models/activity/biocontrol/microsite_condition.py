@@ -1,9 +1,9 @@
 from django.db import models
-from api.models.activity.abstract_sub_tables import BaseOneToOneActivityTable
+from api.models.activity import RepeatedFormData
 from api.models.codes.code_tables import MesoslopePositionCode, SiteSurfaceShapeCode
 
 
-class MicrositeCondition(BaseOneToOneActivityTable):
+class MicrositeCondition(RepeatedFormData):
     """
     Microsite Condition details for activities,
     consumed by:

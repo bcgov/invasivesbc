@@ -27,6 +27,9 @@
     }
   },
   {
+    "model": "ap"
+  },
+  {
     "model": "api.FundingAgency",
     "pk": 1,
     "fields": {

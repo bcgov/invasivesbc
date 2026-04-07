@@ -2,10 +2,10 @@ from django.db import models
 
 from api.models.codes import WaterbodyTypeCode
 from api.models.enums.yes_no_unknown import YesNoUnknown
-from api.models.activity.abstract_sub_tables import BaseOneToOneActivityTable
+from api.models.activity import UnrepeatedFormData
 
 
-class WaterbodyContext(BaseOneToOneActivityTable):
+class WaterbodyContext(UnrepeatedFormData):
     type = models.ForeignKey(WaterbodyTypeCode, on_delete=models.PROTECT)
     name_gazetted = models.CharField(max_length=256, null=True, blank=True)
     name_local = models.CharField(max_length=256, null=True, blank=True)

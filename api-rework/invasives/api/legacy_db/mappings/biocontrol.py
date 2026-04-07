@@ -16,6 +16,7 @@ from api.models.activity import (
     TerrestrialBiocontrolAgentCountExtended,
     SignOfBiocontrolPresenceTerrestrial,
     LocationBiocontrolAgentsFoundTerrestrial,
+    ActivityDataRecord,
 )
 from api.models.codes import (
     TerrestrialPlantCode,
@@ -36,6 +37,7 @@ def add_subtype_payload_for_biocontrol_release(new: Activity, old: LegacyActivit
     add_microsite_conditions(new, old)
     add_weather_conditions(new, old)
     add_target_plant_phenology(new, old)
+    adr = ActivityDataRecord.objects.create(activity=new)
 
     for (
         bcr
@@ -43,7 +45,7 @@ def add_subtype_payload_for_biocontrol_release(new: Activity, old: LegacyActivit
         old.activity_payload.form_data.activity_subtype_data.Biocontrol_Release_Information
     ):
         TerrestrialBiocontrolReleaseEntry.objects.create(
-            activity=new,
+            activity_data_record=adr,
             invasive_plant=TerrestrialPlantCode.objects.get(
                 code=bcr.invasive_plant_code
             ),
@@ -71,14 +73,8 @@ def add_subtype_payload_for_biocontrol_release(new: Activity, old: LegacyActivit
         if bcr.estimated_biological_agents is not None:
             for ba in bcr.estimated_biological_agents:
                 TerrestrialBiocontrolAgentCount.objects.create(
-                    activity=new,
+                    activity_data_record=adr,
                     is_estimate=True,
-                    invasive_plant=TerrestrialPlantCode.objects.get(
-                        code=bcr.invasive_plant_code
-                    ),
-                    biocontrol_agent=BiocontrolAgentCode.objects.get(
-                        code=bcr.biological_agent_code
-                    ),
                     stage=(
                         BioAgentLifeStageCode.objects.get(
                             code=ba.biological_agent_stage_code
@@ -91,14 +87,8 @@ def add_subtype_payload_for_biocontrol_release(new: Activity, old: LegacyActivit
         if bcr.actual_biological_agents is not None:
             for ba in bcr.actual_biological_agents:
                 TerrestrialBiocontrolAgentCount.objects.create(
-                    activity=new,
+                    activity_data_record=adr,
                     is_estimate=False,
-                    invasive_plant=TerrestrialPlantCode.objects.get(
-                        code=bcr.invasive_plant_code
-                    ),
-                    biocontrol_agent=BiocontrolAgentCode.objects.get(
-                        code=bcr.biological_agent_code
-                    ),
                     stage=(
                         BioAgentLifeStageCode.objects.get(
                             code=ba.biological_agent_stage_code
@@ -114,14 +104,17 @@ def add_subtype_payload_for_biocontrol_collection(new: Activity, old: LegacyActi
     add_persons(new, old)
     add_well_information(new, old)
     add_weather_conditions(new, old)
+    add_microsite_conditions(new, old)
     add_target_plant_phenology(new, old)
+    adr = ActivityDataRecord.objects.create(activity=new)
+
     for (
         bcc
     ) in (
         old.activity_payload.form_data.activity_subtype_data.Biocontrol_Collection_Information
     ):
         TerrestrialBiocontrolCollectionEntry.objects.create(
-            activity=new,
+            activity_data_record=adr,
             invasive_plant=TerrestrialPlantCode.objects.get(
                 code=bcc.invasive_plant_code
             ),
@@ -142,14 +135,8 @@ def add_subtype_payload_for_biocontrol_collection(new: Activity, old: LegacyActi
         if bcc.estimated_biological_agents is not None:
             for ba in bcc.estimated_biological_agents:
                 TerrestrialBiocontrolAgentCount.objects.create(
-                    activity=new,
+                    activity_data_record=adr,
                     is_estimate=True,
-                    invasive_plant=TerrestrialPlantCode.objects.get(
-                        code=bcc.invasive_plant_code
-                    ),
-                    biocontrol_agent=BiocontrolAgentCode.objects.get(
-                        code=bcc.biological_agent_code
-                    ),
                     stage=(
                         BioAgentLifeStageCode.objects.get(
                             code=ba.biological_agent_stage_code
@@ -162,14 +149,8 @@ def add_subtype_payload_for_biocontrol_collection(new: Activity, old: LegacyActi
         if bcc.actual_biological_agents is not None:
             for ba in bcc.actual_biological_agents:
                 TerrestrialBiocontrolAgentCount.objects.create(
-                    activity=new,
+                    activity_data_record=adr,
                     is_estimate=False,
-                    invasive_plant=TerrestrialPlantCode.objects.get(
-                        code=bcc.invasive_plant_code
-                    ),
-                    biocontrol_agent=BiocontrolAgentCode.objects.get(
-                        code=bcc.biological_agent_code
-                    ),
                     stage=(
                         BioAgentLifeStageCode.objects.get(
                             code=ba.biological_agent_stage_code
@@ -189,6 +170,7 @@ def add_subtype_payload_for_biocontrol_dispersal_monitoring_terrestrial_plant(
     add_microsite_conditions(new, old)
     add_weather_conditions(new, old)
     add_target_plant_phenology(new, old)
+    adr = ActivityDataRecord.objects.create(activity=new)
 
     for (
         ri
@@ -196,7 +178,7 @@ def add_subtype_payload_for_biocontrol_dispersal_monitoring_terrestrial_plant(
         old.activity_payload.form_data.activity_subtype_data.Monitoring_BiocontrolDispersal_Information
     ):
         TerrestrialBiocontrolDispersalMonitoringEntry.objects.create(
-            activity=new,
+            activity_data_record=adr,
             invasive_plant=TerrestrialPlantCode.objects.get(
                 code=ri.invasive_plant_code
             ),
@@ -217,14 +199,8 @@ def add_subtype_payload_for_biocontrol_dispersal_monitoring_terrestrial_plant(
         if ri.estimated_biological_agents is not None:
             for ba in ri.estimated_biological_agents:
                 TerrestrialBiocontrolAgentCountExtended.objects.create(
-                    activity=new,
+                    activity_data_record=adr,
                     is_estimate=True,
-                    invasive_plant=TerrestrialPlantCode.objects.get(
-                        code=ri.invasive_plant_code
-                    ),
-                    biocontrol_agent=BiocontrolAgentCode.objects.get(
-                        code=ri.biological_agent_code
-                    ),
                     stage=(
                         BioAgentLifeStageCode.objects.get(
                             code=ba.biological_agent_stage_code
@@ -243,14 +219,8 @@ def add_subtype_payload_for_biocontrol_dispersal_monitoring_terrestrial_plant(
         if ri.actual_biological_agents is not None:
             for ba in ri.actual_biological_agents:
                 TerrestrialBiocontrolAgentCountExtended.objects.create(
-                    activity=new,
+                    activity_data_record=adr,
                     is_estimate=False,
-                    invasive_plant=TerrestrialPlantCode.objects.get(
-                        code=ri.invasive_plant_code
-                    ),
-                    biocontrol_agent=BiocontrolAgentCode.objects.get(
-                        code=ri.biological_agent_code
-                    ),
                     stage=(
                         BioAgentLifeStageCode.objects.get(
                             code=ba.biological_agent_stage_code
@@ -278,13 +248,15 @@ def add_subtype_payload_for_biocontrol_release_monitoring_terrestrial_plant(
     add_target_plant_phenology(new, old)
     add_spread_details(new, old)
 
+    adr = ActivityDataRecord.objects.create(activity=new)
+
     for (
         ri
     ) in (
         old.activity_payload.form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information
     ):
         TerrestrialBiocontrolDispersalMonitoringEntry.objects.create(
-            activity=new,
+            activity_data_record=adr,
             invasive_plant=TerrestrialPlantCode.objects.get(
                 code=ri.invasive_plant_code
             ),
@@ -305,13 +277,7 @@ def add_subtype_payload_for_biocontrol_release_monitoring_terrestrial_plant(
         if ri.bio_agent_location_code is not None:
             for p in ri.bio_agent_location_code.split(","):
                 LocationBiocontrolAgentsFoundTerrestrial.objects.create(
-                    activity=new,
-                    invasive_plant=TerrestrialPlantCode.objects.get(
-                        code=ri.invasive_plant_code
-                    ),
-                    biocontrol_agent=BiocontrolAgentCode.objects.get(
-                        code=ri.biological_agent_code
-                    ),
+                    activity_data_record=adr,
                     location_agent_found=AgentLocationFoundTerrainCode.objects.get(
                         code=p
                     ),
@@ -319,26 +285,14 @@ def add_subtype_payload_for_biocontrol_release_monitoring_terrestrial_plant(
         if ri.biological_agent_presence_code is not None:
             for p in ri.biological_agent_presence_code.split(","):
                 SignOfBiocontrolPresenceTerrestrial.objects.create(
-                    activity=new,
-                    invasive_plant=TerrestrialPlantCode.objects.get(
-                        code=ri.invasive_plant_code
-                    ),
-                    biocontrol_agent=BiocontrolAgentCode.objects.get(
-                        code=ri.biological_agent_code
-                    ),
+                    activity_data_record=adr,
                     sign_of_presence=BiocontrolPresenceCode.objects.get(code=p),
                 )
         if ri.actual_biological_agents is not None:
             for ba in ri.actual_biological_agents:
                 TerrestrialBiocontrolAgentCountExtended.objects.create(
-                    activity=new,
+                    activity_data_record=adr,
                     is_estimate=False,
-                    invasive_plant=TerrestrialPlantCode.objects.get(
-                        code=ri.invasive_plant_code
-                    ),
-                    biocontrol_agent=BiocontrolAgentCode.objects.get(
-                        code=ri.biological_agent_code
-                    ),
                     stage=(
                         BioAgentLifeStageCode.objects.get(
                             code=ba.biological_agent_stage_code
@@ -357,14 +311,8 @@ def add_subtype_payload_for_biocontrol_release_monitoring_terrestrial_plant(
         if ri.estimated_biological_agents is not None:
             for ba in ri.estimated_biological_agents:
                 TerrestrialBiocontrolAgentCountExtended.objects.create(
-                    activity=new,
+                    activity_data_record=adr,
                     is_estimate=True,
-                    invasive_plant=TerrestrialPlantCode.objects.get(
-                        code=ri.invasive_plant_code
-                    ),
-                    biocontrol_agent=BiocontrolAgentCode.objects.get(
-                        code=ri.biological_agent_code
-                    ),
                     stage=(
                         BioAgentLifeStageCode.objects.get(
                             code=ba.biological_agent_stage_code

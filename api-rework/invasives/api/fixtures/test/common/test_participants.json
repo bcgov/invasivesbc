@@ -1,5 +1,8 @@
 [
   {
+    "model": "api.Activity"
+  },
+  {
     "model": "api.Participant",
     "pk": 1,
     "fields": {

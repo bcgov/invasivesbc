@@ -18,6 +18,9 @@ interface ActivitySummary {
 const ActivitiesList: React.FC = () => {
   const [activities, setActivities] = useState<ActivitySummary[]>([]);
 
+  const [distinctSubtypes, setDistinctSubtypes] = useState<string[]>([]);
+  const [subtypeFilter, setSubtypeFilter] = useState<string>("Unfiltered");
+
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -27,7 +30,12 @@ const ActivitiesList: React.FC = () => {
 
   // Column Definitions: Defines the columns to be displayed.
   const colDefs: ColDef[] = [
-    { field: 'id', headerName: 'ID' },
+    { field: 'id',
+      headerName: 'ID',
+      cellRenderer: (params) => {
+        return <a href={`/activities/${params.value}/django`} className={'idLink'}>{params.value}</a>;
+      }
+    },
     { field: 'type' },
     { field: 'subtype' },
     { field: 'date', headerName: 'Activity Date' },
@@ -54,7 +62,9 @@ const ActivitiesList: React.FC = () => {
       .then(async (res) => {
         setLoading(false);
         if (res.status === 200) {
-          setActivities(await res.json());
+          const serverResult: ActivitySummary[] = await res.json();
+          setActivities(serverResult);
+          setDistinctSubtypes([...new Set(serverResult.map( as => as.subtype))])
         } else {
           setActivities([]);
           setError(true);
@@ -76,9 +86,14 @@ const ActivitiesList: React.FC = () => {
     <>
       {error && <pre>{errorMessage}</pre>}
       <div style={{ height: '80dvh' }}>
+        Filter By Subtype:
+        <select onChange={(e) => {setSubtypeFilter(e.target.value)}}>
+          <option value={'Unfiltered'}>All</option>
+        {distinctSubtypes.map( st => (<option key={st} value={st}>{st}</option>))}
+        </select>
         <AgGridReact
           loading={loading}
-          rowData={activities}
+          rowData={activities.filter( x => subtypeFilter == 'Unfiltered' || x.subtype == subtypeFilter)}
           columnDefs={colDefs}
           onRowClicked={(e) => {
             navigate(`/activities/${e.data.id}/django`);

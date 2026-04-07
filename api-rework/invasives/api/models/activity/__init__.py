@@ -1,4 +1,3 @@
-from .abstract_sub_tables import *
 from .activity import *
 
 from .employer import *

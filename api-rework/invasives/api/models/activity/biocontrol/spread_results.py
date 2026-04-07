@@ -1,10 +1,10 @@
 from django.core.validators import MaxValueValidator
 from django.db import models
 
-from api.models.activity.abstract_sub_tables import BaseOneToOneActivityTable
+from api.models.activity import UnrepeatedFormData
 
 
-class SpreadResults(BaseOneToOneActivityTable):
+class SpreadResults(UnrepeatedFormData):
     """
     Spread Result Condition details for activities,
     consumed by:

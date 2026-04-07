@@ -1,52 +1,21 @@
-from abc import abstractclassmethod
-
 from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
 
-from api.models.activity import TerrestrialBiocontrolReleaseEntry, SpecificUse
+from api.models.activity import (
+    SpecificUse,
+    PretreatmentObservation,
+)
 from api.models.activity.observations import (
     TerrestrialPlantObservationEntries,
     TerrestrialVoucherSpecimen,
     TerrestrialPlantObservationContext,
 )
-from api.models.codes import (
-    AspectCode,
-    SlopePercentCode,
-    SoilTextureCode,
-    SpecificUseCode,
+from api.serializers.common.codes import (
+    SpecificUseCodeSerializer,
+    SoilTextureCodeSerializer,
+    AspectCodeSerializer,
+    SlopeCodeSerializer,
 )
-
-
-class BaseCodeSerializer(serializers.ModelSerializer):
-    class Meta:
-        fields = (
-            "code",
-            "full",
-        )
-
-
-class SpecificUseCodeSerializer(BaseCodeSerializer):
-    class Meta:
-        model = SpecificUseCode
-        fields = BaseCodeSerializer.Meta.fields
-
-
-class SoilTextureCodeSerializer(BaseCodeSerializer):
-    class Meta:
-        model = SoilTextureCode
-        fields = BaseCodeSerializer.Meta.fields
-
-
-class AspectCodeSerializer(BaseCodeSerializer):
-    class Meta:
-        model = AspectCode
-        fields = BaseCodeSerializer.Meta.fields
-
-
-class SlopeCodeSerializer(BaseCodeSerializer):
-    class Meta:
-        model = SlopePercentCode
-        fields = BaseCodeSerializer.Meta.fields
 
 
 class TerrestrialVoucherSpecimenSerializer(serializers.ModelSerializer):
@@ -66,7 +35,7 @@ class TerrestrialVoucherSpecimenSerializer(serializers.ModelSerializer):
         )
 
 
-class TerrestrialPlantObservationContextSerializer(serializers.ModelSerializer):
+class TerrestrialPlantObservationEntriesSerializer(serializers.ModelSerializer):
     voucher_specimen = serializers.SerializerMethodField()
 
     class Meta:
@@ -105,15 +74,17 @@ class SpecificUseSerializer(serializers.ModelSerializer):
         fields = ("specific_use",)
 
 
-class TerrestrialPlantObservationEntriesSerializer(serializers.ModelSerializer):
+class TerrestrialPlantObservationContextSerializer(serializers.ModelSerializer):
     specific_uses = SerializerMethodField()
     soil_texture = SoilTextureCodeSerializer()
     aspect = AspectCodeSerializer()
     slope_percent = SlopeCodeSerializer()
 
     def get_specific_uses(self, obj):
-        # objects = SpecificUse.objects.filter(activity=obj.activity)
-        return SpecificUseSerializer(obj.activity.specificuse_set.all(), many=True).data
+        children = SpecificUse.objects.filter(
+            activity_data_record=obj.activity_data_record
+        )
+        return SpecificUseSerializer(children, many=True).data
 
     class Meta:
         model = TerrestrialPlantObservationContext
@@ -129,20 +100,29 @@ class TerrestrialPlantObservationEntriesSerializer(serializers.ModelSerializer):
 
 
 class TerrestrialObservationSerializer(serializers.Serializer):
-    entries = TerrestrialPlantObservationContextSerializer(
-        source="terrestrialplantobservationentries_set", many=True
-    )
-    context = TerrestrialPlantObservationEntriesSerializer(
-        source="terrestrialplantobservationcontext"
-    )
-    pretreatment_observation = serializers.CharField(
-        source="pretreatmentobservation.pre_treatment_observation"
-    )
+    context = serializers.SerializerMethodField()
+    pretreatment_observation = serializers.SerializerMethodField()
+    entries = serializers.SerializerMethodField()
 
-    def to_representation(self, instance):
-        ret = super().to_representation(instance)
-        info_data = ret.pop("context", None)
+    def get_pretreatment_observation(self, obj):
+        children = PretreatmentObservation.objects.filter(
+            activity_data_record__activity_id=obj.id
+        ).first()
+        return children.pre_treatment_observation if children is not None else None
 
-        if info_data and isinstance(info_data, dict):
-            ret.update(info_data)
-        return ret
+    def get_context(self, obj):
+        children = TerrestrialPlantObservationContext.objects.filter(
+            activity_data_record__activity_id=obj.id
+        ).first()
+        return (
+            TerrestrialPlantObservationContextSerializer(children).data
+            if children is not None
+            else None
+        )
+
+    def get_entries(self, obj):
+
+        children = TerrestrialPlantObservationEntries.objects.filter(
+            activity_data_record__activity_id=obj.id
+        )
+        return TerrestrialPlantObservationEntriesSerializer(children, many=True).data

@@ -58,6 +58,10 @@ from api.models.codes import (
     WaterbodyTypeCode,
     WaterbodySubstrateCode,
     BioAgentMonitoringMethodCode,
+    LiquidHerbicideCode,
+    GranularHerbicideCode,
+    HerbicideTypeCode,
+    HerbicideApplicationMethodCode,
 )
 from api.models.migrator import ActivityPendingLink, MigrationError
 from api.models.migrator.activity_migration_status import ActivityMigrationStatus
@@ -238,6 +242,18 @@ class LegacyDB:
 
             case "waterbody_use_code":
                 return WaterbodyUseCode
+
+            case "granular_herbicide_code":
+                return GranularHerbicideCode
+
+            case "liquid_herbicide_code":
+                return LiquidHerbicideCode
+
+            case "herbicide_type_code":
+                return HerbicideTypeCode
+
+            case "chemical_method_code":
+                return HerbicideApplicationMethodCode
 
             case _:
                 return None

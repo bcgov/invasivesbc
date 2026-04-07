@@ -61,52 +61,32 @@ class TerrestrialBiologicalMonitoringEntriesSerializer(serializers.ModelSerializ
 
     def get_actual_biological_agents(self, obj):
         qs = TerrestrialBiocontrolAgentCountExtended.objects.filter(
-            activity=obj.activity,
+            activity_data_record=obj.activity_data_record,
             is_estimate=False,
-            invasive_plant=obj.invasive_plant,
-            biocontrol_agent=obj.biocontrol_agent,
         )
         return TerrestrialBiocontrolAgentCountExtendedSerializer(qs, many=True).data
 
     def get_estimated_biological_agents(self, obj):
         qs = TerrestrialBiocontrolAgentCountExtended.objects.filter(
-            activity=obj.activity,
+            activity_data_record=obj.activity_data_record,
             is_estimate=True,
-            invasive_plant=obj.invasive_plant,
-            biocontrol_agent=obj.biocontrol_agent,
         )
         return TerrestrialBiocontrolAgentCountExtendedSerializer(qs, many=True).data
 
     def get_sign_of_biocontrol_presence(self, obj):
         sbpt = SignOfBiocontrolPresenceTerrestrial.objects.filter(
-            activity=obj.activity,
-            invasive_plant=obj.invasive_plant,
-            biocontrol_agent=obj.biocontrol_agent,
+            activity_data_record=obj.activity_data_record,
         )
         return SignOfBiocontrolPresenceTerrestrialSerializer(sbpt, many=True).data
 
     def get_location_agent_found(self, obj):
         lbaft = LocationBiocontrolAgentsFoundTerrestrial.objects.filter(
-            activity=obj.activity,
-            invasive_plant=obj.invasive_plant,
-            biocontrol_agent=obj.biocontrol_agent,
+            activity_data_record=obj.activity_data_record,
         )
         return LocationBiocontrolAgentsFoundTerrestrialSerializer(lbaft, many=True).data
 
     def get_biocontrol_present(self, obj):
         # Inferred by sign of biocontrol presence records existing.
         return SignOfBiocontrolPresenceTerrestrial.objects.filter(
-            activity=obj.activity,
-            invasive_plant=obj.invasive_plant,
-            biocontrol_agent=obj.biocontrol_agent,
+            activity_data_record=obj.activity_data_record,
         ).exists()
-
-    def to_representation(self, instance):
-        """Remove Linear_Segment from Release forms."""
-        ret = super().to_representation(instance)
-        if (
-            instance.activity.subtype
-            == ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial.name
-        ):
-            ret.pop("linear_segment")
-        return ret

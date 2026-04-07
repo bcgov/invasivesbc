@@ -1,6 +1,18 @@
 from rest_framework import serializers
-from api.models.activity import AquaticPlantMechanicalTreatmentEntry
-from api.serializers.common import ShorelineTypesSerializer
+
+from api.models.activity import (
+    AquaticPlantMechanicalTreatmentEntry,
+    AquaticMechanicalAuthorization,
+    ShorelineTypes,
+    WellEntry,
+)
+from api.serializers.common import ShorelineTypesSerializer, NearestWellSerializer
+
+
+class AquaticMechanicalAuthorizationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AquaticMechanicalAuthorization
+        fields = ("authorization_information",)
 
 
 class AquaticPlantMechanicalTreatmentSerializer(serializers.ModelSerializer):
@@ -17,10 +29,30 @@ class AquaticPlantMechanicalTreatmentSerializer(serializers.ModelSerializer):
 
 
 class AquaticPlantTreatmentMechanicalSerializer(serializers.Serializer):
-    entries = AquaticPlantMechanicalTreatmentSerializer(
-        source="aquaticplantmechanicaltreatmententry_set", many=True
-    )
-    authorization_info = serializers.CharField(
-        source="aquaticmechanicalauthorization.authorization_information"
-    )
-    shoreline_types = ShorelineTypesSerializer(source="shorelinetypes_set", many=True)
+
+    authorization_info = serializers.SerializerMethodField()
+    entries = serializers.SerializerMethodField()
+    shoreline_types = serializers.SerializerMethodField()
+    well_entries = serializers.SerializerMethodField()
+
+    def get_authorization_info(self, obj):
+        children = AquaticMechanicalAuthorization.objects.filter(
+            activity_data_record__activity_id=obj.id
+        )
+        return AquaticMechanicalAuthorizationSerializer(children, many=True).data
+
+    def get_shoreline_types(self, obj):
+        children = ShorelineTypes.objects.filter(
+            activity_data_record__activity_id=obj.id
+        )
+        return ShorelineTypesSerializer(children, many=True).data
+
+    def get_entries(self, obj):
+        children = AquaticPlantMechanicalTreatmentEntry.objects.filter(
+            activity_data_record__activity_id=obj.id
+        )
+        return AquaticPlantMechanicalTreatmentSerializer(children, many=True).data
+
+    def get_well_entries(self, obj):
+        children = WellEntry.objects.filter(activity_data_record__activity_id=obj.id)
+        return NearestWellSerializer(children, many=True).data

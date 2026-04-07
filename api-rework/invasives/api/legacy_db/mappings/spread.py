@@ -1,5 +1,5 @@
 from api.legacy_db.model_serializer import LegacyActivity
-from api.models.activity import Activity, SpreadResults
+from api.models.activity import Activity, SpreadResults, ActivityDataRecord
 
 
 def add_spread_details(
@@ -19,8 +19,9 @@ def add_spread_details(
     ):
         return
 
+    adr = ActivityDataRecord.objects.create(activity=new)
     SpreadResults.objects.create(
-        activity=new,
+        activity_data_record=adr,
         agent_density=spread.agent_density,
         plant_attack=spread.plant_attack,
         max_spread_distance_m=spread.max_spread_distance,

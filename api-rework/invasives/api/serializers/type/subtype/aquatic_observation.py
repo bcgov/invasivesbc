@@ -15,6 +15,8 @@ from api.models.activity import (
     WaterbodyUse,
     WaterbodyLevelManagement,
     WaterbodyAdjacentLandUse,
+    PretreatmentObservation,
+    ShorelineTypes,
 )
 
 
@@ -157,66 +159,119 @@ class AquaticPlantObservationEntrySerializer(serializers.ModelSerializer):
         )
 
     def get_voucher_specimen(self, obj):
-        """Search for Voucher Specimen matching the record"""
-        activity = getattr(obj, "activity", None)
-        invasive_plant = obj.invasive_plant
-
-        if not activity or not invasive_plant:
-            return None
-
-        try:
-            voucher_specimen = AquaticVoucherSpecimen.objects.get(
-                activity=activity, invasive_plant=invasive_plant
-            )
-            return AquaticVoucherSpecimenSerializer(voucher_specimen).data
-        except AquaticVoucherSpecimen.DoesNotExist:
-            return None
+        voucher_specimen = AquaticVoucherSpecimen.objects.filter(
+            activity_data_record=obj.activity_data_record
+        ).first()
+        return (
+            AquaticVoucherSpecimenSerializer(voucher_specimen).data
+            if voucher_specimen is not None
+            else None
+        )
 
 
 class AquaticObservationSerializer(serializers.Serializer):
-    adjacent_land_use = WaterbodyAdjacentLandUseSerializer(
-        source="waterbodyadjacentlanduse_set", many=True
-    )
-    entries = AquaticPlantObservationEntrySerializer(
-        source="aquaticplantobservationentry_set", many=True
-    )
-    pretreatment_observation = serializers.CharField(
-        source="pretreatmentobservation.pre_treatment_observation"
-    )
-    substrate_type = WaterbodySubstrateTypeSerializer(
-        source="waterbodysubstratetype_set", many=True
-    )
+    adjacent_land_use = serializers.SerializerMethodField()
 
-    aquatic_observation_context = AquaticPlantObservationContextSerializer(
-        source="aquaticplantobservationcontext"
-    )
+    def get_adjacent_land_use(self, obj):
+        children = WaterbodyAdjacentLandUse.objects.filter(
+            activity_data_record__activity_id=obj.id
+        )
+        return WaterbodyAdjacentLandUseSerializer(children, many=True).data
 
-    waterbody_context = WaterbodyDataSerializer(source="waterbodycontext")
-    water_use = WaterbodyUseSerializer(source="waterbodyuse_set", many=True)
-    waterlevel_management = WaterbodyLevelManagementSerializer(
-        source="waterbodylevelmanagement_set", many=True
-    )
-    shoreline_types = ShorelineTypesSerializer(source="shorelinetypes_set", many=True)
+    entries = serializers.SerializerMethodField()
+
+    def get_entries(self, obj):
+        children = AquaticPlantObservationEntry.objects.filter(
+            activity_data_record__activity_id=obj.id
+        )
+        return AquaticPlantObservationEntrySerializer(children, many=True).data
+
+    pretreatment_observation = serializers.SerializerMethodField()
+
+    def get_pretreatment_observation(self, obj):
+        child = PretreatmentObservation.objects.filter(
+            activity_data_record__activity_id=obj.id
+        ).first()
+        if child is not None:
+            return child.pre_treatment_observation
+        return None
+
+    substrate_type = serializers.SerializerMethodField()
+
+    def get_substrate_type(self, obj):
+        children = WaterbodySubstrateType.objects.filter(
+            activity_data_record__activity_id=obj.id
+        )
+        return WaterbodySubstrateTypeSerializer(children, many=True).data
+
+    aquatic_observation_context = serializers.SerializerMethodField()
+
+    def get_aquatic_observation_context(self, obj):
+        children = AquaticPlantObservationContext.objects.filter(
+            activity_data_record__activity_id=obj.id
+        ).first()
+        return (
+            AquaticPlantObservationContextSerializer(children).data
+            if children is not None
+            else None
+        )
+
+    waterbody_context = serializers.SerializerMethodField()
+
+    def get_waterbody_context(self, obj):
+        children = WaterbodyContext.objects.filter(
+            activity_data_record__activity_id=obj.id
+        ).first()
+        return WaterbodyDataSerializer(children).data if children is not None else None
+
+    water_use = serializers.SerializerMethodField()
+
+    def get_water_use(self, obj):
+        children = WaterbodyUse.objects.filter(activity_data_record__activity_id=obj.id)
+        return WaterbodyUseSerializer(children, many=True).data
+
+    waterlevel_management = serializers.SerializerMethodField()
+
+    def get_waterlevel_management(self, obj):
+        children = WaterbodyLevelManagement.objects.filter(
+            activity_data_record__activity_id=obj.id
+        )
+        return WaterbodyLevelManagementSerializer(children, many=True).data
+
+    shoreline_types = serializers.SerializerMethodField()
+
+    def get_shoreline_types(self, obj):
+        children = ShorelineTypes.objects.filter(
+            activity_data_record__activity_id=obj.id
+        )
+        return ShorelineTypesSerializer(children, many=True).data
 
     # Water Flow
-    inflow_permanent = WaterbodyInflowPermanentSerializer(
-        source="waterbodyinflowpermanent_set", many=True
-    )
-    inflow_seasonal = WaterbodyInflowSeasonalSerializer(
-        source="waterbodyinflowseasonal_set", many=True
-    )
-    outflow_permanent = WaterbodyOutflowPermanentSerializer(
-        source="waterbodyoutflowpermanent_set", many=True
-    )
-    outflow_seasonal = WaterbodyOutflowSeasonalSerializer(
-        source="waterbodyoutflowseasonal_set", many=True
-    )
+    inflow_permanent = serializers.SerializerMethodField()
+    inflow_seasonal = serializers.SerializerMethodField()
+    outflow_permanent = serializers.SerializerMethodField()
+    outflow_seasonal = serializers.SerializerMethodField()
 
-    def to_representation(self, instance):
-        """Flatten Waterbody Details into top level"""
-        ret = super().to_representation(instance)
-        for key in ["waterbody_context", "aquatic_observation_context"]:
-            info_data = ret.pop(key, None)
-            if info_data and isinstance(info_data, dict):
-                ret.update(info_data)
-        return ret
+    def get_inflow_seasonal(self, obj):
+        children = WaterbodyInflowSeasonal.objects.filter(
+            activity_data_record__activity_id=obj.id
+        )
+        return FlowSerializer(children, many=True).data
+
+    def get_inflow_permanent(self, obj):
+        children = WaterbodyInflowPermanent.objects.filter(
+            activity_data_record__activity_id=obj.id
+        )
+        return FlowSerializer(children, many=True).data
+
+    def get_outflow_permanent(self, obj):
+        children = WaterbodyOutflowPermanent.objects.filter(
+            activity_data_record__activity_id=obj.id
+        )
+        return FlowSerializer(children, many=True).data
+
+    def get_outflow_seasonal(self, obj):
+        children = WaterbodyOutflowSeasonal.objects.filter(
+            activity_data_record__activity_id=obj.id
+        )
+        return FlowSerializer(children, many=True).data

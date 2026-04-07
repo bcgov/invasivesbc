@@ -6,6 +6,8 @@ from api.models.activity import (
     Activity,
     TerrestrialPlantMechanicalTreatmentEntry,
     AquaticPlantMechanicalTreatmentEntry,
+    ActivityDataRecord,
+    AquaticMechanicalAuthorization,
 )
 from api.models.codes import (
     PlantMechanicalTreatmentMethodCode,
@@ -26,8 +28,9 @@ def add_subtype_payload_for_plant_terrestrial_treatment(
     ) in (
         old.activity_payload.form_data.activity_subtype_data.Treatment_MechanicalPlant_Information
     ):
+        adr = ActivityDataRecord.objects.create(activity=new)
         TerrestrialPlantMechanicalTreatmentEntry.objects.create(
-            activity=new,
+            activity_data_record=adr,
             invasive_plant=TerrestrialPlantCode.objects.get(
                 code=mt.invasive_plant_code
             ),
@@ -56,13 +59,24 @@ def add_subtype_payload_for_plant_aquatic_treatment(new: Activity, old: LegacyAc
     add_well_information(new, old)
     add_shoreline_types(new, old)
 
+    if (
+        old.activity_payload.form_data.activity_subtype_data.Authorization_Infotmation
+        is not None
+    ):
+        adr = ActivityDataRecord.objects.create(activity=new)
+        AquaticMechanicalAuthorization.objects.create(
+            activity_data_record=adr,
+            authorization_information=old.activity_payload.form_data.activity_subtype_data.Authorization_Infotmation.additional_auth_information,
+        )
+
     for (
         mt
     ) in (
         old.activity_payload.form_data.activity_subtype_data.Treatment_MechanicalPlant_Information
     ):
+        adr = ActivityDataRecord.objects.create(activity=new)
         AquaticPlantMechanicalTreatmentEntry.objects.create(
-            activity=new,
+            activity_data_record=adr,
             invasive_plant=AquaticPlantCode.objects.get(code=mt.invasive_plant_code),
             treated_area_msq=mt.treated_area,
             mechanical_method=PlantMechanicalTreatmentMethodCode.objects.get(

@@ -1,6 +1,6 @@
 from django.db import models
 
-from api.models.activity.abstract_sub_tables import BaseOneToOneActivityTable
+from api.models.activity import UnrepeatedFormData
 from api.models.codes.code_tables import (
     AspectCode,
     SlopePercentCode,
@@ -10,7 +10,7 @@ from api.models.codes.code_tables import (
 from api.models.enums.yes_no_unknown import YesNoUnknown
 
 
-class TerrestrialPlantObservationContext(BaseOneToOneActivityTable):
+class TerrestrialPlantObservationContext(UnrepeatedFormData):
     """
     section title:
       Observation Plant Terrestrial Information
