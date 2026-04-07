@@ -19,7 +19,7 @@ class AquaticObservationTest(BaseActivitySubtypeTest):
 
         sd = response_object["subtype_data"]
 
-        self.assertEqual(sd["suitable_for_biocontrol"], "No")
+        self.assertEqual(sd["context"]["suitable_for_biocontrol"], "No")
 
         self.assertEqual(sd["pretreatment_observation"], "Yes")
         self.assertGreaterEqual(len(sd["entries"]), 1)
@@ -62,7 +62,7 @@ class AquaticObservationTest(BaseActivitySubtypeTest):
 
         sd = response_object["subtype_data"]
 
-        self.assertEqual(sd["suitable_for_biocontrol"], "Yes")
+        self.assertEqual(sd["context"]["suitable_for_biocontrol"], "Yes")
         self.assertEqual(sd["pretreatment_observation"], "No")
         self.assertEqual(len(sd["entries"]), 2)
 

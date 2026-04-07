@@ -54,12 +54,12 @@ class BiocontrolReleaseTest(BaseActivitySubtypeTest):
         self.assertEqual(tpp["senescent"], 25)
 
         # microsite condition
-        self.assertEqual(sd["mesoslope_position"], "LV")
-        self.assertEqual(sd["site_surface_shape"], "LN")
+        self.assertEqual(sd["microsite_conditions"]["mesoslope_position"], "LV")
+        self.assertEqual(sd["microsite_conditions"]["site_surface_shape"], "LN")
 
         # weather conditions
-        self.assertEqual(sd["wind_speed_kmh"], 22)
-        self.assertEqual(sd["temperature"], 32)
-        self.assertEqual(sd["cloud_cover"], "1")
-        self.assertEqual(sd["precipitation"], "DP")
-        self.assertEqual(sd["wind_direction"], "NW")
+        self.assertEqual(sd["weather_conditions"]["wind_speed_kmh"], 22)
+        self.assertEqual(sd["weather_conditions"]["temperature"], 32)
+        self.assertEqual(sd["weather_conditions"]["cloud_cover"], "1")
+        self.assertEqual(sd["weather_conditions"]["precipitation"], "DP")
+        self.assertEqual(sd["weather_conditions"]["wind_direction"], "NW")

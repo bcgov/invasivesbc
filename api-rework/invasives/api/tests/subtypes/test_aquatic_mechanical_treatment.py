@@ -32,14 +32,19 @@ class AquaticMechanicalTreatmentTest(BaseActivitySubtypeTest):
         self.assertEqual(st["percent_covered"], 100)
         self.assertEqual(st["shoreline_type"], "RR")
 
-        self.assertEqual(sd["authorization_info"], "The test looks for this")
+        self.assertEqual(
+            sd["authorization_information"][0]["detail"],
+            "The test looks for this",
+        )
 
     def test_subtype_details_two_entries(self):
         """Subtype keys match the information from fixtures."""
         response_object = self.fetch_b().json()
         sd = response_object["subtype_data"]
-        self.assertEqual(sd["authorization_info"], "The test looks for this")
-
+        self.assertEqual(
+            sd["authorization_information"][0]["detail"],
+            "The test looks for this",
+        )
         mt = sd["entries"]
         self.assertEqual(len(mt), 2)
 

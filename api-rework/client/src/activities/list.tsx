@@ -64,7 +64,7 @@ const ActivitiesList: React.FC = () => {
         if (res.status === 200) {
           const serverResult: ActivitySummary[] = await res.json();
           setActivities(serverResult);
-          setDistinctSubtypes([...new Set(serverResult.map( as => as.subtype))])
+          setDistinctSubtypes([...new Set(serverResult.map( as => as.subtype).sort())])
         } else {
           setActivities([]);
           setError(true);

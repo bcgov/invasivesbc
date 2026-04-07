@@ -10,9 +10,11 @@ from api.serializers.common import ShorelineTypesSerializer, NearestWellSerializ
 
 
 class AquaticMechanicalAuthorizationSerializer(serializers.ModelSerializer):
+    detail = serializers.CharField(source="authorization_information")
+
     class Meta:
         model = AquaticMechanicalAuthorization
-        fields = ("authorization_information",)
+        fields = ("detail",)
 
 
 class AquaticPlantMechanicalTreatmentSerializer(serializers.ModelSerializer):
@@ -30,12 +32,12 @@ class AquaticPlantMechanicalTreatmentSerializer(serializers.ModelSerializer):
 
 class AquaticPlantTreatmentMechanicalSerializer(serializers.Serializer):
 
-    authorization_info = serializers.SerializerMethodField()
+    authorization_information = serializers.SerializerMethodField()
     entries = serializers.SerializerMethodField()
     shoreline_types = serializers.SerializerMethodField()
     well_entries = serializers.SerializerMethodField()
 
-    def get_authorization_info(self, obj):
+    def get_authorization_information(self, obj):
         children = AquaticMechanicalAuthorization.objects.filter(
             activity_data_record__activity_id=obj.id
         )

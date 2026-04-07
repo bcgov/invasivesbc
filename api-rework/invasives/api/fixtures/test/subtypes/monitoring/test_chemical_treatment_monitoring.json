@@ -41,10 +41,24 @@
     }
   },
   {
+    "model": "api.ActivityDataRecord",
+    "pk": 1000,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7"
+    }
+  },
+  {
+    "model": "api.ActivityDataRecord",
+    "pk": 1001,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D"
+    }
+  },
+  {
     "model": "api.TerrestrialTreatmentMonitoringEntry",
     "pk": 1,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "activity_data_record_id": 1000,
       "comment": "Several plants remain",
       "treatment_pass": "Second",
       "invasive_plant": "JK",
@@ -56,7 +70,7 @@
     "model": "api.TerrestrialTreatmentMonitoringEntry",
     "pk": 2,
     "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "activity_data_record_id": 1001,
       "invasive_plant": "CT",
       "evidence_of_treatment": "Y",
       "treatment_pass": "Second",
@@ -68,7 +82,7 @@
     "model": "api.AquaticTreatmentMonitoringEntry",
     "pk": 1,
     "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "activity_data_record_id": 1001,
       "comment": "Several plants remain",
       "treatment_pass": "Third",
       "invasive_plant": "RC",
@@ -81,7 +95,7 @@
     "model": "api.WellEntry",
     "pk": 1,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "activity_data_record_id": 1000,
       "well_tag": "1",
       "distance": 63
     }

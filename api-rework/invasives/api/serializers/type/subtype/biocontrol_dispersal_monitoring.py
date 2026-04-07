@@ -25,7 +25,7 @@ class BiocontrolDispersalMonitoringSerializer(serializers.Serializer):
             WeatherConditionsSerializer(children).data if children is not None else None
         )
 
-    def get_microsite_condition(self, obj):
+    def get_microsite_conditions(self, obj):
         children = MicrositeCondition.objects.filter(
             activity_data_record__activity_id=obj.id
         ).first()
@@ -58,7 +58,7 @@ class BiocontrolDispersalMonitoringSerializer(serializers.Serializer):
         return NearestWellSerializer(children, many=True).data
 
     weather_conditions = serializers.SerializerMethodField()
-    microsite_condition = serializers.SerializerMethodField()
+    microsite_conditions = serializers.SerializerMethodField()
     target_plant_phenology = serializers.SerializerMethodField()
     entries = serializers.SerializerMethodField()
     well_entries = serializers.SerializerMethodField()

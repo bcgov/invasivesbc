@@ -69,7 +69,7 @@ class BiocontrolReleaseSerializer(serializers.Serializer):
             WeatherConditionsSerializer(children).data if children is not None else None
         )
 
-    def get_microsite_condition(self, obj):
+    def get_microsite_conditions(self, obj):
         children = MicrositeCondition.objects.filter(
             activity_data_record__activity_id=obj.id
         ).first()
@@ -91,6 +91,6 @@ class BiocontrolReleaseSerializer(serializers.Serializer):
 
     well_entries = serializers.SerializerMethodField()
     weather_conditions = serializers.SerializerMethodField()
-    microsite_condition = serializers.SerializerMethodField()
+    microsite_conditions = serializers.SerializerMethodField()
     target_plant_phenology = serializers.SerializerMethodField()
     entries = serializers.SerializerMethodField()

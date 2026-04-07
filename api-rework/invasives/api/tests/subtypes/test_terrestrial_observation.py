@@ -15,15 +15,20 @@ class TerrestrialObservationTest(BaseActivitySubtypeTest):
         response_object = self.fetch_a().json()
         sd = response_object["subtype_data"]
 
-        self.assertEqual(sd["suitable_for_biocontrol_agent"], "Yes")
+        self.assertEqual(
+            sd["context"]["suitable_for_biocontrol_agent"],
+            "Yes",
+        )
         self.assertEqual(sd["pretreatment_observation"], "Yes")
-        self.assertEqual(len(sd["specific_uses"]), 1)
-        self.assertEqual(sd["specific_uses"][0]["specific_use"]["code"], "NO")
-        self.assertEqual(sd["research_observation"], "Yes")
-        self.assertEqual(sd["visible_well_nearby"], "Unknown")
-        self.assertEqual(sd["aspect"]["code"], "N")
-        self.assertEqual(sd["slope_percent"]["code"], "SS")
-        self.assertEqual(sd["soil_texture"]["code"], "M")
+        self.assertEqual(len(sd["context"]["specific_uses"]), 1)
+        self.assertEqual(
+            sd["context"]["specific_uses"][0]["specific_use"]["code"], "NO"
+        )
+        self.assertEqual(sd["context"]["research_observation"], "Yes")
+        self.assertEqual(sd["context"]["visible_well_nearby"], "Unknown")
+        self.assertEqual(sd["context"]["aspect"]["code"], "N")
+        self.assertEqual(sd["context"]["slope_percent"]["code"], "SS")
+        self.assertEqual(sd["context"]["soil_texture"]["code"], "M")
         self.assertEqual(sd["pretreatment_observation"], "Yes")
         self.assertGreaterEqual(len(sd["entries"]), 1)
 
@@ -51,15 +56,17 @@ class TerrestrialObservationTest(BaseActivitySubtypeTest):
         response_object = self.fetch_b().json()
         sd = response_object["subtype_data"]
 
-        self.assertEqual(sd["suitable_for_biocontrol_agent"], "No")
+        self.assertEqual(sd["context"]["suitable_for_biocontrol_agent"], "No")
         self.assertEqual(sd["pretreatment_observation"], "No")
-        self.assertEqual(len(sd["specific_uses"]), 1)
-        self.assertEqual(sd["specific_uses"][0]["specific_use"]["code"], "GP")
-        self.assertEqual(sd["research_observation"], "Yes")
-        self.assertEqual(sd["visible_well_nearby"], "Unknown")
-        self.assertEqual(sd["aspect"]["code"], "NA")
-        self.assertEqual(sd["slope_percent"]["code"], "VT")
-        self.assertEqual(sd["soil_texture"]["code"], "F")
+        self.assertEqual(len(sd["context"]["specific_uses"]), 1)
+        self.assertEqual(
+            sd["context"]["specific_uses"][0]["specific_use"]["code"], "GP"
+        )
+        self.assertEqual(sd["context"]["research_observation"], "Yes")
+        self.assertEqual(sd["context"]["visible_well_nearby"], "Unknown")
+        self.assertEqual(sd["context"]["aspect"]["code"], "NA")
+        self.assertEqual(sd["context"]["slope_percent"]["code"], "VT")
+        self.assertEqual(sd["context"]["soil_texture"]["code"], "F")
         self.assertEqual(len(sd["entries"]), 2)
 
         obs_detail = [

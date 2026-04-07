@@ -204,9 +204,9 @@ class AquaticObservationSerializer(serializers.Serializer):
         )
         return WaterbodySubstrateTypeSerializer(children, many=True).data
 
-    aquatic_observation_context = serializers.SerializerMethodField()
+    context = serializers.SerializerMethodField()
 
-    def get_aquatic_observation_context(self, obj):
+    def get_context(self, obj):
         children = AquaticPlantObservationContext.objects.filter(
             activity_data_record__activity_id=obj.id
         ).first()
@@ -256,22 +256,22 @@ class AquaticObservationSerializer(serializers.Serializer):
         children = WaterbodyInflowSeasonal.objects.filter(
             activity_data_record__activity_id=obj.id
         )
-        return FlowSerializer(children, many=True).data
+        return WaterbodyInflowSeasonalSerializer(children, many=True).data
 
     def get_inflow_permanent(self, obj):
         children = WaterbodyInflowPermanent.objects.filter(
             activity_data_record__activity_id=obj.id
         )
-        return FlowSerializer(children, many=True).data
+        return WaterbodyInflowPermanentSerializer(children, many=True).data
 
     def get_outflow_permanent(self, obj):
         children = WaterbodyOutflowPermanent.objects.filter(
             activity_data_record__activity_id=obj.id
         )
-        return FlowSerializer(children, many=True).data
+        return WaterbodyOutflowPermanentSerializer(children, many=True).data
 
     def get_outflow_seasonal(self, obj):
         children = WaterbodyOutflowSeasonal.objects.filter(
             activity_data_record__activity_id=obj.id
         )
-        return FlowSerializer(children, many=True).data
+        return WaterbodyOutflowSeasonalSerializer(children, many=True).data
