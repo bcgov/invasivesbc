@@ -4,10 +4,12 @@ import { SubtypeData } from 'constants';
 import BiocontrolMonitoring from './common/BiocontrolMonitoring';
 import TargetPlantPhenology from './common/TargetPlantPhenology';
 import MicrositeConditions from './common/MicrositeConditions';
+import WeatherConditions from './common/WeatherConditions';
 
 const ReleaseMonitoring = ({ subtypeData }: SubtypeData) => (
   <>
-    <MicrositeConditions microsite_conditions={subtypeData} />
+    <MicrositeConditions microsite_conditions={subtypeData.microsite_conditions} />
+    <WeatherConditions subtypeData={subtypeData?.weather_conditions} />
     <BiocontrolMonitoring entries={subtypeData.entries} />
     <TargetPlantPhenology targetPlantPhenology={subtypeData?.target_plant_phenology} />
     <Fieldset label={'Spread Results'}>
