@@ -25,7 +25,9 @@ class ActivityViewSet(ReadOnlyModelViewSet):
     querysets = {
         "list": Activity.objects.annotate(
             has_migration_remarks=Q(migration_remarks__isnull=False)
-        ).values("id", "type", "subtype", "date", "has_migration_remarks"),
+        )
+        .values("id", "type", "subtype", "date", "has_migration_remarks")
+        .all(),
         "default": Activity.objects.annotate(centroid=AsGeoJSON(Centroid("shape")))
         .prefetch_related()
         .all(),
@@ -63,6 +65,12 @@ class ActivityViewSet(ReadOnlyModelViewSet):
         except Exception as e:
             logging.error("error migrating activity", exc_info=True)
             return Response(status=500)
+
+    # overridden to guarantee pagination defeat
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     @action(detail=True, methods=["get"])
     def legacy(self, request, *args, **kwargs):
