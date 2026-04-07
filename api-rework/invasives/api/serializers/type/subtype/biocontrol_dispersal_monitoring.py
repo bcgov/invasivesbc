@@ -51,7 +51,6 @@ class BiocontrolDispersalMonitoringSerializer(serializers.Serializer):
             children, many=True
         ).data
 
-
     weather_conditions = serializers.SerializerMethodField()
     microsite_conditions = serializers.SerializerMethodField()
     target_plant_phenology = serializers.SerializerMethodField()
