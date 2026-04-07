@@ -18,14 +18,9 @@ class TerrestrialPlantMechanicalTreatmentSerializer(serializers.ModelSerializer)
 
 class TerrestrialPlantTreatmentMechanicalSerializer(serializers.Serializer):
     entries = serializers.SerializerMethodField()
-    well_entries = serializers.SerializerMethodField()
 
     def get_entries(self, obj):
         children = TerrestrialPlantMechanicalTreatmentEntry.objects.filter(
             activity_data_record__activity_id=obj.id
         )
         return TerrestrialPlantMechanicalTreatmentSerializer(children, many=True).data
-
-    def get_well_entries(self, obj):
-        children = WellEntry.objects.filter(activity_data_record__activity_id=obj.id)
-        return NearestWellSerializer(children, many=True).data
