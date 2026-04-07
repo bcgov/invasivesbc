@@ -46,17 +46,26 @@ const AquaticObservation = ({ subtypeData }: SubtypeData) => {
         </Fieldset>
       </Fieldset>
       <Fieldset label={'Observation Information'}>
-        <TextInput label={'suitable for biocontrol'} value={subtypeData?.suitable_for_biocontrol} />
+        <TextInput label={'suitable for biocontrol'} value={subtypeData?.context?.suitable_for_biocontrol} />
+        <TextInput label={'Waterbody Access'} value={subtypeData?.waterbody_context?.access} />
+        <TextInput label={'colour'} value={subtypeData?.waterbody_context?.colour} />
+        <TextInput label={'comment'} value={subtypeData?.waterbody_context?.comment} />
+        <TextInput label={'name gazetted'} value={subtypeData?.waterbody_context?.name_gazetted} />
+        <TextInput label={'name local'} value={subtypeData?.waterbody_context?.name_local} />
+        <TextInput label={'max depth (m)'} value={subtypeData?.waterbody_context?.max_depth_m} />
+        <TextInput label={'secchi depth'} value={subtypeData?.waterbody_context?.secchi_depth} />
+        <TextInput label={'tidal influence'} value={subtypeData?.waterbody_context?.tidal_influence} />
+        <TextInput label={'type'} value={subtypeData?.waterbody_context?.type} />
       </Fieldset>
       <Fieldset label={'observation details'}>
         {subtypeData?.entries.map((od) => (
           <div className="group-wrap">
             <TextInput label="density" value={od.density} />
             <TextInput label="distribution" value={od.distribution} />
-            <TextInput label="invasive_plant" value={od.invasive_plant} />
-            <TextInput label="life_stage" value={od.life_stage} />
-            <TextInput label="observation_type" value={od.observation_type} />
-            <TextInput label="sample_point_id" value={od.sample_point_id} />
+            <TextInput label="invasive plant" value={od.invasive_plant} />
+            <TextInput label="life stage" value={od.life_stage} />
+            <TextInput label="observation type" value={od.observation_type} />
+            <TextInput label="sample point id" value={od.sample_point_id} />
             <TextInput label="voucher specimen" value={od?.voucher_specimen ? 'Yes' : 'No'} />
 
             {!!od?.voucher_specimen && (

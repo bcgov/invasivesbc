@@ -7,12 +7,15 @@ const TerrestrialObservation = ({ subtypeData }: SubtypeData) => {
     <>
       <Fieldset label={'observation info'}>
         <TextInput label="pretreatment observation" value={subtypeData?.pretreatment_observation} />
-        <TextInput label="research observation" value={subtypeData?.research_observation} />
-        <TextInput label="aspect" value={subtypeData?.aspect} />
-        <TextInput label="slope percent" value={subtypeData?.slope_percent} />
-        <TextInput label="soil texture" value={subtypeData?.soil_texture} />
-        <TextInput label="specific use" value={subtypeData.specific_uses.map((su) => (su.specific_use.code)).join(', ')} />
-        <TextInput label="suitable for biocontrol agent" value={subtypeData.suitable_for_biocontrol_agent} />
+        <TextInput label="research observation" value={subtypeData?.context?.research_observation} />
+        <TextInput label="aspect" value={subtypeData?.context?.aspect} />
+        <TextInput label="slope percent" value={subtypeData?.context?.slope_percent} />
+        <TextInput label="soil texture" value={subtypeData?.context?.soil_texture} />
+        <TextInput
+          label="specific use"
+          value={subtypeData.context?.specific_uses?.map((su) => su.specific_use.code).join(', ')}
+        />
+        <TextInput label="suitable for biocontrol agent" value={subtypeData?.context?.suitable_for_biocontrol_agent} />
       </Fieldset>
       <Fieldset label={'observation details'}>
         {subtypeData?.entries.map((od) => (
