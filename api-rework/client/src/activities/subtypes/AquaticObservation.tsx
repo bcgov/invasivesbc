@@ -24,16 +24,16 @@ const AquaticObservation = ({ subtypeData }: SubtypeData) => {
           <ChitList items={subtypeData?.waterlevel_management} />
         </Fieldset>
         <Fieldset small label="Inflow (permanent)">
-          <ChitList items={subtypeData?.inflow_permanent} />
+          <ChitList items={subtypeData?.waterbody_context?.inflow_permanent} />
         </Fieldset>
         <Fieldset small label="Inflow (Seasonal)">
-          <ChitList items={subtypeData?.inflow_seasonal} />
+          <ChitList items={subtypeData?.waterbody_context?.inflow_seasonal} />
         </Fieldset>
         <Fieldset small label="Outflow (Permanent)">
-          <ChitList items={subtypeData?.outflow_permanent} />
+          <ChitList items={subtypeData?.waterbody_context?.outflow_permanent} />
         </Fieldset>
         <Fieldset small label="Outflow (Seasonal)">
-          <ChitList items={subtypeData?.outflow_seasonal} />
+          <ChitList items={subtypeData?.waterbody_context?.outflow_seasonal} />
         </Fieldset>
 
         <Fieldset small label="Shoreline Types">

@@ -104,6 +104,11 @@ class WaterbodyLevelManagementSerializer(serializers.ModelSerializer):
 
 
 class WaterbodyDataSerializer(serializers.ModelSerializer):
+    inflow_permanent = serializers.SerializerMethodField()
+    inflow_seasonal = serializers.SerializerMethodField()
+    outflow_permanent = serializers.SerializerMethodField()
+    outflow_seasonal = serializers.SerializerMethodField()
+
     class Meta:
         model = WaterbodyContext
         fields = (
@@ -116,7 +121,35 @@ class WaterbodyDataSerializer(serializers.ModelSerializer):
             "secchi_depth",
             "tidal_influence",
             "type",
+            "inflow_permanent",
+            "inflow_seasonal",
+            "outflow_permanent",
+            "outflow_seasonal",
         )
+
+    def get_inflow_permanent(self, obj):
+        children = WaterbodyInflowPermanent.objects.filter(
+            activity_data_record=obj.activity_data_record
+        )
+        return WaterbodyInflowPermanentSerializer(children, many=True).data
+
+    def get_inflow_seasonal(self, obj):
+        children = WaterbodyInflowSeasonal.objects.filter(
+            activity_data_record=obj.activity_data_record
+        )
+        return WaterbodyInflowSeasonalSerializer(children, many=True).data
+
+    def get_outflow_permanent(self, obj):
+        children = WaterbodyOutflowPermanent.objects.filter(
+            activity_data_record=obj.activity_data_record
+        )
+        return WaterbodyOutflowPermanentSerializer(children, many=True).data
+
+    def get_outflow_seasonal(self, obj):
+        children = WaterbodyOutflowSeasonal.objects.filter(
+            activity_data_record=obj.activity_data_record
+        )
+        return WaterbodyOutflowSeasonalSerializer(children, many=True).data
 
 
 class AquaticVoucherSpecimenSerializer(serializers.ModelSerializer):
@@ -245,33 +278,3 @@ class AquaticObservationSerializer(serializers.Serializer):
             activity_data_record__activity_id=obj.id
         )
         return ShorelineTypesSerializer(children, many=True).data
-
-    # Water Flow
-    inflow_permanent = serializers.SerializerMethodField()
-    inflow_seasonal = serializers.SerializerMethodField()
-    outflow_permanent = serializers.SerializerMethodField()
-    outflow_seasonal = serializers.SerializerMethodField()
-
-    def get_inflow_seasonal(self, obj):
-        children = WaterbodyInflowSeasonal.objects.filter(
-            activity_data_record__activity_id=obj.id
-        )
-        return WaterbodyInflowSeasonalSerializer(children, many=True).data
-
-    def get_inflow_permanent(self, obj):
-        children = WaterbodyInflowPermanent.objects.filter(
-            activity_data_record__activity_id=obj.id
-        )
-        return WaterbodyInflowPermanentSerializer(children, many=True).data
-
-    def get_outflow_permanent(self, obj):
-        children = WaterbodyOutflowPermanent.objects.filter(
-            activity_data_record__activity_id=obj.id
-        )
-        return WaterbodyOutflowPermanentSerializer(children, many=True).data
-
-    def get_outflow_seasonal(self, obj):
-        children = WaterbodyOutflowSeasonal.objects.filter(
-            activity_data_record__activity_id=obj.id
-        )
-        return WaterbodyOutflowSeasonalSerializer(children, many=True).data
