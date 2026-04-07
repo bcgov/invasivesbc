@@ -14,7 +14,7 @@ const NearestWells = ({ data }: PropTypes) => {
       {!data || (data?.length === 0 && <TextInput value={'No Wells in Area'} />)}
       {data?.map((w) => (
         <div className="group-wrap">
-          <TextInput label={'well_tag_number'} value={w?.well_tag} />
+          <TextInput label={'well tag number'} value={w?.well_tag} />
           <TextInput label={'distance'} value={`${w?.distance || 'unknown'}`} />
         </div>
       ))}
