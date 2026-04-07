@@ -1,8 +1,8 @@
 from django.db import models
-from api.models.activity.abstract_sub_tables import BaseOneToOneActivityTable
+from api.models.activity import UnrepeatedFormData
 
 
-class AquaticMechanicalAuthorization(BaseOneToOneActivityTable):
+class AquaticMechanicalAuthorization(UnrepeatedFormData):
     authorization_information = models.CharField(
         null=True,
         blank=True,

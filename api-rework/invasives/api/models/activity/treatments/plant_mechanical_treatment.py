@@ -1,7 +1,7 @@
 from django.core.validators import MinValueValidator
 from django.db import models
 
-from api.models.activity.abstract_sub_tables import BaseOneToManyActivityTable
+from api.models.activity import RepeatedFormData
 from api.models.codes.code_tables import (
     AquaticPlantCode,
     TerrestrialPlantCode,
@@ -11,7 +11,7 @@ from api.models.codes.code_tables import (
 from api.models.enums.plant_disposal_format import PlantDisposalFormat
 
 
-class PlantMechanicalTreatmentEntry(BaseOneToManyActivityTable):
+class PlantMechanicalTreatmentEntry(RepeatedFormData):
     """
     Abstract Model for PlantMechanicalTreatments
     """
@@ -29,12 +29,6 @@ class PlantMechanicalTreatmentEntry(BaseOneToManyActivityTable):
 
     class Meta:
         abstract = True
-        constraints = [
-            models.UniqueConstraint(
-                fields=["activity", "invasive_plant"],
-                name="uq_mechanical_plant_treat",
-            )
-        ]
 
 
 class TerrestrialPlantMechanicalTreatmentEntry(PlantMechanicalTreatmentEntry):

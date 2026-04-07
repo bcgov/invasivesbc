@@ -41,10 +41,24 @@
     }
   },
   {
+    "model": "api.ActivityDataRecord",
+    "pk": 1000,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7"
+    }
+  },
+  {
+    "model": "api.ActivityDataRecord",
+    "pk": 1001,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D"
+    }
+  },
+  {
     "model": "api.TargetPlantPhenology",
     "pk": 1,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "activity_data_record_id": 1000,
       "winter_dormant": "10",
       "seedlings": "11",
       "rosettes": "12",
@@ -58,7 +72,7 @@
     "model": "api.TargetPlantHeights",
     "pk": 1,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "activity_data_record_id": 1000,
       "height_cm": 4
     }
   },
@@ -66,7 +80,7 @@
     "model": "api.TargetPlantHeights",
     "pk": 2,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "activity_data_record_id": 1000,
       "height_cm": 5
     }
   },
@@ -74,7 +88,7 @@
     "model": "api.TargetPlantHeights",
     "pk": 3,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "activity_data_record_id": 1000,
       "height_cm": 6
     }
   },
@@ -82,7 +96,7 @@
     "model": "api.MicrositeCondition",
     "pk": 1,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "activity_data_record_id": 1000,
       "mesoslope_position": "LV",
       "site_surface_shape": "LN"
     }
@@ -91,7 +105,7 @@
     "model": "api.MicrositeCondition",
     "pk": 2,
     "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "activity_data_record_id": 1001,
       "mesoslope_position": "DP",
       "site_surface_shape": "NA"
     }
@@ -100,7 +114,7 @@
     "model": "api.WeatherConditions",
     "pk": 1,
     "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "activity_data_record_id": 1001,
       "wind_speed_kmh": 0,
       "temperature": 26,
       "cloud_cover": "2",
@@ -112,7 +126,7 @@
     "model": "api.WeatherConditions",
     "pk": 2,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "activity_data_record_id": 1000,
       "wind_speed_kmh": 22,
       "temperature": 32,
       "cloud_cover": "1",
@@ -124,7 +138,7 @@
     "model": "api.TerrestrialBiocontrolDispersalMonitoringEntry",
     "pk": 1,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "activity_data_record_id": 1000,
       "biocontrol_present": true,
       "monitoring_type": "Timed",
       "plant_count": 33,
@@ -143,7 +157,7 @@
     "model": "api.TerrestrialBiocontrolDispersalMonitoringEntry",
     "pk": 2,
     "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "activity_data_record_id": 1001,
       "biocontrol_present": true,
       "monitoring_type": "Count",
       "plant_count": 33,
@@ -162,9 +176,7 @@
     "model": "api.TerrestrialBiocontrolAgentCountExtended",
     "pk": 1,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
-      "invasive_plant": "CT",
-      "biocontrol_agent": "CHEIURB",
+      "activity_data_record_id": 1000,
       "agent_location": "Pe",
       "plant_position": "Pu",
       "stage": "EG",
@@ -176,9 +188,7 @@
     "model": "api.TerrestrialBiocontrolAgentCountExtended",
     "pk": 2,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
-      "invasive_plant": "CT",
-      "biocontrol_agent": "CHEIURB",
+      "activity_data_record_id": 1000,
       "agent_location": "Me",
       "plant_position": "Pl",
       "stage": "AD",
@@ -190,9 +200,7 @@
     "model": "api.SignOfBiocontrolPresenceTerrestrial",
     "pk": 1,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
-      "biocontrol_agent": "CHEIURB",
-      "invasive_plant": "CT",
+      "activity_data_record_id": 1000,
       "sign_of_presence": "EH"
     }
   },
@@ -200,9 +208,7 @@
     "model": "api.SignOfBiocontrolPresenceTerrestrial",
     "pk": 2,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
-      "biocontrol_agent": "CHEIURB",
-      "invasive_plant": "CT",
+      "activity_data_record_id": 1000,
       "sign_of_presence": "ST"
     }
   }

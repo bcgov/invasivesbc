@@ -1,10 +1,10 @@
 from django.db import models
-from api.models.activity.abstract_sub_tables import BaseOneToManyActivityTable
+from api.models.activity import RepeatedFormData
 from api.models.codes.code_tables import ShorelineTypeCode
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 
-class ShorelineTypes(BaseOneToManyActivityTable):
+class ShorelineTypes(RepeatedFormData):
     """
     consumed by:
       - Aquatic Invasive Plant Observation
@@ -19,10 +19,4 @@ class ShorelineTypes(BaseOneToManyActivityTable):
 
     class Meta:
         db_table = '"activity"."shoreline_types"'
-        constraints = [
-            models.UniqueConstraint(
-                fields=["activity", "shoreline_type"],
-                name="unique_activity_shoreline",
-            )
-        ]
         db_table_comment = "Details of surrounding area for a terrestrial activity."

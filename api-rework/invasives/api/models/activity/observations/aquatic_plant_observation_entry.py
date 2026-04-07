@@ -1,6 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
-from api.models.activity.abstract_sub_tables import BaseOneToManyActivityTable
+from api.models.activity import RepeatedFormData
 from api.models.codes.code_tables import (
     DensityCode,
     DistributionCode,
@@ -10,7 +10,7 @@ from api.models.codes.code_tables import (
 from api.models.enums.observation_type import ObservationType
 
 
-class AquaticPlantObservationEntry(BaseOneToManyActivityTable):
+class AquaticPlantObservationEntry(RepeatedFormData):
     invasive_plant = models.ForeignKey(AquaticPlantCode, on_delete=models.PROTECT)
     density = models.ForeignKey(
         DensityCode, on_delete=models.PROTECT, blank=True, null=True
@@ -26,12 +26,6 @@ class AquaticPlantObservationEntry(BaseOneToManyActivityTable):
 
     class Meta:
         db_table = '"activity"."observation_entries_pa"'
-        constraints = [
-            models.UniqueConstraint(
-                fields=["activity", "invasive_plant"],
-                name="aquaticplant_observation_detail_unique_plant",
-            )
-        ]
 
     def clean(self):
         super().clean()

@@ -1,11 +1,11 @@
 from django.db import models
 from django.core.exceptions import ValidationError
-from api.models.activity.abstract_sub_tables import BaseOneToOneActivityTable
+from api.models.activity import UnrepeatedFormData
 from api.models.codes import WindDirectionCode
 from api.models.codes.code_tables import CloudCoverCode, PrecipitationCode
 
 
-class WeatherConditions(BaseOneToOneActivityTable):
+class WeatherConditions(UnrepeatedFormData):
     """
     Weather Condition Details for Activity
     consumed by:

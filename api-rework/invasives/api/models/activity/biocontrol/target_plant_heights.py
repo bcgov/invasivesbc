@@ -1,8 +1,8 @@
 from django.db import models
-from api.models.activity.abstract_sub_tables import BaseOneToManyActivityTable
+from api.models.activity import RepeatedFormData
 
 
-class TargetPlantHeights(BaseOneToManyActivityTable):
+class TargetPlantHeights(RepeatedFormData):
     """
     1:M Height details for Target Plants, correlating to a Plant Phenology Report
     """

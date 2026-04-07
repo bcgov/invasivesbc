@@ -96,3 +96,52 @@ class Activity(
             self.short_id = f"{year}{subtype}{uuid_substr}"
 
         super().save(*args, **kwargs)
+
+
+class ActivityDataRecord(models.Model):
+    """
+    Associate form data with an activity.
+    This indirection is preferred because it clarifies cases where a repeated record itself contains sub-records
+     (for example, some of the biocontrol types have repeated sub-records).
+    """
+
+    id = models.BigAutoField(primary_key=True)
+
+    activity = models.ForeignKey(
+        Activity,
+        on_delete=models.CASCADE,
+    )
+
+    class Meta:
+        db_table = '"activity"."data_record"'
+        db_table_comment = "Represents a unit of form data associated with an activity (such as a participant or observation)."
+
+
+class UnrepeatedFormData(models.Model):
+    """
+    For form data which can occur at most once per activity (eg the list of participants)
+
+    @todo No actual checks are done at this point to confirm uniqueness of (subclass-name, activity) tuple uniqueness
+    """
+
+    activity_data_record = models.ForeignKey(
+        ActivityDataRecord,
+        on_delete=models.CASCADE,
+    )
+
+    class Meta:
+        abstract = True
+
+
+class RepeatedFormData(models.Model):
+    """
+    For form data which can occur multiple times per activity (eg plant observation)
+    """
+
+    activity_data_record = models.ForeignKey(
+        ActivityDataRecord,
+        on_delete=models.CASCADE,
+    )
+
+    class Meta:
+        abstract = True

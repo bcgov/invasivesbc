@@ -1,5 +1,10 @@
 from api.legacy_db.model_serializer import LegacyActivity
-from api.models.activity import Activity, WeatherConditions, MicrositeCondition
+from api.models.activity import (
+    Activity,
+    WeatherConditions,
+    MicrositeCondition,
+    ActivityDataRecord,
+)
 from api.models.codes import (
     PrecipitationCode,
     WindDirectionCode,
@@ -20,8 +25,9 @@ def add_microsite_conditions(
         new.migration_remarks += "Microsite conditions on legacy activity is null\n\n"
         return
 
+    adr = ActivityDataRecord.objects.create(activity=new)
     MicrositeCondition.objects.create(
-        activity=new,
+        activity_data_record=adr,
         mesoslope_position=(
             MesoslopePositionCode.objects.get(code=ms.mesoslope_position_code)
             if ms.mesoslope_position_code is not None
@@ -56,8 +62,9 @@ def add_weather_conditions(
             else None
         )
 
+    adr = ActivityDataRecord.objects.create(activity=new)
     WeatherConditions.objects.create(
-        activity=new,
+        activity_data_record=adr,
         temperature=weather.temperature,
         cloud_cover=(
             CloudCoverCode.objects.get(code=weather.cloud_cover_code)

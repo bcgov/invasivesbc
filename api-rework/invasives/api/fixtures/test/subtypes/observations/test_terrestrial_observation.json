@@ -41,10 +41,24 @@
     }
   },
   {
+    "model": "api.ActivityDataRecord",
+    "pk": 1000,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7"
+    }
+  },
+  {
+    "model": "api.ActivityDataRecord",
+    "pk": 1001,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D"
+    }
+  },
+  {
     "model": "api.PretreatmentObservation",
     "pk": 1,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "activity_data_record_id": 1000,
       "pre_treatment_observation": "Yes"
     }
   },
@@ -52,7 +66,7 @@
     "model": "api.PretreatmentObservation",
     "pk": 2,
     "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "activity_data_record_id": 1001,
       "pre_treatment_observation": "No"
     }
   },
@@ -60,7 +74,7 @@
     "model": "api.TerrestrialPlantObservationEntries",
     "pk": 1,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "activity_data_record_id": 1000,
       "observation_type": "Positive",
       "density": "D",
       "distribution": "WS",
@@ -72,7 +86,7 @@
     "model": "api.TerrestrialPlantObservationEntries",
     "pk": 2,
     "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "activity_data_record_id": 1001,
       "observation_type": "Positive",
       "density": "D",
       "distribution": "WS",
@@ -84,7 +98,7 @@
     "model": "api.TerrestrialPlantObservationEntries",
     "pk": 3,
     "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "activity_data_record_id": 1001,
       "invasive_plant": "CT",
       "observation_type": "Negative"
     }
@@ -93,7 +107,7 @@
     "model": "api.TerrestrialPlantObservationContext",
     "pk": 1,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "activity_data_record_id": 1000,
       "research_observation": "Yes",
       "visible_well_nearby": "Unknown",
       "aspect": "N",
@@ -105,7 +119,7 @@
   {
     "model": "api.SpecificUse",
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "activity_data_record_id": 1000,
       "specific_use": "NO"
     }
   },
@@ -113,7 +127,7 @@
     "model": "api.TerrestrialPlantObservationContext",
     "pk": 2,
     "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "activity_data_record_id": 1001,
       "research_observation": "Yes",
       "visible_well_nearby": "Unknown",
       "aspect": "NA",
@@ -125,7 +139,7 @@
   {
     "model": "api.SpecificUse",
     "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "activity_data_record_id": 1001,
       "specific_use": "GP"
     }
   },
@@ -133,7 +147,7 @@
     "model": "api.TerrestrialVoucherSpecimen",
     "pk": 1,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "activity_data_record_id": 1000,
       "invasive_plant": "JK",
       "voucher_sample_id": 123,
       "date_collected": "2025-01-21",

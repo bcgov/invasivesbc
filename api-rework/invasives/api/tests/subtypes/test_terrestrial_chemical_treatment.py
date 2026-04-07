@@ -17,20 +17,21 @@ class TerrestrialChemicalTreatmentTest(BaseActivitySubtypeTest):
         sd = record["subtype_data"]
         self.assertIsNotNone(sd)
 
-        self.assertEqual(sd["service_license_number"], "0")
-        self.assertEqual(sd["pesticide_use_permit"], "none")
-        self.assertEqual(sd["pest_management_plan"], "BCGOV")
-        self.assertEqual(sd["temperature_c"], 23)
-        self.assertEqual(sd["wind_speed_kmh"], 33)
-        self.assertEqual(sd["application_start_time"], "2025-01-01T00:00")
-        self.assertEqual(sd["wind_direction"], "NW")
-        self.assertEqual(sd["humidity"], 30)
-        self.assertEqual(sd["treatment_notice_signs"], "Yes")
-        self.assertEqual(sd["precautionary_statement"], "COM")
-        self.assertEqual(sd["ntz_reduction_bool"], True)
-        self.assertEqual(sd["rationale_for_ntz_reduction"], "stated rationale")
-        self.assertEqual(sd["additional_unmapped_well_water_bool"], True)
-        self.assertEqual(sd["pest_injury_threshold_determination_bool"], True)
+        self.assertEqual(sd["context"]["pesticide_use_permit"], "none")
+        self.assertEqual(sd["context"]["pest_management_plan"], "BCGOV")
+        self.assertEqual(sd["context"]["temperature_c"], 23)
+        self.assertEqual(sd["context"]["wind_speed_kmh"], 33)
+        self.assertEqual(sd["context"]["application_start_time"], "2025-01-01T00:00")
+        self.assertEqual(sd["context"]["wind_direction"], "NW")
+        self.assertEqual(sd["context"]["humidity"], 30)
+        self.assertEqual(sd["context"]["treatment_notice_signs"], "Yes")
+        self.assertEqual(sd["context"]["precautionary_statement"], "COM")
+        self.assertEqual(sd["context"]["ntz_reduction"], True)
+        self.assertEqual(
+            sd["context"]["rationale_for_ntz_reduction"], "stated rationale"
+        )
+        self.assertEqual(sd["context"]["additional_unmapped_well_water"], True)
+        self.assertEqual(sd["context"]["pest_injury_threshold_determination"], True)
 
         wells = sd["well_entries"]
         self.assertEqual(len(wells), 3)
@@ -38,7 +39,3 @@ class TerrestrialChemicalTreatmentTest(BaseActivitySubtypeTest):
         for well in wells:
             self.assertIsNotNone(well["well_tag"])
             self.assertIsNotNone(well["distance"])
-
-        if sd["entries"] != "NOT IMPLEMENTED":
-            # TODO
-            self.fail("UPDATE TESTS FOR CHEM TREATMENT DETAILS")

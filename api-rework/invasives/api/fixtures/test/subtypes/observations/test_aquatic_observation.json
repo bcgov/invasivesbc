@@ -40,10 +40,24 @@
     }
   },
   {
+    "model": "api.ActivityDataRecord",
+    "pk": 1000,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7"
+    }
+  },
+  {
+    "model": "api.ActivityDataRecord",
+    "pk": 1001,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D"
+    }
+  },
+  {
     "model": "api.AquaticPlantObservationContext",
     "pk": 1,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "activity_data_record_id": 1000,
       "suitable_for_biocontrol": "No"
     }
   },
@@ -51,7 +65,7 @@
     "model": "api.AquaticPlantObservationContext",
     "pk": 2,
     "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "activity_data_record_id": 1001,
       "suitable_for_biocontrol": "Yes"
     }
   },
@@ -59,7 +73,7 @@
     "model": "api.PretreatmentObservation",
     "pk": 1,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "activity_data_record_id": 1000,
       "pre_treatment_observation": "Yes"
     }
   },
@@ -67,7 +81,7 @@
     "model": "api.PretreatmentObservation",
     "pk": 2,
     "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "activity_data_record_id": 1001,
       "pre_treatment_observation": "No"
     }
   },
@@ -75,7 +89,7 @@
     "model": "api.AquaticPlantObservationEntry",
     "pk": 1,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "activity_data_record_id": 1000,
       "observation_type": "Positive",
       "density": "D",
       "distribution": "WS",
@@ -88,7 +102,7 @@
     "model": "api.AquaticPlantObservationEntry",
     "pk": 2,
     "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "activity_data_record_id": 1001,
       "observation_type": "Positive",
       "density": "D",
       "distribution": "WS",
@@ -101,7 +115,7 @@
     "model": "api.AquaticPlantObservationEntry",
     "pk": 3,
     "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "activity_data_record_id": 1001,
       "invasive_plant": "CT",
       "observation_type": "Negative",
       "sample_point_id": "567SP"
@@ -111,7 +125,7 @@
     "model": "api.AquaticVoucherSpecimen",
     "pk": 1,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "activity_data_record_id": 1000,
       "invasive_plant": "JK",
       "voucher_sample_id": "123Vouch",
       "date_collected": "2025-01-21",
@@ -129,7 +143,7 @@
     "model": "api.ShorelineTypes",
     "pk": 1,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "activity_data_record_id": 1000,
       "shoreline_type": "LGA",
       "percent_covered": 100
     }
@@ -138,7 +152,7 @@
     "model": "api.ShorelineTypes",
     "pk": 2,
     "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "activity_data_record_id": 1001,
       "shoreline_type": "RR",
       "percent_covered": 67
     }
@@ -147,7 +161,7 @@
     "model": "api.ShorelineTypes",
     "pk": 3,
     "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "activity_data_record_id": 1001,
       "shoreline_type": "LGA",
       "percent_covered": 33
     }
@@ -156,7 +170,7 @@
     "model": "api.WaterbodyOutflowSeasonal",
     "pk": 1,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "activity_data_record_id": 1000,
       "flow_code": "WET"
     }
   },
@@ -164,7 +178,7 @@
     "model": "api.WaterbodyOutflowSeasonal",
     "pk": 2,
     "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "activity_data_record_id": 1001,
       "flow_code": "WET"
     }
   },
@@ -172,7 +186,7 @@
     "model": "api.WaterbodyOutflowPermanent",
     "pk": 1,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "activity_data_record_id": 1000,
       "flow_code": "WET"
     }
   },
@@ -180,7 +194,7 @@
     "model": "api.WaterbodyOutflowPermanent",
     "pk": 2,
     "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "activity_data_record_id": 1001,
       "flow_code": "WET"
     }
   },
@@ -188,7 +202,7 @@
     "model": "api.WaterbodyInflowSeasonal",
     "pk": 1,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "activity_data_record_id": 1000,
       "flow_code": "DISP"
     }
   },
@@ -196,7 +210,7 @@
     "model": "api.WaterbodyInflowSeasonal",
     "pk": 2,
     "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "activity_data_record_id": 1001,
       "flow_code": "DISP"
     }
   },
@@ -204,7 +218,7 @@
     "model": "api.WaterbodyInflowPermanent",
     "pk": 1,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "activity_data_record_id": 1000,
       "flow_code": "WET"
     }
   },
@@ -212,7 +226,7 @@
     "model": "api.WaterbodyInflowPermanent",
     "pk": 2,
     "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "activity_data_record_id": 1001,
       "flow_code": "WET"
     }
   },
@@ -220,7 +234,7 @@
     "model": "api.WaterbodyLevelManagement",
     "pk": 1,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "activity_data_record_id": 1000,
       "waterlevel_management": "Dam"
     }
   },
@@ -228,7 +242,7 @@
     "model": "api.WaterbodyLevelManagement",
     "pk": 2,
     "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "activity_data_record_id": 1001,
       "waterlevel_management": "Weir"
     }
   },
@@ -236,7 +250,7 @@
     "model": "api.WaterbodyUse",
     "pk": 1,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "activity_data_record_id": 1000,
       "waterbody_use": "AI"
     }
   },
@@ -244,7 +258,7 @@
     "model": "api.WaterbodyUse",
     "pk": 2,
     "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "activity_data_record_id": 1001,
       "waterbody_use": "S"
     }
   },
@@ -252,7 +266,7 @@
     "model": "api.WaterbodySubstrateType",
     "pk": 1,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "activity_data_record_id": 1000,
       "substrate_type": "Gravel"
     }
   },
@@ -260,7 +274,7 @@
     "model": "api.WaterbodySubstrateType",
     "pk": 2,
     "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "activity_data_record_id": 1001,
       "substrate_type": "Sand"
     }
   },
@@ -268,7 +282,7 @@
     "model": "api.WaterbodyAdjacentLandUse",
     "pk": 1,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "activity_data_record_id": 1000,
       "waterbody_adjacent_land_use": "H"
     }
   },
@@ -276,7 +290,7 @@
     "model": "api.WaterbodyAdjacentLandUse",
     "pk": 2,
     "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "activity_data_record_id": 1001,
       "waterbody_adjacent_land_use": "PL"
     }
   },
@@ -284,7 +298,7 @@
     "model": "api.WaterbodyContext",
     "pk": 1,
     "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "activity_data_record_id": 1001,
       "type": "Discharging Pond",
       "name_gazetted": "Big Lake",
       "name_local": "Small Pond",
@@ -300,7 +314,7 @@
     "model": "api.WaterbodyContext",
     "pk": 1,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "activity_data_record_id": 1000,
       "type": "Discharging Pond",
       "name_gazetted": "Big Lake",
       "name_local": "Small Pond",
@@ -316,7 +330,7 @@
     "model": "api.WaterbodyContext",
     "pk": 2,
     "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "activity_data_record_id": 1001,
       "type": "Confined Pond",
       "name_gazetted": "Small Pond",
       "name_local": "Big Lake",

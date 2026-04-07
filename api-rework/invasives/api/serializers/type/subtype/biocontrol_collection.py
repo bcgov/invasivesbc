@@ -1,13 +1,19 @@
 from rest_framework import serializers
+
+from api.models.activity import (
+    TerrestrialBiocontrolCollectionEntry,
+    TerrestrialBiocontrolAgentCount,
+    WeatherConditions,
+    MicrositeCondition,
+    TargetPlantPhenology,
+    WellEntry,
+)
 from api.serializers.common import (
     WeatherConditionsSerializer,
     MicrositeConditionSerializer,
     TargetPlantPhenologySerializer,
     TerrestrialBiocontrolAgentCountSerializer,
-)
-from api.models.activity import (
-    TerrestrialBiocontrolCollectionEntry,
-    TerrestrialBiocontrolAgentCount,
+    NearestWellSerializer,
 )
 
 
@@ -37,39 +43,60 @@ class TerrestrialBiocontrolCollectionEntrySerializer(serializers.ModelSerializer
 
     def get_actual_biological_agents(self, obj):
         qs = TerrestrialBiocontrolAgentCount.objects.filter(
-            activity=obj.activity,
+            activity_data_record=obj.activity_data_record,
             is_estimate=False,
-            invasive_plant=obj.invasive_plant,
-            biocontrol_agent=obj.biological_agent,
         )
         return TerrestrialBiocontrolAgentCountSerializer(qs, many=True).data
 
     def get_estimated_biological_agents(self, obj):
         qs = TerrestrialBiocontrolAgentCount.objects.filter(
-            activity=obj.activity,
+            activity_data_record=obj.activity_data_record,
             is_estimate=True,
-            invasive_plant=obj.invasive_plant,
-            biocontrol_agent=obj.biological_agent,
         )
         return TerrestrialBiocontrolAgentCountSerializer(qs, many=True).data
 
 
 class BiocontrolCollectionSerializer(serializers.Serializer):
-    weather_conditions = WeatherConditionsSerializer(source="weatherconditions")
-    microsite_condition = MicrositeConditionSerializer(source="micrositecondition")
-    target_plant_phenology = TargetPlantPhenologySerializer(
-        source="targetplantphenology"
-    )
-    entries = TerrestrialBiocontrolCollectionEntrySerializer(
-        source="terrestrialbiocontrolcollectionentry_set", many=True
-    )
+    def get_weather_conditions(self, obj):
+        children = WeatherConditions.objects.filter(
+            activity_data_record__activity_id=obj.id
+        ).first()
+        return (
+            WeatherConditionsSerializer(children).data if children is not None else None
+        )
 
-    def to_representation(self, instance):
-        keys = ["microsite_condition", "weather_conditions"]
-        ret = super().to_representation(instance)
+    def get_microsite_conditions(self, obj):
+        children = MicrositeCondition.objects.filter(
+            activity_data_record__activity_id=obj.id
+        ).first()
+        return (
+            MicrositeConditionSerializer(children).data
+            if children is not None
+            else None
+        )
 
-        for key in keys:
-            info_data = ret.pop(key, None)
-            if info_data and isinstance(info_data, dict):
-                ret.update(info_data)
-        return ret
+    def get_target_plant_phenology(self, obj):
+        children = TargetPlantPhenology.objects.filter(
+            activity_data_record__activity_id=obj.id
+        ).first()
+        return (
+            TargetPlantPhenologySerializer(children).data
+            if children is not None
+            else None
+        )
+
+    def get_entries(self, obj):
+        children = TerrestrialBiocontrolCollectionEntry.objects.filter(
+            activity_data_record__activity_id=obj.id
+        )
+        return TerrestrialBiocontrolCollectionEntrySerializer(children, many=True).data
+
+    weather_conditions = serializers.SerializerMethodField()
+    microsite_conditions = serializers.SerializerMethodField()
+    target_plant_phenology = serializers.SerializerMethodField()
+    entries = serializers.SerializerMethodField()
+    well_entries = serializers.SerializerMethodField()
+
+    def get_well_entries(self, obj):
+        children = WellEntry.objects.filter(activity_data_record__activity_id=obj.id)
+        return NearestWellSerializer(children, many=True).data

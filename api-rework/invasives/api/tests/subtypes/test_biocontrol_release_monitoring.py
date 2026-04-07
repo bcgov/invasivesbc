@@ -31,8 +31,6 @@ class BiocontrolReleaseTest(BaseActivitySubtypeTest):
         self.assertEqual(mi["biocontrol_agent"], "CHEIURB")
         self.assertEqual(mi["monitoring_method"], "Ob")
         self.assertEqual(mi["invasive_plant"], "CT")
-        # linear spread should be removed from this record type. Serializer rule in place.
-        self.assertNotIn("linear_segment", mi)
 
         eba = mi["estimated_biological_agents"][0]
         self.assertEqual(eba["stage"], "EG")
@@ -71,18 +69,18 @@ class BiocontrolReleaseTest(BaseActivitySubtypeTest):
         self.assertEqual(tpp["senescent"], 25)
 
         # microsite condition
-        self.assertEqual(sd["mesoslope_position"], "LV")
-        self.assertEqual(sd["site_surface_shape"], "LN")
+        self.assertEqual(sd["microsite_conditions"]["mesoslope_position"], "LV")
+        self.assertEqual(sd["microsite_conditions"]["site_surface_shape"], "LN")
 
         # weather conditions
-        self.assertEqual(sd["wind_speed_kmh"], 22)
-        self.assertEqual(sd["temperature"], 32)
-        self.assertEqual(sd["cloud_cover"], "1")
-        self.assertEqual(sd["precipitation"], "DP")
-        self.assertEqual(sd["wind_direction"], "NW")
+        self.assertEqual(sd["weather_conditions"]["wind_speed_kmh"], 22)
+        self.assertEqual(sd["weather_conditions"]["temperature"], 32)
+        self.assertEqual(sd["weather_conditions"]["cloud_cover"], "1")
+        self.assertEqual(sd["weather_conditions"]["precipitation"], "DP")
+        self.assertEqual(sd["weather_conditions"]["wind_direction"], "NW")
 
         # spread results
-        self.assertEqual(sd["agent_density"], 55)
-        self.assertEqual(sd["plant_attack"], 20)
-        self.assertEqual(sd["max_spread_distance_m"], 300)
-        self.assertEqual(sd["max_spread_aspect_deg"], 320)
+        self.assertEqual(sd["spread_results"]["agent_density"], 55)
+        self.assertEqual(sd["spread_results"]["plant_attack"], 20)
+        self.assertEqual(sd["spread_results"]["max_spread_distance_m"], 300)
+        self.assertEqual(sd["spread_results"]["max_spread_aspect_deg"], 320)

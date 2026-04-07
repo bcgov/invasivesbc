@@ -13,7 +13,7 @@ class MechanicalTreatmentMonitoringTest(BaseActivitySubtypeTest):
     def test_subtype_details_full(self):
         """Subtype keys match the information from fixtures."""
         response_object = self.fetch_a().json()
-        tmi = response_object["subtype_data"]["entries"]
+        tmi = response_object["subtype_data"]["terrestrial_entries"]
         self.assertEqual(len(tmi), 1)
         tmi = tmi[0]
         self.assertEqual(tmi["comment"], "Several plants remain")

@@ -1,9 +1,9 @@
 from django.db import models
 from api.models.codes.code_tables import WaterbodyFlowCode, WaterbodyFlowSeasonalCode
-from api.models.activity.abstract_sub_tables import BaseOneToManyActivityTable
+from api.models.activity import RepeatedFormData
 
 
-class BaseWaterbodyFlow(BaseOneToManyActivityTable):
+class BaseWaterbodyFlow(RepeatedFormData):
     flow_code = models.ForeignKey(WaterbodyFlowCode, on_delete=models.PROTECT)
 
     class Meta:

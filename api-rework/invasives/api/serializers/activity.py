@@ -1,11 +1,7 @@
 import json
 import logging
 
-from django.contrib.gis.db.models.functions import AsGeoJSON
-from django.contrib.gis.serializers.geojson import JSONSerializer as GeoJSONSerializer
-
 from rest_framework import serializers
-from rest_framework.fields import SerializerMethodField
 
 from api.models.activity import (
     ActivitySubtypes,
@@ -16,9 +12,7 @@ from api.models.activity import (
     ProjectCode,
 )
 from api.models.activity.activity import Activity
-from api.models.migrator import ActivityMigrationStatus
 from api.models.mixins.geometry import Geometry
-from api.protocol.activity.api import activity_search
 from api.serializers.type.subtype import (
     AquaticChemicalTreatmentSerializer,
     AquaticObservationSerializer,
@@ -98,16 +92,38 @@ class ActivitySerializer(serializers.ModelSerializer):
     Entry For Serializing Activities to a Record
     """
 
-    jurisdictions = JurisdictionSerializer(source="jurisdiction_set", many=True)
-    projects = ProjectCodeSerializer(source="projectcode_set", many=True)
-    funding_agencies = FundingAgencySerializer(source="fundingagency_set", many=True)
-    employer = EmployerSerializer(source="employer_set", many=True)
+    jurisdictions = serializers.SerializerMethodField()
+    projects = serializers.SerializerMethodField()
+    funding_agencies = serializers.SerializerMethodField()
+    employer = serializers.SerializerMethodField()
     subtype_data = serializers.SerializerMethodField()
-    participants = ParticipantSerializer(source="participant_set", many=True)
+    participants = serializers.SerializerMethodField()
     linked_activities = serializers.SerializerMethodField()
 
     shape = serializers.SerializerMethodField()
     centroid = serializers.SerializerMethodField()
+
+    def get_jurisdictions(self, obj):
+        children = Jurisdiction.objects.filter(activity_data_record__activity_id=obj.id)
+        return JurisdictionSerializer(children, many=True).data
+
+    def get_funding_agencies(self, obj):
+        children = FundingAgency.objects.filter(
+            activity_data_record__activity_id=obj.id
+        )
+        return FundingAgencySerializer(children, many=True).data
+
+    def get_participants(self, obj):
+        children = Participant.objects.filter(activity_data_record__activity_id=obj.id)
+        return ParticipantSerializer(children, many=True).data
+
+    def get_projects(self, obj):
+        children = ProjectCode.objects.filter(activity_data_record__activity_id=obj.id)
+        return ProjectCodeSerializer(children, many=True).data
+
+    def get_employer(self, obj):
+        children = Employer.objects.filter(activity_data_record__activity_id=obj.id)
+        return EmployerSerializer(children, many=True).data
 
     class Meta:
         model = Activity

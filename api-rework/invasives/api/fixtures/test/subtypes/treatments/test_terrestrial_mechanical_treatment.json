@@ -41,10 +41,24 @@
     }
   },
   {
+    "model": "api.ActivityDataRecord",
+    "pk": 1000,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7"
+    }
+  },
+  {
+    "model": "api.ActivityDataRecord",
+    "pk": 1001,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D"
+    }
+  },
+  {
     "model": "api.TerrestrialPlantMechanicalTreatmentEntry",
     "pk": 1,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "activity_data_record_id": 1000,
       "disposed_material_amount": 544,
       "disposed_material_format": "kg",
       "disposal_method": "II",
@@ -57,7 +71,7 @@
     "model": "api.TerrestrialPlantMechanicalTreatmentEntry",
     "pk": 2,
     "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "activity_data_record_id": 1001,
       "disposed_material_amount": 544,
       "disposed_material_format": "m^3",
       "disposal_method": "II",
@@ -70,7 +84,7 @@
     "model": "api.TerrestrialPlantMechanicalTreatmentEntry",
     "pk": 3,
     "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "activity_data_record_id": 1001,
       "invasive_plant": "JK",
       "disposed_material_amount": 544,
       "disposed_material_format": "plants",

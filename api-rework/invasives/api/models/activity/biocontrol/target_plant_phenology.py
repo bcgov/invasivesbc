@@ -1,10 +1,10 @@
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator
 from django.db import models
-from api.models.activity.abstract_sub_tables import BaseOneToOneActivityTable
+from api.models.activity import UnrepeatedFormData
 
 
-class TargetPlantPhenology(BaseOneToOneActivityTable):
+class TargetPlantPhenology(UnrepeatedFormData):
     """
     Phenology Reports for Targetted Invasive Species
       Used in:

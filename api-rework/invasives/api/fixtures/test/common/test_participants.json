@@ -1,27 +1,38 @@
 [
   {
-    "model": "api.Participant",
-    "pk": 1,
+    "model": "api.ActivityDataRecord",
+    "pk": 100,
     "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7"
+    }
+  },
+  {
+    "model": "api.ActivityDataRecord",
+    "pk": 101,
+    "fields": {
+      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D"
+    }
+  },
+  {
+    "model": "api.Participant",
+    "fields": {
+      "activity_data_record_id": 100,
       "name": "Jane Doe",
       "pac_number": 1234
     }
   },
   {
     "model": "api.Participant",
-    "pk": 2,
     "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "activity_data_record_id": 101,
       "name": "John Smith",
       "pac_number": 4567
     }
   },
   {
     "model": "api.Participant",
-    "pk": 3,
     "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D",
+      "activity_data_record_id": 101,
       "name": "Jane Person",
       "pac_number": 1234
     }

@@ -1,1 +1,68 @@
-[{"model": "api.waterbodysubstratecode", "pk": "Clay", "fields": {"full": "Clay", "code_sort_order": 10, "valid_from": "2026-03-16", "valid_to": null, "created_at": "2026-03-16T07:53:44.695Z"}}, {"model": "api.waterbodysubstratecode", "pk": "Cobble", "fields": {"full": "Cobble", "code_sort_order": 20, "valid_from": "2026-03-16", "valid_to": null, "created_at": "2026-03-16T07:53:44.696Z"}}, {"model": "api.waterbodysubstratecode", "pk": "Gravel", "fields": {"full": "Gravel", "code_sort_order": 30, "valid_from": "2026-03-16", "valid_to": null, "created_at": "2026-03-16T07:53:44.697Z"}}, {"model": "api.waterbodysubstratecode", "pk": "Rip-rap", "fields": {"full": "Rip-rap", "code_sort_order": 40, "valid_from": "2026-03-16", "valid_to": null, "created_at": "2026-03-16T07:53:44.698Z"}}, {"model": "api.waterbodysubstratecode", "pk": "Sand", "fields": {"full": "Sand", "code_sort_order": 50, "valid_from": "2026-03-16", "valid_to": null, "created_at": "2026-03-16T07:53:44.699Z"}}, {"model": "api.waterbodysubstratecode", "pk": "Silt/Organic", "fields": {"full": "Silt/Organic", "code_sort_order": 60, "valid_from": "2026-03-16", "valid_to": null, "created_at": "2026-03-16T07:53:44.700Z"}}]
+[
+  {
+    "model": "api.waterbodysubstratecode",
+    "pk": "Clay",
+    "fields": {
+      "full": "Clay",
+      "code_sort_order": 10,
+      "valid_from": "2026-03-16",
+      "valid_to": null,
+      "created_at": "2026-03-16T07:53:44.695Z"
+    }
+  },
+  {
+    "model": "api.waterbodysubstratecode",
+    "pk": "Cobble",
+    "fields": {
+      "full": "Cobble",
+      "code_sort_order": 20,
+      "valid_from": "2026-03-16",
+      "valid_to": null,
+      "created_at": "2026-03-16T07:53:44.696Z"
+    }
+  },
+  {
+    "model": "api.waterbodysubstratecode",
+    "pk": "Gravel",
+    "fields": {
+      "full": "Gravel",
+      "code_sort_order": 30,
+      "valid_from": "2026-03-16",
+      "valid_to": null,
+      "created_at": "2026-03-16T07:53:44.697Z"
+    }
+  },
+  {
+    "model": "api.waterbodysubstratecode",
+    "pk": "Rip-rap",
+    "fields": {
+      "full": "Rip-rap",
+      "code_sort_order": 40,
+      "valid_from": "2026-03-16",
+      "valid_to": null,
+      "created_at": "2026-03-16T07:53:44.698Z"
+    }
+  },
+  {
+    "model": "api.waterbodysubstratecode",
+    "pk": "Sand",
+    "fields": {
+      "full": "Sand",
+      "code_sort_order": 50,
+      "valid_from": "2026-03-16",
+      "valid_to": null,
+      "created_at": "2026-03-16T07:53:44.699Z"
+    }
+  },
+  {
+    "model": "api.waterbodysubstratecode",
+    "pk": "Silt/Organic",
+    "fields": {
+      "full": "Silt/Organic",
+      "code_sort_order": 60,
+      "valid_from": "2026-03-16",
+      "valid_to": null,
+      "created_at": "2026-03-16T07:53:44.700Z"
+    }
+  }
+]

@@ -1,22 +1,35 @@
 from rest_framework import serializers
+
+from api.models import activity
+from api.models.activity import (
+    WellEntry,
+    TerrestrialTreatmentMonitoringEntry,
+    AquaticTreatmentMonitoringEntry,
+)
 from api.serializers.common import (
-    TreatmentMonitoringEntriesSerializer,
     NearestWellSerializer,
+    TerrestrialTreatmentMonitoringSerializer,
+    AquaticTreatmentMonitoringSerializer,
 )
 
 
 class ChemicalMonitoringSerializer(serializers.Serializer):
-    entries = serializers.SerializerMethodField()
-    well_entries = NearestWellSerializer(source="wellentry_set", many=True)
+    terrestrial_entries = serializers.SerializerMethodField()
+    aquatic_entries = serializers.SerializerMethodField()
+    well_entries = serializers.SerializerMethodField()
 
-    def get_entries(self, obj):
-        return TreatmentMonitoringEntriesSerializer(obj, context=self.context).data
+    def get_terrestrial_entries(self, obj):
+        children = TerrestrialTreatmentMonitoringEntry.objects.filter(
+            activity_data_record__activity_id=obj.id
+        )
+        return TerrestrialTreatmentMonitoringSerializer(children, many=True).data
 
-    def to_representation(self, instance):
-        """Flatten"""
-        ret = super().to_representation(instance)
-        info_data = ret.pop("entries", None)
+    def get_aquatic_entries(self, obj):
+        children = AquaticTreatmentMonitoringEntry.objects.filter(
+            activity_data_record__activity_id=obj.id
+        )
+        return AquaticTreatmentMonitoringSerializer(children, many=True).data
 
-        if info_data and isinstance(info_data, dict):
-            ret.update(info_data)
-        return ret
+    def get_well_entries(self, obj):
+        children = WellEntry.objects.filter(activity_data_record__activity_id=obj.id)
+        return NearestWellSerializer(children, many=True).data

@@ -1,6 +1,8 @@
+import logging
+
 from datetime import date
 from enum import Enum
-from typing import Annotated, Any, Literal, Optional
+from typing import Annotated, Any, Literal, Optional, Union
 
 from pydantic import (
     AwareDatetime,
@@ -10,6 +12,9 @@ from pydantic import (
     JsonValue,
     UUID4,
     model_validator,
+    Discriminator,
+    Tag,
+    field_validator,
 )
 from pydantic_extra_types.coordinate import Latitude, Longitude
 
@@ -219,6 +224,7 @@ class LegacyActivityMechanicalPlantTreatmentInformation(BaseModel):
 class LegacyActivityChemicalPlantTreatmentInformation(BaseModel):
     wind_speed: float
     temperature: float
+    confirm_temperature: Optional[bool] = Field(default=None)
     ntz_reduction: bool
     unmapped_wells: bool
     humidity: Optional[float] = Field(default=None)
@@ -237,16 +243,270 @@ class LegacyActivityPestInjuryThresholdDetermination(BaseModel):
     completed_radio: bool
 
 
+class LegacyChemTreatmentBase(BaseModel):
+    index: int
+    area_treated_sqm: Optional[float] = Field(default=None)
+    herbicide_code: Optional[str] = Field(
+        default=None
+    )  # it doesn't /seem/ like it should be optional, but it is missing on many records
+    herbicide_type_code: Literal["L", "G"]
+
+
+class LegacyChemTreatmentHerbicideD(LegacyChemTreatmentBase):
+    @model_validator(mode="before")
+    @classmethod
+    def remove_extra_fields(cls, data: Any) -> Any:
+        extra_fields = [
+            "product_application_rate",
+            "product_application_rate_calculated",
+        ]
+        if isinstance(data, dict):
+            for f in extra_fields:
+                if f in data:
+                    logging.info(f"removing extra field {f} on {cls}")
+                    data.pop(f)
+        return data
+
+    calculation_type: Literal["D"]
+    dilution: Optional[float] = Field(default=None)
+    amount_of_mix: float
+    delivery_rate_of_mix: Optional[float] = Field(default=None)
+
+
+class LegacyChemTreatmentHerbicidePAR(LegacyChemTreatmentBase):
+    @model_validator(mode="before")
+    @classmethod
+    def remove_extra_fields(cls, data: Any) -> Any:
+        extra_fields = ["uuid"]
+        if isinstance(data, dict):
+            for f in extra_fields:
+                if f in data:
+                    logging.info(f"removing extra field {f} on {cls}")
+                    data.pop(f)
+        return data
+
+    calculation_type: Literal["PAR"]
+    amount_of_mix: Optional[float] = Field(default=None)
+    dilution: Optional[float] = Field(default=None)
+    delivery_rate_of_mix: Optional[float] = Field(default=None)
+    product_application_rate: Optional[float] = Field(default=None)
+    product_application_rate_calculated: Optional[float] = Field(default=None)
+
+
+LegacyChemTreatmentHerbicide = Annotated[
+    Union[LegacyChemTreatmentHerbicideD, LegacyChemTreatmentHerbicidePAR],
+    Field(discriminator="calculation_type"),
+]
+
+
+class LegacyChemicalTreatmentTankMixObjectBase(BaseModel):
+    calculation_type: Optional[str] = Field(default=None)
+
+
+class LegacyChemicalTreatmentTankMixObjectNone(BaseModel):
+
+    @model_validator(mode="before")
+    @classmethod
+    def remove_extra_fields(cls, data: Any) -> Any:
+        extra_fields = ["herbicides"]
+        if isinstance(data, dict):
+            for f in extra_fields:
+                if f in data:
+                    logging.info(f"removing extra field {f} on {cls}")
+                    data.pop(f)
+        return data
+
+    calculation_type: Literal[None]
+
+
+class LegacyChemicalTreatmentTankMixPARHerbicide(BaseModel):
+    @model_validator(mode="before")
+    @classmethod
+    def remove_extra_fields(cls, data: Any) -> Any:
+        extra_fields = ["uuid"]
+        if isinstance(data, dict):
+            for f in extra_fields:
+                if f in data:
+                    logging.info(f"removing extra field {f} on {cls}")
+                    data.pop(f)
+        return data
+
+    index: int | str
+    product_application_rate: Optional[float] = Field(default=None)
+    product_application_rate_calculated: Optional[float] = Field(default=None)
+    herbicide_code: Optional[str | None] = Field(default=None)
+    herbicide_type_code: Literal["L", "G"]
+
+
+class LegacyChemicalTreatmentTankMixObjectPAR(BaseModel):
+    calculation_type: Literal["PAR"]
+    amount_of_mix: Optional[float] = Field(default=None)
+    delivery_rate_of_mix: Optional[float] = Field(default=None)
+    herbicides: Optional[list[LegacyChemicalTreatmentTankMixPARHerbicide]]
+
+
+LegacyChemTreatmentTankMix = Annotated[
+    Union[
+        LegacyChemicalTreatmentTankMixObjectNone,
+        LegacyChemicalTreatmentTankMixObjectPAR,
+    ],
+    Field(discriminator="calculation_type"),
+]
+
+
+class LegacyChemTreatmentInvasivePlants(BaseModel):
+    index: int
+    invasive_plant_code: str
+    percent_area_covered: Optional[float] = Field(default=None)
+
+
+class LegacyChemicalTreatmentTankMixPlantHerbicide(BaseModel):
+    dilution: float
+    herbIndex: int
+    plantIndex: int
+    product_application_rate: float
+    amount_of_undiluted_herbicide_used_liters: float
+
+
+class LegacyChemicalTreatmentTankMixObjectIndexed(BaseModel):
+
+    @model_validator(mode="before")
+    def unit_conversion(cls, values: dict) -> dict:
+        """
+        remove area_treated_hectares, converting to sqm and checking against the existing value of sqm, if it exists
+        (if they disagree, use the existing value and discard the value for hectares)
+
+        :param values:
+        :return:
+        """
+        if (
+            isinstance(values, dict)
+            and "area_treated_hectares" in values
+            and values["area_treated_hectares"] is not None
+        ):
+            computed_sqm = round(values["area_treated_hectares"] * 10000, 3)
+            recorded_sqm = (
+                values["area_treated_sqm"]
+                if "area_treated_sqm" in values
+                and values["area_treated_sqm"] is not None
+                else None
+            )
+            if recorded_sqm is not None and abs(recorded_sqm - computed_sqm) > 0.1:
+                logging.warning(
+                    f"unexpected result in unit conversion. recorded value for area_treated_sqm does not match computed value {computed_sqm} (from conversion of recorded hectares value)"
+                )
+            else:
+                logging.info(
+                    f"Using converted value {computed_sqm} for area_treated_sqm, overwriting value {recorded_sqm}"
+                )
+                values["area_treated_sqm"] = computed_sqm
+
+        return values
+
+    @model_validator(mode="before")
+    @classmethod
+    def remove_extra_fields(cls, data: Any) -> Any:
+        extra_fields = [
+            "percentage_area_covered",
+            "area_treated_ha",
+            "area_treated_hectares",
+        ]
+        if isinstance(data, dict):
+            for f in extra_fields:
+                if f in data:
+                    logging.info(f"removing extra field {f} on {cls}")
+                    data.pop(f)
+        return data
+
+    index: int
+    area_treated_sqm: Optional[float] = Field(default=None)
+    percent_area_covered: Optional[float] = Field(default=None)
+    amount_of_mix_used: Optional[float] = Field(default=None)
+    amount_of_undiluted_herbicide_used_liters: Optional[float] = Field(default=None)
+    herbicides: Optional[list[LegacyChemicalTreatmentTankMixPlantHerbicide]] = Field(
+        default=None
+    )
+
+
+class LegacyChemicalCalculationResults(BaseModel):
+    @model_validator(mode="before")
+    def unit_conversion(cls, values: dict) -> dict:
+        """
+        remove area_treated_hectares, converting to sqm and checking against the existing value of sqm, if it exists
+        (if they disagree, use the existing value and discard the value for hectares)
+
+        :param values:
+        :return:
+        """
+        if (
+            isinstance(values, dict)
+            and "area_treated_hectares" in values
+            and values["area_treated_hectares"] is not None
+        ):
+            computed_sqm = round(values["area_treated_hectares"] * 10000, 3)
+            recorded_sqm = (
+                values["area_treated_sqm"]
+                if "area_treated_sqm" in values
+                and values["area_treated_sqm"] is not None
+                else None
+            )
+            if recorded_sqm is not None and abs(recorded_sqm - computed_sqm) > 0.1:
+                logging.warning(
+                    f"unexpected result in unit conversion. recorded value for area_treated_sqm does not match computed value {computed_sqm} (from conversion of recorded hectares value)"
+                )
+            else:
+                logging.info(
+                    f"Using converted value {computed_sqm} for area_treated_sqm, overwriting value {recorded_sqm}"
+                )
+                values["area_treated_sqm"] = computed_sqm
+
+        return values
+
+    @model_validator(mode="before")
+    @classmethod
+    def remove_extra_fields(cls, data: Any) -> Any:
+        extra_fields = [
+            "area_treated_hectares",
+        ]
+        if isinstance(data, dict):
+            for f in extra_fields:
+                if f in data:
+                    logging.info(f"removing extra field {f} on {cls}")
+                    data.pop(f)
+        return data
+
+    area_treated_sqm: Optional[float] = Field(default=None)
+    percent_area_covered: Optional[float] = Field(default=None)
+    amount_of_undiluted_herbicide_used_liters: Optional[float] = Field(default=None)
+
+    calculation_type: Optional[str] = Field(default=None)
+    invasive_plants: Optional[list[LegacyChemicalTreatmentTankMixObjectIndexed]] = (
+        Field(default=None)
+    )
+    dilution: Optional[float] = Field(default=None)
+
+
 class LegacyChemicalTreatmentDetails(BaseModel):
+    @field_validator("tank_mix_object", mode="before")
+    @classmethod
+    def empty_dict_to_none(cls, v: Any) -> Any:
+        if v == {}:
+            return None
+        return v
+
     errors: Optional[bool] = Field(default=None)
     tank_mix: Optional[bool] = Field(default=None)
     skipAppRateValidation: Optional[bool] = Field(default=None)
     chemical_application_method: Optional[str] = Field(default=None)
     chemical_application_method_type: Optional[str] = Field(default=None)
-    calculation_results: Optional[JsonValue] = Field(default=None)
-    tank_mix_object: Optional[JsonValue] = Field(default=None)
-    herbicides: Optional[JsonValue] = Field(default=None)
-    invasive_plants: Optional[JsonValue] = Field(default=None)
+    calculation_results: Optional[LegacyChemicalCalculationResults] = Field(
+        default=None
+    )
+    tank_mix_object: Optional[LegacyChemTreatmentTankMix] = Field(default=None)
+    herbicides: Optional[list[LegacyChemTreatmentHerbicide]] = Field(default=None)
+    invasive_plants: Optional[list[LegacyChemTreatmentInvasivePlants]] = Field(
+        default=None
+    )
 
 
 class LegacyActivityChemicalMonitoring(BaseModel):
@@ -307,6 +567,10 @@ class LegacyTargetPlantPhenology(BaseModel):
     winter_dormant: Optional[int] = Field(default=None)
     target_plant_heights: Optional[list[float]] = Field(default=None)
     phenology_details_recorded: Literal["Yes", "No"]
+
+
+class LegacyAuthorizationInfotmation(BaseModel):
+    additional_auth_information: str = Field(default=None)
 
 
 class LegacyBiologicalAgentInformation(BaseModel):
@@ -508,7 +772,9 @@ class LegacyActivitySubtypeData(BaseModel):
     Monitoring_BiocontrolRelease_TerrestrialPlant_Information: Optional[
         list[LegacyBiocontrolReleaseTerrestrialPlantInformation]
     ] = Field(default=None)
-    Authorization_Infotmation: Optional[JsonValue] = Field(default=None)
+    Authorization_Infotmation: Optional[LegacyAuthorizationInfotmation] = Field(
+        default=None
+    )
     Monitoring_MechanicalTerrestrialAquaticPlant_Information: Optional[
         list[LegacyMechanicalTerrestrialAquaticMonitoringInformation]
     ] = Field(default=None)

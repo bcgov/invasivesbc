@@ -1,9 +1,9 @@
 from django.db import models
-from api.models.activity.abstract_sub_tables import BaseOneToOneActivityTable
+from api.models.activity import UnrepeatedFormData
 from api.models.enums.yes_no_unknown import YesNoUnknown
 
 
-class PretreatmentObservation(BaseOneToOneActivityTable):
+class PretreatmentObservation(UnrepeatedFormData):
     """
     consumed by:
       - Terrestrial Invasive Plant Observation
@@ -16,6 +16,3 @@ class PretreatmentObservation(BaseOneToOneActivityTable):
         db_table = '"activity"."observation_pre_treatment_p"'
         db_table_comment = "Detail that an Observation has taken place before any known Treatments have occured"
         pass
-
-    def __str__(self):
-        return f"{self.activity.short_id}: Pretreatment Status {self.pre_treatment_observation}"
