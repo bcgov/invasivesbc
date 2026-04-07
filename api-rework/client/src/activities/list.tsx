@@ -33,7 +33,7 @@ const ActivitiesList: React.FC = () => {
     { field: 'id',
       headerName: 'ID',
       cellRenderer: (params) => {
-        return <a href={`/activities/${params.value}/django`} className={'idLink'}>{params.value}</a>;
+        return <a href={`/activities/${params.value}/django`} className={'id-link'}>{params.value}</a>;
       }
     },
     { field: 'type' },
