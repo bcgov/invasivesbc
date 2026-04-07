@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from api.models.activity import TerrestrialPlantMechanicalTreatmentEntry, WellEntry
-from api.serializers.common import NearestWellSerializer
+from api.models.activity import TerrestrialPlantMechanicalTreatmentEntry
 
 
 class TerrestrialPlantMechanicalTreatmentSerializer(serializers.ModelSerializer):
