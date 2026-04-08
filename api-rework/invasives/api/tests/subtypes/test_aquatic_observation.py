@@ -23,10 +23,6 @@ class AquaticObservationTest(BaseActivitySubtypeTest):
 
         self.assertEqual(sd["pretreatment_observation"], "Yes")
         self.assertGreaterEqual(len(sd["entries"]), 1)
-        self.assertIn("WET", sd["inflow_permanent"])
-        self.assertIn("DISP", sd["inflow_seasonal"])
-        self.assertIn("WET", sd["outflow_permanent"])
-        self.assertIn("WET", sd["outflow_seasonal"])
         self.assertIn("Dam", sd["waterlevel_management"])
         self.assertIn("AI", sd["water_use"])
         self.assertIn("Gravel", sd["substrate_type"])
@@ -55,6 +51,12 @@ class AquaticObservationTest(BaseActivitySubtypeTest):
         self.assertEqual(vs["utm_zone"], 10)
         self.assertEqual(vs["utm_easting"], 6543232)
         self.assertEqual(vs["utm_northing"], 123456)
+
+        wct = sd["waterbody_context"]
+        self.assertIn("WET", wct["inflow_permanent"])
+        self.assertIn("DISP", wct["inflow_seasonal"])
+        self.assertIn("WET", wct["outflow_permanent"])
+        self.assertIn("WET", wct["outflow_seasonal"])
 
     def test_subtype_details_partial(self):
         """Subtype keys match the information from fixtures."""

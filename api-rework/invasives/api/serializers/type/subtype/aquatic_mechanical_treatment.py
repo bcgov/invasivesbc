@@ -35,7 +35,6 @@ class AquaticPlantTreatmentMechanicalSerializer(serializers.Serializer):
     authorization_information = serializers.SerializerMethodField()
     entries = serializers.SerializerMethodField()
     shoreline_types = serializers.SerializerMethodField()
-    well_entries = serializers.SerializerMethodField()
 
     def get_authorization_information(self, obj):
         children = AquaticMechanicalAuthorization.objects.filter(
@@ -54,7 +53,3 @@ class AquaticPlantTreatmentMechanicalSerializer(serializers.Serializer):
             activity_data_record__activity_id=obj.id
         )
         return AquaticPlantMechanicalTreatmentSerializer(children, many=True).data
-
-    def get_well_entries(self, obj):
-        children = WellEntry.objects.filter(activity_data_record__activity_id=obj.id)
-        return NearestWellSerializer(children, many=True).data

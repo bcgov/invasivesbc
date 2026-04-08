@@ -8,8 +8,11 @@ const ChemicalMonitoring = ({ subtypeData }: SubtypeData) => {
     <>
       <NearestWells data={subtypeData?.well_entries} />
       <Fieldset label={'Monitoring Information'}>
-        {subtypeData?.entries?.map((d) => (
-          <MonitoringInfo data={d} />
+        {subtypeData?.aquatic_entries?.map((d) => (
+          <MonitoringInfo data={d} key={d.invasive_plant} />
+        ))}
+        {subtypeData?.terrestrial_entries?.map((d) => (
+          <MonitoringInfo data={d} key={d.invasive_plant} />
         ))}
       </Fieldset>
     </>

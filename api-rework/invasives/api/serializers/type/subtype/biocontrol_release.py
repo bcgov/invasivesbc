@@ -5,14 +5,12 @@ from api.models.activity import (
     WeatherConditions,
     MicrositeCondition,
     TargetPlantPhenology,
-    WellEntry,
 )
 from api.serializers.common import (
     TerrestrialBiocontrolAgentCountSerializer,
     TargetPlantPhenologySerializer,
     MicrositeConditionSerializer,
     WeatherConditionsSerializer,
-    NearestWellSerializer,
 )
 
 
@@ -85,11 +83,6 @@ class BiocontrolReleaseSerializer(serializers.Serializer):
         )
         return TerrestrialBiocontrolReleaseSerializer(children, many=True).data
 
-    def get_well_entries(self, obj):
-        children = WellEntry.objects.filter(activity_data_record__activity_id=obj.id)
-        return NearestWellSerializer(children, many=True).data
-
-    well_entries = serializers.SerializerMethodField()
     weather_conditions = serializers.SerializerMethodField()
     microsite_conditions = serializers.SerializerMethodField()
     target_plant_phenology = serializers.SerializerMethodField()

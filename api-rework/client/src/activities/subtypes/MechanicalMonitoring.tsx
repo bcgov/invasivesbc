@@ -4,8 +4,11 @@ import MonitoringInfo from './common/MonitoringInfo';
 
 const MechanicalMonitoring = ({ subtypeData }: SubtypeData) => (
   <Fieldset label={'Monitoring Information'}>
-    {subtypeData?.entries?.map((d) => (
-      <MonitoringInfo data={d} />
+    {subtypeData?.terrestrial_entries?.map((d) => (
+      <MonitoringInfo data={d} key={d.invasive_plant} />
+    ))}
+    {subtypeData?.aquatic_entries?.map((d) => (
+      <MonitoringInfo data={d} key={d.invasive_plant} />
     ))}
   </Fieldset>
 );

@@ -4,7 +4,7 @@ import TextInput from 'common-components/inputs/TextInput';
 const MechTreatmentInfo = ({ entries }) => (
   <Fieldset label={'Mechanical Treatment Info'}>
     {entries?.map((ti) => (
-      <div className="group-wrap">
+      <div className="group-wrap" key={ti?.invasive_plant}>
         <TextInput label={'Invasive Plant'} value={ti?.invasive_plant} />
         <TextInput label={'Treated Area (m2)'} value={ti?.treated_area_msq} />
         <TextInput label={'Mechanical Method'} value={ti?.mechanical_method} />

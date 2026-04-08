@@ -9,15 +9,15 @@ import TextField from 'common-components/inputs/TextField';
 const BiocontrolCollection = ({ subtypeData }) => {
   return (
     <>
-      <WeatherConditions subtypeData={subtypeData} />
-      <MicrositeConditions microsite_conditions={subtypeData} />
+      <WeatherConditions subtypeData={subtypeData.weather_conditions} />
+      <MicrositeConditions microsite_conditions={subtypeData.microsite_conditions} />
       <Fieldset label={'Collection Information'}>
         {!!subtypeData?.entries?.length && <p>No Data</p>}
         {subtypeData?.entries?.map((ci) => (
-          <div className="group-wrap">
+          <div className="group-wrap" key={ci?.invasive_plant + ci?.biological_agent}>
             <TextInput label={'invasive plant'} value={ci?.invasive_plant} />
             <TextInput label={'biological agent'} value={ci?.biological_agent} />
-            <TextInput label={'historical iapp_site'} value={ci?.historical_iapp_site} />
+            <TextInput label={'historical iapp site'} value={ci?.historical_iapp_site} />
             <TextInput label={'collection type'} value={ci?.collection_type} />
             <TextInput label={'plant count collection'} value={ci?.plant_count_collection} />
             <TextInput label={'time collection duration minutes'} value={ci?.time_collection_duration_minutes} />

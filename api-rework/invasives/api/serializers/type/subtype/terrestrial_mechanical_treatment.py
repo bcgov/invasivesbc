@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from api.models.activity import TerrestrialPlantMechanicalTreatmentEntry, WellEntry
-from api.serializers.common import NearestWellSerializer
+from api.models.activity import TerrestrialPlantMechanicalTreatmentEntry
 
 
 class TerrestrialPlantMechanicalTreatmentSerializer(serializers.ModelSerializer):
@@ -18,14 +17,9 @@ class TerrestrialPlantMechanicalTreatmentSerializer(serializers.ModelSerializer)
 
 class TerrestrialPlantTreatmentMechanicalSerializer(serializers.Serializer):
     entries = serializers.SerializerMethodField()
-    well_entries = serializers.SerializerMethodField()
 
     def get_entries(self, obj):
         children = TerrestrialPlantMechanicalTreatmentEntry.objects.filter(
             activity_data_record__activity_id=obj.id
         )
         return TerrestrialPlantMechanicalTreatmentSerializer(children, many=True).data
-
-    def get_well_entries(self, obj):
-        children = WellEntry.objects.filter(activity_data_record__activity_id=obj.id)
-        return NearestWellSerializer(children, many=True).data
