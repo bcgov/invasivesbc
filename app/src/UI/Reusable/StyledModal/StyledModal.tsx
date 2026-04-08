@@ -13,13 +13,14 @@ type PropTypes = {
   variant?: 'primary' | 'secondary' | 'blank'; // Can extend this later to add colour types for different use cases
   onClose: () => void;
   className?: string;
+  id?: string;
 } & PropsWithChildren;
 
-const StyledModal = ({ open, variant = 'primary', onClose, className = '', children }: PropTypes) => {
+const StyledModal = ({ open, variant = 'primary', onClose, className = '', id = '', children }: PropTypes) => {
   if (!open) return;
   return (
     <div id="styled-modal-outter" data-testid="styled-modal" onClick={onClose}>
-      <div className={`styled-modal ${variant} ${className}`} onClick={(evt) => evt.stopPropagation()}>
+      <div className={`styled-modal ${variant} ${className}`} id={id} onClick={(evt) => evt.stopPropagation()}>
         {children}
       </div>
     </div>

@@ -15,30 +15,35 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action: PayloadAction<A
   const { API_V2_BASE, MOBILE } = yield select(selectConfiguration);
   const body = JSON.stringify({ filterObjects: [action.payload.filterObj] });
 
-  const response = yield fetch(`${API_V2_BASE}/recordset-rows`, {
-    method: 'POST',
-    headers: { Authorization: yield getCurrentJWT(), 'Content-Type': 'application/json' },
-    body
-  });
+  try {
+    const response = yield fetch(`${API_V2_BASE}/recordset-rows`, {
+      method: 'POST',
+      headers: { Authorization: yield getCurrentJWT(), 'Content-Type': 'application/json' },
+      body
+    });
 
-  const tableFiltersHash = mapState?.recordTables[action.payload.recordSetID]?.tableFiltersHash;
-  if (tableFiltersHash !== action.payload.tableFiltersHash) {
-    return;
+    const tableFiltersHash = mapState?.recordTables[action.payload.recordSetID]?.tableFiltersHash;
+    if (tableFiltersHash !== action.payload.tableFiltersHash) {
+      return;
+    }
+
+    if (response?.ok) {
+      const result = yield response.json();
+      yield put(
+        Activity.getRowsSuccess({
+          recordSetID: action.payload.recordSetID,
+          rows: result,
+          tableFiltersHash: action.payload.tableFiltersHash,
+          page: action.payload.page,
+          limit: action.payload.limit
+        })
+      );
+      return;
+    }
+  } catch (e) {
+    console.error(e);
   }
-
-  if (response?.ok) {
-    const result = yield response.json();
-    yield put(
-      Activity.getRowsSuccess({
-        recordSetID: action.payload.recordSetID,
-        rows: result,
-        tableFiltersHash: action.payload.tableFiltersHash,
-        page: action.payload.page,
-        limit: action.payload.limit
-      })
-    );
-    return;
-  } else if (MOBILE) {
+  if (MOBILE) {
     // API Request Failed, see if we can rows from a cache
     yield getRowsFromCachedRecordset(action.payload);
     return;

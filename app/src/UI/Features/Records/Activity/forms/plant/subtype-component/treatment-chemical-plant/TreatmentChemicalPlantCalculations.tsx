@@ -13,8 +13,7 @@ import {
   mSpecie_sGHerb_spray_usingDilutionPercent,
   mSpecie_sGHerb_spray_usingProdAppRate,
   mSpecie_sLHerb_spray_usingDilutionPercent,
-  mSpecie_sLHerb_spray_usingProdAppRate,
-  sSpecie_sLHerb_direct_usingDilutionPercent
+  mSpecie_sLHerb_spray_usingProdAppRate
 } from './calculations';
 import './treatmentChemicalPlantCalculations.css';
 import Accordion from 'UI/Reusable/Accordion/Accordion';
@@ -133,8 +132,8 @@ const TreatmentChemicalPlantCalculations = () => {
       throw new Error(invalidScenario);
     })();
 
-    if (applicationMethod === 'Direct' && isHerbicideLiquid && isDilutionCalculation && !isMultiplePlants) {
-      return sSpecie_sLHerb_direct_usingDilutionPercent(calculationPayload as DilutionCalculationVariables);
+    if (applicationMethod === 'Direct' && isHerbicideLiquid && isDilutionCalculation) {
+      return mSpecie_sLHerb_spray_usingDilutionPercent(calculationPayload as DilutionCalculationVariables);
     } else if (applicationMethod !== 'Spray') {
       return invalidScenario; // Early Exit, avoid checking Application Method === Spray for every remaining case
     } else if (isHerbicideLiquid && isApplicationCalculation) {

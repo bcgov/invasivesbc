@@ -12,10 +12,11 @@ import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import EFilterType from 'constants/EFilterType';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
+import formAlerts from 'constants/alerts/formAlerts';
 
 interface FormSubmission {
   data: FormSchema;
-  type: 'submission' | 'draft';
+  type: 'submit' | 'draft';
 }
 
 interface DuplicateForm {
@@ -132,19 +133,32 @@ class FormActions {
   };
   static readonly sendForm = createAsyncThunk(
     `${this.PREFIX}/sendForm`,
-    async ({ type, data }: FormSubmission, { dispatch }) => {
+    async ({ type, data }: FormSubmission, { dispatch, getState, rejectWithValue }) => {
+      const state: RootState = getState() as RootState;
+      const BASE_API = state.Configuration.current.runtime.API_V2_BASE;
+      const _MOBILE = state.Configuration.current.build.MOBILE;
+      const ONLINE = state.Network.connected;
       const simplifiedData = this.drillAndSimplify(data);
       console.info('Type:', type, 'Data:', simplifiedData);
-      // TODO: Add API Call, Return Short ID generated from form, branch Draft/Submission logic
-      dispatch(
-        Alerts.create({
-          severity: AlertSeverity.Success,
-          subject: AlertSubjects.Form,
-          content: 'Form submitted successfully.',
-          autoClose: 8
-        })
-      );
-      return '12PTO12345678';
+      if (ONLINE) {
+        const res = await fetch(`${BASE_API}/entries/${type}`, {
+          method: 'POST',
+          headers: {
+            Authorization: await getCurrentJWT(),
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+        if (!res?.ok) {
+          // Request failed, alert user.
+          dispatch(Alerts.create(formAlerts.recordSubmittedFailure));
+          return rejectWithValue(await res.json());
+        }
+        dispatch(Alerts.create(formAlerts.recordSubmittedSuccess));
+        return await res.json();
+      }
+      // TODO: Handle Offline
+      return { short_id: '12PTO12345678', id: crypto.randomUUID() };
     }
   );
   static readonly updateState = createAction<FormSchema>(`${this.PREFIX}/updateState`);

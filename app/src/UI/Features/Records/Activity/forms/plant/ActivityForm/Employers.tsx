@@ -15,6 +15,7 @@ type PropTypes = {
  * @desc High order component to control the available employers based on the user and form state.
  */
 const Employer = ({ width = Width.Full }: PropTypes) => {
+  const NOT_REQUIRED = 'NRQ';
   const employerCodes = useSelector((state) => state.ActivityPage.formCodes?.EmployerCode) ?? [];
   const userEmployers = useSelector((state) => state.Auth?.extendedInfo?.employer)?.split(',');
   const username = useSelector((state) => state.Auth?.username);
@@ -25,7 +26,7 @@ const Employer = ({ width = Width.Full }: PropTypes) => {
 
   const optionsAvailableToUser = useMemo(() => {
     if (createdBy !== username || userIsAdmin) return employerCodes;
-    return employerCodes.filter(({ code }) => userEmployers?.includes(code as string));
+    return employerCodes.filter(({ code }) => userEmployers?.includes(code as string) || code === NOT_REQUIRED);
   }, [employerCodes, userEmployers, createdBy, username]);
 
   return (

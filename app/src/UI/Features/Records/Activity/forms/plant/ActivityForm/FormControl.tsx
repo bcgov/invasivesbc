@@ -36,13 +36,18 @@ const FormControl = () => {
     dispatch(FormActions.startDuplicateForm());
   };
 
-  const saveToDraft = () => {
+  const saveToDraft = async () => {
     if (!isDirty) return;
-    dispatch(FormActions.sendForm({ data: getValues(), type: 'draft' }));
+    const values = await dispatch(FormActions.sendForm({ data: getValues(), type: 'draft' }));
+    if (FormActions.sendForm.fulfilled.match(values)) {
+      setValue('id', values.payload.id);
+      setValue('short_id', values.payload.short_id);
+    }
   };
 
   const {
     getValues,
+    setValue,
     reset,
     formState: { disabled, isDirty, errors }
   } = useFormContext<FormSchema>();

@@ -23,14 +23,16 @@ type PropTypes = {
 const RecordMetadata = ({ formState }: PropTypes) => {
   return (
     <Fieldset label={'Overview'}>
-      <dl id="record-metadata">
-        <Info term={'Record ID'} definition={formState?.short_id} />
-        <Info term={'Form Status'} definition={formState?.form_status} />
-        <Info term={'Activity Type'} definition={formState?.type} />
-        <Info term={'Activity Subtype'} definition={ActivitySubtypesShortLabels[formState?.subtype]} />
-        <Info term={'Date of Activity'} definition={new Date(formState?.date)?.toLocaleDateString() ?? ''} />
-        <Info term={'Created By'} definition={formState?.created_by} />
-      </dl>
+      <div className="metadata-wrapper">
+        <dl id="record-metadata">
+          <Info term={'Record ID'} definition={formState?.short_id} />
+          <Info term={'Form Status'} definition={formState?.form_status} />
+          <Info term={'Activity Type'} definition={formState?.type} />
+          <Info term={'Activity Subtype'} definition={ActivitySubtypesShortLabels[formState?.subtype]} />
+          <Info term={'Date of Activity'} definition={new Date(formState?.date)?.toLocaleDateString() ?? ''} />
+          <Info term={'Created By'} definition={formState?.created_by} />
+        </dl>
+      </div>
     </Fieldset>
   );
 };

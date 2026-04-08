@@ -33,7 +33,7 @@
     }
 
     .header {
-      height: var(--title-control-height);
+      min-height: var(--title-control-height);
       background-color: var(--header-color);
       border-bottom: 2pt solid var(--header-border-color);
       color: var(--header-text-color);
@@ -65,7 +65,7 @@
     .control {
       display: flex;
       box-sizing: border-box;
-      height: var(--title-control-height);
+      min-height: var(--title-control-height);
       padding: 5pt;
       border-top: 1pt solid #cdcdcd;
       justify-content: flex-end;

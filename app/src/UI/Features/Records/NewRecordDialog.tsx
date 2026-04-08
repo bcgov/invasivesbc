@@ -1,181 +1,114 @@
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select
-} from '@mui/material';
-import { useEffect, useState } from 'react';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import { useDispatch } from 'react-redux';
-import {
-  ActivitySubtype,
-  ActivitySubtypeRelations,
-  ActivitySubtypesRelations,
-  ActivitySubtypes,
-  ActivitySubtypesShortLabels
-} from 'sharedAPI';
+import { useEffect, useMemo } from 'react';
+import { ActivitySubtypesRelations, ActivitySubtypes, ActivitySubtypesShortLabels } from 'sharedAPI';
 import 'UI/Features/Records/NewRecordDialog.css';
-import { useSelector } from 'utils/use_selector';
+import { useDispatch, useSelector } from 'utils/use_selector';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { useNavigate } from 'react-router';
 import FormActions from 'state/actions/activity/FormActions';
+import StyledModal from 'UI/Reusable/StyledModal/StyledModal';
+import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
+import SingleSelect from './Activity/forms/common/SingleSelect/SingleSelect';
+import FormCode from 'interfaces/FormCode';
 
-export interface INewRecordDialogState {
-  recordCategory: string;
-  recordSubtype: string;
-  recordType: string;
+interface NewRecordForm {
+  category: string;
+  type: string;
+  subtype: ActivitySubtypes;
 }
 
 const NewRecordDialog = () => {
-  const handleClose = () => {
-    dispatch(UserSettings.closeNewRecordDialogue());
-  };
+  const handleClose = () => dispatch(UserSettings.closeNewRecordDialogue());
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  const accessRoles = useSelector((state) => state.Auth.accessRoles);
   const open = useSelector((state) => state.UserSettings.newRecordDialogueState.open);
   const mode = useSelector((state) => state.UserSettings.newRecordDialogueState.viewLayout);
-  const writePrivilege = useSelector((state) => state.Auth.writePrivilege);
-  // Options
-  const [activityCategorySelectOptions, setActivityCategorySelectOptions] = useState<string[]>([]);
-  const [activityTypeSelectOptions, setActivityTypeSelectOptions] = useState<string[]>([]);
-  const [activitySubTypeSelectOptions, setActivitySubTypeSelectOptions] = useState<ActivitySubtype[]>([]);
 
-  // Selections
-  const [recordType, setRecordType] = useState<string>('');
-  const [recordCategory, setRecordCategory] = useState<string>('');
-  const [recordSubtype, setRecordSubtype] = useState<string>('');
-
-  useEffect(() => {
-    const activityCategories: Array<string> = [];
-    const plantSubtypes = Object.values(ActivitySubtypeRelations['Plant']).flatMap((value) => value);
-    if (writePrivilege.some((subtype) => plantSubtypes.includes(subtype))) {
-      activityCategories.push('Plant');
+  const methods = useForm<NewRecordForm>({
+    mode: 'onChange',
+    defaultValues: {
+      category: undefined,
+      type: undefined,
+      subtype: undefined
     }
-    setActivityCategorySelectOptions(activityCategories);
-  }, [accessRoles, writePrivilege]);
+  });
 
-  useEffect(() => {
-    if (!recordCategory) {
-      setActivityTypeSelectOptions([]);
-    } else {
-      const types: string[] = [];
-      Object.keys(ActivitySubtypesRelations[recordCategory]).forEach((key) => {
-        types.push(key);
-      });
-      setActivityTypeSelectOptions(types);
-    }
-  }, [recordCategory]);
+  const { watch, handleSubmit, resetField } = methods;
+  const category = watch('category');
+  const type = watch('type');
+  const subtype = watch('subtype');
 
-  useEffect(() => {
-    if (!recordType || !recordCategory) {
-      setActivitySubTypeSelectOptions([]);
-    } else {
-      const subTypes = ActivitySubtypesRelations[recordCategory][recordType];
-      //TODO: Refactor to limit creation logic
-      // const availableSubTypes = subTypes.filter((subtype) => writePrivilege.includes(subtype));
-      setActivitySubTypeSelectOptions(subTypes);
-    }
-  }, [recordType]);
+  const categoryOptions: Array<FormCode> = useMemo(() => {
+    // TODO: Add Permission Logic to options
+    return [{ code: 'Plant', full_name: 'Plant Record' }];
+  }, []);
 
-  const createNewRecord = async () => {
+  const typeOptions: Array<FormCode> = useMemo(() => {
+    if (!category) return [];
+    return Object.keys(ActivitySubtypesRelations?.[category])?.map((key) => ({
+      code: key,
+      full_name: key
+    }));
+  }, [category]);
+
+  const subtypeOptions: Array<FormCode> = useMemo(() => {
+    if (!type) return [];
+    return ActivitySubtypesRelations[category][type].map((code: string) => ({
+      code: code,
+      full_name: ActivitySubtypesShortLabels[code] ?? code
+    }));
+  }, [type, category]);
+
+  const onSubmit: SubmitHandler<NewRecordForm> = (data) => {
     if (mode === 'new') {
-      dispatch(FormActions.createNewForm(recordSubtype as ActivitySubtypes));
+      dispatch(FormActions.createNewForm(data.subtype));
     } else {
-      dispatch(FormActions.duplicateForm({ subtype: recordSubtype as ActivitySubtypes }));
+      dispatch(FormActions.duplicateForm({ subtype: data.subtype }));
     }
     navigate('/Records/HookForm/new/form');
   };
 
-  const handleRecordCategoryChange = (event) => {
-    setRecordCategory(event.target.value);
-    setRecordType('');
-    setRecordSubtype('');
-  };
-
-  const handleRecordTypeChange = (event) => {
-    setRecordType(event.target.value);
-    setRecordSubtype('');
-  };
-
-  const handleRecordSubtypeChange = (event) => {
-    setRecordSubtype(event.target.value);
-  };
-
+  useEffect(() => {
+    // Reset user selections if option no longer available.
+    if (typeOptions.every(({ code }) => code !== type)) resetField('type');
+    if (subtypeOptions.every(({ code }) => code !== subtype)) resetField('subtype');
+  }, [subtypeOptions, typeOptions]);
   return (
-    <Dialog open={!!open} id="new_record_dialog">
-      <DialogTitle>Create New Record</DialogTitle>
-      {mode === 'duplicate' && <DialogContent>Select activity subtype you want to copy data into</DialogContent>}
-      <Box className={'vertical_grid content'}>
-        <FormControl>
-          <InputLabel>Record Category</InputLabel>
-          <Select
-            value={recordCategory}
-            IconComponent={KeyboardArrowDownIcon}
-            onChange={handleRecordCategoryChange}
-            label="Select Form Type"
-          >
-            {activityCategorySelectOptions.map((option) => (
-              <MenuItem key={option} value={option}>
-                {option}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        <FormControl>
-          <InputLabel>Record Type</InputLabel>
-          <Select
-            disabled={recordCategory === ''}
-            value={recordType}
-            onChange={handleRecordTypeChange}
-            IconComponent={KeyboardArrowDownIcon}
-            label="Select Form Type"
-          >
-            {activityTypeSelectOptions.map((option) => (
-              <MenuItem key={option} value={option}>
-                {option}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl>
-          <InputLabel>Record Sub-Type</InputLabel>
-          <Select
-            disabled={recordType === ''}
-            value={recordSubtype}
-            onChange={handleRecordSubtypeChange}
-            IconComponent={KeyboardArrowDownIcon}
-            label="Select Form Type"
-          >
-            {activitySubTypeSelectOptions.map((option) => (
-              <MenuItem key={option} value={option}>
-                {ActivitySubtypesShortLabels[option] ?? option}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Box>
-
-      <DialogActions>
-        <Button onClick={handleClose}>Cancel</Button>
-        <Button
-          variant="contained"
-          aria-label="Create Record"
-          disabled={recordSubtype === ''}
-          onClick={createNewRecord}
-        >
-          New Record
-        </Button>
-      </DialogActions>
-    </Dialog>
+    <StyledModal open={!!open} onClose={handleClose} id="new-record-dialog-content">
+      <div className="header">Create {mode} Record</div>
+      <div className="content">
+        {mode === 'duplicate' && <p>Select activity subtype you want to copy data into</p>}
+        <FormProvider {...methods}>
+          <form autoComplete="off" id="create-record-form" onSubmit={handleSubmit(onSubmit)}>
+            <SingleSelect
+              name={'category'}
+              label={'Record Category'}
+              rules={{ required: true }}
+              required
+              options={categoryOptions}
+            />
+            <SingleSelect
+              name={'type'}
+              label={'Record Type'}
+              required
+              rules={{ required: true }}
+              options={typeOptions}
+            />
+            <SingleSelect
+              name={'subtype'}
+              label={'Record Sub-Type'}
+              required
+              rules={{ required: true }}
+              options={subtypeOptions}
+            />
+          </form>
+        </FormProvider>
+      </div>
+      <div className="control">
+        <input type="button" value="Cancel" onClick={handleClose} />
+        <input type="submit" form="create-record-form" value={`${mode} Record`} />
+      </div>
+    </StyledModal>
   );
 };
 

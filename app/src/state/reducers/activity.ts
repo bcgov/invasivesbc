@@ -240,10 +240,9 @@ function createActivityReducer() {
       } else if (FormActions.updateState.match(action)) {
         draftState.formState = structuredClone(action.payload);
       } else if (FormActions.sendForm.fulfilled.match(action)) {
-        if (draftState.formState) {
-          // Should always exist if we just submitted a form.
-          draftState.formState.short_id = action.payload;
-        }
+        if (!draftState.formState) return;
+        draftState.formId = action.payload.id;
+        draftState.activeActivity = action.payload.id;
       } else if (Activity.get.match(action)) {
         draftState.failCode = null;
         draftState.loading = true;

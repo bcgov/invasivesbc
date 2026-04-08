@@ -109,7 +109,7 @@ const mSpecie_sLHerb_spray_usingProdAppRate = ({
 /**
  *    **Application Method**: Spray
  *
- *    **Calculation Type**: Dilution
+ *    **Calculation Type**: Dilution / Direct
  *
  *    **Herbicides**: x1 Liquid
  *
