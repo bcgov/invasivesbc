@@ -52,19 +52,15 @@ export const Activity = () => {
   const { id, mode } = useParams<{ id: string; mode: string }>();
   const activity_id = useSelector((state) => state.ActivityPage?.activity?.activity_id);
   const dispatch = useDispatch();
-  const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (wrapperRef.current) {
-      wrapperRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
-    }
     if (id) {
       dispatch(ActivityActions.loadActivityIfRequired(id));
     }
-  }, [activity_id, id]);
+  }, [activity_id, id, activity_id]);
 
   return (
-    <div ref={wrapperRef}>
+    <div>
       <div className="records__activity">
         <div className="records__activity__header">
           <div className="records__activity_buttons">
