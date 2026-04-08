@@ -50,14 +50,11 @@ export const Activity = () => {
   const navigate = useNavigate();
 
   const { id, mode } = useParams<{ id: string; mode: string }>();
-  const activity_id = useSelector((state) => state.ActivityPage?.activity?.activity_id);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (id) {
-      dispatch(ActivityActions.loadActivityIfRequired(id));
-    }
-  }, [activity_id, id, activity_id]);
+    id && dispatch(ActivityActions.loadActivityIfRequired(id));
+  }, [id]);
 
   return (
     <div>
