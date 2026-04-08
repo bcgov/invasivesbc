@@ -105,3 +105,19 @@ fieldset {
 fieldset fieldset .group-wrap {
   background-color: #9fb6a8;
 }
+
+table {
+  border-collapse: collapse;
+  background-color: white;
+  width: 100%;
+
+  td,
+  th {
+    padding: 5px;
+    border: 1pt solid black;
+  }
+
+  tbody tr {
+    font-weight: normal;
+  }
+}

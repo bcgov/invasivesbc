@@ -16,10 +16,11 @@ interface ActivitySummary {
 }
 
 const ActivitiesList: React.FC = () => {
+  const SESSION_KEY = 'filteredSubtype';
   const [activities, setActivities] = useState<ActivitySummary[]>([]);
 
   const [distinctSubtypes, setDistinctSubtypes] = useState<string[]>([]);
-  const [subtypeFilter, setSubtypeFilter] = useState<string>("Unfiltered");
+  const [subtypeFilter, setSubtypeFilter] = useState<string>(sessionStorage.getItem(SESSION_KEY) ?? 'Unfiltered');
 
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<boolean>(false);
@@ -30,10 +31,15 @@ const ActivitiesList: React.FC = () => {
 
   // Column Definitions: Defines the columns to be displayed.
   const colDefs: ColDef[] = [
-    { field: 'id',
+    {
+      field: 'id',
       headerName: 'ID',
       cellRenderer: (params) => {
-        return <a href={`/activities/${params.value}/django`} className={'id-link'}>{params.value}</a>;
+        return (
+          <a href={`/activities/${params.value}/django`} className={'id-link'}>
+            {params.value}
+          </a>
+        );
       }
     },
     { field: 'type' },
@@ -64,7 +70,7 @@ const ActivitiesList: React.FC = () => {
         if (res.status === 200) {
           const serverResult: ActivitySummary[] = await res.json();
           setActivities(serverResult);
-          setDistinctSubtypes([...new Set(serverResult.map( as => as.subtype).sort())])
+          setDistinctSubtypes([...new Set(serverResult.map((as) => as.subtype).sort())]);
         } else {
           setActivities([]);
           setError(true);
@@ -87,13 +93,22 @@ const ActivitiesList: React.FC = () => {
       {error && <pre>{errorMessage}</pre>}
       <div style={{ height: '80dvh' }}>
         Filter By Subtype:
-        <select onChange={(e) => {setSubtypeFilter(e.target.value)}}>
+        <select
+          value={subtypeFilter}
+          onChange={(e) => {
+            sessionStorage.setItem(SESSION_KEY, e.target.value);
+            setSubtypeFilter(e.target.value);
+          }}>
           <option value={'Unfiltered'}>All</option>
-        {distinctSubtypes.map( st => (<option key={st} value={st}>{st}</option>))}
+          {distinctSubtypes.map((st) => (
+            <option key={st} value={st}>
+              {st}
+            </option>
+          ))}
         </select>
         <AgGridReact
           loading={loading}
-          rowData={activities.filter( x => subtypeFilter == 'Unfiltered' || x.subtype == subtypeFilter)}
+          rowData={activities.filter((x) => subtypeFilter == 'Unfiltered' || x.subtype == subtypeFilter)}
           columnDefs={colDefs}
           onRowClicked={(e) => {
             navigate(`/activities/${e.data.id}/django`);

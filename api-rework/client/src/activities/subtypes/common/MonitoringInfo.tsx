@@ -7,7 +7,7 @@ type MonitoringInfo = {
   evidence_of_treatment: string;
   invasive_plant_aquatic?: string;
   invasive_plant?: string;
-  invasive_plants_on_site: Array<string>;
+  invasive_plants_on_site: Array<{ invasive_plants_on_site: { code: string; full: string } }>;
   management_efficacy_rating: string;
   treatment_efficacy_rating: string;
   treatment_pass: string;
@@ -26,7 +26,7 @@ const MonitoringInfo = ({ data }: PropTypes) => {
       <TextInput label={'treatment efficacy rating'} value={data?.treatment_efficacy_rating} />
       <TextInput label={'management efficacy rating'} value={data?.management_efficacy_rating} />
       <Fieldset small label="Invasive plants on site">
-        <ChitList items={data?.invasive_plants_on_site} />
+        <ChitList items={data?.invasive_plants_on_site.map((i) => i?.invasive_plants_on_site)} />
       </Fieldset>
       <TextInput label={'Treatment Pass'} value={data?.treatment_pass} />
       <TextInput label={'Comment'} value={data?.comment} />

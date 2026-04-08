@@ -12,7 +12,7 @@ const AquaticMechTreatment = ({ subtypeData }: SubtypeData) => (
     <Spacer />
     <Fieldset label={'Shoreline Types'}>
       {subtypeData?.shoreline_types?.map((st) => (
-        <div className="group-wrap">
+        <div className="group-wrap" key={st.shoreline_type}>
           <TextInput label={'Shoreline type'} value={st?.shoreline_type} />
           <TextInput label={'Percent Covered'} value={st?.percent_covered} />
         </div>
