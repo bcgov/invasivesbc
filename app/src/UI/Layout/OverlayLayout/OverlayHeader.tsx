@@ -33,7 +33,7 @@ const getOverlayAnchorDimensions = () => {
   const appElement = document.getElementById('overlay-anchor');
 
   if (appElement !== null) {
-    const { height, top } = window.getComputedStyle(appElement);
+    const { height, top } = globalThis.getComputedStyle(appElement);
     return { height, top };
   }
 
@@ -78,7 +78,7 @@ export const OverlayHeader = () => {
   useEffect(() => {
     // On URL Change, if the Overlay Header is below 50%, resize it. If greater, do nothing.
     const overlayY = document.getElementsByClassName('overlay-header')?.[0]?.getBoundingClientRect()?.y;
-    const screenHeight = parseInt(getOverlayAnchorDimensions().height);
+    const screenHeight = Number.parseInt(getOverlayAnchorDimensions().height);
     if (overlayY == undefined || screenHeight == undefined) return;
     if (overlayY - 90 > screenHeight / 2) defaultPosition();
   }, [url]);

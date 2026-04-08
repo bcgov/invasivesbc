@@ -131,7 +131,7 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
           id={props.id}
           value={value ?? ''}
           onChange={(evt) => {
-            const value = evt.target.value !== '' ? evt.target.value : undefined;
+            const value = evt.target.value ?? undefined;
             setValue(value);
             props.onChange(value);
           }}
