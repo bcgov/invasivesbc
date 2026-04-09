@@ -22,8 +22,8 @@ interface TerrestrialPlantObservationSchema extends BaseForm {
         utm_zone: number;
         utm_easting: number;
         utm_northing: number;
-        date_collected: number;
-        date_verified: number;
+        date_collected: string;
+        date_verified: string;
       };
     }>;
     pretreatment_observation: string;
