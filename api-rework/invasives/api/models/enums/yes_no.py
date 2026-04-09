@@ -3,7 +3,7 @@ from django.db import models
 
 class YesNo(models.TextChoices):
     Yes = (
-        "Y",
+        "Yre",
         "Yes",
     )
-    No = "N", "No"
+    No = "No", "No"
