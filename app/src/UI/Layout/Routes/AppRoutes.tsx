@@ -48,7 +48,14 @@ const AppRoutes = () => {
       <Route path="/" element={<Navigate to="/Landing" replace />} />
       <Route path="/Map" Component={() => <></>} />
       <Route path="/Landing" Component={() => <LandingComponent />} />
-      <Route path="/Records/Activity/:id/:mode" Component={() => <Activity />}></Route>
+      <Route
+        path="/Records/Activity/:id/:mode"
+        element={
+          <Suspense fallback={<Spinner />}>
+            <Activity />
+          </Suspense>
+        }
+      ></Route>
 
       <Route path="/Records/IAPP/:id/:mode" Component={() => <IAPPRecord />} />
       <Route

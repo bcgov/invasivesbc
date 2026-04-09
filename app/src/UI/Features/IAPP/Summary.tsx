@@ -36,7 +36,7 @@ export const Summary: React.FC<IAPPSitePropType> = ({ record }) => {
           <Typography>Legacy IAPP Site: {site?.site_id}</Typography>
         </AccordionSummary>
 
-        <AccordionDetails>
+        <AccordionDetails style={{ textAlign: 'left' }}>
           <Grid container spacing={1}>
             <Grid size={{ xs: 3, sm: 2 }}>
               <Typography>Created:</Typography>

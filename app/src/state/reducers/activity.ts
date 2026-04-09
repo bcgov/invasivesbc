@@ -216,6 +216,7 @@ function createActivityReducer() {
         draftState.schema = action.payload.schema;
       } else if (DrawToolActions.updateGeoSuccess.match(action)) {
         const { geometry, lat, long, utm, reported_area, Well_Information } = action.payload;
+        draftState.pristine = false;
         draftState.activity.geometry = geometry;
         draftState.activity.form_data.activity_data.latitude = lat;
         draftState.activity.form_data.activity_data.longitude = long;

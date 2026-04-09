@@ -58,6 +58,7 @@ export const OfflineDataSyncTable = ({ handleClose }: PropTypes) => {
     if (confirmDelete) {
       dispatch(Activity.Offline.delete(contextRecord));
       setConfirmDelete(false);
+      setAnchorEl(null);
     } else {
       setConfirmDelete(true);
     }
