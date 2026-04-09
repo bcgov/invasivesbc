@@ -1,5 +1,5 @@
 from typing import List, Literal, Optional
-from pydantic import Field, model_validator
+from pydantic import Field, model_validator, field_validator
 from api.protocol.activity.plant_subtypes.base_form_schema import (
     BaseFormSchema,
     CleanSchema,
@@ -7,16 +7,27 @@ from api.protocol.activity.plant_subtypes.base_form_schema import (
 from api.protocol.activity.plant_subtypes.common.voucher_specimen import (
     VoucherSpecimenSchema,
 )
+from api.protocol.activity.validators.no_repeat_key import no_repeat_key
+from api.protocol.activity.validators.code_validation import (
+    DensityCodeType,
+    DistributionCodeType,
+    PlantLifeStageCodeType,
+    TerrestrialPlantCodeType,
+    AspectCodeType,
+    SlopePercentCodeType,
+    SoilTextureCodeType,
+    SpecificUseCodeType,
+)
 
 
 class Entry(CleanSchema):
-    observation_type: str = Field(...)  # e.g., "Positive" or "Negative"
-    invasive_plant: str = Field(...)  # Always required
+    observation_type: str  # e.g., "Positive" or "Negative"
+    invasive_plant: TerrestrialPlantCodeType  # Always required
 
     # These are technically Optional in the schema to allow "Negative" types to pass
-    density: Optional[str] = None
-    distribution: Optional[str] = None
-    life_stage: Optional[str] = None
+    density: Optional[DensityCodeType] = None
+    distribution: Optional[DistributionCodeType] = None
+    life_stage: Optional[PlantLifeStageCodeType] = None
     voucher_specimen: Optional[VoucherSpecimenSchema] = None
 
     @model_validator(mode="after")
@@ -29,20 +40,24 @@ class Entry(CleanSchema):
                     raise ValueError(
                         f"{field_name} is required when observation_type is {self.observation_type}"
                     )
-
         return self
 
 
 class SubtypeData(CleanSchema):
     entries: List[Entry] = Field(..., min_length=1)
-    pretreatment_observation: str = Field(...)
-    research_observation: str = Field(...)
-    visible_well_nearby: str = Field(...)
-    aspect: str = Field(...)
-    slope_percent: str = Field(...)
-    soil_texture: Optional[str] = Field(...)
-    specific_uses: List[str] = Field(..., min_length=1)
-    suitable_for_biocontrol_agent: str = Field(...)
+    pretreatment_observation: str
+    research_observation: str
+    visible_well_nearby: str
+    aspect: AspectCodeType
+    slope_percent: SlopePercentCodeType
+    soil_texture: Optional[SoilTextureCodeType] = None
+    specific_uses: List[SpecificUseCodeType] = Field(..., min_length=1)
+    suitable_for_biocontrol_agent: str
+
+    @field_validator("entries")
+    @classmethod
+    def unique_plants(cls, v):
+        return no_repeat_key(v, key="invasive_plant", key_label="Invasive Plant")
 
 
 class ObservationTerrestrialSchema(BaseFormSchema):
