@@ -62,9 +62,8 @@ const VoucherCollection = ({ index }) => {
       <DateInput
         error={get(errors, getPath('date_verified'))}
         label="Date Voucher Verified"
-        required
         width={Width.Half}
-        {...register(getPath('date_verified'), { required: true })}
+        {...register(getPath('date_verified'))}
       />
       <Fieldset label={'Voucher Verification Completed By'}>
         <TextInput
