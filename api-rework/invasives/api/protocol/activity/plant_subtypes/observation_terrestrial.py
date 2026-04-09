@@ -8,6 +8,7 @@ from api.protocol.activity.plant_subtypes.common.voucher_specimen import (
     VoucherSpecimenSchema,
 )
 from api.protocol.activity.validators.no_repeat_key import no_repeat_key
+from api.models.enums import YesNoUnknown, ObservationType
 from api.protocol.activity.validators.code_validation import (
     DensityCodeType,
     DistributionCodeType,
@@ -21,7 +22,7 @@ from api.protocol.activity.validators.code_validation import (
 
 
 class Entry(CleanSchema):
-    observation_type: str  # e.g., "Positive" or "Negative"
+    observation_type: ObservationType
     invasive_plant: TerrestrialPlantCodeType  # Always required
 
     # These are technically Optional in the schema to allow "Negative" types to pass
@@ -44,15 +45,17 @@ class Entry(CleanSchema):
 
 
 class SubtypeData(CleanSchema):
-    entries: List[Entry] = Field(..., min_length=1)
-    pretreatment_observation: str
-    research_observation: str
-    visible_well_nearby: str
+    pretreatment_observation: YesNoUnknown
+    research_observation: YesNoUnknown
+    suitable_for_biocontrol_agent: YesNoUnknown
+    visible_well_nearby: YesNoUnknown
+
     aspect: AspectCodeType
     slope_percent: SlopePercentCodeType
     soil_texture: Optional[SoilTextureCodeType] = None
     specific_uses: List[SpecificUseCodeType] = Field(..., min_length=1)
-    suitable_for_biocontrol_agent: str
+
+    entries: List[Entry] = Field(..., min_length=1)
 
     @field_validator("entries")
     @classmethod
