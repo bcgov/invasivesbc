@@ -4,6 +4,7 @@ from api.protocol.activity.validators.no_future_date import no_future_date
 from typing import Optional
 from datetime import date
 
+
 class VoucherSpecimenSchema(CleanSchema):
     voucher_sample_id: str
     herbarium: Optional[str] = None
@@ -28,6 +29,10 @@ class VoucherSpecimenSchema(CleanSchema):
 
     @model_validator(mode="after")
     def sequential_dates(self):
-        if self.date_collected and self.date_verified and self.date_collected > self.date_verified:
+        if (
+            self.date_collected
+            and self.date_verified
+            and self.date_collected > self.date_verified
+        ):
             raise ValueError("The end date must follow the start date")
         return self
