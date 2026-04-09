@@ -12,7 +12,9 @@ from api.protocol.activity.activity import (
     ActivitySearchResult,
 )
 from api.protocol.activity.plant_subtypes.union_definition import PlantActivitySchema
+
 router = Router(auth=NinjaKeycloakAuthentication())
+
 
 # Helper
 def mock_record_id():
@@ -23,7 +25,9 @@ def mock_record_id():
 
     return {"short_id": short_id.upper(), "id": str(id)}
 
-#Routes
+
+# Routes
+
 
 @router.get("/", response=List[ActivityMinimal])
 def list_activities(request):
@@ -57,8 +61,9 @@ def submit_record(request, data: PlantActivitySchema = Body(...)):
     val = mock_record_id()
     data["id"] = val["id"]
     data["short_id"] = val["short_id"]
-    data['type'] = 'Submit'
+    data["type"] = "Submit"
     return data
+
 
 @router.post("/draft")
 def submit_draft_record(request, data: PlantActivitySchema = Body(...)):
@@ -66,7 +71,7 @@ def submit_draft_record(request, data: PlantActivitySchema = Body(...)):
     val = mock_record_id()
     data["id"] = val["id"]
     data["short_id"] = val["short_id"]
-    data['type'] = 'Draft'
+    data["type"] = "Draft"
     return data
 
 

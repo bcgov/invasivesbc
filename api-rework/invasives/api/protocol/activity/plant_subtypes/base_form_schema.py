@@ -1,44 +1,60 @@
-from typing import List, Literal, Union, Annotated, Dict, TypedDict, Optional
-from ninja import NinjaAPI, Schema
-from pydantic import Field
+from typing import List, Union, TypedDict, Optional
+from ninja import Schema
+from pydantic import Field, model_validator
 from pydantic_geojson import PointModel, FeatureModel, PolygonModel, MultiPolygonModel
-from api.models.activity import ActivitySubtypes, ActivityType, FormStatus
+from api.models.activity import FormStatus
+
+MAX_AREA_FOR_RECORD = 500000
 
 
+class CleanSchema(Schema):
+    """
+    Cleanup method to set all Empty strings in form to None
+    """
 
-class JurisdictionSchema(Schema):
+    @model_validator(mode="before")
+    def remove_empty_strings(cls, values):
+        # Convert empty string fields to None
+        for f in cls.__pydantic_fields__:
+            if getattr(values, f, None) == "":
+                setattr(values, f, None)
+        return values
+
+
+class JurisdictionSchema(CleanSchema):
     jurisdiction: str = Field(...)
     percent_covered: int = Field(..., ge=0, le=100)
 
+
+class Participant(CleanSchema):
+    name: str = Field(...)
+    pac_number: Optional[int] = None
+
+
 class Employer(TypedDict):
     employer: str
+
 
 class LinkedActivity(TypedDict):
     label: str
     full: str
 
+
 class FundingAgency(TypedDict):
     invasive_species_agency_code: str
+
 
 class Media(TypedDict):
     description: str
     encoded_file: str
 
 
-class Participant(Schema):
-    name: str = Field(...)
-    pac_number: Optional[int] = None
-
-
 class ProjectCode(TypedDict):
     description: str
 
 
-MAX_AREA_FOR_RECORD = 500000
-
-
-class BaseFormSchema(Schema):
-    id: Optional[str] = None # Optional for first entries, required for updating.
+class BaseFormSchema(CleanSchema):
+    id: Optional[str] = None  # Optional for first entries, required for updating.
     access_description: Optional[str] = None
     area_m: int = Field(..., gt=0, le=MAX_AREA_FOR_RECORD)
     comment: Optional[str] = None
