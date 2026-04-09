@@ -98,6 +98,15 @@ const ObservationPlantTerrestrial = () => {
           rules={{ required: true }}
           width={Width.Half}
         />
+        <SingleSelect
+          label="Pre-treatment Observation"
+          options={YesNoUnknown}
+          tooltip={tooltips.basic.pretreatment_observation}
+          name={getPath('pretreatment_observation')}
+          width={Width.Half}
+          required
+          rules={{ required: true }}
+        />
       </Fieldset>
       <ArrayField<TerrestrialPlantObservationSchema, 'subtype_data.entries'>
         name={'subtype_data.entries'}

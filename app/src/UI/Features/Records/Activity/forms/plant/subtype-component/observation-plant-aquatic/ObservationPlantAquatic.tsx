@@ -200,6 +200,16 @@ const ObservationPlantAquatic = () => {
           options={YesNoUnknown}
           tooltip={tooltips.plant.suitable_for_biocontrol_agent}
           name={getPath('suitable_for_biocontrol')}
+          width={Width.Half}
+          required
+          rules={{ required: true }}
+        />
+        <SingleSelect
+          label="Pre-treatment Observation"
+          options={YesNoUnknown}
+          tooltip={tooltips.basic.pretreatment_observation}
+          name={getPath('pretreatment_observation')}
+          width={Width.Half}
           required
           rules={{ required: true }}
         />
