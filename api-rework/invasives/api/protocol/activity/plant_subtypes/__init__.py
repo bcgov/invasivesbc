@@ -1,0 +1,5 @@
+from api.protocol.activity.plant_subtypes.observation_terrestrial import ObservationTerrestrialSchema
+from api.protocol.activity.plant_subtypes.observation_aquatic import ObservationAquaticSchema
+from api.protocol.activity.plant_subtypes.treatment_mechanical_terrestrial import TreatmentMechanicalTerrestrial
+from api.protocol.activity.plant_subtypes.treatment_mechanical_aquatic import TreatmentMechanicalAquatic
+from api.protocol.activity.plant_subtypes.monitoring_mechanical import MonitoringMechanical
