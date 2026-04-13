@@ -88,7 +88,7 @@ class BaseFormSchema(CleanSchema):
     # Top-level Comments
     access_description: Optional[str] = None
     comment: Optional[str] = None
-    location_description: str = Field(..., min_length=10)
+    location_description: str = Field(..., min_length=5)
 
     @field_validator("date")
     @classmethod
