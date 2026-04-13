@@ -3,3 +3,4 @@ from api.protocol.activity.plant_subtypes.observation_aquatic import Observation
 from api.protocol.activity.plant_subtypes.treatment_mechanical_terrestrial import TreatmentMechanicalTerrestrial
 from api.protocol.activity.plant_subtypes.treatment_mechanical_aquatic import TreatmentMechanicalAquatic
 from api.protocol.activity.plant_subtypes.monitoring_mechanical import MonitoringMechanical
+from api.protocol.activity.plant_subtypes.monitoring_chemical import MonitoringChemical
