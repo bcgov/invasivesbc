@@ -8,7 +8,7 @@ import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips'
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
 import { useSelector } from 'utils/use_selector';
 import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
-import { CardinalDirection, YesNoUnknown } from 'UI/Features/Records/Activity/forms/enums';
+import { YesNoUnknown } from 'UI/Features/Records/Activity/forms/enums';
 import DateInput from 'UI/Features/Records/Activity/forms/common/DateInput/DateInput';
 import RadioInput from 'UI/Features/Records/Activity/forms/common/RadioInput/RadioInput';
 import FormSpacer from 'UI/Features/Records/Activity/forms/common/FormSpacer/FormSpacer';
@@ -185,7 +185,7 @@ const TreatmentChemicalPlant = () => {
         <SingleSelect
           label={'Wind Direction'}
           name={getPath('wind_direction')}
-          options={CardinalDirection}
+          options={codes?.WindDirectionCode}
           required
           tooltip={tooltips.plant.chemical.weather.wind_direction}
           width={Width.Half}
