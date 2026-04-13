@@ -12,8 +12,9 @@ from api.protocol.activity.validators.code_validation import (
     AquaticPlantCodeType,
     PlantMechanicalTreatmentMethodCodeType,
     DisposalMethodCodeType,
-    ShorelineTypeCodeType
+    ShorelineTypeCodeType,
 )
+
 
 class Entry(CleanSchema):
     disposed_material_amount: Optional[int]
@@ -26,9 +27,13 @@ class Entry(CleanSchema):
     @model_validator(mode="after")
     def validate_materials(self) -> "Entry":
         if self.disposed_material_format and not self.disposed_material_amount:
-            raise ValueError("Disposed Material Format required when disposed material amount not blank.")
+            raise ValueError(
+                "Disposed Material Format required when disposed material amount not blank."
+            )
         elif self.disposed_material_amount and not self.disposed_material_format:
-            raise ValueError("Disposed Material Amount required when disposed material amount not blank.")
+            raise ValueError(
+                "Disposed Material Amount required when disposed material amount not blank."
+            )
         return self
 
 

@@ -7,7 +7,7 @@ from api.protocol.activity.plant_subtypes import (
     TreatmentMechanicalAquatic,
     MonitoringMechanical,
     MonitoringChemical,
-    MonitoringBiocontrolRelease
+    MonitoringBiocontrolRelease,
 )
 
 PlantActivitySchema = Annotated[
@@ -18,7 +18,7 @@ PlantActivitySchema = Annotated[
         TreatmentMechanicalAquatic,
         MonitoringMechanical,
         MonitoringChemical,
-        MonitoringBiocontrolRelease
+        MonitoringBiocontrolRelease,
     ],
     Field(discriminator="subtype"),
 ]

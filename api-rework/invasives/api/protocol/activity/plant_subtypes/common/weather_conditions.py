@@ -7,6 +7,7 @@ from api.protocol.activity.validators.code_validation import (
     WindDirectionCodeType,
 )
 
+
 class WeatherConditions(CleanSchema):
     comments: Optional[str] = None
     cloud_cover: CloudCoverCodeType

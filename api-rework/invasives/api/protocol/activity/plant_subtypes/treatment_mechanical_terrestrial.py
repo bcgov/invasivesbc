@@ -10,8 +10,9 @@ from api.models.enums import PlantDisposalFormat
 from api.protocol.activity.validators.code_validation import (
     TerrestrialPlantCodeType,
     PlantMechanicalTreatmentMethodCodeType,
-    DisposalMethodCodeType
+    DisposalMethodCodeType,
 )
+
 
 class Entry(CleanSchema):
     disposed_material_amount: Optional[int]

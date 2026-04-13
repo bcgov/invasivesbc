@@ -6,6 +6,7 @@ from typing import Optional, List
 class PlantHeight(CleanSchema):
     height_cm: int = Field(..., gt=1)
 
+
 class TargetPlantPhenology(CleanSchema):
     winter_dormant: int = Field(..., ge=0, le=100)
     seedlings: int = Field(..., ge=0, le=100)
@@ -17,7 +18,7 @@ class TargetPlantPhenology(CleanSchema):
     target_plant_heights: Optional[List[PlantHeight]] = None
 
     @model_validator(mode="after")
-    def validate_sum_percentages(self) -> 'TargetPlantPhenology':
+    def validate_sum_percentages(self) -> "TargetPlantPhenology":
         stages = [
             self.winter_dormant,
             self.seedlings,
@@ -25,7 +26,7 @@ class TargetPlantPhenology(CleanSchema):
             self.bolts,
             self.flowering,
             self.seeds_forming,
-            self.senescent
+            self.senescent,
         ]
         total = sum(stages)
         if total != 100:

@@ -15,27 +15,36 @@ from api.protocol.activity.validators.code_validation import (
     TreatmentEfficacyRatingCodeType,
 )
 
+
 class Entry(CleanSchema):
     invasive_plant: Optional[TerrestrialPlantCodeType] = None
     invasive_plant_aquatic: Optional[AquaticPlantCodeType] = None
     evidence_of_treatment: YesNo
     treatment_pass: Optional[TreatmentPass] = None
     comment: Optional[str] = None
-    invasive_plants_on_site: List[InvasivePlantsOnSiteCodeType] = Field(..., min_length=1)
+    invasive_plants_on_site: List[InvasivePlantsOnSiteCodeType] = Field(
+        ..., min_length=1
+    )
     management_efficacy_rating: EfficacyManagementRatingCodeType
     treatment_efficacy_rating: Optional[TreatmentEfficacyRatingCodeType] = None
 
     @model_validator(mode="after")
-    def validate_exclusive_plant_type(self) -> 'Entry':
+    def validate_exclusive_plant_type(self) -> "Entry":
         if self.invasive_plant and self.invasive_plant_aquatic:
             raise ValueError("Can't specify both Aquatic and Terrestrial plant types")
         return self
 
     @model_validator(mode="after")
-    def validate_treatment_efficacy_rating(self) -> 'Entry':
-        if self.evidence_of_treatment == YesNo.Yes and self.treatment_efficacy_rating is None:
-            raise ValueError("Efficacy Rating is required when evidence of treatment is Yes")
+    def validate_treatment_efficacy_rating(self) -> "Entry":
+        if (
+            self.evidence_of_treatment == YesNo.Yes
+            and self.treatment_efficacy_rating is None
+        ):
+            raise ValueError(
+                "Efficacy Rating is required when evidence of treatment is Yes"
+            )
         return self
+
 
 class SubtypeData(CleanSchema):
     entries: List[Entry] = Field(..., min_length=1)
@@ -43,9 +52,11 @@ class SubtypeData(CleanSchema):
     @field_validator("entries")
     @classmethod
     def unique_plants(cls, v):
-        return no_repeat_key(v, key="invasive_plant", key_label="Invasive Plant") and \
-               no_repeat_key(v, key="aquatic_invasive_plant", key_label="Aquatic Invasive Plant")
-
+        return no_repeat_key(
+            v, key="invasive_plant", key_label="Invasive Plant"
+        ) and no_repeat_key(
+            v, key="aquatic_invasive_plant", key_label="Aquatic Invasive Plant"
+        )
 
 
 class MonitoringMechanical(BaseFormSchema):

@@ -10,7 +10,7 @@ from api.protocol.activity.plant_subtypes.common import (
     WeatherConditions,
     SpreadResultsMixin,
     BiocontrolCountExtended,
-    TargetPlantPhenology
+    TargetPlantPhenology,
 )
 from api.models.enums import YesNoUnknown, CollectionType
 from api.protocol.activity.validators.code_validation import (
@@ -18,7 +18,7 @@ from api.protocol.activity.validators.code_validation import (
     BioAgentCollectionMethodCodeType,
     TerrestrialPlantCodeType,
     AgentLocationFoundCodeType,
-    BiocontrolPresenceCodeType
+    BiocontrolPresenceCodeType,
 )
 
 
@@ -50,24 +50,28 @@ class Entry(CleanSchema):
 
     @model_validator(mode="after")
     def validate_monitoring_type(self) -> "Entry":
-        if self.monitoring_type == 'Timed' and self.count_duration_minutes is None:
+        if self.monitoring_type == "Timed" and self.count_duration_minutes is None:
             raise ValueError("Count duration minutes is a required field")
-        elif self.monitoring_type == 'Count' and self.plant_count is None:
+        elif self.monitoring_type == "Count" and self.plant_count is None:
             print("We in it")
             raise ValueError("Plant Count is a required field")
         return self
 
     @model_validator(mode="after")
     def validate_monitoring_method(self) -> "Entry":
-        if self.monitoring_method == 'Cs' and self.number_of_sweeps is None:
+        if self.monitoring_method == "Cs" and self.number_of_sweeps is None:
             raise ValueError("Number of sweeps is a required field")
         return self
 
     @model_validator(mode="after")
     def validate_biocontrol_present(self) -> "Entry":
-        if self.biocontrol_present and (self.sign_of_biocontrol_presence is None or len(self.sign_of_biocontrol_presence) == 0):
+        if self.biocontrol_present and (
+            self.sign_of_biocontrol_presence is None
+            or len(self.sign_of_biocontrol_presence) == 0
+        ):
             raise ValueError("Sign of Biocontrol Presence is a required field")
         return self
+
     @model_validator(mode="after")
     def validate_sequential_date(self):
         if self.start_time >= self.stop_time:
@@ -80,5 +84,5 @@ class SubtypeData(MicrositeCondition, WeatherConditions, SpreadResultsMixin):
 
 
 class MonitoringBiocontrolRelease(CleanSchema):
-    subtype: Literal['Monitoring_Biocontrol_Release_Plant_Terrestrial']
+    subtype: Literal["Monitoring_Biocontrol_Release_Plant_Terrestrial"]
     subtype_data: SubtypeData
