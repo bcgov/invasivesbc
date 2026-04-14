@@ -138,6 +138,7 @@ const FormContainer = () => {
             formData={formDataState}
             schema={activitySchema}
             uiSchema={activityUISchema}
+            focusOnFirstError
             liveValidate={'onChange'}
             customValidate={customValidators()}
             validator={validator}
@@ -158,8 +159,6 @@ const FormContainer = () => {
             >
               <FormMenuButtons />
             </CustomPopover>
-            {/* This seemingly useless Fragment prevents a generic submit button from rendering through RJSF */}
-            <Fragment />
           </Form>
 
           {isActivityChemTreatment && (
