@@ -31,6 +31,7 @@ import FormMenuButtons from '../../FormMenuButtons/FormMenuButtons';
 import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
 import Alerts from 'state/actions/alerts/Alerts';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
+import { RJSFValidationError } from '@rjsf/utils';
 
 const FormContainer = () => {
   const ref = useRef(0);
@@ -39,7 +40,7 @@ const FormContainer = () => {
     console.log('%c FormContainer render:' + ref.current.toString(), 'color: yellow');
   }
 
-  const handleFormErrors = (err = []) => {
+  const handleFormErrors = (err: Array<RJSFValidationError> = []) => {
     dispatch(Activity.setErrors(err));
     dispatch(
       Alerts.create({
