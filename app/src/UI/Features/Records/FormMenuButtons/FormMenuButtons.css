@@ -11,5 +11,10 @@
     min-height: 50pt;
     background-color: var(--blue-primary);
     border-radius: 0;
+
+    &:disabled {
+      background-color: #ccc;
+      color: black;
+    }
   }
 }
