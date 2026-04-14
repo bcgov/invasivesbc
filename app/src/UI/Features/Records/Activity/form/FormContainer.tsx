@@ -29,6 +29,8 @@ import FundingAgencySelectAutoComplete from 'rjsf/widgets/FundingAgencySelectAut
 import EmployerSelectAutoComplete from 'rjsf/widgets/EmployerSelectAutoComplete';
 import FormMenuButtons from '../../FormMenuButtons/FormMenuButtons';
 import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
+import Alerts from 'state/actions/alerts/Alerts';
+import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 
 const FormContainer = () => {
   const ref = useRef(0);
@@ -36,6 +38,18 @@ const FormContainer = () => {
   if (RENDER_DEBUG) {
     console.log('%c FormContainer render:' + ref.current.toString(), 'color: yellow');
   }
+
+  const handleFormErrors = (err = []) => {
+    dispatch(Activity.setErrors(err));
+    dispatch(
+      Alerts.create({
+        subject: AlertSubjects.Form,
+        severity: AlertSeverity.Error,
+        content: `Cannot submit form! ${err.length} error(s) found.`,
+        autoClose: 5
+      })
+    );
+  };
 
   const dispatch = useDispatch();
 
@@ -148,7 +162,7 @@ const FormContainer = () => {
             ref={formRef}
             noHtml5Validate={true}
             onSubmit={() => dispatch(Activity.submit())}
-            onError={(errors) => dispatch(Activity.setErrors(errors ?? []))}
+            onError={handleFormErrors}
             onChange={(event) => debouncedFormChange(event)}
           >
             <CustomPopover
