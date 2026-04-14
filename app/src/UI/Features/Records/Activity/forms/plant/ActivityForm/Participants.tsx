@@ -30,7 +30,7 @@ const Participants = () => {
         <>
           <TextInput
             disabled={disabled}
-            error={get(errors, `errors.participants.${index}.name`)}
+            error={get(errors, `participants.${index}.name`)}
             id={`participants.${index}.name`}
             label={'Name'}
             required

@@ -268,7 +268,7 @@ const Form = () => {
           width={Width.Third}
           {...register('location_description', {
             required: true,
-            validate: (val) => greaterThanEqual(val, 10)
+            validate: (val) => greaterThanEqual(val, 5)
           })}
         />
         <TextArea

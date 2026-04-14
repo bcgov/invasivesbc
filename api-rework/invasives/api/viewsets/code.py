@@ -57,6 +57,7 @@ class CodeViewSet(ViewSet):
         WaterbodyFlowSeasonalCode,
         WaterbodySubstrateCode,
         WaterbodyUseCode,
+        WindDirectionCode,
     ]
 
     def list(self, request):

@@ -5,7 +5,6 @@ import { BiocontrolReleaseSchema } from 'UI/Features/Records/Activity/forms/plan
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import { useSelector } from 'utils/use_selector';
 import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
-import { CardinalDirection } from 'UI/Features/Records/Activity/forms/enums';
 import TextArea from 'UI/Features/Records/Activity/forms/common/TextArea/TextArea';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
 import useFieldPath from 'UI/Features/Records/Activity/forms/plant/hooks/useFieldPath';
@@ -14,6 +13,7 @@ const BiocontrolWeatherConditions = () => {
   const { getPath } = useFieldPath<BiocontrolReleaseSchema>('subtype_data');
   const { register } = useFormContext<BiocontrolReleaseSchema>();
   const codes = useSelector((state) => state.ActivityPage.formCodes);
+
   return (
     <Fieldset label={'Weather Conditions'}>
       <NumberInput
@@ -54,7 +54,7 @@ const BiocontrolWeatherConditions = () => {
       <SingleSelect
         label={'Wind Direction'}
         name={getPath('wind_direction')}
-        options={CardinalDirection}
+        options={codes?.WindDirectionCode}
         required
         width={Width.Half}
         rules={{ required: true }}

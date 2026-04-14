@@ -141,7 +141,7 @@ class FormActions {
       const simplifiedData = this.drillAndSimplify(data);
       console.info('Type:', type, 'Data:', simplifiedData);
       if (ONLINE) {
-        const res = await fetch(`${BASE_API}/entries/${type}`, {
+        const res = await fetch(`${BASE_API}/ninja/activities/${type}`, {
           method: 'POST',
           headers: {
             Authorization: await getCurrentJWT(),

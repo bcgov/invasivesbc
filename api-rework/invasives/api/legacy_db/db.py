@@ -62,8 +62,6 @@ from api.models.codes import (
     WaterbodyTypeCode,
     WaterbodySubstrateCode,
     BioAgentMonitoringMethodCode,
-    LiquidHerbicideCode,
-    GranularHerbicideCode,
     HerbicideTypeCode,
     HerbicideApplicationMethodCode,
 )

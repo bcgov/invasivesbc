@@ -23,7 +23,9 @@ const tooltips = {
       'Plain text description of any supporting information about the observation that is not captured elsewhere',
     comment: 'Any comments of particular interest regarding this collection that does not fit elsewhere.',
     historical_iapp:
-      'Record number from historical Invasive Alien Plant Program (IAPP) data, if known, to enable tracing to historical biocontrol records. '
+      'Record number from historical Invasive Alien Plant Program (IAPP) data, if known, to enable tracing to historical biocontrol records.',
+    pretreatment_observation:
+      'Choose yes if this observation was completed before any treatment occurred within the current growing season'
   },
   plant: {
     invasive_plant: 'Target invasive plant species at this location.',

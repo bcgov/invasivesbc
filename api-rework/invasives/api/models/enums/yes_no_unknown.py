@@ -3,8 +3,8 @@ from django.db import models
 
 class YesNoUnknown(models.TextChoices):
     Yes = (
-        "Y",
+        "Yes",
         "Yes",
     )
-    No = "N", "No"
-    Unknown = "U", "Unknown"
+    No = "No", "No"
+    Unknown = "Unknown", "Unknown"

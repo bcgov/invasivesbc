@@ -1,7 +1,8 @@
 from typing import List
 
-from ninja import Router
-
+from ninja import Router, Body
+from datetime import datetime
+import uuid
 from api.models.activity import Activity
 from api.ninja_authentication import NinjaKeycloakAuthentication
 from api.protocol.activity.activity import (
@@ -10,8 +11,22 @@ from api.protocol.activity.activity import (
     ActivitySearchParameters,
     ActivitySearchResult,
 )
+from api.protocol.activity.plant_subtypes.union_definition import PlantActivitySchema
 
 router = Router(auth=NinjaKeycloakAuthentication())
+
+
+# Helper
+def mock_record_id():
+    """Mock Function for generating short ID's"""
+    year_prefix = datetime.now().strftime("%y")
+    id = uuid.uuid4()
+    short_id = f"{year_prefix}PTO{id.hex[:8]}"
+
+    return {"short_id": short_id.upper(), "id": str(id)}
+
+
+# Routes
 
 
 @router.get("/", response=List[ActivityMinimal])
@@ -38,6 +53,26 @@ def activity_search(request, search: ActivitySearchParameters):
         search=search,
     )
     return result
+
+
+@router.post("/submit")
+def submit_record(request, data: PlantActivitySchema = Body(...)):
+    data = data.model_dump()
+    val = mock_record_id()
+    data["id"] = val["id"]
+    data["short_id"] = val["short_id"]
+    data["type"] = "Submit"
+    return data
+
+
+@router.post("/draft")
+def submit_draft_record(request, data: PlantActivitySchema = Body(...)):
+    data = data.model_dump()
+    val = mock_record_id()
+    data["id"] = val["id"]
+    data["short_id"] = val["short_id"]
+    data["type"] = "Draft"
+    return data
 
 
 @router.get("/{id}", response=ActivityOut)
