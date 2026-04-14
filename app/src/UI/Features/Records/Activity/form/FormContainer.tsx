@@ -1,7 +1,7 @@
 import { Box, Button, CircularProgress, createTheme, Theme, ThemeOptions, ThemeProvider } from '@mui/material';
 import { Form } from '@rjsf/mui';
 import CoreForm from '@rjsf/core';
-import { createRef, Fragment, RefObject, useCallback, useEffect, useRef, useState } from 'react';
+import { createRef, RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { SelectAutoCompleteContextProvider } from 'UI/Features/Records/Activity/form/SelectAutoCompleteContext';
 import ArrayFieldTemplate from 'rjsf/templates/ArrayFieldTemplate';
 import FieldTemplate from 'rjsf/templates/FieldTemplate';
@@ -178,6 +178,7 @@ const FormContainer = () => {
 
           {isActivityChemTreatment && (
             <ChemicalTreatmentDetailsForm
+              key={activity_ID}
               activitySubType={activity_subtype}
               disabled={isDisabled}
               onChange={(form_data, callback) => {
