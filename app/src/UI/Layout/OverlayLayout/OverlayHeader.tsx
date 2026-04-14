@@ -5,7 +5,6 @@ import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useEffect } from 'react';
-import ContextualPopover from '../ContextualPopover/ContextualPopover';
 import { useSelector } from 'utils/use_selector';
 
 const maximize = () => {
