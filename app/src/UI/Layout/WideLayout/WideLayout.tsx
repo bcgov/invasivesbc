@@ -19,7 +19,6 @@ import { OfflineUserMenu } from 'UI/Features/OfflineUserMenu/OfflineUserMenu';
 import DebugMenu from 'UI/Layout/DebugMenu/DebugMenu';
 import { NetworkStateControl } from 'UI/Reusable/NetworkStateControl';
 import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
-import ContextualPopover from 'UI/Layout/ContextualPopover/ContextualPopover';
 import { Map as InvasivesMap } from 'UI/Features/LegacyMap/Map';
 
 const WideLayout = () => {
@@ -126,9 +125,6 @@ const WideLayout = () => {
             <InvasivesMap />
           </div>
         )}
-
-        <ContextualPopover />
-
         <AppRoutes />
       </div>
       <FeatureGated requires={'OFFLINE_SYNC'}>

@@ -85,7 +85,7 @@ export const OverlayHeader = () => {
 
   return (
     <div className="overlay-header">
-      <div className={'left'}></div>
+      <div className={'left'} />
       <div className={'center'}>
         <IconButton className="overlay-control" onClick={maximize}>
           <ArrowDropUpIcon />
@@ -99,9 +99,7 @@ export const OverlayHeader = () => {
           <ArrowDropDownIcon />
         </IconButton>
       </div>
-      <div className={'right'}>
-        <ContextualPopover />
-      </div>
+      <div className={'right'} />
     </div>
   );
 };

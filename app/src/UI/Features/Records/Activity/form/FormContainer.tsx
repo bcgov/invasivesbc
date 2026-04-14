@@ -27,6 +27,8 @@ import ArrayItemTemplate from 'rjsf/templates/ArrayItemTemplate';
 import ArrayItemButtonTemplate from 'rjsf/templates/ArrayFieldButtonTemplate';
 import FundingAgencySelectAutoComplete from 'rjsf/widgets/FundingAgencySelectAutoComplete';
 import EmployerSelectAutoComplete from 'rjsf/widgets/EmployerSelectAutoComplete';
+import FormMenuButtons from '../../FormMenuButtons/FormMenuButtons';
+import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
 
 const FormContainer = () => {
   const ref = useRef(0);
@@ -59,6 +61,7 @@ const FormContainer = () => {
   const activity_subtype = useSelector((state) => state.ActivityPage.activity.activity_subtype);
   const activitySchema = useSelector((state) => state.ActivityPage.schema);
   const activityUISchema = useSelector((state) => state.ActivityPage.uiSchema);
+  const isCellPhoneWidth = useSelector((state) => state.AppMode.constraints.tinyScreen);
 
   const can_edit = useSelector((state) => !!state.ActivityPage?.activeActivityPermissions?.can_edit);
   const created_by = useSelector((state) => state.ActivityPage.activity.created_by);
@@ -87,10 +90,6 @@ const FormContainer = () => {
   }, [JSON.stringify(activity_subtype)]);
 
   const formRef: RefObject<CoreForm> = createRef();
-
-  useEffect(() => {
-    dispatch(Activity.setErrors(formRef.current?.state?.errors ?? []));
-  }, [formDataState]);
 
   useEffect(() => {
     setIsCreatedByUser(username === created_by);
@@ -135,6 +134,7 @@ const FormContainer = () => {
             readonly={isDisabled}
             key={activity_ID + pasteCount + reported_area}
             disabled={isDisabled}
+            id="rjsf-form"
             formData={formDataState}
             schema={activitySchema}
             uiSchema={activityUISchema}
@@ -145,8 +145,19 @@ const FormContainer = () => {
             transformErrors={getCustomErrorTransformer()}
             autoComplete="off"
             ref={formRef}
+            noHtml5Validate={true}
+            onSubmit={() => dispatch(Activity.submit())}
+            onError={(errors) => dispatch(Activity.setErrors(errors ?? []))}
             onChange={(event) => debouncedFormChange(event)}
           >
+            <CustomPopover
+              buttonClasses={'overlay-menu'}
+              buttonText={isCellPhoneWidth ? 'Save' : 'Save Menu'}
+              closeAfterPress={true}
+              disablePortal={true}
+            >
+              <FormMenuButtons />
+            </CustomPopover>
             {/* This seemingly useless Fragment prevents a generic submit button from rendering through RJSF */}
             <Fragment />
           </Form>

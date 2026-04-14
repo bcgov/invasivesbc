@@ -1,3 +1,7 @@
+.overlay-menu {
+  background-color: red;
+  padding: 1rem;
+}
 /* ----------Show just 1 error at a time for the field-------------*/
 #invasivesbc-activity-form ul li .Mui-error {
   display: none;
@@ -13,4 +17,22 @@ div[class*='indicatorContainer'] {
 
 .editFormButtonCont {
   margin: 1rem;
+}
+
+#rjsf-form .overlay-menu {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 100000;
+  color: black;
+  background-color: white;
+  border-radius: 2px;
+  border: 1px solid darkgrey;
+  height: var(--overlay-grip-height);
+  vertical-align: baseline;
+  box-shadow: none;
+
+  &:hover {
+    border: 1px solid #036;
+  }
 }
