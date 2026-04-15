@@ -235,6 +235,8 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP() {
           DrawToolActions.updateGeo([]),
           Alerts.create(mappingAlertMessages.trackMyPathStoppedEarly)
         ];
+      } else {
+        return [MapActions.trackLocationStart()];
       }
     };
     yield put(
@@ -295,6 +297,8 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP() {
           DrawToolActions.updateGeo([]),
           Alerts.create(mappingAlertMessages.trackMyPathStoppedEarly)
         ];
+      } else {
+        return [MapActions.trackLocationStart()];
       }
     };
     yield put(
