@@ -182,21 +182,14 @@ export function isLinkedTreatmentSubtype(subType: ActivitySubtype): boolean {
 // extract and set the species codes (both positive and negative) of a given activity (or POI, once they're editable)
 
 export function populateJurisdictionArray(record) {
-  const jurisdictions = record?.form_data?.activity_data?.jurisdictions;
+  const jurisdictions = record?.form_data?.activity_data?.jurisdictions ?? [];
 
-  let jurisdiction = [];
-  if (jurisdictions) {
-    jurisdiction = jurisdictions?.map((j) => {
-      return j.jurisdiction_code;
-    });
-  } else {
-    return record;
-  }
+  const jurisdiction = jurisdictions
+    .map(({ jurisdiction_code }) => jurisdiction_code)
+    .filter(Boolean)
+    .sort();
 
-  return {
-    ...record,
-    jurisdiction: jurisdiction.sort() || []
-  };
+  return { ...record, jurisdiction };
 }
 
 /**
