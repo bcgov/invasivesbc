@@ -12,6 +12,7 @@ const FormMenuButtons = () => {
   const navigate = useNavigate();
 
   const pristine = useSelector((state) => state.ActivityPage.pristine);
+  const activityErrors = useSelector((state) => state.ActivityPage?.activityErrors);
   const activity_id = useSelector((state) => state.ActivityPage?.activity?.activity_id);
 
   const can_delete = useSelector((state) => !!state.ActivityPage?.activeActivityPermissions?.can_delete);
@@ -27,11 +28,11 @@ const FormMenuButtons = () => {
 
   const recordIsSerializedActivity = !!serializedActivities[activity_id];
   // Users must have write permission and be online to delete, or record is users offline record
-
+  console.log(activityErrors);
   useEffect(() => {
-    setSaveDisabled(!can_edit);
+    setSaveDisabled(!can_edit || pristine || activityErrors?.length > 0);
     setDraftDisabled(pristine || status === 'Submitted' || !can_edit);
-  }, [activity_id, can_edit, pristine]);
+  }, [activity_id, can_edit, pristine, activityErrors]);
 
   const handleSaveDraft = () => {
     dispatch(Activity.save());

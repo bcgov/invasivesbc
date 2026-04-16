@@ -111,6 +111,10 @@ const FormContainer = () => {
     setIsDisabled(username !== created_by || !can_edit);
   }, [username, created_by, can_edit]);
 
+  useEffect(() => {
+    dispatch(Activity.setErrors(formRef.current?.state?.errors ?? []));
+  }, [formDataState]);
+
   const isActivityChemTreatment =
     activity_subtype === ActivitySubtype.Treatment_ChemicalPlant ||
     activity_subtype === ActivitySubtype.Treatment_ChemicalPlantAquatic;
