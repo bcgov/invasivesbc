@@ -369,7 +369,7 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action: PayloadAction<Us
 
       let updatedActivity = populateSpeciesArrays({ ...cloneDeep(previousActivityState), form_data: updatedFormData });
       updatedActivity = populateJurisdictionArray(updatedActivity);
-      updatedActivity = { ...updatedActivity, map_symbol: updatedActivity.species_positive.join(', ') };
+      updatedActivity.map_symbol = updatedActivity.species_positive.join(', ');
       yield put(Activity.OnFormChangeRequestSuccess(updatedActivity));
     } catch (error) {
       console.error(error);

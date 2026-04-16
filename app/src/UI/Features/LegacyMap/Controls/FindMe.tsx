@@ -7,6 +7,8 @@ import MapActions from 'state/actions/map';
 import { GpsFixed, GpsNotFixed, GpsOff } from '@mui/icons-material';
 import { MapContext } from '../helpers/components/MapContext';
 import { MapLibreEvent } from 'maplibre-gl';
+import { isTracking } from 'utils/geoTrackingHelpers';
+import GeoTracking from 'state/actions/geotracking/GeoTracking';
 
 export const FindMeToggle = () => {
   enum Mode {
@@ -21,6 +23,9 @@ export const FindMeToggle = () => {
     if (mode === Mode.ON) {
       dispatch(MapActions.panningOn());
     } else {
+      if (userIsGeoTracking && mode === Mode.FOLLOWING) {
+        dispatch(GeoTracking.stop());
+      }
       dispatch(MapActions.trackLocationToggle());
     }
     setShow(false);
@@ -32,6 +37,7 @@ export const FindMeToggle = () => {
 
   const positionTracking = useSelector((state) => state.Map?.positionTracking);
   const positionFollowing = useSelector((state) => state.Map?.panned);
+  const userIsGeoTracking: boolean = useSelector((state) => isTracking(state.Map.track_me_draw_geo.status));
 
   const [show, setShow] = useState<boolean>(false);
   const [mode, setMode] = useState<Mode>(Mode.OFF);
