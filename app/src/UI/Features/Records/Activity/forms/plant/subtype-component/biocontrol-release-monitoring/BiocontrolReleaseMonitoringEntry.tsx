@@ -233,6 +233,7 @@ const BiocontrolReleaseMonitoringEntry = ({ index }: PropTypes) => {
             label={'Suitable for Collection'}
             name={getPath('suitable_for_collection')}
             options={YesNoUnknown}
+            required
             rules={{ required: true }}
             tooltip={tooltips.plant.biocontrol.monitoring.suitable_for_collection}
             width={Width.Half}

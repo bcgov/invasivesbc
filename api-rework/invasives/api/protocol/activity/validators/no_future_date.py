@@ -1,29 +1,31 @@
 from datetime import date, datetime
-from typing import Union, Optional
+from typing import Union
 
 
-def no_future_date(v: Union[str, date, datetime, None]) -> Optional[date]:
+def no_future_date(v: Union[str, date, datetime, None]) -> Union[datetime, date, None]:
     """
-    Ensures the date is not in the future.
-    Strips time/timezone data from datetime objects to prevent shifting.
+    Ensures the date/time is not in the future.
+    Preserves time data if provided.
     """
     if v is None or v == "":
         return None
 
-    target_date: date
-
     if isinstance(v, str):
         try:
-            target_date = date.fromisoformat(v.split("T")[0])
+            target = datetime.fromisoformat(v)
         except ValueError:
-            raise ValueError("Invalid date format. Expected YYYY-MM-DD.")
-    elif isinstance(v, datetime):
-        target_date = v.date()
-    elif isinstance(v, date):
-        target_date = v
+            try:
+                target = date.fromisoformat(v)
+            except ValueError:
+                raise ValueError("Invalid format. Expected YYYY-MM-DD or ISO datetime.")
     else:
-        raise ValueError(f"Unsupported type: {type(v)}")
-    if target_date > date.today():
-        raise ValueError("Date cannot occur in the future")
+        target = v
 
-    return target_date
+    if isinstance(target, datetime):
+        if target > datetime.now():
+            raise ValueError("Time cannot occur in the future")
+    elif isinstance(target, date):
+        if target > date.today():
+            raise ValueError("Date cannot occur in the future")
+
+    return target
