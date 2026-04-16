@@ -5,7 +5,6 @@ import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useEffect } from 'react';
-import ContextualPopover from '../ContextualPopover/ContextualPopover';
 import { useSelector } from 'utils/use_selector';
 
 const maximize = () => {
@@ -85,7 +84,7 @@ export const OverlayHeader = () => {
 
   return (
     <div className="overlay-header">
-      <div className={'left'}></div>
+      <div className={'left'} />
       <div className={'center'}>
         <IconButton className="overlay-control" onClick={maximize}>
           <ArrowDropUpIcon />
@@ -99,9 +98,7 @@ export const OverlayHeader = () => {
           <ArrowDropDownIcon />
         </IconButton>
       </div>
-      <div className={'right'}>
-        <ContextualPopover />
-      </div>
+      <div className={'right'} />
     </div>
   );
 };

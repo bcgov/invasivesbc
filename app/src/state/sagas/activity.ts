@@ -235,6 +235,8 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP() {
           DrawToolActions.updateGeo([]),
           Alerts.create(mappingAlertMessages.trackMyPathStoppedEarly)
         ];
+      } else {
+        return [MapActions.trackLocationStart()];
       }
     };
     yield put(
@@ -295,6 +297,8 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP() {
           DrawToolActions.updateGeo([]),
           Alerts.create(mappingAlertMessages.trackMyPathStoppedEarly)
         ];
+      } else {
+        return [MapActions.trackLocationStart()];
       }
     };
     yield put(
@@ -450,6 +454,12 @@ function* handle_copyGeometry(action: PayloadAction<string>) {
   );
 }
 
+// Force updates to occur (Populating species arrays, jurisdictions, shapes if needed, etc)
+function* handle_PASTE() {
+  const activityState = yield select(selectActivity);
+  yield put(Activity.onFormChangeRequest(activityState.activity.form_data));
+}
+
 function* activityPageSaga() {
   yield all([
     takeEvery(UserSettings.InitState.get, handle_UPDATE_CACHED_RECORDS),
@@ -458,6 +468,7 @@ function* activityPageSaga() {
     takeEvery(Activity.buildFormSchema, handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST),
     takeEvery(Activity.get, handle_ACTIVITY_GET_REQUEST),
     takeEvery(Activity.copy, handle_ACTIVITY_COPY_REQUEST),
+    takeEvery(Activity.paste, handle_PASTE),
     takeEvery(Activity.getNetworkRequest, handle_ACTIVITY_GET_NETWORK_REQUEST),
     takeEvery(AppActions.setUserCoords, handle_MAP_SET_COORDS),
     takeEvery(DrawToolActions.updateGeo, handle_ACTIVITY_UPDATE_GEO_REQUEST),
