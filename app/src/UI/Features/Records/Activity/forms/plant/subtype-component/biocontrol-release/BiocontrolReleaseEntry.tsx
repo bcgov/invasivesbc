@@ -1,4 +1,3 @@
-import { useSelector } from 'utils/use_selector';
 import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
@@ -27,7 +26,6 @@ const BiocontrolReleaseEntry = ({ index }: PropTypes) => {
   } = useFormContext<BiocontrolReleaseSchema>();
   const { getPath } = useFieldPath<BiocontrolReleaseSchema>(`subtype_data.entries.${index}`);
 
-  const codes = useSelector((state) => state.ActivityPage.formCodes);
   const selectedPlant = watch(getPath('invasive_plant'));
   const selectedAgent = watch(getPath('biocontrol_agent'));
   const { terrestrialPlantOptionsWithAgents } = useFilteredInvasivePlantCodes();
@@ -105,7 +103,7 @@ const BiocontrolReleaseEntry = ({ index }: PropTypes) => {
       <SingleSelect
         label={'Plant Collected From'}
         name={getPath('plant_collected_from')}
-        options={codes?.TerrestrialPlantCode}
+        options={terrestrialPlantOptionsWithAgents}
         required
         rules={{ required: true }}
         tooltip={tooltips.plant.biocontrol.plant_collected_from}
