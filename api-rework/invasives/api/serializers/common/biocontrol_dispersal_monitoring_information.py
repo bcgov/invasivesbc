@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from api.serializers.common import TerrestrialBiocontrolAgentCountExtendedSerializer
 from api.models.activity import (
-    ActivitySubtypes,
     LocationBiocontrolAgentsFoundTerrestrial,
     TerrestrialBiocontrolDispersalMonitoringEntry,
     SignOfBiocontrolPresenceTerrestrial,

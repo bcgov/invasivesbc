@@ -5,9 +5,7 @@ from api.models.activity import RepeatedFormData
 from api.models.codes.code_tables import (
     AgentLocationFoundCode,
     BioAgentLifeStageCode,
-    BiocontrolAgentCode,
     PlantPositionCode,
-    TerrestrialPlantCode,
 )
 
 

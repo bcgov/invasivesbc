@@ -4,7 +4,7 @@ from django.utils import timezone
 from api.models.activity import RepeatedFormData
 from api.models.codes.code_tables import (
     BiocontrolAgentCode,
-    TerrestrialPlantCode,
+    PlantsWithBiocontrol,
     BioAgentCollectionMethodCode,
 )
 from api.models.enums.collection_type import CollectionType
@@ -17,7 +17,7 @@ class TerrestrialBiocontrolCollectionEntry(RepeatedFormData):
       - Biocontrol Collection
     """
 
-    invasive_plant = models.ForeignKey(TerrestrialPlantCode, on_delete=models.PROTECT)
+    invasive_plant = models.ForeignKey(PlantsWithBiocontrol, on_delete=models.PROTECT)
     biological_agent = models.ForeignKey(BiocontrolAgentCode, on_delete=models.PROTECT)
     historical_iapp_site = models.PositiveBigIntegerField(blank=True, null=True)
     collection_type = models.CharField(choices=CollectionType)

@@ -16,7 +16,7 @@ from api.models.enums import YesNoUnknown, CollectionType
 from api.protocol.activity.validators.code_validation import (
     BiocontrolAgentCodeType,
     BioAgentCollectionMethodCodeType,
-    TerrestrialPlantCodeType,
+    PlantsWithBiocontrolType,
     AgentLocationFoundCodeType,
     BiocontrolPresenceCodeType,
 )
@@ -25,7 +25,7 @@ from api.protocol.activity.validators.code_validation import (
 class Entry(CleanSchema):
     biocontrol_agent: BiocontrolAgentCodeType
     biocontrol_present: bool
-    invasive_plant: TerrestrialPlantCodeType
+    invasive_plant: PlantsWithBiocontrolType
     monitoring_type: CollectionType
     monitoring_method: BioAgentCollectionMethodCodeType
     count_duration_minutes: Optional[int] = None
