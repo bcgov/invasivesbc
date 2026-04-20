@@ -24,7 +24,7 @@ const TargetPlantPhenology = () => {
   } = useFormContext<BiocontrolReleaseSchema>();
   const { basePath, getPath } = useFieldPath<BiocontrolReleaseSchema>('subtype_data.target_plant_phenology');
   const plantPhenologyExists = useWatch({ control, name: basePath });
-  const [isPhenologyDetails, setIsPhenologyDetails] = useState<boolean>(!!plantPhenologyExists);
+  const [isPhenologyDetails, setIsPhenologyDetails] = useState<boolean>(false);
 
   const handleChange = async () => {
     const data = getValues(basePath);
@@ -40,10 +40,14 @@ const TargetPlantPhenology = () => {
 
   useEffect(() => {
     // Delete Phenology if box unchecked
-    if (!isPhenologyDetails && isDirty) {
+    if (!isPhenologyDetails) {
       setValue(basePath, undefined);
     }
   }, [isPhenologyDetails]);
+
+  useEffect(() => {
+    setIsPhenologyDetails(!!plantPhenologyExists);
+  }, [plantPhenologyExists]);
 
   return (
     <Fieldset label={'Target Plant Phenology'}>
