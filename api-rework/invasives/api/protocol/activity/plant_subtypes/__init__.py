@@ -7,3 +7,4 @@ from .monitoring_chemical import MonitoringChemical
 from .monitoring_biocontrol_release import MonitoringBiocontrolRelease
 from .treatment_biocontrol_release import TreatmentBiocontrolRelease
 from .biocontrol_collection import BiocontrolCollection
+from .biocontrol_dispersal_monitoring import BiocontrolDispersalMonitoring
