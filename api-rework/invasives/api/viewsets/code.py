@@ -43,6 +43,7 @@ class CodeViewSet(ViewSet):
         PlantPositionCode,
         PlantLifeStageCode,
         PlantMechanicalTreatmentMethodCode,
+        PlantsWithBiocontrol,
         PrecipitationCode,
         ServiceLicenseNumberAndCompany,
         ShorelineTypeCode,

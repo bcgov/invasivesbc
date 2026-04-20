@@ -44,6 +44,7 @@ from api.models.codes import (
     PlantLifeStageCode,
     PlantMechanicalTreatmentMethodCode,
     PlantPositionCode,
+    PlantsWithBiocontrol,
     PrecipitationCode,
     ServiceLicenseNumberAndCompany,
     ShorelineTypeCode,
@@ -180,7 +181,7 @@ class LegacyDB:
                 return TerrestrialPlantCode
 
             case "invasive_plant_code_withbiocontrol":
-                pass
+                return PlantsWithBiocontrol
 
             case "invasive_plant_density_code":
                 return DensityCode

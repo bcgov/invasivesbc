@@ -6,7 +6,7 @@ from api.models.activity import RepeatedFormData, ActivitySubtypes
 from api.models.codes.code_tables import (
     BiocontrolAgentCode,
     BioAgentMonitoringMethodCode,
-    TerrestrialPlantCode,
+    PlantsWithBiocontrol,
 )
 from api.models.enums import CollectionType, YesNoUnknown
 
@@ -19,7 +19,7 @@ class TerrestrialBiocontrolDispersalMonitoringEntry(RepeatedFormData):
       - Biocontrol Dispersal Monitoring
     """
 
-    invasive_plant = models.ForeignKey(TerrestrialPlantCode, on_delete=models.PROTECT)
+    invasive_plant = models.ForeignKey(PlantsWithBiocontrol, on_delete=models.PROTECT)
     biocontrol_agent = models.ForeignKey(BiocontrolAgentCode, on_delete=models.PROTECT)
     biocontrol_present = models.BooleanField()
     monitoring_type = models.CharField(choices=CollectionType)

@@ -1,7 +1,8 @@
 from typing import List, Literal, Optional
-from pydantic import model_validator
-from datetime import datetime
+from pydantic import model_validator, field_validator, NaiveDatetime
+from api.protocol.activity.validators.no_future_date import no_future_date
 from api.protocol.activity.plant_subtypes.base_form_schema import (
+    BaseFormSchema,
     CleanSchema,
 )
 
@@ -16,7 +17,7 @@ from api.models.enums import YesNoUnknown, CollectionType
 from api.protocol.activity.validators.code_validation import (
     BiocontrolAgentCodeType,
     BioAgentCollectionMethodCodeType,
-    TerrestrialPlantCodeType,
+    PlantsWithBiocontrolType,
     AgentLocationFoundCodeType,
     BiocontrolPresenceCodeType,
 )
@@ -25,15 +26,15 @@ from api.protocol.activity.validators.code_validation import (
 class Entry(CleanSchema):
     biocontrol_agent: BiocontrolAgentCodeType
     biocontrol_present: bool
-    invasive_plant: TerrestrialPlantCodeType
+    invasive_plant: PlantsWithBiocontrolType
     monitoring_type: CollectionType
     monitoring_method: BioAgentCollectionMethodCodeType
     count_duration_minutes: Optional[int] = None
     plant_count: Optional[int] = None
     location_agent_found: List[AgentLocationFoundCodeType]
     sign_of_biocontrol_presence: List[BiocontrolPresenceCodeType]
-    start_time: datetime
-    stop_time: datetime
+    start_time: NaiveDatetime
+    stop_time: NaiveDatetime
     suitable_for_collection: YesNoUnknown
     number_of_sweeps: Optional[int] = None
 
@@ -53,7 +54,6 @@ class Entry(CleanSchema):
         if self.monitoring_type == "Timed" and self.count_duration_minutes is None:
             raise ValueError("Count duration minutes is a required field")
         elif self.monitoring_type == "Count" and self.plant_count is None:
-            print("We in it")
             raise ValueError("Plant Count is a required field")
         return self
 
@@ -74,8 +74,21 @@ class Entry(CleanSchema):
 
     @model_validator(mode="after")
     def validate_sequential_date(self):
-        if self.start_time >= self.stop_time:
+        start = self.start_time
+        stop = self.stop_time
+        if start and stop and start > stop:
             raise ValueError("Start time cannot occur after stop time.")
+        return self
+
+    @field_validator("start_time")
+    @classmethod
+    def validate_no_future_start_time(cls, v):
+        return no_future_date(v)
+
+    @field_validator("stop_time")
+    @classmethod
+    def validate_no_future_stop_time(cls, v):
+        return no_future_date(v)
 
 
 class SubtypeData(MicrositeCondition, WeatherConditions, SpreadResultsMixin):
@@ -83,6 +96,6 @@ class SubtypeData(MicrositeCondition, WeatherConditions, SpreadResultsMixin):
     target_plant_phenology: Optional[TargetPlantPhenology] = None
 
 
-class MonitoringBiocontrolRelease(CleanSchema):
+class MonitoringBiocontrolRelease(BaseFormSchema):
     subtype: Literal["Monitoring_Biocontrol_Release_Plant_Terrestrial"]
     subtype_data: SubtypeData

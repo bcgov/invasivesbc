@@ -2,8 +2,6 @@ from django.db import models
 from api.models.activity import RepeatedFormData
 from api.models.codes import (
     AgentLocationFoundTerrainCode,
-    BiocontrolAgentCode,
-    TerrestrialPlantCode,
 )
 
 

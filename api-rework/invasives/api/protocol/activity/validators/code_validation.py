@@ -31,6 +31,7 @@ from api.models.codes import (
     PlantLifeStageCode,
     PlantMechanicalTreatmentMethodCode,
     PlantPositionCode,
+    PlantsWithBiocontrol,
     PrecipitationCode,
     ServiceLicenseNumberAndCompany,
     ShorelineTypeCode,
@@ -112,6 +113,7 @@ PlantMechanicalTreatmentMethodCodeType = Annotated[
     str, MapCodeTable(PlantMechanicalTreatmentMethodCode)
 ]
 PlantPositionCodeType = Annotated[str, MapCodeTable(PlantPositionCode)]
+PlantsWithBiocontrolType = Annotated[str, MapCodeTable(PlantsWithBiocontrol)]
 PrecipitationCodeType = Annotated[str, MapCodeTable(PrecipitationCode)]
 ServiceLicenseNumberAndCompanyType = Annotated[
     str, MapCodeTable(ServiceLicenseNumberAndCompany)

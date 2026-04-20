@@ -174,6 +174,11 @@ class PlantMechanicalTreatmentMethodCode(BaseCode):
         pass
 
 
+class PlantsWithBiocontrol(BaseCode):
+    class Meta:
+        db_table = '"codes"."plants_with_biocontrol"'
+
+
 class PrecipitationCode(BaseCode):
     class Meta:
         db_table = '"codes"."precipitation"'
