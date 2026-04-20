@@ -16,7 +16,7 @@ from api.models.enums import CollectionType
 from api.protocol.activity.validators.code_validation import (
     BiocontrolAgentCodeType,
     PlantsWithBiocontrolType,
-    BioAgentCollectionMethodCodeType
+    BioAgentCollectionMethodCodeType,
 )
 
 
@@ -38,18 +38,26 @@ class Entry(CleanSchema):
 
     @model_validator(mode="after")
     def validate_collection_type_followup(self) -> "Entry":
-        if self.collection_type == 'Timed' and self.time_collection_duration_minutes is None:
-            raise ValueError('"Count duration (Minutes)" is required when Collection type is "Timed"')
-        elif self.collection_type == 'Count' and self.plant_count_collection is None:
-            raise ValueError('"Plant Count" is required when Collection type is "Count"')
+        if (
+            self.collection_type == "Timed"
+            and self.time_collection_duration_minutes is None
+        ):
+            raise ValueError(
+                '"Count duration (Minutes)" is required when Collection type is "Timed"'
+            )
+        elif self.collection_type == "Count" and self.plant_count_collection is None:
+            raise ValueError(
+                '"Plant Count" is required when Collection type is "Count"'
+            )
         return self
 
     @model_validator(mode="after")
     def validate_number_of_sweeps(self) -> "Entry":
-        if self.collection_method == 'Cs' and self.number_of_sweeps is None:
-            raise ValueError('"Number of Sweeps" is required when collection method is "Sweep (counted)"')
+        if self.collection_method == "Cs" and self.number_of_sweeps is None:
+            raise ValueError(
+                '"Number of Sweeps" is required when collection method is "Sweep (counted)"'
+            )
         return self
-
 
     @model_validator(mode="after")
     def set_estimate_flags(self) -> "Entry":

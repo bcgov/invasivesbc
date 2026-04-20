@@ -24,7 +24,7 @@ PlantActivitySchema = Annotated[
         MonitoringMechanical,
         MonitoringChemical,
         MonitoringBiocontrolRelease,
-        BiocontrolDispersalMonitoring
+        BiocontrolDispersalMonitoring,
     ],
     Field(discriminator="subtype"),
 ]

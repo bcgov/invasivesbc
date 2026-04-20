@@ -18,7 +18,7 @@ from api.protocol.activity.validators.code_validation import (
     PlantsWithBiocontrolType,
     BioAgentCollectionMethodCodeType,
     AgentLocationFoundCodeType,
-    BiocontrolPresenceCodeType
+    BiocontrolPresenceCodeType,
 )
 
 
@@ -33,7 +33,9 @@ class Entry(CleanSchema):
     count_duration_minutes: Optional[int] = Field(None, gt=0)
     location_agent_found: List[AgentLocationFoundCodeType] = Field(..., min_length=1)
     number_of_sweeps: Optional[int] = Field(None, gt=0)
-    sign_of_biocontrol_presence: List[BiocontrolPresenceCodeType] = Field(None, min_length=1)
+    sign_of_biocontrol_presence: List[BiocontrolPresenceCodeType] = Field(
+        None, min_length=1
+    )
     start_time: NaiveDatetime
     stop_time: NaiveDatetime
     suitable_for_collection: bool
@@ -43,18 +45,23 @@ class Entry(CleanSchema):
 
     @model_validator(mode="after")
     def validate_collection_type_followup(self) -> "Entry":
-        if self.monitoring_type == 'Timed' and self.count_duration_minutes is None:
-            raise ValueError('"Count duration (Minutes)" is required when Collection type is "Timed"')
-        elif self.monitoring_type == 'Count' and self.plant_count is None:
-            raise ValueError('"Plant Count" is required when Collection type is "Count"')
+        if self.monitoring_type == "Timed" and self.count_duration_minutes is None:
+            raise ValueError(
+                '"Count duration (Minutes)" is required when Collection type is "Timed"'
+            )
+        elif self.monitoring_type == "Count" and self.plant_count is None:
+            raise ValueError(
+                '"Plant Count" is required when Collection type is "Count"'
+            )
         return self
 
     @model_validator(mode="after")
     def validate_number_of_sweeps(self) -> "Entry":
-        if self.monitoring_method == 'Cs' and self.number_of_sweeps is None:
-            raise ValueError('"Number of Sweeps" is required when collection method is "Sweep (counted)"')
+        if self.monitoring_method == "Cs" and self.number_of_sweeps is None:
+            raise ValueError(
+                '"Number of Sweeps" is required when collection method is "Sweep (counted)"'
+            )
         return self
-
 
     @model_validator(mode="after")
     def set_estimate_flags(self) -> "Entry":
