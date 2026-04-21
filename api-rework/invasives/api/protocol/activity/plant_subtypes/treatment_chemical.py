@@ -1,4 +1,4 @@
-from typing import List, Literal, Optional, Annotated, Union, Any
+from typing import List, Literal, Optional, Annotated, Union, Any, Self
 from pydantic import (
     model_validator,
     field_validator,
@@ -6,6 +6,7 @@ from pydantic import (
     Field,
     Discriminator,
     Tag,
+    ConfigDict,
 )
 from enum import Enum
 from api.protocol.activity.validators.check_sum import check_sum
@@ -27,6 +28,7 @@ from api.protocol.activity.validators.code_validation import (
     LiquidHerbicideCodeType,
     GranularHerbicideCodeType,
 )
+from .common.chem_calculations import get_chem_calculation_results
 
 
 class Calculations(Enum):
@@ -54,7 +56,7 @@ class ChemicalWeatherInformation(CleanSchema):
 
 ## Chemical Building Blocks
 class BaseHerbicide(CleanSchema):
-    type: Literal["granular", "liquid", ""]
+    type: Literal["granular", "liquid"]
     name: LiquidHerbicideCodeType | GranularHerbicideCodeType
 
 
@@ -84,12 +86,16 @@ class ProductDilutionRate(CleanSchema):
 
 
 class BaseChemicalTreatmentContext(CleanSchema):
+    model_config = ConfigDict(extra="forbid")
     plants_treated: List[TreatedPlant] = Field(..., min_length=1)
     tank_mix: bool
     calculation_type: Literal["Product Application Rate", "Dilution"]
     application_method: (
         ChemicalApplicationMethodDirectCodeType | ChemicalApplicationMethodSprayCodeType
     )
+    results: Optional[List[Any]] = Field(
+        None, validate_default=False
+    )  # Will be filled in by validators
 
     @field_validator("plants_treated")
     def validate_plants_treated_percent(cls, v):
@@ -113,7 +119,7 @@ class ChemicalContextApplicationRate(
 def resolve_chemical_type(v: Any) -> str:
     """Helper for Treatment Context Discriminator"""
     calc_type = v.get("calculation_type")
-    if v.get("tank_mix") is True and calc_type == Calculations.APPLICATION_RATE:
+    if v.get("tank_mix") is True and calc_type == Calculations.APPLICATION_RATE.value:
         return "Tank Mix"
 
     if calc_type == Calculations.DILUTION.value:
@@ -160,7 +166,7 @@ class BaseChemicalDetails(ChemicalWeatherInformation):
         return self
 
     @model_validator(mode="after")
-    def validate_pest_management_plan(self) -> "BaseChemicalDetails":
+    def validate_pest_management_plan(self) -> Self:
         if self.pest_management_plan and self.pest_management_plan_manual:
             raise ValueError(
                 "You must only fill either Pest Management Plan or Unlisted Drop Down field."
@@ -175,6 +181,14 @@ class BaseChemicalDetails(ChemicalWeatherInformation):
 class TreatmentChemicalAquatic(BaseFormSchema):
     subtype: Literal["Treatment_Chemical_Plant_Aquatic"]
     subtype_data: BaseChemicalDetails
+
+    @model_validator(mode="after")
+    def get_chemical_treatment_calculations(self) -> Self:
+        """Apply Chemical Validations through the backend"""
+        self.subtype_data.treatment_context.results = get_chem_calculation_results(
+            treatment_context=self.subtype_data.treatment_context, area_m=self.area_m
+        )
+        return self
 
 
 class TreatmentChemicalTerrestrial(TreatmentChemicalAquatic):
