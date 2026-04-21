@@ -5,7 +5,7 @@ const getBioControlReleaseSubtypeFields = (): BiocontrolReleaseSchema['subtype_d
     {
       agent_source: '',
       biocontrol_agent: '',
-      collection_date: new Date(),
+      collection_date: '',
       linear_segment: '',
       invasive_plant: '',
       mortality: 0,
