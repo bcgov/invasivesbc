@@ -83,7 +83,7 @@ class Entry(CleanSchema):
         return no_future_date(v)
 
     @field_validator("end_time_collecting")
-    def validate_start_time_collecting(cls, v):
+    def validate_end_time_collecting(cls, v):
         return no_future_date(v)
 
     @model_validator(mode="after")
