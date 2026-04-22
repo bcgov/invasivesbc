@@ -99,7 +99,9 @@ module.exports = {
     },
     migrations: {
       tableName: 'migration',
-      directory: './migrations'
+      directory: './migrations',
+      searchPath: 'public',
+      schemaName: 'public',
     }
   }
 };
