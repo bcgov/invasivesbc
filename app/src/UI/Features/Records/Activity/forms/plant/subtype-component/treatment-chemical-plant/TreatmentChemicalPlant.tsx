@@ -130,6 +130,7 @@ const TreatmentChemicalPlant = () => {
             <TextInput
               label={'Well ID'}
               readOnly
+              required // ensure optional tag not present
               tooltip={tooltips.plant.chemical.wells.field_disclaimer}
               width={Width.Half}
               value={we.well_tag}
@@ -137,6 +138,7 @@ const TreatmentChemicalPlant = () => {
             <NumberInput
               label={'Well Proximity (m)'}
               readOnly
+              required // ensure optional tag not present
               tooltip={tooltips.plant.chemical.wells.field_disclaimer}
               value={we.distance}
               width={Width.Half}
