@@ -105,11 +105,7 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
               {offlineRows?.map((r: IOfflineActivityRow) => (
                 <tr onMouseEnter={() => onUserHoveredRecord(r)} key={r.activity_id} className={'record_table_row'}>
                   {offlineActivityColumnsToDisplay.map((col) => (
-                    <td
-                      className="record_table_row_column"
-                      onClick={(evt) => handlePopoverOpen(evt, r)}
-                      key={r.short_id}
-                    >
+                    <td className="record_table_row_column" onClick={(evt) => handlePopoverOpen(evt, r)} key={col.key}>
                       {r[col.key]}
                     </td>
                   ))}

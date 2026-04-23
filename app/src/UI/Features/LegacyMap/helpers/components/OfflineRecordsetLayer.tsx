@@ -51,7 +51,6 @@ const OfflineRecordsetLayer = ({ mapReady }: PropTypes) => {
         );
 
         if (parsedData?.geom) {
-          console.log(parsedData);
           geometryList.push({
             ...parsedData.geom,
             properties: {
