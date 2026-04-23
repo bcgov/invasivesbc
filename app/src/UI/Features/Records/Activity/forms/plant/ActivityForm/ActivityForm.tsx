@@ -93,7 +93,6 @@ const ActivityForm = () => {
   } = methods;
 
   const onSubmit: SubmitHandler<FormSchema> = (data) => {
-    if (!isDirty) return;
     MOBILE
       ? dispatch(FormActions.saveMobileForm({ data, type: 'submit' }))
       : dispatch(FormActions.sendForm({ data, type: 'submit' }));

@@ -37,7 +37,6 @@ const FormControl = () => {
   };
 
   const saveToDraft = async () => {
-    if (!isDirty) return;
     if (MOBILE) {
       dispatch(FormActions.saveMobileForm({ data: getValues(), type: 'draft' }));
     } else {
@@ -53,7 +52,7 @@ const FormControl = () => {
     getValues,
     setValue,
     reset,
-    formState: { disabled, isDirty, errors }
+    formState: { disabled, errors }
   } = useFormContext<FormSchema>();
 
   const dispatch = useDispatch();
@@ -68,11 +67,6 @@ const FormControl = () => {
 
       <CustomPopover buttonOverrideOptions={{ anchorEl, setAnchorEl }}>
         <div id="form-popover-menu">
-          {!isDirty && (
-            <div className="error-warning">
-              <p>No Changes Detected</p>
-            </div>
-          )}
           {Object.keys(errors).length > 0 && (
             <div className="error-warning">
               <Error color="error" />
@@ -83,7 +77,7 @@ const FormControl = () => {
             // Type="Submit" is tied to react-hook-form, it will handle the submission logic.
             // Errors don't need to be accounted for in disabling, since the rhf will pan to the error
             className="control-button"
-            disabled={disabled || !isDirty}
+            disabled={disabled}
             form="activity-form"
             type="submit"
             value="Submit Form"
@@ -91,7 +85,7 @@ const FormControl = () => {
           {!isFormSubmitted && (
             <input
               className="control-button"
-              disabled={disabled || !isDirty}
+              disabled={disabled}
               onClick={saveToDraft}
               type="button"
               value="Save to Drafts"
