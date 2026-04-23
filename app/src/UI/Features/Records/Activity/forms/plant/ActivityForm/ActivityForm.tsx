@@ -72,6 +72,7 @@ const ActivityForm = () => {
   const formId = useSelector((state) => state.ActivityPage?.formId);
   const recordNotFound = useSelector((state) => state.ActivityPage?.recordNotFound);
   const currentUser = useSelector((state) => state.Auth?.username) ?? undefined;
+  const MOBILE = useSelector((state) => state.Configuration.current.build.MOBILE);
   // Assign Props to sole variable to pass into FormProvider
   const methods = useForm<FormSchema>({
     mode: 'onChange',
@@ -93,7 +94,9 @@ const ActivityForm = () => {
 
   const onSubmit: SubmitHandler<FormSchema> = (data) => {
     if (!isDirty) return;
-    dispatch(FormActions.sendForm({ data, type: 'submit' }));
+    MOBILE
+      ? dispatch(FormActions.saveMobileForm({ data, type: 'submit' }))
+      : dispatch(FormActions.sendForm({ data, type: 'submit' }));
   };
 
   const allFormValues = useWatch({ control });
