@@ -318,6 +318,20 @@ export enum ReviewStatus {
   DISAPPROVED = 'Disapproved' // deemed invalid by review process - can be resubmitted for review
 }
 
+export const ActivitySubtypesToType = {
+  [ActivitySubtypes.Observation_Plant_Terrestrial]: ActivityType.Observation,
+  [ActivitySubtypes.Observation_Plant_Aquatic]: ActivityType.Observation,
+  [ActivitySubtypes.Monitoring_Chemical_Plant_Terrestrial_Aquatic]: ActivityType.Monitoring,
+  [ActivitySubtypes.Monitoring_Mechanical_Plant_Terrestrial_Aquatic]: ActivityType.Monitoring,
+  [ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial]: ActivityType.Monitoring,
+  [ActivitySubtypes.Treatment_Mechanical_Plant_Terrestrial]: ActivityType.Treatment,
+  [ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic]: ActivityType.Treatment,
+  [ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial]: ActivityType.Treatment,
+  [ActivitySubtypes.Treatment_Chemical_Plant_Aquatic]: ActivityType.Treatment,
+  [ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial]: ActivityType.Monitoring,
+  [ActivitySubtypes.Biocontrol_Collection]: ActivityType.Biocontrol,
+  [ActivitySubtypes.Biocontrol_Release]: ActivityType.Biocontrol
+};
 export const ReviewActionDescriptions: { [key: string]: string } = {
   [ReviewStatus.PREAPPROVED]:
     'Submit this for Review by InvasivesBC staff. Currently pre-approved and does not require further review.',

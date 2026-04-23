@@ -1,5 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
-import { Feature, Point, Polygon } from 'geojson';
+import { Feature, GeoJSON } from 'geojson';
 import RecordSet from './RecordSet';
 import Boundary from 'interfaces/Boundary';
 import { RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
@@ -8,7 +8,7 @@ import { MapRecordsetLayerFilterCategory } from 'state/reducers/map';
 interface IHoverRecordset {
   recordType: RecordSetType;
   id: string | number;
-  geom: Point | Polygon | undefined;
+  geom?: GeoJSON;
   quickPan?: boolean; // Map should pan to this site when update occurs
   readableIdentifier?: string; // Readable ID Format. e.g. Short ID or Site ID
 }

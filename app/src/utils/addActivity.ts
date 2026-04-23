@@ -3,9 +3,6 @@ import moment from 'moment';
 import {
   ActivityStatus,
   ActivitySubtype,
-  ActivitySubtypes,
-  ActivitySubtypeShortLabels,
-  ActivitySubtypeTargetKey,
   ActivitySyncStatus,
   ActivityType,
   getShortActivityID,
@@ -272,64 +269,6 @@ export function findSpeciesCodes(
   searchAndExtract(obj);
 
   return codeMaps;
-}
-
-export function transformOfflineActivitiesForRecordTable(
-  offlineActivities: Record<string, any>,
-  listOptions: any
-): Record<string, any> {
-  try {
-    Object.entries(offlineActivities).forEach(([key, value]) => {
-      offlineActivities[key].data.activity_date = new Date(
-        value.data?.form_data?.activity_data?.activity_date_time ??
-          value.data?.form_data?.activity_data?.activity_date_time ??
-          null
-      )
-        .toISOString()
-        .substring(0, 10);
-
-      offlineActivities[key].data.activity_subtype = ActivitySubtypeShortLabels[value.record_type] || 'Unknown';
-
-      offlineActivities[key].data.invasive_plant = getConcatenatedLabels(
-        findSpeciesCodes(
-          offlineActivities[key].data.form_data.activity_subtype_data,
-          ActivitySubtypeTargetKey[offlineActivities[key].record_type],
-          [
-            // Special case: if activity_subtype is in this list, switch between invasive_plant_code and invasive_plant_aquatic_code when searching api docs
-            ActivitySubtype.Treatment_MechanicalPlantAquatic,
-            ActivitySubtype.Treatment_ChemicalPlantAquatic,
-            ActivitySubtype.Observation_PlantAquatic
-          ].includes(offlineActivities[key].record_type as ActivitySubtype)
-        ),
-        listOptions?.components?.schemas.ChemicalTreatment_Species_Codes.properties
-      );
-
-      offlineActivities[key].data.jurisdiction_display = (offlineActivities[key].data?.jurisdiction || [])
-        .map(
-          (val) =>
-            listOptions?.components?.schemas[
-              value.record_type
-            ].properties.activity_data.properties.jurisdictions.items.properties.jurisdiction_code.options.find(
-              (item) => item.value === val
-            )?.label
-        )
-        .filter((label) => label)
-        .join(', ');
-
-      offlineActivities[key].data.agency =
-        listOptions?.components?.schemas[
-          value.record_type
-        ].properties.activity_data.properties.invasive_species_agency_code.options.find(
-          (item) => item.value === offlineActivities[key].data.form_data.activity_data.invasive_species_agency_code
-        )?.label || '';
-
-      offlineActivities[key].data.reported_area = offlineActivities[key].data.form_data.activity_data.reported_area;
-    });
-    return offlineActivities;
-  } catch (error) {
-    console.error(error);
-    return {};
-  }
 }
 
 export { activityDefaults };
