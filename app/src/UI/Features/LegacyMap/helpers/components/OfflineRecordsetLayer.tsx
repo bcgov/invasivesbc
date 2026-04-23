@@ -17,6 +17,7 @@ import {
   getPaintBySchemeOrColor
 } from '../functional/layer-definitions/reusable-layer-specifications';
 import { LayerSpecificationWithStackingOrder } from '../functional/layers-hook';
+import { ActivitySubtypesToType } from 'sharedAPI';
 
 type PropTypes = {
   mapReady: boolean;
@@ -50,6 +51,7 @@ const OfflineRecordsetLayer = ({ mapReady }: PropTypes) => {
         );
 
         if (parsedData?.geom) {
+          console.log(parsedData);
           geometryList.push({
             ...parsedData.geom,
             properties: {
@@ -57,7 +59,7 @@ const OfflineRecordsetLayer = ({ mapReady }: PropTypes) => {
               map_symbol: plantCodes,
               activity_subtype: parsedData.subtype,
               activity_id: parsedData,
-              type: parsedData.type
+              type: ActivitySubtypesToType[parsedData?.subtype]
             }
           });
         }
