@@ -242,8 +242,8 @@ export function findSpeciesCodes(
   switchToAquaticCode: boolean = false
 ): Record<string, Set<string>> {
   const codeMaps: Record<string, Set<string>> = {
-    invasive_plant_code: new Set(),
-    invasive_plant_aquatic_code: new Set()
+    invasive_plant: new Set(),
+    invasive_plant_aquatic: new Set()
   };
 
   const keysToFind = Object.keys(codeMaps);
@@ -258,7 +258,7 @@ export function findSpeciesCodes(
         } else if (keysToFind.includes(key) && obj[key]) {
           const values = Array.isArray(obj[key]) ? obj[key] : [obj[key]];
           if (switchToAquaticCode) {
-            values.forEach((value) => codeMaps.invasive_plant_aquatic_code.add(value));
+            values.forEach((value) => codeMaps.invasive_plant_aquatic.add(value));
           } else {
             values.forEach((value) => codeMaps[key].add(value));
           }

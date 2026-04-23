@@ -46,18 +46,18 @@ const OfflineRecordsetLayer = ({ mapReady }: PropTypes) => {
       try {
         const parsedData = JSON.parse((item as OfflineActivityRecord)?.data);
         const plantCodes = getConcatenatedCodes(
-          findSpeciesCodes(parsedData.form_data.activity_subtype_data, (item as OfflineActivityRecord)?.record_type)
+          findSpeciesCodes(parsedData, (item as OfflineActivityRecord)?.record_type)
         );
 
-        if (parsedData?.geometry?.[0]) {
+        if (parsedData?.geom) {
           geometryList.push({
-            ...parsedData.geometry[0],
+            ...parsedData.geom,
             properties: {
               short_id: parsedData.short_id,
               map_symbol: plantCodes,
-              activity_subtype: parsedData.activity_subtype,
-              activity_id: parsedData.activity_id,
-              type: parsedData.activity_type
+              activity_subtype: parsedData.subtype,
+              activity_id: parsedData,
+              type: parsedData.type
             }
           });
         }
