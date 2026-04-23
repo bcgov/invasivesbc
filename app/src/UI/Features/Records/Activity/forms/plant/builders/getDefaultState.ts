@@ -1,4 +1,4 @@
-import { ActivityLetters, ActivityStatus, ActivitySubtypes } from 'sharedAPI';
+import { ActivityLetters, ActivityStatus, ActivitySubtypes, ActivitySubtypesToType } from 'sharedAPI';
 import {
   getBioControlReleaseSubtypeFields,
   getMonitoringBiocontrolReleaseSubtypeFields,
@@ -52,10 +52,7 @@ const getSubtypeData = (subtype: ActivitySubtypes): FormSchema['subtype_data'] =
 /**
  * Get the default values needed for a form, used for form create/reset logic.
  */
-const getDefaultFormState = (
-  subtype: ActivitySubtypes = ActivitySubtypes.Observation_Plant_Terrestrial,
-  created_by?: string
-): FormSchema => {
+const getDefaultFormState = (subtype: ActivitySubtypes, created_by?: string): FormSchema => {
   const subtype_data = getSubtypeData(subtype);
   const isChemical = [
     ActivitySubtypes.Treatment_Chemical_Plant_Aquatic,
@@ -89,6 +86,7 @@ const getDefaultFormState = (
     linked_activities: [],
     participants: [{ name: '', pac_number: isChemical ? 0 : undefined }],
     subtype_data: subtype_data,
+    type: ActivitySubtypesToType[subtype],
     media: [],
     created_by
   } as FormSchema;
