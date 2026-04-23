@@ -12,6 +12,7 @@ import UserRecord from 'interfaces/UserRecord';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import { RootState } from 'state/reducers/rootReducer';
 import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
+import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 
 interface INewActivity {
   type: string;
@@ -106,7 +107,23 @@ class Activity {
   static readonly getActivity = createAsyncThunk(
     `${this.PREFIX}/getActivity`,
     async (id: string, { getState, rejectWithValue }) => {
-      const { Configuration }: RootState = getState() as RootState;
+      const { Configuration, Network, OfflineActivity }: RootState = getState() as RootState;
+      const MOBILE = Configuration.current.build.MOBILE;
+      if (MOBILE) {
+        // Check if stored in offline records
+        const serializedActivities = OfflineActivity.serializedActivities;
+        const record = serializedActivities?.[id];
+        if (record) {
+          return JSON.parse(record.data);
+        }
+        if (!Network.connected) {
+          // Attempt fetching from cache if online
+          const service = await RecordCacheServiceFactory.getPlatformInstance();
+          const offlineRecord = await service.loadActivity(id);
+          if (offlineRecord) return offlineRecord;
+          return rejectWithValue(404);
+        }
+      }
       const req = await fetch(`${Configuration.current.runtime.API_V2_BASE}/activities/${id}`, {
         headers: { Authorization: await getCurrentJWT() }
       });
