@@ -17,8 +17,6 @@ export enum ActivityType {
 
 /**
  * @desc Activity Subtype Titles
- *       Replaces Old names after converting from API to Django.
- * @TODO: Remove old names once work is done
  */
 export enum ActivitySubtypes {
   Observation_Plant_Terrestrial = 'Observation_Plant_Terrestrial',
@@ -50,6 +48,9 @@ export enum ActivitySubtypesShortLabels {
   Biocontrol_Release = 'Biocontrol Release' //
 }
 
+/**
+ * @deprecated succeeded by ActivitySubtypes
+ */
 export enum ActivitySubtype {
   // Observations:
   Observation_PlantTerrestrial = 'Activity_Observation_PlantTerrestrial',
@@ -96,6 +97,9 @@ export enum ActivitySubtype {
   Activity_FREP_FormC = 'Activity_FREP_FormC'
 }
 
+/**
+ * @deprecated
+ */
 export const ActivitySubtypeTargetKey = {
   [ActivitySubtype.Observation_PlantTerrestrial]: 'TerrestrialPlants',
   [ActivitySubtype.Observation_PlantAquatic]: 'AquaticPlants',
@@ -138,6 +142,9 @@ export const ActivitySubtypesRelations = {
   }
 };
 
+/**
+ * @deprecated succeeded by ActivitySubtypesRelations
+ */
 export const ActivitySubtypeRelations = {
   [ActivityCategory.Plant]: {
     [ActivityType.Observation]: [
@@ -176,6 +183,9 @@ export const ActivitySubtypeRelations = {
   [ActivityCategory.FREP]: { [ActivityType.FREP]: [ActivitySubtype.Activity_FREP_FormC] }
 };
 
+/**
+ * @deprecated succeeded by ActivitySubtypesShortLabels
+ */
 export enum ActivitySubtypeShortLabels {
   // Observations:
   Activity_Observation_PlantTerrestrial = 'Terrestrial Invasive Plant Observation',
@@ -217,6 +227,9 @@ export enum ActivitySubtypeShortLabels {
   Activity_FREP_FormC = 'Form C'
 }
 
+/**
+ * @deprecated succeeded by ActivityLetters
+ */
 export enum ActivityLetter {
   // Observations:
   Activity_Observation_PlantTerrestrial = 'PTO',
@@ -264,6 +277,20 @@ export enum ActivityLetter {
   Activity_FREP_FormC = 'PFC'
 }
 
+export enum ActivityLetters {
+  Observation_Plant_Terrestrial = 'PTO',
+  Observation_Plant_Aquatic = 'PAO',
+  Monitoring_Chemical_Plant_Terrestrial_Aquatic = 'PMC',
+  Monitoring_Mechanical_Plant_Terrestrial_Aquatic = 'PMM',
+  Monitoring_Biocontrol_Release_Plant_Terrestrial = 'PBM',
+  Treatment_Mechanical_Plant_Terrestrial = 'PTM',
+  Treatment_Mechanical_Plant_Aquatic = 'PAM',
+  Treatment_Chemical_Plant_Terrestrial = 'PTC',
+  Treatment_Chemical_Plant_Aquatic = 'PAC',
+  Monitoring_Biocontrol_Dispersal_Plant_Terrestrial = 'PBD',
+  Biocontrol_Collection = 'PBC',
+  Biocontrol_Release = 'PBR'
+}
 export enum ActivityStatus {
   DRAFT = 'Draft',
   SUBMITTED = 'Submitted',
