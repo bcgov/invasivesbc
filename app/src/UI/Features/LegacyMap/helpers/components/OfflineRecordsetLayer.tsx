@@ -4,7 +4,6 @@ import { useSelector } from 'utils/use_selector';
 import { SourceComponent } from './SourceComponent';
 import { LayerComponent } from './LayerComponent';
 import { SourceCleanupComponent } from './SourceCleanupComponent';
-import { findSpeciesCodes, getConcatenatedCodes } from 'utils/addActivity';
 import { OfflineActivityRecord, OfflineActivitySyncState } from 'state/reducers/offlineActivity';
 import { FeatureCollection, GeoJSON } from 'geojson';
 import { SourceSpecification } from 'maplibre-gl';
@@ -46,9 +45,17 @@ const OfflineRecordsetLayer = ({ mapReady }: PropTypes) => {
     Object.values(locallyStoredActivities).forEach((item) => {
       try {
         const parsedData = JSON.parse((item as OfflineActivityRecord)?.data);
-        const plantCodes = getConcatenatedCodes(
-          findSpeciesCodes(parsedData, (item as OfflineActivityRecord)?.record_type)
-        );
+        const plantCodes = (() => {
+          const { entries, treatment_context } = parsedData.subtype_data;
+          const plants = new Set<string | undefined>();
+          entries?.forEach((e) => {
+            plants.add(e?.invasive_plant_aquatic);
+            plants.add(e?.invasive_plant);
+          });
+          treatment_context?.plants_treated?.forEach((pt) => plants.add(pt.invasive_plant));
+          plants.delete(undefined); // Remove undefined (if exists)
+          return Array.from(plants);
+        })();
 
         if (parsedData?.geom) {
           geometryList.push({
