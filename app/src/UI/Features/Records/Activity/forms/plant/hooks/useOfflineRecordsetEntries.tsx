@@ -10,7 +10,7 @@ type Options = {
   filterUnsynced?: boolean;
 };
 
-const useOfflineRecordsetEntries = (options?: Options) => {
+const useOfflineRecordsetEntries = (options: Options) => {
   /**
    * @desc convert a form code to a full code.
    * @param code Code to translate
@@ -47,7 +47,6 @@ const useOfflineRecordsetEntries = (options?: Options) => {
     (state) => state.OfflineActivity.serializedActivities
   );
 
-  if (!options) return { drillForPlants };
   /**
    * @desc formatted serializedActivities for Recordset rows
    */
@@ -57,7 +56,9 @@ const useOfflineRecordsetEntries = (options?: Options) => {
         const data = JSON.parse((s as { data: string }).data);
         const plants = drillForPlants(data);
         const jurisdictions = data?.jurisdictions
-          .map((e) => codeToFull(e.jurisdiction, codes.JurisdictionCode) + ` (${e?.percent_covered}%)`)
+          .map((e) =>
+            e.jurisdiction ? codeToFull(e.jurisdiction, codes.JurisdictionCode) + ` (${e?.percent_covered}%)` : ''
+          )
           .join(', ');
         const fundingAgency = data?.funding_agencies
           .map((a) => codeToFull(a.invasive_species_agency_code, codes.FundingAgencyCode))
