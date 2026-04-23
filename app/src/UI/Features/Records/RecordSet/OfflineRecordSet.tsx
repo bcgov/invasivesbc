@@ -1,31 +1,30 @@
 import { useDispatch } from 'react-redux';
 import 'UI/Features/Records/RecordSet/RecordSet.css';
 import { Button } from '@mui/material';
-
 import RecordSetFooter from 'UI/Features/Records/RecordSet/RecordSetFooter';
 import { useSelector } from 'utils/use_selector';
 import { RecordSetType } from 'interfaces/UserRecordSet';
-import { OfflineActivityRecord, OfflineActivitySyncState, selectOfflineActivity } from 'state/reducers/offlineActivity';
 import { offlineActivityColumnsToDisplay } from 'UI/Features/Records/RecordSet/RecordTableHelpers';
-import UserRecord from 'interfaces/UserRecord';
-import { transformOfflineActivitiesForRecordTable } from 'utils/addActivity';
 import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
 import RecordTablePopoverContent from 'UI/Features/Records/RecordSet/RecordTablePopoverContent/RecordTablePopoverContent';
 import { MouseEvent, TouchEvent, useEffect, useState } from 'react';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import IOfflineActivityRow from 'interfaces/TableRows/IOfflineActivityRow';
-import { Point, Polygon } from 'geojson';
+import { GeoJSON } from 'geojson';
 import { useNavigate } from 'react-router';
 import Activity from 'state/actions/activity/Activity';
+import useOfflineRecordsetEntries from '../Activity/forms/plant/hooks/useOfflineRecordsetEntries';
+import CheckboxUI from '../Activity/forms/common/CheckboxUI/CheckboxUI';
 
 type PropTypes = { setID: string };
 
 export const OfflineRecordSet = ({ setID }: PropTypes) => {
+  const [changedOnly, setChangedOnly] = useState<boolean>(true);
   const onUserHoveredRecord = (row: IOfflineActivityRow) => {
     dispatch(
       UserSettings.Map.setHoveredRecordset({
         id: row.activity_id,
-        geom: row.geometry?.[0] as Polygon | Point,
+        geom: row.geom,
         recordType: RecordSetType.Activity,
         readableIdentifier: row.short_id
       })
@@ -34,17 +33,14 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [recordDisplayId, setRecordDisplayId] = useState<string>('');
   const [recordLookupId, setRecordLookupId] = useState<string>('');
-  const [geom, setGeom] = useState<Point | Polygon>();
+  const [geom, setGeom] = useState<GeoJSON>();
 
-  const handlePopoverOpen = (evt: MouseEvent<HTMLElement> | TouchEvent<HTMLElement>, row: UserRecord) => {
-    setGeom(row.geometry?.[0]);
+  const handlePopoverOpen = (evt: MouseEvent<HTMLElement> | TouchEvent<HTMLElement>, row: IOfflineActivityRow) => {
+    setGeom(row.geom);
     setRecordDisplayId((row.short_id as string) ?? '');
     setRecordLookupId((row.activity_id as string) ?? '');
     setAnchorEl(evt.currentTarget);
   };
-
-  const offlineDocs = useSelector((state) => state.UserSettings.offlineDocs);
-  const listOptions = offlineDocs[0]?.apiDocsWithViewOptions;
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -55,25 +51,10 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
 
   const recordSet = useSelector((state) => state.UserSettings?.recordSets?.[setID]);
   const recordTable = useSelector((state) => state.Map.recordTables?.[setID]);
-  const { serializedActivities } = useSelector(selectOfflineActivity);
-
   const startIndex = recordTable?.page * recordTable?.limit;
   const endIndex = startIndex + recordTable?.limit;
 
-  let unsyncedOfflineActivities: Record<string, any> = Object.fromEntries(
-    Object.entries(serializedActivities as Record<string, OfflineActivityRecord>)
-      .filter(([_, value]) => value.sync_state !== OfflineActivitySyncState.SYNCHRONIZED)
-      .map(([key, value]) => {
-        return [key, { ...value, data: JSON.parse(value.data) }];
-      })
-      .slice(startIndex, endIndex)
-  );
-
-  try {
-    unsyncedOfflineActivities = transformOfflineActivitiesForRecordTable(unsyncedOfflineActivities, listOptions);
-  } catch (error) {
-    console.error(error);
-  }
+  const { offlineRows } = useOfflineRecordsetEntries({ startIndex, endIndex, filterUnsynced: changedOnly });
 
   useEffect(() => {
     dispatch(Activity.switchRecordSet({ type: RecordSetType.Activity, setId: setID }));
@@ -100,50 +81,43 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
         </div>
       </div>
       <div className="recordSet_container">
-        {Object.keys(unsyncedOfflineActivities).length === 0 ? (
-          <div className="no-records">
-            <p>There are no locally stored unsynced activities.</p>
-          </div>
-        ) : (
-          <>
-            <div style={{ margin: '8px', padding: '8px' }} />
-            <div className="record_table_container">
-              <table className="record_table">
-                <tbody>
-                  <tr className="record_table_header">
-                    {offlineActivityColumnsToDisplay.map((col) => (
-                      <th className={'record_table_header_column'} key={col.key}>
-                        {col.name}
-                      </th>
-                    ))}
-                  </tr>
-                  {Object.values(unsyncedOfflineActivities).map(({ data }) => (
-                    <tr
-                      onContextMenu={(event) => {
-                        event.preventDefault();
-                        event.stopPropagation();
-                      }}
-                      onMouseOver={() => onUserHoveredRecord(data)}
-                      onFocus={() => onUserHoveredRecord(data)}
-                      className="record_table_row"
-                      key={data?.activity_id}
+        <div>
+          <CheckboxUI
+            state={changedOnly}
+            required
+            onChange={() => setChangedOnly((prev) => !prev)}
+            label={'Show unsynced only'}
+          />
+        </div>
+        <div style={{ margin: '8px', padding: '8px' }} />
+        <div className="record_table_container">
+          <table className="record_table">
+            <thead>
+              <tr className="record_table_header">
+                {offlineActivityColumnsToDisplay.map((col) => (
+                  <th className={'record_table_header_column'} key={col.key}>
+                    {col.name}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {offlineRows?.map((r: IOfflineActivityRow) => (
+                <tr onMouseEnter={() => onUserHoveredRecord(r)} key={r.activity_id} className={'record_table_row'}>
+                  {offlineActivityColumnsToDisplay.map((col) => (
+                    <td
+                      className="record_table_row_column"
+                      onClick={(evt) => handlePopoverOpen(evt, r)}
+                      key={r.short_id}
                     >
-                      {offlineActivityColumnsToDisplay.map((col) => (
-                        <td
-                          className="record_table_row_column"
-                          key={col.key + col.name}
-                          onClick={(evt) => handlePopoverOpen(evt, data)}
-                        >
-                          {data[col.key]}
-                        </td>
-                      ))}
-                    </tr>
+                      {r[col.key]}
+                    </td>
                   ))}
-                </tbody>
-              </table>
-            </div>
-          </>
-        )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
       <RecordSetFooter recordSet={recordSet} />
     </>

@@ -4,7 +4,13 @@ import { ActivitySubtypesShortLabels, ActivitySubtypesToType } from 'sharedAPI';
 import { OfflineActivityRecord, OfflineActivitySyncState } from 'state/reducers/offlineActivity';
 import { useSelector } from 'utils/use_selector';
 
-const useOfflineRecordsetEntries = (startIndex: number, endIndex: number, filterUnsynced: boolean) => {
+type Options = {
+  startIndex: number;
+  endIndex: number;
+  filterUnsynced?: boolean;
+};
+
+const useOfflineRecordsetEntries = (options?: Options) => {
   /**
    * @desc convert a form code to a full code.
    * @param code Code to translate
@@ -41,6 +47,7 @@ const useOfflineRecordsetEntries = (startIndex: number, endIndex: number, filter
     (state) => state.OfflineActivity.serializedActivities
   );
 
+  if (!options) return { drillForPlants };
   /**
    * @desc formatted serializedActivities for Recordset rows
    */
@@ -72,22 +79,25 @@ const useOfflineRecordsetEntries = (startIndex: number, endIndex: number, filter
         };
       }),
 
-    [serializedActivities, serial, filterUnsynced]
+    [serializedActivities, serial, options?.filterUnsynced]
   );
 
   /**
    * Subset of all Serialized Activities
    */
   const returnedEntries = useMemo(() => {
-    if (filterUnsynced) {
+    if (options?.filterUnsynced) {
       return serializedEntries
         .filter((r) => r.status !== OfflineActivitySyncState.SYNCHRONIZED)
-        .slice(startIndex, endIndex);
+        .slice(options?.startIndex, options?.endIndex);
     }
-    return serializedEntries.slice(startIndex, endIndex);
-  }, [serializedEntries, startIndex, endIndex]);
+    return serializedEntries.slice(options?.startIndex, options?.endIndex);
+  }, [serializedEntries, options?.startIndex, options?.endIndex]);
 
-  return returnedEntries;
+  return {
+    drillForPlants,
+    offlineRows: returnedEntries
+  };
 };
 
 export default useOfflineRecordsetEntries;
