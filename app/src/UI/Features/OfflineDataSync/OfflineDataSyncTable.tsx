@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'utils/use_selector';
 import 'UI/Features/OfflineDataSync/OfflineDataSync.css';
 import moment from 'moment';
 import { MoreVert } from '@mui/icons-material';
-import { ActivitySubtypeShortLabels } from 'sharedAPI';
+import { ActivitySubtypesShortLabels } from 'sharedAPI';
 import Activity from 'state/actions/activity/Activity';
 import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
 import { useNavigate } from 'react-router';
@@ -51,7 +51,11 @@ export const OfflineDataSyncTable = ({ handleClose }: PropTypes) => {
   }, [working, workingOffline, authenticated, connected, numUnsynchronizedRecords]);
 
   if (Object.values(serializedActivities).length === 0) {
-    return <p>There are no locally-stored activities to synchronize.</p>;
+    return (
+      <div className="content">
+        <p>There are no locally-stored activities to synchronize.</p>
+      </div>
+    );
   }
   const handleDelete = () => {
     if (!contextRecord) return;
@@ -104,7 +108,7 @@ export const OfflineDataSyncTable = ({ handleClose }: PropTypes) => {
                   <Fragment key={key}>
                     <tr>
                       <td>{`${(value as OfflineActivityRecord).short_id}`}</td>
-                      <td className="record-type">{`${ActivitySubtypeShortLabels[(value as OfflineActivityRecord).record_type] || 'Unknown'}`}</td>
+                      <td className="record-type">{`${ActivitySubtypesShortLabels[(value as OfflineActivityRecord).record_type] ?? 'Unknown'}`}</td>
                       <td className="modified-time">
                         {`${moment((value as OfflineActivityRecord).saved_at).fromNow()}`}
                       </td>
