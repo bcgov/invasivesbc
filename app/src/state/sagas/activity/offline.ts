@@ -12,13 +12,13 @@ import { RecordSetId } from 'interfaces/UserRecordSet';
 import parseActivityForPermissions from 'utils/parseActivityForPermissions';
 import { selectActivity } from 'state/reducers/activity';
 import { PLATFORM_SRC } from 'constants/misc';
-import { ISaveOffline } from 'state/actions/activity/Offline';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
+import FormActions, { FormSubmission } from 'state/actions/activity/FormActions';
 
-function* handle_ACTIVITY_SAVE_OFFLINE(action: PayloadAction<ISaveOffline>) {
+function* handle_ACTIVITY_SAVE_OFFLINE(action: PayloadAction<FormSubmission>) {
   const connected = yield select(selectNetworkConnected);
   // reload the activity in case the reducer modified it (create time, etc.)
-  yield put(Activity.get(action.payload.id));
+  yield put(Activity.get(action.payload.data.id));
   if (connected) {
     // trigger a sync if we're online
     yield put(
@@ -204,7 +204,7 @@ function* handle_ACTIVITY_OFFLINE_DELETE_ITEM(action: PayloadAction<string>) {
 export const OFFLINE_ACTIVITY_SAGA_HANDLERS = [
   takeEvery(Activity.Offline.delete, handle_ACTIVITY_OFFLINE_DELETE_ITEM),
   takeEvery(Activity.getLocal, handle_ACTIVITY_GET_LOCAL_REQUEST),
-  takeEvery(Activity.Offline.save, handle_ACTIVITY_SAVE_OFFLINE),
+  takeEvery(FormActions.saveMobileForm, handle_ACTIVITY_SAVE_OFFLINE),
   takeEvery(Activity.createLocal, handle_ACTIVITY_CREATE_LOCAL),
   takeLeading(Activity.Offline.syncRun, handle_ACTIVITY_RUN_OFFLINE_SYNC)
 ];
