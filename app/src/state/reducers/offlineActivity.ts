@@ -1,8 +1,10 @@
 import { createNextState } from '@reduxjs/toolkit';
 import moment from 'moment';
+import { ActivityStatus } from 'sharedAPI';
 import { AppConfig } from 'state/configuration/runtime-config';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import Activity from 'state/actions/activity/Activity';
+import FormActions from 'state/actions/activity/FormActions';
 
 enum OfflineActivitySyncState {
   LOCALLY_MODIFIED = 'Locally Modified',
@@ -63,6 +65,19 @@ function createOfflineActivityReducer(
           sync_state: OfflineActivitySyncState.LOCALLY_MODIFIED
         };
         draftState.serial = moment.now();
+      } else if (FormActions.saveMobileForm.match(action)) {
+        const { data, type } = action.payload;
+        const currTime = moment.now();
+        data.form_status = type === 'submit' ? ActivityStatus.SUBMITTED : data.form_status;
+        const id = data?.id ?? crypto.randomUUID();
+        draftState.serializedActivities[id] = {
+          data: JSON.stringify(data),
+          saved_at: currTime,
+          short_id: data?.short_id ?? id,
+          record_type: data.subtype,
+          sync_state: OfflineActivitySyncState.LOCALLY_MODIFIED
+        };
+        draftState.serial = currTime;
       } else if (Activity.Offline.syncRun.match(action)) {
         draftState.working = true;
       } else if (Activity.Offline.syncRunComplete.match(action)) {
