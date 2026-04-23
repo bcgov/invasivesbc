@@ -164,3 +164,4 @@ class FormActions {
 }
 
 export default FormActions;
+export type { FormSubmission };
