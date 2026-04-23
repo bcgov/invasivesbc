@@ -1,4 +1,4 @@
-import { ActivitySubtypes } from 'sharedAPI';
+import { ActivityLetters, ActivityStatus, ActivitySubtypes } from 'sharedAPI';
 import {
   getBioControlReleaseSubtypeFields,
   getMonitoringBiocontrolReleaseSubtypeFields,
@@ -61,8 +61,14 @@ const getDefaultFormState = (
     ActivitySubtypes.Treatment_Chemical_Plant_Aquatic,
     ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial
   ].some((st) => st === subtype);
-
+  const id = crypto.randomUUID();
+  const dateStamp = new Date().toISOString().slice(2, 4);
+  const subtypeTag = ActivityLetters[subtype] ?? '';
+  const uuidSlice = id.slice(0, 8).toUpperCase();
+  const short_id = dateStamp + subtypeTag + uuidSlice;
   return {
+    id,
+    short_id,
     employer: '',
     subtype: subtype,
     funding_agencies: [{ invasive_species_agency_code: '' }],
@@ -70,6 +76,7 @@ const getDefaultFormState = (
     projects: [{ description: '' }],
     location_description: '',
     access_description: '',
+    form_status: ActivityStatus.DRAFT,
     date: new Date().toISOString().slice(0, 10),
     comment: '',
     area_m: 0,
