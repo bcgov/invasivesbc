@@ -3,7 +3,7 @@ from pprint import pformat
 
 from django.core.management.base import BaseCommand
 
-from api.management.commands.map_tile_generator.tile_downloader import TileDownloader
+from api.services.map_tile_generator.tile_downloader import TileDownloader
 
 
 class Command(BaseCommand):
