@@ -168,9 +168,11 @@ export const OfflineDataSyncTable = ({ handleClose }: PropTypes) => {
         </div>
       </div>
       <div className="control">
-        <Button variant={'outlined'} onClick={clearSyncedActivities} className="clear-synced" color={'primary'}>
-          Remove Synced Records
-        </Button>
+        {numUnsynchronizedRecords !== Object.keys(serializedActivities).length && (
+          <Button variant={'outlined'} onClick={clearSyncedActivities} className="clear-synced" color={'primary'}>
+            Remove Synced Records
+          </Button>
+        )}
         <Button onClick={handleClose}>Close</Button>
         <Button disabled={syncDisabled} variant={'contained'} onClick={() => dispatch(Activity.Offline.syncRun())}>
           Run Sync

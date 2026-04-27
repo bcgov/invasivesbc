@@ -105,6 +105,10 @@
     padding: 10pt;
     position: relative;
     width: 100%;
+
+    .clear-synced {
+      margin-right: auto;
+    }
   }
 }
 
