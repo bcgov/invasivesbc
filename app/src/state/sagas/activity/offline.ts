@@ -1,6 +1,7 @@
 import { delay, put, select, takeEvery, takeLeading } from 'redux-saga/effects';
 import { ActivityStatus, ActivitySyncStatus } from 'sharedAPI';
 import { PayloadAction } from '@reduxjs/toolkit';
+import { getCurrentJWT } from 'state/sagas/auth/auth';
 import { OfflineActivityRecord, OfflineActivitySyncState, selectOfflineActivity } from 'state/reducers/offlineActivity';
 import { selectNetworkConnected } from 'state/reducers/network';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
@@ -14,6 +15,8 @@ import { selectActivity } from 'state/reducers/activity';
 import { PLATFORM_SRC } from 'constants/misc';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import FormActions, { FormSubmission } from 'state/actions/activity/FormActions';
+import { selectConfiguration } from 'state/reducers/configuration';
+import { AppConfig } from 'state/configuration/runtime-config';
 
 function* handle_ACTIVITY_SAVE_OFFLINE(action: PayloadAction<FormSubmission>) {
   const connected = yield select(selectNetworkConnected);
@@ -95,6 +98,7 @@ function* handle_ACTIVITY_GET_LOCAL_REQUEST(action: PayloadAction<string>) {
 }
 
 function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
+  const config: AppConfig = yield select(selectConfiguration);
   const { serializedActivities } = yield select(selectOfflineActivity);
   const { activeActivity, activeActivityPermissions } = yield select(selectActivity);
   const toSync: OfflineActivityRecord[] = Object.values(serializedActivities).filter(
@@ -107,27 +111,22 @@ function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
 
   for (const activity of toSync) {
     const hydrated = JSON.parse(activity.data);
-    const sync_status =
-      hydrated.form_status === ActivityStatus.SUBMITTED
-        ? ActivitySyncStatus.SAVE_SUCCESSFUL
-        : ActivitySyncStatus.SAVE_SUCCESSFUL_PRIVATE; // saved to db but only visible to user in drafts
-
     try {
-      const networkReturn =
-        hydrated.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL_PRIVATE ||
-        hydrated.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL
-          ? yield InvasivesAPI_Call('PUT', `/api/activity/`, {
-              ...hydrated,
-              sync_status: sync_status
-            })
-          : yield InvasivesAPI_Call('POST', `/api/activity/`, {
-              ...hydrated,
-              sync_status: sync_status
-            });
+      const sync_status = hydrated.form_status === ActivitySyncStatus.SAVE_SUCCESSFUL;
+      const path = hydrated.form_status === ActivityStatus.SUBMITTED ? 'submit' : 'draft';
+
+      const networkReturn = yield fetch(`${config.API_V2_BASE}/ninja/activities/${path}`, {
+        method: 'POST',
+        headers: {
+          Authorization: yield getCurrentJWT(),
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(hydrated)
+      });
       if (networkReturn?.ok) {
         yield put(
           Activity.Offline.updateSyncState({
-            id: hydrated.activity_id,
+            id: hydrated.id,
             data: {
               ...hydrated,
               sync_status: sync_status
@@ -136,7 +135,7 @@ function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
           })
         );
 
-        if (hydrated.activity_id === activeActivity) {
+        if (hydrated.id === activeActivity) {
           yield put(
             Activity.getSuccess({
               activity: {
