@@ -88,6 +88,13 @@ function createOfflineActivityReducer(
           delete draftState.serializedActivities[action.payload];
         }
         draftState.serial = moment.now();
+      } else if (Activity.Offline.removeSyncedRecords.match(action)) {
+        Object.keys(draftState.serializedActivities).forEach((k) => {
+          if (draftState.serializedActivities[k].sync_state === OfflineActivitySyncState.SYNCHRONIZED) {
+            delete draftState.serializedActivities[k];
+          }
+        });
+        draftState.serial = moment.now();
       } else if (Activity.Offline.updateSyncState.match(action)) {
         const found = draftState.serializedActivities[payload.id];
         if (found) {

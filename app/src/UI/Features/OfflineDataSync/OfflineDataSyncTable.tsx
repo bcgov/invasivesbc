@@ -9,11 +9,28 @@ import { ActivitySubtypesShortLabels } from 'sharedAPI';
 import Activity from 'state/actions/activity/Activity';
 import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
 import { useNavigate } from 'react-router';
+import Prompt from 'state/actions/prompts/Prompt';
 
 type PropTypes = {
   handleClose: () => void;
 };
 export const OfflineDataSyncTable = ({ handleClose }: PropTypes) => {
+  const clearSyncedActivities = () => {
+    dispatch(
+      Prompt.confirmation({
+        title: 'Remove all Synchronized Records?',
+        prompt: [
+          'This will permanently remove synchronized records from this device.',
+          'This action cannot be undone, but it will not affect your data stored in the InvasivesBC database.'
+        ],
+        confirmText: 'Delete Locally',
+        cancelText: 'Keep Records',
+        callback: (confirm) => {
+          if (confirm) dispatch(Activity.Offline.removeSyncedRecords());
+        }
+      })
+    );
+  };
   const serializedActivities = useSelector((state) => state.OfflineActivity.serializedActivities);
   const working = useSelector((state) => state.OfflineActivity.working);
   const { authenticated, workingOffline } = useSelector((state) => state.Auth);
@@ -151,14 +168,11 @@ export const OfflineDataSyncTable = ({ handleClose }: PropTypes) => {
         </div>
       </div>
       <div className="control">
+        <Button variant={'outlined'} onClick={clearSyncedActivities} className="clear-synced" color={'primary'}>
+          Remove Synced Records
+        </Button>
         <Button onClick={handleClose}>Close</Button>
-        <Button
-          disabled={syncDisabled}
-          variant={'contained'}
-          onClick={() => {
-            dispatch(Activity.Offline.syncRun());
-          }}
-        >
+        <Button disabled={syncDisabled} variant={'contained'} onClick={() => dispatch(Activity.Offline.syncRun())}>
           Run Sync
         </Button>
       </div>
