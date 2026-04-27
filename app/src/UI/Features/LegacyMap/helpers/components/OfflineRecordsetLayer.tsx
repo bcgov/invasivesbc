@@ -54,7 +54,7 @@ const OfflineRecordsetLayer = ({ mapReady }: PropTypes) => {
           });
           treatment_context?.plants_treated?.forEach((pt) => plants.add(pt.invasive_plant));
           plants.delete(undefined); // Remove undefined (if exists)
-          return Array.from(plants);
+          return Array.from(plants).filter(Boolean).join(', ');
         })();
 
         if (parsedData?.geom) {
