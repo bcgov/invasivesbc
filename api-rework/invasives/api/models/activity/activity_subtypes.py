@@ -28,6 +28,7 @@ class ActivitySubtype:
     species: Species | None
     short_id_format: str
     legacyDatabaseName: list[str]  # For mapping the old names to the enum values
+    readableFormat: str
 
 
 class ActivitySubtypes(ActivitySubtype, Enum):
@@ -38,6 +39,7 @@ class ActivitySubtypes(ActivitySubtype, Enum):
         None,
         "BCC",
         ["Activity_Biocontrol_Collection"],
+        "Biocontrol Collection",
     )
 
     Biocontrol_Release = (
@@ -46,6 +48,7 @@ class ActivitySubtypes(ActivitySubtype, Enum):
         None,
         "BCR",
         ["Activity_Biocontrol_Release"],
+        "Biocontrol Release",
     )
     Monitoring_Biocontrol_Dispersal_Plant_Terrestrial = (
         SubtypePrimary.Biocontrol,
@@ -53,6 +56,7 @@ class ActivitySubtypes(ActivitySubtype, Enum):
         Species.TerrestrialPlant,
         "BCMD",
         ["Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant"],
+        "Biocontrol Dispersal Monitoring",
     )
     Monitoring_Biocontrol_Release_Plant_Terrestrial = (
         SubtypePrimary.Biocontrol,
@@ -60,6 +64,7 @@ class ActivitySubtypes(ActivitySubtype, Enum):
         Species.TerrestrialPlant,
         "BCMR",
         ["Activity_Monitoring_BiocontrolRelease_TerrestrialPlant"],
+        "Biocontrol Release Monitoring",
     )
     Monitoring_Chemical_Plant_Terrestrial_Aquatic = (
         SubtypePrimary.Monitoring,
@@ -67,6 +72,7 @@ class ActivitySubtypes(ActivitySubtype, Enum):
         Species.TerrestrialPlant | Species.AquaticPlant,
         "MCP",
         ["Activity_Monitoring_ChemicalTerrestrialAquaticPlant"],
+        "Chemical Treatment Monitoring",
     )
     Monitoring_Mechanical_Plant_Terrestrial_Aquatic = (
         SubtypePrimary.Monitoring,
@@ -74,6 +80,7 @@ class ActivitySubtypes(ActivitySubtype, Enum):
         Species.TerrestrialPlant | Species.AquaticPlant,
         "MMP",
         ["Activity_Monitoring_MechanicalTerrestrialAquaticPlant"],
+        "Mechanical Treatment Monitoring",
     )
     Observation_Mussels = (
         SubtypePrimary.Observation,
@@ -81,6 +88,7 @@ class ActivitySubtypes(ActivitySubtype, Enum):
         Species.Mussels,
         "MUS",
         ["Activity_Observation_Mussels"],
+        "Activity_Observation_Mussels",
     )
     Observation_Plant_Aquatic = (
         SubtypePrimary.Observation,
@@ -88,6 +96,7 @@ class ActivitySubtypes(ActivitySubtype, Enum):
         Species.AquaticPlant,
         "OBSA",
         ["Activity_Observation_PlantAquatic"],
+        "Aquatic Invasive Plant Observation",
     )
 
     Observation_Plant_Terrestrial = (
@@ -96,6 +105,7 @@ class ActivitySubtypes(ActivitySubtype, Enum):
         Species.TerrestrialPlant,
         "OBST",
         ["Activity_Observation_PlantTerrestrial"],
+        "Terrestrial Invasive Plant Observation",
     )
 
     Officer_Shift = (
@@ -104,6 +114,7 @@ class ActivitySubtypes(ActivitySubtype, Enum):
         None,
         "OS",
         ["Activity_Officer_Shift"],
+        "Activity_Officer_Shift",
     )
 
     Treatment_Chemical_Plant_Aquatic = (
@@ -112,6 +123,7 @@ class ActivitySubtypes(ActivitySubtype, Enum):
         Species.AquaticPlant,
         "TCPA",
         ["Activity_Treatment_ChemicalPlantAquatic"],
+        "Aquatic Plant Treatment - Chemical",
     )
 
     Treatment_Chemical_Plant_Terrestrial = (
@@ -120,6 +132,7 @@ class ActivitySubtypes(ActivitySubtype, Enum):
         Species.TerrestrialPlant,
         "TCPT",
         ["Activity_Treatment_ChemicalPlantTerrestrial"],
+        "Terrestrial Plant Treatment - Chemical",
     )
     Treatment_Mechanical_Plant_Aquatic = (
         SubtypePrimary.Treatment,
@@ -127,6 +140,7 @@ class ActivitySubtypes(ActivitySubtype, Enum):
         Species.AquaticPlant,
         "TMPA",
         ["Activity_Treatment_MechanicalPlantAquatic"],
+        "Aquatic Plant Treatment - Mechanical",
     )
     Treatment_Mechanical_Plant_Terrestrial = (
         SubtypePrimary.Treatment,
@@ -137,6 +151,7 @@ class ActivitySubtypes(ActivitySubtype, Enum):
             "Activity_Treatment_MechanicalPlantTerrestrial",
             "Treatment - Mechanical - Aquatic Plant",
         ],
+        "Terrestrial Plant Treatment - Mechanical",
     )
 
     @staticmethod
