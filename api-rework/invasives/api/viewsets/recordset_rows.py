@@ -10,7 +10,10 @@ from api.models.activity import Activity
 class RecordsetRowsViewSet(viewsets.GenericViewSet):
     serializer_class = ActivityRecordsetRowSerializer
 
-    def create(self, request):
+    def create(self, request, *args, **kwargs):
+        return self.get_rows_by_criteria(request, *args, **kwargs)
+
+    def get_rows_by_criteria(self, request):
         """
         TODO: Build out further, add spatial filters, convert some column fields ('activity_subtype' -> 'subtype') where appropriate.
               Meant as a starting point to help expand rest of in-app functionality.
