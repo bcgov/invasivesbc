@@ -1,7 +1,7 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from django.core.exceptions import FieldError
-from django.db.models import Q, F, Min, Case, When, Value, CharField
+from django.db.models import Q, F, Min
 from django.db.models.functions import Coalesce
 from api.models.activity import ActivitySubtypes
 from api.serializers.activity_recordset_row import ActivityRecordsetRowSerializer
