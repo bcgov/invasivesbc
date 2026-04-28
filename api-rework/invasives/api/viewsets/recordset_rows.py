@@ -1,6 +1,8 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from django.db.models import Q
+from django.core.exceptions import FieldError
+from django.db.models import Q, F, Min
+from django.db.models.functions import Coalesce
 from api.serializers.activity_recordset_row import ActivityRecordsetRowSerializer
 from api.models.activity import Activity
 
@@ -18,27 +20,130 @@ class RecordsetRowsViewSet(viewsets.GenericViewSet):
 
         page = int(meta.get("page", 0))
         limit = int(meta.get("limit", 10))
-        sort_order = "" if meta.get("sortOrder", "") == "ASC" else "-"
         sort_column = meta.get("sortColumn", "date").replace("activity_", "")
-        order_by = sort_order + sort_column
+
+        sort_mapping = {
+            "project_code": "activitydatarecord__projectcode__description",
+            "agency": "activitydatarecord__fundingagency__agency__full",
+            "jurisdiction_display": "activitydatarecord__jurisdiction__jurisdiction__full",
+            "activity_id": "id",
+            "activity_type": "type",
+            "activity_subtype": "subtype",
+            "activity_date": "date",
+            "invasive_plant": "activitydatarecord__terrestrialplantobservationentries__invasive_plant__full",
+            "regional_invasive_species_organization_areas": "computed_invasive_plant_management_areas",
+            "regional_districts": "computed_regional_districts",
+            "ownership": "computed_ownership",
+            "moti_districts": "computed_moti_districts",
+            "invasive_plant_management_areas": "computed_invasive_plant_management_areas",
+            "biogeoclimatic_zones": "computed_biogeoclimatic_zone",
+            "elevation": "computed_elevation_m",
+            "updated_by": "created_by"
+        }
+        # Use the mapped path if it exists, otherwise use the raw column name
+        db_column = sort_mapping.get(sort_column, sort_column)
 
         queryset = Activity.objects.all().prefetch_related(
-            "jurisdiction_set__jurisdiction",
-            "projectcode_set",
-            "fundingagency_set__agency",
-            "aquaticplantobservationentry_set__invasive_plant",
-            "terrestrialplantobservationentries_set__invasive_plant",
-            "aquaticplantmechanicaltreatmententry_set__invasive_plant",
-            "terrestrialplantmechanicaltreatmententry_set__invasive_plant",
-            "terrestrialbiocontroldispersalmonitoringentry_set__invasive_plant",
-            "terrestrialbiocontrolreleaseentry_set__invasive_plant",
-            "aquatictreatmentmonitoringentry_set__invasive_plant",
-            "terrestrialtreatmentmonitoringentry_set__invasive_plant",
-            "terrestrialbiocontrolcollectionentry_set__invasive_plant",
-            "terrestrialbiocontrolcollectionentry_set__biological_agent",
-            "terrestrialbiocontrolreleaseentry_set__biocontrol_agent",
-            "terrestrialbiocontroldispersalmonitoringentry_set__biocontrol_agent",
+            "activitydatarecord_set__jurisdiction_set__jurisdiction",
+            "activitydatarecord_set__projectcode_set",
+            "activitydatarecord_set__fundingagency_set__agency",
+            "activitydatarecord_set__aquaticplantobservationentry_set__invasive_plant",
+            "activitydatarecord_set__terrestrialplantobservationentries_set__invasive_plant",
+            "activitydatarecord_set__aquaticplantmechanicaltreatmententry_set__invasive_plant",
+            "activitydatarecord_set__terrestrialplantmechanicaltreatmententry_set__invasive_plant",
+            "activitydatarecord_set__terrestrialbiocontroldispersalmonitoringentry_set__invasive_plant",
+            "activitydatarecord_set__terrestrialbiocontrolreleaseentry_set__invasive_plant",
+            "activitydatarecord_set__aquatictreatmentmonitoringentry_set__invasive_plant",
+            "activitydatarecord_set__terrestrialtreatmentmonitoringentry_set__invasive_plant",
+            "activitydatarecord_set__terrestrialbiocontrolcollectionentry_set__invasive_plant",
+            "activitydatarecord_set__terrestrialbiocontrolcollectionentry_set__biological_agent",
+            "activitydatarecord_set__terrestrialbiocontrolreleaseentry_set__biocontrol_agent",
+            "activitydatarecord_set__terrestrialbiocontroldispersalmonitoringentry_set__biocontrol_agent",
+            "activitydatarecord_set__terrestrialbiocontroldispersalmonitoringentry_set__invasive_plant",
         )
+
+        if sort_column == "species_negative_full":
+            is_negative_observation = Q(type="Observation") & (
+                Q(
+                    activitydatarecord__terrestrialplantobservationentries__observation_type="Negative",
+                    activitydatarecord__terrestrialplantobservationentries__invasive_plant__isnull=False,
+                )
+                | Q(
+                    activitydatarecord__aquaticplantobservationentry__observation_type="Negative",
+                    activitydatarecord__aquaticplantobservationentry__invasive_plant__isnull=False,
+                )
+            )
+            queryset = queryset.annotate(
+                species_sort=Min(Coalesce(
+                    "activitydatarecord__aquaticplantobservationentry__invasive_plant__full",
+                    "activitydatarecord__terrestrialplantobservationentries__invasive_plant__full",
+                ),
+                filter=is_negative_observation),
+            )
+            order_by = "species_sort"
+
+        elif sort_column == "species_positive_full":
+            is_positive_observation = Q(type="Observation") & (
+                Q(
+                    activitydatarecord__terrestrialplantobservationentries__observation_type="Positive",
+                    activitydatarecord__terrestrialplantobservationentries__invasive_plant__isnull=False,
+                )
+                | Q(
+                    activitydatarecord__aquaticplantobservationentry__observation_type="Positive",
+                    activitydatarecord__aquaticplantobservationentry__invasive_plant__isnull=False,
+                )
+            )
+            queryset = queryset.annotate(
+                species_sort=Min(Coalesce(
+                    "activitydatarecord__aquaticplantobservationentry__invasive_plant__full",
+                    "activitydatarecord__terrestrialplantobservationentries__invasive_plant__full",
+                ),
+                filter=is_positive_observation),
+            )
+            order_by = "species_sort"
+
+        elif sort_column in "invasive_plant" :
+            # For general plants, we look across all tables
+            queryset = queryset.annotate(
+                species_sort=Coalesce(
+                    "activitydatarecord__aquaticplantobservationentry__invasive_plant__full",
+                    "activitydatarecord__terrestrialplantobservationentries__invasive_plant__full",
+                    "activitydatarecord__aquaticplantmechanicaltreatmententry__invasive_plant__full",
+                    "activitydatarecord__terrestrialplantmechanicaltreatmententry__invasive_plant__full",
+                    "activitydatarecord__terrestrialtreatmentmonitoringentry__invasive_plant__full",
+                    "activitydatarecord__terrestrialbiocontroldispersalmonitoringentry__invasive_plant__full",
+                    "activitydatarecord__terrestrialbiocontrolreleaseentry__invasive_plant__full",
+                    "activitydatarecord__aquatictreatmentmonitoringentry__invasive_plant__full",
+                    "activitydatarecord__chemicaltreatmentaquaticinvasiveplantrecord__invasive_plant__full",
+                    "activitydatarecord__chemicaltreatmentterrestrialinvasiveplantrecord__invasive_plant__full"
+                )
+            )
+            order_by = "species_sort"
+        elif sort_column == "species_treated_full":
+            queryset = queryset.annotate(
+                species_sort=Coalesce(
+                    "activitydatarecord__aquaticplantmechanicaltreatmententry__invasive_plant__full",
+                    "activitydatarecord__terrestrialplantmechanicaltreatmententry__invasive_plant__full",
+                    "activitydatarecord__terrestrialtreatmentmonitoringentry__invasive_plant__full",
+                    "activitydatarecord__terrestrialbiocontroldispersalmonitoringentry__invasive_plant__full",
+                    "activitydatarecord__terrestrialbiocontrolreleaseentry__invasive_plant__full",
+                    "activitydatarecord__aquatictreatmentmonitoringentry__invasive_plant__full",
+                    "activitydatarecord__chemicaltreatmentaquaticinvasiveplantrecord__invasive_plant__full",
+                    "activitydatarecord__chemicaltreatmentterrestrialinvasiveplantrecord__invasive_plant__full"
+                )
+            )
+            order_by = "species_sort"
+        elif sort_column == 'species_biocontrol_full':
+            queryset = queryset.annotate(
+                species_sort=Min(Coalesce(
+                    "activitydatarecord__terrestrialbiocontrolcollectionentry__biological_agent__full",
+                    "activitydatarecord__terrestrialbiocontrolreleaseentry__biocontrol_agent__full",
+                    "activitydatarecord__terrestrialbiocontroldispersalmonitoringentry__biocontrol_agent__full",
+                ))
+            )
+            order_by = "species_sort"
+        else:
+            order_by = db_column
 
         final_query = Q()
         for obj in filter_objects:
@@ -68,7 +173,16 @@ class RecordsetRowsViewSet(viewsets.GenericViewSet):
         start = page * limit
         stop = start + limit
 
-        results = queryset.order_by(order_by)[start:stop]
+        try:
+            if meta.get("sortOrder", "") == "ASC":
+                order_expression = F(order_by).asc(nulls_last=True)
+            else:
+                order_expression = F(order_by).desc(nulls_last=True)
+
+            results = queryset.order_by(order_expression).distinct()[start:stop]
+        except FieldError as e:
+            print(e)
+            results = queryset.order_by("date").distinct()[start:stop]
 
         serializer = ActivityRecordsetRowSerializer(results, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
