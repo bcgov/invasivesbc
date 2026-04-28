@@ -8,6 +8,7 @@ class ActivityRecordsetRowSerializer(serializers.ModelSerializer):
     """
     Entry For Serializing Activities to a Recordset Row
     """
+
     geom = serializers.SerializerMethodField()
     invasive_plant = serializers.SerializerMethodField()
     species_positive_full = serializers.SerializerMethodField()
@@ -67,7 +68,7 @@ class ActivityRecordsetRowSerializer(serializers.ModelSerializer):
         ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial.name: {
             "set": "terrestrialbiocontroldispersalmonitoringentry_set",
             "key": "biocontrol_agent",
-        }
+        },
     }
 
     class Meta:
@@ -94,7 +95,7 @@ class ActivityRecordsetRowSerializer(serializers.ModelSerializer):
             "biogeoclimatic_zones",
             "elevation",
             "batch_id",
-            "geom"
+            "geom",
         )
 
     def get_entry_destination(self, subtype):
