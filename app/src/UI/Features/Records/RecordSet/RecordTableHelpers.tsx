@@ -25,7 +25,8 @@ export const getUnnestedFieldsForActivity = (activity): IActivityTableRow => {
     invasive_plant_management_areas: activity?.invasive_plant_management_areas,
     biogeoclimatic_zones: activity?.biogeoclimatic_zones,
     elevation: activity?.elevation,
-    batch_id: activity?.batch_id
+    batch_id: activity?.batch_id,
+    geom: activity?.geom
   };
 
   return JSON.parse(JSON.stringify(columns));
