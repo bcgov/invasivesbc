@@ -46,6 +46,7 @@ const TargetPlantPhenology = () => {
   }, [isPhenologyDetails]);
 
   useEffect(() => {
+    if (isDirty) return;
     setIsPhenologyDetails(!!plantPhenologyExists);
   }, [plantPhenologyExists]);
 
