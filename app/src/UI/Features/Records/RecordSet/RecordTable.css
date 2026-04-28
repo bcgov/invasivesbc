@@ -84,6 +84,22 @@
   td {
     border-top: 1px solid lightgray;
     border-left: 1px solid lightgray;
+    padding: 8px;
+    vertical-align: text-top;
+
+    .cell {
+      max-width: 550px;
+      white-space: normal;
+      overflow-wrap: normal;
+      width: max-content;
+      min-width: 100px;
+      display: block;
+
+      .null-value {
+        color: #ccc;
+        font-style: italic;
+      }
+    }
 
     &:last-child {
       border-right: 1px solid lightgray;
