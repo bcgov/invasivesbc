@@ -22,14 +22,14 @@ const RecordTablePopoverContent = ({ recordDisplayId: id, recordLookupId, record
   const handleOpenRecordInRHF = () => {
     const url =
       recordType === RecordSetType.Activity
-        ? '/Records/HookForm/' + recordLookupId + '/form'
+        ? '/Records/Activity/' + recordLookupId + '/form'
         : '/Records/IAPP/' + recordLookupId + '/summary';
     navigate(url);
   };
   const handleOpenRecordInRJSF = () => {
     const url =
       recordType === RecordSetType.Activity
-        ? '/Records/Activity/' + recordLookupId + '/form'
+        ? '/Records/LegacyForm/' + recordLookupId + '/form'
         : '/Records/IAPP/' + recordLookupId + '/summary';
     navigate(url);
   };
