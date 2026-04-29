@@ -88,7 +88,7 @@ body {
 }
 
 :root {
-  --overlay-header-z-index: 99999;
+  --overlay-header-z-index: 998;
   --form-container-width: 950px;
   --form-input-height: 2.75rem;
   --form-legend-font-size: 1.33rem;

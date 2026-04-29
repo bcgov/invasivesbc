@@ -104,13 +104,13 @@ export const iappColumnsToDisplay = [
 
 export const offlineActivityColumnsToDisplay = [
   { key: 'short_id', name: 'Activity ID', displayWidget: 'div', hide: false },
-  { key: 'activity_type', name: 'Activity Type', hide: false },
-  { key: 'activity_subtype', name: 'Activity Sub Type', hide: false },
-  { key: 'activity_date', name: 'Activity Date', hide: false },
-  { key: 'reported_area', name: 'Area (m²)', hide: false },
-  { key: 'jurisdiction_display', name: 'Jurisdiction', hide: false },
-  { key: 'invasive_plant', name: 'Invasive Plant', hide: false },
+  { key: 'type', name: 'Activity Type', hide: false },
+  { key: 'subtype', name: 'Activity Sub Type', hide: false },
+  { key: 'date', name: 'Activity Date', hide: false },
+  { key: 'area_m', name: 'Area (m²)', hide: false },
+  { key: 'jurisdictions', name: 'Jurisdiction', hide: false },
+  { key: 'invasive_plants', name: 'Invasive Plant(s)', hide: false },
   { key: 'created_by', name: 'Created By', hide: false },
-  { key: 'agency', name: 'Agency', hide: false },
-  { key: 'form_status', name: 'Status', hide: false }
+  { key: 'funding_agencies', name: 'Funding Agencies', hide: false },
+  { key: 'status', name: 'Status', hide: false }
 ];

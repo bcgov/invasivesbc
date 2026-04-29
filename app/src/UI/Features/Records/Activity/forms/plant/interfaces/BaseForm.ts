@@ -2,10 +2,10 @@ import { Feature } from 'maplibre-gl';
 import { ActivitySubtypes, ActivityType } from 'sharedAPI';
 
 interface BaseForm {
-  id?: string;
+  id: string;
   subtype: ActivitySubtypes;
-  type?: ActivityType;
-  short_id?: string;
+  type: ActivityType;
+  short_id: string;
   form_status?: string;
   created_by?: string;
   linked_activities: Array<{

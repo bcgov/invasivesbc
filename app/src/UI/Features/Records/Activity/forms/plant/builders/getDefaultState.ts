@@ -1,4 +1,4 @@
-import { ActivitySubtypes } from 'sharedAPI';
+import { ActivityLetters, ActivityStatus, ActivitySubtypes, ActivitySubtypesToType } from 'sharedAPI';
 import {
   getBioControlReleaseSubtypeFields,
   getMonitoringBiocontrolReleaseSubtypeFields,
@@ -52,17 +52,20 @@ const getSubtypeData = (subtype: ActivitySubtypes): FormSchema['subtype_data'] =
 /**
  * Get the default values needed for a form, used for form create/reset logic.
  */
-const getDefaultFormState = (
-  subtype: ActivitySubtypes = ActivitySubtypes.Observation_Plant_Terrestrial,
-  created_by?: string
-): FormSchema => {
+const getDefaultFormState = (subtype: ActivitySubtypes, created_by?: string): FormSchema => {
   const subtype_data = getSubtypeData(subtype);
   const isChemical = [
     ActivitySubtypes.Treatment_Chemical_Plant_Aquatic,
     ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial
   ].some((st) => st === subtype);
-
+  const id = crypto.randomUUID();
+  const dateStamp = new Date().toISOString().slice(2, 4);
+  const subtypeTag = ActivityLetters[subtype] ?? '';
+  const uuidSlice = id.slice(0, 8).toUpperCase();
+  const short_id = dateStamp + subtypeTag + uuidSlice;
   return {
+    id,
+    short_id,
     employer: '',
     subtype: subtype,
     funding_agencies: [{ invasive_species_agency_code: '' }],
@@ -70,6 +73,7 @@ const getDefaultFormState = (
     projects: [{ description: '' }],
     location_description: '',
     access_description: '',
+    form_status: ActivityStatus.DRAFT,
     date: new Date().toISOString().slice(0, 10),
     comment: '',
     area_m: 0,
@@ -82,6 +86,7 @@ const getDefaultFormState = (
     linked_activities: [],
     participants: [{ name: '', pac_number: isChemical ? 0 : undefined }],
     subtype_data: subtype_data,
+    type: ActivitySubtypesToType[subtype],
     media: [],
     created_by
   } as FormSchema;

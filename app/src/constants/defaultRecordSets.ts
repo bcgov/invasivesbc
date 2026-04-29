@@ -57,7 +57,7 @@ if (buildTimeConfig.MOBILE) {
     recordSetType: RecordSetType.Activity,
     id: RecordSetId.OfflineActivities,
     idList: [],
-    recordSetName: 'All Unsynced Offline Activities',
+    recordSetName: 'All Offline Activities',
     cacheMetadataStatus: UserRecordCacheStatus.NOT_ELIGIBLE,
     drawOrder: 4,
     mapToggle: true, // by default

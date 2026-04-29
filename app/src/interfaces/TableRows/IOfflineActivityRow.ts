@@ -1,19 +1,19 @@
-import { Polygon } from 'geojson';
-import { Point } from 'maplibre-gl';
-import { ActivitySubtype, ActivityType } from 'sharedAPI';
+import { GeoJSON } from 'geojson';
+import { ActivitySubtypes, ActivityType } from 'sharedAPI';
 
 interface IOfflineActivityRow {
   activity_id: string;
   short_id: string;
-  geometry: Array<Polygon | Point>;
-  activity_type: ActivityType;
-  activity_subtype: ActivitySubtype;
-  activity_date: Date;
-  reported_area: number;
-  jurisdiction_display: string;
-  invasive_plant_management_area: string;
+  geom: GeoJSON;
+  type: ActivityType;
+  subtype: ActivitySubtypes;
+  date: string;
+  area_m: string;
+  jurisdictions: string;
+  invasive_plants: string;
+  funding_agencies: string;
   created_by: string;
-  agency: string;
+  status: string;
 }
 
 export default IOfflineActivityRow;

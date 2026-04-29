@@ -3,10 +3,9 @@ import './RecordTablePopoverContent.css';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import { useDispatch } from 'utils/use_selector';
 import UserSettings from 'state/actions/userSettings/UserSettings';
-import { Point, Polygon } from 'geojson';
+import { GeoJSON } from 'geojson';
 import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
 import { useNavigate } from 'react-router';
-import { Debug } from 'UI/Reusable/Predicates/Debug';
 
 /**
  * @property { string } recordDisplayId Short ID / Site ID for a Record, displayed in the Popover
@@ -17,7 +16,7 @@ type PropTypes = {
   recordDisplayId: string;
   recordLookupId: string;
   recordType: RecordSetType;
-  geom?: Point | Polygon;
+  geom?: GeoJSON;
 };
 const RecordTablePopoverContent = ({ recordDisplayId: id, recordLookupId, recordType, geom }: PropTypes) => {
   const handleOpenRecordInRHF = () => {

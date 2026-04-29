@@ -37,11 +37,14 @@ const FormControl = () => {
   };
 
   const saveToDraft = async () => {
-    if (!isDirty) return;
-    const values = await dispatch(FormActions.sendForm({ data: getValues(), type: 'draft' }));
-    if (FormActions.sendForm.fulfilled.match(values)) {
-      setValue('id', values.payload.id);
-      setValue('short_id', values.payload.short_id);
+    if (MOBILE) {
+      dispatch(FormActions.saveMobileForm({ data: getValues(), type: 'draft' }));
+    } else {
+      const values = await dispatch(FormActions.sendForm({ data: getValues(), type: 'draft' }));
+      if (FormActions.sendForm.fulfilled.match(values)) {
+        setValue('id', values.payload.id);
+        setValue('short_id', values.payload.short_id);
+      }
     }
   };
 
@@ -49,11 +52,13 @@ const FormControl = () => {
     getValues,
     setValue,
     reset,
-    formState: { disabled, isDirty, errors }
+    formState: { disabled, errors }
   } = useFormContext<FormSchema>();
 
   const dispatch = useDispatch();
   const subtype = useSelector((state) => state.ActivityPage.formType);
+  const isFormSubmitted = useSelector((state) => state.ActivityPage.formState?.form_status === 'Submitted');
+  const MOBILE = useSelector((state) => state.Configuration.current.build.MOBILE);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   return (
@@ -62,11 +67,6 @@ const FormControl = () => {
 
       <CustomPopover buttonOverrideOptions={{ anchorEl, setAnchorEl }}>
         <div id="form-popover-menu">
-          {!isDirty && (
-            <div className="error-warning">
-              <p>No Changes Detected</p>
-            </div>
-          )}
           {Object.keys(errors).length > 0 && (
             <div className="error-warning">
               <Error color="error" />
@@ -77,18 +77,20 @@ const FormControl = () => {
             // Type="Submit" is tied to react-hook-form, it will handle the submission logic.
             // Errors don't need to be accounted for in disabling, since the rhf will pan to the error
             className="control-button"
-            disabled={disabled || !isDirty}
+            disabled={disabled}
             form="activity-form"
             type="submit"
             value="Submit Form"
           />
-          <input
-            className="control-button"
-            disabled={disabled || !isDirty}
-            onClick={saveToDraft}
-            type="button"
-            value="Save to Drafts"
-          />
+          {!isFormSubmitted && (
+            <input
+              className="control-button"
+              disabled={disabled}
+              onClick={saveToDraft}
+              type="button"
+              value="Save to Drafts"
+            />
+          )}
           <input
             className="control-button"
             disabled={disabled}

@@ -5,15 +5,32 @@ import { useDispatch, useSelector } from 'utils/use_selector';
 import 'UI/Features/OfflineDataSync/OfflineDataSync.css';
 import moment from 'moment';
 import { MoreVert } from '@mui/icons-material';
-import { ActivitySubtypeShortLabels } from 'sharedAPI';
+import { ActivitySubtypesShortLabels } from 'sharedAPI';
 import Activity from 'state/actions/activity/Activity';
 import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
 import { useNavigate } from 'react-router';
+import Prompt from 'state/actions/prompts/Prompt';
 
 type PropTypes = {
   handleClose: () => void;
 };
 export const OfflineDataSyncTable = ({ handleClose }: PropTypes) => {
+  const clearSyncedActivities = () => {
+    dispatch(
+      Prompt.confirmation({
+        title: 'Remove all Synchronized Records?',
+        prompt: [
+          'This will permanently remove synchronized records from this device.',
+          'This action cannot be undone, but it will not affect your data stored in the InvasivesBC database.'
+        ],
+        confirmText: 'Delete Locally',
+        cancelText: 'Keep Records',
+        callback: (confirm) => {
+          if (confirm) dispatch(Activity.Offline.removeSyncedRecords());
+        }
+      })
+    );
+  };
   const serializedActivities = useSelector((state) => state.OfflineActivity.serializedActivities);
   const working = useSelector((state) => state.OfflineActivity.working);
   const { authenticated, workingOffline } = useSelector((state) => state.Auth);
@@ -51,7 +68,11 @@ export const OfflineDataSyncTable = ({ handleClose }: PropTypes) => {
   }, [working, workingOffline, authenticated, connected, numUnsynchronizedRecords]);
 
   if (Object.values(serializedActivities).length === 0) {
-    return <p>There are no locally-stored activities to synchronize.</p>;
+    return (
+      <div className="content">
+        <p>There are no locally-stored activities to synchronize.</p>
+      </div>
+    );
   }
   const handleDelete = () => {
     if (!contextRecord) return;
@@ -64,7 +85,7 @@ export const OfflineDataSyncTable = ({ handleClose }: PropTypes) => {
   };
   const handleLoad = () => {
     if (!contextRecord) return;
-    navigate(`/Records/Activity/${contextRecord}/form`);
+    navigate(`/Records/HookForm/${contextRecord}/form`);
     dispatch(Activity.Offline.setSyncDialogueWindow({ open: false }));
   };
   const handleOpenMenu = (evt: MouseEvent<HTMLElement> | TouchEvent<HTMLElement>, key: string) => {
@@ -104,7 +125,7 @@ export const OfflineDataSyncTable = ({ handleClose }: PropTypes) => {
                   <Fragment key={key}>
                     <tr>
                       <td>{`${(value as OfflineActivityRecord).short_id}`}</td>
-                      <td className="record-type">{`${ActivitySubtypeShortLabels[(value as OfflineActivityRecord).record_type] || 'Unknown'}`}</td>
+                      <td className="record-type">{`${ActivitySubtypesShortLabels[(value as OfflineActivityRecord).record_type] ?? 'Unknown'}`}</td>
                       <td className="modified-time">
                         {`${moment((value as OfflineActivityRecord).saved_at).fromNow()}`}
                       </td>
@@ -147,14 +168,13 @@ export const OfflineDataSyncTable = ({ handleClose }: PropTypes) => {
         </div>
       </div>
       <div className="control">
+        {numUnsynchronizedRecords !== Object.keys(serializedActivities).length && (
+          <Button variant={'outlined'} onClick={clearSyncedActivities} className="clear-synced" color={'primary'}>
+            Remove Synced Records
+          </Button>
+        )}
         <Button onClick={handleClose}>Close</Button>
-        <Button
-          disabled={syncDisabled}
-          variant={'contained'}
-          onClick={() => {
-            dispatch(Activity.Offline.syncRun());
-          }}
-        >
+        <Button disabled={syncDisabled} variant={'contained'} onClick={() => dispatch(Activity.Offline.syncRun())}>
           Run Sync
         </Button>
       </div>
