@@ -19,6 +19,7 @@ class Offline {
   static readonly setSyncDialogueWindow = createAction<{ open: boolean }>(`${this.PREFIX}/setSyncDialogueWindow`);
   static readonly syncRun = createAction(`${this.PREFIX}/syncRun`);
   static readonly syncRunComplete = createAction(`${this.PREFIX}/syncRunComplete`);
+  static readonly removeSyncedRecords = createAction(`${this.PREFIX}/removeSyncedRecords`);
 
   static readonly updateSyncState = createAction<IUpdateSync>(`${this.PREFIX}/updateSyncState`);
   static readonly save = createAction<ISaveOffline>(`${this.PREFIX}/save`);

@@ -1,6 +1,6 @@
 #styled-modal-outter {
   display: flex;
-  z-index: 100000000;
+  z-index: 1000;
   position: fixed;
   background-color: #00000035;
   box-sizing: border-box;
@@ -15,6 +15,7 @@
   .styled-modal {
     --title-control-height: 45px;
 
+    max-width: 100%;
     background-color: white;
     box-sizing: border-box;
 

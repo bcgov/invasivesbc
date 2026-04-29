@@ -308,7 +308,7 @@ function createActivityReducer() {
           utm_easting: utm?.[1],
           utm_northing: utm?.[2]
         };
-        if (draftState.activity) {
+        if (draftState.activity?.activity_data) {
           // Prevent Crash when using RHF and Activity state empty
           // TODO: Remove this
           draftState.activity.geometry = geometry;
