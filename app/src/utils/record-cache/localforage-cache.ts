@@ -157,17 +157,11 @@ class LocalForageRecordCacheService extends RecordCacheService {
     return repos[foundIndex];
   }
 
-  async saveActivity(data: Record<PropertyKey, UserRecord>): Promise<void> {
+  async saveActivity(data: Array<UserRecord>): Promise<void> {
     if (this.store == null) {
       throw new Error('cache not available');
     }
-    await Promise.all(
-      Object.keys(data).map((key) => {
-        const parsed = getUnnestedFieldsForActivity(data[key]);
-        (parsed as Record<PropertyKey, any>).data = data[key];
-        this.store?.setItem(key, parsed);
-      })
-    );
+    await Promise.all(data.map((entry) => this.store?.setItem(entry.activity_id as string, entry)));
   }
 
   /**
