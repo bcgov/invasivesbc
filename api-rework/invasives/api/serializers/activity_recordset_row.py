@@ -1,7 +1,9 @@
 import json
 from rest_framework import serializers
+from django.contrib.gis.db.models.functions import Centroid, AsGeoJSON
 from api.models.activity.activity import Activity
 from api.models.activity import ActivitySubtypes
+from api.serializers.activity import ActivitySerializer
 
 
 class ActivityRecordsetRowSerializer(serializers.ModelSerializer):
@@ -235,3 +237,18 @@ class ActivityRecordsetRowSerializer(serializers.ModelSerializer):
     def get_updated_by(self, obj):
         # TODO: Update when Auditing is added
         return obj.created_by
+
+
+class CachedActivityRecordsetRowSerializer(ActivityRecordsetRowSerializer):
+    data = serializers.SerializerMethodField()
+
+    class Meta(ActivityRecordsetRowSerializer.Meta):
+        fields = ActivityRecordsetRowSerializer.Meta.fields + ("data",)
+
+    def get_data(self, obj):
+        # Refetch the object and annotate the centroid value.
+        annotated_obj = Activity.objects.annotate(
+            centroid=AsGeoJSON(Centroid("shape"))
+        ).get(pk=obj.pk)
+
+        return ActivitySerializer(annotated_obj, context=self.context).data
