@@ -29,7 +29,7 @@ export const getUnnestedFieldsForActivity = (activity): IActivityTableRow => {
     geom: activity?.geom
   };
 
-  return JSON.parse(JSON.stringify(columns));
+  return structuredClone(columns) as IActivityTableRow;
 };
 
 export const getUnnestedFieldsForIAPP = (record): IIappTableRow => {
