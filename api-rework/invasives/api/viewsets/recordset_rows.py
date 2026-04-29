@@ -4,8 +4,12 @@ from django.core.exceptions import FieldError
 from django.db.models import Q, F, Min
 from django.db.models.functions import Coalesce
 from api.models.activity import ActivitySubtypes
-from api.serializers.activity_recordset_row import ActivityRecordsetRowSerializer
+from api.serializers.activity_recordset_row import (
+    ActivityRecordsetRowSerializer,
+    CachedActivityRecordsetRowSerializer,
+)
 from api.models.activity import Activity
+from api.constants import uuid_regex, short_id_regex
 
 # Separate complex paths to a constant for easier maintenance
 ALL_PLANT_PATHS = [
@@ -53,9 +57,37 @@ SORT_MAPPING = {
 class RecordsetRowsViewSet(viewsets.GenericViewSet):
     serializer_class = ActivityRecordsetRowSerializer
 
+    def get(self, request, *args, **kwargs):
+        """
+        Given a 'idList' query param of IDs (short or full)
+        return a list of Recordset rows and data payloads (For caching purposes)
+        """
+        id_list = request.GET.get("idList", []).split(",")
+        if len(id_list) == 0:
+            return Response("No IDs provided", status=status.HTTP_400_BAD_REQUEST)
+
+        uuids = []
+        short_ids = []
+        for id in id_list:
+            if uuid_regex.match(id):
+                uuids.append(id)
+            elif short_id_regex.match(id):
+                short_ids.append(id)
+            else:
+                return Response(f"Invalid ID: {id}", status=status.HTTP_400_BAD_REQUEST)
+
+        results = Activity.objects.filter(Q(id__in=uuids) | Q(short_id__in=short_ids))
+        serializer = CachedActivityRecordsetRowSerializer(results, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     def create(self, request, *args, **kwargs):
         filter_objects = request.data.get("filterObjects", [])
         meta = filter_objects[0] if filter_objects else {}
+        ids_only = (
+            len(meta.get("selectColumns", [])) == 1
+            and meta.get("selectColumns")[0] == "activity_id"
+        )
 
         queryset = self._get_base_queryset()
 
@@ -64,6 +96,10 @@ class RecordsetRowsViewSet(viewsets.GenericViewSet):
 
         # 2. Apply Sorting & Annotations
         queryset, order_by = self._apply_sorting(queryset, meta)
+
+        if ids_only:  # Early Return, just ship IDs, don't paginate.
+            id_list = queryset.values_list("id", flat=True).distinct()
+            return Response(list(id_list), status=status.HTTP_200_OK)
 
         # 3. Pagination & Execution
         results = self._paginate_and_execute(queryset, order_by, meta)
