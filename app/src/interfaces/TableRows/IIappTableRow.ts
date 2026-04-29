@@ -1,4 +1,4 @@
-import { Feature } from 'maplibre-gl';
+import { GeoJSON } from 'geojson';
 
 interface IIappTableRow {
   site_id: number | string;
@@ -17,6 +17,6 @@ interface IIappTableRow {
   regional_district: string;
   regional_invasive_species_organization: string;
   invasive_plant_management_area: string;
-  geometry: Feature;
+  geometry: GeoJSON;
 }
 export default IIappTableRow;

@@ -10,7 +10,7 @@ import { useSelector } from 'utils/use_selector';
 import { createSelector } from '@reduxjs/toolkit';
 import UserRecord from 'interfaces/UserRecord';
 import RecordTableColumnSelect from 'UI/Features/Records/RecordSet/RecordTableColumnSelect/RecordTableColumnSelect';
-import { MouseEvent, TouchEvent, useState } from 'react';
+import { MouseEvent, TouchEvent, useMemo, useState } from 'react';
 import RecordTablePopoverContent from 'UI/Features/Records/RecordSet/RecordTablePopoverContent/RecordTablePopoverContent';
 import IappRecord from 'interfaces/IappRecord';
 import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
@@ -18,6 +18,7 @@ import UserSettings from 'state/actions/userSettings/UserSettings';
 import IActivityTableRow from 'interfaces/TableRows/IActivityTableRow';
 import IIappTableRow from 'interfaces/TableRows/IIappTableRow';
 import { Point, Polygon } from 'geojson';
+import { Md5 } from 'ts-md5';
 
 type PropTypes = {
   setID: string;
@@ -29,7 +30,7 @@ export const RecordTable = ({ setID }: PropTypes) => {
       if ('activity_id' in row) {
         return {
           id: row.activity_id,
-          geom: row?.geometry?.[0],
+          geom: row?.geom,
           identifier: row.short_id
         };
       } else if ('site_id' in row) {
@@ -54,7 +55,7 @@ export const RecordTable = ({ setID }: PropTypes) => {
    * @desc Set anchor point and display information for opening the Popover
    */
   const handlePopoverOpen = (evt: MouseEvent<any> | TouchEvent<any>, row: UserRecord | IappRecord) => {
-    setGeom(row?.geometry?.[0] ?? row?.geometry);
+    setGeom(row?.geom);
     setRecordDisplayId(row.short_id ?? row.site_id ?? '');
     setRecordLookupId(row.activity_id ?? row.site_id ?? '');
     setAnchorEl(evt.currentTarget);
@@ -78,9 +79,16 @@ export const RecordTable = ({ setID }: PropTypes) => {
   const [recordLookupId, setRecordLookupId] = useState<string>('');
   const [geom, setGeom] = useState<Polygon | Point>();
 
-  const mappedRows = unmappedRows?.map((row) =>
-    recordSetType === RecordSetType.Activity ? getUnnestedFieldsForActivity(row) : getUnnestedFieldsForIAPP(row)
-  );
+  const mappedRows = useMemo(() => {
+    if (!unmappedRows) return [];
+    else if (recordSetType === RecordSetType.Activity) {
+      return unmappedRows.map(getUnnestedFieldsForActivity);
+    } else if (recordSetType === RecordSetType.IAPP) {
+      return unmappedRows.map(getUnnestedFieldsForIAPP);
+    }
+    return [];
+  }, [recordSetType, unmappedRows]);
+
   const sortColumns = (() => {
     switch (recordSetType) {
       case RecordSetType.IAPP:
@@ -99,6 +107,7 @@ export const RecordTable = ({ setID }: PropTypes) => {
       </div>
     );
   }
+  const hash = Md5.hashStr(JSON.stringify(mappedRows));
   return (
     <div>
       <CustomPopover buttonOverrideOptions={{ anchorEl, setAnchorEl }}>
@@ -111,7 +120,7 @@ export const RecordTable = ({ setID }: PropTypes) => {
       </CustomPopover>
       <RecordTableColumnSelect recordSetType={recordSetType} />
       <div className="record_table_container">
-        <table className="record_table">
+        <table className="record_table" key={hash}>
           <tbody>
             <tr className="record_table_header">
               {tableColumns.map((col) => (
@@ -149,7 +158,13 @@ export const RecordTable = ({ setID }: PropTypes) => {
                       key={col.key + col.name}
                       onClick={(evt) => handlePopoverOpen(evt, row)}
                     >
-                      {row[col.key]}
+                      <div className="cell">
+                        {row[col.key] ?? (
+                          <span className="null-value" aria-hidden={true}>
+                            None
+                          </span>
+                        )}
+                      </div>
                     </td>
                   ))}
                 </tr>
