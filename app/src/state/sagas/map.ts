@@ -53,7 +53,6 @@ import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
 import AppActions from 'state/actions/appActions/appActions';
 import DrawToolActions from 'state/actions/drawtool/drawToolActions';
 import getIdsForRecordset from 'utils/getIdsForRecordset';
-import { selectConfiguration } from 'state/reducers/configuration';
 import Alerts from 'state/actions/alerts/Alerts';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 
@@ -643,7 +642,6 @@ function* handle_ACTIVITIES_TABLE_GET_ROWS_REQUEST(action) {
   }
 }
 function* handle_GET_RECORDSET_IDS(action: PayloadAction<IGetIdsForRecordset>) {
-  const { API_BASE } = yield select(selectConfiguration);
   const currentState = yield select((state) => state.UserSettings);
   const workingOffline = yield select((state) => state.Auth.workingOffline);
   const connected = yield select((state) => state.Network.connected);
@@ -657,7 +655,7 @@ function* handle_GET_RECORDSET_IDS(action: PayloadAction<IGetIdsForRecordset>) {
   // Attempt to retrieve Records from API
   try {
     if (!userIsOffline) {
-      const ids = yield getIdsForRecordset(currentState.recordSets[action.payload.recordSetID], { API_BASE });
+      const ids = yield getIdsForRecordset(currentState.recordSets[action.payload.recordSetID]);
       yield put(WhatsHere.getIdsForRecordsetSuccess({ idList: ids, ...action.payload }));
       return; // Exit out, we don't need to scan for Cached Records
     }
