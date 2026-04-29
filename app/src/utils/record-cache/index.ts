@@ -319,7 +319,6 @@ abstract class RecordCacheService extends BaseCacheService<
         });
         if (rez.ok) {
           const response = await rez.json();
-          console.log(response);
           await this.saveActivity(response);
         }
       });
