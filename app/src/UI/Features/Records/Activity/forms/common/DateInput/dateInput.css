@@ -19,6 +19,9 @@
 
   input[type='date'],
   input[type='datetime-local'] {
+    color: black;
+    border: 1pt solid var(--ui-border-light);
+    appearance: none; /* Prevent iOS Style overriding */
     font-family: BCSans, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif;
     height: var(--form-input-height);
     width: 100%;

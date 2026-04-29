@@ -12,6 +12,8 @@
   }
 
   input[type='text'] {
+    appearance: none; /* Prevent iOS Style overriding */
+    border: 1pt solid var(--ui-border-light);
     font-family: BCSans, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif;
     height: var(--form-input-height);
     width: 100%;
