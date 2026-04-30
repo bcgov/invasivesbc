@@ -1,8 +1,7 @@
 import localForage from 'localforage';
-import centroid from '@turf/centroid';
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
 import booleanIntersects from '@turf/boolean-intersects';
-import { Feature } from 'geojson';
+import { Feature, GeoJSON } from 'geojson';
 import {
   IappRecordMode,
   RepositoryMetadata,
@@ -16,7 +15,6 @@ import IappRecord from 'interfaces/IappRecord';
 import IappTableRow from 'interfaces/IappTableRecord';
 import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import bboxToPolygon from 'utils/bboxToPolygon';
-import { getUnnestedFieldsForActivity } from 'UI/Features/Records/RecordSet/RecordTableHelpers';
 import EFilterType from 'constants/EFilterType';
 
 class LocalForageRecordCacheService extends RecordCacheService {
@@ -324,32 +322,32 @@ class LocalForageRecordCacheService extends RecordCacheService {
    * @returns { RecordSetSourceMetadata } Two formatted queries for High/Low zoom layers
    */
   async createActivityRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata> {
-    const centroidArr: any[] = [];
-    const geoJsonArr: any[] = [];
+    const centroidArr: GeoJSON[] = [];
+    const geoJsonArr: GeoJSON[] = [];
 
     for (const id of ids) {
       const data: UserRecord = (await this.loadActivity(id)) as UserRecord;
       const geojson = {
-        ...(data.shape as object),
+        ...(data.shape as GeoJSON),
         properties: {
           description: id
         }
       };
-      centroidArr.push(data.centroid);
+      centroidArr.push(data.centroid as GeoJSON);
       geoJsonArr.push(geojson);
     }
     const cachedCentroid: GeoJSONSourceSpecification = {
       type: 'geojson',
       data: {
         type: 'FeatureCollection',
-        features: centroidArr
+        features: centroidArr as keyof GeoJSONSourceSpecification['data']
       }
     };
     const cachedGeoJson: GeoJSONSourceSpecification = {
       type: 'geojson',
       data: {
         type: 'FeatureCollection',
-        features: geoJsonArr
+        features: geoJsonArr as keyof GeoJSONSourceSpecification['data']
       }
     };
     return { cachedCentroid, cachedGeoJson };
