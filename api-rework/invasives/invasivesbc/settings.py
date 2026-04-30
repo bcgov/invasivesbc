@@ -2,6 +2,8 @@ import os
 from pathlib import Path
 import sys
 
+from celery import Celery
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = "django-insecure-&3i*dwyfxin1+336nfgz861&1z(56@qod5mq!^9f&-8y(r8qio"
@@ -14,6 +16,7 @@ INSTALLED_APPS = [
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.gis",
+    "django_celery_beat",
     "ninja",
     "api",
     "corsheaders",
@@ -64,6 +67,12 @@ LEGACY_DB = {
     "HOST": os.getenv("LEGACY_DB_HOST"),
     "PORT": os.getenv("DB_PORT"),
 }
+
+CELERY_BROKER_URL = os.getenv(
+    "CELERY_BROKER_URL", "amqp://guest:guest@localhost:5672//"
+)  # rabbitmq defaults if unspecified (for local dev)
+CELERY_TIMEZONE = "America/Vancouver"
+CELERY_TASK_TRACK_STARTED = True
 
 KEYCLOAK = {
     "JWKS_ENDPOINT": os.getenv(
