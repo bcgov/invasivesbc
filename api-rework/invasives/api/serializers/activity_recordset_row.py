@@ -11,6 +11,7 @@ class ActivityRecordsetRowSerializer(serializers.ModelSerializer):
     Entry For Serializing Activities to a Recordset Row
     """
 
+    reported_area = serializers.SerializerMethodField()
     geom = serializers.SerializerMethodField()
     invasive_plant = serializers.SerializerMethodField()
     species_positive_full = serializers.SerializerMethodField()
@@ -90,6 +91,7 @@ class ActivityRecordsetRowSerializer(serializers.ModelSerializer):
             "species_biocontrol_full",
             "created_by",
             "updated_by",
+            "reported_area",
             "agency",
             "regional_invasive_species_organization_areas",
             "regional_districts",
@@ -127,6 +129,9 @@ class ActivityRecordsetRowSerializer(serializers.ModelSerializer):
             )
 
         return self.build_response_value(sorted(set(all_plants)))
+
+    def get_reported_area(self, obj):
+        return obj.area_m
 
     def get_species_positive_full(self, obj):
         """Fetch Positive species values from all associated DataRecords"""
