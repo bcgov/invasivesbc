@@ -260,7 +260,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
     const subset = recordSetIdList.slice(startPos, startPos + limit);
     const results = await this.cacheDB?.query(
       // language=SQLite
-      `SELECT DATA
+      `SELECT *
        FROM CACHED_RECORDS
        WHERE ID IN (${subset.map(() => '?').join(', ')})`,
       [...subset]
@@ -270,18 +270,20 @@ class SQLiteRecordCacheService extends RecordCacheService {
       return [];
     }
 
-    const response = results.values
-      .map((item) => {
-        try {
-          return JSON.parse(item['DATA']) as UserRecord;
-        } catch (e) {
-          console.error('Error parsing record:', e);
-          return null;
-        }
-      })
-      .filter((record) => record !== null);
-
-    return response;
+    return (
+      results.values.map((record) => {
+        const parsedRecord: Record<PropertyKey, UserRecord | IappRecord> = {};
+        Object.keys(record).forEach((key) => {
+          if (['TABLE_DATA', 'RECORD_DATA', 'DATA', 'GEOJSON', 'CENTROID'].includes(key)) {
+            parsedRecord[key.toLowerCase()] = JSON.parse(record[key]);
+            if (key === 'DATA') parsedRecord.reported_area = parsedRecord.data?.area_m;
+          } else {
+            parsedRecord[key.toLowerCase()] = record[key];
+          }
+        });
+        return parsedRecord;
+      }) ?? []
+    );
   }
 
   async getPaginatedCachedIappRecords(recordSetIdList: string[], page: number, limit: number): Promise<IappRecord[]> {
@@ -544,7 +546,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
       results.map((record) => {
         const parsedRecord: Record<PropertyKey, UserRecord | IappRecord> = {};
         Object.keys(record).forEach((key) => {
-          if (['TABLE_DATA', 'RECORD_DATA', 'DATA', 'RECORD_DATA', 'GEOJSON', 'CENTROID'].includes(key)) {
+          if (['TABLE_DATA', 'RECORD_DATA', 'DATA', 'GEOJSON', 'CENTROID'].includes(key)) {
             parsedRecord[key.toLowerCase()] = JSON.parse(record[key]);
           } else {
             parsedRecord[key.toLowerCase()] = record[key];
