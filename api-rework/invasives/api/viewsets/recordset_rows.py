@@ -1,3 +1,8 @@
+from django.contrib.gis.geos import GEOSGeometry
+import json
+import psycopg
+import logging
+from psycopg.rows import dict_row
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from django.core.exceptions import FieldError
@@ -10,6 +15,12 @@ from api.serializers.activity_recordset_row import (
 )
 from api.models.activity import Activity
 from api.constants import uuid_regex, short_id_regex
+from invasivesbc.settings import LEGACY_DB_CONNECTION_STRING
+
+logging.basicConfig(level=logging.DEBUG)
+logging.getLogger("psycopg").setLevel(logging.DEBUG)
+
+log = logging.getLogger("recordset_rows_viewset")
 
 # Separate complex paths to a constant for easier maintenance
 ALL_PLANT_PATHS = [
@@ -136,8 +147,42 @@ class RecordsetRowsViewSet(viewsets.GenericViewSet):
         field = f.get("field").replace("activity_", "")
         value = f.get("filter")
         operator = f.get("operator")
+        filter_type = f.get("filterType")
 
-        if field == "invasive_plant":
+        if filter_type == "spatialFilterDrawn":
+            try:
+                geom_data = json.dumps(f.get("geojson").get("geometry"))
+                search_geometry = GEOSGeometry(geom_data)
+                return Q(shape__intersects=search_geometry)
+            except Exception as e:
+                log.error("error handling spatialFilterDrawn:", e)
+                return Q()
+        elif filter_type == "spatialFilterUploaded":
+            try:
+                with psycopg.connect(
+                    LEGACY_DB_CONNECTION_STRING, row_factory=dict_row
+                ) as conn:
+                    with conn.cursor() as cursor:
+                        sql = """
+                            SELECT geog
+                            FROM admin_defined_shapes
+                            WHERE id = %s
+                            LIMIT 1;
+                        """
+                        cursor.execute(sql, (value,))
+                        result = cursor.fetchone()
+                        if result:
+                            geog = result["geog"]
+                            return Q(shape__intersects=GEOSGeometry(geog))
+                        else:
+                            log.debug(
+                                f"Requested shape with ID '{value}' was not found."
+                            )
+                            return Q()
+            except Exception as e:
+                log.error("error handling spatialFilterUploaded:", e)
+                return Q()
+        elif field == "invasive_plant":
             current_q = Q()
             for path in ALL_PLANT_PATHS:
                 current_q |= Q(**{f"{path}__icontains": value})
