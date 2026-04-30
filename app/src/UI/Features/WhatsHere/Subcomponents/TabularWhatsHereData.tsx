@@ -73,7 +73,6 @@ const TabularWhatsHereData = ({ setAnchorEl, recordsetType }: PropTypes) => {
   if (config[recordsetType].rows.length === 0) {
     return <NoRowsInSearch />;
   }
-  console.log(config[recordsetType].rows);
   return (
     <>
       <div className="whats-here-table-container">
