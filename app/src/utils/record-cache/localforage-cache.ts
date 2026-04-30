@@ -180,8 +180,8 @@ class LocalForageRecordCacheService extends RecordCacheService {
     // Multiple Repos could contain the same record, so iterate them into an object to filter the duplicates
     for (const r of reposInBoundingBox) {
       const repo = await this.getRepository(r.set_id!, ['cached_geojson']);
-      (repo?.cached_geojson?.data as any)?.features.forEach((feature: Feature, i: number) => {
-        featureMap[feature?.properties?.name + i] ??= feature;
+      (repo?.cached_geojson?.data as any)?.features.forEach((feature: Feature) => {
+        featureMap[feature?.properties?.description] ??= feature;
       });
     }
     Object.values(featureMap).forEach((feature) => {
@@ -253,7 +253,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
     return results;
   }
 
-  async loadActivity(id: string): Promise<unknown> {
+  async loadActivity(id: string, format: 'row' | 'record' = 'record'): Promise<unknown> {
     if (this.store == null) {
       throw new Error('cache not available');
     }
@@ -264,7 +264,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
       throw new Error(`activity ${id} not found in cache`);
     }
 
-    return data?.data;
+    return format === 'row' ? data : data?.data;
   }
 
   /**
@@ -286,7 +286,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
     const results: any[] = [];
     const endPos = Math.min((page + 1) * limit, recordSetIdList.length);
     for (let i = startPos; i < endPos; i++) {
-      const entry: UserRecord = (await this.loadActivity(recordSetIdList[i])) as UserRecord;
+      const entry: UserRecord = (await this.loadActivity(recordSetIdList[i], 'row')) as UserRecord;
       results.push(entry);
     }
     return results;
@@ -329,17 +329,14 @@ class LocalForageRecordCacheService extends RecordCacheService {
 
     for (const id of ids) {
       const data: UserRecord = (await this.loadActivity(id)) as UserRecord;
-      const label = data.short_id;
-      const features = (data.geometry as Feature[]) ?? [];
-      features.forEach((feature: Feature) => {
-        feature.properties = {
-          name: label + '\n' + data.map_symbol,
-          description: id,
-          activity_subtype: data?.activity_subtype ?? null
-        };
-        centroidArr.push(centroid(feature, { properties: feature.properties }));
-        geoJsonArr.push(feature);
-      });
+      const geojson = {
+        ...(data.shape as object),
+        properties: {
+          description: id
+        }
+      };
+      centroidArr.push(data.centroid);
+      geoJsonArr.push(geojson);
     }
     const cachedCentroid: GeoJSONSourceSpecification = {
       type: 'geojson',
