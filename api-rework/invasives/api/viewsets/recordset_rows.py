@@ -125,7 +125,9 @@ class RecordsetRowsViewSet(viewsets.GenericViewSet):
         """
         for obj in filter_objects:
             or_group = Q()
-
+            ids_to_filter = obj.get("ids_to_filter", None)
+            if ids_to_filter:
+                queryset = queryset.filter(id__in=ids_to_filter)
             for f in obj.get("tableFilters", []):
                 logic_gate = f.get("operator2", "AND")
                 current_q = self._build_single_filter_q(f)
@@ -144,7 +146,7 @@ class RecordsetRowsViewSet(viewsets.GenericViewSet):
 
     def _build_single_filter_q(self, f):
         """Helper to create a Q object for a single filter row."""
-        field = f.get("field").replace("activity_", "")
+        field = f.get("field", "").replace("activity_", "")
         value = f.get("filter")
         operator = f.get("operator")
         filter_type = f.get("filterType")
@@ -229,7 +231,7 @@ class RecordsetRowsViewSet(viewsets.GenericViewSet):
         final_query = Q()
         for obj in filter_objects:
             for f in obj.get("tableFilters", []):
-                field = f.get("field").replace("activity_", "")
+                field = f.get("field", "").replace("activity_", "")
                 value = f.get("filter")
                 operator = f.get("operator")
                 logic_gate = f.get("operator2", "AND")
