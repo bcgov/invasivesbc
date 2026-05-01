@@ -21,7 +21,7 @@ app.conf.update(
         "beat_schedule": {
             "scheduler_working_check": {
                 "task": "api.tasks.scheduler_working_check.scheduler_working_check",
-                "schedule": 10.0,
+                "schedule": 600.0,
             }
         }
     }
