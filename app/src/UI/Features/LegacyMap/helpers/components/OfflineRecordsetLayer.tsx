@@ -4,7 +4,6 @@ import { useSelector } from 'utils/use_selector';
 import { SourceComponent } from './SourceComponent';
 import { LayerComponent } from './LayerComponent';
 import { SourceCleanupComponent } from './SourceCleanupComponent';
-import { findSpeciesCodes, getConcatenatedCodes } from 'utils/addActivity';
 import { OfflineActivityRecord, OfflineActivitySyncState } from 'state/reducers/offlineActivity';
 import { FeatureCollection, GeoJSON } from 'geojson';
 import { SourceSpecification } from 'maplibre-gl';
@@ -17,6 +16,7 @@ import {
   getPaintBySchemeOrColor
 } from '../functional/layer-definitions/reusable-layer-specifications';
 import { LayerSpecificationWithStackingOrder } from '../functional/layers-hook';
+import { ActivitySubtypesToType } from 'sharedAPI';
 
 type PropTypes = {
   mapReady: boolean;
@@ -45,19 +45,27 @@ const OfflineRecordsetLayer = ({ mapReady }: PropTypes) => {
     Object.values(locallyStoredActivities).forEach((item) => {
       try {
         const parsedData = JSON.parse((item as OfflineActivityRecord)?.data);
-        const plantCodes = getConcatenatedCodes(
-          findSpeciesCodes(parsedData.form_data.activity_subtype_data, (item as OfflineActivityRecord)?.record_type)
-        );
+        const plantCodes = (() => {
+          const { entries, treatment_context } = parsedData.subtype_data;
+          const plants = new Set<string | undefined>();
+          entries?.forEach((e) => {
+            plants.add(e?.invasive_plant_aquatic);
+            plants.add(e?.invasive_plant);
+          });
+          treatment_context?.plants_treated?.forEach((pt) => plants.add(pt.invasive_plant));
+          plants.delete(undefined); // Remove undefined (if exists)
+          return Array.from(plants).filter(Boolean).join(', ');
+        })();
 
-        if (parsedData?.geometry?.[0]) {
+        if (parsedData?.geom) {
           geometryList.push({
-            ...parsedData.geometry[0],
+            ...parsedData.geom,
             properties: {
               short_id: parsedData.short_id,
               map_symbol: plantCodes,
-              activity_subtype: parsedData.activity_subtype,
-              activity_id: parsedData.activity_id,
-              type: parsedData.activity_type
+              activity_subtype: parsedData.subtype,
+              activity_id: parsedData,
+              type: ActivitySubtypesToType[parsedData?.subtype]
             }
           });
         }

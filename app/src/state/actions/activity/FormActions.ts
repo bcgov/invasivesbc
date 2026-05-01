@@ -131,15 +131,14 @@ class FormActions {
     }
     return data;
   };
+  static readonly saveMobileForm = createAction<FormSubmission>(`${this.PREFIX}/saveMobileForm`);
   static readonly sendForm = createAsyncThunk(
     `${this.PREFIX}/sendForm`,
     async ({ type, data }: FormSubmission, { dispatch, getState, rejectWithValue }) => {
       const state: RootState = getState() as RootState;
       const BASE_API = state.Configuration.current.runtime.API_V2_BASE;
-      const _MOBILE = state.Configuration.current.build.MOBILE;
       const ONLINE = state.Network.connected;
-      const simplifiedData = this.drillAndSimplify(data);
-      console.info('Type:', type, 'Data:', simplifiedData);
+      const simplified = this.drillAndSimplify(data);
       if (ONLINE) {
         const res = await fetch(`${BASE_API}/ninja/activities/${type}`, {
           method: 'POST',
@@ -147,7 +146,7 @@ class FormActions {
             Authorization: await getCurrentJWT(),
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify(data)
+          body: JSON.stringify(simplified)
         });
         if (!res?.ok) {
           // Request failed, alert user.
@@ -165,3 +164,4 @@ class FormActions {
 }
 
 export default FormActions;
+export type { FormSubmission };

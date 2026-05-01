@@ -1,4 +1,4 @@
-import { Feature } from 'maplibre-gl';
+import { GeoJSON } from 'geojson';
 import { ActivitySubtype, ActivityType } from 'sharedAPI';
 
 interface IActivityTableRow {
@@ -27,7 +27,7 @@ interface IActivityTableRow {
   biogeoclimatic_zones: string;
   elevation: string;
   batch_id: string;
-  geometry: Feature | Feature[];
+  geom: GeoJSON;
 }
 
 export default IActivityTableRow;
