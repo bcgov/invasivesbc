@@ -191,6 +191,5 @@ class TileDownloader:
 
         for t in tile_definitions:
             TileDownloader.generate_protomap_archive(t.name, t.tiles, source)
-            break
 
         return stats
