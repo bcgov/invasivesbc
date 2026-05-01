@@ -13,6 +13,7 @@ from api.services.map_tile_generator.tile_downloader import (
     TileCacheStatistics,
 )
 from api.services.map_tile_generator.tile_source import ESRIWorldImageryTileSource
+from invasivesbc.settings import SCRATCH_DIRECTORY, TILE_CACHE_MAXIMUM_SIZE
 
 
 class Command(BaseCommand):
@@ -40,7 +41,11 @@ class Command(BaseCommand):
         pass
 
     def handle(self, *args, **options):
-        shutdown = False
+
+        logging.info(f"output to {SCRATCH_DIRECTORY}")
+        logging.info(
+            f"max cache size {TILE_CACHE_MAXIMUM_SIZE} ({round(TILE_CACHE_MAXIMUM_SIZE/(1024*1024), 0)}MB)"
+        )
 
         def handle_interruption(sig, frame):
             if not self.shutdown:

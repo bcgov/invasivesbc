@@ -1,6 +1,8 @@
+import logging
 import os
 from pathlib import Path
 import sys
+import shutil
 
 from celery import Celery
 
@@ -74,6 +76,21 @@ CELERY_BROKER_URL = os.getenv(
 CELERY_TIMEZONE = "America/Vancouver"
 CELERY_TASK_TRACK_STARTED = True
 
+SCRATCH_DIRECTORY = os.getenv("SCRATCH_DIRECTORY", os.getcwd())
+
+os.makedirs(SCRATCH_DIRECTORY, exist_ok=True)
+
+disk_space = shutil.disk_usage(SCRATCH_DIRECTORY)
+
+TILE_CACHE_MAXIMUM_SIZE = int(
+    os.getenv("TILE_CACHE_MAXIMUM_SIZE", "4294967296")  # default to 4GB
+)
+
+if disk_space.free < TILE_CACHE_MAXIMUM_SIZE:
+    TILE_CACHE_MAXIMUM_SIZE = int(
+        disk_space.free * 0.75
+    )  # don't use more than 3/4 of the available space for the cache
+
 KEYCLOAK = {
     "JWKS_ENDPOINT": os.getenv(
         "JWKS_ENDPOINT",
@@ -131,6 +148,13 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CORS_EXPOSE_HEADERS = ["Content-Disposition"]
+
+OBJECT_STORE_ENDPOINT_URL = os.getenv(
+    "OBJECT_STORE_ENDPOINT_URL", "http://localhost:9000"
+)
+OBJECT_STORE_ACCESS_KEY_ID = os.getenv("OBJECT_STORE_ACCESS_KEY_ID", "unset")
+OBJECT_STORE_SECRET_ACCESS_KEY = os.getenv("OBJECT_STORE_SECRET_ACCESS_KEY", "unset")
+OBJECT_STORE_MAP_UPLOAD_BUCKET = os.getenv("OBJECT_STORE_MAP_UPLOAD_BUCKET", "maps")
 
 LOGGING = {
     "version": 1,

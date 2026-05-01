@@ -5,9 +5,11 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import List, Optional
 
+import boto3
 import diskcache
 import mercantile
 import requests
+from botocore.exceptions import ClientError
 from diskcache import Cache
 from requests import RequestException
 
@@ -17,11 +19,21 @@ from api.services.map_tile_generator.tile_source import (
     ESRIWorldImageryTileSource,
     TileSource,
 )
+from invasivesbc.settings import (
+    SCRATCH_DIRECTORY,
+    TILE_CACHE_MAXIMUM_SIZE,
+    OBJECT_STORE_ENDPOINT_URL,
+    OBJECT_STORE_ACCESS_KEY_ID,
+    OBJECT_STORE_SECRET_ACCESS_KEY,
+    OBJECT_STORE_MAP_UPLOAD_BUCKET,
+)
 
-# ZOOM_RANGE = [4, 10, 17]
-ZOOM_RANGE = range(5, 8)
+ZOOM_RANGE = range(5, 14)
 
-cache = Cache(directory=".tile-cache", size_limit=1024 * 1024 * 1024 * 8)
+cache = Cache(
+    directory=os.path.join(SCRATCH_DIRECTORY, ".tile-cache"),
+    size_limit=TILE_CACHE_MAXIMUM_SIZE,
+)
 
 
 @dataclass
@@ -84,9 +96,14 @@ class TileDownloader:
         tiles: List[mercantile.Tile],
         source: TileSource,
     ):
-        mbtiles_filename = f"output/{tileset_name}.mbtiles"
-        pmtiles_filename = f"output/{tileset_name}.pmtiles"
-        os.makedirs("output", exist_ok=True)
+        mbtiles_filename = os.path.join(
+            SCRATCH_DIRECTORY, f"output/{tileset_name}.mbtiles"
+        )
+        pmtiles_filename = os.path.join(
+            SCRATCH_DIRECTORY, f"output/{tileset_name}.pmtiles"
+        )
+
+        os.makedirs(os.path.join(SCRATCH_DIRECTORY, "output"), exist_ok=True)
 
         try:
             with MBTilesDatabase(
@@ -130,6 +147,30 @@ class TileDownloader:
                     )
 
             subprocess.run(["pmtiles", "convert", mbtiles_filename, pmtiles_filename])
+
+            s3_client = boto3.client(
+                "s3",
+                endpoint_url=OBJECT_STORE_ENDPOINT_URL,
+                aws_access_key_id=OBJECT_STORE_ACCESS_KEY_ID,
+                aws_secret_access_key=OBJECT_STORE_SECRET_ACCESS_KEY,
+                aws_session_token=None,
+                config=boto3.session.Config(
+                    signature_version="s3v4",
+                    request_checksum_calculation="when_required",
+                    response_checksum_validation="when_required",
+                ),
+            )
+            try:
+                s3_client.upload_file(
+                    pmtiles_filename,
+                    OBJECT_STORE_MAP_UPLOAD_BUCKET,
+                    f"maps/{tileset_name}.pmtiles",
+                    ExtraArgs={"ACL": "public-read"},
+                )
+                logging.info(f"PMTiles upload complete for {pmtiles_filename}")
+            except ClientError as e:
+                logging.error("Unable to upload file to object store", exc_info=True)
+
         except Exception as e:
             logging.error(
                 f"Error encountered on tileset {tileset_name}",
@@ -137,6 +178,7 @@ class TileDownloader:
             )
         finally:
             os.unlink(mbtiles_filename)
+            os.unlink(pmtiles_filename)
 
     @staticmethod
     def generate_map_tiles():
@@ -149,5 +191,6 @@ class TileDownloader:
 
         for t in tile_definitions:
             TileDownloader.generate_protomap_archive(t.name, t.tiles, source)
+            break
 
         return stats
