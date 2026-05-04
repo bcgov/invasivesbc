@@ -48,12 +48,13 @@ const TabularWhatsHereData = ({ setAnchorEl, recordsetType }: PropTypes) => {
       readableId: 'short_id',
       rows: whatsHere.activityRows,
       cols: [
-        { field: 'short_id', headerName: 'Activity ID' },
-        { field: 'activity_type', headerName: 'Activity Type' },
-        { field: 'reported_area', headerName: 'Reported Area' },
-        { field: 'created', headerName: 'Created' },
-        { field: 'jurisdiction_code', headerName: 'Jurisdiction Code' },
-        { field: 'species_code', headerName: 'Species Code' }
+        { field: 'short_id', headerName: 'Record ID' },
+        { field: 'activity_type', headerName: 'Type' },
+        { field: 'reported_area', headerName: 'Area' },
+        { field: 'created', headerName: 'Date' },
+        { field: 'jurisdiction_code', headerName: 'Jurisdiction(s)' },
+        { field: 'species_code', headerName: 'Invasive Plant(s)' },
+        { field: 'created_by', headerName: 'Created By' }
       ]
     },
     [RecordSetType.IAPP]: {
