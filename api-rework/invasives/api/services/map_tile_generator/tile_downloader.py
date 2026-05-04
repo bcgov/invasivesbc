@@ -3,6 +3,7 @@ import os
 import subprocess
 from dataclasses import dataclass
 from datetime import datetime, timedelta
+from django.utils import timezone
 from typing import List, Optional
 
 import boto3
@@ -13,10 +14,12 @@ from botocore.exceptions import ClientError
 from diskcache import Cache
 from requests import RequestException
 
+from api.models import CachedRasterTile
 from api.services.map_tile_generator.mb_tiles_database import MBTilesDatabase
-from api.services.map_tile_generator.tile_definitions import NTSGridTileDefinition
+from api.services.map_tile_generator.tile_definitions import (
+    TileDefinition,
+)
 from api.services.map_tile_generator.tile_source import (
-    ESRIWorldImageryTileSource,
     TileSource,
 )
 from invasivesbc.settings import (
@@ -28,7 +31,10 @@ from invasivesbc.settings import (
     OBJECT_STORE_MAP_UPLOAD_BUCKET,
 )
 
-ZOOM_RANGE = range(5, 14)
+# store frequently-used low-zoom tiles locally for faster retrieval
+LOCAL_CACHE_ZOOM_RANGE = range(0, 11)
+# store more tiles in the database for shared access (across workers)
+DATABASE_CACHE_ZOOM_RANGE = range(0, 19)
 
 cache = Cache(
     directory=os.path.join(SCRATCH_DIRECTORY, ".tile-cache"),
@@ -44,9 +50,78 @@ class TileCacheStatistics:
     errors: int = 0
 
 
+@dataclass
+class TileRetrieveResult:
+    hit: bool
+    data: bytes
+
+
+class TileRetrieveException(Exception):
+    pass
+
+
 class TileDownloader:
     def __init__(self):
         pass
+
+    @staticmethod
+    def retrieve_tile(
+        source: TileSource,
+        tile: mercantile.Tile,
+    ) -> TileRetrieveResult:
+        """
+        Retrieve a tile from the source, employing caching mechanisms
+
+        :param source: tile source definition
+        :param tile: coordinates of tile to retrieve
+        :return: TileRetrieveResult
+        :raises: TileRetrieveException on retrieval failure
+        """
+
+        cache_key = f"{source.cache_area}-{tile.z}-${tile.x}-${tile.y}"
+
+        # first we try the (local) disk cache
+        if tile.z in LOCAL_CACHE_ZOOM_RANGE:
+            cached = cache.get(cache_key, default=None)
+            if cached is not None:
+                return TileRetrieveResult(hit=True, data=cached)
+
+        # now try the database cache
+        if tile.z in DATABASE_CACHE_ZOOM_RANGE:
+            cached = CachedRasterTile.objects.filter(key=cache_key).first()
+            if cached is not None:
+                return TileRetrieveResult(hit=True, data=cached.data)
+
+        url = source.build_url(tile.z, tile.y, tile.x)
+
+        try:
+            response = requests.get(url, timeout=5)
+            response.raise_for_status()  # raise an exception on HTTP error code
+
+            # add to local cache
+            if tile.z in LOCAL_CACHE_ZOOM_RANGE:
+                cache.set(
+                    cache_key,
+                    response.content,
+                    expire=source.cache_lifetime_seconds,
+                )
+
+            # add to database cache
+            if tile.z in DATABASE_CACHE_ZOOM_RANGE:
+                CachedRasterTile.objects.create(
+                    key=cache_key,
+                    data=response.content,
+                    expires=timezone.now()
+                    + timedelta(seconds=source.cache_lifetime_seconds),
+                )
+
+            return TileRetrieveResult(hit=False, data=response.content)
+        except RequestException as e:
+            logging.warning(f"tile download failure: {url}", exc_info=True)
+            raise TileRetrieveException(e)
+        except diskcache.Timeout as e:
+            logging.error("cache timeout")
+            raise TileRetrieveException(e)
 
     @staticmethod
     def preheat_cache(
@@ -57,8 +132,6 @@ class TileDownloader:
         stats = TileCacheStatistics()
 
         for tile in tiles:
-            cache_key = f"{source.cache_area}-{tile.z}-${tile.x}-${tile.y}"
-            cached = cache.get(cache_key, default=None)
             stats.total_tiles += 1
 
             if max_downloads is not None and stats.cache_misses >= max_downloads:
@@ -67,26 +140,17 @@ class TileDownloader:
                 )  # this mechanism is intended to limit the runtime of the preheat function, for use in periodic tasks keeping the cache fresh
                 return stats
 
-            if cached is not None:
-                stats.cache_hits += 1
-            else:
-                stats.cache_misses += 1
-                url = source.build_url(tile.z, tile.y, tile.x)
-                try:
-                    response = requests.get(url, timeout=5)
-                    response.raise_for_status()  # raise an exception on HTTP error code
+            try:
+                result = TileDownloader.retrieve_tile(source, tile)
 
-                    cache.set(
-                        cache_key,
-                        response.content,
-                        expire=source.cache_lifetime_seconds,
-                    )
-                except RequestException as e:
-                    logging.warning(f"tile download failure: {url}", exc_info=True)
-                    stats.errors += 1
-                except diskcache.Timeout as e:
-                    logging.error("cache timeout")
-                    stats.errors += 1
+                if result.hit:
+                    stats.cache_hits += 1
+                else:
+                    stats.cache_misses += 1
+
+            except TileRetrieveException as e:
+                logging.warning(f"tile retrieve failure: {e}", exc_info=True)
+                stats.errors += 1
 
         return stats
 
@@ -115,23 +179,24 @@ class TileDownloader:
                 last_report = datetime.now()
 
                 for tile in tiles:
-                    stats.total_tiles += 1
-                    cache_key = f"{source.cache_area}-{tile.z}-${tile.x}-${tile.y}"
 
-                    cached = cache.get(cache_key, default=None)
-                    if cached is not None:
-                        content = cached
-                        stats.cache_hits += 1
-                    else:
-                        stats.cache_misses += 1
-                        url = source.build_url(tile.z, tile.y, tile.x)
-                        response = requests.get(url, timeout=10)
-                        content = response.content
-                        cache.set(
-                            cache_key,
-                            content,
-                            expire=source.cache_lifetime_seconds,
+                    try:
+                        stats.total_tiles += 1
+                        result = TileDownloader.retrieve_tile(source, tile)
+
+                        if result.hit:
+                            stats.cache_hits += 1
+                        else:
+                            stats.cache_misses += 1
+
+                        tiledb.db.execute(
+                            "INSERT OR REPLACE INTO tiles (zoom_level, tile_column, tile_row, tile_data) values (?, ?, ?, ?)",
+                            (tile.z, tile.y, tile.x, result.data),
                         )
+
+                    except TileRetrieveException as e:
+                        logging.warning(f"tile retrieve failure: {e}", exc_info=True)
+                        stats.errors += 1
 
                     tiles_loaded += 1
 
@@ -140,11 +205,6 @@ class TileDownloader:
                         logging.info(
                             f"{tiles_loaded} / {len(tiles)} ({round((tiles_loaded/len(tiles)) * 100.0, 2)}%)"
                         )
-
-                    tiledb.db.execute(
-                        "INSERT OR REPLACE INTO tiles (zoom_level, tile_column, tile_row, tile_data) values (?, ?, ?, ?)",
-                        (tile.z, tile.y, tile.x, content),
-                    )
 
             subprocess.run(["pmtiles", "convert", mbtiles_filename, pmtiles_filename])
 
@@ -181,13 +241,11 @@ class TileDownloader:
             os.unlink(pmtiles_filename)
 
     @staticmethod
-    def generate_map_tiles():
+    def generate_map_tiles(tiles: TileDefinition, source: TileSource):
 
         stats = TileCacheStatistics()
 
-        tile_definitions = NTSGridTileDefinition(zoom_range=ZOOM_RANGE).tilesets()
-
-        source = ESRIWorldImageryTileSource()
+        tile_definitions = tiles.tilesets()
 
         for t in tile_definitions:
             TileDownloader.generate_protomap_archive(t.name, t.tiles, source)

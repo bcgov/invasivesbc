@@ -133,7 +133,7 @@ class Command(BaseCommand):
             overall_stats.cache_misses += stats.cache_misses
             overall_stats.cache_hits += stats.cache_hits
 
-            tiles_remaining = total_tile_count - stats.total_tiles
+            tiles_remaining = total_tile_count - overall_stats.total_tiles
 
             estimate_remaining = timedelta(seconds=round(tiles_remaining / recent_tps))
 
