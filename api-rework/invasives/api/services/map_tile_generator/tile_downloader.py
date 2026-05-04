@@ -78,7 +78,7 @@ class TileDownloader:
         :raises: TileRetrieveException on retrieval failure
         """
 
-        cache_key = f"{source.cache_area}-{tile.z}-${tile.x}-${tile.y}"
+        cache_key = f"{source.cache_area}-{tile.z}-{tile.x}-{tile.y}"
 
         # first we try the (local) disk cache
         if tile.z in LOCAL_CACHE_ZOOM_RANGE:
