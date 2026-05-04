@@ -17,10 +17,7 @@ from api.models.activity import Activity
 from api.constants import uuid_regex, short_id_regex
 from invasivesbc.settings import LEGACY_DB_CONNECTION_STRING
 
-logging.basicConfig(level=logging.DEBUG)
-logging.getLogger("psycopg").setLevel(logging.DEBUG)
-
-log = logging.getLogger("recordset_rows_viewset")
+log = logging.getLogger("invasives")
 
 # Separate complex paths to a constant for easier maintenance
 ALL_PLANT_PATHS = [
@@ -156,8 +153,8 @@ class RecordsetRowsViewSet(viewsets.GenericViewSet):
                 geom_data = json.dumps(f.get("geojson").get("geometry"))
                 search_geometry = GEOSGeometry(geom_data)
                 return Q(shape__intersects=search_geometry)
-            except Exception as e:
-                log.error("error handling spatialFilterDrawn:", e)
+            except Exception:
+                log.error("Error while handling 'spatialFilterDrawn'", exc_info=True)
                 return Q()
         elif filter_type == "spatialFilterUploaded":
             try:
@@ -181,8 +178,8 @@ class RecordsetRowsViewSet(viewsets.GenericViewSet):
                                 f"Requested shape with ID '{value}' was not found."
                             )
                             return Q()
-            except Exception as e:
-                log.error("error handling spatialFilterUploaded:", e)
+            except Exception:
+                log.error("Error while handling 'spatialFilterUploaded'", exc_info=True)
                 return Q()
         elif field == "invasive_plant":
             current_q = Q()
