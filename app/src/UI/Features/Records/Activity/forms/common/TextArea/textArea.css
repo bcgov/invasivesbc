@@ -14,6 +14,8 @@
   }
 
   textarea {
+    appearance: none; /* Prevent iOS Style overriding */
+    border: 1pt solid var(--ui-border-light);
     font-family: BCSans, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif;
     resize: none;
     width: 100%;

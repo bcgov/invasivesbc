@@ -33,7 +33,7 @@ const createFillLayer = (options: PaintLayerOptions): LayerSpecificationWithStac
   paint: {
     'fill-color': options.color,
     'fill-outline-color': options.color,
-    'fill-opacity': 0.5
+    'fill-opacity': 0.25
   },
   minzoom: options?.minzoom ?? 0,
   maxzoom: options?.maxzoom ?? 24,

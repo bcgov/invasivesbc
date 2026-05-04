@@ -3,6 +3,7 @@ import { getCurrentJWT } from 'state/sagas/auth/auth';
 
 const config = await import('state/configuration/runtime-config');
 const API_BASE = config.runtimeConfig.API_BASE;
+const API_V2_BASE = config.runtimeConfig.API_V2_BASE;
 
 /**
  * @desc Get list of all IDs from a recordset using current filters.
@@ -19,7 +20,7 @@ const getIdsForRecordset = async (record: UserRecordSet): Promise<Array<string |
         };
       case RecordSetType.Activity:
         return {
-          url: `${API_BASE}/api/v2/activities/`,
+          url: `${API_V2_BASE}/recordset-rows`,
           col: 'activity_id'
         };
     }
@@ -35,7 +36,9 @@ const getIdsForRecordset = async (record: UserRecordSet): Promise<Array<string |
 
   if (!res?.ok) throw Error('Network Call Failed');
   const data = await res.json();
-  const ids = data.result.map((id) => id[config.col]);
+
+  // IAPP Activities come in a result wrapper, where IBC records come direct
+  const ids = data?.result?.map((id) => id[config.col]) ?? data;
   return ids;
 };
 

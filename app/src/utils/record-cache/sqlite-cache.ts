@@ -1,6 +1,5 @@
 import { DBSQLiteValues, SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
-import centroid from '@turf/centroid';
-import { Feature } from 'geojson';
+import { Feature, GeoJSON } from 'geojson';
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
 import booleanIntersects from '@turf/boolean-intersects';
 import bbox from '@turf/bbox';
@@ -19,10 +18,7 @@ import {
   RepositoryMetadata
 } from 'utils/record-cache/index';
 import { sqlite } from 'utils/sharedSQLiteInstance';
-import {
-  getUnnestedFieldsForActivity,
-  getUnnestedFieldsForIAPP
-} from 'UI/Features/Records/RecordSet/RecordTableHelpers';
+import { getUnnestedFieldsForIAPP } from 'UI/Features/Records/RecordSet/RecordTableHelpers';
 import EFilterType from 'constants/EFilterType';
 import { IFilter } from 'state/actions/userSettings/RecordSet';
 
@@ -141,8 +137,8 @@ class SQLiteRecordCacheService extends RecordCacheService {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
-    const centroidArr: any[] = [];
-    const geoJsonArr: any[] = [];
+    const centroidArr: GeoJSON[] = [];
+    const geoJsonArr: GeoJSON[] = [];
 
     let results: DBSQLiteValues;
 
@@ -150,7 +146,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
       const slice = ids.slice(i, i + this.QUERY_LIMIT);
       results = await this.cacheDB?.query(
         // language=SQLite
-        `SELECT GEOJSON, SHORT_ID
+        `SELECT GEOJSON, CENTROID, SHORT_ID
          FROM CACHED_RECORDS
          WHERE ID IN (${slice.map(() => '?').join(', ')})
            AND GEOJSON NOT NULL`,
@@ -159,10 +155,8 @@ class SQLiteRecordCacheService extends RecordCacheService {
 
       results?.values?.forEach((item) => {
         try {
-          JSON.parse(item['GEOJSON'])?.forEach((feature: Feature) => {
-            centroidArr.push(centroid(feature, { properties: feature.properties }));
-            geoJsonArr.push(feature);
-          });
+          centroidArr.push(item['CENTROID']);
+          geoJsonArr.push(item['GEOJSON']);
         } catch (e) {
           console.error('Error parsing record:', e);
         }
@@ -266,7 +260,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
     const subset = recordSetIdList.slice(startPos, startPos + limit);
     const results = await this.cacheDB?.query(
       // language=SQLite
-      `SELECT DATA
+      `SELECT *
        FROM CACHED_RECORDS
        WHERE ID IN (${subset.map(() => '?').join(', ')})`,
       [...subset]
@@ -276,18 +270,20 @@ class SQLiteRecordCacheService extends RecordCacheService {
       return [];
     }
 
-    const response = results.values
-      .map((item) => {
-        try {
-          return JSON.parse(item['DATA']) as UserRecord;
-        } catch (e) {
-          console.error('Error parsing record:', e);
-          return null;
-        }
-      })
-      .filter((record) => record !== null);
-
-    return response;
+    return (
+      results.values.map((record) => {
+        const parsedRecord: Record<PropertyKey, UserRecord | IappRecord> = {};
+        Object.keys(record).forEach((key) => {
+          if (['TABLE_DATA', 'RECORD_DATA', 'DATA', 'GEOJSON', 'CENTROID'].includes(key)) {
+            parsedRecord[key.toLowerCase()] = JSON.parse(record[key]);
+            if (key === 'DATA') parsedRecord.reported_area = parsedRecord.data?.area_m;
+          } else {
+            parsedRecord[key.toLowerCase()] = record[key];
+          }
+        });
+        return parsedRecord;
+      }) ?? []
+    );
   }
 
   async getPaginatedCachedIappRecords(recordSetIdList: string[], page: number, limit: number): Promise<IappRecord[]> {
@@ -494,7 +490,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
     ) {
       params.selectColumns.push('GEOJSON');
     }
-    const columns = params.selectColumns.length > 0 ? params.selectColumns.join(', ') : '*';
+    const columns = params.selectColumns && params.selectColumns.length > 0 ? params.selectColumns.join(', ') : '*';
     let where = 'WHERE 1=1 ';
 
     params.tableFilters.forEach((filter: IFilter) => {
@@ -550,7 +546,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
       results.map((record) => {
         const parsedRecord: Record<PropertyKey, UserRecord | IappRecord> = {};
         Object.keys(record).forEach((key) => {
-          if (['TABLE_DATA', 'RECORD_DATA', 'DATA', 'RECORD_DATA', 'GEOJSON', 'CENTROID'].includes(key)) {
+          if (['TABLE_DATA', 'RECORD_DATA', 'DATA', 'GEOJSON', 'CENTROID'].includes(key)) {
             parsedRecord[key.toLowerCase()] = JSON.parse(record[key]);
           } else {
             parsedRecord[key.toLowerCase()] = record[key];
@@ -565,14 +561,14 @@ class SQLiteRecordCacheService extends RecordCacheService {
    * @desc Upserts an Invasives Activity into the local Database.
    * @param data Incoming Activity Data
    */
-  async saveActivity(data: Record<PropertyKey, UserRecord>): Promise<void> {
+  async saveActivity(data: Array<UserRecord>): Promise<void> {
     const NUM_ACTIVITY_COLUMNS = 26;
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
     const entry = `( ${Array(NUM_ACTIVITY_COLUMNS).fill('?').join(',')} )`;
     const values: Array<any> = [];
-    Object.keys(data).forEach((key) => values.push(this.transformActivity(key, data[key])));
+    data.forEach((rec: UserRecord) => values.push(this.transformActivity(rec.activity_id as string, rec)));
     let query = `INSERT INTO CACHED_RECORDS(ID,
                                             LATITUDE,
                                             LONGITUDE,
@@ -794,47 +790,55 @@ class SQLiteRecordCacheService extends RecordCacheService {
    * @param data Incoming Activity data
    * @returns Database entry for Activity
    */
-  private transformActivity(id: string, data: UserRecord): Array<any> {
-    const normalizedRows = getUnnestedFieldsForActivity(data);
-    const stringifiedData = JSON.stringify(data);
-    const geometry = (data as Record<PropertyKey, Feature[]>)?.geometry;
-    const activityDate = (data as Record<PropertyKey, any>)?.date_created;
-    geometry.forEach((_, i) => {
-      geometry[i].properties = {
-        name: normalizedRows.short_id + `${data?.map_symbol ? '\n' + data.map_symbol : ''}`,
-        description: id,
-        activity_subtype: data.activity_subtype
-      };
-    });
-    const centroidObj = centroid(geometry[0], { properties: geometry[0].properties });
+  private transformActivity(id: string, rec: UserRecord): Array<any> {
+    const stringifiedData = JSON.stringify(rec.data);
+    const geometry = rec.geom as GeoJSON;
+    const plantCodes = (() => {
+      const { entries, treatment_context } = rec.data.subtype_data;
+      const plants = new Set<string | undefined>();
+      entries?.forEach((e) => {
+        plants.add(e?.invasive_plant_aquatic);
+        plants.add(e?.invasive_plant);
+      });
+      treatment_context?.plants_treated?.forEach((pt) => plants.add(pt.invasive_plant));
+      plants.delete(undefined); // Remove undefined (if exists)
+      return Array.from(plants).filter(Boolean).join(', ');
+    })();
+    geometry.properties = {
+      name: rec.short_id + `${plantCodes ? '\n' + plantCodes : ''}`,
+      description: id,
+      activity_subtype: rec.activity_subtype
+    };
+    const centroidObj = rec.data?.centroid ? { ...rec.data.centroid, properties: { ...geometry.properties } } : null;
     const geojson = JSON.stringify(geometry) ?? null;
+
     return [
       id, // ID
-      centroidObj.geometry.coordinates[1], // LATITUDE
-      centroidObj.geometry.coordinates[0], // LONGITUDE
+      centroidObj.coordinates[1], // LATITUDE
+      centroidObj.coordinates[0], // LONGITUDE
       geojson, // GEOJSON
       JSON.stringify(centroidObj), // CENTROID
       stringifiedData, // DATA
-      activityDate, // DATE_CREATED
+      rec.activity_date, // DATE_CREATED
       id, // ACTIVITY_ID
-      normalizedRows.activity_type ?? null,
-      normalizedRows.short_id ?? null,
-      normalizedRows.activity_subtype ?? null,
-      normalizedRows.activity_date ?? null,
-      normalizedRows.project_code ?? null,
-      normalizedRows.jurisdiction_display ?? null,
-      normalizedRows.invasive_plant ?? null,
-      normalizedRows.species_positive_full ?? null,
-      normalizedRows.species_negative_full ?? null,
-      normalizedRows.has_current_positive ?? null,
-      normalizedRows.current_positive_species ?? null,
-      normalizedRows.has_current_negative ?? null,
-      normalizedRows.current_negative_species ?? null,
-      normalizedRows.species_treated_full ?? null,
-      normalizedRows.species_biocontrol_full ?? null,
-      normalizedRows.created_by ?? null,
-      normalizedRows.updated_by ?? null,
-      normalizedRows.agency ?? null
+      rec.activity_type ?? null,
+      rec.short_id ?? null,
+      rec.activity_subtype ?? null,
+      rec.activity_date ?? null,
+      rec.project_code ?? null,
+      rec.jurisdiction_display ?? null,
+      rec.invasive_plant ?? null,
+      rec.species_positive_full ?? null,
+      rec.species_negative_full ?? null,
+      rec.has_current_positive ?? null,
+      rec.current_positive_species ?? null,
+      rec.has_current_negative ?? null,
+      rec.current_negative_species ?? null,
+      rec.species_treated_full ?? null,
+      rec.species_biocontrol_full ?? null,
+      rec.created_by ?? null,
+      rec.updated_by ?? null,
+      rec.agency ?? null
     ];
   }
 

@@ -1,7 +1,9 @@
 import json
 from rest_framework import serializers
+from django.contrib.gis.db.models.functions import Centroid, AsGeoJSON
 from api.models.activity.activity import Activity
 from api.models.activity import ActivitySubtypes
+from api.serializers.activity import ActivitySerializer
 
 
 class ActivityRecordsetRowSerializer(serializers.ModelSerializer):
@@ -9,6 +11,7 @@ class ActivityRecordsetRowSerializer(serializers.ModelSerializer):
     Entry For Serializing Activities to a Recordset Row
     """
 
+    reported_area = serializers.SerializerMethodField()
     geom = serializers.SerializerMethodField()
     invasive_plant = serializers.SerializerMethodField()
     species_positive_full = serializers.SerializerMethodField()
@@ -88,6 +91,7 @@ class ActivityRecordsetRowSerializer(serializers.ModelSerializer):
             "species_biocontrol_full",
             "created_by",
             "updated_by",
+            "reported_area",
             "agency",
             "regional_invasive_species_organization_areas",
             "regional_districts",
@@ -125,6 +129,9 @@ class ActivityRecordsetRowSerializer(serializers.ModelSerializer):
             )
 
         return self.build_response_value(sorted(set(all_plants)))
+
+    def get_reported_area(self, obj):
+        return obj.area_m
 
     def get_species_positive_full(self, obj):
         """Fetch Positive species values from all associated DataRecords"""
@@ -235,3 +242,18 @@ class ActivityRecordsetRowSerializer(serializers.ModelSerializer):
     def get_updated_by(self, obj):
         # TODO: Update when Auditing is added
         return obj.created_by
+
+
+class CachedActivityRecordsetRowSerializer(ActivityRecordsetRowSerializer):
+    data = serializers.SerializerMethodField()
+
+    class Meta(ActivityRecordsetRowSerializer.Meta):
+        fields = ActivityRecordsetRowSerializer.Meta.fields + ("data",)
+
+    def get_data(self, obj):
+        # Refetch the object and annotate the centroid value.
+        annotated_obj = Activity.objects.annotate(
+            centroid=AsGeoJSON(Centroid("shape"))
+        ).get(pk=obj.pk)
+
+        return ActivitySerializer(annotated_obj, context=self.context).data

@@ -156,13 +156,25 @@ OBJECT_STORE_ACCESS_KEY_ID = os.getenv("OBJECT_STORE_ACCESS_KEY_ID", "unset")
 OBJECT_STORE_SECRET_ACCESS_KEY = os.getenv("OBJECT_STORE_SECRET_ACCESS_KEY", "unset")
 OBJECT_STORE_MAP_UPLOAD_BUCKET = os.getenv("OBJECT_STORE_MAP_UPLOAD_BUCKET", "maps")
 
+LOG_LEVEL = os.getenv("DJANGO_LOGGING_LEVEL", "INFO")
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+    "formatters": {
+        "simple": {
+            "format": "[{levelname}][{module}][{asctime}]: {message}",
+            "style": "{",
+        }
+    },
     "handlers": {
         "console": {
             "class": "logging.StreamHandler",
             "stream": sys.stdout,
+        },
+        "timestamped": {
+            "class": "logging.StreamHandler",
+            "stream": sys.stdout,
+            "formatter": "simple",
         },
     },
     "root": {
@@ -173,6 +185,11 @@ LOGGING = {
         "django": {
             "handlers": ["console"],
             "level": "INFO",
+            "propagate": False,
+        },
+        "invasives": {
+            "handlers": ["timestamped"],
+            "level": LOG_LEVEL,
             "propagate": False,
         },
     },

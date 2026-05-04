@@ -12,6 +12,7 @@ import EFilterType from 'constants/EFilterType';
 
 const config = await import('state/configuration/runtime-config');
 const API_BASE = config.runtimeConfig.API_BASE;
+const API_V2_BASE = config.runtimeConfig.API_V2_BASE;
 
 enum IappRecordMode {
   Record = 'record',
@@ -312,7 +313,7 @@ abstract class RecordCacheService extends BaseCacheService<
       const ids = uncachedRecords.slice(i, i + this.BATCH_AMOUNT);
 
       this.processNext(executing, async () => {
-        const url = `${API_BASE}/api/v2/activities/batch-request?idList=${JSON.stringify(ids)}`;
+        const url = `${API_V2_BASE}/recordset-rows?idList=${ids.join(',')}`;
         const rez = await fetch(url, {
           headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' }
         });

@@ -153,14 +153,13 @@ export function* getRowsFromCachedRecordset(req: ActivityTableRowGetRequest) {
       tableFilters: filters?.tableFilters,
       ids_to_filter: filters?.ids_to_filter,
       recordSetType: filters?.recordSetType,
-      selectColumns: ['data'],
       sort: { by: filters.sortColumn, order: filters.sortOrder }
     };
     const records = yield service.query(queryObj);
     yield put(
       Activity.getRowsSuccess({
         recordSetID: recordSetID,
-        rows: records.map((r) => r.data),
+        rows: records,
         tableFiltersHash: tableFiltersHash,
         page: page,
         limit: limit

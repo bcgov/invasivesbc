@@ -16,6 +16,7 @@ import {
   handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE,
   handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE
 } from './map/offline';
+import { getCurrentJWT } from './auth/auth';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { selectMap } from 'state/reducers/map';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
@@ -53,9 +54,11 @@ import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
 import AppActions from 'state/actions/appActions/appActions';
 import DrawToolActions from 'state/actions/drawtool/drawToolActions';
 import getIdsForRecordset from 'utils/getIdsForRecordset';
-import { selectConfiguration } from 'state/reducers/configuration';
 import Alerts from 'state/actions/alerts/Alerts';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
+
+const config = await import('state/configuration/runtime-config');
+const API_V2_BASE = config.runtimeConfig.API_V2_BASE;
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS() {
   yield put(MapActions.initRequest());
@@ -123,21 +126,19 @@ function* handle_WHATS_HERE_FEATURE(whatsHereFeature: PayloadAction<Feature>) {
       tableFilters,
       limit: 200000
     };
-    const [activitiesNetworkReturn, iappNetworkReturn] = yield all([
-      yield call(InvasivesAPI_Call, 'POST', `/api/v2/activities/`, {
-        filterObjects: [activitiesfilterObj]
-      }),
-      yield call(InvasivesAPI_Call, 'POST', `/api/v2/iapp/`, {
-        filterObjects: [iappfilterObj]
-      })
-    ]);
+    const activitiesNetworkReturn = yield fetch(`${API_V2_BASE}/recordset-rows`, {
+      method: 'POST',
+      headers: { Authorization: yield getCurrentJWT(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ filterObjects: [activitiesfilterObj] })
+    });
+    const iappNetworkReturn = yield call(InvasivesAPI_Call, 'POST', `/api/v2/iapp/`, {
+      filterObjects: [iappfilterObj]
+    });
     if (activitiesNetworkReturn?.ok && iappNetworkReturn?.ok) {
-      const activityReturn = activitiesNetworkReturn?.data?.data?.result ?? activitiesNetworkReturn?.data?.result ?? [];
-      const activitiesServerIDList: string[] = activityReturn.map((row: UserRecord) => row.activity_id);
+      const activitiesServerIDList = yield activitiesNetworkReturn.json();
 
       const iappReturn = iappNetworkReturn?.data?.data?.result ?? iappNetworkReturn?.data?.result ?? [];
       const iappServerIDList: string[] = iappReturn.map((row: Record<PropertyKey, any>) => row.site_id);
-
       const { activity, iapp } = yield parseRecordSetsForWhatsHere(activitiesServerIDList, iappServerIDList);
 
       yield put(WhatsHere.server_filtered_ids_fetched(activity, iapp));
@@ -280,11 +281,13 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST() {
       whatsHere.ActivityLimit
     );
   } else {
-    const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/activities/`, {
-      filterObjects: [filterObject]
+    const networkReturn = yield fetch(`${API_V2_BASE}/recordset-rows`, {
+      method: 'POST',
+      headers: { Authorization: yield getCurrentJWT(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ filterObjects: [filterObject] })
     });
     if (networkReturn?.ok) {
-      records = networkReturn.data.result;
+      records = yield networkReturn.json();
     } else {
       const service = yield RecordCacheServiceFactory.getPlatformInstance();
       records = yield service.getPaginatedCachedActivityRecords(
@@ -294,18 +297,18 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST() {
       );
     }
   }
-  const mappedToWhatsHereColumns = records.map((activityRecord) => {
+  const mappedToWhatsHereColumns = records.map((act) => {
     // Differentiate the Cached records from the API called ones
-    const shortHand = activityRecord.activity_payload ? activityRecord.activity_payload : activityRecord;
     return {
-      id: activityRecord.activity_id,
-      short_id: activityRecord.short_id,
-      activity_type: activityRecord.activity_type,
-      jurisdiction_code: activityRecord.jurisdiction_display,
-      species_code: activityRecord.map_symbol,
-      reported_area: shortHand.form_data.activity_data.reported_area,
-      geometry: shortHand.geometry?.[0],
-      created: new Date(shortHand.form_data.activity_data.activity_date_time).toDateString()
+      id: act.activity_id,
+      short_id: act.short_id,
+      activity_type: act.activity_type,
+      jurisdiction_code: act.jurisdiction_display,
+      species_code: act.invasive_plant,
+      reported_area: act.reported_area,
+      geometry: act.geom,
+      created_by: act.created_by,
+      created: new Date(act.activity_date as string).toDateString()
     };
   });
   yield put(WhatsHere.activity_rows_success(mappedToWhatsHereColumns));
@@ -643,7 +646,6 @@ function* handle_ACTIVITIES_TABLE_GET_ROWS_REQUEST(action) {
   }
 }
 function* handle_GET_RECORDSET_IDS(action: PayloadAction<IGetIdsForRecordset>) {
-  const { API_BASE } = yield select(selectConfiguration);
   const currentState = yield select((state) => state.UserSettings);
   const workingOffline = yield select((state) => state.Auth.workingOffline);
   const connected = yield select((state) => state.Network.connected);
@@ -657,7 +659,7 @@ function* handle_GET_RECORDSET_IDS(action: PayloadAction<IGetIdsForRecordset>) {
   // Attempt to retrieve Records from API
   try {
     if (!userIsOffline) {
-      const ids = yield getIdsForRecordset(currentState.recordSets[action.payload.recordSetID], { API_BASE });
+      const ids = yield getIdsForRecordset(currentState.recordSets[action.payload.recordSetID]);
       yield put(WhatsHere.getIdsForRecordsetSuccess({ idList: ids, ...action.payload }));
       return; // Exit out, we don't need to scan for Cached Records
     }

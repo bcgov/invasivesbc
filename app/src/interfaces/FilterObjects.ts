@@ -6,7 +6,7 @@ interface FilterObjects {
   page?: number;
   recordSetType: RecordSetType;
   ids_to_filter?: Array<string | number>;
-  selectColumns: string[];
+  selectColumns?: string[];
   tableFilters: Array<IFilter>;
 }
 

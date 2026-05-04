@@ -1,11 +1,23 @@
+from django.contrib.gis.geos import GEOSGeometry
+import json
+import psycopg
+import logging
+from psycopg.rows import dict_row
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from django.core.exceptions import FieldError
 from django.db.models import Q, F, Min
 from django.db.models.functions import Coalesce
 from api.models.activity import ActivitySubtypes
-from api.serializers.activity_recordset_row import ActivityRecordsetRowSerializer
+from api.serializers.activity_recordset_row import (
+    ActivityRecordsetRowSerializer,
+    CachedActivityRecordsetRowSerializer,
+)
 from api.models.activity import Activity
+from api.constants import uuid_regex, short_id_regex
+from invasivesbc.settings import LEGACY_DB_CONNECTION_STRING
+
+log = logging.getLogger("invasives")
 
 # Separate complex paths to a constant for easier maintenance
 ALL_PLANT_PATHS = [
@@ -53,9 +65,37 @@ SORT_MAPPING = {
 class RecordsetRowsViewSet(viewsets.GenericViewSet):
     serializer_class = ActivityRecordsetRowSerializer
 
+    def get(self, request, *args, **kwargs):
+        """
+        Given a 'idList' query param of IDs (short or full)
+        return a list of Recordset rows and data payloads (For caching purposes)
+        """
+        id_list = request.GET.get("idList", []).split(",")
+        if len(id_list) == 0:
+            return Response("No IDs provided", status=status.HTTP_400_BAD_REQUEST)
+
+        uuids = []
+        short_ids = []
+        for id in id_list:
+            if uuid_regex.match(id):
+                uuids.append(id)
+            elif short_id_regex.match(id):
+                short_ids.append(id)
+            else:
+                return Response(f"Invalid ID: {id}", status=status.HTTP_400_BAD_REQUEST)
+
+        results = Activity.objects.filter(Q(id__in=uuids) | Q(short_id__in=short_ids))
+        serializer = CachedActivityRecordsetRowSerializer(results, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     def create(self, request, *args, **kwargs):
         filter_objects = request.data.get("filterObjects", [])
         meta = filter_objects[0] if filter_objects else {}
+        ids_only = (
+            len(meta.get("selectColumns", [])) == 1
+            and meta.get("selectColumns")[0] == "activity_id"
+        )
 
         queryset = self._get_base_queryset()
 
@@ -64,6 +104,10 @@ class RecordsetRowsViewSet(viewsets.GenericViewSet):
 
         # 2. Apply Sorting & Annotations
         queryset, order_by = self._apply_sorting(queryset, meta)
+
+        if ids_only:  # Early Return, just ship IDs, don't paginate.
+            id_list = queryset.values_list("id", flat=True).distinct()
+            return Response(list(id_list), status=status.HTTP_200_OK)
 
         # 3. Pagination & Execution
         results = self._paginate_and_execute(queryset, order_by, meta)
@@ -78,7 +122,9 @@ class RecordsetRowsViewSet(viewsets.GenericViewSet):
         """
         for obj in filter_objects:
             or_group = Q()
-
+            ids_to_filter = obj.get("ids_to_filter", None)
+            if ids_to_filter:
+                queryset = queryset.filter(id__in=ids_to_filter)
             for f in obj.get("tableFilters", []):
                 logic_gate = f.get("operator2", "AND")
                 current_q = self._build_single_filter_q(f)
@@ -97,11 +143,45 @@ class RecordsetRowsViewSet(viewsets.GenericViewSet):
 
     def _build_single_filter_q(self, f):
         """Helper to create a Q object for a single filter row."""
-        field = f.get("field").replace("activity_", "")
+        field = f.get("field", "").replace("activity_", "")
         value = f.get("filter")
         operator = f.get("operator")
+        filter_type = f.get("filterType")
 
-        if field == "invasive_plant":
+        if filter_type == "spatialFilterDrawn":
+            try:
+                geom_data = json.dumps(f.get("geojson").get("geometry"))
+                search_geometry = GEOSGeometry(geom_data)
+                return Q(shape__intersects=search_geometry)
+            except Exception:
+                log.error("Error while handling 'spatialFilterDrawn'", exc_info=True)
+                return Q()
+        elif filter_type == "spatialFilterUploaded":
+            try:
+                with psycopg.connect(
+                    LEGACY_DB_CONNECTION_STRING, row_factory=dict_row
+                ) as conn:
+                    with conn.cursor() as cursor:
+                        sql = """
+                            SELECT geog
+                            FROM admin_defined_shapes
+                            WHERE id = %s
+                            LIMIT 1;
+                        """
+                        cursor.execute(sql, (value,))
+                        result = cursor.fetchone()
+                        if result:
+                            geog = result["geog"]
+                            return Q(shape__intersects=GEOSGeometry(geog))
+                        else:
+                            log.debug(
+                                f"Requested shape with ID '{value}' was not found."
+                            )
+                            return Q()
+            except Exception:
+                log.error("Error while handling 'spatialFilterUploaded'", exc_info=True)
+                return Q()
+        elif field == "invasive_plant":
             current_q = Q()
             for path in ALL_PLANT_PATHS:
                 current_q |= Q(**{f"{path}__icontains": value})
@@ -148,7 +228,7 @@ class RecordsetRowsViewSet(viewsets.GenericViewSet):
         final_query = Q()
         for obj in filter_objects:
             for f in obj.get("tableFilters", []):
-                field = f.get("field").replace("activity_", "")
+                field = f.get("field", "").replace("activity_", "")
                 value = f.get("filter")
                 operator = f.get("operator")
                 logic_gate = f.get("operator2", "AND")

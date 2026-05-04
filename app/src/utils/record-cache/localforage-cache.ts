@@ -1,8 +1,7 @@
 import localForage from 'localforage';
-import centroid from '@turf/centroid';
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
 import booleanIntersects from '@turf/boolean-intersects';
-import { Feature } from 'geojson';
+import { Feature, GeoJSON } from 'geojson';
 import {
   IappRecordMode,
   RepositoryMetadata,
@@ -16,7 +15,6 @@ import IappRecord from 'interfaces/IappRecord';
 import IappTableRow from 'interfaces/IappTableRecord';
 import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import bboxToPolygon from 'utils/bboxToPolygon';
-import { getUnnestedFieldsForActivity } from 'UI/Features/Records/RecordSet/RecordTableHelpers';
 import EFilterType from 'constants/EFilterType';
 
 class LocalForageRecordCacheService extends RecordCacheService {
@@ -157,17 +155,11 @@ class LocalForageRecordCacheService extends RecordCacheService {
     return repos[foundIndex];
   }
 
-  async saveActivity(data: Record<PropertyKey, UserRecord>): Promise<void> {
+  async saveActivity(data: Array<UserRecord>): Promise<void> {
     if (this.store == null) {
       throw new Error('cache not available');
     }
-    await Promise.all(
-      Object.keys(data).map((key) => {
-        const parsed = getUnnestedFieldsForActivity(data[key]);
-        (parsed as Record<PropertyKey, any>).data = data[key];
-        this.store?.setItem(key, parsed);
-      })
-    );
+    await Promise.all(data.map((entry) => this.store?.setItem(entry.activity_id as string, entry)));
   }
 
   /**
@@ -186,8 +178,8 @@ class LocalForageRecordCacheService extends RecordCacheService {
     // Multiple Repos could contain the same record, so iterate them into an object to filter the duplicates
     for (const r of reposInBoundingBox) {
       const repo = await this.getRepository(r.set_id!, ['cached_geojson']);
-      (repo?.cached_geojson?.data as any)?.features.forEach((feature: Feature, i: number) => {
-        featureMap[feature?.properties?.name + i] ??= feature;
+      (repo?.cached_geojson?.data as any)?.features.forEach((feature: Feature) => {
+        featureMap[feature?.properties?.description] ??= feature;
       });
     }
     Object.values(featureMap).forEach((feature) => {
@@ -259,7 +251,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
     return results;
   }
 
-  async loadActivity(id: string): Promise<unknown> {
+  async loadActivity(id: string, format: 'row' | 'record' = 'record'): Promise<unknown> {
     if (this.store == null) {
       throw new Error('cache not available');
     }
@@ -270,7 +262,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
       throw new Error(`activity ${id} not found in cache`);
     }
 
-    return data?.data;
+    return format === 'row' ? data : data?.data;
   }
 
   /**
@@ -292,7 +284,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
     const results: any[] = [];
     const endPos = Math.min((page + 1) * limit, recordSetIdList.length);
     for (let i = startPos; i < endPos; i++) {
-      const entry: UserRecord = (await this.loadActivity(recordSetIdList[i])) as UserRecord;
+      const entry: UserRecord = (await this.loadActivity(recordSetIdList[i], 'row')) as UserRecord;
       results.push(entry);
     }
     return results;
@@ -330,35 +322,32 @@ class LocalForageRecordCacheService extends RecordCacheService {
    * @returns { RecordSetSourceMetadata } Two formatted queries for High/Low zoom layers
    */
   async createActivityRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata> {
-    const centroidArr: any[] = [];
-    const geoJsonArr: any[] = [];
+    const centroidArr: GeoJSON[] = [];
+    const geoJsonArr: GeoJSON[] = [];
 
     for (const id of ids) {
       const data: UserRecord = (await this.loadActivity(id)) as UserRecord;
-      const label = data.short_id;
-      const features = (data.geometry as Feature[]) ?? [];
-      features.forEach((feature: Feature) => {
-        feature.properties = {
-          name: label + '\n' + data.map_symbol,
-          description: id,
-          activity_subtype: data?.activity_subtype ?? null
-        };
-        centroidArr.push(centroid(feature, { properties: feature.properties }));
-        geoJsonArr.push(feature);
-      });
+      const geojson = {
+        ...(data.shape as GeoJSON),
+        properties: {
+          description: id
+        }
+      };
+      centroidArr.push(data.centroid as GeoJSON);
+      geoJsonArr.push(geojson);
     }
     const cachedCentroid: GeoJSONSourceSpecification = {
       type: 'geojson',
       data: {
         type: 'FeatureCollection',
-        features: centroidArr
+        features: centroidArr as keyof GeoJSONSourceSpecification['data']
       }
     };
     const cachedGeoJson: GeoJSONSourceSpecification = {
       type: 'geojson',
       data: {
         type: 'FeatureCollection',
-        features: geoJsonArr
+        features: geoJsonArr as keyof GeoJSONSourceSpecification['data']
       }
     };
     return { cachedCentroid, cachedGeoJson };

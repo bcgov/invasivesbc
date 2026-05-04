@@ -9,6 +9,7 @@
   /* stylelint-disable-next-line selector-class-pattern */
   .select-input__control,
   .select-input {
+    appearance: none; /* Prevent iOS Style overriding */
     width: 100%;
     text-align: left;
     font-size: var(--form-input-font-size);

@@ -513,7 +513,7 @@ const DrawControls = () => {
           filter: ['all', ['==', 'active', 'false'], ['!=', 'user_error', 'true'], ['==', '$type', 'Polygon']],
           paint: {
             'fill-color': 'white',
-            'fill-opacity': 0.5
+            'fill-opacity': 0.002
           },
           slot: LAYER_Z_FOREGROUND
         },
