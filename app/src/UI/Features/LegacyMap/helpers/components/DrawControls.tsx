@@ -77,7 +77,7 @@ const DrawControls = () => {
   const [mode, setMode] = useState<TargetMode>(TargetMode.DISABLED);
   const prevMode = useRef<TargetMode>(TargetMode.DISABLED);
 
-  const isEditDisabled = ![TargetMode.ACTIVITY].includes(mode);
+  const isEditDisabled = ![TargetMode.LEGACY_FORM].includes(mode);
 
   /**
    * @desc Dispatch Custom event for when the Edit Button is used. Listened to by `LayerDataMarker.tsx`
@@ -279,7 +279,7 @@ const DrawControls = () => {
     };
 
     if (!drawInstance.current) return;
-    if (mode === TargetMode.ACTIVITY || mode === TargetMode.HOOK_FORM) {
+    if (mode === TargetMode.LEGACY_FORM || mode === TargetMode.ACTIVITY) {
       dispatch(
         Prompt.confirmation({
           callback,
@@ -330,8 +330,8 @@ const DrawControls = () => {
         }
         break;
       }
-      case TargetMode.HOOK_FORM:
-      case TargetMode.ACTIVITY: {
+      case TargetMode.ACTIVITY:
+      case TargetMode.LEGACY_FORM: {
         dispatch(DrawToolActions.createShape(feature));
         break;
       }
@@ -372,15 +372,15 @@ const DrawControls = () => {
     } else if (drawingCustomLayer) {
       setMode(TargetMode.CUSTOM_LAYER);
       return;
-    } else if (url?.includes('Activity')) {
+    } else if (url?.includes('LegacyForm')) {
       if (currGeoTrackingMode || prevGeoTrackingMode) {
         setMode(TargetMode.ACTIVITY_GEO_TRACK);
         disableDrawButtons(true);
       } else {
-        setMode(TargetMode.ACTIVITY);
+        setMode(TargetMode.LEGACY_FORM);
       }
-    } else if (url?.includes('HookForm')) {
-      setMode(TargetMode.HOOK_FORM);
+    } else if (url?.includes('Activity')) {
+      setMode(TargetMode.ACTIVITY);
       disableDrawButtons(false);
     } else {
       setMode(TargetMode.DISABLED);
@@ -430,7 +430,7 @@ const DrawControls = () => {
   useEffect(() => {
     if (!drawInstance.current) return;
 
-    const shouldPreserveShape = prevMode.current === TargetMode.ACTIVITY_GEO_TRACK && mode === TargetMode.ACTIVITY;
+    const shouldPreserveShape = prevMode.current === TargetMode.ACTIVITY_GEO_TRACK && mode === TargetMode.LEGACY_FORM;
 
     if (!shouldPreserveShape) {
       drawInstance.current.deleteAll();
@@ -443,7 +443,7 @@ const DrawControls = () => {
       case TargetMode.ACTIVITY_GEO_TRACK:
         drawInstance.current.changeMode('geo_tracking_mode');
         break;
-      case TargetMode.ACTIVITY:
+      case TargetMode.LEGACY_FORM:
         drawInstance.current.changeMode('simple_select');
         break;
       case TargetMode.DISABLED:

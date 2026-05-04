@@ -65,7 +65,7 @@ const NewRecordDialog = () => {
     } else {
       dispatch(FormActions.duplicateForm({ subtype: data.subtype }));
     }
-    navigate('/Records/HookForm/new/form');
+    navigate('/Records/Activity/new/form');
   };
 
   useEffect(() => {
