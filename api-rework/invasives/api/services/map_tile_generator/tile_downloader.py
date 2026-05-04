@@ -1,20 +1,22 @@
+import abc
+from dataclasses import dataclass
+from datetime import datetime, timedelta
 import logging
 import os
 import subprocess
-from dataclasses import dataclass
-from datetime import datetime, timedelta
-from django.utils import timezone
 from typing import List, Optional
 
 import boto3
+from botocore.exceptions import ClientError
 import diskcache
+from diskcache import Cache
+from django.db import transaction
+from django.utils import timezone
 import mercantile
 import requests
-from botocore.exceptions import ClientError
-from diskcache import Cache
 from requests import RequestException
 
-from api.models import CachedRasterTile
+from api.models import CachedRasterTile, RasterMapGenerationRequest
 from api.services.map_tile_generator.mb_tiles_database import MBTilesDatabase
 from api.services.map_tile_generator.tile_definitions import (
     TileDefinition,
@@ -23,18 +25,18 @@ from api.services.map_tile_generator.tile_source import (
     TileSource,
 )
 from invasivesbc.settings import (
+    OBJECT_STORE_ACCESS_KEY_ID,
+    OBJECT_STORE_ENDPOINT_URL,
+    OBJECT_STORE_MAP_UPLOAD_BUCKET,
+    OBJECT_STORE_SECRET_ACCESS_KEY,
     SCRATCH_DIRECTORY,
     TILE_CACHE_MAXIMUM_SIZE,
-    OBJECT_STORE_ENDPOINT_URL,
-    OBJECT_STORE_ACCESS_KEY_ID,
-    OBJECT_STORE_SECRET_ACCESS_KEY,
-    OBJECT_STORE_MAP_UPLOAD_BUCKET,
 )
 
 # store frequently-used low-zoom tiles locally for faster retrieval
 LOCAL_CACHE_ZOOM_RANGE = range(0, 11)
 # store more tiles in the database for shared access (across workers)
-DATABASE_CACHE_ZOOM_RANGE = range(0, 19)
+DATABASE_CACHE_ZOOM_RANGE = range(0, 20)
 
 cache = Cache(
     directory=os.path.join(SCRATCH_DIRECTORY, ".tile-cache"),
@@ -58,6 +60,38 @@ class TileRetrieveResult:
 
 class TileRetrieveException(Exception):
     pass
+
+
+class DownloadProgressReporter(abc.ABC):
+    def report_progress(
+        self, tiles_loaded: int, total_tiles: int, stats: TileCacheStatistics
+    ):
+        pass
+
+
+class LoggingDownloadProgressReporter(DownloadProgressReporter):
+    def report_progress(
+        self, tiles_loaded: int, total_tiles: int, stats: TileCacheStatistics
+    ):
+        logging.info(
+            f"{tiles_loaded} / {total_tiles} ({round((tiles_loaded/total_tiles) * 100.0, 2)}%)"
+        )
+
+
+class GenerationRequestProgressReporter(DownloadProgressReporter):
+    def __init__(self, mgr: RasterMapGenerationRequest):
+        self.mgr = mgr
+
+    def report_progress(
+        self, tiles_loaded: int, total_tiles: int, stats: TileCacheStatistics
+    ):
+        logging.info(
+            f"{tiles_loaded} / {total_tiles} ({round((tiles_loaded/total_tiles) * 100.0, 2)}%)"
+        )
+        with transaction.atomic():
+            self.mgr.cache_hits = stats.cache_hits
+            self.mgr.tiles_downloaded = tiles_loaded
+            self.mgr.save()
 
 
 class TileDownloader:
@@ -159,6 +193,7 @@ class TileDownloader:
         tileset_name: str,
         tiles: List[mercantile.Tile],
         source: TileSource,
+        progress_reporter: DownloadProgressReporter = LoggingDownloadProgressReporter(),
     ):
         mbtiles_filename = os.path.join(
             SCRATCH_DIRECTORY, f"output/{tileset_name}.mbtiles"
@@ -169,76 +204,73 @@ class TileDownloader:
 
         os.makedirs(os.path.join(SCRATCH_DIRECTORY, "output"), exist_ok=True)
 
+        with MBTilesDatabase(
+            mbtiles_filename, tileset_name, source.tile_format
+        ) as tiledb:
+            stats = TileCacheStatistics()
+
+            tiles_loaded = 0
+            last_report = datetime.now()
+
+            for tile in tiles:
+
+                try:
+                    stats.total_tiles += 1
+                    result = TileDownloader.retrieve_tile(source, tile)
+
+                    if result.hit:
+                        stats.cache_hits += 1
+                    else:
+                        stats.cache_misses += 1
+
+                    tiledb.db.execute(
+                        "INSERT OR REPLACE INTO tiles (zoom_level, tile_column, tile_row, tile_data) values (?, ?, ?, ?)",
+                        (tile.z, (2**tile.z) - 1 - tile.y, tile.x, result.data),
+                    )
+
+                except TileRetrieveException as e:
+                    logging.warning(f"tile retrieve failure: {e}", exc_info=True)
+                    stats.errors += 1
+
+                tiles_loaded += 1
+
+                if datetime.now() - last_report > timedelta(seconds=10):
+                    last_report = datetime.now()
+                    progress_reporter.report_progress(
+                        tiles_loaded=tiles_loaded, total_tiles=len(tiles), stats=stats
+                    )
+
+        subprocess.run(["pmtiles", "convert", mbtiles_filename, pmtiles_filename])
+
+        s3_client = boto3.client(
+            "s3",
+            endpoint_url=OBJECT_STORE_ENDPOINT_URL,
+            aws_access_key_id=OBJECT_STORE_ACCESS_KEY_ID,
+            aws_secret_access_key=OBJECT_STORE_SECRET_ACCESS_KEY,
+            aws_session_token=None,
+            config=boto3.session.Config(
+                signature_version="s3v4",
+                request_checksum_calculation="when_required",
+                response_checksum_validation="when_required",
+            ),
+        )
         try:
-            with MBTilesDatabase(
-                mbtiles_filename, tileset_name, source.tile_format
-            ) as tiledb:
-                stats = TileCacheStatistics()
-
-                tiles_loaded = 0
-                last_report = datetime.now()
-
-                for tile in tiles:
-
-                    try:
-                        stats.total_tiles += 1
-                        result = TileDownloader.retrieve_tile(source, tile)
-
-                        if result.hit:
-                            stats.cache_hits += 1
-                        else:
-                            stats.cache_misses += 1
-
-                        tiledb.db.execute(
-                            "INSERT OR REPLACE INTO tiles (zoom_level, tile_column, tile_row, tile_data) values (?, ?, ?, ?)",
-                            (tile.z, tile.y, tile.x, result.data),
-                        )
-
-                    except TileRetrieveException as e:
-                        logging.warning(f"tile retrieve failure: {e}", exc_info=True)
-                        stats.errors += 1
-
-                    tiles_loaded += 1
-
-                    if datetime.now() - last_report > timedelta(seconds=10):
-                        last_report = datetime.now()
-                        logging.info(
-                            f"{tiles_loaded} / {len(tiles)} ({round((tiles_loaded/len(tiles)) * 100.0, 2)}%)"
-                        )
-
-            subprocess.run(["pmtiles", "convert", mbtiles_filename, pmtiles_filename])
-
-            s3_client = boto3.client(
-                "s3",
-                endpoint_url=OBJECT_STORE_ENDPOINT_URL,
-                aws_access_key_id=OBJECT_STORE_ACCESS_KEY_ID,
-                aws_secret_access_key=OBJECT_STORE_SECRET_ACCESS_KEY,
-                aws_session_token=None,
-                config=boto3.session.Config(
-                    signature_version="s3v4",
-                    request_checksum_calculation="when_required",
-                    response_checksum_validation="when_required",
-                ),
+            s3_client.upload_file(
+                pmtiles_filename,
+                OBJECT_STORE_MAP_UPLOAD_BUCKET,
+                f"maps/{tileset_name}.pmtiles",
+                ExtraArgs={"ACL": "public-read"},
             )
-            try:
-                s3_client.upload_file(
-                    pmtiles_filename,
-                    OBJECT_STORE_MAP_UPLOAD_BUCKET,
-                    f"maps/{tileset_name}.pmtiles",
-                    ExtraArgs={"ACL": "public-read"},
-                )
-                logging.info(f"PMTiles upload complete for {pmtiles_filename}")
-            except ClientError as e:
-                logging.error("Unable to upload file to object store", exc_info=True)
+            logging.info(f"PMTiles upload complete for {pmtiles_filename}")
+        except ClientError as e:
+            logging.error("Unable to upload file to object store", exc_info=True)
+            raise e
 
-        except Exception as e:
-            logging.error(
-                f"Error encountered on tileset {tileset_name}",
-                exc_info=True,
-            )
         finally:
-            os.unlink(mbtiles_filename)
-            os.unlink(pmtiles_filename)
+            if os.path.exists(mbtiles_filename):
+                os.unlink(mbtiles_filename)
+            if os.path.exists(pmtiles_filename):
+                os.unlink(pmtiles_filename)
 
     @staticmethod
     def generate_map_tiles(tiles: TileDefinition, source: TileSource):
@@ -251,3 +283,27 @@ class TileDownloader:
             TileDownloader.generate_protomap_archive(t.name, t.tiles, source)
 
         return stats
+
+    @staticmethod
+    def process_map_generation_request(mgr: RasterMapGenerationRequest):
+
+        with transaction.atomic():
+            mgr.status = "PROCESSING"
+            mgr.save()
+
+        try:
+            TileDownloader.generate_protomap_archive(
+                f"gen_request_{mgr.id}",
+                mgr.tileset,
+                mgr.tile_definition_source,
+                progress_reporter=GenerationRequestProgressReporter(mgr),
+            )
+
+            with transaction.atomic():
+                mgr.status = "COMPLETED"
+                mgr.save()
+        except Exception as e:
+            logging.error(e, exc_info=True)
+            with transaction.atomic():
+                mgr.status = "FAILED"
+                mgr.save()
