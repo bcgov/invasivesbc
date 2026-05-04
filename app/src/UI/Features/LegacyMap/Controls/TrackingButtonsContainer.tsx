@@ -7,7 +7,7 @@ const TrackingButtonsContainer = () => {
   const { status } = useSelector((state) => state.Map.track_me_draw_geo);
   const tracking = isTracking(status);
   const url = useSelector((state) => state.AppMode.url);
-  const isInActivity = /\/(HookForm|Activity)\//.test(url ?? '');
+  const isInActivity = /\/(LegacyForm|Activity)\//.test(url ?? '');
 
   return (
     <>
