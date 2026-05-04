@@ -85,7 +85,7 @@ export const OfflineDataSyncTable = ({ handleClose }: PropTypes) => {
   };
   const handleLoad = () => {
     if (!contextRecord) return;
-    navigate(`/Records/HookForm/${contextRecord}/form`);
+    navigate(`/Records/Activity/${contextRecord}/form`);
     dispatch(Activity.Offline.setSyncDialogueWindow({ open: false }));
   };
   const handleOpenMenu = (evt: MouseEvent<HTMLElement> | TouchEvent<HTMLElement>, key: string) => {

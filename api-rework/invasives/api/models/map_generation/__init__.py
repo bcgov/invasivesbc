@@ -1,0 +1,1 @@
+from .map_generation_request import RasterMapGenerationRequest

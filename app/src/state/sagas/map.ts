@@ -520,7 +520,7 @@ function* handle_MAP_ON_SHAPE_CREATE(action: PayloadAction<Feature>) {
   const noUserError = action?.payload?.properties?.user_error !== 'true';
 
   if (isPolygonOrPoint && hasCoordinates && noUserError) {
-    const isActivityPage = appModeUrl && /(Activity|HookForm)/.test(appModeUrl);
+    const isActivityPage = appModeUrl && /(Activity|LegacyForm)/.test(appModeUrl);
     if (isActivityPage && !whatsHereToggle) {
       yield put(DrawToolActions.updateGeo([action.payload]));
       return;
@@ -539,7 +539,7 @@ function* handle_MAP_ON_SHAPE_CREATE(action: PayloadAction<Feature>) {
         acceptFloats: true,
         callback: (width: number) => {
           const newGeo = (buffer(geometry, width / 10000) ?? geometry) as Feature;
-          if (appModeUrl && /(Activity|HookForm)/.test(appModeUrl) && !whatsHereToggle) {
+          if (appModeUrl && /(Activity|LegacyForm)/.test(appModeUrl) && !whatsHereToggle) {
             return [DrawToolActions.updateGeo([newGeo])];
           }
         },
@@ -556,7 +556,7 @@ function* handle_MAP_ON_SHAPE_UPDATE(action: PayloadAction<Feature>) {
     const { status, shapeType } = yield select((state) => state.Map.track_me_draw_geo);
     const { id, geometry } = action.payload;
 
-    const isActivityPage = url && /(Activity|HookForm)/.test(url);
+    const isActivityPage = url && /(Activity|LegacyForm)/.test(url);
     const isGeoTrackingFeature = id === GEO_TRACKING_FEATURE;
 
     if (drawingCustomLayer) {

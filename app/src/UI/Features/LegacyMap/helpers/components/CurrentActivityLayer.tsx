@@ -15,10 +15,10 @@ const CurrentActivityLayer = ({ mapReady }) => {
   // react to changes in the geometry or current page and set our rendered geo appropriately
   // render if a) we're on the Activity page and b) There is a geo object in the Activity
   useEffect(() => {
-    if (activityGeometryArray && activityGeometryArray[0] && url?.includes('Activity')) {
+    if (activityGeometryArray && activityGeometryArray[0] && url?.includes('LegacyForm')) {
       // TODO Remove
       setGeo(activityGeometryArray[0]);
-    } else if (url && formGeometry && RegExp(/\/HookForm/).test(url)) {
+    } else if (url && formGeometry && RegExp(/\/Activity/).test(url)) {
       setGeo(formGeometry);
     } else {
       setGeo(null);

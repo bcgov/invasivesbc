@@ -133,9 +133,8 @@ function usePrimaryNavigationLinks() {
     },
     {
       id: 'activity',
-      // TODO: Replace 'HookForm' with 'Activity'
-      path: `/Records/HookForm/${activeActivity}/form`,
-      activePaths: [{ path: `/Records/HookForm/:id/*`, end: true }],
+      path: `/Records/Activity/${activeActivity}/form`,
+      activePaths: [{ path: `/Records/Activity/:id/*`, end: true }],
       label: isCellPhoneWidth ? 'Activity' : 'Current Activity',
       predicate: TabPredicate.AUTHENTICATED_ANY,
       platform: PlatformPredicate.BOTH,
