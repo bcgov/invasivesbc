@@ -52,7 +52,7 @@ class RasterMapGenerationRequest(models.Model):
         blank=True,
     )
 
-    xstatus = models.CharField(
+    status = models.CharField(
         max_length=32,
         null=False,
         blank=False,
