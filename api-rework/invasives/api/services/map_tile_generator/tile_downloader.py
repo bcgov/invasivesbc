@@ -1,4 +1,5 @@
 import abc
+import threading
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 import logging
@@ -20,6 +21,7 @@ from api.models import CachedRasterTile, RasterMapGenerationRequest
 from api.services.map_tile_generator.mb_tiles_database import MBTilesDatabase
 from api.services.map_tile_generator.tile_definitions import (
     TileDefinition,
+    Tileset,
 )
 from api.services.map_tile_generator.tile_source import (
     TileSource,
@@ -31,12 +33,10 @@ from invasivesbc.settings import (
     OBJECT_STORE_SECRET_ACCESS_KEY,
     SCRATCH_DIRECTORY,
     TILE_CACHE_MAXIMUM_SIZE,
+    LOCAL_CACHE_ZOOM_RANGE,
+    DATABASE_CACHE_ZOOM_RANGE,
 )
 
-# store frequently-used low-zoom tiles locally for faster retrieval
-LOCAL_CACHE_ZOOM_RANGE = range(0, 11)
-# store more tiles in the database for shared access (across workers)
-DATABASE_CACHE_ZOOM_RANGE = range(0, 20)
 
 cache = Cache(
     directory=os.path.join(SCRATCH_DIRECTORY, ".tile-cache"),
@@ -273,13 +273,24 @@ class TileDownloader:
                 os.unlink(pmtiles_filename)
 
     @staticmethod
-    def generate_map_tiles(tiles: TileDefinition, source: TileSource):
+    def generate_map_tiles(
+        tiles: TileDefinition,
+        source: TileSource,
+        stop_event: Optional[threading.Event] = None,
+    ):
 
         stats = TileCacheStatistics()
 
         tile_definitions = tiles.tilesets()
 
+        if isinstance(tile_definitions, Tileset):
+            # make it a list if it was singular
+            tile_definitions = [tile_definitions]
+
         for t in tile_definitions:
+            if stop_event is not None and stop_event.is_set():
+                logging.info("Shutting down on request")
+                break
             TileDownloader.generate_protomap_archive(t.name, t.tiles, source)
 
         return stats

@@ -60,6 +60,16 @@ DATABASES = {
         "TEST": {
             "NAME": os.getenv("TEST_DB_NAME"),
         },
+        "CONN_MAX_AGE": 0,
+        "OPTIONS": {
+            "pool": {
+                "min_size": 2,
+                "max_size": 8,
+                "timeout": 30,
+                "max_lifetime": 1800,
+                "max_idle": 900,
+            },
+        },
     }
 }
 LEGACY_DB = {
@@ -76,6 +86,10 @@ CELERY_BROKER_URL = os.getenv(
 CELERY_TIMEZONE = "America/Vancouver"
 CELERY_TASK_TRACK_STARTED = True
 
+"""
+Settings related to map generation and tile caching
+"""
+
 SCRATCH_DIRECTORY = os.getenv("SCRATCH_DIRECTORY", os.getcwd())
 
 os.makedirs(SCRATCH_DIRECTORY, exist_ok=True)
@@ -90,6 +104,18 @@ if disk_space.free < TILE_CACHE_MAXIMUM_SIZE:
     TILE_CACHE_MAXIMUM_SIZE = int(
         disk_space.free * 0.75
     )  # don't use more than 3/4 of the available space for the cache
+
+# store frequently-used low-zoom tiles locally for faster retrieval.
+# this cache is NOT shared between workers
+LOCAL_CACHE_ZOOM_RANGE = range(0, 13)
+
+# store more tiles in the database for shared access (across workers)
+# slower but bigger (level 2 cache)
+DATABASE_CACHE_ZOOM_RANGE = range(0, 19)
+
+"""
+end of map generation settings
+"""
 
 KEYCLOAK = {
     "JWKS_ENDPOINT": os.getenv(
