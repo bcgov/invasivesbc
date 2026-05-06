@@ -60,7 +60,7 @@ class Command(BaseCommand):
         signal.signal(signal.SIGINT, handle_interruption)
 
         tile_definitions = NTSGridTileDefinition(
-            zoom_range=range(0, options["max_zoom"])
+            min_zoom=0, max_zoom=options["max_zoom"]
         ).tilesets()
 
         total_tile_count = reduce(

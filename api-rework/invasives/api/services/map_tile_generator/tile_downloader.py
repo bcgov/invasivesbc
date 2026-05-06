@@ -18,7 +18,10 @@ import requests
 from requests import RequestException
 
 from api.models import CachedRasterTile, RasterMapGenerationRequest
-from api.services.map_tile_generator.mb_tiles_database import MBTilesDatabase
+from api.services.map_tile_generator.mb_tiles_database import (
+    MBTilesDatabase,
+    MBTilesMetadata,
+)
 from api.services.map_tile_generator.tile_definitions import (
     TileDefinition,
     Tileset,
@@ -191,7 +194,7 @@ class TileDownloader:
     @staticmethod
     def generate_protomap_archive(
         tileset_name: str,
-        tiles: List[mercantile.Tile],
+        tileset: Tileset,
         source: TileSource,
         progress_reporter: DownloadProgressReporter = LoggingDownloadProgressReporter(),
     ):
@@ -204,15 +207,21 @@ class TileDownloader:
 
         os.makedirs(os.path.join(SCRATCH_DIRECTORY, "output"), exist_ok=True)
 
-        with MBTilesDatabase(
-            mbtiles_filename, tileset_name, source.tile_format
-        ) as tiledb:
+        metadata = MBTilesMetadata(
+            min_zoom=tileset.min_zoom,
+            max_zoom=tileset.max_zoom,
+            format=source.tile_format,
+            bounds=tileset.bounds,
+            center=tileset.center,
+        )
+
+        with MBTilesDatabase(mbtiles_filename, tileset_name, metadata) as tiledb:
             stats = TileCacheStatistics()
 
             tiles_loaded = 0
             last_report = datetime.now()
 
-            for tile in tiles:
+            for tile in tileset.tiles:
 
                 try:
                     stats.total_tiles += 1
@@ -225,7 +234,7 @@ class TileDownloader:
 
                     tiledb.db.execute(
                         "INSERT OR REPLACE INTO tiles (zoom_level, tile_column, tile_row, tile_data) values (?, ?, ?, ?)",
-                        (tile.z, (2**tile.z) - 1 - tile.y, tile.x, result.data),
+                        (tile.z, tile.x, (1 << tile.z) - 1 - tile.y, result.data),
                     )
 
                 except TileRetrieveException as e:
@@ -237,7 +246,9 @@ class TileDownloader:
                 if datetime.now() - last_report > timedelta(seconds=10):
                     last_report = datetime.now()
                     progress_reporter.report_progress(
-                        tiles_loaded=tiles_loaded, total_tiles=len(tiles), stats=stats
+                        tiles_loaded=tiles_loaded,
+                        total_tiles=len(tileset.tiles),
+                        stats=stats,
                     )
 
         subprocess.run(["pmtiles", "convert", mbtiles_filename, pmtiles_filename])
@@ -291,7 +302,8 @@ class TileDownloader:
             if stop_event is not None and stop_event.is_set():
                 logging.info("Shutting down on request")
                 break
-            TileDownloader.generate_protomap_archive(t.name, t.tiles, source)
+
+            TileDownloader.generate_protomap_archive(t.name, t, source)
 
         return stats
 

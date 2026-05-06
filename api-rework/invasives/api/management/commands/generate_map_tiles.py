@@ -20,6 +20,12 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
+            "--min_zoom",
+            help="Min zoom level to include",
+            type=int,
+            default=0,
+        )
+        parser.add_argument(
             "--max_zoom",
             help="Max zoom level to include",
             type=int,
@@ -45,7 +51,9 @@ class Command(BaseCommand):
         signal.signal(signal.SIGINT, handle_interruption)
 
         stats = TileDownloader.generate_map_tiles(
-            tiles=NTSGridTileDefinition(zoom_range=range(0, options["max_zoom"])),
+            tiles=NTSGridTileDefinition(
+                min_zoom=options["min_zoom"], max_zoom=options["max_zoom"]
+            ),
             source=ESRIWorldImageryTileSource(),
             stop_event=self.stop_event,
         )

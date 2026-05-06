@@ -1,4 +1,5 @@
 const API_URL = import.meta.env.VITE_API_BASE || 'http://localhost:8000';
+const OBJECTSTORE_ROOT = import.meta.env.VITE_OBJECTSTORE_ROOT || 'http://localhost:3900';
 
 interface SubtypeData {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -11,4 +12,4 @@ interface KeyValue {
 }
 
 export type { SubtypeData, KeyValue };
-export { API_URL };
+export { API_URL, OBJECTSTORE_ROOT };

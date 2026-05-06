@@ -7,6 +7,7 @@ import { produce } from 'immer';
 import Header from 'common-components/header/Header';
 import Footer from 'common-components/footer/Footer';
 import Logo from 'common-components/logo/Logo';
+import Map from 'map-components/map';
 import './client.css';
 import EndlessLoadingBar from 'common-components/endless-loading-bar/EndlessLoadingBar';
 import { AgGridProvider } from 'ag-grid-react';
@@ -227,6 +228,7 @@ const Client: React.FC = () => {
               <Route path="/migration-status" element={<MigrationStatusList />} />
               <Route path="/activities" element={<ActivitiesList />} />
               <Route path="/activities/:id/*" element={<ActivitiesDetail />} />
+              <Route path="/map/*" element={<Map />} />
             </Routes>
           </AgGridProvider>
         </div>
