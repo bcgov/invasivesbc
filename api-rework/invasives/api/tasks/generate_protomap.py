@@ -100,10 +100,10 @@ def preheat_map_cache(max_zoom=15):
             f" {round(sheet_time.total_seconds(), 0)}s {round(sheet_tps, 1)} tiles/sec - estimate {str(estimate_remaining)} ({tiles_remaining} tiles) remaining"
         )
 
-        logging.info(
-            f"run complete"
-            f" {overall_stats.cache_hits}/{overall_stats.total_tiles} hit,"
-            f" {overall_stats.cache_misses} missed (downloaded),"
-            f" {overall_stats.errors} errors,"
-            f" {str(datetime.now() - job_start)} elapsed"
-        )
+    logging.info(
+        f"run complete"
+        f" {overall_stats.cache_hits}/{overall_stats.total_tiles} hit,"
+        f" {overall_stats.cache_misses} missed (downloaded),"
+        f" {overall_stats.errors} errors,"
+        f" {str(datetime.now() - job_start)} elapsed"
+    )
