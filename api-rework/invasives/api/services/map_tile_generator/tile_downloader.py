@@ -127,6 +127,13 @@ class TileDownloader:
         if tile.z in DATABASE_CACHE_ZOOM_RANGE:
             cached = CachedRasterTile.objects.filter(key=cache_key).first()
             if cached is not None:
+                if tile.z in LOCAL_CACHE_ZOOM_RANGE:
+                    # copy l2 -> l1 cache for next time, if appropriate
+                    cache.set(
+                        cache_key,
+                        cached.data,
+                        expire=source.cache_lifetime_seconds,
+                    )
                 return TileRetrieveResult(hit=True, data=cached.data)
 
         url = source.build_url(tile.z, tile.y, tile.x)

@@ -107,11 +107,11 @@ if disk_space.free < TILE_CACHE_MAXIMUM_SIZE:
 
 # store frequently-used low-zoom tiles locally for faster retrieval.
 # this cache is NOT shared between workers
-LOCAL_CACHE_ZOOM_RANGE = range(0, 13)
+LOCAL_CACHE_ZOOM_RANGE = range(0, 13 + 1)
 
 # store more tiles in the database for shared access (across workers)
 # slower but bigger (level 2 cache)
-DATABASE_CACHE_ZOOM_RANGE = range(0, 19)
+DATABASE_CACHE_ZOOM_RANGE = range(0, 18 + 1)
 
 """
 end of map generation settings
