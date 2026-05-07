@@ -3,14 +3,19 @@ from api.models.activity import ActivitySubtypes
 from api.models.activity import (
     TerrestrialPlantObservationEntries,
     AquaticPlantObservationEntry,
-    PlantMechanicalTreatmentEntry,
+    AquaticTreatmentMonitoringEntry,
+    TerrestrialTreatmentMonitoringEntry,
 )
-from . import OBSERVATION_AQUATIC_ANNOTATIONS, OBSERVATION_TERRESTRIAL_ANNOTATIONS
+from . import (
+    OBSERVATION_AQUATIC_ANNOTATIONS,
+    OBSERVATION_TERRESTRIAL_ANNOTATIONS,
+    MONITORING_ANNOTATIONS,
+)
 
 ADR_BASE = "activity_data_record__activity__activitydatarecord_set"
 CSV_SUBTYPE_CONFIG = {
     ActivitySubtypes.Observation_Plant_Terrestrial.name: {
-        "entry_model": TerrestrialPlantObservationEntries,
+        "entry_models": [TerrestrialPlantObservationEntries],
         "annotations": OBSERVATION_TERRESTRIAL_ANNOTATIONS,
         "prefetch_related": [
             f"{ADR_BASE}__specificuse_set__specific_use",
@@ -18,7 +23,7 @@ CSV_SUBTYPE_CONFIG = {
         "select_related": [],
     },
     ActivitySubtypes.Observation_Plant_Aquatic.name: {
-        "entry_model": AquaticPlantObservationEntry,
+        "entry_models": [AquaticPlantObservationEntry],
         "annotations": OBSERVATION_AQUATIC_ANNOTATIONS,
         "prefetch_related": [
             f"{ADR_BASE}__waterbodycontext_set__type",
@@ -36,5 +41,21 @@ CSV_SUBTYPE_CONFIG = {
             f"{ADR_BASE}__waterbodyoutflowseasonal_set__flow_code",
         ],
         "select_related": [],
+    },
+    ActivitySubtypes.Monitoring_Mechanical_Plant_Terrestrial_Aquatic.name: {
+        "entry_models": [
+            AquaticTreatmentMonitoringEntry,
+            TerrestrialTreatmentMonitoringEntry,
+        ],
+        "annotations": MONITORING_ANNOTATIONS,
+        "prefetch_related": [],
+    },
+    ActivitySubtypes.Monitoring_Chemical_Plant_Terrestrial_Aquatic.name: {
+        "entry_models": [
+            AquaticTreatmentMonitoringEntry,
+            TerrestrialTreatmentMonitoringEntry,
+        ],
+        "annotations": MONITORING_ANNOTATIONS,
+        "prefetch_related": [],
     },
 }
