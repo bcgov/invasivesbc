@@ -347,11 +347,16 @@ class RecordsetRowsViewSet(viewsets.GenericViewSet):
         if not config:
             return Response("Unsupported Activity Type", status=400)
 
-        entry_model = config.get("entry_model")
+        entry_model = config.get("entry_models")
 
         # Get IDs matching Filters to apply to our model
         activity_queryset = self._get_base_queryset()
         activity_queryset = self._apply_filters(activity_queryset, filter_objects)
+        """
+        Since CSV's are based on a Specific Subtype, ensure we are filtering for one. This eliminates
+        Shared models like for Chemical/Mechanical Monitoring Records.
+        """
+        activity_queryset = activity_queryset.filter(subtype=csv_type)
         valid_activity_ids = activity_queryset.values_list("id", flat=True).distinct()
 
         ANNOTATIONS = build_csv_annotation_object(config.get("annotations", []))
@@ -361,17 +366,29 @@ class RecordsetRowsViewSet(viewsets.GenericViewSet):
         value_keys = [item["key"] for item in ANNOTATIONS]
         headers = [item["header"] for item in ANNOTATIONS]
 
-        data_stream = (
-            # Use Entry model so rows are by Entries, not Records (1 plant, 1 row)
-            entry_model.objects.filter(
-                activity_data_record__activity_id__in=valid_activity_ids
+        querysets = []
+
+        for model in entry_model:
+            qs = (
+                model.objects.filter(
+                    activity_data_record__activity_id__in=valid_activity_ids
+                )
+                .annotate(
+                    root_activity=FilteredRelation("activity_data_record__activity")
+                )
+                .annotate(**annotations)
+                .values(*value_keys)
+                .distinct()
             )
-            .annotate(root_activity=FilteredRelation("activity_data_record__activity"))
-            .annotate(**annotations)
-            .values(*value_keys)
-            .distinct()
-            .iterator(chunk_size=1000)  # Chunk out for Streaming
-        )
+            querysets.append(qs)
+
+        if querysets:
+            combined_query = querysets[0]
+            for other_qs in querysets[1:]:
+                combined_query = combined_query.union(other_qs)
+            data_stream = combined_query.iterator(chunk_size=1000)
+        else:
+            data_stream = iter([])
 
         def rows():
             echo = Echo()
