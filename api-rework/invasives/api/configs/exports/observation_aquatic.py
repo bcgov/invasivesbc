@@ -4,6 +4,7 @@ from django.db.models.functions import Concat, Cast
 from api.models.activity import (
     TerrestrialVoucherSpecimen,
 )
+from .helpers import agg
 
 SRC = "root_activity"
 ADR_PATH = f"{SRC}__activitydatarecord"
@@ -51,8 +52,8 @@ OBSERVATION_AQUATIC_ANNOTATIONS = [
     {
         "header": "Suitable for Biocontrol",
         "key": "suitable_for_biocontrol_display",
-        "annotation": StringAgg(
-            f"{CTX_PATH}__suitable_for_biocontrol", delimiter=", ", distinct=True
+        "annotation": agg(
+            f"{CTX_PATH}__suitable_for_biocontrol",
         ),
     },
     {
@@ -76,136 +77,106 @@ OBSERVATION_AQUATIC_ANNOTATIONS = [
     {
         "header": "Waterbody Type",
         "key": "waterbody_type_display",
-        "annotation": StringAgg(
+        "annotation": agg(
             f"{WB_CTX}__type__full",
-            delimiter=", ",
-            distinct=True,
         ),
     },
     {
         "header": "Name (Gazetted)",
         "key": "name_gazetted_display",
-        "annotation": StringAgg(
+        "annotation": agg(
             f"{WB_CTX}__name_gazetted",
-            delimiter=", ",
-            distinct=True,
         ),
     },
     {
         "header": "Name (Local)",
         "key": "name_local_display",
-        "annotation": StringAgg(
+        "annotation": agg(
             f"{WB_CTX}__name_local",
-            delimiter=", ",
-            distinct=True,
         ),
     },
     {
         "header": "Waterbody Access",
         "key": "access_display",
-        "annotation": StringAgg(
+        "annotation": agg(
             f"{WB_CTX}__access",
-            delimiter=", ",
-            distinct=True,
         ),
     },
     {
         "header": "Water Use",
         "key": "water_use_display",
-        "annotation": StringAgg(
+        "annotation": agg(
             f"{ADR_PATH}__waterbodyuse__waterbody_use__full",
-            delimiter=", ",
-            distinct=True,
         ),
     },
     {
         "header": "Water Level Management",
         "key": "water_level_management_display",
-        "annotation": StringAgg(
+        "annotation": agg(
             f"{ADR_PATH}__waterbodylevelmanagement__waterlevel_management__full",
-            delimiter=", ",
-            distinct=True,
         ),
     },
     {
         "header": "Outflow (Seasonal)",
         "key": "outflow_seasonal_display",
-        "annotation": StringAgg(
+        "annotation": agg(
             f"{ADR_PATH}__waterbodyoutflowseasonal__flow_code__full",
-            delimiter=", ",
-            distinct=True,
         ),
     },
     {
         "header": "Outflow (Permanent)",
         "key": "outflow_permanent_display",
-        "annotation": StringAgg(
+        "annotation": agg(
             f"{ADR_PATH}__waterbodyoutflowpermanent__flow_code__full",
-            delimiter=", ",
-            distinct=True,
         ),
     },
     {
         "header": "Inflow (Seasonal)",
         "key": "inflow_seasonal_display",
-        "annotation": StringAgg(
+        "annotation": agg(
             f"{ADR_PATH}__waterbodyinflowseasonal__flow_code__full",
-            delimiter=", ",
-            distinct=True,
         ),
     },
     {
         "header": "Inflow (Permanent)",
         "key": "inflow_permanent_display",
-        "annotation": StringAgg(
+        "annotation": agg(
             f"{ADR_PATH}__waterbodyinflowpermanent__flow_code__full",
-            delimiter=", ",
-            distinct=True,
         ),
     },
     {
         "header": "Waterbody Comment",
         "key": "wb_comment_display",
-        "annotation": StringAgg(
+        "annotation": agg(
             f"{WB_CTX}__comment",
-            delimiter=", ",
-            distinct=True,
         ),
     },
     {
         "header": "Sample Water Depth (m)",
         "key": "water_depth_display",
-        "annotation": StringAgg(
+        "annotation": agg(
             Cast(f"{WB_CTX}__max_depth_m", CharField()),
-            delimiter=", ",
-            distinct=True,
         ),
     },
     {
         "header": "Secchi Depth (m)",
         "key": "secchi_depth_display",
-        "annotation": StringAgg(
+        "annotation": agg(
             Cast(f"{WB_CTX}__secchi_depth", CharField()),
-            delimiter=", ",
-            distinct=True,
         ),
     },
     {
         "header": "Water Colour",
         "key": "water_colour_display",
-        "annotation": StringAgg(
+        "annotation": agg(
             f"{WB_CTX}__colour",
-            delimiter=", ",
-            distinct=True,
         ),
     },
     {
         "header": "Tidal Influence",
         "key": "tidal_influece_display",
-        "annotation": StringAgg(
+        "annotation": agg(
             f"{WB_CTX}__tidal_influence",
-            delimiter=", ",
-            distinct=True,
         ),
     },
     {
@@ -220,28 +191,22 @@ OBSERVATION_AQUATIC_ANNOTATIONS = [
     {
         "header": "Pre-treatment Observation",
         "key": "pre_treatment_observation_display",
-        "annotation": StringAgg(
+        "annotation": agg(
             f"{ADR_PATH}__pretreatmentobservation__pre_treatment_observation",
-            delimiter=", ",
-            distinct=True,
         ),
     },
     {
         "header": "Substrate Type",
         "key": "subtrate_type_display",
-        "annotation": StringAgg(
+        "annotation": agg(
             f"{ADR_PATH}__waterbodysubstratetype__substrate_type__full",
-            delimiter=", ",
-            distinct=True,
         ),
     },
     {
         "header": "Adjacent Land Use",
         "key": "adjacent_land_use_display",
-        "annotation": StringAgg(
+        "annotation": agg(
             f"{ADR_PATH}__waterbodyadjacentlanduse__waterbody_adjacent_land_use__full",
-            delimiter=", ",
-            distinct=True,
         ),
     },
 ]

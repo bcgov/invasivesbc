@@ -1,5 +1,5 @@
 from django.db.models import F
-from django.contrib.postgres.aggregates import StringAgg
+from .helpers import agg
 
 """
 Monitoring Annotations are Identical between Mechanical and Chemical Treatments
@@ -28,10 +28,8 @@ MONITORING_ANNOTATIONS = [
     {
         "header": "Invasive Plants on Site",
         "key": "invasive_plant_on_site_display",
-        "annotation": StringAgg(
+        "annotation": agg(
             f"root_activity__activitydatarecord__invasiveplantsonsite__invasive_plants_on_site__full",
-            delimiter=", ",
-            distinct=True,
         ),
     },
     {
