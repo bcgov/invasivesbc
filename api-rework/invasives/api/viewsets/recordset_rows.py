@@ -2,20 +2,32 @@ from django.contrib.gis.geos import GEOSGeometry
 import json
 import psycopg
 import logging
+import csv
+from django.db.models.functions import Coalesce
+from django.http import StreamingHttpResponse
 from psycopg.rows import dict_row
+from rest_framework.decorators import action
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from django.core.exceptions import FieldError
-from django.db.models import Q, F, Min
+from django.db.models import (
+    Q,
+    F,
+    Min,
+    FilteredRelation,
+)
 from django.db.models.functions import Coalesce
 from api.models.activity import ActivitySubtypes
 from api.serializers.activity_recordset_row import (
     ActivityRecordsetRowSerializer,
     CachedActivityRecordsetRowSerializer,
 )
+
 from api.models.activity import Activity
 from api.constants import uuid_regex, short_id_regex
 from invasivesbc.settings import LEGACY_DB_CONNECTION_STRING
+from api.configs.exports import build_csv_annotation_object, CSV_SUBTYPE_CONFIG
+from api.models.activity import ActivitySubtypes
 
 log = logging.getLogger("invasives")
 
@@ -124,7 +136,14 @@ class RecordsetRowsViewSet(viewsets.GenericViewSet):
             or_group = Q()
             ids_to_filter = obj.get("ids_to_filter", None)
             if ids_to_filter:
-                queryset = queryset.filter(id__in=ids_to_filter)
+                uuids = []
+                short_ids = []
+                for id in ids_to_filter:
+                    if uuid_regex.match(id):
+                        uuids.append(id)
+                    elif short_id_regex.match(id):
+                        short_ids.append(id)
+                queryset = queryset.filter(Q(id__in=uuids) | Q(short_id__in=short_ids))
             for f in obj.get("tableFilters", []):
                 logic_gate = f.get("operator2", "AND")
                 current_q = self._build_single_filter_q(f)
@@ -309,3 +328,61 @@ class RecordsetRowsViewSet(viewsets.GenericViewSet):
             return queryset.order_by(order_expr).distinct()[start:stop]
         except FieldError:
             return queryset.order_by("-date").distinct()[start:stop]
+
+    @action(detail=False, methods=["post"], url_path="csv")
+    def csv(self, request, *args, **kwargs):
+        class Echo:
+            """An object that implements write() to return the value
+            instead of buffering it, allowing us to stream CSV rows."""
+
+            def write(self, value):
+                return value
+
+        filter_objects = request.data.get("filterObjects", [])
+        csv_type = filter_objects[0].get("CSVType")
+
+        # Fetch Configuration for a specific 'Subtype'
+        config = CSV_SUBTYPE_CONFIG.get(csv_type)
+
+        if not config:
+            return Response("Unsupported Activity Type", status=400)
+
+        entry_model = config.get("entry_model")
+
+        # Get IDs matching Filters to apply to our model
+        activity_queryset = self._get_base_queryset()
+        activity_queryset = self._apply_filters(activity_queryset, filter_objects)
+        valid_activity_ids = activity_queryset.values_list("id", flat=True).distinct()
+
+        ANNOTATIONS = build_csv_annotation_object(config.get("annotations", []))
+
+        # Decompile the annotations Array into their respective sections
+        annotations = {item["key"]: item["annotation"] for item in ANNOTATIONS}
+        value_keys = [item["key"] for item in ANNOTATIONS]
+        headers = [item["header"] for item in ANNOTATIONS]
+
+        data_stream = (
+            # Use Entry model so rows are by Entries, not Records (1 plant, 1 row)
+            entry_model.objects.filter(
+                activity_data_record__activity_id__in=valid_activity_ids
+            )
+            .annotate(root_activity=FilteredRelation("activity_data_record__activity"))
+            .annotate(**annotations)
+            .values(*value_keys)
+            .distinct()
+            .iterator(chunk_size=1000)  # Chunk out for Streaming
+        )
+
+        def rows():
+            echo = Echo()
+            writer = csv.writer(echo)
+            yield writer.writerow(headers)
+
+            for record in data_stream:
+                yield writer.writerow([record.get(key, "") for key in value_keys])
+
+        response = StreamingHttpResponse(rows(), content_type="text/csv")
+        response["Content-Disposition"] = (
+            f'attachment; filename="{csv_type}_export.csv"'
+        )
+        return response
