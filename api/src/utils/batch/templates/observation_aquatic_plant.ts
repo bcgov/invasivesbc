@@ -4,8 +4,12 @@ import {
   ActivityPersons,
   BasicInformation,
   BasicInformationRowValidators,
+  DuplicateInvasivePlantValidator,
+  ObservationCompleteSetValidator,
   PositiveObservationPlantValidator,
   ProjectInformation,
+  SampleCollectedNotAllowedValidator,
+  SamplePointIDValidator,
   ShorelineInformation,
   ShorelineSumValidator,
   WaterbodyInformation,
@@ -30,52 +34,6 @@ ObservationAquaticPlant.columns = [
   )
     .isRequired()
     .build(),
-
-  new TemplateColumnBuilder(
-    'Observation - Sample Point ID',
-    'text',
-    'form_data.activity_subtype_data.AquaticPlants[0].sample_point_id'
-  ).build(),
-  new TemplateColumnBuilder(
-    'Observation - Type',
-    'codeReference',
-    'form_data.activity_subtype_data.AquaticPlants[0].observation_type'
-  )
-    .hardcodedCodes(OBSERVATION_TYPE_CODES)
-    .isRequired()
-    .build(),
-  new TemplateColumnBuilder(
-    'Observation - Invasive Plant',
-    'codeReference',
-    'form_data.activity_subtype_data.AquaticPlants[0].invasive_plant_code'
-  )
-    .referencesCode('invasive_plant_aquatic_code')
-    .isRequired()
-    .build(),
-  new TemplateColumnBuilder(
-    'Observation - Life Stage',
-    'codeReference',
-    'form_data.activity_subtype_data.AquaticPlants[0].plant_life_stage_code'
-  )
-    .referencesCode('plant_life_stage_code')
-    .isRequired(false)
-    .build(),
-  new TemplateColumnBuilder(
-    'Observation - Density',
-    'codeReference',
-    'form_data.activity_subtype_data.AquaticPlants[0].invasive_plant_density_code'
-  )
-    .referencesCode('invasive_plant_density_code')
-    .isRequired(false)
-    .build(),
-  new TemplateColumnBuilder(
-    'Observation - Distribution',
-    'codeReference',
-    'form_data.activity_subtype_data.AquaticPlants[0].invasive_plant_distribution_code'
-  )
-    .referencesCode('invasive_plant_distribution_code')
-    .isRequired(false)
-    .build(),
   new TemplateColumnBuilder(
     'Observation - Suitable for Biocontrol Agent?',
     'tristate',
@@ -83,78 +41,159 @@ ObservationAquaticPlant.columns = [
   )
     .isRequired()
     .build(),
-
   new TemplateColumnBuilder(
-    'Voucher - Sample Collected?',
+    'Observation - Sample Point ID 1',
+    'text',
+    'form_data.activity_subtype_data.AquaticPlants[0].sample_point_id'
+  ).build(),
+  new TemplateColumnBuilder(
+    'Observation - Invasive Plant 1',
+    'codeReference',
+    'form_data.activity_subtype_data.AquaticPlants[0].invasive_plant_code'
+  )
+    .referencesCode('invasive_plant_aquatic_code')
+    .isRequired()
+    .build(),
+  new TemplateColumnBuilder(
+    'Observation - Type 1',
+    'codeReference',
+    'form_data.activity_subtype_data.AquaticPlants[0].observation_type'
+  )
+    .hardcodedCodes(OBSERVATION_TYPE_CODES)
+    .isRequired()
+    .build(),
+  new TemplateColumnBuilder(
+    'Observation - Density 1',
+    'codeReference',
+    'form_data.activity_subtype_data.AquaticPlants[0].invasive_plant_density_code'
+  )
+    .referencesCode('invasive_plant_density_code')
+    .build(),
+  new TemplateColumnBuilder(
+    'Observation - Distribution 1',
+    'codeReference',
+    'form_data.activity_subtype_data.AquaticPlants[0].invasive_plant_distribution_code'
+  )
+    .referencesCode('invasive_plant_distribution_code')
+    .build(),
+  new TemplateColumnBuilder(
+    'Observation - Life Stage 1',
+    'codeReference',
+    'form_data.activity_subtype_data.AquaticPlants[0].plant_life_stage_code'
+  )
+    .referencesCode('plant_life_stage_code')
+    .build(),
+  new TemplateColumnBuilder(
+    'Voucher - Sample Collected? 1',
     'codeReference',
     'form_data.activity_subtype_data.AquaticPlants[0].voucher_specimen_collected'
   )
     .hardcodedCodes(YES_NO_CODES)
-    .isRequired()
     .build(),
   new TemplateColumnBuilder(
-    'Voucher - Accession Number',
+    'Observation - Sample Point ID 2',
     'text',
-    'form_data.activity_subtype_data.AquaticPlants[0].voucher_specimen_collection_information.accession_number'
-  ).build(),
-
-  // utm zone is a number here and a string elsewhere. ?!?
-  new TemplateColumnBuilder(
-    'Voucher - UTM Zone',
-    'numeric',
-    'form_data.activity_subtype_data.AquaticPlants[0].voucher_specimen_collection_information.exact_utm_coords.utm_zone'
-  ).build(),
-
-  new TemplateColumnBuilder(
-    'Voucher - UTM Easting',
-    'numeric',
-    'form_data.activity_subtype_data.AquaticPlants[0].voucher_specimen_collection_information.exact_utm_coords.utm_easting'
+    'form_data.activity_subtype_data.AquaticPlants[1].sample_point_id'
   ).build(),
   new TemplateColumnBuilder(
-    'Voucher - UTM Northing',
-    'numeric',
-    'form_data.activity_subtype_data.AquaticPlants[0].voucher_specimen_collection_information.exact_utm_coords.utm_northing'
-  ).build(),
-  new TemplateColumnBuilder(
-    'Voucher - Name of Herbarium',
-    'text',
-    'form_data.activity_subtype_data.AquaticPlants[0].voucher_specimen_collection_information.name_of_herbarium'
-  ).build(),
-  new TemplateColumnBuilder(
-    'Voucher - Sample ID',
-    'text',
-    'form_data.activity_subtype_data.AquaticPlants[0].voucher_specimen_collection_information.voucher_sample_id'
-  ).build(),
-  new TemplateColumnBuilder(
-    'Voucher - Date Verified',
-    'date',
-    'form_data.activity_subtype_data.AquaticPlants[0].voucher_specimen_collection_information.date_voucher_verified'
+    'Observation - Invasive Plant 2',
+    'codeReference',
+    'form_data.activity_subtype_data.AquaticPlants[1].invasive_plant_code'
   )
-    .mustNotBeFuture()
+    .referencesCode('invasive_plant_aquatic_code')
     .build(),
   new TemplateColumnBuilder(
-    'Voucher - Date Collected',
-    'date',
-    'form_data.activity_subtype_data.AquaticPlants[0].voucher_specimen_collection_information.date_voucher_collected'
+    'Observation - Type 2',
+    'codeReference',
+    'form_data.activity_subtype_data.AquaticPlants[1].observation_type'
   )
-    .mustNotBeFuture()
+    .hardcodedCodes(OBSERVATION_TYPE_CODES)
     .build(),
   new TemplateColumnBuilder(
-    'Voucher - Verifying Person',
+    'Observation - Density 2',
+    'codeReference',
+    'form_data.activity_subtype_data.AquaticPlants[1].invasive_plant_density_code'
+  )
+    .referencesCode('invasive_plant_density_code')
+    .build(),
+  new TemplateColumnBuilder(
+    'Observation - Distribution 2',
+    'codeReference',
+    'form_data.activity_subtype_data.AquaticPlants[1].invasive_plant_distribution_code'
+  )
+    .referencesCode('invasive_plant_distribution_code')
+    .build(),
+  new TemplateColumnBuilder(
+    'Observation - Life Stage 2',
+    'codeReference',
+    'form_data.activity_subtype_data.AquaticPlants[1].plant_life_stage_code'
+  )
+    .referencesCode('plant_life_stage_code')
+    .build(),
+  new TemplateColumnBuilder(
+    'Voucher - Sample Collected? 2',
+    'codeReference',
+    'form_data.activity_subtype_data.AquaticPlants[1].voucher_specimen_collected'
+  )
+    .hardcodedCodes(YES_NO_CODES)
+    .build(),
+  new TemplateColumnBuilder(
+    'Observation - Sample Point ID 3',
     'text',
-    'form_data.activity_subtype_data.AquaticPlants[0].voucher_specimen_collection_information.voucher_verification_completed_by.person_name'
+    'form_data.activity_subtype_data.AquaticPlants[2].sample_point_id'
   ).build(),
   new TemplateColumnBuilder(
-    'Voucher - Verifying Organization',
-    'text',
-    'form_data.activity_subtype_data.AquaticPlants[0].voucher_specimen_collection_information.voucher_verification_completed_by.organization'
-  ).build()
+    'Observation - Invasive Plant 3',
+    'codeReference',
+    'form_data.activity_subtype_data.AquaticPlants[2].invasive_plant_code'
+  )
+    .referencesCode('invasive_plant_aquatic_code')
+    .build(),
+  new TemplateColumnBuilder(
+    'Observation - Type 3',
+    'codeReference',
+    'form_data.activity_subtype_data.AquaticPlants[2].observation_type'
+  )
+    .hardcodedCodes(OBSERVATION_TYPE_CODES)
+    .build(),
+  new TemplateColumnBuilder(
+    'Observation - Density 3',
+    'codeReference',
+    'form_data.activity_subtype_data.AquaticPlants[2].invasive_plant_density_code'
+  )
+    .referencesCode('invasive_plant_density_code')
+    .build(),
+  new TemplateColumnBuilder(
+    'Observation - Distribution 3',
+    'codeReference',
+    'form_data.activity_subtype_data.AquaticPlants[2].invasive_plant_distribution_code'
+  )
+    .referencesCode('invasive_plant_distribution_code')
+    .build(),
+  new TemplateColumnBuilder(
+    'Observation - Life Stage 3',
+    'codeReference',
+    'form_data.activity_subtype_data.AquaticPlants[2].plant_life_stage_code'
+  )
+    .referencesCode('plant_life_stage_code')
+    .build(),
+  new TemplateColumnBuilder(
+    'Voucher - Sample Collected? 3',
+    'codeReference',
+    'form_data.activity_subtype_data.AquaticPlants[2].voucher_specimen_collected'
+  )
+    .hardcodedCodes(YES_NO_CODES)
+    .build()
 ];
 
 ObservationAquaticPlant.rowValidators = [
   ...BasicInformationRowValidators,
   ShorelineSumValidator,
-  PositiveObservationPlantValidator
+  PositiveObservationPlantValidator,
+  DuplicateInvasivePlantValidator,
+  SampleCollectedNotAllowedValidator,
+  SamplePointIDValidator,
+  ObservationCompleteSetValidator
 ];
 
 export { ObservationAquaticPlant };

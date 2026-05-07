@@ -324,12 +324,34 @@ export function* handle_ACTIVITY_CREATE_SUCCESS(action: PayloadAction<string>) {
 }
 
 export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action: PayloadAction<UserRecord>) {
+  /**
+   * Set Null Fields to Undefined. RJSF Will clear out undefined values, but null values persist and and throw validation
+   */
+  const setNullsToUndefined = (data: unknown): unknown => {
+    if (data === null) {
+      return undefined;
+    }
+    if (Array.isArray(data)) {
+      return data.map(setNullsToUndefined);
+    }
+    if (typeof data === 'object' && data !== undefined) {
+      const result: Record<string, unknown> = {};
+      for (const key in data) {
+        if (Object.hasOwn(data, key)) {
+          result[key] = setNullsToUndefined(data[key]);
+        }
+      }
+      return result;
+    }
+    return data;
+  };
+
   try {
     const previousState = yield select(selectActivity);
     const previousActivityState = previousState.activity;
 
     try {
-      let updatedFormData = cloneDeep(action.payload);
+      let updatedFormData = setNullsToUndefined(cloneDeep(action.payload));
       if (
         previousActivityState.activity_type === ActivityType.Biocontrol ||
         [
@@ -350,7 +372,7 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action: PayloadAction<Us
 
       let updatedActivity = populateSpeciesArrays({ ...cloneDeep(previousActivityState), form_data: updatedFormData });
       updatedActivity = populateJurisdictionArray(updatedActivity);
-      updatedActivity = { ...updatedActivity, map_symbol: updatedActivity.species_positive.join(', ') };
+      updatedActivity.map_symbol = updatedActivity.species_positive.join(', ');
       yield put(Activity.OnFormChangeRequestSuccess(updatedActivity));
     } catch (error) {
       console.error(error);

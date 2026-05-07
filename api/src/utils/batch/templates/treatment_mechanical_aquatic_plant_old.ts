@@ -10,26 +10,22 @@ import {
   ShorelineSumValidator
 } from 'utils/batch/shared-columns';
 
-const TreatmentMechanicalAquaticPlantTemp = new Template(
-  'treatment_mechanical_aquatic_plant_temp',
-  'Treatment - Mechanical - Aquatic Plant TEMP POINT',
+const TreatmentMechanicalAquaticPlantOld = new Template(
+  'treatment_mechanical_aquatic_plant_old',
+  'Treatment - Mechanical - Aquatic Plant Old',
   null,
   false
 );
 
-TreatmentMechanicalAquaticPlantTemp.type = 'Treatment';
-TreatmentMechanicalAquaticPlantTemp.subtype = 'Activity_Treatment_MechanicalPlantAquatic';
+TreatmentMechanicalAquaticPlantOld.type = 'Treatment';
+TreatmentMechanicalAquaticPlantOld.subtype = 'Activity_Treatment_MechanicalPlantAquatic';
 
-TreatmentMechanicalAquaticPlantTemp.columns = [
+TreatmentMechanicalAquaticPlantOld.columns = [
   ...BasicInformation,
   ...ProjectInformation,
   ...ActivityPersons,
   ...AuthorizationInformation,
   ...ShorelineInformation,
-  new TemplateColumnBuilder('Area', 'numeric', 'form_data.activity_data.reported_area')
-    .isRequired()
-    .mapperOverwritesPrevious()
-    .build(),
   new TemplateColumnBuilder(
     'Treatment - Treated Area',
     'numeric',
@@ -78,6 +74,6 @@ TreatmentMechanicalAquaticPlantTemp.columns = [
     .build()
 ];
 
-TreatmentMechanicalAquaticPlantTemp.rowValidators = [...BasicInformationRowValidators, ShorelineSumValidator];
+TreatmentMechanicalAquaticPlantOld.rowValidators = [...BasicInformationRowValidators, ShorelineSumValidator];
 
-export { TreatmentMechanicalAquaticPlantTemp };
+export { TreatmentMechanicalAquaticPlantOld };

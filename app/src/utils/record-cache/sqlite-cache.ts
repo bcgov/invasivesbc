@@ -785,6 +785,27 @@ class SQLiteRecordCacheService extends RecordCacheService {
   }
 
   /**
+   * @desc If GeoJSON fails to be parsed, use recovery shape in middle of ocean to identify outlier records.
+   * @returns
+   */
+  private getRecoveryGeoJSON = (short_id: string): Array<GeoJSON> => {
+    console.warn(`Record ${short_id} Found without a geometry`);
+    return [
+      {
+        id: 'ERROR_OCCURED',
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [-131.60496320034184, 54.43608755757705]
+        },
+        properties: {
+          name: short_id,
+          radius: 1.2615662610100802
+        }
+      }
+    ];
+  };
+  /**
    * @desc Takes the incoming Activity payload, and maps the column information to the fields, preps any geometry to contain Activity IDs and information.
    * @param id ID of New record
    * @param data Incoming Activity data

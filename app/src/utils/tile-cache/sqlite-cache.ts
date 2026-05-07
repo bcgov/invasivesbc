@@ -73,14 +73,12 @@ class SQLiteTileCacheService extends TileCacheService {
       throw new Error('cache not available');
     }
 
-    const encodedTileData = Buffer.from(tileData);
-
     try {
       await this.cacheDB.query(
         //language=SQLite
         `INSERT INTO CACHED_TILES(TILESET, Z, X, Y, DATA)
          VALUES (?, ?, ?, ?, ?)`,
-        [repository, z, x, y, encodedTileData]
+        [repository, z, x, y, tileData]
       );
     } catch (e) {
       console.error(e);

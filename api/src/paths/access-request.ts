@@ -1,8 +1,9 @@
-import { RequestHandler } from 'express';
+import { RequestHandler, Response } from 'express';
 import { Operation } from 'express-openapi';
-import { SQLStatement } from 'sql-template-strings';
+import SQL, { SQLStatement } from 'sql-template-strings';
+import { PoolClient } from 'pg';
 import { getEmailTemplatesFromDB } from './email-templates';
-import {ACTIVATED_ROLES, Role, SECURITY_ON} from 'constants/misc';
+import { ACTIVATED_ROLES, Role, SECURITY_ON } from 'constants/misc';
 import { getDBConnection } from 'database/db';
 import {
   approveAccessRequestsSQL,
@@ -17,12 +18,14 @@ import { getUserByBCEIDSQL, getUserByIDIRSQL } from 'queries/user-queries';
 import { getLogger } from 'utils/logger';
 import { buildMailer } from 'utils/mailer';
 import isAdminFromAuthContext from 'utils/isAdminFromAuthContext';
-import { PoolClient } from 'pg';
+import LoggerHandler from 'utils/endpoints/LoggerHandler';
+import { InvasivesRequest } from 'utils/auth-utils';
 
 const defaultLog = getLogger('access-request');
+const logger = new LoggerHandler('access-request');
 
-export const POST: Operation = [postHandler()];
-export const GET: Operation = [getAccessRequests()];
+const POST: Operation = [postHandler()];
+const GET: Operation = [getAccessRequests()];
 
 POST.apiDoc = {
   description: 'Create a new access request.',
@@ -150,7 +153,7 @@ function getAccessRequests(): RequestHandler {
  * @desc Handles post requests, any keycloak user can make an access request, only admins can approve/deny them
  */
 function postHandler(): RequestHandler {
-  return async (req, res, next) => {
+  return async (req: InvasivesRequest, res: Response, next) => {
     const approvedAccessRequests = req.body.approvedAccessRequests;
     const declinedAccessRequest = req.body.declinedAccessRequest;
     const newAccessRequest = req.body.newAccessRequest;
@@ -183,7 +186,7 @@ function postHandler(): RequestHandler {
 /**
  * Create an access request
  */
-async function createAccessRequest(req, res, next, newAccessRequest) {
+async function createAccessRequest(req, res, _, newAccessRequest) {
   defaultLog.debug({ label: 'access-request', message: 'create', body: newAccessRequest });
 
   let connection: PoolClient | undefined;
@@ -230,110 +233,73 @@ async function createAccessRequest(req, res, next, newAccessRequest) {
   }
 }
 
-async function batchApproveAccessRequests(req, res, next, approvedAccessRequests) {
+async function batchApproveAccessRequests(req: InvasivesRequest, res: Response, _, approvedAccessRequests) {
+  // Filter out any requests with no roles
+  const approvedRequests = approvedAccessRequests.filter((aar) => !!aar.requested_roles);
   let connection: PoolClient | undefined;
 
   try {
     connection = await getDBConnection();
-    const requests = approvedAccessRequests;
-    for (const request of requests) {
-      if (!request.requested_roles) continue;
-      try {
-        // Update request status
-        const sqlStatement2: SQLStatement = updateAccessRequestStatusSQL(
-          request.primary_email,
-          'APPROVED',
-          request.access_request_id
-        );
-        if (!sqlStatement2) {
-          return res.status(500).json({
-            message: 'Failed to build SQL statement',
-            request: req.body,
-            namespace: 'access-request',
-            code: 500
-          });
-        }
-        await connection.query(sqlStatement2.text, sqlStatement2.values);
-        const sqlStatement5: SQLStatement = request.idir_userid
-          ? getUserByIDIRSQL(request.idir_userid)
-          : getUserByBCEIDSQL(request.bceid_userid);
-        if (!sqlStatement5) {
-          return res.status(500).json({
-            message: 'Failed to generate SQL statement',
-            request: req.body,
-            namespace: 'user-access',
-            code: 500
-          });
-        }
-        const response = await connection.query(sqlStatement5.text, sqlStatement5.values);
-        const userId = response.rows[0].user_id;
-        const sqlStatement4: SQLStatement = revokeAllRolesExceptAdmin(userId);
-        if (!sqlStatement4) {
-          return res.status(500).json({
-            message: 'Failed to generate SQL statement',
-            request: req.body,
-            namespace: 'user-access',
-            code: 500
-          });
-        }
-        await connection.query(sqlStatement4.text, sqlStatement4.values);
-        for (const requestedRole of request.requested_roles.split(',')) {
-          const sqlStatement3: SQLStatement = grantRoleByValueSQL(request.primary_email, requestedRole);
-          if (!sqlStatement3) {
-            return res.status(500).json({
-              message: 'Failed to build SQL statement',
-              request: req.body,
-              namespace: 'access-request',
-              code: 500
-            });
-          }
-          await connection.query(sqlStatement3.text, sqlStatement3.values);
-        }
-        const sqlStatement: SQLStatement = approveAccessRequestsSQL(request);
-        if (!sqlStatement) {
-          return res.status(500).json({
-            message: 'Failed to build SQL statement',
-            request: req.body,
-            namespace: 'access-request',
-            code: 500
-          });
-        }
-        await connection.query(sqlStatement.text, sqlStatement.values);
-        const mailer = await buildMailer();
-        const templatesResponse = await getEmailTemplatesFromDB();
-        const approvedTemplate = templatesResponse.result?.find((template) => template.templatename === 'Approved');
-        mailer.sendEmail(
-          [request.primary_email],
-          approvedTemplate.fromemail,
-          approvedTemplate.emailsubject,
-          approvedTemplate.emailbody,
-          'html'
-        );
-      } catch (error) {
-        defaultLog.debug({ label: 'batchApproveAccessRequests', message: 'database encountered an error', error });
+    // Step 1: Begin Transaction
+    await connection.query(SQL`BEGIN`);
+    for (const request of approvedRequests) {
+      // Step 2: Fetch details of user
+      const getUserDetailSQL: SQLStatement = request.idir_userid
+        ? getUserByIDIRSQL(request.idir_userid)
+        : getUserByBCEIDSQL(request.bceid_userid);
+
+      const response = await connection.query(getUserDetailSQL.text, getUserDetailSQL.values);
+      const { user_id, email } = response.rows[0];
+      logger.info('', { user_id, email });
+      if (!user_id || !email) throw new Error(`User not found in Database | ${user_id}: ${email}`);
+      // Step 3: Revoke Existing [Non-admin] Roles
+      await connection.query(revokeAllRolesExceptAdmin(user_id));
+
+      // Step 4: Add New roles
+      for (const role of request.requested_roles.split(',')) {
+        const grantNewRoleSQL: SQLStatement = grantRoleByValueSQL(email, role);
+        await connection.query(grantNewRoleSQL.text, grantNewRoleSQL.values);
+        logger.debug(`Granted new Role to user: ${email}: ${role}`);
       }
+
+      // Step 5: Update Statuses
+      await connection.query(updateAccessRequestStatusSQL(email, 'APPROVED', request.access_request_id));
+      await connection.query(approveAccessRequestsSQL(request));
+    }
+
+    // Step 6: Commit Transactions
+    await connection.query(SQL`COMMIT`);
+
+    // Step 7: Email User(s) after all requests processed
+    const mailer = await buildMailer();
+    const templatesResponse = await getEmailTemplatesFromDB();
+    const approvedTemplate = templatesResponse.result?.find((template) => template.templatename === 'Approved');
+    for (const request of approvedAccessRequests) {
+      mailer.sendEmail(
+        [request.primary_email],
+        approvedTemplate.fromemail,
+        approvedTemplate.emailsubject,
+        approvedTemplate.emailbody,
+        'html'
+      );
     }
     return res.status(201).json({
-      message: 'Acccess requests processed',
+      message: 'Access requests processed',
       request: req.body,
       namespace: 'access-request',
       code: 201
     });
-  } catch (error) {
-    defaultLog.debug({ label: 'batchApproveAccessRequests', message: 'error', error });
-    return res.status(500).json({
-      message: 'Acccess requests failed',
-      request: req.body,
-      error: error,
-      namespace: 'access-request',
-      code: 500
-    });
+  } catch (ex) {
+    await connection.query(SQL`ROLLBACK`);
+    const reqIds = approvedAccessRequests.map((r) => r.access_request_id).join(',');
+    logger.error(ex, `Error occurred in approving access requests id(s): ${reqIds}`);
+    throw ex;
   } finally {
     connection?.release();
   }
 }
 
-async function declineAccessRequest(req, res, next, declinedAccessRequest) {
+async function declineAccessRequest(req: InvasivesRequest, res: Response, _, declinedAccessRequest) {
   let connection: PoolClient | undefined;
 
   try {
@@ -384,3 +350,5 @@ async function declineAccessRequest(req, res, next, declinedAccessRequest) {
     connection?.release();
   }
 }
+
+export { POST, GET };

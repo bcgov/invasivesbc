@@ -7,45 +7,38 @@ import { SQL, SQLStatement } from 'sql-template-strings';
  * @returns {SQLStatement} sql query object
  */
 export const grantRoleToUserSQL = (user_id, role_id): SQLStatement => {
-  if (!user_id || !role_id) {
-    return null;
-  } else {
-    return SQL`
-      INSERT INTO user_access (user_id, role_id)
-      VALUES (${user_id},
-              ${role_id})
-      ON CONFLICT DO NOTHING;
-    `;
-  }
+  if (!user_id || !role_id) return null;
+  return SQL`
+    INSERT INTO user_access (user_id, role_id)
+    VALUES (${user_id},
+            ${role_id})
+    ON CONFLICT DO NOTHING;
+  `;
 };
 
 export const grantRoleByValueSQL = (email, role_value): SQLStatement => {
-  if (!email || !role_value) {
-    return null;
-  } else {
-    return SQL`
+  if (!email || !role_value) return null;
+  return SQL`
       INSERT INTO user_access (user_id, role_id)
-      VALUES ((SELECT user_id from application_user WHERE email = ${email}),
-              (SELECT role_id FROM user_role WHERE role_name = ${role_value}))
-      ON CONFLICT DO NOTHING;
+      SELECT u.user_id, r.role_id
+      FROM application_user u
+      JOIN user_role r
+      ON r.role_name = ${role_value}
+      WHERE u.email = ${email}
+      ON CONFLICT DO NOTHING
     `;
-  }
 };
 
 export const revokeAllRolesExceptAdmin = (userId): SQLStatement => {
-  if (!userId) {
-    return null;
-  } else {
-    const sql = SQL`
-      DELETE
-      FROM user_access
-      WHERE user_id = ${userId}
-        AND role_id != 18
-        AND role_id != 1
-        AND role_id != 2;
-    `;
-    return sql;
-  }
+  if (!userId) return null;
+  return SQL`
+    DELETE
+    FROM user_access
+    WHERE user_id = ${userId}
+      AND role_id != 18
+      AND role_id != 1
+      AND role_id != 2;
+  `;
 };
 
 /**

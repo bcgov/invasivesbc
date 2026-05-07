@@ -20,7 +20,8 @@ export enum Role {
   INDIGENOUS_RISO_STAFF_PLANTS = 'indigenous_riso_staff_plants',
   INDIGENOUS_RISO_STAFF_BOTH = 'indigenous_riso_staff_both',
   MUSSEL_INSPECTION_OFFICER = 'mussel_inspection_officer',
-  MASTER_ADMINISTRATOR = 'master_administrator'
+  MASTER_ADMINISTRATOR = 'master_administrator',
+  NOT_ACTIVATED = 'not_activated'
 }
 
 export const ALL_ROLES = [

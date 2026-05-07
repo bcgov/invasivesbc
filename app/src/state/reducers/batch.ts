@@ -17,6 +17,7 @@ interface ShallowBatch {
 interface ShallowTemplate {
   name: string;
   key: string;
+  selectable: boolean;
 }
 
 interface DeepTemplate {
@@ -143,7 +144,6 @@ function createBatchReducer() {
     });
   };
 }
-
 const selectBatch: (state) => Batch = (state) => state.Batch;
 
 export { selectBatch, createBatchReducer };

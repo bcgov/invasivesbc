@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useRef, useState } from 'react';
 import 'UI/Layout/OverlayLayout/Overlay.css';
 import { useSelector } from 'utils/use_selector';
 import { OverlayHeader } from 'UI/Layout/OverlayLayout/OverlayHeader';
@@ -22,8 +22,10 @@ const Overlay = () => {
   const [panelOpen, setPanelOpen] = React.useState(true);
   const [fullScreen, setFullScreen] = React.useState(false);
   const [additionalClasses, setAdditionalClasses] = useState<string>('');
-
+  const containerRef = useRef<HTMLDivElement>(null);
   const layoutMode = useSelector((state) => state.AppMode.layout.viewLayout);
+  const url = useSelector((state) => state.AppMode.url);
+  const activity_id = useSelector((state) => state.ActivityPage.activeActivity);
 
   useEffect(() => {
     switch (layoutMode) {
@@ -54,6 +56,11 @@ const Overlay = () => {
     setAdditionalClasses(classesToAdd.join(' '));
   }, [fullScreen, panelOpen]);
 
+  useEffect(() => {
+    if (containerRef.current) {
+      containerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [url, activity_id]);
   return (
     <>
       <AlertsContainer />
@@ -70,7 +77,7 @@ const Overlay = () => {
       <div id="overlay-anchor">
         <div className={`overlay-panel ${additionalClasses}`}>
           {panelOpen && !fullScreen && <OverlayHeader />}
-          <div className={`overlay-content`}>
+          <div className={`overlay-content`} ref={containerRef}>
             <AppRoutes />
           </div>
         </div>

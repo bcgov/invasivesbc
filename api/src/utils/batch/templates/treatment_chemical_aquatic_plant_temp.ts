@@ -18,7 +18,8 @@ import { ChemTreatmentValidators } from 'utils/batch/validation/chemical-treatme
 const TreatmentChemicalAquaticPlantTemp = new Template(
   'treatment_chemical_aquatic_plant_temp',
   'Treatment - Chemical - Aquatic Plant TEMP POINT',
-  null
+  null,
+  false
 );
 
 TreatmentChemicalAquaticPlantTemp.type = 'Treatment';

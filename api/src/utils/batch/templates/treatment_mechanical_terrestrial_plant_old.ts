@@ -2,33 +2,31 @@ import { Template, TemplateColumnBuilder } from 'utils/batch/definitions';
 import { DISPOSED_MATERIAL_FORMAT_CODES } from 'utils/batch/hard-coded-codes';
 import {
   ActivityPersons,
-  AuthorizationInformation,
   BasicInformation,
   BasicInformationRowValidators,
-  ProjectInformation,
-  ShorelineInformation,
-  ShorelineSumValidator
+  ProjectInformation
 } from 'utils/batch/shared-columns';
 
-const TreatmentMechanicalAquaticPlantTemp = new Template(
-  'treatment_mechanical_aquatic_plant_temp',
-  'Treatment - Mechanical - Aquatic Plant TEMP POINT',
+const TreatmentMechanicalTerrestrialPlantOld = new Template(
+  'treatment_mechanical_terrestrial_plant_old',
+  'Treatment - Mechanical - Terrestrial Plant Old',
   null,
   false
 );
+TreatmentMechanicalTerrestrialPlantOld.type = 'Treatment';
+TreatmentMechanicalTerrestrialPlantOld.subtype = 'Activity_Treatment_MechanicalPlantTerrestrial';
 
-TreatmentMechanicalAquaticPlantTemp.type = 'Treatment';
-TreatmentMechanicalAquaticPlantTemp.subtype = 'Activity_Treatment_MechanicalPlantAquatic';
-
-TreatmentMechanicalAquaticPlantTemp.columns = [
+TreatmentMechanicalTerrestrialPlantOld.columns = [
   ...BasicInformation,
   ...ProjectInformation,
   ...ActivityPersons,
-  ...AuthorizationInformation,
-  ...ShorelineInformation,
-  new TemplateColumnBuilder('Area', 'numeric', 'form_data.activity_data.reported_area')
+  new TemplateColumnBuilder(
+    'Treatment - Invasive Plant Code',
+    'codeReference',
+    'form_data.activity_subtype_data.Treatment_MechanicalPlant_Information[0].invasive_plant_code'
+  )
+    .referencesCode('invasive_plant_code')
     .isRequired()
-    .mapperOverwritesPrevious()
     .build(),
   new TemplateColumnBuilder(
     'Treatment - Treated Area',
@@ -36,6 +34,14 @@ TreatmentMechanicalAquaticPlantTemp.columns = [
     'form_data.activity_subtype_data.Treatment_MechanicalPlant_Information[0].treated_area'
   )
     .valueRange(0, null)
+    .isRequired()
+    .build(),
+  new TemplateColumnBuilder(
+    'Treatment - Mechanical Method Code',
+    'codeReference',
+    'form_data.activity_subtype_data.Treatment_MechanicalPlant_Information[0].mechanical_method_code'
+  )
+    .referencesCode('mechanical_method_code')
     .isRequired()
     .build(),
   new TemplateColumnBuilder(
@@ -59,25 +65,9 @@ TreatmentMechanicalAquaticPlantTemp.columns = [
     'form_data.activity_subtype_data.Treatment_MechanicalPlant_Information[0].disposed_material.disposed_material_input_number'
   )
     .valueRange(0, null)
-    .build(),
-  new TemplateColumnBuilder(
-    'Treatment - Invasive Plant Code',
-    'codeReference',
-    'form_data.activity_subtype_data.Treatment_MechanicalPlant_Information[0].invasive_plant_code'
-  )
-    .referencesCode('invasive_plant_aquatic_code')
-    .isRequired()
-    .build(),
-  new TemplateColumnBuilder(
-    'Treatment - Mechanical Method Code',
-    'codeReference',
-    'form_data.activity_subtype_data.Treatment_MechanicalPlant_Information[0].mechanical_method_code'
-  )
-    .referencesCode('mechanical_method_code')
-    .isRequired()
     .build()
 ];
 
-TreatmentMechanicalAquaticPlantTemp.rowValidators = [...BasicInformationRowValidators, ShorelineSumValidator];
+TreatmentMechanicalTerrestrialPlantOld.rowValidators = [...BasicInformationRowValidators];
 
-export { TreatmentMechanicalAquaticPlantTemp };
+export { TreatmentMechanicalTerrestrialPlantOld };

@@ -31,9 +31,11 @@ const TemplateDownloadList = () => {
   return (
     <>
       <Typography variant={'h4'}>Available Templates</Typography>
-      {templates.map((t) => (
-        <TemplatePreview name={t.name} id={t.key} key={t.key} />
-      ))}
+      {templates
+        .filter((t) => t.selectable)
+        .map((t) => (
+          <TemplatePreview name={t.name} id={t.key} key={t.key} />
+        ))}
     </>
   );
 };

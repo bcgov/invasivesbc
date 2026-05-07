@@ -79,6 +79,7 @@ const CustomPopover = ({
         onClick={handleCloseAfterClick}
         onClose={handleClose}
         disablePortal={disablePortal}
+        style={{ zIndex: 100001 }}
       >
         {children}
       </Popover>

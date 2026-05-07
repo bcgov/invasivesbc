@@ -1,4 +1,4 @@
-import { TREATMENT_PASS_CODES, YES_NO_CODES } from 'utils/batch/hard-coded-codes';
+import { TREATMENT_PASS_CODES, YES_NO_CODES } from '../hard-coded-codes';
 import { Template, TemplateColumnBuilder } from 'utils/batch/definitions';
 import {
   ActivityPersons,
@@ -9,25 +9,20 @@ import {
   TreatmentEfficacyValidator
 } from 'utils/batch/shared-columns';
 
-const MonitoringChemicalTemp = new Template(
-  'monitoring_chemical_treatment_temp',
-  'Monitoring - Chemical TEMP POINT',
+const MonitoringChemicalOld = new Template(
+  'monitoring_chemical_treatment_old',
+  'Monitoring - Chemical Old',
   null,
   false
 );
 
-MonitoringChemicalTemp.type = 'Monitoring';
-MonitoringChemicalTemp.subtype = 'Activity_Monitoring_ChemicalTerrestrialAquaticPlant';
+MonitoringChemicalOld.type = 'Monitoring';
+MonitoringChemicalOld.subtype = 'Activity_Monitoring_ChemicalTerrestrialAquaticPlant';
 
-MonitoringChemicalTemp.columns = [
+MonitoringChemicalOld.columns = [
   ...BasicInformation,
   ...ProjectInformation,
   ...ActivityPersons,
-
-  new TemplateColumnBuilder('Area', 'numeric', 'form_data.activity_data.reported_area')
-    .isRequired()
-    .mapperOverwritesPrevious()
-    .build(),
 
   new TemplateColumnBuilder(
     'Monitoring - Linked Treatment ID',
@@ -105,10 +100,10 @@ MonitoringChemicalTemp.columns = [
   ).build()
 ];
 
-MonitoringChemicalTemp.rowValidators = [
+MonitoringChemicalOld.rowValidators = [
   ...BasicInformationRowValidators,
   TreatmentEfficacyValidator,
   CopyGeometryValidator
 ];
 
-export { MonitoringChemicalTemp };
+export { MonitoringChemicalOld };

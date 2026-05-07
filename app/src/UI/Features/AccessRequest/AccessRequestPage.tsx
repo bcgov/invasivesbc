@@ -19,6 +19,7 @@ import { useSelector } from 'utils/use_selector';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
 import 'UI/Features/AccessRequest/AccessRequestPage.css';
 import { useNavigate } from 'react-router';
+import { Role } from 'constants/roles';
 
 const AccessRequestPage = () => {
   enum AuthOptions {
@@ -96,7 +97,8 @@ const AccessRequestPage = () => {
   const [idirErrorText, setIdirErrorText] = useState<string>();
   const [lastNameErrorText, setLastNameErrorText] = useState<string>();
   const [requestedRolesErrorText, setRequestedRolesErrorText] = useState<string>();
-  const isUpdating = authState?.roles?.length > 0 && authState?.extendedInfo?.account_status === 1;
+  const isUpdating =
+    authState?.roles?.length > 0 && authState.roles.every(({ role_name }) => role_name !== Role.NOT_ACTIVATED);
   const idir_userid = authState?.idir_user_guid ?? '';
   const bceid_userid = authState?.bceid_user_guid ?? '';
 
@@ -397,14 +399,14 @@ const AccessRequestPage = () => {
               onChange={handleEmployerChange}
               renderValue={(selected) => (
                 <div className="selected-menu-options">
-                  {selected.map((value) => (
+                  {selected?.map((value) => (
                     <Chip key={value} label={getEmployerDescription(value)} />
                   ))}
                 </div>
               )}
               MenuProps={MenuProps}
             >
-              {employersList.map((employer) => (
+              {employersList?.map((employer) => (
                 <MenuItem key={employer.code_id} value={employer.code_name}>
                   {employer.code_description}
                 </MenuItem>
@@ -426,14 +428,14 @@ const AccessRequestPage = () => {
               onChange={handleFundingAgenciesChange}
               renderValue={(selected) => (
                 <div className="selected-menu-options">
-                  {selected.map((value) => (
+                  {selected?.map((value) => (
                     <Chip key={value} label={getAgencyDescription(value)} />
                   ))}
                 </div>
               )}
               MenuProps={MenuProps}
             >
-              {fundingAgenciesList.map((fundingAgency) => (
+              {fundingAgenciesList?.map((fundingAgency) => (
                 <MenuItem key={fundingAgency.code_id} value={fundingAgency.code_name}>
                   {fundingAgency.code_description}
                 </MenuItem>
@@ -497,14 +499,14 @@ const AccessRequestPage = () => {
               onChange={handleRequestedRoleChange}
               renderValue={(selected) => (
                 <div className="selected-menu-options">
-                  {selected.map((value) => (
+                  {selected?.map((value) => (
                     <Chip key={value} label={getRoleDescription(value)} />
                   ))}
                 </div>
               )}
               MenuProps={MenuProps}
             >
-              {roles.map((role) => (
+              {roles?.map((role) => (
                 <MenuItem key={role.role_id} value={role.role_name}>
                   {role.role_description}
                 </MenuItem>

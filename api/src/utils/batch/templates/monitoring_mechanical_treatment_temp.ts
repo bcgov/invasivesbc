@@ -1,3 +1,4 @@
+import { TREATMENT_PASS_CODES, YES_NO_CODES } from 'utils/batch/hard-coded-codes';
 import { Template, TemplateColumnBuilder } from 'utils/batch/definitions';
 import {
   ActivityPersons,
@@ -5,15 +6,14 @@ import {
   BasicInformationRowValidators,
   CopyGeometryValidator,
   ProjectInformation,
-  TerrestrialAquaticPlantValidator,
   TreatmentEfficacyValidator
 } from 'utils/batch/shared-columns';
-import { TREATMENT_PASS_CODES, YES_NO_CODES } from '../hard-coded-codes';
 
 const MonitoringMechanicalTemp = new Template(
   'monitoring_mechanical_treatment_temp',
   'Monitoring - Mechanical TEMP POINT',
-  null
+  null,
+  false
 );
 
 MonitoringMechanicalTemp.type = 'Monitoring';
@@ -108,7 +108,6 @@ MonitoringMechanicalTemp.columns = [
 MonitoringMechanicalTemp.rowValidators = [
   ...BasicInformationRowValidators,
   TreatmentEfficacyValidator,
-  TerrestrialAquaticPlantValidator,
   CopyGeometryValidator
 ];
 

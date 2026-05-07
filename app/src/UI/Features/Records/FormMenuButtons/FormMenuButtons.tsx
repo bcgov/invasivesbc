@@ -11,6 +11,7 @@ const FormMenuButtons = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const pristine = useSelector((state) => state.ActivityPage.pristine);
   const activityErrors = useSelector((state) => state.ActivityPage?.activityErrors);
   const activity_id = useSelector((state) => state.ActivityPage?.activity?.activity_id);
 
@@ -27,18 +28,16 @@ const FormMenuButtons = () => {
 
   const recordIsSerializedActivity = !!serializedActivities[activity_id];
   // Users must have write permission and be online to delete, or record is users offline record
-
+  console.log(activityErrors);
   useEffect(() => {
-    setSaveDisabled(!can_edit);
-    setDraftDisabled(status === 'Submitted' || !can_edit);
-  }, [activity_id, can_edit]);
+    setSaveDisabled(!can_edit || pristine || activityErrors?.length > 0);
+    setDraftDisabled(pristine || status === 'Submitted' || !can_edit);
+  }, [activity_id, can_edit, pristine, activityErrors]);
 
   const handleSaveDraft = () => {
     dispatch(Activity.save());
   };
-  const handlePublish = () => {
-    dispatch(Activity.submit());
-  };
+
   const handleDuplicate = () => {
     dispatch(Activity.copy());
   };
@@ -57,7 +56,7 @@ const FormMenuButtons = () => {
       <Button onClick={handleSaveDraft} disabled={draftDisabled} variant="contained">
         SAVE TO DRAFT {connected || '(LOCAL OFFLINE)'}
       </Button>
-      <Button onClick={handlePublish} disabled={saveDisabled || activityErrors?.length > 0} variant="contained">
+      <Button type="submit" disabled={saveDisabled} variant="contained">
         SAVE & PUBLISH TO SUBMITTED {connected || '(LOCAL OFFLINE)'}
       </Button>
       <Button onClick={handleDuplicate} disabled={!can_write} variant="contained">

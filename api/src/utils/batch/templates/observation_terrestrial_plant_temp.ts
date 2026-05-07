@@ -12,7 +12,8 @@ import {
 const ObservationTerrestrialPlantTemp = new Template(
   'observation_terrestrial_plant_temp',
   'Observation - Terrestrial Plant TEMP POINT',
-  null
+  null,
+  false
 );
 ObservationTerrestrialPlantTemp.subtype = 'Activity_Observation_PlantTerrestrial';
 
