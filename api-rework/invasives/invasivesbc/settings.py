@@ -196,21 +196,27 @@ LOGGING = {
         "console": {
             "class": "logging.StreamHandler",
             "stream": sys.stdout,
+            "level": LOG_LEVEL,
         },
         "timestamped": {
             "class": "logging.StreamHandler",
             "stream": sys.stdout,
             "formatter": "simple",
+            "level": LOG_LEVEL,
         },
     },
     "root": {
         "handlers": ["console"],
-        "level": "INFO",
     },
     "loggers": {
         "django": {
             "handlers": ["console"],
             "level": "INFO",
+            "propagate": False,
+        },
+        "psycopg": {
+            "handlers": ["timestamped"],
+            "level": LOG_LEVEL,
             "propagate": False,
         },
         "invasives": {
