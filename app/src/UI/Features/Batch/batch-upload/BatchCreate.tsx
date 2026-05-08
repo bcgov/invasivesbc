@@ -60,11 +60,13 @@ const BatchCreate = () => {
       <p>Which template are you uploading?</p>
       <select onChange={(e) => setSelectedTemplate(e.target.value)} value={selectedTemplate}>
         <option value={''}>Select a template</option>
-        {templates.map((t) => (
-          <option value={t.key} key={t.key}>
-            {t.name}
-          </option>
-        ))}
+        {templates
+          .filter((t) => t.selectable)
+          .map((t) => (
+            <option value={t.key} key={t.key}>
+              {t.name}
+            </option>
+          ))}
       </select>
 
       <h3>File</h3>

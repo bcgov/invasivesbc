@@ -108,6 +108,34 @@ export const Treatment_ChemicalPlant_Information = {
           }
         }
       ]
+    },
+    temperature: {
+      allOf: [
+        {
+          if: {
+            properties: {
+              temperature: {
+                not: {
+                  // Temperature should be between 10-28 degrees
+                  minimum: 10,
+                  maximum: 28
+                }
+              }
+            },
+            required: ['temperature']
+          },
+          then: {
+            properties: {
+              confirm_temperature: {
+                title: 'I confirm that the temperature at the time of treatment is accurate.',
+                type: 'boolean',
+                enum: [true]
+              }
+            },
+            required: ['confirm_temperature']
+          }
+        }
+      ]
     }
   },
   properties: {

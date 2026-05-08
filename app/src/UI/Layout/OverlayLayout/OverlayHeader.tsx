@@ -4,8 +4,8 @@ import 'UI/Layout/OverlayLayout/OverlayHeader.css';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import React, { useEffect } from 'react';
-import ContextualPopover from '../ContextualPopover/ContextualPopover';
+import { useEffect } from 'react';
+import { useSelector } from 'utils/use_selector';
 
 const maximize = () => {
   setOverlayStyle({ top: '0px' });
@@ -32,11 +32,8 @@ const getOverlayAnchorDimensions = () => {
   const appElement = document.getElementById('overlay-anchor');
 
   if (appElement !== null) {
-    const currentAppStyle = window.getComputedStyle(appElement);
-    return {
-      height: currentAppStyle.height,
-      top: currentAppStyle.top
-    };
+    const { height, top } = globalThis.getComputedStyle(appElement);
+    return { height, top };
   }
 
   return {
@@ -55,11 +52,8 @@ const throttledRestyle = debounce(
 
 const drag = (e: PointerEvent) => {
   e.preventDefault();
-
   const correctedClientY = e.clientY - 60;
-
   const SNAP_TO_NEAREST = 1; // set to 1 for no snap
-
   throttledRestyle({ top: `${Math.floor(correctedClientY / SNAP_TO_NEAREST) * SNAP_TO_NEAREST}px` });
 };
 
@@ -78,13 +72,19 @@ const onClickDragButton = (e) => {
 };
 
 export const OverlayHeader = () => {
+  const url = useSelector((state) => state.AppMode.url);
+
   useEffect(() => {
-    defaultPosition();
-  }, []);
+    // On URL Change, if the Overlay Header is below 50%, resize it. If greater, do nothing.
+    const overlayY = document.getElementsByClassName('overlay-header')?.[0]?.getBoundingClientRect()?.y;
+    const screenHeight = Number.parseInt(getOverlayAnchorDimensions().height);
+    if (overlayY == undefined || screenHeight == undefined) return;
+    if (overlayY - 90 > screenHeight / 2) defaultPosition();
+  }, [url]);
 
   return (
     <div className="overlay-header">
-      <div className={'left'}></div>
+      <div className={'left'} />
       <div className={'center'}>
         <IconButton className="overlay-control" onClick={maximize}>
           <ArrowDropUpIcon />
@@ -98,9 +98,7 @@ export const OverlayHeader = () => {
           <ArrowDropDownIcon />
         </IconButton>
       </div>
-      <div className={'right'}>
-        <ContextualPopover />
-      </div>
+      <div className={'right'} />
     </div>
   );
 };

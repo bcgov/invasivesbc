@@ -1,6 +1,15 @@
 import { createFilterOptions } from '@mui/material/Autocomplete';
 import StarIcon from '@mui/icons-material/Star';
-import { TextField, Autocomplete, MenuItem } from '@mui/material';
+import {
+  TextField,
+  Autocomplete,
+  MenuItem,
+  Select,
+  OutlinedInput,
+  InputLabel,
+  FormControl,
+  FormHelperText
+} from '@mui/material';
 import { SelectAutoCompleteContext } from 'UI/Features/Records/Activity/form/SelectAutoCompleteContext';
 import { useContext, useEffect, useState } from 'react';
 import { WidgetProps } from '@rjsf/utils';
@@ -45,6 +54,7 @@ export type AutoCompleteSelectOption = {
  */
 
 const SingleSelectAutoComplete = (props: WidgetProps) => {
+  const MIN_ITEMS_FOR_SEARCH = 10;
   const selectAutoCompleteContext = useContext(SelectAutoCompleteContext);
   if (!selectAutoCompleteContext) {
     throw new Error('Context not provided to SingleSelectAutoComplete.tsx');
@@ -111,6 +121,44 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
 
   if (props.id.includes('jurisdiction_code')) {
     handleSuggestedJurisdictions(suggestedJurisdictionsInState, listOptions);
+  }
+  if (listOptions.length < MIN_ITEMS_FOR_SEARCH) {
+    return (
+      <FormControl fullWidth variant="outlined" disabled={props.disabled || props.readonly} required={props.required}>
+        <InputLabel id={`${props.id}-label`}>{props.label || props.schema.title}</InputLabel>
+        <Select
+          labelId={`${props.id}-label`}
+          id={props.id}
+          value={value ?? ''}
+          onChange={(evt) => {
+            const value = evt.target.value ?? undefined;
+            setValue(value);
+            props.onChange(value);
+          }}
+          onBlur={() => props.onBlur(props.id, value)}
+          onFocus={() => props.onFocus(props.id, value)}
+          input={<OutlinedInput label={props.label || props.schema.title} />}
+          displayEmpty={!!props.placeholder}
+          sx={{
+            '& .MuiSelect-select': {
+              textAlign: 'left',
+              display: 'flex',
+              alignItems: 'center'
+            }
+          }}
+        >
+          {listOptions.map((option) => (
+            <MenuItem key={option.value} value={option.value}>
+              {/* Keeping your "Suggested" logic if applicable to the data */}
+              {option.suggested && <StarIcon style={{ fontSize: 15, marginRight: 7 }} color="warning" />}
+              {option.label}
+              {option.suggested && <i style={{ marginLeft: 8, opacity: 0.7 }}> - Suggested based on location</i>}
+            </MenuItem>
+          ))}
+        </Select>
+        {props.schema.description && <FormHelperText>{props.schema.description}</FormHelperText>}
+      </FormControl>
+    );
   }
   return (
     <Autocomplete

@@ -1,7 +1,6 @@
 import { execSync } from 'child_process';
 import { defineConfig, PluginOption } from 'vite';
 import react from '@vitejs/plugin-react';
-import tsconfigPaths from 'vite-tsconfig-paths';
 import { visualizer } from 'rollup-plugin-visualizer';
 
 // sets up constants in the code, based on the build environment
@@ -29,7 +28,7 @@ function buildSpecificDefines() {
 
     defines['CONFIGURATION_COMPONENTIZED_MAP'] = JSON.stringify(process.env['ENABLE_COMPONENTIZED_MAP']);
   } else if (process.env.CONFIGURATION_SOURCE === 'Caddy') {
-    defines['minify'] = false;
+    defines['minify'] = true;
 
     defines['CONFIGURATION_SOURCE'] = JSON.stringify('Caddy');
 
@@ -77,27 +76,26 @@ export default defineConfig({
     minify: buildSpecificDefines()['minify'],
     sourcemap: true,
     cssCodeSplit: false,
+    target: process.env['VITE_TARGET_PLATFORM'] === 'ios' ? 'ios26.4' : 'baseline-widely-available',
 
-    rollupOptions: {
-      onLog(level, log, handler) {
-        // @ts-ignore
-        if (log.cause && log.cause.message === `Can't resolve original location of error.`) {
-          return;
-        }
-        handler(level, log);
-      },
+    rolldownOptions: {
       plugins: [...statsPlugin()],
       output: {
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            return 'vendor';
-          }
-          if (id.includes('state/configuration/runtime-config')) {
-            return 'configuration';
-          }
-          if (id.includes('state/configuration/injected-features')) {
-            return 'injected-features';
-          }
+        codeSplitting: {
+          groups: [
+            {
+              test: /node_modules/,
+              name: 'vendor'
+            },
+            {
+              test: /state\/configuration\/runtime-config/,
+              name: 'configuration'
+            },
+            {
+              test: /state\/configuration\/injected-features/,
+              name: 'injected-features'
+            }
+          ]
         }
       }
     }
@@ -107,18 +105,15 @@ export default defineConfig({
   },
   assetsInclude: ['**/*.tiff'],
   plugins: [
-    tsconfigPaths(),
     react({
       // Use React plugin in all *.jsx and *.tsx files
       include: '**/*.{jsx,tsx}',
-
       ...reactDevOptions()
     })
   ],
-  optimizeDeps: {
-    esbuildOptions: {}
-  },
+  optimizeDeps: {},
   resolve: {
-    alias: {}
+    alias: {},
+    tsconfigPaths: true
   }
 });

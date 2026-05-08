@@ -4,9 +4,11 @@ import {
   BasicInformation,
   BasicInformationRowValidators,
   CopyGeometryValidator,
+  DuplicateMonitoringInvasivePlantValidator,
   ProjectInformation,
   TerrestrialAquaticPlantValidator,
-  TreatmentEfficacyValidator
+  TreatmentEfficacyValidator,
+  TreatmentMonitoringValidator
 } from 'utils/batch/shared-columns';
 import { TREATMENT_PASS_CODES, YES_NO_CODES } from '../hard-coded-codes';
 
@@ -27,18 +29,19 @@ MonitoringChemical.columns = [
   ).build(),
 
   new TemplateColumnBuilder('Monitoring - Copy Geometry', 'codeReference', 'form_data.activity_type_data.copy_geometry')
+    .isRequired()
     .hardcodedCodes(YES_NO_CODES)
     .build(),
 
   new TemplateColumnBuilder(
-    'Monitoring - Terrestrial Invasive Plant',
+    'Monitoring - Terrestrial Invasive Plant 1',
     'codeReference',
     'form_data.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information[0].invasive_plant_code'
   )
     .referencesCode('invasive_plant_code')
     .build(),
   new TemplateColumnBuilder(
-    'Monitoring - Aquatic Invasive Plant',
+    'Monitoring - Aquatic Invasive Plant 1',
     'codeReference',
     'form_data.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information[0].invasive_plant_aquatic_code'
   )
@@ -46,7 +49,7 @@ MonitoringChemical.columns = [
     .build(),
 
   new TemplateColumnBuilder(
-    'Monitoring - Evidence of Treatment',
+    'Monitoring - Evidence of Treatment 1',
     'codeReference',
     'form_data.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information[0].evidence_of_treatment'
   )
@@ -55,7 +58,7 @@ MonitoringChemical.columns = [
     .build(),
 
   new TemplateColumnBuilder(
-    'Monitoring - Treatment Efficacy Rating',
+    'Monitoring - Treatment Efficacy Rating 1',
     'codeReference',
     'form_data.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information[0].efficacy_code'
   )
@@ -63,7 +66,7 @@ MonitoringChemical.columns = [
     .build(),
 
   new TemplateColumnBuilder(
-    'Monitoring - Management Efficacy Rating',
+    'Monitoring - Management Efficacy Rating 1',
     'codeReference',
     'form_data.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information[0].management_efficacy_rating'
   )
@@ -72,7 +75,7 @@ MonitoringChemical.columns = [
     .build(),
 
   new TemplateColumnBuilder(
-    'Monitoring - Invasive Plants on Site',
+    'Monitoring - Invasive Plants on Site 1',
     'codeReference',
     'form_data.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information[0].invasive_plants_on_site'
   )
@@ -81,26 +84,146 @@ MonitoringChemical.columns = [
     .build(),
 
   new TemplateColumnBuilder(
-    'Monitoring - Treatment Pass',
+    'Monitoring - Treatment Pass 1',
     'codeReference',
     'form_data.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information[0].treatment_pass'
   )
-    .isRequired()
     .hardcodedCodes(TREATMENT_PASS_CODES)
     .build(),
 
   new TemplateColumnBuilder(
-    'Monitoring - Comments',
+    'Monitoring - Comments 1',
     'text',
     'form_data.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information[0].comment'
+  ).build(),
+  new TemplateColumnBuilder(
+    'Monitoring - Terrestrial Invasive Plant 2',
+    'codeReference',
+    'form_data.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information[1].invasive_plant_code'
+  )
+    .referencesCode('invasive_plant_code')
+    .build(),
+  new TemplateColumnBuilder(
+    'Monitoring - Aquatic Invasive Plant 2',
+    'codeReference',
+    'form_data.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information[1].invasive_plant_aquatic_code'
+  )
+    .referencesCode('invasive_plant_aquatic_code')
+    .build(),
+
+  new TemplateColumnBuilder(
+    'Monitoring - Evidence of Treatment 2',
+    'codeReference',
+    'form_data.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information[1].evidence_of_treatment'
+  )
+    .hardcodedCodes(YES_NO_CODES)
+    .build(),
+
+  new TemplateColumnBuilder(
+    'Monitoring - Treatment Efficacy Rating 2',
+    'codeReference',
+    'form_data.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information[1].efficacy_code'
+  )
+    .referencesCode('efficacy_code')
+    .build(),
+
+  new TemplateColumnBuilder(
+    'Monitoring - Management Efficacy Rating 2',
+    'codeReference',
+    'form_data.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information[1].management_efficacy_rating'
+  )
+    .referencesCode('management_efficacy_code')
+    .build(),
+
+  new TemplateColumnBuilder(
+    'Monitoring - Invasive Plants on Site 2',
+    'codeReference',
+    'form_data.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information[1].invasive_plants_on_site'
+  )
+    .referencesCode('monitoring_evidence_code')
+    .build(),
+
+  new TemplateColumnBuilder(
+    'Monitoring - Treatment Pass 2',
+    'codeReference',
+    'form_data.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information[1].treatment_pass'
+  )
+    .hardcodedCodes(TREATMENT_PASS_CODES)
+    .build(),
+
+  new TemplateColumnBuilder(
+    'Monitoring - Comments 2',
+    'text',
+    'form_data.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information[1].comment'
+  ).build(),
+  new TemplateColumnBuilder(
+    'Monitoring - Terrestrial Invasive Plant 3',
+    'codeReference',
+    'form_data.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information[2].invasive_plant_code'
+  )
+    .referencesCode('invasive_plant_code')
+    .build(),
+  new TemplateColumnBuilder(
+    'Monitoring - Aquatic Invasive Plant 3',
+    'codeReference',
+    'form_data.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information[2].invasive_plant_aquatic_code'
+  )
+    .referencesCode('invasive_plant_aquatic_code')
+    .build(),
+
+  new TemplateColumnBuilder(
+    'Monitoring - Evidence of Treatment 3',
+    'codeReference',
+    'form_data.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information[2].evidence_of_treatment'
+  )
+    .hardcodedCodes(YES_NO_CODES)
+    .build(),
+
+  new TemplateColumnBuilder(
+    'Monitoring - Treatment Efficacy Rating 3',
+    'codeReference',
+    'form_data.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information[2].efficacy_code'
+  )
+    .referencesCode('efficacy_code')
+    .build(),
+
+  new TemplateColumnBuilder(
+    'Monitoring - Management Efficacy Rating 3',
+    'codeReference',
+    'form_data.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information[2].management_efficacy_rating'
+  )
+    .referencesCode('management_efficacy_code')
+    .build(),
+
+  new TemplateColumnBuilder(
+    'Monitoring - Invasive Plants on Site 3',
+    'codeReference',
+    'form_data.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information[2].invasive_plants_on_site'
+  )
+    .referencesCode('monitoring_evidence_code')
+    .build(),
+
+  new TemplateColumnBuilder(
+    'Monitoring - Treatment Pass 3',
+    'codeReference',
+    'form_data.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information[2].treatment_pass'
+  )
+    .hardcodedCodes(TREATMENT_PASS_CODES)
+    .build(),
+
+  new TemplateColumnBuilder(
+    'Monitoring - Comments 3',
+    'text',
+    'form_data.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information[2].comment'
   ).build()
 ];
 
 MonitoringChemical.rowValidators = [
   ...BasicInformationRowValidators,
   TreatmentEfficacyValidator,
-  TerrestrialAquaticPlantValidator,
-  CopyGeometryValidator
+  CopyGeometryValidator,
+  TreatmentMonitoringValidator,
+  DuplicateMonitoringInvasivePlantValidator
 ];
 
 export { MonitoringChemical };

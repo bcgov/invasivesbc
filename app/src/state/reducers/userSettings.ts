@@ -28,7 +28,7 @@ interface UserSettingsState {
   activeIAPP: string | null;
   apiDocsWithViewOptions: object | null;
   apiDocsWithSelectOptions: object | null;
-
+  drawToolCrosshairEnabled: boolean;
   mapCenter: [number, number];
 
   preferredBasemap: string | undefined;
@@ -63,6 +63,7 @@ const initialState: UserSettingsState = {
 
   apiDocsWithSelectOptions: null,
   apiDocsWithViewOptions: null,
+  drawToolCrosshairEnabled: false,
   layerPickerIsAccordion: false,
   boundaries: [],
   error: false,
@@ -170,6 +171,8 @@ function createUserSettingsReducer(_configuration: AppConfig) {
         }
       } else if (UserSettings.RecordSet.requestRemoval.fulfilled.match(action)) {
         delete draftState.recordSets[action.payload];
+      } else if (UserSettings.toggleDrawtoolCrosshair.match(action)) {
+        draftState.drawToolCrosshairEnabled = !draftState.drawToolCrosshairEnabled;
       } else if (UserSettings.RecordSet.set.match(action)) {
         Object.keys(action.payload.updatedSet).forEach((key) => {
           draftState.recordSets[action.payload.setName][key] = action.payload.updatedSet[key];

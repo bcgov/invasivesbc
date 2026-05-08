@@ -674,35 +674,122 @@ export const PhenologySumValidator = (row): RowValidationResult => {
   };
 };
 
-export const PositiveObservationPlantValidator = (row): RowValidationResult => {
+export const ObservationCompleteSetValidator = (row): RowValidationResult => {
   let valid = true;
-  const fields = ['Observation - Life Stage', 'Observation - Distribution', 'Observation - Density'];
-  const rowData = row.data;
   const validationMessages = [];
-  if (rowData?.['Observation - Type']?.parsedValue === 'Positive Observation') {
-    // if it was a positive occurrence, three other fields become required
+  const appliesToFields = [];
+  const rowData = row.data;
 
-    for (const v of fields) {
-      if (!rowData?.[v]?.parsedValue) {
-        valid = false;
-        validationMessages.push({
-          severity: 'error',
-          messageTitle: 'Required value',
-          messageDetail: `${v} is required when Observation - Type is Positive Observation`
-        });
-      }
+  const observationSets = [1, 2, 3];
+
+  const baseFields = [
+    'Observation - Type',
+    'Observation - Invasive Plant',
+    'Observation - Density',
+    'Observation - Distribution',
+    'Observation - Life Stage',
+    'Voucher - Sample Collected?'
+  ];
+
+  for (const i of observationSets) {
+    const typeField = `Observation - Type ${i}`;
+    const plantField = `Observation - Invasive Plant ${i}`;
+    const fields = baseFields.map((f) => `${f} ${i}`);
+
+    const values = fields.map((field) => rowData?.[field]?.parsedValue);
+
+    const anyFilled = values.some((v) => !!v);
+    const allFilled = values.every((v) => !!v);
+
+    const observationType = rowData?.[typeField]?.parsedValue;
+    const invasivePlant = rowData?.[plantField]?.parsedValue;
+
+    const isValidNegativeCase = invasivePlant && observationType === 'Negative Observation';
+
+    if (anyFilled && !allFilled && !isValidNegativeCase) {
+      valid = false;
+
+      validationMessages.push({
+        severity: 'error',
+        messageTitle: 'Incomplete observation set',
+        messageDetail: `Please provide complete information for each invasive plant`
+      });
+
+      appliesToFields.push(...fields);
     }
   }
 
-  if (rowData?.['Observation - Type']?.parsedValue === 'Negative Observation') {
-    for (const v of fields) {
-      if (rowData?.[v]?.parsedValue) {
-        valid = false;
-        validationMessages.push({
-          severity: 'error',
-          messageTitle: 'Invalid value',
-          messageDetail: `${v} must be blank when Observation - Type is Negative Observation`
-        });
+  return {
+    valid,
+    validationMessages,
+    appliesToFields: [...new Set(appliesToFields)]
+  };
+};
+
+export const PositiveObservationPlantValidator = (row): RowValidationResult => {
+  let valid = true;
+  const validationMessages = [];
+  const appliesToFields = [];
+  const rowData = row.data;
+
+  const observationSets = [1, 2, 3];
+
+  const baseFields = [
+    'Observation - Density',
+    'Observation - Distribution',
+    'Observation - Life Stage',
+    'Voucher - Sample Collected?'
+  ];
+
+  for (const i of observationSets) {
+    const typeField = `Observation - Type ${i}`;
+    const invasivePlantField = `Observation - Invasive Plant ${i}`;
+    const requiredFields = baseFields.map((f) => `${f} ${i}`);
+
+    const observationType = rowData?.[typeField]?.parsedValue;
+    const invasivePlant = rowData?.[invasivePlantField]?.parsedValue;
+
+    if (invasivePlant && !observationType) {
+      valid = false;
+
+      validationMessages.push({
+        severity: 'error',
+        messageTitle: 'Required value',
+        messageDetail: `${typeField} is required when ${invasivePlantField} is provided`
+      });
+
+      appliesToFields.push(typeField, invasivePlantField);
+    }
+
+    if (observationType === 'Positive Observation') {
+      for (const field of requiredFields) {
+        if (!rowData?.[field]?.parsedValue) {
+          valid = false;
+
+          validationMessages.push({
+            severity: 'error',
+            messageTitle: 'Required value',
+            messageDetail: `${field} is required when ${typeField} is Positive Observation`
+          });
+
+          appliesToFields.push(typeField, field);
+        }
+      }
+    }
+
+    if (observationType === 'Negative Observation') {
+      for (const field of requiredFields) {
+        if (rowData?.[field]?.parsedValue) {
+          valid = false;
+
+          validationMessages.push({
+            severity: 'error',
+            messageTitle: 'Invalid value',
+            messageDetail: `${field} must be blank when ${typeField} is Negative Observation`
+          });
+
+          appliesToFields.push(typeField, field);
+        }
       }
     }
   }
@@ -710,7 +797,429 @@ export const PositiveObservationPlantValidator = (row): RowValidationResult => {
   return {
     valid,
     validationMessages,
-    appliesToFields: fields
+    appliesToFields: [...new Set(appliesToFields)]
+  };
+};
+
+export const DuplicateInvasivePlantValidator = (row): RowValidationResult => {
+  let valid = true;
+  const validationMessages = [];
+  const appliesToFields = [];
+  const rowData = row.data;
+
+  const observationSets = [1, 2, 3];
+  const plantFields = observationSets.map((i) => `Observation - Invasive Plant ${i}`);
+
+  const seenPlants: Record<string, string[]> = {};
+
+  for (const field of plantFields) {
+    const value = rowData?.[field]?.parsedValue;
+
+    if (!value) continue;
+
+    if (!seenPlants[value]) {
+      seenPlants[value] = [field];
+    } else {
+      seenPlants[value].push(field);
+    }
+  }
+
+  for (const plant in seenPlants) {
+    const fields = seenPlants[plant];
+
+    if (fields.length > 1) {
+      valid = false;
+
+      validationMessages.push({
+        severity: 'error',
+        messageTitle: 'Duplicate invasive plant',
+        messageDetail: `An Invasive Plant can only appear once per row`
+      });
+
+      appliesToFields.push(...fields);
+    }
+  }
+
+  return {
+    valid,
+    validationMessages,
+    appliesToFields: [...new Set(appliesToFields)]
+  };
+};
+
+export const DuplicateMechanicalTreatmentPlantValidator = (row): RowValidationResult => {
+  let valid = true;
+  const validationMessages = [];
+  const appliesToFields = [];
+  const rowData = row.data;
+
+  const treatmentSets = [1, 2, 3];
+  const plantFields = treatmentSets.map((i) => `Treatment - Invasive Plant Code ${i}`);
+
+  const seenPlants: Record<string, string[]> = {};
+
+  for (const field of plantFields) {
+    const value = rowData?.[field]?.parsedValue;
+
+    if (!value) continue;
+
+    if (!seenPlants[value]) {
+      seenPlants[value] = [field];
+    } else {
+      seenPlants[value].push(field);
+    }
+  }
+
+  for (const plant in seenPlants) {
+    const fields = seenPlants[plant];
+
+    if (fields.length > 1) {
+      valid = false;
+
+      validationMessages.push({
+        severity: 'error',
+        messageTitle: 'Duplicate treatment plant',
+        messageDetail: `Treatment Invasive Plant Code can only appear once per row`
+      });
+
+      appliesToFields.push(...fields);
+    }
+  }
+
+  return {
+    valid,
+    validationMessages,
+    appliesToFields: [...new Set(appliesToFields)]
+  };
+};
+
+export const DuplicateMonitoringInvasivePlantValidator = (row): RowValidationResult => {
+  let valid = true;
+  const validationMessages = [];
+  const appliesToFields = [];
+  const rowData = row.data;
+
+  const monitoringSets = [1, 2, 3];
+
+  const plantFields = monitoringSets.flatMap((i) => [
+    `Monitoring - Terrestrial Invasive Plant ${i}`,
+    `Monitoring - Aquatic Invasive Plant ${i}`
+  ]);
+
+  const seenPlants: Record<string, string[]> = {};
+
+  for (const field of plantFields) {
+    const value = rowData?.[field]?.parsedValue;
+
+    if (!value) continue;
+
+    if (!seenPlants[value]) {
+      seenPlants[value] = [field];
+    } else {
+      seenPlants[value].push(field);
+    }
+  }
+
+  for (const plant in seenPlants) {
+    const fields = seenPlants[plant];
+
+    if (fields.length > 1) {
+      valid = false;
+
+      validationMessages.push({
+        severity: 'error',
+        messageTitle: 'Duplicate invasive plant',
+        messageDetail: 'An invasive plant can only appear once per monitoring row.'
+      });
+
+      appliesToFields.push(...fields);
+    }
+  }
+
+  return {
+    valid,
+    validationMessages,
+    appliesToFields: [...new Set(appliesToFields)]
+  };
+};
+
+export const SampleCollectedNotAllowedValidator = (row): RowValidationResult => {
+  let valid = true;
+  const validationMessages = [];
+  const appliesToFields = [];
+  const rowData = row.data;
+
+  const observationSets = [1, 2, 3];
+
+  for (const i of observationSets) {
+    const field = `Voucher - Sample Collected? ${i}`;
+    const value = rowData?.[field]?.parsedValue;
+
+    if (value === 'Yes') {
+      valid = false;
+
+      validationMessages.push({
+        severity: 'error',
+        messageTitle: 'Invalid value',
+        messageDetail: `${field} must be No, if you have voucher info please enter it through the form after batch uploading your data`
+      });
+
+      appliesToFields.push(field);
+    }
+  }
+
+  return {
+    valid,
+    validationMessages,
+    appliesToFields
+  };
+};
+
+export const SamplePointIDValidator = (row): RowValidationResult => {
+  let valid = true;
+  const validationMessages = [];
+  const appliesToFields = [];
+  const rowData = row.data;
+
+  const observationSets = [1, 2, 3];
+
+  for (const i of observationSets) {
+    const samplePointField = `Observation - Sample Point ID ${i}`;
+    const invasivePlantField = `Observation - Invasive Plant ${i}`;
+    const typeField = `Observation - Type ${i}`;
+
+    const samplePointValue = rowData?.[samplePointField]?.parsedValue;
+    const invasivePlantValue = rowData?.[invasivePlantField]?.parsedValue;
+    const typeValue = rowData?.[typeField]?.parsedValue;
+
+    if (samplePointValue) {
+      if (!invasivePlantValue || !typeValue) {
+        valid = false;
+
+        validationMessages.push({
+          severity: 'error',
+          messageTitle: 'Required value',
+          messageDetail: `${invasivePlantField} and ${typeField} are required when ${samplePointField} is provided`
+        });
+
+        appliesToFields.push(samplePointField, invasivePlantField, typeField);
+      }
+    }
+  }
+
+  return {
+    valid,
+    validationMessages,
+    appliesToFields: [...new Set(appliesToFields)]
+  };
+};
+
+export const MechanicalTreatmentValidator = (row): RowValidationResult => {
+  let valid = true;
+  const validationMessages = [];
+  const appliesToFields = [];
+  const rowData = row.data;
+
+  const treatmentSets = [1, 2, 3];
+
+  const requiredBaseFields = [
+    'Treatment - Invasive Plant Code',
+    'Treatment - Treated Area',
+    'Treatment - Mechanical Method Code',
+    'Treatment - Disposal Method Code'
+  ];
+
+  const optionalBaseFields = ['Treatment - Disposed Material Format', 'Treatment - Disposed Material Amount'];
+
+  for (const i of treatmentSets) {
+    const requiredFields = requiredBaseFields.map((f) => `${f} ${i}`);
+    const optionalFields = optionalBaseFields.map((f) => `${f} ${i}`);
+
+    const requiredValues = requiredFields.map((field) => rowData?.[field]?.parsedValue);
+
+    const optionalValues = optionalFields.map((field) => rowData?.[field]?.parsedValue);
+
+    const anyRequiredFilled = requiredValues.some((v) => !!v);
+    const allRequiredFilled = requiredValues.every((v) => !!v);
+    const anyOptionalFilled = optionalValues.some((v) => !!v);
+
+    if (anyRequiredFilled && !allRequiredFilled) {
+      valid = false;
+
+      validationMessages.push({
+        severity: 'error',
+        messageTitle: 'Incomplete treatment set',
+        messageDetail: 'Please fill out all required treatment fields when entering treatment data.'
+      });
+
+      appliesToFields.push(...requiredFields);
+    }
+
+    if (anyOptionalFilled && !allRequiredFilled) {
+      valid = false;
+
+      validationMessages.push({
+        severity: 'error',
+        messageTitle: 'Incomplete treatment set',
+        messageDetail: 'Please fill out all required treatment fields when entering treatment data.'
+      });
+
+      appliesToFields.push(...requiredFields, ...optionalFields);
+    }
+  }
+
+  return {
+    valid,
+    validationMessages,
+    appliesToFields: [...new Set(appliesToFields)]
+  };
+};
+
+export const TreatmentMonitoringValidator = (row): RowValidationResult => {
+  let valid = true;
+  const validationMessages = [];
+  const appliesToFields = [];
+  const rowData = row.data;
+
+  const monitoringSets = [1, 2, 3];
+
+  const baseFields = [
+    'Monitoring - Terrestrial Invasive Plant',
+    'Monitoring - Aquatic Invasive Plant',
+    'Monitoring - Evidence of Treatment',
+    'Monitoring - Treatment Efficacy Rating',
+    'Monitoring - Management Efficacy Rating',
+    'Monitoring - Invasive Plants on Site',
+    'Monitoring - Treatment Pass',
+    'Monitoring - Comments'
+  ];
+
+  for (const i of monitoringSets) {
+    const fields = baseFields.map((f) => `${f} ${i}`);
+
+    const [
+      terrestrialField,
+      aquaticField,
+      evidenceField,
+      treatmentEfficacyField,
+      managementEfficacyField,
+      invasiveOnSiteField,
+      treatmentPassField,
+      commentsField
+    ] = fields;
+
+    const getValue = (field: string) => rowData?.[field]?.parsedValue;
+
+    const terrestrial = getValue(terrestrialField);
+    const aquatic = getValue(aquaticField);
+    const evidence = getValue(evidenceField);
+    const treatmentEfficacy = getValue(treatmentEfficacyField);
+    const managementEfficacy = getValue(managementEfficacyField);
+    const invasiveOnSite = getValue(invasiveOnSiteField);
+    const treatmentPass = getValue(treatmentPassField);
+    const comments = getValue(commentsField);
+
+    const allValues = [
+      terrestrial,
+      aquatic,
+      evidence,
+      treatmentEfficacy,
+      managementEfficacy,
+      invasiveOnSite,
+      treatmentPass,
+      comments
+    ];
+
+    const anyFilled = allValues.some((v) => !!v);
+
+    const requiredCoreFields = [evidenceField, managementEfficacyField, invasiveOnSiteField];
+
+    const requiredCoreValues = [evidence, managementEfficacy, invasiveOnSite];
+
+    const allCoreFilled = requiredCoreValues.every((v) => !!v);
+
+    const plantFilledCount = (terrestrial ? 1 : 0) + (aquatic ? 1 : 0);
+
+    if (plantFilledCount > 1) {
+      valid = false;
+
+      validationMessages.push({
+        severity: 'error',
+        messageTitle: 'Invalid plant selection',
+        messageDetail: 'Only one of Terrestrial or Aquatic Invasive Plant may be selected per monitoring set.'
+      });
+
+      appliesToFields.push(terrestrialField, aquaticField);
+    }
+
+    if (anyFilled && plantFilledCount === 0) {
+      valid = false;
+
+      validationMessages.push({
+        severity: 'error',
+        messageTitle: 'Missing invasive plant',
+        messageDetail: 'Either Terrestrial or Aquatic Invasive Plant must be selected when monitoring data is entered.'
+      });
+
+      appliesToFields.push(terrestrialField, aquaticField);
+    }
+
+    if (evidence === 'No' && treatmentEfficacy) {
+      valid = false;
+
+      validationMessages.push({
+        severity: 'error',
+        messageTitle: 'Treatment efficacy not allowed',
+        messageDetail: 'Treatment Efficacy Rating must be blank when Evidence of Treatment is No.'
+      });
+
+      appliesToFields.push(evidenceField, treatmentEfficacyField);
+    }
+
+    if (evidence === 'Yes' && !treatmentEfficacy) {
+      valid = false;
+
+      validationMessages.push({
+        severity: 'error',
+        messageTitle: 'Missing treatment efficacy rating',
+        messageDetail: 'Treatment Efficacy Rating is required when Evidence of Treatment is Yes.'
+      });
+
+      appliesToFields.push(evidenceField, treatmentEfficacyField);
+    }
+
+    if (anyFilled) {
+      if (!allCoreFilled) {
+        valid = false;
+
+        validationMessages.push({
+          severity: 'error',
+          messageTitle: 'Incomplete monitoring set',
+          messageDetail: 'All required monitoring fields must be completed when entering monitoring data.'
+        });
+
+        appliesToFields.push(...requiredCoreFields);
+      }
+    }
+
+    if ((treatmentPass || comments) && (!anyFilled || !allCoreFilled)) {
+      valid = false;
+
+      validationMessages.push({
+        severity: 'error',
+        messageTitle: 'Incomplete monitoring set',
+        messageDetail:
+          'Treatment Pass or Comments cannot be entered unless all required monitoring fields are completed.'
+      });
+
+      appliesToFields.push(...fields);
+    }
+  }
+
+  return {
+    valid,
+    validationMessages,
+    appliesToFields: [...new Set(appliesToFields)]
   };
 };
 
@@ -1177,39 +1686,6 @@ export const TreatmentEfficacyValidator = (row): RowValidationResult => {
       severity: 'error',
       messageTitle: 'Invalid value',
       messageDetail: 'If Evidence of Treatment is No, Treatment Efficacy Rating must be blank.'
-    });
-  }
-
-  return {
-    valid,
-    validationMessages,
-    appliesToFields: fields
-  };
-};
-
-export const TerrestrialAquaticPlantValidator = (row): RowValidationResult => {
-  let valid = true;
-  const fields = ['Monitoring - Terrestrial Invasive Plant', 'Monitoring - Aquatic Invasive Plant'];
-  const rowData = row.data;
-  const terrestrial_plant = rowData?.['Monitoring - Terrestrial Invasive Plant']?.parsedValue;
-  const aquatic_plant = rowData?.['Monitoring - Aquatic Invasive Plant']?.parsedValue;
-  const validationMessages = [];
-
-  if (terrestrial_plant && aquatic_plant) {
-    valid = false;
-    validationMessages.push({
-      severity: 'error',
-      messageTitle: 'Invalid value',
-      messageDetail: 'Only one of Terrestrial Invasive Plant and Aquatic Invasive Plant must be entered.'
-    });
-  }
-
-  if (!terrestrial_plant && !aquatic_plant) {
-    valid = false;
-    validationMessages.push({
-      severity: 'error',
-      messageTitle: 'Invalid value',
-      messageDetail: 'One of Terrestrial Invasive Plant and Aquatic Invasive Plant must be entered.'
     });
   }
 

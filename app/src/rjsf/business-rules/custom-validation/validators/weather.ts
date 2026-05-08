@@ -12,6 +12,7 @@ function getTemperatureValidator(activitySubtype: string): rjsfValidator {
       activity_subtype_data: {
         Treatment_ChemicalPlant_Information?: {
           temperature: number;
+          confirm_temperature?: boolean;
         };
       };
     },
@@ -19,6 +20,7 @@ function getTemperatureValidator(activitySubtype: string): rjsfValidator {
       activity_subtype_data: {
         Treatment_ChemicalPlant_Information: {
           temperature: number;
+          confirm_temperature?: boolean;
         };
       };
     }>
@@ -28,7 +30,7 @@ function getTemperatureValidator(activitySubtype: string): rjsfValidator {
     }
 
     const temperature = formData.activity_subtype_data.Treatment_ChemicalPlant_Information?.temperature;
-
+    const confirmation = !!formData.activity_subtype_data.Treatment_ChemicalPlant_Information?.confirm_temperature;
     if (temperature === undefined) {
       return errors as FormValidation;
     }
@@ -37,10 +39,10 @@ function getTemperatureValidator(activitySubtype: string): rjsfValidator {
       errors.activity_subtype_data.Treatment_ChemicalPlant_Information.temperature.__errors = [];
     }
 
-    //if the temperature is out of normal range, display an error
-    if (temperature < MIN_TEMP || temperature > MAX_TEMP) {
-      errors.activity_subtype_data?.Treatment_ChemicalPlant_Information?.temperature?.addError(
-        `Temperature should ideally be between ${MIN_TEMP} and ${MAX_TEMP} degrees`
+    //if the temperature is out of normal range, display an error unless user has confirmed the temperature to be accurate
+    if ((temperature < MIN_TEMP || temperature > MAX_TEMP) && !confirmation) {
+      errors.activity_subtype_data?.Treatment_ChemicalPlant_Information?.confirm_temperature?.addError(
+        `Temperature should ideally be between ${MIN_TEMP} and ${MAX_TEMP} degrees. Please confirm that the temperature listed is accurate`
       );
     }
     //if the user clicked proceed in the warning dialog, remove the error

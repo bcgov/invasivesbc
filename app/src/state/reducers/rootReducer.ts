@@ -1,8 +1,9 @@
 import { combineReducers } from 'redux';
 import localForage from 'localforage';
-import autoMergeLevel1 from 'redux-persist/lib/stateReconciler/autoMergeLevel1';
-import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
+
 import { createTransform, persistReducer } from 'redux-persist';
+import autoMergeLevel1 from 'redux-persist/es/stateReconciler/autoMergeLevel1';
+import autoMergeLevel2 from 'redux-persist/es/stateReconciler/autoMergeLevel2';
 import { ActivityState, createActivityReducer } from './activity';
 import { AuthState, createAuthReducer } from './auth';
 import { createBatchReducer } from './batch';
