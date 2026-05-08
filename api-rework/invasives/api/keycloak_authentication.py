@@ -4,9 +4,11 @@ import logging
 from django.conf import settings
 import jwt
 import requests
+from django.db.models import Model
 from rest_framework import authentication, exceptions
 
-from api.models.auth import User
+from api.constants import WellKnownRoles
+from api.models.auth import User, Role
 
 
 class UserAuthentication(authentication.BaseAuthentication):
@@ -33,7 +35,14 @@ class UserAuthentication(authentication.BaseAuthentication):
             raise exceptions.AuthenticationFailed("Authorization header required")
 
         if settings.UNIT_TESTING_ENABLED:
-            return User.objects.get_or_create(subject="test-user"), None
+            user, _ = User.objects.get_or_create(subject="test-user")
+            if not user.roles.filter(name=WellKnownRoles.ADMINISTRATOR.value).exists():
+                admin_role, _ = Role.objects.get_or_create(
+                    name=WellKnownRoles.ADMINISTRATOR.value
+                )
+                user.roles.set((admin_role,))
+
+            return user, None
 
         try:
             scheme, token = auth.split()
@@ -84,8 +93,6 @@ class UserAuthentication(authentication.BaseAuthentication):
                 "\n".join([str(error) for error in token_validation_errors]),
             )
 
-        try:
-            user = User.objects.get(subject=user_token["sub"])
-            return user, None
-        except User.DoesNotExist:
-            raise exceptions.AuthenticationFailed("User does not exist")
+        user, _ = User.objects.get_or_create(subject=user_token["sub"])
+        logging.debug(f"User roles: [{','.join(r.name for r in user.roles.all())}]")
+        return user, None

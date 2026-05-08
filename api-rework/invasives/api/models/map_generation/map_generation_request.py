@@ -1,12 +1,11 @@
 from collections import namedtuple
-from typing import List, NamedTuple
+from typing import List
 
-from django.db import models
-from django.core.validators import MaxValueValidator
-from django.core.exceptions import ValidationError
-
-from django.contrib.gis.db import models as geomodels
 import mercantile
+from django.contrib.gis.db import models as geomodels
+from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator
+from django.db import models
 
 from api.services.map_tile_generator.tile_source import ESRIWorldImageryTileSource
 
@@ -25,6 +24,14 @@ class RasterMapGenerationRequest(models.Model):
     id = models.AutoField(primary_key=True)
 
     created = models.DateTimeField(auto_now=True, null=False, blank=False)
+
+    owner = models.ForeignKey(
+        "User",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        db_comment="Optional owner of this map generation request",
+    )
 
     bounds = geomodels.PolygonField(null=False, blank=False)
 

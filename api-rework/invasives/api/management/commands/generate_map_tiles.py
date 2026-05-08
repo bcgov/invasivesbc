@@ -31,6 +31,21 @@ class Command(BaseCommand):
             type=int,
             default=10,
         )
+        parser.add_argument(
+            "--disable-cache-reads",
+            help="Don't read tiles from cache (always download)",
+            action="store_true",
+        )
+        parser.add_argument(
+            "--disable-l1-writes",
+            help="Don't write tiles to the local tile cache",
+            action="store_true",
+        )
+        parser.add_argument(
+            "--disable-l2-writes",
+            help="Don't write tiles to the database tile cache",
+            action="store_true",
+        )
 
     def handle(self, *args, **options):
         logging.info(f"output to {SCRATCH_DIRECTORY}")
@@ -50,12 +65,23 @@ class Command(BaseCommand):
 
         signal.signal(signal.SIGINT, handle_interruption)
 
+        cache_mode = TileDownloader.CacheAccessMode(0)
+        if options["disable_cache_reads"]:
+            cache_mode |= TileDownloader.CacheAccessMode.DISABLE_READS
+        if options["disable_l1_writes"]:
+            cache_mode |= TileDownloader.CacheAccessMode.DISABLE_L1_WRITES
+        if options["disable_l2_writes"]:
+            cache_mode |= TileDownloader.CacheAccessMode.DISABLE_L2_WRITES
+
+        logging.warning(f"Using cache mode {str(cache_mode)} for this run")
+
         stats = TileDownloader.generate_map_tiles(
             tiles=NTSGridTileDefinition(
                 min_zoom=options["min_zoom"], max_zoom=options["max_zoom"]
             ),
             source=ESRIWorldImageryTileSource(),
             stop_event=self.stop_event,
+            cache_mode=cache_mode,
         )
 
         logging.info(pformat(stats))

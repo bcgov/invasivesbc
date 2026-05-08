@@ -8,6 +8,7 @@ import psycopg
 from mercantile import Tile
 from psycopg.rows import dict_row
 
+from api.models import RasterMapGenerationRequest
 from invasivesbc.settings import LEGACY_DB_CONNECTION_STRING
 
 # specs for the archive, from https://github.com/mapbox/mbtiles-spec/blob/master/1.3/spec.md
@@ -30,6 +31,14 @@ class TileDefinition(ABC):
     @abstractmethod
     def tilesets(self) -> List[Tileset] | Tileset:
         pass
+
+
+class MapGenerationRequestDefinition(TileDefinition):
+    def __init__(self, map_generation_request: RasterMapGenerationRequest):
+        self.map_generation_request = map_generation_request
+
+    def tilesets(self) -> Tileset:
+        return self.map_generation_request.tileset
 
 
 class NTSGridTileDefinition(TileDefinition):

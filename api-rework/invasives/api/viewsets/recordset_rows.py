@@ -9,6 +9,7 @@ from django.core.exceptions import FieldError
 from django.db.models import Q, F, Min
 from django.db.models.functions import Coalesce
 from api.models.activity import ActivitySubtypes
+from api.permissions import HasAdminRole
 from api.serializers.activity_recordset_row import (
     ActivityRecordsetRowSerializer,
     CachedActivityRecordsetRowSerializer,
@@ -64,6 +65,7 @@ SORT_MAPPING = {
 
 class RecordsetRowsViewSet(viewsets.GenericViewSet):
     serializer_class = ActivityRecordsetRowSerializer
+    permission_classes = [HasAdminRole]
 
     def get(self, request, *args, **kwargs):
         """

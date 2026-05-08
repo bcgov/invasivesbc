@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 import logging
 import os
 import subprocess
+from enum import IntFlag, STRICT
 from typing import List, Optional
 
 import boto3
@@ -98,6 +99,11 @@ class GenerationRequestProgressReporter(DownloadProgressReporter):
 
 
 class TileDownloader:
+    class CacheAccessMode(IntFlag, boundary=STRICT):
+        DISABLE_READS = 1
+        DISABLE_L1_WRITES = 2
+        DISABLE_L2_WRITES = 4
+
     def __init__(self):
         pass
 
@@ -105,12 +111,14 @@ class TileDownloader:
     def retrieve_tile(
         source: TileSource,
         tile: mercantile.Tile,
+        cache_mode: CacheAccessMode = CacheAccessMode(0),  # no flags by default
     ) -> TileRetrieveResult:
         """
         Retrieve a tile from the source, employing caching mechanisms
 
         :param source: tile source definition
         :param tile: coordinates of tile to retrieve
+        :param cache_mode: override caching behaviour
         :return: TileRetrieveResult
         :raises: TileRetrieveException on retrieval failure
         """
@@ -118,22 +126,27 @@ class TileDownloader:
         cache_key = f"{source.cache_area}-{tile.z}-{tile.x}-{tile.y}"
 
         # first we try the (local) disk cache
-        if tile.z in LOCAL_CACHE_ZOOM_RANGE:
+        if tile.z in LOCAL_CACHE_ZOOM_RANGE and not (
+            cache_mode & cache_mode.DISABLE_READS
+        ):
             cached = cache.get(cache_key, default=None)
             if cached is not None:
                 return TileRetrieveResult(hit=True, data=cached)
 
         # now try the database cache
-        if tile.z in DATABASE_CACHE_ZOOM_RANGE:
+        if tile.z in DATABASE_CACHE_ZOOM_RANGE and not (
+            cache_mode & cache_mode.DISABLE_READS
+        ):
             cached = CachedRasterTile.objects.filter(key=cache_key).first()
             if cached is not None:
                 if tile.z in LOCAL_CACHE_ZOOM_RANGE:
                     # copy l2 -> l1 cache for next time, if appropriate
-                    cache.set(
-                        cache_key,
-                        cached.data,
-                        expire=source.cache_lifetime_seconds,
-                    )
+                    if not cache_mode & cache_mode.DISABLE_L1_WRITES:
+                        cache.set(
+                            cache_key,
+                            cached.data,
+                            expire=source.cache_lifetime_seconds,
+                        )
                 return TileRetrieveResult(hit=True, data=cached.data)
 
         url = source.build_url(tile.z, tile.y, tile.x)
@@ -143,7 +156,9 @@ class TileDownloader:
             response.raise_for_status()  # raise an exception on HTTP error code
 
             # add to local cache
-            if tile.z in LOCAL_CACHE_ZOOM_RANGE:
+            if tile.z in LOCAL_CACHE_ZOOM_RANGE and not (
+                cache_mode & cache_mode.DISABLE_L1_WRITES
+            ):
                 cache.set(
                     cache_key,
                     response.content,
@@ -151,7 +166,9 @@ class TileDownloader:
                 )
 
             # add to database cache
-            if tile.z in DATABASE_CACHE_ZOOM_RANGE:
+            if tile.z in DATABASE_CACHE_ZOOM_RANGE and not (
+                cache_mode & cache_mode.DISABLE_L2_WRITES
+            ):
                 CachedRasterTile.objects.create(
                     key=cache_key,
                     data=response.content,
@@ -204,6 +221,7 @@ class TileDownloader:
         tileset: Tileset,
         source: TileSource,
         progress_reporter: DownloadProgressReporter = LoggingDownloadProgressReporter(),
+        cache_mode: CacheAccessMode = CacheAccessMode(0),
     ):
         mbtiles_filename = os.path.join(
             SCRATCH_DIRECTORY, f"output/{tileset_name}.mbtiles"
@@ -232,7 +250,9 @@ class TileDownloader:
 
                 try:
                     stats.total_tiles += 1
-                    result = TileDownloader.retrieve_tile(source, tile)
+                    result = TileDownloader.retrieve_tile(
+                        source, tile, cache_mode=cache_mode
+                    )
 
                     if result.hit:
                         stats.cache_hits += 1
@@ -295,6 +315,7 @@ class TileDownloader:
         tiles: TileDefinition,
         source: TileSource,
         stop_event: Optional[threading.Event] = None,
+        cache_mode: CacheAccessMode = CacheAccessMode(0),
     ):
 
         stats = TileCacheStatistics()
@@ -310,7 +331,9 @@ class TileDownloader:
                 logging.info("Shutting down on request")
                 break
 
-            TileDownloader.generate_protomap_archive(t.name, t, source)
+            TileDownloader.generate_protomap_archive(
+                t.name, t, source, cache_mode=cache_mode
+            )
 
         return stats
 
