@@ -1,8 +1,8 @@
 from django.contrib.postgres.aggregates import StringAgg
 
 
-def agg(path):
+def agg(path, **kwargs):
     """
     Shorthand StringAgg to reduce repeating delimiter and distinct arguments
     """
-    return StringAgg(path, delimiter=", ", distinct=True)
+    return StringAgg(path, delimiter=", ", distinct=True, **kwargs)
