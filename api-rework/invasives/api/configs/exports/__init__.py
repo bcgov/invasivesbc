@@ -6,7 +6,7 @@ from .monitoring_biocontrol_dispersal_release import (
     MONITORING_BIOCONTROL_DISPERSAL_RELEASE_ANNOTATIONS,
 )
 from .biocontrol_release import BIOCONTROL_RELEASE_ANNOTATIONS
-
+from .biocontrol_collection import BIOCONTROL_COLLECTION_ANNOTATIONS
 from .shared.plant_phenology import PLANT_PHENOLOGY_ANNOTATIONS
 from .shared.agent_counts import (
     AGENT_COUNT_ANNOTATIONS,

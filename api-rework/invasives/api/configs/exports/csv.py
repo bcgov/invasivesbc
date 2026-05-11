@@ -7,6 +7,7 @@ from api.models.activity import (
     TerrestrialTreatmentMonitoringEntry,
     TerrestrialBiocontrolDispersalMonitoringEntry,
     TerrestrialBiocontrolReleaseEntry,
+    TerrestrialBiocontrolCollectionEntry,
 )
 from . import (
     OBSERVATION_AQUATIC_ANNOTATIONS,
@@ -19,6 +20,7 @@ from . import (
     PLANT_PHENOLOGY_ANNOTATIONS,
     BIOCONTROL_WEATHER_ANNOTATIONS,
     SPREAD_RESULTS_ANNOTATIONS,
+    BIOCONTROL_COLLECTION_ANNOTATIONS,
 )
 
 ADR_BASE = "activity_data_record__activity__activitydatarecord_set"
@@ -90,6 +92,14 @@ CSV_SUBTYPE_CONFIG = {
         + EXTENDED_AGENT_COUNT_ANNOTATIONS
         + PLANT_PHENOLOGY_ANNOTATIONS
         + SPREAD_RESULTS_ANNOTATIONS,
+        "prefetch_related": [],
+    },
+    ActivitySubtypes.Biocontrol_Collection.name: {
+        "entry_models": [TerrestrialBiocontrolCollectionEntry],
+        "annotations": BIOCONTROL_WEATHER_ANNOTATIONS
+        + BIOCONTROL_COLLECTION_ANNOTATIONS
+        + AGENT_COUNT_ANNOTATIONS
+        + PLANT_PHENOLOGY_ANNOTATIONS,
         "prefetch_related": [],
     },
 }
