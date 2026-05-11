@@ -12,13 +12,20 @@ import boto3
 from botocore.exceptions import ClientError
 import diskcache
 from diskcache import Cache
+from django.contrib.gis.geos import Polygon
 from django.db import transaction
 from django.utils import timezone
 import mercantile
 import requests
 from requests import RequestException
 
-from api.models import CachedRasterTile, RasterMapGenerationRequest
+from api.models import (
+    CachedRasterTile,
+    RasterMapGenerationRequest,
+    MapGenerationRecord,
+    MapGenerationIntermediateResult,
+    User,
+)
 from api.services.map_tile_generator.mb_tiles_database import (
     MBTilesDatabase,
     MBTilesMetadata,
@@ -92,10 +99,15 @@ class GenerationRequestProgressReporter(DownloadProgressReporter):
         logging.info(
             f"{tiles_loaded} / {total_tiles} ({round((tiles_loaded/total_tiles) * 100.0, 2)}%)"
         )
-        with transaction.atomic():
-            self.mgr.cache_hits = stats.cache_hits
-            self.mgr.tiles_downloaded = tiles_loaded
-            self.mgr.save()
+
+        progress, _ = MapGenerationIntermediateResult.objects.get_or_create(
+            generation_request=self.mgr
+        )
+        progress.cache_hits = stats.cache_hits
+        progress.cache_misses = stats.cache_misses
+        progress.tiles_downloaded = tiles_loaded
+        progress.remaining_tiles = total_tiles - tiles_loaded
+        progress.save()
 
 
 class TileDownloader:
@@ -222,6 +234,7 @@ class TileDownloader:
         source: TileSource,
         progress_reporter: DownloadProgressReporter = LoggingDownloadProgressReporter(),
         cache_mode: CacheAccessMode = CacheAccessMode(0),
+        owner: Optional[User] = None,
     ):
         mbtiles_filename = os.path.join(
             SCRATCH_DIRECTORY, f"output/{tileset_name}.mbtiles"
@@ -297,9 +310,40 @@ class TileDownloader:
                 pmtiles_filename,
                 OBJECT_STORE_MAP_UPLOAD_BUCKET,
                 f"maps/{tileset_name}.pmtiles",
-                ExtraArgs={"ACL": "public-read"},
+                ExtraArgs={"ACL": "public-read"} if owner is None else {},
             )
             logging.info(f"PMTiles upload complete for {pmtiles_filename}")
+
+            bounding_box = Polygon(
+                (
+                    (metadata.bounds.left, metadata.bounds.top),
+                    (metadata.bounds.right, metadata.bounds.top),
+                    (metadata.bounds.right, metadata.bounds.bottom),
+                    (metadata.bounds.left, metadata.bounds.bottom),
+                    (metadata.bounds.left, metadata.bounds.top),
+                )
+            )
+
+            record, _ = MapGenerationRecord.objects.get_or_create(
+                file_name=f"maps/{tileset_name}.pmtiles"
+            )
+
+            record.file_size = os.path.getsize(pmtiles_filename)
+            record.expires = (
+                timezone.now() + timedelta(days=7) if owner is not None else None
+            )
+            record.raster = True
+            record.description = (
+                f"System-generated base map grid"
+                if owner is None
+                else f"User-generated map archive"
+            )
+            record.bounds = bounding_box
+            record.minimum_zoom = metadata.min_zoom
+            record.maximum_zoom = metadata.max_zoom
+            record.owner = owner
+            record.save()
+
         except ClientError as e:
             logging.error("Unable to upload file to object store", exc_info=True)
             raise e
@@ -346,7 +390,7 @@ class TileDownloader:
 
         try:
             TileDownloader.generate_protomap_archive(
-                f"gen_request_{mgr.id}",
+                mgr.file_name,
                 mgr.tileset,
                 mgr.tile_definition_source,
                 progress_reporter=GenerationRequestProgressReporter(mgr),

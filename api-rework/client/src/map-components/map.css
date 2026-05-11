@@ -1,6 +1,7 @@
 #map {
   width: 80vw;
-  height: 70vh;
+  height: 40vh;
   margin-left: auto;
   margin-right: auto;
+  margin-bottom: 1rem;
 }
