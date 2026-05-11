@@ -8,6 +8,8 @@ from api.models.activity import (
     TerrestrialBiocontrolDispersalMonitoringEntry,
     TerrestrialBiocontrolReleaseEntry,
     TerrestrialBiocontrolCollectionEntry,
+    TerrestrialPlantMechanicalTreatmentEntry,
+    AquaticPlantMechanicalTreatmentEntry,
 )
 from . import (
     OBSERVATION_AQUATIC_ANNOTATIONS,
@@ -21,6 +23,8 @@ from . import (
     BIOCONTROL_WEATHER_ANNOTATIONS,
     SPREAD_RESULTS_ANNOTATIONS,
     BIOCONTROL_COLLECTION_ANNOTATIONS,
+    TREATMENT_MECHANICAL_TERRESTRIAL_ANNOTATIONS,
+    TREATMENT_MECHANICAL_AQUATIC_ANNOTATIONS,
 )
 
 ADR_BASE = "activity_data_record__activity__activitydatarecord_set"
@@ -100,6 +104,16 @@ CSV_SUBTYPE_CONFIG = {
         + BIOCONTROL_COLLECTION_ANNOTATIONS
         + AGENT_COUNT_ANNOTATIONS
         + PLANT_PHENOLOGY_ANNOTATIONS,
+        "prefetch_related": [],
+    },
+    ActivitySubtypes.Treatment_Mechanical_Plant_Terrestrial.name: {
+        "entry_models": [TerrestrialPlantMechanicalTreatmentEntry],
+        "annotations": TREATMENT_MECHANICAL_TERRESTRIAL_ANNOTATIONS,
+        "prefetch_related": [],
+    },
+    ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic.name: {
+        "entry_models": [AquaticPlantMechanicalTreatmentEntry],
+        "annotations": TREATMENT_MECHANICAL_AQUATIC_ANNOTATIONS,
         "prefetch_related": [],
     },
 }
