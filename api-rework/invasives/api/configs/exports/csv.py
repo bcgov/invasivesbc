@@ -12,12 +12,13 @@ from . import (
     OBSERVATION_AQUATIC_ANNOTATIONS,
     OBSERVATION_TERRESTRIAL_ANNOTATIONS,
     MONITORING_ANNOTATIONS,
-    MONITORING_BIOCONTROL_DISPERSAL_ANNOTATIONS,
+    MONITORING_BIOCONTROL_DISPERSAL_RELEASE_ANNOTATIONS,
     BIOCONTROL_RELEASE_ANNOTATIONS,
     AGENT_COUNT_ANNOTATIONS,
     EXTENDED_AGENT_COUNT_ANNOTATIONS,
     PLANT_PHENOLOGY_ANNOTATIONS,
     BIOCONTROL_WEATHER_ANNOTATIONS,
+    SPREAD_RESULTS_ANNOTATIONS,
 )
 
 ADR_BASE = "activity_data_record__activity__activitydatarecord_set"
@@ -69,7 +70,7 @@ CSV_SUBTYPE_CONFIG = {
     ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial.name: {
         "entry_models": [TerrestrialBiocontrolDispersalMonitoringEntry],
         "annotations": BIOCONTROL_WEATHER_ANNOTATIONS
-        + MONITORING_BIOCONTROL_DISPERSAL_ANNOTATIONS
+        + MONITORING_BIOCONTROL_DISPERSAL_RELEASE_ANNOTATIONS
         + EXTENDED_AGENT_COUNT_ANNOTATIONS
         + PLANT_PHENOLOGY_ANNOTATIONS,
         "prefetch_related": [],
@@ -80,6 +81,15 @@ CSV_SUBTYPE_CONFIG = {
         + BIOCONTROL_RELEASE_ANNOTATIONS
         + AGENT_COUNT_ANNOTATIONS
         + PLANT_PHENOLOGY_ANNOTATIONS,
+        "prefetch_related": [],
+    },
+    ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial.name: {
+        "entry_models": [TerrestrialBiocontrolDispersalMonitoringEntry],
+        "annotations": BIOCONTROL_WEATHER_ANNOTATIONS
+        + MONITORING_BIOCONTROL_DISPERSAL_RELEASE_ANNOTATIONS
+        + EXTENDED_AGENT_COUNT_ANNOTATIONS
+        + PLANT_PHENOLOGY_ANNOTATIONS
+        + SPREAD_RESULTS_ANNOTATIONS,
         "prefetch_related": [],
     },
 }

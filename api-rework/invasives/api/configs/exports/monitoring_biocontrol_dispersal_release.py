@@ -13,8 +13,9 @@ ROOT = f"root_activity__activitydatarecord"
 WEATHER = f"{ROOT}__weatherconditions"
 MS = f"{ROOT}__micrositecondition"
 
+# Dispersal and Release Monitoring share the same Entries
 
-MONITORING_BIOCONTROL_DISPERSAL_ANNOTATIONS = [
+MONITORING_BIOCONTROL_DISPERSAL_RELEASE_ANNOTATIONS = [
     {
         "header": "Mesoslope Position",
         "key": "mesoslope_position_display",
