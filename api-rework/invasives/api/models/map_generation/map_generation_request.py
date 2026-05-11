@@ -7,6 +7,8 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator
 from django.db import models
 
+from api.models.mixins.dated import Dated
+from api.models.mixins.owned import OptionallyOwned
 from api.services.map_tile_generator.tile_source import ESRIWorldImageryTileSource
 
 TileDefinitionNameToInstanceMap = namedtuple(
@@ -20,18 +22,8 @@ TILE_SOURCE_DEFINITION_MAP: List[TileDefinitionNameToInstanceMap] = [
 ]
 
 
-class RasterMapGenerationRequest(models.Model):
-    id = models.AutoField(primary_key=True)
-
-    created = models.DateTimeField(auto_now=True, null=False, blank=False)
-
-    owner = models.ForeignKey(
-        "User",
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-        db_comment="Optional owner of this map generation request",
-    )
+class RasterMapGenerationRequest(OptionallyOwned, Dated, models.Model):
+    id = models.AutoField(primary_key=True, null=False, blank=False)
 
     bounds = geomodels.PolygonField(null=False, blank=False)
 
@@ -64,18 +56,6 @@ class RasterMapGenerationRequest(models.Model):
         null=False,
         blank=False,
         default="PENDING",
-    )
-
-    tiles_downloaded = models.PositiveIntegerField(
-        default=0,
-        null=False,
-        db_comment="Number of tiles downloaded. Updated periodically during download operation for progress reporting",
-    )
-
-    cache_hits = models.PositiveIntegerField(
-        null=True,
-        blank=True,
-        db_comment="Used to track caching effectiveness. May be removed in future",
     )
 
     @property

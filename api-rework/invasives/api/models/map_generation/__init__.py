@@ -1,1 +1,3 @@
 from .map_generation_request import RasterMapGenerationRequest
+from .map_generation_intermediate_result import MapGenerationIntermediateResult
+from .map_generation_record import MapGenerationRecord
