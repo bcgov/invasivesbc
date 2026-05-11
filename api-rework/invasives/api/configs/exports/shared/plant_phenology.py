@@ -13,7 +13,7 @@ tpp_exists_subquery = Exists(
 
 PLANT_PHENOLOGY_ANNOTATIONS = [
     {
-        "header": "phenology_details_recorded",
+        "header": "Phenology Details Recorded",
         "key": "phenology_details_recorded_display",
         "annotation": Max(
             Case(
