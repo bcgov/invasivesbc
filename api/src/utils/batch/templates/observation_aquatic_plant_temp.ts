@@ -15,7 +15,8 @@ import {
 const ObservationAquaticPlantTemp = new Template(
   'observation_aquatic_plant_temp',
   'Observation - Aquatic Plant TEMP POINT',
-  null
+  null,
+  false
 );
 
 ObservationAquaticPlantTemp.subtype = 'Activity_Observation_PlantAquatic';

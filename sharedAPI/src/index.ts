@@ -237,123 +237,163 @@ export const getShortActivityID = (activity) => {
 };
 
 export function populateSpeciesArrays(record) {
-  let species_positive: any = [];
-  let species_negative: any[] = [];
-  let species_treated: any[] = [];
+  const species_positive: Array<string> = [];
+  const species_negative: Array<string> = [];
+  const species_treated: Array<string> = [];
 
   const subtypeData = record?.form_data?.activity_subtype_data;
 
   switch (record.activity_subtype) {
-    case ActivitySubtype.Observation_PlantTerrestrial:
-      species_positive = subtypeData?.TerrestrialPlants?.filter((plant) =>
-        plant.observation_type?.includes('Positive')
-      ).map((plant) => plant.invasive_plant_code);
-      species_negative = subtypeData?.TerrestrialPlants?.filter((plant) =>
-        plant.observation_type?.includes('Negative')
-      ).map((plant) => plant.invasive_plant_code);
+    // Observation Types
+    case ActivitySubtype.Observation_PlantTerrestrial: {
+      const arr = subtypeData?.TerrestrialPlants ?? [];
+      species_positive.push(
+        ...arr
+          .filter((plant) => plant.observation_type?.includes('Positive'))
+          .map(({ invasive_plant_code }) => invasive_plant_code)
+      );
+      species_negative.push(
+        ...arr
+          .filter((plant) => plant.observation_type?.includes('Negative'))
+          .map(({ invasive_plant_code }) => invasive_plant_code)
+      );
       break;
-    case ActivitySubtype.Observation_PlantAquatic:
-      species_positive = subtypeData?.AquaticPlants?.filter((plant) =>
-        plant.observation_type?.includes('Positive')
-      ).map((plant) => plant.invasive_plant_code);
-      species_negative = subtypeData?.AquaticPlants?.filter((plant) =>
-        plant.observation_type?.includes('Negative')
-      ).map((plant) => plant.invasive_plant_code);
+    }
+    case ActivitySubtype.Observation_PlantAquatic: {
+      const arr = subtypeData.AquaticPlants ?? [];
+      species_positive.push(
+        ...arr
+          .filter((plant) => plant.observation_type?.includes('Positive'))
+          .map(({ invasive_plant_code }) => invasive_plant_code)
+      );
+      species_negative.push(
+        ...arr
+          .filter((plant) => plant.observation_type?.includes('Negative'))
+          .map(({ invasive_plant_code }) => invasive_plant_code)
+      );
       break;
+    }
+    // Treatment Types
+    case ActivitySubtype.Treatment_ChemicalPlantAquatic: {
+      const arr = subtypeData?.chemical_treatment_details?.invasive_plants ?? [];
+      species_treated.push(...arr.map(({ invasive_plant_code }) => invasive_plant_code));
+      break;
+    }
+    case ActivitySubtype.Treatment_ChemicalPlant: {
+      const arr = subtypeData?.chemical_treatment_details?.invasive_plants ?? [];
+      species_treated.push(...arr.map(({ invasive_plant_code }) => invasive_plant_code));
+      break;
+    }
+    case ActivitySubtype.Treatment_MechanicalPlantAquatic: // Intentional Fallthrough
+    case ActivitySubtype.Treatment_MechanicalPlant: {
+      const arr = subtypeData?.Treatment_MechanicalPlant_Information ?? [];
+      species_treated.push(...arr.map(({ invasive_plant_code }) => invasive_plant_code));
+      break;
+    }
+    case ActivitySubtype.Treatment_BiologicalPlant: {
+      const arr = subtypeData?.Biocontrol_Release_Information ?? [];
+      species_treated.push(...arr.map(({ invasive_plant_code }) => invasive_plant_code));
+      break;
+    }
+    // Monitoring Types
+    case ActivitySubtype.Monitoring_ChemicalTerrestrialAquaticPlant: {
+      const arr = subtypeData?.Monitoring_ChemicalTerrestrialAquaticPlant_Information ?? [];
+      species_treated.push(
+        ...arr.flatMap(({ invasive_plant_code, invasive_plant_aquatic_code }) =>
+          [invasive_plant_code, invasive_plant_aquatic_code].filter(Boolean)
+        )
+      );
+      break;
+    }
+    case ActivitySubtype.Monitoring_MechanicalTerrestrialAquaticPlant: {
+      const arr = subtypeData?.Monitoring_MechanicalTerrestrialAquaticPlant_Information ?? [];
+      species_treated.push(
+        ...arr.flatMap(({ invasive_plant_code, invasive_plant_aquatic_code }) =>
+          [invasive_plant_code, invasive_plant_aquatic_code].filter(Boolean)
+        )
+      );
+      break;
+    }
+    case ActivitySubtype.Monitoring_BiologicalTerrestrialPlant: {
+      const arr = subtypeData?.Monitoring_BiocontrolRelease_TerrestrialPlant_Information ?? [];
+      species_treated.push(...arr.map(({ invasive_plant_code }) => invasive_plant_code));
+      break;
+    }
+    case ActivitySubtype.Monitoring_BiologicalDispersal: {
+      const arr = subtypeData?.Monitoring_BiocontrolDispersal_Information ?? [];
+      species_treated.push(...arr.map(({ invasive_plant_code }) => invasive_plant_code));
+      break;
+    }
+    // Biocontrol Types
+    case ActivitySubtype.Collection_Biocontrol: {
+      const arr = subtypeData?.Biocontrol_Collection_Information ?? [];
+      species_treated.push(...arr.map(({ invasive_plant_code }) => invasive_plant_code));
+      break;
+    }
 
-    case ActivitySubtype.Activity_AnimalTerrestrial:
-      // no species selection currently
-      break;
-    case ActivitySubtype.Activity_AnimalAquatic:
-      species_treated = subtypeData?.invasive_aquatic_animals?.map((animal) => animal.invasive_animal_code);
-      break;
-    case ActivitySubtype.Treatment_ChemicalPlantAquatic:
-      species_treated = subtypeData?.chemical_treatment_details?.invasive_plants?.map(
-        (plant) => plant.invasive_plant_code
-      );
-      break;
-    case ActivitySubtype.Treatment_ChemicalPlant:
-      species_treated = subtypeData?.chemical_treatment_details?.invasive_plants?.map(
-        (plant) => plant.invasive_plant_code
-      );
-      break;
-    case ActivitySubtype.Treatment_MechanicalPlantAquatic:
-      species_treated = subtypeData?.Treatment_MechanicalPlant_Information?.map((plant) => plant.invasive_plant_code);
-      break;
-    case ActivitySubtype.Treatment_MechanicalPlant:
-      species_treated = subtypeData?.Treatment_MechanicalPlant_Information?.map((plant) => plant.invasive_plant_code);
-      break;
-    case ActivitySubtype.Treatment_BiologicalPlant:
-      species_treated = subtypeData?.Biocontrol_Release_Information?.map((plant) => plant.invasive_plant_code);
-      break;
-    case ActivitySubtype.Monitoring_ChemicalTerrestrialAquaticPlant:
-      species_treated = subtypeData?.Monitoring_ChemicalTerrestrialAquaticPlant_Information?.flatMap((plantInfo) =>
-        [plantInfo?.invasive_plant_code, plantInfo?.invasive_plant_aquatic_code].filter(Boolean)
-      );
-      break;
-    case ActivitySubtype.Monitoring_MechanicalTerrestrialAquaticPlant:
-      species_treated = subtypeData?.Monitoring_MechanicalTerrestrialAquaticPlant_Information?.flatMap((plantInfo) =>
-        [plantInfo?.invasive_plant_code, plantInfo?.invasive_plant_aquatic_code].filter(Boolean)
-      );
-      break;
-    case ActivitySubtype.Monitoring_BiologicalTerrestrialPlant:
-      species_treated = subtypeData?.Monitoring_BiocontrolRelease_TerrestrialPlant_Information?.map(
-        (plantInfo) => plantInfo?.invasive_plant_code
-      );
-      break;
-    case ActivitySubtype.Monitoring_BiologicalDispersal:
-      species_treated = subtypeData?.Monitoring_BiocontrolDispersal_Information?.map(
-        (plantInfo) => plantInfo?.invasive_plant_code
-      );
-      break;
-    case ActivitySubtype.Transect_FireMonitoring:
-      species_positive = subtypeData?.fire_monitoring_transect_lines
-        ?.map((line) =>
-          line.fire_monitoring_transect_points?.map((point) =>
-            point.invasive_plants?.map((plant) => plant.invasive_plant_code)
-          )
-        )
-        .flat(3);
-      break;
-    case ActivitySubtype.Transect_Vegetation:
-      species_positive = subtypeData?.vegetation_transect_lines
-        ?.map((line) =>
-          [
-            line.vegetation_transect_points_percent_cover,
-            line.vegetation_transect_points_number_plants,
-            line.vegetation_transect_points_daubenmire
-          ]
-            .flat(2)
-            .filter((point) => point)
-            .map((point) =>
-              point.vegetation_transect_species?.invasive_plants?.map((plant) => plant.invasive_plant_code)
+    // None implemented
+    case ActivitySubtype.Transect_FireMonitoring: {
+      const arr = subtypeData?.fire_monitoring_transect_lines ?? [];
+      species_positive.push(
+        ...arr
+          .map((line) =>
+            line.fire_monitoring_transect_points?.map((point) =>
+              point.invasive_plants?.map((plant) => plant.invasive_plant_code)
             )
-        )
-        .flat(3);
+          )
+          .flat(3)
+      );
       break;
-    case ActivitySubtype.Transect_BiocontrolEfficacy:
-      species_positive = subtypeData?.transect_invasive_plants?.map((plant) => plant.invasive_plant_code) || [];
+    }
+    case ActivitySubtype.Transect_Vegetation: {
+      const arr = subtypeData?.vegetation_transect_lines ?? [];
+      species_positive.push(
+        ...arr
+          .map((line) =>
+            [
+              line.vegetation_transect_points_percent_cover,
+              line.vegetation_transect_points_number_plants,
+              line.vegetation_transect_points_daubenmire
+            ]
+              .flat(2)
+              .filter((point) => point)
+              .map((point) =>
+                point.vegetation_transect_species?.invasive_plants?.map((plant) => plant.invasive_plant_code)
+              )
+          )
+          .flat(3)
+      );
       break;
-    case ActivitySubtype.Collection_Biocontrol:
-      species_treated = subtypeData?.Biocontrol_Collection_Information?.map((plant) => plant.invasive_plant_code);
+    }
+    case ActivitySubtype.Transect_BiocontrolEfficacy: {
+      const arr = subtypeData?.transect_invasive_plants ?? [];
+      species_positive.push(...arr.map((plant) => plant.invasive_plant_code));
       break;
+    }
+    case ActivitySubtype.Activity_AnimalTerrestrial: {
+      console.warn('no species selection currently available for Activity_AnimalTerrestrial');
+      break;
+    }
+    case ActivitySubtype.Activity_AnimalAquatic: {
+      const arr = subtypeData?.invasive_aquatic_animals ?? [];
+      species_treated.push(...arr.map((animal) => animal.invasive_animal_code));
+      break;
+    }
     default:
       break;
   }
   const returnVal = {
     ...record,
-    species_positive:
-      Array.from(new Set(species_positive || []))
-        ?.filter((code) => typeof code === 'string')
-        .sort() || [],
-    species_negative:
-      Array.from(new Set(species_negative || []))
-        ?.filter((code) => typeof code === 'string')
-        .sort() || [],
-    species_treated:
-      Array.from(new Set(species_treated || []))
-        ?.filter((code) => typeof code === 'string')
-        .sort() || []
+    species_positive: Array.from(new Set(species_positive))
+      ?.filter((code) => typeof code === 'string')
+      .sort(),
+    species_negative: Array.from(new Set(species_negative))
+      ?.filter((code) => typeof code === 'string')
+      .sort(),
+    species_treated: Array.from(new Set(species_treated))
+      ?.filter((code) => typeof code === 'string')
+      .sort()
   };
+
   return returnVal;
 }

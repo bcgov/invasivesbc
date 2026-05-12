@@ -41,7 +41,7 @@ class AuthActions {
       account_status: number | null;
       activation_status: number | null;
       work_phone_number: string | null;
-      funding_agencies: any[];
+      funding_agencies: string;
       employer: string | null;
       pac_number: string | null;
       pac_service_number_1: string | null;

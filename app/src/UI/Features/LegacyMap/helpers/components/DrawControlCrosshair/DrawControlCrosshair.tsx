@@ -5,6 +5,7 @@ import { MapContext } from '../MapContext';
 import AddIcon from '@mui/icons-material/Add';
 import { IconButton } from '@mui/material';
 import { AddCircle, CheckCircle } from '@mui/icons-material';
+import { useSelector } from 'utils/use_selector';
 
 interface PropTypes {
   drawControls?: MapboxDraw;
@@ -81,6 +82,7 @@ const DrawControlCrosshair = ({ drawControls }: PropTypes) => {
 
   const map = useContext(MapContext);
   const ref = useRef<SVGSVGElement | null>(null);
+  const drawToolCrosshairEnabled = useSelector((state) => state.UserSettings.drawToolCrosshairEnabled);
   const [shouldRender, setShouldRender] = useState<boolean>(false);
 
   useEffect(() => {
@@ -92,7 +94,7 @@ const DrawControlCrosshair = ({ drawControls }: PropTypes) => {
     };
   }, [map]);
 
-  if (!shouldRender) return null;
+  if (!shouldRender || !drawToolCrosshairEnabled) return null;
   return (
     <div id="mobile-draw">
       <AddIcon ref={ref} className="crosshair" />

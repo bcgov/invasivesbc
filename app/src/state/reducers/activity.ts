@@ -69,6 +69,7 @@ const initialState: ActivityState = {
   activity: null,
   activeActivity: null,
   activityErrors: [],
+  pristine: true,
   error: false,
   formCodes: {},
   pasteCount: 0,
@@ -173,6 +174,7 @@ function createActivityReducer() {
           activity_copy_buffer
         });
       } else if (Activity.saveSuccess.match(action)) {
+        draftState.pristine = true;
         draftState.activity = { ...action.payload };
       } else if (Activity.createSuccess.match(action)) {
         draftState.activeActivity = action.payload;
@@ -286,6 +288,7 @@ function createActivityReducer() {
         draftState.activity.form_data.activity_data.utm_northing = undefined;
         draftState.activity.form_data.activity_data.reported_area = undefined;
       } else if (Activity.buildFormSchemaSuccess.match(action)) {
+        draftState.pristine = true;
         draftState.uiSchema = action.payload.uiSchema;
         draftState.schema = action.payload.schema;
       } else if (DrawToolActions.deleteGeo.match(action)) {
@@ -321,6 +324,7 @@ function createActivityReducer() {
           draftState.activity.form_data.activity_subtype_data.Well_Information = Well_Information;
         }
       } else if (Activity.OnFormChangeRequestSuccess.match(action)) {
+        draftState.pristine = false;
         draftState.activity.form_data = JSON.parse(JSON.stringify(action.payload.form_data));
         draftState.activity.species_positive = action.payload?.species_positive;
         draftState.activity.species_negative = action.payload?.species_negative;

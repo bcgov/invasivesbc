@@ -125,7 +125,7 @@ KEYCLOAK = {
     "AUDIENCE": os.getenv("JWT_AUDIENCE", "invasivesbc"),
 }
 
-KEYCLOAK_AUDIENCE = os.getenv("KEYCLOAK_AUDIENCE", "tfrs-on-gold-4308")
+KEYCLOAK_AUDIENCE = os.getenv("KEYCLOAK_AUDIENCE", "invasives")
 
 UNIT_TESTING_ENABLED = False
 
@@ -193,24 +193,26 @@ LOGGING = {
         }
     },
     "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "stream": sys.stdout,
-        },
         "timestamped": {
             "class": "logging.StreamHandler",
             "stream": sys.stdout,
             "formatter": "simple",
+            "level": LOG_LEVEL,
         },
     },
-    "root": {
-        "handlers": ["console"],
-        "level": "INFO",
-    },
     "loggers": {
+        "": {
+            "handlers": ["timestamped"],
+            "level": "DEBUG",
+        },
         "django": {
-            "handlers": ["console"],
-            "level": "INFO",
+            "handlers": ["timestamped"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+        "psycopg": {
+            "handlers": ["timestamped"],
+            "level": "DEBUG",
             "propagate": False,
         },
         "invasives": {

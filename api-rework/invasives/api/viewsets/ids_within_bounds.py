@@ -1,15 +1,19 @@
+import json
+
 from django.contrib.gis.geos import GEOSGeometry
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from api.serializers.linked_record_query import LinkedRecordQuerySerializer
-from api.models.activity.activity_subtypes import ActivitySubtypes, SubtypePrimary
+
 from api.models.activity import Activity
-import json
+from api.models.activity.activity_subtypes import ActivitySubtypes, SubtypePrimary
+from api.permissions import HasAdminRole
+from api.serializers.linked_record_query import LinkedRecordQuerySerializer
 
 
 class IdsWithinBoundsViewSet(viewsets.GenericViewSet):
     queryset = Activity.objects.all()
     serializer_class = LinkedRecordQuerySerializer
+    permission_classes = [HasAdminRole]
 
     def map_subtype_to_type(self, subtype):
         modelled_type: SubtypePrimary = ActivitySubtypes[subtype].typeOfActivity

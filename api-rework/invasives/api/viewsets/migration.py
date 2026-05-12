@@ -1,16 +1,16 @@
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from api.models.migrator.activity_migration_status import ActivityMigrationStatus
+from api.permissions import HasAdminRole
 from api.serializers.activity_migration_status import ActivityMigrationStatusSerializer
 
 
 class MigrationStatusViewSet(ReadOnlyModelViewSet):
     queryset = ActivityMigrationStatus.objects.all()
-    permission_classes = [AllowAny]
+    permission_classes = [HasAdminRole]
     serializer_class = ActivityMigrationStatusSerializer
 
     @action(detail=False, methods=["get"])

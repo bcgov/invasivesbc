@@ -1,3 +1,4 @@
+import { TREATMENT_PASS_CODES, YES_NO_CODES } from 'utils/batch/hard-coded-codes';
 import { Template, TemplateColumnBuilder } from 'utils/batch/definitions';
 import {
   ActivityPersons,
@@ -5,15 +6,14 @@ import {
   BasicInformationRowValidators,
   CopyGeometryValidator,
   ProjectInformation,
-  TerrestrialAquaticPlantValidator,
   TreatmentEfficacyValidator
 } from 'utils/batch/shared-columns';
-import { TREATMENT_PASS_CODES, YES_NO_CODES } from '../hard-coded-codes';
 
 const MonitoringChemicalTemp = new Template(
   'monitoring_chemical_treatment_temp',
   'Monitoring - Chemical TEMP POINT',
-  null
+  null,
+  false
 );
 
 MonitoringChemicalTemp.type = 'Monitoring';
@@ -108,7 +108,6 @@ MonitoringChemicalTemp.columns = [
 MonitoringChemicalTemp.rowValidators = [
   ...BasicInformationRowValidators,
   TreatmentEfficacyValidator,
-  TerrestrialAquaticPlantValidator,
   CopyGeometryValidator
 ];
 

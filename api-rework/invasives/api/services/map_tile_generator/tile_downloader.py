@@ -5,19 +5,27 @@ from datetime import datetime, timedelta
 import logging
 import os
 import subprocess
+from enum import IntFlag, STRICT
 from typing import List, Optional
 
 import boto3
 from botocore.exceptions import ClientError
 import diskcache
 from diskcache import Cache
+from django.contrib.gis.geos import Polygon
 from django.db import transaction
 from django.utils import timezone
 import mercantile
 import requests
 from requests import RequestException
 
-from api.models import CachedRasterTile, RasterMapGenerationRequest
+from api.models import (
+    CachedRasterTile,
+    RasterMapGenerationRequest,
+    MapGenerationRecord,
+    MapGenerationIntermediateResult,
+    User,
+)
 from api.services.map_tile_generator.mb_tiles_database import (
     MBTilesDatabase,
     MBTilesMetadata,
@@ -91,13 +99,23 @@ class GenerationRequestProgressReporter(DownloadProgressReporter):
         logging.info(
             f"{tiles_loaded} / {total_tiles} ({round((tiles_loaded/total_tiles) * 100.0, 2)}%)"
         )
-        with transaction.atomic():
-            self.mgr.cache_hits = stats.cache_hits
-            self.mgr.tiles_downloaded = tiles_loaded
-            self.mgr.save()
+
+        progress, _ = MapGenerationIntermediateResult.objects.get_or_create(
+            generation_request=self.mgr
+        )
+        progress.cache_hits = stats.cache_hits
+        progress.cache_misses = stats.cache_misses
+        progress.tiles_downloaded = tiles_loaded
+        progress.remaining_tiles = total_tiles - tiles_loaded
+        progress.save()
 
 
 class TileDownloader:
+    class CacheAccessMode(IntFlag, boundary=STRICT):
+        DISABLE_READS = 1
+        DISABLE_L1_WRITES = 2
+        DISABLE_L2_WRITES = 4
+
     def __init__(self):
         pass
 
@@ -105,12 +123,14 @@ class TileDownloader:
     def retrieve_tile(
         source: TileSource,
         tile: mercantile.Tile,
+        cache_mode: CacheAccessMode = CacheAccessMode(0),  # no flags by default
     ) -> TileRetrieveResult:
         """
         Retrieve a tile from the source, employing caching mechanisms
 
         :param source: tile source definition
         :param tile: coordinates of tile to retrieve
+        :param cache_mode: override caching behaviour
         :return: TileRetrieveResult
         :raises: TileRetrieveException on retrieval failure
         """
@@ -118,22 +138,27 @@ class TileDownloader:
         cache_key = f"{source.cache_area}-{tile.z}-{tile.x}-{tile.y}"
 
         # first we try the (local) disk cache
-        if tile.z in LOCAL_CACHE_ZOOM_RANGE:
+        if tile.z in LOCAL_CACHE_ZOOM_RANGE and not (
+            cache_mode & cache_mode.DISABLE_READS
+        ):
             cached = cache.get(cache_key, default=None)
             if cached is not None:
                 return TileRetrieveResult(hit=True, data=cached)
 
         # now try the database cache
-        if tile.z in DATABASE_CACHE_ZOOM_RANGE:
+        if tile.z in DATABASE_CACHE_ZOOM_RANGE and not (
+            cache_mode & cache_mode.DISABLE_READS
+        ):
             cached = CachedRasterTile.objects.filter(key=cache_key).first()
             if cached is not None:
                 if tile.z in LOCAL_CACHE_ZOOM_RANGE:
                     # copy l2 -> l1 cache for next time, if appropriate
-                    cache.set(
-                        cache_key,
-                        cached.data,
-                        expire=source.cache_lifetime_seconds,
-                    )
+                    if not cache_mode & cache_mode.DISABLE_L1_WRITES:
+                        cache.set(
+                            cache_key,
+                            cached.data,
+                            expire=source.cache_lifetime_seconds,
+                        )
                 return TileRetrieveResult(hit=True, data=cached.data)
 
         url = source.build_url(tile.z, tile.y, tile.x)
@@ -143,7 +168,9 @@ class TileDownloader:
             response.raise_for_status()  # raise an exception on HTTP error code
 
             # add to local cache
-            if tile.z in LOCAL_CACHE_ZOOM_RANGE:
+            if tile.z in LOCAL_CACHE_ZOOM_RANGE and not (
+                cache_mode & cache_mode.DISABLE_L1_WRITES
+            ):
                 cache.set(
                     cache_key,
                     response.content,
@@ -151,7 +178,9 @@ class TileDownloader:
                 )
 
             # add to database cache
-            if tile.z in DATABASE_CACHE_ZOOM_RANGE:
+            if tile.z in DATABASE_CACHE_ZOOM_RANGE and not (
+                cache_mode & cache_mode.DISABLE_L2_WRITES
+            ):
                 CachedRasterTile.objects.create(
                     key=cache_key,
                     data=response.content,
@@ -204,6 +233,8 @@ class TileDownloader:
         tileset: Tileset,
         source: TileSource,
         progress_reporter: DownloadProgressReporter = LoggingDownloadProgressReporter(),
+        cache_mode: CacheAccessMode = CacheAccessMode(0),
+        owner: Optional[User] = None,
     ):
         mbtiles_filename = os.path.join(
             SCRATCH_DIRECTORY, f"output/{tileset_name}.mbtiles"
@@ -232,7 +263,9 @@ class TileDownloader:
 
                 try:
                     stats.total_tiles += 1
-                    result = TileDownloader.retrieve_tile(source, tile)
+                    result = TileDownloader.retrieve_tile(
+                        source, tile, cache_mode=cache_mode
+                    )
 
                     if result.hit:
                         stats.cache_hits += 1
@@ -277,9 +310,40 @@ class TileDownloader:
                 pmtiles_filename,
                 OBJECT_STORE_MAP_UPLOAD_BUCKET,
                 f"maps/{tileset_name}.pmtiles",
-                ExtraArgs={"ACL": "public-read"},
+                ExtraArgs={"ACL": "public-read"} if owner is None else {},
             )
             logging.info(f"PMTiles upload complete for {pmtiles_filename}")
+
+            bounding_box = Polygon(
+                (
+                    (metadata.bounds.left, metadata.bounds.top),
+                    (metadata.bounds.right, metadata.bounds.top),
+                    (metadata.bounds.right, metadata.bounds.bottom),
+                    (metadata.bounds.left, metadata.bounds.bottom),
+                    (metadata.bounds.left, metadata.bounds.top),
+                )
+            )
+
+            record, _ = MapGenerationRecord.objects.get_or_create(
+                file_name=f"maps/{tileset_name}.pmtiles"
+            )
+
+            record.file_size = os.path.getsize(pmtiles_filename)
+            record.expires = (
+                timezone.now() + timedelta(days=7) if owner is not None else None
+            )
+            record.raster = True
+            record.description = (
+                f"System-generated base map grid"
+                if owner is None
+                else f"User-generated map archive"
+            )
+            record.bounds = bounding_box
+            record.minimum_zoom = metadata.min_zoom
+            record.maximum_zoom = metadata.max_zoom
+            record.owner = owner
+            record.save()
+
         except ClientError as e:
             logging.error("Unable to upload file to object store", exc_info=True)
             raise e
@@ -295,6 +359,7 @@ class TileDownloader:
         tiles: TileDefinition,
         source: TileSource,
         stop_event: Optional[threading.Event] = None,
+        cache_mode: CacheAccessMode = CacheAccessMode(0),
     ):
 
         stats = TileCacheStatistics()
@@ -310,7 +375,9 @@ class TileDownloader:
                 logging.info("Shutting down on request")
                 break
 
-            TileDownloader.generate_protomap_archive(t.name, t, source)
+            TileDownloader.generate_protomap_archive(
+                t.name, t, source, cache_mode=cache_mode
+            )
 
         return stats
 
@@ -323,7 +390,7 @@ class TileDownloader:
 
         try:
             TileDownloader.generate_protomap_archive(
-                f"gen_request_{mgr.id}",
+                mgr.file_name,
                 mgr.tileset,
                 mgr.tile_definition_source,
                 progress_reporter=GenerationRequestProgressReporter(mgr),

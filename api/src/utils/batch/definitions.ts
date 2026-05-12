@@ -169,7 +169,8 @@ export class Template {
   constructor(
     readonly key: string,
     readonly name: string,
-    readonly helpText: string
+    readonly helpText: string,
+    readonly selectable: boolean = true
   ) {
     this.rowValidators = [];
     this.subtype = name;

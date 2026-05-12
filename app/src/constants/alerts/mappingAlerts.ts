@@ -12,17 +12,20 @@ const mappingAlertMessages: Record<string, AlertMessage> = {
   notWithinBC: {
     content: 'Activity is not within BC',
     severity: AlertSeverity.Error,
-    subject: AlertSubjects.Map
+    subject: AlertSubjects.Map,
+    autoClose: 8
   },
   noAreaCalculated: {
     content: 'The calculated area of your shape is 0, please add more points',
     severity: AlertSeverity.Error,
-    subject: AlertSubjects.Map
+    subject: AlertSubjects.Map,
+    autoClose: 8
   },
   willContainIntersections: {
     severity: AlertSeverity.Error,
     subject: AlertSubjects.Map,
-    content: 'Closing this geometry will result in a shape intersection being formed. Please adjust appropriately.'
+    content: 'Closing this geometry will result in a shape intersection being formed. Please adjust appropriately.',
+    autoClose: 8
   },
   containsIntersections: {
     severity: AlertSeverity.Error,
@@ -45,7 +48,8 @@ const mappingAlertMessages: Record<string, AlertMessage> = {
   doesNotEvaluateAsPolygon: {
     content: 'Given Coordinates could not be evaluated as a Polygon. you may need to update or add new points',
     severity: AlertSeverity.Error,
-    subject: AlertSubjects.Map
+    subject: AlertSubjects.Map,
+    autoClose: 8
   },
 
   // Info

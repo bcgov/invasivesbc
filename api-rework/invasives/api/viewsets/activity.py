@@ -16,6 +16,7 @@ from api.legacy_db.db import LegacyDB
 from api.legacy_db.model_serializer import LegacyActivity
 from api.models.activity.activity import Activity
 from api.models.migrator.activity_migration_status import ActivityMigrationStatus
+from api.permissions import HasAdminRole
 from api.serializers.activity import ActivityListSerializer, ActivitySerializer
 from api.serializers.activity_migration_status import ActivityMigrationStatusSerializer
 from invasivesbc.settings import LEGACY_DB_CONNECTION_STRING
@@ -32,7 +33,7 @@ class ActivityViewSet(ReadOnlyModelViewSet):
         .prefetch_related()
         .all(),
     }
-    permission_classes = [AllowAny]
+    permission_classes = [HasAdminRole]
 
     def get_queryset(self):
         if self.action in self.querysets.keys():

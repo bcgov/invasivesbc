@@ -13,7 +13,8 @@ import {
 const TreatmentMechanicalAquaticPlantTemp = new Template(
   'treatment_mechanical_aquatic_plant_temp',
   'Treatment - Mechanical - Aquatic Plant TEMP POINT',
-  null
+  null,
+  false
 );
 
 TreatmentMechanicalAquaticPlantTemp.type = 'Treatment';

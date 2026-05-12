@@ -287,6 +287,9 @@ const Herbicide = ({ herbicide, index, insideTankMix }: PropTypes) => {
             <HelpOutlineIcon />
           </Tooltip>
           <TextField
+            slotProps={{
+              htmlInput: { inputMode: 'decimal' }
+            }}
             disabled={formDetails.disabled}
             id="amount-of-mix-used"
             type="text"
@@ -341,6 +344,9 @@ const Herbicide = ({ herbicide, index, insideTankMix }: PropTypes) => {
               value={herbicide?.dilution}
               variant="outlined"
               key={dilutionPercentKey}
+              slotProps={{
+                htmlInput: { inputMode: 'decimal' }
+              }}
               onBlur={(event) => {
                 const input = event.target.value;
                 if (input === '') {
@@ -374,6 +380,9 @@ const Herbicide = ({ herbicide, index, insideTankMix }: PropTypes) => {
               id="area-treated"
               type="text"
               label="Area Treated (sqm)"
+              slotProps={{
+                htmlInput: { inputMode: 'decimal' }
+              }}
               value={herbicide?.area_treated_sqm?.toFixed(2)}
               variant="outlined"
               key={areaTreatedSqmKey}
@@ -412,6 +421,9 @@ const Herbicide = ({ herbicide, index, insideTankMix }: PropTypes) => {
             <TextField
               disabled={formDetails.disabled}
               type="text"
+              slotProps={{
+                htmlInput: { inputMode: 'decimal' }
+              }}
               id="delivery-rate-of-mix"
               label="Delivery Rate of Mix (L/ha)"
               value={herbicide?.delivery_rate_of_mix?.toFixed(2)}
@@ -461,6 +473,9 @@ const Herbicide = ({ herbicide, index, insideTankMix }: PropTypes) => {
               disabled={formDetails.disabled}
               type="decimal"
               id="product-application-rate"
+              slotProps={{
+                htmlInput: { inputMode: 'decimal' }
+              }}
               label={
                 currentHerbicide?.herbicide_type_code === 'G'
                   ? 'Product Application Rate (g/ha)'
@@ -504,6 +519,9 @@ const Herbicide = ({ herbicide, index, insideTankMix }: PropTypes) => {
               <InputLabel>Product Application Rate (L/ha)</InputLabel>
               <TextField
                 disabled
+                slotProps={{
+                  htmlInput: { inputMode: 'decimal' }
+                }}
                 style={{ display: 'none' }}
                 type="number"
                 id="product-application-rate"

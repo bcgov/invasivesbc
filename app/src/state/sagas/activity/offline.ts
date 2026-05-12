@@ -28,7 +28,8 @@ function* handle_ACTIVITY_SAVE_OFFLINE(action: PayloadAction<FormSubmission>) {
       Alerts.create({
         content: 'Synchronizing records with server.',
         severity: AlertSeverity.Info,
-        subject: AlertSubjects.Form
+        subject: AlertSubjects.Form,
+        autoClose: 6
       })
     );
     yield delay(500);
@@ -38,7 +39,8 @@ function* handle_ACTIVITY_SAVE_OFFLINE(action: PayloadAction<FormSubmission>) {
       Alerts.create({
         content: 'Saved locally',
         severity: AlertSeverity.Info,
-        subject: AlertSubjects.Form
+        subject: AlertSubjects.Form,
+        autoClose: 6
       })
     );
   }

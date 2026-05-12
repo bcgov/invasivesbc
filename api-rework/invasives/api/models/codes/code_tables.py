@@ -116,11 +116,6 @@ class FundingAgencyCode(BaseCode):
         pass
 
 
-class GranularHerbicideCode(BaseCode):
-    class Meta:
-        db_table = '"codes"."herbicide_granular"'
-
-
 class InvasivePlantsOnSiteCode(BaseCode):
     class Meta:
         db_table = '"codes"."invasive_plants_on_site"'
@@ -131,11 +126,6 @@ class JurisdictionCode(BaseCode):
     class Meta:
         db_table = '"codes"."jurisdiction"'
         pass
-
-
-class LiquidHerbicideCode(BaseCode):
-    class Meta:
-        db_table = '"codes"."herbicide_liquid"'
 
 
 class MesoslopePositionCode(BaseCode):

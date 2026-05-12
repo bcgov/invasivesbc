@@ -1,7 +1,7 @@
 import { Box, Button, CircularProgress, createTheme, Theme, ThemeOptions, ThemeProvider } from '@mui/material';
 import { Form } from '@rjsf/mui';
 import CoreForm from '@rjsf/core';
-import { createRef, Fragment, RefObject, useCallback, useEffect, useRef, useState } from 'react';
+import { createRef, RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { SelectAutoCompleteContextProvider } from 'UI/Features/Records/Activity/form/SelectAutoCompleteContext';
 import ArrayFieldTemplate from 'rjsf/templates/ArrayFieldTemplate';
 import FieldTemplate from 'rjsf/templates/FieldTemplate';
@@ -27,6 +27,11 @@ import ArrayItemTemplate from 'rjsf/templates/ArrayItemTemplate';
 import ArrayItemButtonTemplate from 'rjsf/templates/ArrayFieldButtonTemplate';
 import FundingAgencySelectAutoComplete from 'rjsf/widgets/FundingAgencySelectAutoComplete';
 import EmployerSelectAutoComplete from 'rjsf/widgets/EmployerSelectAutoComplete';
+import FormMenuButtons from '../../FormMenuButtons/FormMenuButtons';
+import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
+import Alerts from 'state/actions/alerts/Alerts';
+import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
+import { RJSFValidationError } from '@rjsf/utils';
 
 const FormContainer = () => {
   const ref = useRef(0);
@@ -34,6 +39,18 @@ const FormContainer = () => {
   if (RENDER_DEBUG) {
     console.log('%c FormContainer render:' + ref.current.toString(), 'color: yellow');
   }
+
+  const handleFormErrors = (err: Array<RJSFValidationError> = []) => {
+    dispatch(Activity.setErrors(err));
+    dispatch(
+      Alerts.create({
+        subject: AlertSubjects.Form,
+        severity: AlertSeverity.Error,
+        content: `Cannot submit form! ${err.length} error(s) found.`,
+        autoClose: 5
+      })
+    );
+  };
 
   const dispatch = useDispatch();
 
@@ -59,6 +76,7 @@ const FormContainer = () => {
   const activity_subtype = useSelector((state) => state.ActivityPage.activity.activity_subtype);
   const activitySchema = useSelector((state) => state.ActivityPage.schema);
   const activityUISchema = useSelector((state) => state.ActivityPage.uiSchema);
+  const isCellPhoneWidth = useSelector((state) => state.AppMode.constraints.tinyScreen);
 
   const can_edit = useSelector((state) => !!state.ActivityPage?.activeActivityPermissions?.can_edit);
   const created_by = useSelector((state) => state.ActivityPage.activity.created_by);
@@ -89,13 +107,13 @@ const FormContainer = () => {
   const formRef: RefObject<CoreForm> = createRef();
 
   useEffect(() => {
-    dispatch(Activity.setErrors(formRef.current?.state?.errors ?? []));
-  }, [formDataState]);
-
-  useEffect(() => {
     setIsCreatedByUser(username === created_by);
     setIsDisabled(username !== created_by || !can_edit);
   }, [username, created_by, can_edit]);
+
+  useEffect(() => {
+    dispatch(Activity.setErrors(formRef.current?.state?.errors ?? []));
+  }, [formDataState]);
 
   const isActivityChemTreatment =
     activity_subtype === ActivitySubtype.Treatment_ChemicalPlant ||
@@ -135,9 +153,11 @@ const FormContainer = () => {
             readonly={isDisabled}
             key={activity_ID + pasteCount + reported_area}
             disabled={isDisabled}
+            id="rjsf-form"
             formData={formDataState}
             schema={activitySchema}
             uiSchema={activityUISchema}
+            focusOnFirstError
             liveValidate={'onChange'}
             customValidate={customValidators()}
             validator={validator}
@@ -145,14 +165,24 @@ const FormContainer = () => {
             transformErrors={getCustomErrorTransformer()}
             autoComplete="off"
             ref={formRef}
+            noHtml5Validate={true}
+            onSubmit={() => dispatch(Activity.submit())}
+            onError={handleFormErrors}
             onChange={(event) => debouncedFormChange(event)}
           >
-            {/* This seemingly useless Fragment prevents a generic submit button from rendering through RJSF */}
-            <Fragment />
+            <CustomPopover
+              buttonClasses={'overlay-menu'}
+              buttonText={isCellPhoneWidth ? 'Save' : 'Save Menu'}
+              closeAfterPress={true}
+              disablePortal={true}
+            >
+              <FormMenuButtons />
+            </CustomPopover>
           </Form>
 
           {isActivityChemTreatment && (
             <ChemicalTreatmentDetailsForm
+              key={activity_ID}
               activitySubType={activity_subtype}
               disabled={isDisabled}
               onChange={(form_data, callback) => {
