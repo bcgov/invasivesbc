@@ -31,10 +31,19 @@ class ExportActions {
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
 
+      const date = new Date();
+
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+
+      const formattedDate = `${year}-${month}-${day}`; // "2026-05-12"
+
+      // Create an invisible link component and "clicks" it to start download, then removes it
       const a = document.createElement('a');
       a.style.display = 'none';
       a.href = url;
-      a.download = 'export_data.csv';
+      a.download = `${spec.csvType.toLowerCase()}-${formattedDate}`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL('url');
