@@ -396,7 +396,7 @@ class RecordsetRowsViewSet(viewsets.GenericViewSet):
             combined_query = querysets[0]
             for other_qs in querysets[1:]:
                 combined_query = combined_query.union(other_qs)
-            data_stream = combined_query.iterator(chunk_size=1000)
+            data_stream = combined_query.iterator(chunk_size=3000)
         else:
             data_stream = iter([])
 
