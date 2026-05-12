@@ -1,8 +1,6 @@
 from django.db.models import (
-    F,
     Value,
     CharField,
-    Func,
     Exists,
     OuterRef,
     Max,

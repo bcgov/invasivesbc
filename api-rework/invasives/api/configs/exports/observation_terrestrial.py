@@ -1,4 +1,4 @@
-from django.db.models import F, Value, CharField, Case, When, Exists, OuterRef, Q
+from django.db.models import F, Value, CharField, Case, When, Exists, OuterRef
 from api.models.activity import (
     TerrestrialVoucherSpecimen,
 )
