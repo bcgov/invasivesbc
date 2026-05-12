@@ -19,7 +19,7 @@ from api.models.activity import (
     ActivityDataRecord,
 )
 from api.models.codes import (
-    TerrestrialPlantCode,
+    PlantsWithBiocontrol,
     BiocontrolAgentCode,
     BioAgentLifeStageCode,
     BioAgentCollectionMethodCode,
@@ -46,7 +46,7 @@ def add_subtype_payload_for_biocontrol_release(new: Activity, old: LegacyActivit
     ):
         TerrestrialBiocontrolReleaseEntry.objects.create(
             activity_data_record=adr,
-            invasive_plant=TerrestrialPlantCode.objects.get(
+            invasive_plant=PlantsWithBiocontrol.objects.get(
                 code=bcr.invasive_plant_code
             ),
             biocontrol_agent=BiocontrolAgentCode.objects.get(
@@ -57,7 +57,7 @@ def add_subtype_payload_for_biocontrol_release(new: Activity, old: LegacyActivit
             agent_source=bcr.agent_source,
             collection_date=bcr.collection_date,
             plant_collected_from=(
-                TerrestrialPlantCode.objects.get(code=bcr.plant_collected_from)
+                PlantsWithBiocontrol.objects.get(code=bcr.plant_collected_from)
                 if bcr.plant_collected_from is not None
                 else None
             ),
@@ -115,7 +115,7 @@ def add_subtype_payload_for_biocontrol_collection(new: Activity, old: LegacyActi
     ):
         TerrestrialBiocontrolCollectionEntry.objects.create(
             activity_data_record=adr,
-            invasive_plant=TerrestrialPlantCode.objects.get(
+            invasive_plant=PlantsWithBiocontrol.objects.get(
                 code=bcc.invasive_plant_code
             ),
             biological_agent=BiocontrolAgentCode.objects.get(
@@ -179,7 +179,7 @@ def add_subtype_payload_for_biocontrol_dispersal_monitoring_terrestrial_plant(
     ):
         TerrestrialBiocontrolDispersalMonitoringEntry.objects.create(
             activity_data_record=adr,
-            invasive_plant=TerrestrialPlantCode.objects.get(
+            invasive_plant=PlantsWithBiocontrol.objects.get(
                 code=ri.invasive_plant_code
             ),
             biocontrol_agent=BiocontrolAgentCode.objects.get(
@@ -257,7 +257,7 @@ def add_subtype_payload_for_biocontrol_release_monitoring_terrestrial_plant(
     ):
         TerrestrialBiocontrolDispersalMonitoringEntry.objects.create(
             activity_data_record=adr,
-            invasive_plant=TerrestrialPlantCode.objects.get(
+            invasive_plant=PlantsWithBiocontrol.objects.get(
                 code=ri.invasive_plant_code
             ),
             biocontrol_agent=BiocontrolAgentCode.objects.get(
