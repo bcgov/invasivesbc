@@ -5,6 +5,11 @@ from .monitoring_chemical_mechanical import MONITORING_ANNOTATIONS
 from .monitoring_biocontrol_dispersal_release import (
     MONITORING_BIOCONTROL_DISPERSAL_RELEASE_ANNOTATIONS,
 )
+from .treatment_mechanical import (
+    TREATMENT_MECHANICAL_TERRESTRIAL_ANNOTATIONS,
+    TREATMENT_MECHANICAL_AQUATIC_ANNOTATIONS,
+)
+from .treatment_chemical import TREATMENT_CHEMICAL_ANNOTATIONS
 from .biocontrol_release import BIOCONTROL_RELEASE_ANNOTATIONS
 from .biocontrol_collection import BIOCONTROL_COLLECTION_ANNOTATIONS
 from .shared.plant_phenology import PLANT_PHENOLOGY_ANNOTATIONS
