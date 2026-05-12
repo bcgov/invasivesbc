@@ -331,6 +331,16 @@ class RecordsetRowsViewSet(viewsets.GenericViewSet):
 
     @action(detail=False, methods=["post"], url_path="csv")
     def csv(self, request, *args, **kwargs):
+        """
+        Export Endpoint for InvasivesBC Recordsets.
+
+        Current functionality supports exporting any Recordset via, using the filters
+        applied to the user's recordset. whether or not specified by the user, there is a subtype filter applied to all requests.
+        This ensures common model entries don't get crossed. e.g.: Biocontrol Dispersal v Biocontrol Collections
+
+        To change CSV Headers/Values/Formats, update :data:`CSV_SUBTYPE_CONFIG`
+        """
+
         class Echo:
             """An object that implements write() to return the value
             instead of buffering it, allowing us to stream CSV rows."""
