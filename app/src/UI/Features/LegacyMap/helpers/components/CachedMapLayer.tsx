@@ -11,8 +11,6 @@ type PropTypes = {
 };
 
 const CachedMapLayer = ({ mapReady }: PropTypes) => {
-  const map = useContext(MapContext);
-
   const MAP_ID = 'cached-tiles-source';
   const LAYER_DEFINITION: FillLayerSpecification = {
     id: `fill-${MAP_ID}`,
@@ -20,7 +18,7 @@ const CachedMapLayer = ({ mapReady }: PropTypes) => {
     source: MAP_ID,
     paint: {
       'fill-color': 'orange',
-      'fill-opacity': 0.4
+      'fill-opacity': 0.25
     }
   };
   const LABEL_DEFINITION: SymbolLayerSpecification = {
@@ -72,8 +70,10 @@ const CachedMapLayer = ({ mapReady }: PropTypes) => {
     }
   };
 
-  const repositories = useSelector((state) => state.TileCache?.repositories);
+  const map = useContext(MapContext);
   const url = useSelector((state) => state.AppMode.url);
+  const repositories = useSelector((state) => state.TileCache?.repositories);
+  const userOnPlanMyTripPage = useMemo(() => !!url?.includes('/ManageTrips'), [url]);
 
   // Rebuild Dataset when repository state updates
   const data = useMemo(() => {
@@ -85,8 +85,6 @@ const CachedMapLayer = ({ mapReady }: PropTypes) => {
       }) ?? []
     );
   }, [repositories]);
-
-  const userOnPlanMyTripPage = useMemo(() => !!url?.includes('/ManageTrips'), [url]);
 
   // Update layer data on change instead of destroying/recreating each time there's an update
   useEffect(() => {
@@ -111,7 +109,7 @@ const CachedMapLayer = ({ mapReady }: PropTypes) => {
     const visibility = userOnPlanMyTripPage ? 'visible' : 'none';
     map.setLayoutProperty(`label-${MAP_ID}`, 'visibility', visibility);
     map.setLayoutProperty(`fill-${MAP_ID}`, 'visibility', visibility);
-  }, [userOnPlanMyTripPage]);
+  }, [userOnPlanMyTripPage, url, mapReady]);
 
   return null;
 };
