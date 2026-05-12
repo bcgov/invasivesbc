@@ -10,6 +10,8 @@ from api.models.activity import (
     TerrestrialBiocontrolCollectionEntry,
     TerrestrialPlantMechanicalTreatmentEntry,
     AquaticPlantMechanicalTreatmentEntry,
+    ChemicalTreatmentAquaticInvasivePlantRecord,
+    ChemicalTreatmentTerrestrialInvasivePlantRecord,
 )
 from . import (
     OBSERVATION_AQUATIC_ANNOTATIONS,
@@ -25,6 +27,7 @@ from . import (
     BIOCONTROL_COLLECTION_ANNOTATIONS,
     TREATMENT_MECHANICAL_TERRESTRIAL_ANNOTATIONS,
     TREATMENT_MECHANICAL_AQUATIC_ANNOTATIONS,
+    TREATMENT_CHEMICAL_ANNOTATIONS,
 )
 
 ADR_BASE = "activity_data_record__activity__activitydatarecord_set"
@@ -114,6 +117,16 @@ CSV_SUBTYPE_CONFIG = {
     ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic.name: {
         "entry_models": [AquaticPlantMechanicalTreatmentEntry],
         "annotations": TREATMENT_MECHANICAL_AQUATIC_ANNOTATIONS,
+        "prefetch_related": [],
+    },
+    ActivitySubtypes.Treatment_Chemical_Plant_Aquatic.name: {
+        "entry_models": [ChemicalTreatmentAquaticInvasivePlantRecord],
+        "annotations": TREATMENT_CHEMICAL_ANNOTATIONS,
+        "prefetch_related": [],
+    },
+    ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial.name: {
+        "entry_models": [ChemicalTreatmentTerrestrialInvasivePlantRecord],
+        "annotations": TREATMENT_CHEMICAL_ANNOTATIONS,
         "prefetch_related": [],
     },
 }
