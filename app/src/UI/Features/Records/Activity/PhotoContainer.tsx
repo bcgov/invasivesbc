@@ -1,4 +1,4 @@
-import { CameraResultType, CameraSource, Camera } from '@capacitor/camera';
+import { Camera, MediaResult, MediaTypeSelection } from '@capacitor/camera';
 import {
   Box,
   Button,
@@ -39,114 +39,60 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
   const dispatch = useDispatch();
   const media = useSelector((state) => state.ActivityPage.activity?.media || []);
 
-  async function convertWebPathToDataUrl(webPath: string): Promise<string> {
-    const response = await fetch(webPath);
-
-    // convert response into a blob
-    const blob = await response.blob();
-
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result as string); // result is a dataUrl
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    });
-  }
-
-  const checkPermissionsAndAlert = async (photoOption: CameraSource): Promise<void> => {
-    try {
-      const permissions = await Camera.checkPermissions();
-
-      if (photoOption === CameraSource.Camera && permissions.camera === 'denied') {
-        dispatch(
-          Alerts.create({
-            content:
-              'Camera access is denied. Please enable camera permissions in your device settings to take photos.',
-            severity: AlertSeverity.Warning,
-            subject: AlertSubjects.Photo,
-            autoClose: 5
-          })
-        );
-      } else if (photoOption === CameraSource.Photos && permissions.photos === 'denied') {
-        dispatch(
-          Alerts.create({
-            content:
-              'Photo library access is denied. Please enable photo library permissions in your device settings to choose photos.',
-            severity: AlertSeverity.Warning,
-            subject: AlertSubjects.Photo,
-            autoClose: 5
-          })
-        );
-      }
-    } catch (error) {
-      console.error('Error checking permissions:', error);
+  const checkPermissionsAndAlert = async (permission: 'Photo Gallery' | 'Camera'): Promise<void> => {
+    const { camera, photos } = await Camera.checkPermissions();
+    if ((permission == 'Camera' && camera === 'denied') || (permission === 'Photo Gallery' && photos === 'denied')) {
+      dispatch(
+        Alerts.create({
+          content: 'Camera access is denied. Please enable camera permissions in your device settings to take photos.',
+          severity: AlertSeverity.Warning,
+          subject: AlertSubjects.Photo,
+          autoClose: 5
+        })
+      );
     }
+  };
+
+  const transformImageToFormData = (photo: MediaResult, index = 0): UploadedPhoto => {
+    const fileName = `${new Date().toISOString().slice(0, 10)}-${index}.${photo.metadata?.format}`;
+    const dataUrl = `data:image/${photo.metadata?.format};base64,${photo.thumbnail}`;
+    return {
+      file_name: fileName,
+      encoded_file: dataUrl,
+      description: `Untitled.${photo.metadata?.format}`,
+      editing: false
+    } as UploadedPhoto;
   };
 
   const takePhotoFromCamera = async () => {
     try {
-      await checkPermissionsAndAlert(CameraSource.Camera);
-      const cameraPhoto = await Camera.getPhoto({
+      await checkPermissionsAndAlert('Camera');
+      const result = await Camera.takePhoto({
         presentationStyle: 'fullscreen',
-        resultType: CameraResultType.DataUrl,
-        source: CameraSource.Camera,
-        quality: 100
+        quality: 75,
+        includeMetadata: true
       });
-
-      const fileName = new Date().getTime() + '.' + cameraPhoto.format;
-      const photo: UploadedPhoto = {
-        file_name: fileName,
-        encoded_file: cameraPhoto.dataUrl,
-        description: 'untitled',
-        editing: false
-      };
-
-      dispatch(Activity.Photo.add(photo));
+      dispatch(Activity.Photo.add(transformImageToFormData(result)));
     } catch (e) {
-      console.error('user cancelled or other camera problem', e);
+      console.error(e);
     }
   };
 
   const choosePhotosFromLibrary = async () => {
     try {
-      await checkPermissionsAndAlert(CameraSource.Photos);
-      const multiplePhotos = await Camera.pickImages({
-        quality: 100,
-        limit: 10
+      await checkPermissionsAndAlert('Photo Gallery');
+      const { results } = await Camera.chooseFromGallery({
+        mediaType: MediaTypeSelection.Photo,
+        includeMetadata: true,
+        allowMultipleSelection: true,
+        limit: 5,
+        quality: 75
       });
-
-      if (!multiplePhotos.photos.length) {
-        console.log('No photos selected');
-        return;
-      }
-
-      // process all photos concurrently
-      const processedPhotos = await Promise.all(
-        multiplePhotos.photos.map(async (photo, index) => {
-          try {
-            const fileName = `${new Date().getTime()}-${index}.${photo.format}`;
-            const dataUrl = await convertWebPathToDataUrl(photo.webPath);
-
-            return {
-              file_name: fileName,
-              encoded_file: dataUrl,
-              description: 'untitled',
-              editing: false
-            } as UploadedPhoto;
-          } catch (error) {
-            console.error(`Error processing photo ${index + 1}:`, error);
-            return null; // skip photo on failure
-          }
-        })
-      );
-
+      const processedPhotos = results.map(transformImageToFormData);
       // filter out failed photo conversions
-      const validPhotos = processedPhotos.filter((photo) => photo !== null);
-      validPhotos.forEach((photo) => {
-        if (photo) dispatch(Activity.Photo.add(photo));
-      });
+      processedPhotos.filter(Boolean).forEach((p) => dispatch(Activity.Photo.add(p)));
     } catch (e) {
-      console.error('error occurred: ', e);
+      console.error(e);
     }
   };
 
