@@ -16,6 +16,15 @@ input[type='button']:hover {
     margin-bottom: 15px;
   }
 
+  .form-section {
+    width: 100%;
+    display: none;
+
+    &.active {
+      display: block;
+    }
+  }
+
   nav {
     display: flex;
     flex-direction: 100%;
