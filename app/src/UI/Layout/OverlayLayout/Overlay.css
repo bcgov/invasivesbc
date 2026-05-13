@@ -2,7 +2,6 @@
   --overlay-top: var(--header-bar-height);
   --overlay-grip-height: 25px; /* grab handle */
 
-
   #app.overlay-layout {
     position: relative;
 
@@ -42,6 +41,7 @@
         width: 100%;
         overflow: auto;
         box-sizing: border-box;
+        padding-bottom: calc(var(--footer-bar-height) + 5px);
       }
     }
 
@@ -102,5 +102,4 @@
       }
     }
   }
-
 }
