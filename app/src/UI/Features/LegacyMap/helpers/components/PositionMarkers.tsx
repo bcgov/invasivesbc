@@ -5,7 +5,8 @@ import {
   refreshHighlightedRecord
 } from 'UI/Features/LegacyMap/helpers/functional/current-record';
 import centroid from '@turf/centroid';
-import maplibregl, { LngLatLike } from 'maplibre-gl';
+import * as maplibregl from 'maplibre-gl/dist/maplibre-gl-dev';
+import { LngLatLike } from 'maplibre-gl/dist/maplibre-gl-dev';
 import { useSelector } from 'utils/use_selector';
 import circle from '@turf/circle';
 import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';

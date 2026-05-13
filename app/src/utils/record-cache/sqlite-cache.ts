@@ -1,7 +1,7 @@
 import { DBSQLiteValues, SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
 import centroid from '@turf/centroid';
 import { Feature, GeoJSON } from 'geojson';
-import { GeoJSONSourceSpecification } from 'maplibre-gl';
+import { GeoJSONSourceSpecification } from 'maplibre-gl/dist/maplibre-gl-dev';
 import booleanIntersects from '@turf/boolean-intersects';
 import bbox from '@turf/bbox';
 import { reShortId } from 'sharedAPI/src/regex';

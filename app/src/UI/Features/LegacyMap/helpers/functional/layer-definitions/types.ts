@@ -1,4 +1,4 @@
-import { LayerSpecification } from 'maplibre-gl';
+import { LayerSpecification } from 'maplibre-gl/dist/maplibre-gl-dev';
 import { FeatureFlags } from 'state/configuration/feature-flags';
 import { Platform } from 'state/configuration/build-time-config';
 import { SOURCES } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/layer-definitions';

@@ -1,6 +1,6 @@
 import localForage from 'localforage';
 import centroid from '@turf/centroid';
-import { GeoJSONSourceSpecification } from 'maplibre-gl';
+import { GeoJSONSourceSpecification } from 'maplibre-gl/dist/maplibre-gl-dev';
 import booleanIntersects from '@turf/boolean-intersects';
 import { Feature } from 'geojson';
 import {

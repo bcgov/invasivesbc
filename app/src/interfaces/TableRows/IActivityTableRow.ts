@@ -1,4 +1,4 @@
-import { Feature } from 'maplibre-gl';
+import { Feature } from 'maplibre-gl/dist/maplibre-gl-dev';
 import { ActivitySubtype, ActivityType } from 'sharedAPI';
 
 interface IActivityTableRow {

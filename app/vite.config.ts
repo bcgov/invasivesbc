@@ -1,13 +1,10 @@
 import { execSync } from 'child_process';
-import { defineConfig, PluginOption } from 'vite';
+import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import { visualizer } from 'rollup-plugin-visualizer';
 
 // sets up constants in the code, based on the build environment
 function buildSpecificDefines() {
   const defines = {};
-
-  defines['minify'] = false;
 
   if (process.env.CONFIGURATION_SOURCE === 'Provided') {
     defines['CONFIGURATION_SOURCE'] = JSON.stringify('Provided');
@@ -27,8 +24,6 @@ function buildSpecificDefines() {
 
     defines['CONFIGURATION_COMPONENTIZED_MAP'] = JSON.stringify(process.env['ENABLE_COMPONENTIZED_MAP']);
   } else if (process.env.CONFIGURATION_SOURCE === 'Caddy') {
-    defines['minify'] = true;
-
     defines['CONFIGURATION_SOURCE'] = JSON.stringify('Caddy');
 
     if (process.env['OPENSHIFT_BUILD_COMMIT'] !== undefined) {
@@ -49,19 +44,6 @@ function reactDevOptions() {
   return {};
 }
 
-function statsPlugin() {
-  if (process.env['ENABLE_STATS'] && process.env['ENABLE_STATS'].toLowerCase() === 'true') {
-    return [
-      visualizer({
-        template: 'flamegraph',
-        emitFile: true,
-        filename: 'bundle-stats.html'
-      }) as PluginOption
-    ];
-  }
-  return [];
-}
-
 export default defineConfig({
   root: 'src',
   publicDir: '../public',
@@ -72,13 +54,14 @@ export default defineConfig({
   build: {
     // Relative to the root
     outDir: '../dist',
-    minify: buildSpecificDefines()['minify'],
+    minify: 'oxc',
     sourcemap: true,
-    cssCodeSplit: false,
+    // cssCodeSplit: false,
+
     target: process.env['VITE_TARGET_PLATFORM'] === 'ios' ? 'ios26.4' : 'baseline-widely-available',
 
     rolldownOptions: {
-      plugins: [...statsPlugin()],
+      plugins: [],
       output: {
         codeSplitting: {
           groups: [
@@ -110,7 +93,9 @@ export default defineConfig({
       ...reactDevOptions()
     })
   ],
-  optimizeDeps: {},
+  optimizeDeps: {
+    // exclude: ['maplibre-gl', '@mapbox/mapbox-gl-draw']
+  },
   resolve: {
     alias: {},
     tsconfigPaths: true

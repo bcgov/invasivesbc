@@ -1,6 +1,6 @@
 import { useContext, useEffect, useMemo } from 'react';
 import { MapContext } from './MapContext';
-import { FillLayerSpecification, GeoJSONSource, SymbolLayerSpecification } from 'maplibre-gl';
+import { FillLayerSpecification, GeoJSONSource, SymbolLayerSpecification } from 'maplibre-gl/dist/maplibre-gl-dev';
 import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
 import { useSelector } from 'utils/use_selector';
 import bboxToPolygon from 'utils/bboxToPolygon';

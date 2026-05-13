@@ -1,5 +1,5 @@
 import { Polygon } from 'geojson';
-import { Point } from 'maplibre-gl';
+import { Point } from 'maplibre-gl/dist/maplibre-gl-dev';
 import { ActivitySubtype, ActivityType } from 'sharedAPI';
 
 interface IOfflineActivityRow {

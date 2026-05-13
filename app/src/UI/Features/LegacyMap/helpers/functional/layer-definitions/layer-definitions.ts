@@ -1,4 +1,4 @@
-import { SourceSpecification } from 'maplibre-gl';
+import { SourceSpecification } from 'maplibre-gl/dist/maplibre-gl-dev';
 import { InvasivesMapLayerDefinition } from './types';
 import { ESRI_LAYERS } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/esri';
 import { BAKED_VECTOR_LAYERS } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/baked-vector-full';

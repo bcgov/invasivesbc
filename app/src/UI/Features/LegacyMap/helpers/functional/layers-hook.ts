@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { LayerSpecification, SourceSpecification } from 'maplibre-gl';
+import { LayerSpecification, SourceSpecification } from 'maplibre-gl/dist/maplibre-gl-dev';
 import debounce from 'lodash.debounce';
 import { produce } from 'immer';
 import { shallowEqual } from 'react-redux';

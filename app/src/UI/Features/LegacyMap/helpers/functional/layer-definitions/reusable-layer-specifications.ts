@@ -1,4 +1,4 @@
-import { ColorSpecification, ExpressionSpecification, FilterSpecification } from 'maplibre-gl';
+import { ColorSpecification, ExpressionSpecification, FilterSpecification } from 'maplibre-gl/dist/maplibre-gl-dev';
 import { FALLBACK_COLOR } from '../constants';
 import { LayerSpecificationWithStackingOrder } from '../layers-hook';
 import { LAYER_Z_FOREGROUND } from './types';

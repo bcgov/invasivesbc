@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { MapContext } from '../MapContext';
-import { MapMouseEvent, MapTouchEvent, Point, PointLike, Popup } from 'maplibre-gl';
+import { MapMouseEvent, MapTouchEvent, Point, PointLike, Popup } from 'maplibre-gl/dist/maplibre-gl-dev';
 import ReactDOM from 'react-dom/client';
 import LayerDataMarkerContent from './LayerDataMarkerContent';
 import { useDispatch, useSelector } from 'utils/use_selector';

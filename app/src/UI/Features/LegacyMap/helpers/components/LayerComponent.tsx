@@ -1,7 +1,7 @@
 import { useContext, useEffect } from 'react';
 import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
 import { LayerSpecificationWithStackingOrder } from 'UI/Features/LegacyMap/helpers/functional/layers-hook';
-import { LayerSpecification } from 'maplibre-gl';
+import { LayerSpecification } from 'maplibre-gl/dist/maplibre-gl-dev';
 
 type LayerComponentProps = {
   mapReady: boolean;

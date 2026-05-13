@@ -7,7 +7,7 @@ import { getCurrentJWT } from 'state/sagas/auth/auth';
 import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
 import { InvasivesMap } from 'UI/Features/LegacyMap/InvasivesMap';
 import { PositionMarkers } from 'UI/Features/LegacyMap/helpers/components/PositionMarkers';
-import maplibregl from 'maplibre-gl';
+import * as maplibregl from 'maplibre-gl/dist/maplibre-gl-dev';
 import { PMTiles, Protocol } from 'pmtiles';
 import { TileCacheService } from 'utils/tile-cache';
 import { CurrentActivityLayer } from 'UI/Features/LegacyMap/helpers/components/CurrentActivityLayer';

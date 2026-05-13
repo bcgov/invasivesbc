@@ -7,7 +7,7 @@ import { SourceCleanupComponent } from './SourceCleanupComponent';
 import { findSpeciesCodes, getConcatenatedCodes } from 'utils/addActivity';
 import { OfflineActivityRecord, OfflineActivitySyncState } from 'state/reducers/offlineActivity';
 import { FeatureCollection, GeoJSON } from 'geojson';
-import { SourceSpecification } from 'maplibre-gl';
+import { SourceSpecification } from 'maplibre-gl/dist/maplibre-gl-dev';
 import { Md5 } from 'ts-md5';
 import {
   createBorderLayer,

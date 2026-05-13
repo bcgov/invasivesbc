@@ -1,7 +1,7 @@
 import { createNextState, createSelector, nanoid } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
 import { Feature, GeoJSON, Point, Polygon } from 'geojson';
-import { FilterSpecification } from 'maplibre-gl';
+import { FilterSpecification } from 'maplibre-gl/dist/maplibre-gl-dev';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import GeoShapes from 'constants/geoShapes';
 import UserSettings from 'state/actions/userSettings/UserSettings';

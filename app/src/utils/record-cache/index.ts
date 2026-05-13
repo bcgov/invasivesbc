@@ -1,4 +1,4 @@
-import { GeoJSONSourceSpecification } from 'maplibre-gl';
+import { GeoJSONSourceSpecification } from 'maplibre-gl/dist/maplibre-gl-dev';
 import { Feature } from 'geojson';
 import IappRecord from 'interfaces/IappRecord';
 import IappTableRow from 'interfaces/IappTableRecord';

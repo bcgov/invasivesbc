@@ -1,7 +1,7 @@
 import { createNextState } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
 import { bbox } from '@turf/turf';
-import { SourceSpecification } from 'maplibre-gl';
+import { SourceSpecification } from 'maplibre-gl/dist/maplibre-gl-dev';
 import { RepositoryMetadata, RepositoryStatus, TileCacheProgressCallbackParameters } from 'utils/tile-cache';
 import TileCache from 'state/actions/cache/TileCache';
 import {

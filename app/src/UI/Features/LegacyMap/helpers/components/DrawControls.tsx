@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'utils/use_selector';
 import TileCache from 'state/actions/cache/TileCache';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { DoNothing } from 'UI/Features/LegacyMap/helpers/functional/do-nothing-mode';
-import { IControl } from 'maplibre-gl';
+import { IControl } from 'maplibre-gl/dist/maplibre-gl-dev';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import { InvasivesMap } from 'UI/Features/LegacyMap/InvasivesMap';
 import Prompt from 'state/actions/prompts/Prompt';

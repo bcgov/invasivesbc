@@ -6,7 +6,7 @@ import { useSelector } from 'utils/use_selector';
 import MapActions from 'state/actions/map';
 import { GpsFixed, GpsNotFixed, GpsOff } from '@mui/icons-material';
 import { MapContext } from '../helpers/components/MapContext';
-import { MapLibreEvent } from 'maplibre-gl';
+import { MapLibreEvent } from 'maplibre-gl/dist/maplibre-gl-dev';
 import { isTracking } from 'utils/geoTrackingHelpers';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
 
