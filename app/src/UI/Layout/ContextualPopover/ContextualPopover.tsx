@@ -7,7 +7,7 @@ const ContextualPopover = () => {
   return (
     <Routes>
       <Route
-        path="/Records/Activity/:id/:mode"
+        path="/Records/LegacyForm/:id/:mode"
         Component={() => {
           const isCellPhoneWidth = useSelector((state) => state.AppMode.constraints.tinyScreen);
 

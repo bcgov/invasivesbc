@@ -41,18 +41,44 @@ class ActivityRecordsetRowSerializer(serializers.ModelSerializer):
     activity_id = serializers.CharField(source="id", read_only=True)
 
     PATH_TO_PLANT_MAP = {
-        ActivitySubtypes.Observation_Plant_Aquatic.name: "aquaticplantobservationentry_set",
-        ActivitySubtypes.Observation_Plant_Terrestrial.name: "terrestrialplantobservationentries_set",
-        ActivitySubtypes.Treatment_Chemical_Plant_Aquatic.name: "chemicaltreatmentaquaticinvasiveplantrecord_set",
-        ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial.name: "chemicaltreatmentterrestrialinvasiveplantrecord_set",
-        ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic.name: "aquaticplantmechanicaltreatmententry_set",
-        ActivitySubtypes.Treatment_Mechanical_Plant_Terrestrial.name: "terrestrialplantmechanicaltreatmententry_set",
-        ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial.name: "terrestrialbiocontroldispersalmonitoringentry_set",
-        ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial.name: "terrestrialbiocontroldispersalmonitoringentry_set",
-        ActivitySubtypes.Monitoring_Chemical_Plant_Terrestrial_Aquatic.name: "terrestrialtreatmentmonitoringentry_set",
-        ActivitySubtypes.Monitoring_Mechanical_Plant_Terrestrial_Aquatic.name: "terrestrialtreatmentmonitoringentry_set",
-        ActivitySubtypes.Biocontrol_Collection.name: "terrestrialbiocontrolcollectionentry_set",
-        ActivitySubtypes.Biocontrol_Release.name: "terrestrialbiocontrolreleaseentry_set",
+        ActivitySubtypes.Observation_Plant_Aquatic.name: [
+            "aquaticplantobservationentry_set"
+        ],
+        ActivitySubtypes.Observation_Plant_Terrestrial.name: [
+            "terrestrialplantobservationentries_set"
+        ],
+        ActivitySubtypes.Treatment_Chemical_Plant_Aquatic.name: [
+            "chemicaltreatmentaquaticinvasiveplantrecord_set"
+        ],
+        ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial.name: [
+            "chemicaltreatmentterrestrialinvasiveplantrecord_set"
+        ],
+        ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic.name: [
+            "aquaticplantmechanicaltreatmententry_set"
+        ],
+        ActivitySubtypes.Treatment_Mechanical_Plant_Terrestrial.name: [
+            "terrestrialplantmechanicaltreatmententry_set"
+        ],
+        ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial.name: [
+            "terrestrialbiocontroldispersalmonitoringentry_set"
+        ],
+        ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial.name: [
+            "terrestrialbiocontroldispersalmonitoringentry_set"
+        ],
+        ActivitySubtypes.Monitoring_Chemical_Plant_Terrestrial_Aquatic.name: [
+            "terrestrialtreatmentmonitoringentry_set",
+            "aquatictreatmentmonitoringentry_set",
+        ],
+        ActivitySubtypes.Monitoring_Mechanical_Plant_Terrestrial_Aquatic.name: [
+            "terrestrialtreatmentmonitoringentry_set",
+            "aquatictreatmentmonitoringentry_set",
+        ],
+        ActivitySubtypes.Biocontrol_Collection.name: [
+            "terrestrialbiocontrolcollectionentry_set"
+        ],
+        ActivitySubtypes.Biocontrol_Release.name: [
+            "terrestrialbiocontrolreleaseentry_set"
+        ],
     }
 
     PATH_TO_AGENT_MAP = {
@@ -103,7 +129,10 @@ class ActivityRecordsetRowSerializer(serializers.ModelSerializer):
         )
 
     def get_entry_destination(self, subtype):
-        return self.PATH_TO_PLANT_MAP.get(subtype)
+        dest = self.PATH_TO_PLANT_MAP.get(subtype)
+        if isinstance(dest, str):
+            return [dest]
+        return dest  # returns list or None
 
     def build_response_value(self, values):
         """Join response values to return to client"""
@@ -116,17 +145,17 @@ class ActivityRecordsetRowSerializer(serializers.ModelSerializer):
         }
 
     def get_invasive_plant(self, obj):
-        """Fetch the Invasive Plant for all records associated with this activity"""
-        destination = self.get_entry_destination(obj.subtype)
-        if not destination:
+        destinations = self.get_entry_destination(obj.subtype)
+        if not destinations:
             return None
 
         all_plants = []
         for record in obj.activitydatarecord_set.all():
-            entries = getattr(record, destination).all()
-            all_plants.extend(
-                [e.invasive_plant.full for e in entries if e.invasive_plant]
-            )
+            for destination in destinations:  # Loop through all possible entry sets
+                entries = getattr(record, destination).all()
+                all_plants.extend(
+                    [e.invasive_plant.full for e in entries if e.invasive_plant]
+                )
 
         return self.build_response_value(sorted(set(all_plants)))
 
@@ -134,47 +163,43 @@ class ActivityRecordsetRowSerializer(serializers.ModelSerializer):
         return obj.area_m
 
     def get_species_positive_full(self, obj):
-        """Fetch Positive species values from all associated DataRecords"""
-        destination = self.get_entry_destination(obj.subtype)
-        if not destination:
+        destinations = self.get_entry_destination(obj.subtype)
+        if not destinations:
             return None
 
         is_observation = ActivitySubtypes[obj.subtype].typeOfActivity == "Observation"
         plants = []
 
         for record in obj.activitydatarecord_set.all():
-            entries = getattr(record, destination).all()
-            for e in entries:
-                if (
-                    is_observation
-                    and getattr(e, "observation_type", None) == "Positive"
-                    and e.invasive_plant
-                ):
-                    plants.append(e.invasive_plant.full)
+            for destination in destinations:
+                entries = getattr(record, destination).all()
+                for e in entries:
+                    if (
+                        is_observation
+                        and getattr(e, "observation_type", None) == "Positive"
+                        and e.invasive_plant
+                    ):
+                        plants.append(e.invasive_plant.full)
 
         return self.build_response_value(sorted(set(plants)))
 
     def get_species_negative_full(self, obj):
         """Fetch Negative Species (Only for Observations)"""
-        if ActivitySubtypes[obj.subtype].typeOfActivity != "Observation":
-            return None
-
-        destination = self.get_entry_destination(obj.subtype)
-        if not destination:
-            return None
+        destinations = self.get_entry_destination(obj.subtype)
 
         is_observation = ActivitySubtypes[obj.subtype].typeOfActivity == "Observation"
         plants = []
 
         for record in obj.activitydatarecord_set.all():
-            entries = getattr(record, destination).all()
-            for e in entries:
-                if (
-                    is_observation
-                    and getattr(e, "observation_type", None) == "Negative"
-                    and e.invasive_plant
-                ):
-                    plants.append(e.invasive_plant.full)
+            for destination in destinations:
+                entries = getattr(record, destination).all()
+                for e in entries:
+                    if (
+                        is_observation
+                        and getattr(e, "observation_type", None) == "Negative"
+                        and e.invasive_plant
+                    ):
+                        plants.append(e.invasive_plant.full)
 
         return self.build_response_value(sorted(set(plants)))
 
@@ -184,14 +209,15 @@ class ActivityRecordsetRowSerializer(serializers.ModelSerializer):
         if activity_type not in ["Treatment", "Biocontrol", "Monitoring"]:
             return None
 
-        destination = self.get_entry_destination(obj.subtype)
-        if not destination:
-            return None
+        destinations = self.get_entry_destination(obj.subtype)
 
         plants = []
         for record in obj.activitydatarecord_set.all():
-            entries = getattr(record, destination).all()
-            plants.extend([e.invasive_plant.full for e in entries if e.invasive_plant])
+            for destination in destinations:
+                entries = getattr(record, destination).all()
+                plants.extend(
+                    [e.invasive_plant.full for e in entries if e.invasive_plant]
+                )
         return self.build_response_value(sorted(set(plants)))
 
     def get_species_biocontrol_full(self, obj):
