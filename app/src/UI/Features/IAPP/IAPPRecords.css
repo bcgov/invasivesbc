@@ -64,6 +64,7 @@
 
 .records__activity .control {
   width: 100%;
+  box-sizing: border-box;
   max-width: 1200px;
   color: red;
   padding: 10pt;
