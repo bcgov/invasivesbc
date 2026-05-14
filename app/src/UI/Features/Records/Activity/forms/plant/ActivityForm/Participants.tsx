@@ -2,12 +2,12 @@ import { get, useFormContext } from 'react-hook-form';
 import { useSelector } from 'utils/use_selector';
 import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import ArrayField from 'UI/Features/Records/Activity/forms/common/ArrayField/ArrayField';
-import { minArrayLength, greaterThanEqual } from '../../common/validators';
+import { minArrayLength, greaterThanEqual } from 'UI/Features/Records/Activity/forms/common/validators';
 import TextInput from 'UI/Features/Records/Activity/forms/common/TextInput/TextInput';
 import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
-import getDefaultFormState from '../builders/getDefaultState';
+import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
 import { isActivityChemicalTreatment } from 'state/reducers/activity';
 
 const Participants = () => {

@@ -58,6 +58,7 @@
 
       img {
         object-fit: contain;
+        max-height: 80vh;
         height: 100%;
         width: 100%;
       }

@@ -158,11 +158,14 @@ const ActivityForm = () => {
       <FormProvider {...methods}>
         <form autoComplete={'off'} id="activity-form" onSubmit={handleSubmit(onSubmit)}>
           <RecordMetadata formState={getValues()} />
-          {mode &&
-            {
-              [Mode.Form]: <Form />,
-              [Mode.Photo]: <Photos />
-            }[mode]}
+          {/* Use conditional Rendering so RHF Doesn't unmount fields in its validation step on submit */}
+          <div className={`form-section ${mode === Mode.Form ? 'active' : ''}`}>
+            <Form />
+          </div>
+          <div className={`form-section ${mode === Mode.Photo ? 'active' : ''}`}>
+            <Photos />
+          </div>
+
           <FormControl />
 
           {/* Debug Information/Options */}
