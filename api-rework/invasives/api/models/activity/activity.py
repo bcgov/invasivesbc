@@ -2,7 +2,7 @@ import datetime
 import uuid
 
 from django.core.exceptions import ValidationError
-from django.db import models
+from django.db import models, transaction
 
 from api.models.activity.activity_subtypes import ActivitySubtypes
 from api.models.enums.activity_type import ActivityType
@@ -86,6 +86,10 @@ class Activity(
         """
         For new records, Mutate the activity ID into the ShortID For a record
         """
+        if kwargs.get("update_fields"):
+            # Only update fields, nothing extra needed
+            return super().save(*args, **kwargs)
+
         if not self.short_id:  # Create new ShortID
             subtype = ActivitySubtypes[self.subtype].short_id_format
             uuid_substr = str(self.id)[
@@ -96,6 +100,14 @@ class Activity(
             self.short_id = f"{year}{subtype}{uuid_substr}"
 
         super().save(*args, **kwargs)
+
+        if self.form_status == "Submitted" and self.computed_fields_generated == False:
+            """Start populating generated fields, send task to celery worker for pickup"""
+            from api.tasks import generate_computed_activity_fields
+
+            transaction.on_commit(
+                lambda: generate_computed_activity_fields.delay(self.id)
+            )
 
 
 class ActivityDataRecord(models.Model):
