@@ -22,9 +22,7 @@ class ActivityRecordsetRowSerializer(serializers.ModelSerializer):
     project_code = serializers.SerializerMethodField()
     agency = serializers.SerializerMethodField()
     updated_by = serializers.SerializerMethodField()
-    regional_invasive_species_organization_areas = serializers.CharField(
-        source="computed_regional_invasive_species_organization_areas", read_only=True
-    )
+    regional_invasive_species_organization_areas = serializers.SerializerMethodField()
     regional_districts = serializers.CharField(
         source="computed_regional_districts", read_only=True
     )
@@ -32,7 +30,7 @@ class ActivityRecordsetRowSerializer(serializers.ModelSerializer):
         source="computed_invasive_plant_management_areas", read_only=True
     )
     biogeoclimatic_zones = serializers.CharField(
-        source="computed_biogeoclimactic_zone", read_only=True
+        source="computed_biogeoclimatic_zone", read_only=True
     )
     elevation = serializers.IntegerField(source="computed_elevation_m", read_only=True)
     activity_type = serializers.CharField(source="type", read_only=True)
@@ -235,6 +233,12 @@ class ActivityRecordsetRowSerializer(serializers.ModelSerializer):
                     agents.append(agent_obj.full)
 
         return self.build_response_value(sorted(set(agents)))
+
+    def get_regional_invasive_species_organization_areas(self, obj):
+        risos = []
+        for record in obj.activitydatarecord_set.all():
+            risos.extend([r.organization for r in record.risoarea_set.all()])
+        return ", ".join(sorted(set(risos))) or None
 
     def get_jurisdiction_display(self, obj):
         """
