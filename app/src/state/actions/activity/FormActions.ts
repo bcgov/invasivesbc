@@ -42,7 +42,7 @@ class FormActions {
       if (!formState) {
         dispatch(Alerts.create(formAlerts.noActiveForm));
         return rejectWithValue('No Active Form');
-      } else if (Auth.username) {
+      } else if (!Auth.username) {
         dispatch(Alerts.create(formAlerts.insufficientDeletePermission));
         return rejectWithValue('Not Authorized');
       }
