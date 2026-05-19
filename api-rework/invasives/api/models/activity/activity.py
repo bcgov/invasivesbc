@@ -15,6 +15,12 @@ from api.models.mixins.regional_detail import ComputedLocationFields
 UUID_SUBSTRING_LENGTH = 8
 
 
+class ActivityManager(models.Manager):
+    def get_queryset(self):
+        """Add global rule to filter out any deleted records from the frontend"""
+        return super().get_queryset().exclude(form_status=FormStatus.Deleted)
+
+
 class Activity(
     ComputedLocationFields, Geometry, BatchInformation, Platform, models.Model
 ):
@@ -23,6 +29,11 @@ class Activity(
     consumed by:
       - All IBC Activities
     """
+
+    objects = ActivityManager()
+
+    # Bypass filter if needed for cleanup tasks.
+    all_objects = models.Manager()
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     short_id = models.CharField(
