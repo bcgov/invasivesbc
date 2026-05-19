@@ -74,6 +74,7 @@ const FormControl = () => {
   const dispatch = useDispatch();
 
   const MOBILE = useSelector((state) => state.Configuration.current.build.MOBILE);
+  const ONLINE = useSelector((state) => state.Network.connected);
   const USERNAME = useSelector((state) => state.Auth.username);
   const ROLES = useSelector((state) => state.Auth.roles);
 
@@ -129,7 +130,7 @@ const FormControl = () => {
             type="button"
             value="Clear Form"
           />
-          {canUserDelete && (
+          {canUserDelete && ONLINE && (
             <input className="control-button" disabled={disabled} onClick={handleDelete} type="button" value="Delete" />
           )}
           <input type="button" className="control-button" onClick={handleDuplicateForm} value="Duplicate Form" />
