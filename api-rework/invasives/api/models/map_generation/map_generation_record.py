@@ -54,5 +54,9 @@ class MapGenerationRecord(OptionallyOwned, Dated, models.Model):
         db_comment="Optional map generation request that caused this record to be created (may be null for system-generated maps)",
     )
 
+    @property
+    def area_km2(self):
+        return round(self.bounds.transform(6933, clone=True).area / 1000000.0, 2)
+
     class Meta:
         db_table = '"activity"."raster_map_generation_rcord"'
