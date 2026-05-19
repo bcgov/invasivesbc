@@ -13,6 +13,7 @@ import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import EFilterType from 'constants/EFilterType';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import formAlerts from 'constants/alerts/formAlerts';
+import { Role } from 'constants/roles';
 
 interface FormSubmission {
   data: FormSchema;
@@ -30,6 +31,38 @@ class FormActions {
 
   static readonly createNewForm = createAction<ActivitySubtypes>(`${this.PREFIX}/createNewForm`);
   static readonly startDuplicateForm = createAction(`${this.PREFIX}/startDuplicateForm`);
+  static readonly delete = createAsyncThunk(
+    `${this.PREFIX}/delete`,
+    async (_, { getState, rejectWithValue, dispatch }) => {
+      const {
+        Auth,
+        ActivityPage: { formState },
+        Configuration
+      } = getState() as RootState;
+      if (!formState) {
+        dispatch(Alerts.create(formAlerts.noActiveForm));
+        return rejectWithValue('No Active Form');
+      } else if (Auth.username) {
+        dispatch(Alerts.create(formAlerts.insufficientDeletePermission));
+        return rejectWithValue('Not Authorized');
+      }
+
+      const API_V2_BASE = Configuration.current.runtime.API_V2_BASE;
+      const isAdmin = Auth.roles.some((r) => r.role_name === Role.MASTER_ADMINISTRATOR);
+      const isCreator = Auth.username === formState.created_by;
+
+      // TODO: Refactor as Permission based checked over role specific
+      if (!isCreator && isAdmin) rejectWithValue('You do not have permission to perform this action.');
+
+      const res = await fetch(`${API_V2_BASE}/ninja/activities/${formState.id}`, {
+        method: 'DELETE',
+        headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' }
+      });
+
+      if (res.ok) dispatch(Alerts.create(formAlerts.recordDeleted));
+      else dispatch(Alerts.create(formAlerts.recordCouldNotBeDeleted));
+    }
+  );
 
   static readonly duplicateForm = createAsyncThunk(
     `${this.PREFIX}/duplicateForm`,
@@ -156,8 +189,6 @@ class FormActions {
         dispatch(Alerts.create(formAlerts.recordSubmittedSuccess));
         return await res.json();
       }
-      // TODO: Handle Offline
-      return { short_id: '12PTO12345678', id: crypto.randomUUID() };
     }
   );
   static readonly updateState = createAction<FormSchema>(`${this.PREFIX}/updateState`);
