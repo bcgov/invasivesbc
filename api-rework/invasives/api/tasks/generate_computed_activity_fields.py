@@ -2,6 +2,7 @@ import requests
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from api.models.activity import Activity, ActivityDataRecord, RisoArea
+from django.db import transaction
 from invasivesbc.settings import LEGACY_DB_CONNECTION_STRING
 import psycopg
 from psycopg.rows import dict_row
@@ -50,98 +51,89 @@ def query_bcgw(config_name, activity: Activity):
 
 
 def fetch_computed_biogeoclimatic_zones(a: Activity):
-    biogeoclimatic_zone = query_bcgw("computed_biogeoclimatic_zone", a)
-    if biogeoclimatic_zone:
-        a.computed_biogeoclimatic_zone = biogeoclimatic_zone
-        a.save(update_fields=["computed_biogeoclimatic_zone"])
+    return query_bcgw("computed_biogeoclimatic_zone", a)
 
 
 def fetch_computed_flrno_districts(a: Activity):
-    flrno_districts = query_bcgw("flrno_districts", a)
-    if flrno_districts:
-        a.computed_flrno_districts = flrno_districts
-        a.save(update_fields=["computed_flrno_districts"])
+    return query_bcgw("flrno_districts", a)
 
 
 def fetch_computed_ownership(a: Activity):
-    ownership = query_bcgw("ownership", a)
-    if ownership:
-        a.computed_ownership = ownership
-        a.save(update_fields=["computed_ownership"])
+    return query_bcgw("ownership", a)
 
 
 def fetch_computed_moti_districts(a: Activity):
-    moti_districts = query_bcgw("moti_districts", a)
-    if moti_districts:
-        a.computed_moti_districts = moti_districts
-        a.save(update_fields=["computed_moti_districts"])
+    return query_bcgw("moti_districts", a)
 
 
 def fetch_computed_riso_areas(a: Activity):
     # TODO: Port tables over and create unmanaged models
     wkt_shape = a.shape.wkt
     srid = a.shape.srid
-    with psycopg.connect(LEGACY_DB_CONNECTION_STRING, row_factory=dict_row) as conn:
-        with conn.cursor() as cursor:
-            response = cursor.execute(
-                """
-                SELECT riso.agency
-                FROM public.regional_invasive_species_organization_areas riso
-                WHERE ST_INTERSECTS2(riso.geog, ST_GeomFromText(%s, %s)::geography)
-                """,
-                (wkt_shape, srid),
-            )
-            if cursor.rowcount == 0:
-                return None
-            for result in response.fetchall():
-                adr = ActivityDataRecord.objects.create(activity=a)
-                RisoArea.objects.create(
-                    activity_data_record=adr, organization=result["agency"]
+    try:
+        with psycopg.connect(LEGACY_DB_CONNECTION_STRING, row_factory=dict_row) as conn:
+            with conn.cursor() as cursor:
+                response = cursor.execute(
+                    """
+                    SELECT riso.agency
+                    FROM public.regional_invasive_species_organization_areas riso
+                    WHERE ST_INTERSECTS2(riso.geog, ST_GeomFromText(%s, %s)::geography)
+                    """,
+                    (wkt_shape, srid),
                 )
+                return [row["agency"] for row in response.fetchall()]
+    except psycopg.Error as e:
+        logger.error(f"fetch_computed_riso_areas failed: {e}")
+        raise
 
 
 def fetch_computed_invasive_plant_management_areas(a: Activity):
     # TODO: Port tables over and create unmanaged models
     wkt_shape = a.shape.wkt
     srid = a.shape.srid
-    with psycopg.connect(LEGACY_DB_CONNECTION_STRING, row_factory=dict_row) as conn:
-        with conn.cursor() as cursor:
-            response = cursor.execute(
-                """
-                SELECT imp.ipma
-                FROM public.invasive_plant_management_areas imp
-                WHERE ST_INTERSECTS2(imp.geog, ST_GeomFromText(%s, %s)::geography)
-                LIMIT 1
-                """,
-                (wkt_shape, srid),
-            )
-            if cursor.rowcount == 0:
-                return None
-            row = response.fetchone()
-            a.computed_invasive_plant_management_areas = row["ipma"]
-            a.save(update_fields=["computed_invasive_plant_management_areas"])
+    try:
+        with psycopg.connect(LEGACY_DB_CONNECTION_STRING, row_factory=dict_row) as conn:
+            with conn.cursor() as cursor:
+                response = cursor.execute(
+                    """
+                    SELECT imp.ipma
+                    FROM public.invasive_plant_management_areas imp
+                    WHERE ST_INTERSECTS2(imp.geog, ST_GeomFromText(%s, %s)::geography)
+                    LIMIT 1
+                    """,
+                    (wkt_shape, srid),
+                )
+                if cursor.rowcount == 0:
+                    return None
+                row = response.fetchone()
+                return row["ipma"]
+    except psycopg.Error as e:
+        logger.error(e)
+        raise
 
 
 def fetch_computed_regional_districts(a: Activity):
     # TODO: Port tables over and create unmanaged models
     wkt_shape = a.shape.wkt
     srid = a.shape.srid
-    with psycopg.connect(LEGACY_DB_CONNECTION_STRING, row_factory=dict_row) as conn:
-        with conn.cursor() as cursor:
-            response = cursor.execute(
-                """
-                SELECT rd.agency
-                FROM public.regional_districts rd
-                WHERE ST_INTERSECTS2(rd.geog, ST_GeomFromText(%s, %s)::geography)
-                LIMIT 1
-                """,
-                (wkt_shape, srid),
-            )
-            if cursor.rowcount == 0:
-                return None
-            row = response.fetchone()
-            a.computed_regional_districts = row["agency"]
-            a.save(update_fields=["computed_regional_districts"])
+    try:
+        with psycopg.connect(LEGACY_DB_CONNECTION_STRING, row_factory=dict_row) as conn:
+            with conn.cursor() as cursor:
+                response = cursor.execute(
+                    """
+                    SELECT rd.agency
+                    FROM public.regional_districts rd
+                    WHERE ST_INTERSECTS2(rd.geog, ST_GeomFromText(%s, %s)::geography)
+                    LIMIT 1
+                    """,
+                    (wkt_shape, srid),
+                )
+                if cursor.rowcount == 0:
+                    return None
+                row = response.fetchone()
+                return row["agency"]
+    except psycopg.Error as e:
+        logger.error(e)
 
 
 def fetch_computed_elevation_m(a: Activity):
@@ -151,28 +143,49 @@ def fetch_computed_elevation_m(a: Activity):
     response = requests.get(url, timeout=5)
     response.raise_for_status()
     data = response.json()
-    elevation = data["altitude"]
-    if elevation is None:
-        return
-    a.computed_elevation_m = elevation
-
-    a.save(update_fields=["computed_elevation_m"])
+    return data["altitude"]
 
 
-@shared_task(bind=True, max_retries=3, default_retry_delay=30)
+@shared_task(bind=True, max_retries=3)
 def generate_computed_activity_fields(self, record_id):
     try:
         a = Activity.objects.get(id=record_id)
-        fetch_computed_elevation_m(a)
-        fetch_computed_biogeoclimatic_zones(a)
-        fetch_computed_flrno_districts(a)
-        fetch_computed_invasive_plant_management_areas(a)
-        fetch_computed_moti_districts(a)
-        fetch_computed_ownership(a)
-        fetch_computed_regional_districts(a)
-        fetch_computed_riso_areas(a)
-        a.computed_fields_generated = True
-        a.save(update_fields=["computed_fields_generated"])
+        a.computed_elevation_m = fetch_computed_elevation_m(a)
+        a.computed_biogeoclimatic_zone = fetch_computed_biogeoclimatic_zones(a)
+        a.computed_flrno_districts = fetch_computed_flrno_districts(a)
+        a.computed_invasive_plant_management_areas = (
+            fetch_computed_invasive_plant_management_areas(a)
+        )
+        a.computed_moti_districts = fetch_computed_moti_districts(a)
+        a.computed_ownership = fetch_computed_ownership(a)
+        a.computed_regional_districts = fetch_computed_regional_districts(a)
+        risos = fetch_computed_riso_areas(a)
+        with transaction.atomic():
+            for agency in risos:
+                already_exists = ActivityDataRecord.objects.filter(
+                    activity=a,
+                    risoarea__organization=agency,
+                ).exists()
+                if not already_exists:
+                    logger.info(f"{agency} -- {str(risos)}")
+                    adr = ActivityDataRecord.objects.create(activity=a)
+                    RisoArea.objects.create(
+                        activity_data_record=adr, organization=agency
+                    )
+
+            a.computed_fields_generated = True
+            a.save(
+                update_fields=[
+                    "computed_fields_generated",
+                    "computed_elevation_m",
+                    "computed_biogeoclimatic_zone",
+                    "computed_flrno_districts",
+                    "computed_invasive_plant_management_areas",
+                    "computed_moti_districts",
+                    "computed_ownership",
+                    "computed_regional_districts",
+                ]
+            )
 
     except requests.RequestException as e:
         logger.error(e)
@@ -181,3 +194,4 @@ def generate_computed_activity_fields(self, record_id):
         logger.warning(f"Activity {record_id} does not exist.")
     except Exception as e:
         logger.error(e)
+        raise e
