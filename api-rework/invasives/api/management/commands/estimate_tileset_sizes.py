@@ -7,11 +7,11 @@ from django.core.management.base import BaseCommand
 import mercantile
 
 from api.services.map_tile_generator.tile_definitions import NTSGridTileDefinition
-
-# assumptions
-average_size_of_tile = 16000
-tiles_per_second_worst = 8
-tiles_per_second_best = 20
+from api.models.map_generation.map_generation_request import (
+    AVERAGE_SIZE_OF_TILE,
+    TILES_PER_SECOND_WORST_CASE,
+    TILES_PER_SECOND_BEST_CASE,
+)
 
 
 def count_suffix(size):
@@ -82,9 +82,9 @@ class Command(BaseCommand):
             logging.info(
                 f"zoom={z:2}\t"
                 f"tile_count={count_suffix(tiles_at_zoom_level)}\t"
-                f"zoom_set_size={size_suffix(tiles_at_zoom_level * average_size_of_tile)}\t"
-                f"download_time_worst_case={timedelta(seconds=(tiles_at_zoom_level-tiles_at_previous_zoom_level)/tiles_per_second_worst)}\t"
-                f"download_time_best_case={timedelta(seconds=(tiles_at_zoom_level-tiles_at_previous_zoom_level)/tiles_per_second_best)}\t"
+                f"zoom_set_size={size_suffix(tiles_at_zoom_level * AVERAGE_SIZE_OF_TILE)}\t"
+                f"download_time_worst_case={timedelta(seconds=(tiles_at_zoom_level-tiles_at_previous_zoom_level) / TILES_PER_SECOND_WORST_CASE)}\t"
+                f"download_time_best_case={timedelta(seconds=(tiles_at_zoom_level-tiles_at_previous_zoom_level) / TILES_PER_SECOND_BEST_CASE)}\t"
             )
 
             tiles_at_previous_zoom_level = tiles_at_zoom_level

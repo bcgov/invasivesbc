@@ -5,8 +5,22 @@ import { ColDef } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import { customizedAgTheme } from 'ag-theme';
 
-const MapGenerationRequestsTable: React.FC = () => {
-  const [requests, setRequests] = useState<unknown[]>([]);
+interface MapRecord {
+  minimum_zoom: number;
+  maximum_zoom: number;
+  file_name: string;
+  file_size: string;
+  raster: boolean;
+  updated: Date;
+  bounds: GeoJSON.Polygon;
+  centroid: GeoJSON.Point;
+}
+
+const MapGenerationRecordsTable: React.FC<{ setMap: (m: MapRecord) => void; source: 'owned' | 'public' }> = ({
+  setMap,
+  source = 'owned'
+}) => {
+  const [records, setRecords] = useState<MapRecord[]>([]);
 
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<boolean>(false);
@@ -15,17 +29,17 @@ const MapGenerationRequestsTable: React.FC = () => {
 
   const colDefs: ColDef[] = [
     { field: 'file_name', headerName: 'File' },
-    {
-      field: 'status',
-      headerName: 'Status',
-      cellRenderer: (params) => {
-        return <a href={`/map/monitor/${params.data.id}`}>{params.value} (View Status)</a>;
-      }
-    },
-    { field: 'total_tile_count', headerName: 'Tile Count' },
+    { field: 'file_size', headerName: 'Size' },
     { field: 'minimum_zoom', headerName: 'Min' },
     { field: 'maximum_zoom', headerName: 'Max' },
-    { field: 'updated', headerName: 'Updated' }
+    { field: 'updated', headerName: 'Updated' },
+    {
+      field: 'raster',
+      headerName: 'type',
+      cellRenderer: (params) => {
+        return params.value ? 'Raster' : 'Vector';
+      }
+    }
   ];
 
   useEffect(() => {
@@ -33,7 +47,7 @@ const MapGenerationRequestsTable: React.FC = () => {
     setErrorMessage('');
     setError(false);
 
-    fetch(`${API_URL}/maps/requests`, {
+    fetch(`${API_URL}/maps/records/${source}`, {
       headers: {
         Authorization: `Bearer ${auth.token}`
       }
@@ -41,10 +55,10 @@ const MapGenerationRequestsTable: React.FC = () => {
       .then(async (res) => {
         setLoading(false);
         if (res.status === 200) {
-          const serverResult: unknown[] = await res.json();
-          setRequests(serverResult);
+          const serverResult: MapRecord[] = await res.json();
+          setRecords(serverResult);
         } else {
-          setRequests([]);
+          setRecords([]);
           setError(true);
         }
       })
@@ -53,17 +67,20 @@ const MapGenerationRequestsTable: React.FC = () => {
         setError(true);
         setErrorMessage(`${reason}`);
       });
-  }, []);
+  }, [source]);
   return (
     <>
       {error && <pre>{errorMessage}</pre>}
       <div style={{ height: '80dvh' }}>
         <AgGridReact
           loading={loading}
-          rowData={requests}
+          rowData={records}
           columnDefs={colDefs}
           defaultColDef={{
             flex: 1
+          }}
+          onRowClicked={(e) => {
+            setMap(e.data);
           }}
           theme={customizedAgTheme}
           pagination
@@ -73,4 +90,5 @@ const MapGenerationRequestsTable: React.FC = () => {
   );
 };
 
-export default MapGenerationRequestsTable;
+export type { MapRecord };
+export default MapGenerationRecordsTable;

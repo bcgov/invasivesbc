@@ -5,3 +5,24 @@
   margin-right: auto;
   margin-bottom: 1rem;
 }
+
+#maplinks {
+  height: var(--header-height);
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  background-color: #036;
+  font-family: Calibri, sans-serif;
+  color: white;
+
+  a {
+    display: inline-block;
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    padding: 0 1em;
+
+  }
+}

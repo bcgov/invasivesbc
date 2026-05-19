@@ -1,11 +1,11 @@
 from collections import namedtuple
 from typing import List
 
-import mercantile
 from django.contrib.gis.db import models as geomodels
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator
 from django.db import models
+import mercantile
 
 from api.models.mixins.dated import Dated
 from api.models.mixins.owned import OptionallyOwned
@@ -20,6 +20,11 @@ TILE_SOURCE_DEFINITION_MAP: List[TileDefinitionNameToInstanceMap] = [
         name="esri-world-imagery", source=ESRIWorldImageryTileSource()
     )
 ]
+
+# assumptions
+AVERAGE_SIZE_OF_TILE = 16000
+TILES_PER_SECOND_WORST_CASE = 3
+TILES_PER_SECOND_BEST_CASE = 15
 
 
 class RasterMapGenerationRequest(OptionallyOwned, Dated, models.Model):
@@ -73,8 +78,24 @@ class RasterMapGenerationRequest(OptionallyOwned, Dated, models.Model):
         )
 
     @property
+    def area_km2(self):
+        return round(self.bounds.transform(6933, clone=True).area / 1000000.0, 2)
+
+    @property
     def total_tile_count(self):
         return len(self.tileset)
+
+    @property
+    def estimated_download_time_worst_case(self):
+        return round(self.total_tile_count / TILES_PER_SECOND_WORST_CASE, 0)
+
+    @property
+    def estimated_download_time_best_case(self):
+        return round(self.total_tile_count / TILES_PER_SECOND_BEST_CASE, 0)
+
+    @property
+    def estimated_final_size(self):
+        return AVERAGE_SIZE_OF_TILE * self.total_tile_count
 
     @property
     def tile_definition_source(self):
