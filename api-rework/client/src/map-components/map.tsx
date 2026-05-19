@@ -1,4 +1,4 @@
-import React, { act, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import maplibregl from 'maplibre-gl';
 import * as geojson from 'geojson';
 import { Protocol } from 'pmtiles';
@@ -7,8 +7,7 @@ import './map.css';
 import MapGenerationRequestsTable from 'map-components/map_generation_requests_table';
 import MapGenerationRecordsTable, { MapRecord } from 'map-components/map_generation_records_table';
 import MapGenerationRequestForm from 'map-components/map_generation_request_form';
-import { Link, NavLink, Route, Routes, useLocation, useMatch } from 'react-router';
-import Map_generation_records_table from 'map-components/map_generation_records_table';
+import { NavLink, Route, Routes, useLocation, useMatch } from 'react-router';
 import MapGenerationRequestMonitor from 'map-components/map_generation_request_monitor';
 
 type point = {

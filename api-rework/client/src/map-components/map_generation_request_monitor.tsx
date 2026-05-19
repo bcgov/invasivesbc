@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from 'client';
-import * as geojson from 'geojson';
 import { API_URL, OBJECTSTORE_ROOT } from 'constants';
 import { MapRecord } from 'map-components/map_generation_records_table';
 import { MapGenerationExecutionResponse } from 'map-components/map_generation_request_form';
@@ -83,7 +82,11 @@ const MapGenerationRequestMonitor: React.FC<{ setMap: (m: MapRecord) => void }> 
       });
   }, [tick, finished]);
 
-  if (!response) return <div>Waiting for data...</div>;
+  if (loading || !response) return <div>Waiting for data...</div>;
+
+  if (error) {
+    return <p className={'warning'}>{errorMessage}</p>;
+  }
 
   return (
     <div>

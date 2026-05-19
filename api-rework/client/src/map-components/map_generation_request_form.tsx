@@ -3,7 +3,6 @@ import { AuthContext } from 'client';
 import * as geojson from 'geojson';
 import { API_URL } from 'constants';
 import { MapRecord } from 'map-components/map_generation_records_table';
-import MapGenerationRequestMonitor from 'map-components/map_generation_request_monitor';
 import { useNavigate } from 'react-router';
 
 type MapGenerationEstimateRequest = {
@@ -44,7 +43,6 @@ const MapGenerationRequestForm: React.FC<{ boundingPolygon: geojson.Polygon | un
   const navigate = useNavigate();
 
   const [estimateResponse, setEstimateResponse] = useState<MapGenerationEstimateResponse | undefined>(undefined);
-  const [executionResponse, setExecutionResponse] = useState<MapGenerationExecutionResponse | undefined>(undefined);
 
   const [estimateRequest, setEstimateRequest] = useState<MapGenerationEstimateRequest>({
     minimum_zoom: 0,
@@ -106,10 +104,8 @@ const MapGenerationRequestForm: React.FC<{ boundingPolygon: geojson.Polygon | un
         setLoading(false);
         if (res.status === 200) {
           const serverResult: MapGenerationExecutionResponse = await res.json();
-          setExecutionResponse(serverResult);
           navigate(`/map/monitor/${serverResult.id}`);
         } else {
-          setExecutionResponse(undefined);
           setError(true);
         }
       })
@@ -119,6 +115,10 @@ const MapGenerationRequestForm: React.FC<{ boundingPolygon: geojson.Polygon | un
         setErrorMessage(`${reason}`);
       });
   };
+
+  if (error) {
+    return <p className={'warning'}>{errorMessage}</p>;
+  }
 
   return (
     <div className={'form'}>
