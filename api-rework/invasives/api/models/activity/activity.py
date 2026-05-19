@@ -90,21 +90,18 @@ class Activity(
             # Only update fields, nothing extra needed
             return super().save(*args, **kwargs)
 
-        if not self.short_id:  # Create new ShortID
+        if not self.short_id:
             subtype = ActivitySubtypes[self.subtype].short_id_format
-            uuid_substr = str(self.id)[
-                :UUID_SUBSTRING_LENGTH
-            ].upper()  # 21bAcd -> 21BACD
+            uuid_substr = str(self.id)[:UUID_SUBSTRING_LENGTH].upper()
             year = datetime.datetime.now().strftime("%y")
-            ## Assign formatted short_id
             self.short_id = f"{year}{subtype}{uuid_substr}"
 
         super().save(*args, **kwargs)
 
-        if self.form_status == "Submitted" and self.computed_fields_generated == False:
-            """Start populating generated fields, send task to celery worker for pickup"""
+        if self.form_status == "Submitted" and not self.computed_fields_generated:
             from api.tasks import generate_computed_activity_fields
 
+            # Start populating generated fields, send task to celery worker for pickup
             transaction.on_commit(
                 lambda: generate_computed_activity_fields.delay(self.id)
             )
