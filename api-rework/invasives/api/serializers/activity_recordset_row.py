@@ -2,7 +2,7 @@ import json
 from rest_framework import serializers
 from django.contrib.gis.db.models.functions import Centroid, AsGeoJSON
 from api.models.activity.activity import Activity
-from api.models.activity import ActivitySubtypes
+from api.models.activity import ActivitySubtypes, RisoArea, ProjectCode, FundingAgency
 from api.serializers.activity import ActivitySerializer
 
 
@@ -235,10 +235,13 @@ class ActivityRecordsetRowSerializer(serializers.ModelSerializer):
         return self.build_response_value(sorted(set(agents)))
 
     def get_regional_invasive_species_organization_areas(self, obj):
-        risos = []
-        for record in obj.activitydatarecord_set.all():
-            risos.extend([r.organization for r in record.risoarea_set.all()])
-        return ", ".join(sorted(set(risos))) or None
+        risos = (
+            RisoArea.objects.filter(activity_data_record__activity=obj)
+            .values_list("organization", flat=True)
+            .distinct()
+            .order_by("organization")
+        )
+        return ", ".join(risos)
 
     def get_jurisdiction_display(self, obj):
         """
@@ -252,22 +255,25 @@ class ActivityRecordsetRowSerializer(serializers.ModelSerializer):
         return ", ".join(sorted(set(jurisdictions))) or None
 
     def get_project_code(self, obj):
-        codes = []
-        for record in obj.activitydatarecord_set.all():
-            codes.extend([p.description for p in record.projectcode_set.all()])
-        return ", ".join(sorted(set(codes))) or None
+        codes = (
+            ProjectCode.objects.filter(activity_data_record__activity=obj)
+            .values_list("description", flat=True)
+            .distinct()
+            .order_by("description")
+        )
+        return ", ".join(codes)
 
     def get_agency(self, obj):
         """
         Aggregates funding agencies across all DataRecords linked to this Activity.
         """
-        agencies = []
-        for record in obj.activitydatarecord_set.all():
-            for a in record.fundingagency_set.all():
-                if a.agency and hasattr(a.agency, "full"):
-                    agencies.append(a.agency.full)
-
-        return self.build_response_value(sorted(set(agencies)))
+        agencies = (
+            FundingAgency.objects.filter(activity_data_record__activity=obj)
+            .values_list("agency__full", flat=True)
+            .distinct()
+            .order_by("agency__full")
+        )
+        return ", ".join(agencies)
 
     def get_updated_by(self, obj):
         # TODO: Update when Auditing is added
