@@ -21,19 +21,19 @@ const formAlerts: Record<PropertyKey, AlertMessage> = {
     autoClose: 8
   },
   insufficientDeletePermission: {
-    content: 'You do not have permission to delete this record.',
+    content: 'Cannot delete record, insufficient permissions.',
     severity: AlertSeverity.Error,
     subject: AlertSubjects.Form,
     autoClose: 8
   },
   noActiveForm: {
-    content: 'There is no active form to perform this action on.',
+    content: 'No active form.',
     severity: AlertSeverity.Error,
     subject: AlertSubjects.Form,
     autoClose: 8
   },
   recordCouldNotBeDeleted: {
-    content: 'Could not delete record.',
+    content: 'An error occurred, could not delete record at this time.',
     severity: AlertSeverity.Error,
     subject: AlertSubjects.Form,
     autoClose: 8
