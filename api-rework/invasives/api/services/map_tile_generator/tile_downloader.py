@@ -1,19 +1,13 @@
-import abc
-import threading
-from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime, time, timedelta
 import logging
 import os
 import subprocess
-from enum import IntFlag, STRICT
 from typing import List, Optional
 
 import boto3
 from botocore.exceptions import ClientError
 import diskcache
 from diskcache import Cache
-from django.contrib.gis.geos import Polygon
-from django.db import transaction
 from django.utils import timezone
 import mercantile
 import requests
@@ -21,33 +15,37 @@ from requests import RequestException
 
 from api.models import (
     CachedRasterTile,
-    RasterMapGenerationRequest,
-    MapGenerationRecord,
     MapGenerationIntermediateResult,
-    User,
+    MapGenerationRecord,
+    RasterMapGenerationRequest,
+)
+from api.services.map_tile_generator.definitions import (
+    CacheAccessMode,
+    ProtomapGenerationParameters,
+    TileCacheStatistics,
+    TileRetrieveResult,
 )
 from api.services.map_tile_generator.mb_tiles_database import (
     MBTilesDatabase,
     MBTilesMetadata,
 )
 from api.services.map_tile_generator.tile_definitions import (
-    TileDefinition,
-    Tileset,
+    TilesetBounds,
+    TilesetCenter,
 )
 from api.services.map_tile_generator.tile_source import (
     TileSource,
 )
 from invasivesbc.settings import (
+    DATABASE_CACHE_ZOOM_RANGE,
+    LOCAL_CACHE_ZOOM_RANGE,
     OBJECT_STORE_ACCESS_KEY_ID,
     OBJECT_STORE_ENDPOINT_URL,
     OBJECT_STORE_MAP_UPLOAD_BUCKET,
     OBJECT_STORE_SECRET_ACCESS_KEY,
     SCRATCH_DIRECTORY,
     TILE_CACHE_MAXIMUM_SIZE,
-    LOCAL_CACHE_ZOOM_RANGE,
-    DATABASE_CACHE_ZOOM_RANGE,
 )
-
 
 cache = Cache(
     directory=os.path.join(SCRATCH_DIRECTORY, ".tile-cache"),
@@ -55,66 +53,11 @@ cache = Cache(
 )
 
 
-@dataclass
-class TileCacheStatistics:
-    total_tiles: int = 0
-    cache_hits: int = 0
-    cache_misses: int = 0
-    errors: int = 0
-
-
-@dataclass
-class TileRetrieveResult:
-    hit: bool
-    data: bytes
-
-
 class TileRetrieveException(Exception):
     pass
 
 
-class DownloadProgressReporter(abc.ABC):
-    def report_progress(
-        self, tiles_loaded: int, total_tiles: int, stats: TileCacheStatistics
-    ):
-        pass
-
-
-class LoggingDownloadProgressReporter(DownloadProgressReporter):
-    def report_progress(
-        self, tiles_loaded: int, total_tiles: int, stats: TileCacheStatistics
-    ):
-        logging.info(
-            f"{tiles_loaded} / {total_tiles} ({round((tiles_loaded/total_tiles) * 100.0, 2)}%)"
-        )
-
-
-class GenerationRequestProgressReporter(DownloadProgressReporter):
-    def __init__(self, mgr: RasterMapGenerationRequest):
-        self.mgr = mgr
-
-    def report_progress(
-        self, tiles_loaded: int, total_tiles: int, stats: TileCacheStatistics
-    ):
-        logging.info(
-            f"{tiles_loaded} / {total_tiles} ({round((tiles_loaded/total_tiles) * 100.0, 2)}%)"
-        )
-
-        progress, _ = MapGenerationIntermediateResult.objects.get_or_create(
-            generation_request=self.mgr
-        )
-        progress.cache_hits = stats.cache_hits
-        progress.cache_misses = stats.cache_misses
-        progress.tiles_downloaded = tiles_loaded
-        progress.remaining_tiles = total_tiles - tiles_loaded
-        progress.save()
-
-
 class TileDownloader:
-    class CacheAccessMode(IntFlag, boundary=STRICT):
-        DISABLE_READS = 1
-        DISABLE_L1_WRITES = 2
-        DISABLE_L2_WRITES = 4
 
     def __init__(self):
         pass
@@ -150,6 +93,7 @@ class TileDownloader:
             cache_mode & cache_mode.DISABLE_READS
         ):
             cached = CachedRasterTile.objects.filter(key=cache_key).first()
+
             if cached is not None:
                 if tile.z in LOCAL_CACHE_ZOOM_RANGE:
                     # copy l2 -> l1 cache for next time, if appropriate
@@ -181,11 +125,13 @@ class TileDownloader:
             if tile.z in DATABASE_CACHE_ZOOM_RANGE and not (
                 cache_mode & cache_mode.DISABLE_L2_WRITES
             ):
-                CachedRasterTile.objects.create(
+                CachedRasterTile.objects.update_or_create(
                     key=cache_key,
-                    data=response.content,
-                    expires=timezone.now()
-                    + timedelta(seconds=source.cache_lifetime_seconds),
+                    defaults={
+                        "data": response.content,
+                        "expires": timezone.now()
+                        + timedelta(seconds=source.cache_lifetime_seconds),
+                    },
                 )
 
             return TileRetrieveResult(hit=False, data=response.content)
@@ -228,179 +174,176 @@ class TileDownloader:
         return stats
 
     @staticmethod
-    def generate_protomap_archive(
-        tileset_name: str,
-        tileset: Tileset,
-        source: TileSource,
-        progress_reporter: DownloadProgressReporter = LoggingDownloadProgressReporter(),
-        cache_mode: CacheAccessMode = CacheAccessMode(0),
-        owner: Optional[User] = None,
-    ):
+    def generate_protomap_archive(options: ProtomapGenerationParameters):
+
+        mgr = RasterMapGenerationRequest.objects.filter(
+            id=options.map_generation_request_id
+        ).first()
+
+        if mgr is None:
+            logging.warning(
+                f"map generation request {options.map_generation_request_id} not found"
+            )
+            return
+
+        if mgr.status != "PENDING":
+            logging.warning(
+                f"map generation request {options.map_generation_request_id} has unexpected status: {mgr.status}, not processing"
+            )
+            return
+
+        logging.info(
+            f"Processing map generation request {mgr.file_name}"
+            f" for [{mgr.owner if mgr.owner else "SYSTEM"}],"
+            f" [{len(mgr.tileset)} tiles],"
+            f" [zoom {mgr.maximum_zoom}],"
+            f" [{mgr.area_km2} km²]"
+        )
+
         mbtiles_filename = os.path.join(
-            SCRATCH_DIRECTORY, f"output/{tileset_name}.mbtiles"
+            SCRATCH_DIRECTORY, f"output/{mgr.file_name}.mbtiles"
         )
         pmtiles_filename = os.path.join(
-            SCRATCH_DIRECTORY, f"output/{tileset_name}.pmtiles"
+            SCRATCH_DIRECTORY, f"output/{mgr.file_name}.pmtiles"
         )
 
-        os.makedirs(os.path.join(SCRATCH_DIRECTORY, "output"), exist_ok=True)
+        mgr.status = "PROCESSING"
+        mgr.save()
+        completed_successfully = False  # flag used later for updating mgr status
 
-        metadata = MBTilesMetadata(
-            min_zoom=tileset.min_zoom,
-            max_zoom=tileset.max_zoom,
-            format=source.tile_format,
-            bounds=tileset.bounds,
-            center=tileset.center,
-        )
+        start_time = datetime.now()
 
-        with MBTilesDatabase(mbtiles_filename, tileset_name, metadata) as tiledb:
-            stats = TileCacheStatistics()
-
-            tiles_loaded = 0
-            last_report = datetime.now()
-
-            for tile in tileset.tiles:
-
-                try:
-                    stats.total_tiles += 1
-                    result = TileDownloader.retrieve_tile(
-                        source, tile, cache_mode=cache_mode
-                    )
-
-                    if result.hit:
-                        stats.cache_hits += 1
-                    else:
-                        stats.cache_misses += 1
-
-                    tiledb.db.execute(
-                        "INSERT OR REPLACE INTO tiles (zoom_level, tile_column, tile_row, tile_data) values (?, ?, ?, ?)",
-                        (tile.z, tile.x, (1 << tile.z) - 1 - tile.y, result.data),
-                    )
-
-                except TileRetrieveException as e:
-                    logging.warning(f"tile retrieve failure: {e}", exc_info=True)
-                    stats.errors += 1
-
-                tiles_loaded += 1
-
-                if datetime.now() - last_report > timedelta(seconds=10):
-                    last_report = datetime.now()
-                    progress_reporter.report_progress(
-                        tiles_loaded=tiles_loaded,
-                        total_tiles=len(tileset.tiles),
-                        stats=stats,
-                    )
-
-        subprocess.run(["pmtiles", "convert", mbtiles_filename, pmtiles_filename])
-
-        s3_client = boto3.client(
-            "s3",
-            endpoint_url=OBJECT_STORE_ENDPOINT_URL,
-            aws_access_key_id=OBJECT_STORE_ACCESS_KEY_ID,
-            aws_secret_access_key=OBJECT_STORE_SECRET_ACCESS_KEY,
-            aws_session_token=None,
-            config=boto3.session.Config(
-                signature_version="s3v4",
-                request_checksum_calculation="when_required",
-                response_checksum_validation="when_required",
-            ),
-        )
         try:
-            s3_client.upload_file(
-                pmtiles_filename,
-                OBJECT_STORE_MAP_UPLOAD_BUCKET,
-                f"maps/{tileset_name}.pmtiles",
-                ExtraArgs={"ACL": "public-read"} if owner is None else {},
-            )
-            logging.info(f"PMTiles upload complete for {pmtiles_filename}")
+            os.makedirs(os.path.join(SCRATCH_DIRECTORY, "output"), exist_ok=True)
 
-            bounding_box = Polygon(
-                (
-                    (metadata.bounds.left, metadata.bounds.top),
-                    (metadata.bounds.right, metadata.bounds.top),
-                    (metadata.bounds.right, metadata.bounds.bottom),
-                    (metadata.bounds.left, metadata.bounds.bottom),
-                    (metadata.bounds.left, metadata.bounds.top),
+            metadata = MBTilesMetadata(
+                min_zoom=mgr.minimum_zoom,
+                max_zoom=mgr.maximum_zoom,
+                format=mgr.tile_definition_source.tile_format,
+                bounds=TilesetBounds(
+                    mgr.bounds.extent[0],
+                    mgr.bounds.extent[1],
+                    mgr.bounds.extent[2],
+                    mgr.bounds.extent[3],
+                ),
+                center=TilesetCenter(
+                    mgr.bounds.centroid.x,
+                    mgr.bounds.centroid.y,
+                    mgr.minimum_zoom,
+                ),
+            )
+
+            with MBTilesDatabase(mbtiles_filename, mgr.file_name, metadata) as tiledb:
+                stats = TileCacheStatistics()
+
+                tiles_loaded = 0
+
+                for tile in mgr.tileset:
+
+                    try:
+                        stats.total_tiles += 1
+                        result = TileDownloader.retrieve_tile(
+                            mgr.tile_definition_source,
+                            tile,
+                            cache_mode=options.cache_mode,
+                        )
+
+                        if result.hit:
+                            stats.cache_hits += 1
+                        else:
+                            stats.cache_misses += 1
+
+                        MapGenerationIntermediateResult.objects.update_or_create(
+                            generation_request=mgr,
+                            defaults={
+                                "tiles_downloaded": stats.total_tiles,
+                                "cache_hits": stats.cache_hits,
+                                "cache_misses": stats.cache_misses,
+                                "remaining_tiles": mgr.total_tile_count
+                                - stats.total_tiles,
+                                "owner": mgr.owner,
+                                "status_information": f"{(datetime.now() - start_time).__str__()} elapsed",
+                            },
+                        )
+
+                        tiledb.db.execute(
+                            "INSERT OR REPLACE INTO tiles (zoom_level, tile_column, tile_row, tile_data) values (?, ?, ?, ?)",
+                            (tile.z, tile.x, (1 << tile.z) - 1 - tile.y, result.data),
+                        )
+
+                    except TileRetrieveException as e:
+                        logging.warning(f"tile retrieve failure: {e}", exc_info=True)
+                        stats.errors += 1
+
+                    tiles_loaded += 1
+
+            subprocess.run(
+                ["pmtiles", "convert", mbtiles_filename, pmtiles_filename],
+                capture_output=True,
+                check=True,
+                text=True,
+            )
+
+            s3_client = boto3.client(
+                "s3",
+                endpoint_url=OBJECT_STORE_ENDPOINT_URL,
+                aws_access_key_id=OBJECT_STORE_ACCESS_KEY_ID,
+                aws_secret_access_key=OBJECT_STORE_SECRET_ACCESS_KEY,
+                aws_session_token=None,
+                config=boto3.session.Config(
+                    signature_version="s3v4",
+                    request_checksum_calculation="when_required",
+                    response_checksum_validation="when_required",
+                ),
+            )
+            try:
+                s3_client.upload_file(
+                    pmtiles_filename,
+                    OBJECT_STORE_MAP_UPLOAD_BUCKET,
+                    f"maps/{mgr.file_name}.pmtiles",
+                    ExtraArgs={"ACL": "public-read"} if mgr.owner is None else {},
                 )
-            )
+                logging.info(f"PMTiles upload complete for {pmtiles_filename}")
 
-            record, _ = MapGenerationRecord.objects.get_or_create(
-                file_name=f"maps/{tileset_name}.pmtiles"
-            )
+                # create a corresponding map generation record
+                record, _ = MapGenerationRecord.objects.update_or_create(
+                    file_name=f"maps/{mgr.file_name}.pmtiles",
+                    defaults={
+                        "generation_request": mgr,
+                        "file_size": os.path.getsize(pmtiles_filename),
+                        "expires": (
+                            timezone.now() + timedelta(days=7)
+                            if mgr.owner is not None
+                            else None
+                        ),
+                        "raster": True,
+                        "description": (
+                            f"System-generated base map grid"
+                            if mgr.owner is None
+                            else f"User-generated map archive"
+                        ),
+                        "bounds": mgr.bounds,
+                        "minimum_zoom": mgr.minimum_zoom,
+                        "maximum_zoom": mgr.maximum_zoom,
+                        "owner": mgr.owner,
+                    },
+                )
 
-            record.file_size = os.path.getsize(pmtiles_filename)
-            record.expires = (
-                timezone.now() + timedelta(days=7) if owner is not None else None
-            )
-            record.raster = True
-            record.description = (
-                f"System-generated base map grid"
-                if owner is None
-                else f"User-generated map archive"
-            )
-            record.bounds = bounding_box
-            record.minimum_zoom = metadata.min_zoom
-            record.maximum_zoom = metadata.max_zoom
-            record.owner = owner
-            record.save()
+                completed_successfully = True
 
-        except ClientError as e:
-            logging.error("Unable to upload file to object store", exc_info=True)
-            raise e
+            except ClientError as e:
+                logging.error("Unable to upload file to object store", exc_info=True)
+                raise e
 
         finally:
             if os.path.exists(mbtiles_filename):
                 os.unlink(mbtiles_filename)
             if os.path.exists(pmtiles_filename):
                 os.unlink(pmtiles_filename)
-
-    @staticmethod
-    def generate_map_tiles(
-        tiles: TileDefinition,
-        source: TileSource,
-        stop_event: Optional[threading.Event] = None,
-        cache_mode: CacheAccessMode = CacheAccessMode(0),
-    ):
-
-        stats = TileCacheStatistics()
-
-        tile_definitions = tiles.tilesets()
-
-        if isinstance(tile_definitions, Tileset):
-            # make it a list if it was singular
-            tile_definitions = [tile_definitions]
-
-        for t in tile_definitions:
-            if stop_event is not None and stop_event.is_set():
-                logging.info("Shutting down on request")
-                break
-
-            TileDownloader.generate_protomap_archive(
-                t.name, t, source, cache_mode=cache_mode
+            mgr.status = "COMPLETED" if completed_successfully else "FAILED"
+            mgr.save()
+            logging.info(
+                f"processing of {mgr.file_name} [status {mgr.status}] [hit {stats.cache_hits}/{stats.total_tiles} {round(100.0 * (stats.cache_hits/stats.total_tiles), 1)}%]"
             )
 
         return stats
-
-    @staticmethod
-    def process_map_generation_request(mgr: RasterMapGenerationRequest):
-
-        with transaction.atomic():
-            mgr.status = "PROCESSING"
-            mgr.save()
-
-        try:
-            TileDownloader.generate_protomap_archive(
-                mgr.file_name,
-                mgr.tileset,
-                mgr.tile_definition_source,
-                progress_reporter=GenerationRequestProgressReporter(mgr),
-            )
-
-            with transaction.atomic():
-                mgr.status = "COMPLETED"
-                mgr.save()
-        except Exception as e:
-            logging.error(e, exc_info=True)
-            with transaction.atomic():
-                mgr.status = "FAILED"
-                mgr.save()

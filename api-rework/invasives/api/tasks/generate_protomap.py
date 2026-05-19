@@ -5,28 +5,34 @@ from datetime import timedelta, datetime
 from functools import reduce
 
 from api.models import RasterMapGenerationRequest
-from api.services.map_tile_generator.tile_definitions import NTSGridTileDefinition
-from api.services.map_tile_generator.tile_downloader import (
-    TileDownloader,
+from api.services.map_tile_generator.definitions import (
+    ProtomapGenerationParameters,
     TileCacheStatistics,
 )
+from api.services.map_tile_generator.tile_definitions import NTSGridTileDefinition
+
 from api.services.map_tile_generator.tile_source import ESRIWorldImageryTileSource
 from invasivesbc import celery_app
 from invasivesbc.settings import SCRATCH_DIRECTORY, TILE_CACHE_MAXIMUM_SIZE
 
 
 @celery_app.task
-def generate_protomap(map_generation_request_id: int):
-    mgr = RasterMapGenerationRequest.objects.get(id=map_generation_request_id)
-    TileDownloader.process_map_generation_request(mgr)
+def process_map_generation_request(map_generation_request_id: int):
+    from api.services.map_tile_generator.tile_downloader import TileDownloader
+
+    TileDownloader.generate_protomap_archive(
+        ProtomapGenerationParameters(
+            map_generation_request_id=map_generation_request_id
+        )
+    )
 
 
 @celery_app.task
-def generate_nts_map_tiles(min_zoom=0, max_zoom=14):
-    TileDownloader.generate_map_tiles(
-        tiles=NTSGridTileDefinition(min_zoom=min_zoom, max_zoom=max_zoom),
-        source=ESRIWorldImageryTileSource(),
-    )
+def process_download_request(options: ProtomapGenerationParameters):
+    # wrap this call in a task so we can optionally call it asynchronously
+    from api.services.map_tile_generator.tile_downloader import TileDownloader
+
+    TileDownloader.generate_protomap_archive(options)
 
 
 @celery_app.task
@@ -35,6 +41,7 @@ def preheat_map_cache(max_zoom=15):
     logging.info(
         f"max cache size {TILE_CACHE_MAXIMUM_SIZE} ({round(TILE_CACHE_MAXIMUM_SIZE/(1024*1024), 0)}MB)"
     )
+    from api.services.map_tile_generator.tile_downloader import TileDownloader
 
     tile_definitions = NTSGridTileDefinition(min_zoom=0, max_zoom=max_zoom).tilesets()
 
@@ -62,6 +69,7 @@ def preheat_map_cache(max_zoom=15):
     for i, t in enumerate(tile_definitions, start=1):
 
         start = datetime.now()
+
         stats = TileDownloader.preheat_cache(t.tiles, source)
         sheet_time = datetime.now() - start
 

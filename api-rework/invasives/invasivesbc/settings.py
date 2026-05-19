@@ -61,6 +61,7 @@ DATABASES = {
             "NAME": os.getenv("TEST_DB_NAME"),
         },
         "CONN_MAX_AGE": 0,
+        "ATOMIC_REQUESTS": True,  # sensible default - caution that it only applies to Views
         "OPTIONS": {
             "pool": {
                 "min_size": 2,
@@ -85,6 +86,8 @@ CELERY_BROKER_URL = os.getenv(
 )  # rabbitmq defaults if unspecified (for local dev)
 CELERY_TIMEZONE = "America/Vancouver"
 CELERY_TASK_TRACK_STARTED = True
+CELERY_ACCEPT_CONTENT = ["pickle", "json"]
+CELERY_TASK_SERIALIZER = "pickle"  # by default - more efficient than json, less compatible with other platforms though
 
 """
 Settings related to map generation and tile caching
