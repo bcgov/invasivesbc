@@ -76,9 +76,9 @@ const LayerDataMarker = () => {
                 ? {
                     label: feature.properties.type,
                     value: feature.properties.short_id,
-                    map_symbol: feature.properties.map_symbol,
-                    id: feature.properties.activity_id,
-                    url: '/Records/Activity/' + feature.properties.activity_id + '/form'
+                    map_symbol: feature.properties.computed_map_symbol,
+                    id: feature.properties.id,
+                    url: '/Records/Activity/' + feature.properties.id + '/form'
                   }
                 : {
                     label: 'Site ID',

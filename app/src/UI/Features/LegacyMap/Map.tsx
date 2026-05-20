@@ -66,6 +66,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
   const [mapReady, setMapReady] = useState<boolean>(false);
 
   const API_BASE = useSelector((state) => state.Configuration.current.runtime.API_BASE);
+  const API_V2_BASE = useSelector((state) => state.Configuration.current.runtime.API_V2_BASE);
 
   const { sources, layers, availableLayerDefinitions, setActiveBaseMap, setOverlayState } = useInvasivesMapLayers();
   const { recordsetLayers, recordsetSources } = useRecordSetControls();
@@ -77,6 +78,29 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
 
     maplibregl.addProtocol('api', async (request) => {
       const fetchRequest = new Request(request.url.replace('api://', API_BASE));
+      fetchRequest.headers.set('Authorization', await getCurrentJWT());
+      const result = await fetch(fetchRequest);
+      if (result.ok) {
+        if (result.bytes) {
+          return {
+            data: await result.bytes()
+          };
+        } else if (result.arrayBuffer) {
+          return {
+            data: await result.arrayBuffer()
+          };
+        } else {
+          console.error('Unable to load response. Response object unreadable.');
+          return { data: undefined };
+        }
+      }
+      return {
+        data: undefined
+      };
+    });
+
+    maplibregl.addProtocol('apiv2', async (request) => {
+      const fetchRequest = new Request(request.url.replace('apiv2://', API_V2_BASE));
       fetchRequest.headers.set('Authorization', await getCurrentJWT());
       const result = await fetch(fetchRequest);
       if (result.ok) {

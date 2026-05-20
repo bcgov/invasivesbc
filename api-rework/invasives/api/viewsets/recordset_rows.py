@@ -1,36 +1,35 @@
 from django.contrib.gis.geos import GEOSGeometry
-import json
-import psycopg
-import logging
-import csv
-from django.db.models.functions import Coalesce
-from django.http import StreamingHttpResponse
-from psycopg.rows import dict_row
-from rest_framework.decorators import action
-from rest_framework import viewsets, status
-from rest_framework.response import Response
-from django.core.exceptions import FieldError
+import json, psycopg, logging, csv
 from django.db.models import (
-    Q,
+    Aggregate,
     F,
-    Min,
     FilteredRelation,
+    Func,
+    Min,
+    Q,
 )
 from django.db.models.functions import Coalesce
-from api.models.activity import ActivitySubtypes
+from django.contrib.gis.db.models import GeometryField, BinaryField
+from django.contrib.gis.db.models.functions import Centroid
+from django.http import StreamingHttpResponse, HttpResponse
+from psycopg.rows import dict_row
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from django.core.exceptions import FieldError
+from api.models.activity import ActivitySubtypes, Activity
 from api.permissions import HasAdminRole
 from api.serializers.activity_recordset_row import (
     ActivityRecordsetRowSerializer,
     CachedActivityRecordsetRowSerializer,
 )
-
-from api.models.activity import Activity
 from api.constants import uuid_regex, short_id_regex
 from invasivesbc.settings import LEGACY_DB_CONNECTION_STRING
 from api.configs.exports import build_csv_annotation_object, CSV_SUBTYPE_CONFIG
-from api.models.activity import ActivitySubtypes
 
 log = logging.getLogger("invasives")
+
+CENTROID_ZOOM_LIMIT = 12
 
 # Separate complex paths to a constant for easier maintenance
 ALL_PLANT_PATHS = [
@@ -415,3 +414,67 @@ class RecordsetRowsViewSet(viewsets.GenericViewSet):
             f'attachment; filename="{csv_type}_export.csv"'
         )
         return response
+
+    @action(
+        detail=False,
+        methods=["get"],
+        url_path=r"vt/(?P<zoom>\d+)/(?P<tile_x>\d+)/(?P<tile_y>\d+)",
+    )
+    def vector_tiles(self, request, zoom=None, tile_x=None, tile_y=None):
+        class ST_TileEnvelope(Func):
+            function = "ST_TileEnvelope"
+            output_field = GeometryField(srid=3857)
+
+        class ST_AsMVTGeom(Func):
+            function = "ST_AsMVTGeom"
+
+        class ST_AsMVT(Aggregate):
+            function = "ST_AsMVT"
+            output_field = BinaryField()
+            template = (
+                "%(function)s((SELECT r FROM (SELECT %(expressions)s) r), 'data')"
+            )
+
+        z, x, y = int(zoom), int(tile_x), int(tile_y)
+
+        raw_filters = request.GET.get("filterObjects", "")
+        if not raw_filters:
+            return HttpResponse(message="Bad Request", status=400)
+        filter_objects = [json.loads(raw_filters)]
+        activity_queryset = self._get_base_queryset()
+        activity_queryset = self._apply_filters(activity_queryset, filter_objects)
+
+        if not activity_queryset.exists():
+            # Early Return, No results to share.
+            return HttpResponse(status=204)
+
+        tile_geom = ST_TileEnvelope(z, x, y)
+
+        if z < CENTROID_ZOOM_LIMIT:
+            target_geometry = Centroid(
+                F("computed_tile_shape"), output_field=GeometryField(srid=3857)
+            )
+        else:
+            target_geometry = F("computed_tile_shape")
+
+        mvt_features = activity_queryset.filter(
+            computed_tile_shape__intersects=tile_geom
+        ).annotate(mvt_geom=ST_AsMVTGeom(target_geometry, tile_geom, 4096, 64, True))
+
+        mvt_query = mvt_features.aggregate(
+            tile_bytes=ST_AsMVT(
+                F("id"),
+                F("short_id"),
+                F("type"),
+                F("subtype"),
+                F("mvt_geom"),
+                F("computed_map_symbol"),
+            )
+        )
+        tile_bytes = mvt_query.get("tile_bytes")
+
+        if not tile_bytes:
+            return HttpResponse(status=204)
+        return HttpResponse(
+            bytes(tile_bytes), content_type="application/vnd.mapbox-vector-tile"
+        )

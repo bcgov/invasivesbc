@@ -1,7 +1,9 @@
 from django.contrib.gis.db import models as geomodels
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from ninja.orm import register_field
 
+register_field("GeometryField", dict)
 MAX_AREA = 500000
 
 
@@ -35,11 +37,29 @@ class Geometry(models.Model):
         blank=True,
         validators=[MinValueValidator(0)],
     )
+    computed_tile_shape = geomodels.GeometryField(
+        srid=3857,
+        spatial_index=True,
+        geography=False,
+        null=False,
+        blank=True,
+        db_comment="Baked spatial reference for vector tiles generation.",
+    )
+
+    computed_map_symbol = models.CharField(
+        max_length=128,
+        null=False,
+        blank=True,
+    )
 
     class Meta:
         abstract = True
 
     def clean(self):
-        super().save()
+        vt_geom = self.shape.clone()
+        vt_geom.transform(3857)
+        self.computed_tile_shape = vt_geom
+
         # Check Geometry/Lat/Long are in BC.
         # Check radius is shape is point. No radius is shape is not point.
+        super().clean()
