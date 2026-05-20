@@ -17,7 +17,7 @@ const recordsetColourScheme = {
   Activity_Treatment_ChemicalPlantTerrestrial: TREATMENT,
   Activity_Treatment_MechanicalPlantAquatic: TREATMENT,
   Activity_Treatment_MechanicalPlantTerrestrial: TREATMENT,
-  // New names
+  // Subtypes
   Observation_Plant_Terrestrial: OBSERVATION,
   Observation_Plant_Aquatic: OBSERVATION,
   Monitoring_Chemical_Plant_Terrestrial_Aquatic: MONITORING,
