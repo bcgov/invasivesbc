@@ -121,7 +121,7 @@ const getPaintBySchemeOrColor = (color: string): ColorSpecification | Expression
     ]);
     return [
       'match',
-      ['get', 'activity_subtype'],
+      ['get', 'subtype'],
       ...activitySubtypeColours,
       color ?? FALLBACK_COLOR
     ] as unknown as ExpressionSpecification;
