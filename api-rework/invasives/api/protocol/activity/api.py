@@ -61,7 +61,7 @@ def submit_record(request, data: PlantActivitySchema = Body(...)):
     val = mock_record_id()
     data["id"] = val["id"]
     data["short_id"] = val["short_id"]
-    data["type"] = "Submit"
+    data["type"] = "Submitted"
     return data
 
 
