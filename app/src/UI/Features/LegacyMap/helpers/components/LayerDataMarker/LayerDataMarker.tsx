@@ -71,12 +71,13 @@ const LayerDataMarker = () => {
           map
             .queryRenderedFeatures(bbox, { layers: recordsetLayers })
             .map((feature) => {
+              console.log(feature);
               const isInvasivesRecord = 'short_id' in feature.properties;
               return isInvasivesRecord
                 ? {
                     label: feature.properties.type,
                     value: feature.properties.short_id,
-                    map_symbol: feature.properties.computed_map_symbol,
+                    map_symbol: feature.properties.map_symbol,
                     id: feature.properties.id,
                     url: '/Records/Activity/' + feature.properties.id + '/form'
                   }

@@ -26,6 +26,12 @@ class ST_AsMVT(Aggregate):
     template = "%(function)s((SELECT r FROM (SELECT %(expressions)s) r), 'data')"
 
 
+class AsMapSymbol(Func):
+    """Used to force computed_map_symbol to appear as map_symbol in the payload"""
+
+    template = '%(expressions)s AS "map_symbol"'
+
+
 class VectorTileViewset(viewsets.GenericViewSet):
     @action(
         detail=False,
@@ -56,9 +62,26 @@ class VectorTileViewset(viewsets.GenericViewSet):
         else:
             target_geometry = F("computed_tile_shape")
 
-        mvt_features = activity_queryset.filter(
-            computed_tile_shape__intersects=tile_geom
-        ).annotate(mvt_geom=ST_AsMVTGeom(target_geometry, tile_geom, 4096, 64, True))
+        mvt_features = (
+            activity_queryset.filter(computed_tile_shape__intersects=tile_geom)
+            .values(
+                "id",
+                "short_id",
+                "type",
+                "subtype",
+            )
+            .annotate(
+                mvt_geom=ST_AsMVTGeom(
+                    target_geometry,
+                    tile_geom,
+                    4096,
+                    64,
+                    True,
+                    output_field=BinaryField(),
+                ),
+                map_symbol=F("computed_map_symbol"),
+            )
+        )
 
         mvt_query = mvt_features.aggregate(
             tile_bytes=ST_AsMVT(
@@ -67,7 +90,7 @@ class VectorTileViewset(viewsets.GenericViewSet):
                 F("type"),
                 F("subtype"),
                 F("mvt_geom"),
-                F("computed_map_symbol"),
+                AsMapSymbol("map_symbol"),
             )
         )
         tile_bytes = mvt_query.get("tile_bytes")

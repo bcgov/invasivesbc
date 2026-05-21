@@ -285,3 +285,7 @@ class FilteredActivityQueryset:
 
     def get(self, *args, **kwargs):
         return self.queryset.get(*args, **kwargs)
+
+    def values(self, *args, **kwargs):
+        self.queryset = self.queryset.values(*args, **kwargs)
+        return self
