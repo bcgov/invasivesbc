@@ -105,8 +105,7 @@ function buildRecordsetLayerDefinitionsFromRecordset(
           createBorderLayer(layerConfiguration),
           createLabelLayer({
             ...layerConfiguration,
-            visibility: rec.labelToggle ? 'visible' : 'none',
-            minzoom: 12
+            visibility: rec.labelToggle ? 'visible' : 'none'
           })
         ]
       }
