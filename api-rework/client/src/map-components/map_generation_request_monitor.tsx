@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from 'client';
-import { API_URL, OBJECTSTORE_ROOT } from 'constants';
+import { CONFIG } from 'configuration';
 import { MapRecord } from 'map-components/map_generation_records_table';
 import { MapGenerationExecutionResponse } from 'map-components/map_generation_request_form';
 import { useParams } from 'react-router';
@@ -52,7 +52,7 @@ const MapGenerationRequestMonitor: React.FC<{ setMap: (m: MapRecord) => void }> 
       return;
     }
     setLoading(true);
-    fetch(`${API_URL}/maps/requests/${id}`, {
+    fetch(`${CONFIG.API_URL}/maps/requests/${id}`, {
       headers: {
         Authorization: `Bearer ${auth.token}`,
         'Content-Type': 'application/json'
@@ -114,7 +114,7 @@ const MapGenerationRequestMonitor: React.FC<{ setMap: (m: MapRecord) => void }> 
           <>
             <dt>Download</dt>
             <dd>
-              <a href={`${OBJECTSTORE_ROOT}/${response.generation_record.file_name}`}>
+              <a href={`${CONFIG.OBJECTSTORE_ROOT}/${response.generation_record.file_name}`}>
                 Download ({response.generation_record.file_size} bytes)
               </a>
             </dd>

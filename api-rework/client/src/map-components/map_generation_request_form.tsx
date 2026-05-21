@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from 'client';
 import * as geojson from 'geojson';
-import { API_URL } from 'constants';
 import { MapRecord } from 'map-components/map_generation_records_table';
 import { useNavigate } from 'react-router';
+import { CONFIG } from 'configuration';
 
 type MapGenerationEstimateRequest = {
   bounds: geojson.Polygon | undefined;
@@ -66,7 +66,7 @@ const MapGenerationRequestForm: React.FC<{ boundingPolygon: geojson.Polygon | un
 
     setLoading(true);
 
-    fetch(`${API_URL}/maps/requests/estimate`, {
+    fetch(`${CONFIG.API_URL}/maps/requests/estimate`, {
       headers: {
         Authorization: `Bearer ${auth.token}`,
         'Content-Type': 'application/json'
@@ -92,7 +92,7 @@ const MapGenerationRequestForm: React.FC<{ boundingPolygon: geojson.Polygon | un
   }, [estimateRequest, missingData]);
 
   const generateMap = () => {
-    fetch(`${API_URL}/maps/requests`, {
+    fetch(`${CONFIG.API_URL}/maps/requests`, {
       headers: {
         Authorization: `Bearer ${auth.token}`,
         'Content-Type': 'application/json'

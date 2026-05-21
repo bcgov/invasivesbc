@@ -12,19 +12,11 @@ log {
 encode gzip
 
 templates /assets/configuration* {
-  mime application/javascript
-}
-
-templates /assets/injected-features* {
-  mime application/javascript
+  mime text/javascript
 }
 
 route {
   header /assets/* Cache-Control max-age=3600
-}
-
-route {
-  header /.well-known/apple-app-site-association Content-Type application/json
 }
 
 route {
