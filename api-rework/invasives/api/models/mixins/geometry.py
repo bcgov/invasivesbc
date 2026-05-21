@@ -70,7 +70,6 @@ class Geometry(models.Model):
         from api.utils.filtered_activity_queryset import ALL_PLANT_PATHS
 
         codes = set()
-        #
         for path in ALL_PLANT_PATHS:
             values = (
                 type(self)
