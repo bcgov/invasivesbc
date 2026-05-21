@@ -20,7 +20,7 @@ const getIdsForRecordset = async (record: UserRecordSet): Promise<Array<string |
         };
       case RecordSetType.Activity:
         return {
-          url: `${API_V2_BASE}/recordset-rows`,
+          url: `${API_V2_BASE}/recordset/rows`,
           col: 'activity_id'
         };
     }

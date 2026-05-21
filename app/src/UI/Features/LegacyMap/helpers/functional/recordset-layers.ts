@@ -64,7 +64,7 @@ function buildRecordsetLayerDefinitionsFromRecordset(
   const api_target = (() => {
     const filters = encodeURI(stringifiedFilters);
     if (rec.recordSetType === RecordSetType.Activity) {
-      return `apiv2:///recordset-rows/vt/{z}/{x}/{y}?filterObjects=${filters}`;
+      return `apiv2:///tiles/{z}/{x}/{y}?filterObjects=${filters}`;
     } else if (rec.recordSetType === RecordSetType.IAPP) {
       return `api:///api/vectors/iapp/{z}/{x}/{y}?filterObject=${filters}`;
     }
