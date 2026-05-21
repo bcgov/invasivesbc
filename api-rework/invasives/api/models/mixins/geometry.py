@@ -59,7 +59,26 @@ class Geometry(models.Model):
         vt_geom = self.shape.clone()
         vt_geom.transform(3857)
         self.computed_tile_shape = vt_geom
-
         # Check Geometry/Lat/Long are in BC.
         # Check radius is shape is point. No radius is shape is not point.
         super().clean()
+
+        plant_codes = self.get_invasive_plant_codes()
+        self.computed_map_symbol = ", ".join(plant_codes)
+
+    def get_invasive_plant_codes(self):
+        from api.utils.filtered_activity_queryset import ALL_PLANT_PATHS
+
+        codes = set()
+        #
+        for path in ALL_PLANT_PATHS:
+            values = (
+                type(self)
+                .objects.filter(pk=self.pk)
+                .values_list(path + "__code", flat=True)
+            )
+            for val in values:
+                if val:
+                    codes.add(val)
+
+        return sorted(codes)

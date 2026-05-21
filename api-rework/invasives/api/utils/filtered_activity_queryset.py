@@ -15,16 +15,16 @@ from invasivesbc.settings import LEGACY_DB_CONNECTION_STRING
 log = logging.getLogger("invasives")
 
 ALL_PLANT_PATHS = [
-    "activitydatarecord__aquaticplantobservationentry__invasive_plant__full",
-    "activitydatarecord__terrestrialplantobservationentries__invasive_plant__full",
-    "activitydatarecord__aquaticplantmechanicaltreatmententry__invasive_plant__full",
-    "activitydatarecord__terrestrialplantmechanicaltreatmententry__invasive_plant__full",
-    "activitydatarecord__terrestrialtreatmentmonitoringentry__invasive_plant__full",
-    "activitydatarecord__terrestrialbiocontroldispersalmonitoringentry__invasive_plant__full",
-    "activitydatarecord__terrestrialbiocontrolreleaseentry__invasive_plant__full",
-    "activitydatarecord__aquatictreatmentmonitoringentry__invasive_plant__full",
-    "activitydatarecord__chemicaltreatmentaquaticinvasiveplantrecord__invasive_plant__full",
-    "activitydatarecord__chemicaltreatmentterrestrialinvasiveplantrecord__invasive_plant__full",
+    "activitydatarecord__aquaticplantobservationentry__invasive_plant",
+    "activitydatarecord__terrestrialplantobservationentries__invasive_plant",
+    "activitydatarecord__aquaticplantmechanicaltreatmententry__invasive_plant",
+    "activitydatarecord__terrestrialplantmechanicaltreatmententry__invasive_plant",
+    "activitydatarecord__terrestrialtreatmentmonitoringentry__invasive_plant",
+    "activitydatarecord__terrestrialbiocontroldispersalmonitoringentry__invasive_plant",
+    "activitydatarecord__terrestrialbiocontrolreleaseentry__invasive_plant",
+    "activitydatarecord__aquatictreatmentmonitoringentry__invasive_plant",
+    "activitydatarecord__chemicaltreatmentaquaticinvasiveplantrecord__invasive_plant",
+    "activitydatarecord__chemicaltreatmentterrestrialinvasiveplantrecord__invasive_plant",
 ]
 OBSERVATION_PLANTS_PATHS = ALL_PLANT_PATHS[:2]
 TREATED_PLANTS_PATHS = ALL_PLANT_PATHS[2:]
@@ -167,7 +167,9 @@ class FilteredActivityQueryset:
             order_by_field = "observation_species"
         elif sort_column == "invasive_plant":
             self.queryset = self.queryset.annotate(
-                invasive_plant_sort=Coalesce(*[F(p) for p in ALL_PLANT_PATHS])
+                invasive_plant_sort=Coalesce(
+                    *[F(p + "__full") for p in ALL_PLANT_PATHS]
+                )
             )
             order_by_field = "invasive_plant_sort"
 
@@ -245,7 +247,7 @@ class FilteredActivityQueryset:
         elif field == "invasive_plant":
             current_q = Q()
             for path in ALL_PLANT_PATHS:
-                current_q |= Q(**{f"{path}__icontains": value})
+                current_q |= Q(**{f"{path + "__full"}__icontains": value})
         elif field == "species_biocontrol_full":
             current_q = Q()
             for path in BIOCONTROL_PATHS:
