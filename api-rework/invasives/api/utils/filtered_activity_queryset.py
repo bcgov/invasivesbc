@@ -216,7 +216,10 @@ class FilteredActivityQueryset:
         value = f.get("filter")
         operator = f.get("operator")
         filter_type = f.get("filterType")
-        if filter_type == "spatialFilterDrawn":
+
+        if filter_type == "mostRecentObservation":
+            return Q()  # TODO once determined. Stub to prevent crash for invalid query
+        elif filter_type == "spatialFilterDrawn":
             try:
                 geom_data = json.dumps(f.get("geojson").get("geometry"))
                 search_geometry = GEOSGeometry(geom_data)
