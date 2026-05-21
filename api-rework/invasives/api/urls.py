@@ -1,12 +1,16 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
-
-from api.viewsets.activity import ActivityViewSet
-from api.viewsets.code import CodeViewSet
-from api.viewsets.maps import MapGenerationRecordViewset, MapGenerationRequestViewSet
-from api.viewsets.migration import MigrationStatusViewSet
-from api.viewsets.ids_within_bounds import IdsWithinBoundsViewSet
-from api.viewsets.recordset_rows import RecordsetRowsViewSet
+from .viewsets import (
+    ActivityViewSet,
+    CodeViewSet,
+    MapGenerationRecordViewset,
+    MapGenerationRequestViewSet,
+    MigrationStatusViewSet,
+    IdsWithinBoundsViewSet,
+    RecordsetRowsViewSet,
+    VectorTileViewset,
+    ExportViewset,
+)
 
 from api.protocol.activity.api import router as activity_router
 
@@ -18,7 +22,9 @@ ROUTER.register(r"activities", ActivityViewSet, "activity")
 ROUTER.register(r"codes", CodeViewSet, "code")
 ROUTER.register(r"migrations", MigrationStatusViewSet, "migration")
 ROUTER.register(r"ids-within-bounds", IdsWithinBoundsViewSet, "ids-within-bounds")
-ROUTER.register(r"recordset-rows", RecordsetRowsViewSet, "recordsets")
+ROUTER.register(r"recordset", RecordsetRowsViewSet, "recordsets")
+ROUTER.register(r"tiles", VectorTileViewset, "tiles")
+ROUTER.register(r"exports", ExportViewset, "exports")
 ROUTER.register(r"maps/records", MapGenerationRecordViewset, "map_generation_record")
 ROUTER.register(r"maps/requests", MapGenerationRequestViewSet, "map_generation_request")
 
