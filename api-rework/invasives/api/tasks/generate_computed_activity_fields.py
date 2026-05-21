@@ -167,7 +167,6 @@ def generate_computed_activity_fields(self, record_id):
                     risoarea__organization=agency,
                 ).exists()
                 if not already_exists:
-                    logger.info(f"{agency} -- {str(risos)}")
                     adr = ActivityDataRecord.objects.create(activity=a)
                     RisoArea.objects.create(
                         activity_data_record=adr, organization=agency
