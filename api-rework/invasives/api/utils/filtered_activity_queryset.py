@@ -25,6 +25,8 @@ ALL_PLANT_PATHS = [
     "activitydatarecord__aquatictreatmentmonitoringentry__invasive_plant",
     "activitydatarecord__chemicaltreatmentaquaticinvasiveplantrecord__invasive_plant",
     "activitydatarecord__chemicaltreatmentterrestrialinvasiveplantrecord__invasive_plant",
+    "activitydatarecord__terrestrialbiocontrolcollectionentry__invasive_plant",
+    "activitydatarecord__terrestrialbiocontrolreleaseentry__invasive_plant",
 ]
 OBSERVATION_PLANTS_PATHS = ALL_PLANT_PATHS[:2]
 TREATED_PLANTS_PATHS = ALL_PLANT_PATHS[2:]
