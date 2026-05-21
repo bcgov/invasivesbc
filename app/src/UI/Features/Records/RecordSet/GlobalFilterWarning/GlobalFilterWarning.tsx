@@ -1,7 +1,7 @@
 import { ReactNode, useMemo } from 'react';
 import { selectGlobalRecordsetFilters } from 'state/reducers/map';
 import { useSelector } from 'utils/use_selector';
-import { ActivitySubtypeShortLabels } from 'sharedAPI';
+import { ActivitySubtypesShortLabels } from 'sharedAPI';
 import './GlobalFilterWarning.css';
 import { WarningAmberRounded } from '@mui/icons-material';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
@@ -22,7 +22,7 @@ const GlobalFilterWarning = () => {
         <p>Global filters are active. The map will not show the following data:</p>
         <ul>
           {(globalMapFilters as unknown as Array<string>).slice(START_OF_SUBTYPES).map((f) => (
-            <li key={f}>{ActivitySubtypeShortLabels?.[f]}</li>
+            <li key={f}>{ActivitySubtypesShortLabels?.[f]}</li>
           ))}
         </ul>
       </div>
