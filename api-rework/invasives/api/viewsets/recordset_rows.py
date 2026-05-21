@@ -64,7 +64,7 @@ SORT_MAPPING = {
     "activity_subtype": "subtype",
     "activity_date": "date",
     "invasive_plant": "activitydatarecord__terrestrialplantobservationentries__invasive_plant__full",
-    "regional_invasive_species_organization_areas": "computed_invasive_plant_management_areas",
+    "regional_invasive_species_organization_areas": "activitydatarecord__risoarea__organization",
     "regional_districts": "computed_regional_districts",
     "ownership": "computed_ownership",
     "moti_districts": "computed_moti_districts",
