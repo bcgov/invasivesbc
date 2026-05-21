@@ -3,6 +3,7 @@ from rest_framework.routers import DefaultRouter
 from .viewsets import (
     ActivityViewSet,
     CodeViewSet,
+    HealthViewset,
     MapGenerationRecordViewset,
     MapGenerationRequestViewSet,
     MigrationStatusViewSet,
@@ -19,6 +20,7 @@ ROUTER = DefaultRouter(trailing_slash=False)
 
 ROUTER.register(r"activities", ActivityViewSet, "activity")
 ROUTER.register(r"codes", CodeViewSet, "code")
+ROUTER.register(r"health", HealthViewset, "health")
 ROUTER.register(r"ids-within-bounds", IdsWithinBoundsViewSet, "ids-within-bounds")
 ROUTER.register(r"maps/records", MapGenerationRecordViewset, "map_generation_record")
 ROUTER.register(r"maps/requests", MapGenerationRequestViewSet, "map_generation_request")

@@ -43,7 +43,7 @@ class VectorTileViewset(viewsets.GenericViewSet):
 
         raw_filters = request.GET.get("filterObjects", "")
         if not raw_filters:
-            return HttpResponse(message="Bad Request", status=400)
+            return HttpResponse(content="Bad Request", status=400)
 
         filter_objects = [json.loads(raw_filters)]
 
