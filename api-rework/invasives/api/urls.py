@@ -9,7 +9,6 @@ from .viewsets import (
     IdsWithinBoundsViewSet,
     RecordsetRowsViewSet,
     VectorTileViewset,
-    ExportViewset,
 )
 
 from api.protocol.activity.api import router as activity_router
@@ -20,13 +19,12 @@ ROUTER = DefaultRouter(trailing_slash=False)
 
 ROUTER.register(r"activities", ActivityViewSet, "activity")
 ROUTER.register(r"codes", CodeViewSet, "code")
-ROUTER.register(r"migrations", MigrationStatusViewSet, "migration")
 ROUTER.register(r"ids-within-bounds", IdsWithinBoundsViewSet, "ids-within-bounds")
-ROUTER.register(r"recordset", RecordsetRowsViewSet, "recordsets")
-ROUTER.register(r"tiles", VectorTileViewset, "tiles")
-ROUTER.register(r"exports", ExportViewset, "exports")
 ROUTER.register(r"maps/records", MapGenerationRecordViewset, "map_generation_record")
 ROUTER.register(r"maps/requests", MapGenerationRequestViewSet, "map_generation_request")
+ROUTER.register(r"migrations", MigrationStatusViewSet, "migration")
+ROUTER.register(r"recordset", RecordsetRowsViewSet, "recordsets")
+ROUTER.register(r"tiles", VectorTileViewset, "tiles")
 
 ninja_api = NinjaAPI()
 ninja_api.add_router("/activities", activity_router)

@@ -126,7 +126,7 @@ function* handle_WHATS_HERE_FEATURE(whatsHereFeature: PayloadAction<Feature>) {
       tableFilters,
       limit: 200000
     };
-    const activitiesNetworkReturn = yield fetch(`${API_V2_BASE}/recordset-rows`, {
+    const activitiesNetworkReturn = yield fetch(`${API_V2_BASE}/recordset/rows`, {
       method: 'POST',
       headers: { Authorization: yield getCurrentJWT(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ filterObjects: [activitiesfilterObj] })
@@ -281,7 +281,7 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST() {
       whatsHere.ActivityLimit
     );
   } else {
-    const networkReturn = yield fetch(`${API_V2_BASE}/recordset-rows`, {
+    const networkReturn = yield fetch(`${API_V2_BASE}/recordset/rows`, {
       method: 'POST',
       headers: { Authorization: yield getCurrentJWT(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ filterObjects: [filterObject] })
