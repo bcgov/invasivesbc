@@ -6,6 +6,7 @@ import UserSettings from 'state/actions/userSettings/UserSettings';
 import { GeoJSON } from 'geojson';
 import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
 import { useNavigate } from 'react-router';
+import { Debug } from 'UI/Reusable/Predicates/Debug';
 
 /**
  * @property { string } recordDisplayId Short ID / Site ID for a Record, displayed in the Popover
@@ -64,11 +65,13 @@ const RecordTablePopoverContent = ({ recordDisplayId: id, recordLookupId, record
       </p>
       {/* // TODO: Remove RJSF Option */}
       <Button onClick={handleOpenRecordInRJSF} variant="contained">
-        Open - RJSF Form
+        Open <Debug>- RJSF Form</Debug>
       </Button>
-      <Button onClick={handleOpenRecordInRHF} variant="contained">
-        Open - RHF
-      </Button>
+      <Debug>
+        <Button onClick={handleOpenRecordInRHF} variant="contained">
+          Open - RHF
+        </Button>
+      </Debug>
       {!!geom && (
         <Button onClick={handleMarkGeometryOnMap.bind(this, true)} variant="contained">
           Pan to record
