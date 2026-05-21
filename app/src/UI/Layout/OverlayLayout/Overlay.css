@@ -29,6 +29,10 @@
       &.shown {
         top: var(--overlay-top);
         padding-bottom: 1rem;
+
+        .overlay-content {
+          padding-bottom: calc(var(--footer-bar-height) + 5px);
+        }
       }
 
       &.fullscreen {
@@ -41,7 +45,6 @@
         width: 100%;
         overflow: auto;
         box-sizing: border-box;
-        padding-bottom: calc(var(--footer-bar-height) + 5px);
       }
     }
 
