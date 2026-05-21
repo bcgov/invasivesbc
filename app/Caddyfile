@@ -12,11 +12,11 @@ log {
 encode gzip
 
 templates /assets/configuration* {
-  mime application/javascript
+  mime text/javascript
 }
 
 templates /assets/injected-features* {
-  mime application/javascript
+  mime text/javascript
 }
 
 route {
