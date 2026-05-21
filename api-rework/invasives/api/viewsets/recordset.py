@@ -63,11 +63,17 @@ class RecordsetRowsViewSet(viewsets.GenericViewSet):
         )
 
         if ids_only:  # Early Return, just ship IDs
-            id_list = FilteredActivityQueryset(filter_objects).query(ids_only=True)
+            id_list = FilteredActivityQueryset(
+                filter_objects=filter_objects
+            ).select_output_format(fields=["id"])
             return Response(list(id_list), status=status.HTTP_200_OK)
-
-        queryset = FilteredActivityQueryset(filter_objects).query(paginate=True)
-        serializer = self.get_serializer(queryset, many=True)
+        records = (
+            FilteredActivityQueryset(filter_objects=filter_objects)
+            .apply_sorting()
+            .select_output_format()
+            .paginate()
+        )
+        serializer = self.get_serializer(records.query, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(detail=False, methods=["post"], url_path="csv")
@@ -104,10 +110,11 @@ class RecordsetRowsViewSet(viewsets.GenericViewSet):
         Since CSV's are based on a Specific Subtype, ensure we are filtering for one. This eliminates
         Shared models like for Chemical/Mechanical Monitoring Records.
         """
-        activity_queryset = FilteredActivityQueryset(
-            filter_objects=filter_objects
-        ).query()
-        activity_queryset = activity_queryset.filter(subtype=csv_type)
+        # Build up the base filtered/sorted query
+        builder = (
+            FilteredActivityQueryset(filter_objects).apply_filters().apply_sorting()
+        )
+        activity_queryset = builder.query.filter(subtype=csv_type)
         valid_activity_ids = activity_queryset.values_list("id", flat=True).distinct()
 
         ANNOTATIONS = build_csv_annotation_object(config.get("annotations", []))

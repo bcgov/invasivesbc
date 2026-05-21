@@ -33,15 +33,15 @@ class VectorTileViewset(viewsets.GenericViewSet):
         url_path=r"(?P<zoom>\d+)/(?P<tile_x>\d+)/(?P<tile_y>\d+)",
     )
     def vector_tiles(self, request, zoom=None, tile_x=None, tile_y=None):
-
         z, x, y = int(zoom), int(tile_x), int(tile_y)
 
         raw_filters = request.GET.get("filterObjects", "")
         if not raw_filters:
             return HttpResponse(message="Bad Request", status=400)
+
         filter_objects = [json.loads(raw_filters)]
 
-        activity_queryset = FilteredActivityQueryset(filter_objects).query()
+        activity_queryset = FilteredActivityQueryset(filter_objects).apply_filters()
 
         if not activity_queryset.exists():
             # Early Return, No results to share.

@@ -62,31 +62,23 @@ class FilteredActivityQueryset:
     """
 
     def __init__(self, filter_objects):
+        self.queryset = Activity.objects.all()
         self.filter_objects = filter_objects
-        self.queryset = Activity.objects.all().prefetch_related(
-            "activitydatarecord_set__jurisdiction_set__jurisdiction",
-            "activitydatarecord_set__projectcode_set",
-            "activitydatarecord_set__fundingagency_set__agency",
-            "activitydatarecord_set__aquaticplantobservationentry_set__invasive_plant",
-            "activitydatarecord_set__terrestrialplantobservationentries_set__invasive_plant",
-            "activitydatarecord_set__aquaticplantmechanicaltreatmententry_set__invasive_plant",
-            "activitydatarecord_set__terrestrialplantmechanicaltreatmententry_set__invasive_plant",
-            "activitydatarecord_set__terrestrialbiocontroldispersalmonitoringentry_set__invasive_plant",
-            "activitydatarecord_set__terrestrialbiocontrolreleaseentry_set__invasive_plant",
-            "activitydatarecord_set__aquatictreatmentmonitoringentry_set__invasive_plant",
-            "activitydatarecord_set__terrestrialtreatmentmonitoringentry_set__invasive_plant",
-            "activitydatarecord_set__terrestrialbiocontrolcollectionentry_set__invasive_plant",
-            "activitydatarecord_set__terrestrialbiocontrolcollectionentry_set__biological_agent",
-            "activitydatarecord_set__terrestrialbiocontrolreleaseentry_set__biocontrol_agent",
-            "activitydatarecord_set__terrestrialbiocontroldispersalmonitoringentry_set__biocontrol_agent",
-            "activitydatarecord_set__terrestrialbiocontroldispersalmonitoringentry_set__invasive_plant",
-        )
+        self._is_filtered = False
+        self._is_sorted = False
+
+    def __iter__(self):
+        """Allow the class wrapper to be directly iterated over or cast to a list."""
+        return iter(self.queryset)
+
+    @property
+    def query(self):
+        """Gain direct access to queryset if use may require non-user-specified fields"""
+        return self.queryset
 
     def apply_filters(self):
-        """
-        Processes filters. AND logic uses chained .filter() calls to ensure
-        multiple related table lookups work correctly.
-        """
+        if self._is_filtered:
+            return self
 
         for obj in self.filter_objects:
             or_group = Q()
@@ -115,14 +107,115 @@ class FilteredActivityQueryset:
                     self.queryset = self.queryset.filter(current_q)
             if or_group:
                 self.queryset = self.queryset.filter(or_group)
+        self._is_filtered = True
+        return self
+
+    def select_output_format(self, fields=[]):
+        self.apply_filters()
+
+        self.queryset = self.queryset.prefetch_related(
+            "activitydatarecord_set__jurisdiction_set__jurisdiction",
+            "activitydatarecord_set__projectcode_set",
+            "activitydatarecord_set__fundingagency_set__agency",
+            "activitydatarecord_set__aquaticplantobservationentry_set__invasive_plant",
+            "activitydatarecord_set__terrestrialplantobservationentries_set__invasive_plant",
+            "activitydatarecord_set__aquaticplantmechanicaltreatmententry_set__invasive_plant",
+            "activitydatarecord_set__terrestrialplantmechanicaltreatmententry_set__invasive_plant",
+            "activitydatarecord_set__terrestrialtreatmentmonitoringentry_set__invasive_plant",
+            "activitydatarecord_set__terrestrialbiocontroldispersalmonitoringentry_set__invasive_plant",
+            "activitydatarecord_set__terrestrialbiocontrolreleaseentry_set__invasive_plant",
+            "activitydatarecord_set__aquatictreatmentmonitoringentry_set__invasive_plant",
+            "activitydatarecord_set__terrestrialbiocontrolcollectionentry_set__invasive_plant",
+            "activitydatarecord_set__terrestrialbiocontrolcollectionentry_set__biological_agent",
+            "activitydatarecord_set__terrestrialbiocontrolreleaseentry_set__biocontrol_agent",
+            "activitydatarecord_set__terrestrialbiocontroldispersalmonitoringentry_set__biocontrol_agent",
+        )
+        if len(fields) == 1:
+            return self.queryset.values_list(fields[0], flat=True)
+        elif len(fields) != 0:
+            return self.queryset.values_list(*fields)
+
+        return self
+
+    def apply_sorting(self):
+        if self._is_sorted:
+            return self
+
+        self.apply_filters()
+        meta = self.filter_objects[0] if self.filter_objects else {}
+        sort_column = meta.get("sortColumn", "date").replace("activity_", "")
+        direction = meta.get("sortOrder", "DESC")
+
+        order_by_field = None
+
+        if sort_column in ["species_negative_full", "species_positive_full"]:
+            obs_type = "Negative" if "negative" in sort_column else "Positive"
+            condition = Q(type="Observation") & (
+                Q(
+                    activitydatarecord__terrestrialplantobservationentries__observation_type=obs_type
+                )
+                | Q(
+                    activitydatarecord__aquaticplantobservationentry__observation_type=obs_type
+                )
+            )
+            self.queryset = self.queryset.annotate(
+                observation_species=Min(
+                    Coalesce(*[F(p) for p in OBSERVATION_PLANTS_PATHS]),
+                    filter=condition,
+                )
+            )
+            order_by_field = "observation_species"
+        elif sort_column == "invasive_plant":
+            self.queryset = self.queryset.annotate(
+                invasive_plant_sort=Coalesce(*[F(p) for p in ALL_PLANT_PATHS])
+            )
+            order_by_field = "invasive_plant_sort"
+
+        elif sort_column == "species_treated":
+            self.queryset = self.queryset.annotate(
+                species_treated_sort=Coalesce(*[F(p) for p in TREATED_PLANTS_PATHS])
+            )
+            order_by_field = "species_treated_sort"
+
+        elif sort_column == "species_biocontrol_full":
+            self.queryset = self.queryset.annotate(
+                species_biocontrol_full=Coalesce(*[F(p) for p in BIOCONTROL_PATHS])
+            )
+            order_by_field = "species_biocontrol_full"
+        else:
+            order_by_field = SORT_MAPPING.get(sort_column, sort_column)
+
+        try:
+            order_expr = (
+                F(order_by_field).asc(nulls_last=True)
+                if direction == "ASC"
+                else F(order_by_field).desc(nulls_last=True)
+            )
+            self.queryset = self.queryset.order_by(order_expr)
+        except FieldError:
+            self.queryset = self.queryset.order_by("-date")
+
+        self._is_sorted = True
+        return self
+
+    def paginate(self, page=None, limit=None):
+        meta = self.filter_objects[0] if self.filter_objects else {}
+
+        target_page = int(page if page is not None else meta.get("page", 0))
+        target_limit = int(limit if limit is not None else meta.get("limit", 10))
+
+        start = target_page * target_limit
+        stop = start + target_limit
+
+        self.queryset = self.queryset[start:stop]
+        return self
 
     def _build_single_filter_q(self, f):
-        """Helper to create a Q object for a single filter row."""
+        """Helper to create a Q object for a single filter row"""
         field = f.get("field", "").replace("activity_", "")
         value = f.get("filter")
         operator = f.get("operator")
         filter_type = f.get("filterType")
-
         if filter_type == "spatialFilterDrawn":
             try:
                 geom_data = json.dumps(f.get("geojson").get("geometry"))
@@ -137,22 +230,12 @@ class FilteredActivityQueryset:
                     LEGACY_DB_CONNECTION_STRING, row_factory=dict_row
                 ) as conn:
                     with conn.cursor() as cursor:
-                        sql = """
-                                SELECT geog
-                                FROM admin_defined_shapes
-                                WHERE id = %s
-                                LIMIT 1;
-                            """
+                        sql = "SELECT geog FROM admin_defined_shapes WHERE id = %s LIMIT 1;"
                         cursor.execute(sql, (value,))
                         result = cursor.fetchone()
                         if result:
-                            geog = result["geog"]
-                            return Q(shape__intersects=GEOSGeometry(geog))
-                        else:
-                            log.debug(
-                                f"Requested shape with ID '{value}' was not found."
-                            )
-                            return Q()
+                            return Q(shape__intersects=GEOSGeometry(result["geog"]))
+                        return Q()
             except Exception:
                 log.error("Error while handling 'spatialFilterUploaded'", exc_info=True)
                 return Q()
@@ -177,77 +260,21 @@ class FilteredActivityQueryset:
 
         return ~current_q if operator == "DOES NOT CONTAIN" else current_q
 
-    def _apply_sorting(self):
-        meta = self.filter_objects[0] if self.filter_objects else {}
-        """Handles complex annotations and returns the (queryset, sort_field) tuple."""
-        sort_column = meta.get("sortColumn", "date").replace("activity_", "")
+    # Bridge functions to avoid needing to branch into queryset for endpoint specific functionality (Tiles)
+    def exists(self):
+        return self.queryset.exists()
 
-        if sort_column in ["species_negative_full", "species_positive_full"]:
-            obs_type = "Negative" if "negative" in sort_column else "Positive"
-            condition = Q(type="Observation") & (
-                Q(
-                    activitydatarecord__terrestrialplantobservationentries__observation_type=obs_type
-                )
-                | Q(
-                    activitydatarecord__aquaticplantobservationentry__observation_type=obs_type
-                )
-            )
-            # Fixed: Map items to F() expressions and unpack with *
-            self.queryset = self.queryset.annotate(
-                observation_species=Min(
-                    Coalesce(*[F(p) for p in OBSERVATION_PLANTS_PATHS]),
-                    filter=condition,
-                )
-            )
-            return "observation_species"
-
-        if sort_column == "invasive_plant":
-            self.queryset = self.queryset.annotate(
-                invasive_plant_sort=Coalesce(*[F(p) for p in ALL_PLANT_PATHS])
-            )
-            return "invasive_plant_sort"
-
-        if sort_column == "species_treated":
-            # Fixed: Removed the redundant nested bracket [] wrap around TREATED_PLANTS_PATHS
-            self.queryset = self.queryset.annotate(
-                species_treated_sort=Coalesce(*[F(p) for p in TREATED_PLANTS_PATHS])
-            )
-            return "species_treated_sort"
-
-        if sort_column == "species_biocontrol_full":
-            self.queryset = self.queryset.annotate(
-                species_biocontrol_full=Coalesce(*[F(p) for p in BIOCONTROL_PATHS])
-            )
-            return "species_biocontrol_full"
-
-        return SORT_MAPPING.get(sort_column, sort_column)
-
-    def _paginate_and_execute(self, order_by):
-        """Handles final ordering, distinct, and slicing."""
-        meta = self.filter_objects[0] if self.filter_objects else {}
-        page = int(meta.get("page", 0))
-        limit = int(meta.get("limit", 10))
-        direction = meta.get("sortOrder", "DESC")
-
-        start, stop = page * limit, (page * limit) + limit
-
-        try:
-            order_expr = (
-                F(order_by).asc(nulls_last=True)
-                if direction == "ASC"
-                else F(order_by).desc(nulls_last=True)
-            )
-            self.queryset = self.queryset.order_by(order_expr).distinct()[start:stop]
-        except FieldError:
-            self.queryset = self.queryset.order_by("-date").distinct()[start:stop]
-
+    def filter(self, *args, **kwargs):
+        self.queryset = self.queryset.filter(*args, **kwargs)
         return self
 
-    def query(self, ids_only=False, paginate=False):
-        self.apply_filters()
-        order_by = self._apply_sorting()
-        if ids_only:
-            self.queryset = self.queryset.values_list("id", flat=True).distinct()
-        if paginate:
-            self._paginate_and_execute(order_by)
-        return self.queryset
+    def annotate(self, *args, **kwargs):
+        self.queryset = self.queryset.annotate(*args, **kwargs)
+        return self
+
+    def aggregate(self, *args, **kwargs):
+        self.queryset = self.queryset.aggregate(*args, **kwargs)
+        return self
+
+    def get(self, *args, **kwargs):
+        return self.queryset.get(*args, **kwargs)
