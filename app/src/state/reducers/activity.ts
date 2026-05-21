@@ -193,6 +193,11 @@ function createActivityReducer() {
           suggestedPersons: [],
           suggestedTreatmentIDs: []
         });
+      } else if (FormActions.delete.fulfilled.match(action)) {
+        delete draftState.formState;
+        delete draftState.geometry_details;
+        delete draftState.wellsInRecordArea;
+        delete draftState.recordNotFound;
       } else if (Activity.paste.match(action)) {
         const shallow = draftState?.activity_copy_buffer?.form_data;
         if (!shallow) return;
