@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from 'client';
-import { API_URL } from 'constants';
+import { CONFIG } from 'configuration';
 import { ColDef } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import { customizedAgTheme } from 'ag-theme';
@@ -33,7 +33,7 @@ const MapGenerationRequestsTable: React.FC = () => {
     setErrorMessage('');
     setError(false);
 
-    fetch(`${API_URL}/maps/requests`, {
+    fetch(`${CONFIG.API_URL}/maps/requests`, {
       headers: {
         Authorization: `Bearer ${auth.token}`
       }

@@ -13,14 +13,15 @@ import EndlessLoadingBar from 'common-components/endless-loading-bar/EndlessLoad
 import { AgGridProvider } from 'ag-grid-react';
 import { AllCommunityModule } from 'ag-grid-community';
 import MigrationStatusList from 'activities/migration_list';
+import { CONFIG } from 'configuration';
 
 const MIN_FRESHNESS = 60;
 const SESSION_STORE_PATH_KEY = 'post-auth-redirect-path';
 
 const keycloakInstance = new Keycloak({
-  clientId: import.meta.env.VITE_SSO_CLIENT_ID || 'invasives-bc-4565',
-  realm: import.meta.env.VITE_SSO_REALM || 'standard',
-  url: import.meta.env.VITE_SSO_URL || 'https://dev.loginproxy.gov.bc.ca/auth/'
+  clientId: CONFIG.SSO_CLIENT_ID,
+  realm: CONFIG.SSO_REALM,
+  url: CONFIG.SSO_URL
 });
 
 type AuthState = {
@@ -161,7 +162,7 @@ const Client: React.FC = () => {
       .init({
         adapter: 'default',
         checkLoginIframe: false,
-        redirectUri: import.meta.env.VITE_SSO_REDIRECT_URI || 'http://localhost:3001',
+        redirectUri: CONFIG.SSO_REDIRECT_URI,
         responseMode: 'fragment',
         onLoad: 'check-sso',
         pkceMethod: 'S256'

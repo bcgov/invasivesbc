@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { API_URL } from 'constants';
+import { CONFIG } from 'configuration';
 import { NavLink, Outlet, Route, Routes, useParams } from 'react-router';
 import Spinner from 'activities/spinner';
 import JSONViewer from 'activities/json_viewer';
@@ -29,7 +29,7 @@ const ActivitiesDetail: React.FC = () => {
     setAnyError(false);
 
     const promises = [
-      fetch(`${API_URL}/activities/${id}`, {
+      fetch(`${CONFIG.API_URL}/activities/${id}`, {
         headers: {
           Authorization: `Bearer ${auth.token}`
         }
@@ -40,7 +40,7 @@ const ActivitiesDetail: React.FC = () => {
           setAnyError(true);
         }
       }),
-      fetch(`${API_URL}/activities/${id}/pydantic`, {
+      fetch(`${CONFIG.API_URL}/activities/${id}/pydantic`, {
         headers: {
           Authorization: `Bearer ${auth.token}`
         }
@@ -51,7 +51,7 @@ const ActivitiesDetail: React.FC = () => {
           setAnyError(true);
         }
       }),
-      fetch(`${API_URL}/activities/${id}/legacy`, {
+      fetch(`${CONFIG.API_URL}/activities/${id}/legacy`, {
         headers: {
           Authorization: `Bearer ${auth.token}`
         }
@@ -62,7 +62,7 @@ const ActivitiesDetail: React.FC = () => {
           setAnyError(true);
         }
       }),
-      fetch(`${API_URL}/ninja/activities/${id}`, {
+      fetch(`${CONFIG.API_URL}/ninja/activities/${id}`, {
         headers: {
           Authorization: `Bearer ${auth.token}`
         }
@@ -73,7 +73,7 @@ const ActivitiesDetail: React.FC = () => {
           setAnyError(true);
         }
       }),
-      fetch(`${API_URL}/activities/${id}/migration_status`, {
+      fetch(`${CONFIG.API_URL}/activities/${id}/migration_status`, {
         headers: {
           Authorization: `Bearer ${auth.token}`
         }
@@ -91,7 +91,7 @@ const ActivitiesDetail: React.FC = () => {
   }, [id, serial]);
 
   const rerunImport = () => {
-    fetch(`${API_URL}/activities/${id}/migrate`, {
+    fetch(`${CONFIG.API_URL}/activities/${id}/migrate`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${auth.token}`

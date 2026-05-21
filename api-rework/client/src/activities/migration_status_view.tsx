@@ -5,10 +5,13 @@ type MigrationStatus = {
   detail: { reason: string; extended_status: string }[];
 };
 
-const MigrationStatusView: React.FC<{ migrationStatus: MigrationStatus; rerunImport: () => void }> = ({
+const MigrationStatusView: React.FC<{ migrationStatus: MigrationStatus | undefined; rerunImport: () => void }> = ({
   migrationStatus,
   rerunImport
 }) => {
+  if (migrationStatus == undefined)
+    return null;
+
   return (
     <>
       <button

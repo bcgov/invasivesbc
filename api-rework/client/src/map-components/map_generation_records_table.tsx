@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from 'client';
-import { API_URL } from 'constants';
 import { ColDef } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import { customizedAgTheme } from 'ag-theme';
+import { CONFIG } from 'configuration';
 
 interface MapRecord {
   minimum_zoom: number;
@@ -47,7 +47,7 @@ const MapGenerationRecordsTable: React.FC<{ setMap: (m: MapRecord) => void; sour
     setErrorMessage('');
     setError(false);
 
-    fetch(`${API_URL}/maps/records/${source}`, {
+    fetch(`${CONFIG.API_URL}/maps/records/${source}`, {
       headers: {
         Authorization: `Bearer ${auth.token}`
       }

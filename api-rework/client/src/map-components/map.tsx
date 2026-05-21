@@ -2,13 +2,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import maplibregl from 'maplibre-gl';
 import * as geojson from 'geojson';
 import { Protocol } from 'pmtiles';
-import { OBJECTSTORE_ROOT } from 'constants';
 import './map.css';
 import MapGenerationRequestsTable from 'map-components/map_generation_requests_table';
 import MapGenerationRecordsTable, { MapRecord } from 'map-components/map_generation_records_table';
 import MapGenerationRequestForm from 'map-components/map_generation_request_form';
 import { NavLink, Route, Routes, useLocation, useMatch } from 'react-router';
 import MapGenerationRequestMonitor from 'map-components/map_generation_request_monitor';
+import { CONFIG } from 'configuration';
 
 type point = {
   lat: number;
@@ -105,7 +105,7 @@ const Map: React.FC = () => {
     if (activeProtomapLayer !== undefined && enableActiveProtomapLayer) {
       map.current.addSource(activeProtomapLayer.file_name, {
         type: 'raster',
-        url: `pmtiles://${OBJECTSTORE_ROOT}/${activeProtomapLayer.file_name}`,
+        url: `pmtiles://${CONFIG.OBJECTSTORE_ROOT}/${activeProtomapLayer.file_name}`,
         minzoom: activeProtomapLayer.minimum_zoom,
         maxzoom: activeProtomapLayer.maximum_zoom
       });

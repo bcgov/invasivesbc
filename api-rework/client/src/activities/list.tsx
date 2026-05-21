@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { API_URL } from 'constants';
+import { CONFIG } from 'configuration';
 import './activities.scss';
 import { useNavigate } from 'react-router';
 import { AuthContext } from 'client';
@@ -59,7 +59,7 @@ const ActivitiesList: React.FC = () => {
     setErrorMessage('');
     setError(false);
 
-    fetch(`${API_URL}/activities`, {
+    fetch(`${CONFIG.API_URL}/activities`, {
       headers: {
         Authorization: `Bearer ${auth.token}`
       }

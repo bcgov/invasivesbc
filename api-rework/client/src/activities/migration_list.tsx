@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { API_URL } from 'constants';
+import { CONFIG } from 'configuration';
 import './activities.scss';
 import { useNavigate } from 'react-router';
 import { AuthContext } from 'client';
@@ -36,7 +36,7 @@ const MigrationStatusList: React.FC = () => {
     setErrorMessage('');
     setError(false);
 
-    fetch(`${API_URL}/migrations/failed`, {
+    fetch(`${CONFIG.API_URL}/migrations/failed`, {
       headers: {
         Authorization: `Bearer ${auth.token}`
       }
