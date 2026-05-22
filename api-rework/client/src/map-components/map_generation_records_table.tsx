@@ -14,6 +14,7 @@ interface MapRecord {
   updated: Date;
   bounds: GeoJSON.Polygon;
   centroid: GeoJSON.Point;
+  download_link: string;
 }
 
 const MapGenerationRecordsTable: React.FC<{ setMap: (m: MapRecord) => void; source: 'owned' | 'public' }> = ({

@@ -45,6 +45,7 @@ from invasivesbc.settings import (
     OBJECT_STORE_SECRET_ACCESS_KEY,
     SCRATCH_DIRECTORY,
     TILE_CACHE_MAXIMUM_SIZE,
+    OBJECT_STORE_REGION,
 )
 
 cache = Cache(
@@ -290,6 +291,7 @@ class TileDownloader:
                 aws_access_key_id=OBJECT_STORE_ACCESS_KEY_ID,
                 aws_secret_access_key=OBJECT_STORE_SECRET_ACCESS_KEY,
                 aws_session_token=None,
+                region_name=OBJECT_STORE_REGION,
                 config=boto3.session.Config(
                     signature_version="s3v4",
                     request_checksum_calculation="when_required",

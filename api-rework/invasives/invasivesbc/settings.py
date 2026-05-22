@@ -186,6 +186,10 @@ OBJECT_STORE_ENDPOINT_URL = os.getenv(
 OBJECT_STORE_ACCESS_KEY_ID = os.getenv("OBJECT_STORE_ACCESS_KEY_ID", "unset")
 OBJECT_STORE_SECRET_ACCESS_KEY = os.getenv("OBJECT_STORE_SECRET_ACCESS_KEY", "unset")
 OBJECT_STORE_MAP_UPLOAD_BUCKET = os.getenv("OBJECT_STORE_MAP_UPLOAD_BUCKET", "maps")
+OBJECT_STORE_REGION = os.getenv(
+    "OBJECT_STORE_REGION", "unset"
+)  # certain operations, like generating pre-signed URLS, require this to match the service expectation
+
 
 LOG_LEVEL = os.getenv("DJANGO_LOGGING_LEVEL", "INFO")
 LOGGING = {

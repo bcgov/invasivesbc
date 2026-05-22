@@ -1,3 +1,8 @@
+import logging
+from datetime import timedelta
+
+import boto3
+from botocore.exceptions import ClientError
 from rest_framework import serializers
 
 from api.models import (
@@ -8,6 +13,13 @@ from api.models import (
 from django.db.models import Q
 
 from api.serializers.common.polygon import CentroidSerializer, PolygonSerializer
+from invasivesbc.settings import (
+    OBJECT_STORE_SECRET_ACCESS_KEY,
+    OBJECT_STORE_ACCESS_KEY_ID,
+    OBJECT_STORE_ENDPOINT_URL,
+    OBJECT_STORE_MAP_UPLOAD_BUCKET,
+    OBJECT_STORE_REGION,
+)
 
 
 class MapGenerationIntermediateResultSerializer(serializers.ModelSerializer):
@@ -171,6 +183,34 @@ class MapGenerationRecordSerializer(serializers.ModelSerializer):
     bounds = PolygonSerializer()
     centroid = CentroidSerializer(source="bounds")
 
+    download_link = serializers.SerializerMethodField()
+
+    def get_download_link(self, obj):
+        # todo use django's caching mechanisms to speed this up
+        try:
+            s3_client = boto3.client(
+                "s3",
+                endpoint_url=OBJECT_STORE_ENDPOINT_URL,
+                aws_access_key_id=OBJECT_STORE_ACCESS_KEY_ID,
+                aws_secret_access_key=OBJECT_STORE_SECRET_ACCESS_KEY,
+                region_name=OBJECT_STORE_REGION,
+                aws_session_token=None,
+                config=boto3.session.Config(
+                    signature_version="s3v4",
+                    request_checksum_calculation="when_required",
+                    response_checksum_validation="when_required",
+                ),
+            )
+            response = s3_client.generate_presigned_url(
+                ClientMethod="get_object",
+                Params={"Bucket": OBJECT_STORE_MAP_UPLOAD_BUCKET, "Key": obj.file_name},
+                ExpiresIn=int(timedelta(days=7).total_seconds()),
+            )
+            return response
+        except ClientError:
+            logging.error("Unable to generate pre-signed URL", exc_info=True)
+            return None
+
     class Meta:
         model = MapGenerationRecord
         fields = (
@@ -185,4 +225,5 @@ class MapGenerationRecordSerializer(serializers.ModelSerializer):
             "area_km2",
             "centroid",
             "raster",
+            "download_link",
         )

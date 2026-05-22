@@ -114,7 +114,7 @@ const MapGenerationRequestMonitor: React.FC<{ setMap: (m: MapRecord) => void }> 
           <>
             <dt>Download</dt>
             <dd>
-              <a href={`${CONFIG.OBJECTSTORE_ROOT}/${response.generation_record.file_name}`}>
+              <a href={`${response.generation_record.download_link}`}>
                 Download ({response.generation_record.file_size} bytes)
               </a>
             </dd>

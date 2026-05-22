@@ -8,7 +8,6 @@ import MapGenerationRecordsTable, { MapRecord } from 'map-components/map_generat
 import MapGenerationRequestForm from 'map-components/map_generation_request_form';
 import { NavLink, Route, Routes, useLocation, useMatch } from 'react-router';
 import MapGenerationRequestMonitor from 'map-components/map_generation_request_monitor';
-import { CONFIG } from 'configuration';
 
 type point = {
   lat: number;
@@ -105,7 +104,7 @@ const Map: React.FC = () => {
     if (activeProtomapLayer !== undefined && enableActiveProtomapLayer) {
       map.current.addSource(activeProtomapLayer.file_name, {
         type: 'raster',
-        url: `pmtiles://${CONFIG.OBJECTSTORE_ROOT}/${activeProtomapLayer.file_name}`,
+        url: `pmtiles://${activeProtomapLayer.download_link}`,
         minzoom: activeProtomapLayer.minimum_zoom,
         maxzoom: activeProtomapLayer.maximum_zoom
       });
