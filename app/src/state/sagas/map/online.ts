@@ -16,7 +16,7 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action: PayloadAction<A
   const body = JSON.stringify({ filterObjects: [action.payload.filterObj] });
 
   try {
-    const response = yield fetch(`${API_V2_BASE}/recordset-rows`, {
+    const response = yield fetch(`${API_V2_BASE}/recordset/rows`, {
       method: 'POST',
       headers: { Authorization: yield getCurrentJWT(), 'Content-Type': 'application/json' },
       body

@@ -313,7 +313,7 @@ abstract class RecordCacheService extends BaseCacheService<
       const ids = uncachedRecords.slice(i, i + this.BATCH_AMOUNT);
 
       this.processNext(executing, async () => {
-        const url = `${API_V2_BASE}/recordset-rows?idList=${ids.join(',')}`;
+        const url = `${API_V2_BASE}/recordset/cache?idList=${ids.join(',')}`;
         const rez = await fetch(url, {
           headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' }
         });

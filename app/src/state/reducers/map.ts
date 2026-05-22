@@ -2,6 +2,7 @@ import { createNextState, createSelector, nanoid } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
 import { Feature, GeoJSON, Point, Polygon } from 'geojson';
 import { FilterSpecification } from 'maplibre-gl';
+import { ActivitySubtypes } from 'sharedAPI';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import GeoShapes from 'constants/geoShapes';
 import UserSettings from 'state/actions/userSettings/UserSettings';
@@ -600,27 +601,27 @@ const selectMap: (state) => MapState = (state) => state.Map;
 const selectGlobalRecordsetFilters = createSelector(selectMap, (mapState): FilterSpecification | undefined => {
   const MAP_RECORDSET_BUCKETS = {
     [MapRecordsetLayerFilterCategory.Observations]: [
-      'Activity_Observation_PlantAquatic',
-      'Activity_Observation_PlantTerrestrial'
+      ActivitySubtypes.Observation_Plant_Aquatic,
+      ActivitySubtypes.Observation_Plant_Terrestrial
     ],
 
     [MapRecordsetLayerFilterCategory.Treatments]: [
-      'Activity_Treatment_ChemicalPlantAquatic',
-      'Activity_Treatment_ChemicalPlantTerrestrial',
-      'Activity_Treatment_MechanicalPlantAquatic',
-      'Activity_Treatment_MechanicalPlantTerrestrial'
+      ActivitySubtypes.Treatment_Chemical_Plant_Aquatic,
+      ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial,
+      ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic,
+      ActivitySubtypes.Treatment_Mechanical_Plant_Terrestrial
     ],
 
     [MapRecordsetLayerFilterCategory.Monitoring]: [
-      'Activity_Monitoring_ChemicalTerrestrialAquaticPlant',
-      'Activity_Monitoring_MechanicalTerrestrialAquaticPlant'
+      ActivitySubtypes.Monitoring_Chemical_Plant_Terrestrial_Aquatic,
+      ActivitySubtypes.Monitoring_Mechanical_Plant_Terrestrial_Aquatic
     ],
 
     [MapRecordsetLayerFilterCategory.Biocontrol]: [
-      'Activity_Biocontrol_Collection',
-      'Activity_Biocontrol_Release',
-      'Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant',
-      'Activity_Monitoring_BiocontrolRelease_TerrestrialPlant'
+      ActivitySubtypes.Biocontrol_Collection,
+      ActivitySubtypes.Biocontrol_Release,
+      ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial,
+      ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial
     ]
   };
   const keys = Object.entries(mapState.globalMapFilters)
@@ -635,7 +636,7 @@ const selectGlobalRecordsetFilters = createSelector(selectMap, (mapState): Filte
     return undefined; // no filter applied
   }
 
-  return ['!in', 'activity_subtype', ...filteredOutSubtypes];
+  return ['!in', 'subtype', ...filteredOutSubtypes];
 });
 
 export { createMapReducer, selectMap, selectGlobalRecordsetFilters, MapRecordsetLayerFilterCategory };

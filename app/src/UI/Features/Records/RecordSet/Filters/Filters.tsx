@@ -11,6 +11,7 @@ import './filters.css';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { RecordSetId, RecordSetType } from 'interfaces/UserRecordSet';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
+import { Debug } from 'UI/Reusable/Predicates/Debug';
 
 type PropTypes = {
   recordsetId: string;
@@ -127,18 +128,21 @@ const Filters = ({ recordsetId }: PropTypes) => {
         </div>
         <div className="filter-toggles">
           <ul>
-            {recordset.recordSetType === RecordSetType.Activity && (
-              <li className="row">
-                <input
-                  type="checkbox"
-                  id="most-recent-observations"
-                  checked={filters.some((f) => f.filterType === EFilterType.MostRecentObservation)}
-                  onChange={handleMostRecentFilter}
-                />
-                <label htmlFor="most-recent-observations">Most Recent Observations Only</label>
-                <TooltipWithIcon tooltipText={MOST_RECENT_TOOLTIP} />
-              </li>
-            )}
+            <Debug>
+              {/* TODO: Re-implement when decision made on Most Recent Observations */}
+              {recordset.recordSetType === RecordSetType.Activity && (
+                <li className="row">
+                  <input
+                    type="checkbox"
+                    id="most-recent-observations"
+                    checked={filters.some((f) => f.filterType === EFilterType.MostRecentObservation)}
+                    onChange={handleMostRecentFilter}
+                  />
+                  <label htmlFor="most-recent-observations">Most Recent Observations Only</label>
+                  <TooltipWithIcon tooltipText={MOST_RECENT_TOOLTIP} />
+                </li>
+              )}
+            </Debug>
           </ul>
         </div>
         {shouldRenderTable && (

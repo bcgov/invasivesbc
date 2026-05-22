@@ -45,15 +45,7 @@ function buildRecordsetLayerDefinitionsFromRecordset(
   };
   const color = getPaintBySchemeOrColor(rec.color);
   const displayName = rec.recordSetName || `New Recordset - ${rec.recordSetType}`;
-  const api_target = (() => {
-    if (rec.recordSetType === RecordSetType.Activity) {
-      return 'activities';
-    } else if (rec.recordSetType === RecordSetType.IAPP) {
-      return 'iapp';
-    } else {
-      return null;
-    }
-  })();
+
   const stringifiedFilters = JSON.stringify(filterObject);
   const stringifiedGlobalFilters = JSON.stringify(globalFilterObj);
   const SOURCE_ID = rec.id + rec.tableFiltersHash;
@@ -69,6 +61,15 @@ function buildRecordsetLayerDefinitionsFromRecordset(
         stringifiedGlobalFilters
     );
 
+  const api_target = (() => {
+    const filters = encodeURI(stringifiedFilters);
+    if (rec.recordSetType === RecordSetType.Activity) {
+      return `apiv2:///tiles/{z}/{x}/{y}?filterObjects=${filters}`;
+    } else if (rec.recordSetType === RecordSetType.IAPP) {
+      return `api:///api/vectors/iapp/{z}/{x}/{y}?filterObject=${filters}`;
+    }
+    return '';
+  })();
   /** Common Properties for Layer definitions */
   const layerConfiguration = {
     layerId: layerID,
@@ -77,11 +78,12 @@ function buildRecordsetLayerDefinitionsFromRecordset(
     color: color,
     filters: globalFilterObj
   };
+
   return {
     sources: {
       [SOURCE_ID]: {
         type: 'vector',
-        tiles: [`api:///api/vectors/${api_target}/{z}/{x}/{y}?filterObject=${encodeURI(stringifiedFilters)}`],
+        tiles: [api_target],
         minzoom: 0
       }
     },
@@ -103,8 +105,7 @@ function buildRecordsetLayerDefinitionsFromRecordset(
           createBorderLayer(layerConfiguration),
           createLabelLayer({
             ...layerConfiguration,
-            visibility: rec.labelToggle ? 'visible' : 'none',
-            minzoom: 12
+            visibility: rec.labelToggle ? 'visible' : 'none'
           })
         ]
       }
