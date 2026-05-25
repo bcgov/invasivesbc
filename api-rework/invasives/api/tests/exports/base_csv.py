@@ -20,9 +20,9 @@ class BaseCSVTest(BaseTestCase):
     def set_annotations(self, subtype):
         """Build Annotation for the inheriting subtype"""
         config = CSV_SUBTYPE_CONFIG.get(subtype)
-        annotations = config["annotations"]
-        self.assertIsNotNone(annotations)
-        full_annotation = build_csv_annotation_object(annotations)
+        self.subtype_annotations = config["annotations"]
+        self.assertIsNotNone(self.subtype_annotations)
+        full_annotation = build_csv_annotation_object(self.subtype_annotations)
 
         self.CSV_HEADERS = [a["header"] for a in full_annotation]
         self.assertIsNotNone(self.CSV_HEADERS)
@@ -82,3 +82,22 @@ class BaseCSVTest(BaseTestCase):
         self.assertEqual(self.CSV_HEADERS, rows[0])
 
         return rows
+
+    def verify_subtype_columns_populate(self):
+        """
+        Check that between all results, all subtype columns are populated at least once.
+        """
+        sub_headers = [anno["header"] for anno in self.subtype_annotations]
+        rows = self.get_csv()
+        populated_headers = set()
+        for row in rows[1:]:
+            for header in sub_headers:
+                idx = rows[self.HEADERS].index(header)
+                if row[idx] != None:
+                    populated_headers.add(header)
+        missing_fields = set(sub_headers) - populated_headers
+        self.assertEqual(
+            len(missing_fields),
+            0,
+            f"The Following fields had nothing populated: {missing_fields}",
+        )
