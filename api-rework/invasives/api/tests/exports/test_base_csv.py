@@ -18,24 +18,17 @@ class TestTerrestrialObservationCSV(BaseCSVTest):
     ]
 
     def setUp(self):
-        self.filter_id = "25PTO6BBA2749"
+        self.filter_id = None
         super().setUp(
             ActivitySubtypes.Observation_Plant_Terrestrial.name, self.filter_id
         )
 
-    def test_fields_are_populated(self):
-        """
-        Using Terrestrial Plant Observations as an entry source, check that all generic headers for CSV exports get populated.
-        """
-
-        EXPECTED_ROWS = 2
-        generic_fields = [anno["header"] for anno in build_csv_annotation_object([])]
-        rows = self.get_csv(filter=True)
-        self.assertEqual(len(rows), EXPECTED_ROWS)
-        for field in generic_fields:
-            idx = rows[self.HEADERS].index(field)
-            self.assertTrue(rows[self.FIRST][idx])
-
     def test_unauthenticated(self):
         """Will fail with 403"""
         self.get_csv(auth=False)
+
+    def test_columns_populate(self):
+        """Override to Default annotations for the test columns populate test"""
+
+        self.subtype_annotations = build_csv_annotation_object([])
+        self.verify_subtype_columns_populate()
