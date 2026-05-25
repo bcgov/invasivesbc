@@ -1,4 +1,4 @@
-from django.test import TestCase, Client
+from django.test import Client
 from api.tests.base_test_case import BaseTestCase
 from . import parse_mvt_with_geometry
 import json
