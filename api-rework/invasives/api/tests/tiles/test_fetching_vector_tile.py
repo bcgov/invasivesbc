@@ -17,6 +17,7 @@ class VectorTileTestCase(BaseTestCase):
             "tableFilters": [],
         }
     )
+
     url_pattern = "/tiles/{}/{}/{}?filterObjects={}"
 
     fixtures = ["test/common/test_activities.json"]
@@ -150,3 +151,41 @@ class VectorTileTestCase(BaseTestCase):
         y = 1350
         test_status = 403
         return self.get_tile(z, x, y, test_status, auth=False)
+
+    def test_filtered_tile_request(self):
+        """Set a filter object for a specific ID, verify only one item returned."""
+        target = "26PTO6BBA2749"
+        z = 12
+        x = 657
+        y = 1350
+        filter_object = json.dumps(
+            {
+                "recordSetType": "Activity",
+                "selectColumns": [],
+                "tableFilters": [
+                    {
+                        "id": "2",
+                        "field": "short_id",
+                        "filterType": "tableFilter",
+                        "operator": "CONTAINS",
+                        "operator2": "AND",
+                        "filter": target,
+                    }
+                ],
+            }
+        )
+
+        url = self.url_pattern.format(z, x, y, filter_object)
+
+        response = self.client.get(
+            url,
+            headers={"Authorization": "Bearer act_as_user=test_user"},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.headers["Content-Type"], CONTENT_TYPE)
+
+        tile_layers = parse_mvt_with_geometry(response.content)
+        self.assertEqual(len(tile_layers["data"]), 1)
+
+        for feature in tile_layers["data"]:
+            self.assertTrue(feature["properties"]["short_id"], target)
