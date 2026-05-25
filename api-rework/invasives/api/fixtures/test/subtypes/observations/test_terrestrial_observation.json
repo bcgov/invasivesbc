@@ -14,7 +14,21 @@
       "received_timestamp": "2026-01-07T23:44:38.874Z",
       "subtype": "Observation_Plant_Terrestrial",
       "batch_id": 12,
+      "area_m": 5000,
+      "latitude": 54.3210123,
+      "longitude": -123.456789,
+      "utm_easting": 455065,
+      "utm_northing": 6295832,
+      "utm_zone": 9,
       "batch_row_id": 34,
+      "computed_elevation_m": 999,
+      "computed_biogeoclimatic_zone": "TEST A",
+      "computed_flrno_districts": "TEST B",
+      "computed_invasive_plant_management_areas": "TEST C",
+      "computed_moti_districts": "TEST D",
+      "computed_ownership": "TEST E",
+      "computed_regional_districts": "TEST F",
+      "location_description": "A generic location.",
       "linked_activities": [
         "CD542709-F767-402F-818E-117B3FBC797D"
       ],
@@ -27,7 +41,7 @@
     "model": "api.Activity",
     "pk": "CD542709-F767-402F-818E-117B3FBC797D",
     "fields": {
-      "short_id": "25PTO6BBA2749",
+      "short_id": "25PTOCD542709",
       "type": "ActivityType.Observation",
       "date": "2025-10-03",
       "created_by": "johnsmith@identifier",
@@ -56,6 +70,21 @@
     "pk": 1001,
     "fields": {
       "activity_id": "CD542709-F767-402F-818E-117B3FBC797D"
+    }
+  },
+  {
+    "model": "api.ActivityDataRecord",
+    "pk": 1002,
+    "fields": {
+      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7"
+    }
+  },
+  {
+    "model": "api.RisoArea",
+    "pk": 1,
+    "fields": {
+      "activity_data_record_id": 1002,
+      "organization": "Test organization"
     }
   },
   {
