@@ -9,6 +9,7 @@ from rest_framework.decorators import action
 from api.utils.filtered_activity_queryset import FilteredActivityQueryset
 
 CENTROID_ZOOM_LIMIT = 12
+CONTENT_TYPE = "application/vnd.mapbox-vector-tile"
 
 
 class ST_TileEnvelope(Func):
@@ -45,13 +46,28 @@ class VectorTileViewset(viewsets.GenericViewSet):
         if not raw_filters:
             return HttpResponse(content="Bad Request", status=400)
 
+        max_tile = 2**z
+        if z < 0 or z > 24:
+            return HttpResponse(
+                {"error": "Zoom level out of bounds (0-24)."},
+                content_type=CONTENT_TYPE,
+                status=400,
+            )
+
+        if x < 0 or x >= max_tile or y < 0 or y >= max_tile:
+            return HttpResponse(
+                {"error": f"Tile X/Y coordinates out of bounds for zoom {z}."},
+                content_type=CONTENT_TYPE,
+                status=400,
+            )
+
         filter_objects = [json.loads(raw_filters)]
 
         activity_queryset = FilteredActivityQueryset(filter_objects).apply_filters()
 
         if not activity_queryset.exists():
             # Early Return, No results to share.
-            return HttpResponse(status=204)
+            return HttpResponse(status=204, content_type=CONTENT_TYPE)
 
         tile_geom = ST_TileEnvelope(z, x, y)
 
@@ -96,7 +112,5 @@ class VectorTileViewset(viewsets.GenericViewSet):
         tile_bytes = mvt_query.get("tile_bytes")
 
         if not tile_bytes:
-            return HttpResponse(status=204)
-        return HttpResponse(
-            bytes(tile_bytes), content_type="application/vnd.mapbox-vector-tile"
-        )
+            return HttpResponse(status=204, content_type=CONTENT_TYPE)
+        return HttpResponse(bytes(tile_bytes), content_type=CONTENT_TYPE)
