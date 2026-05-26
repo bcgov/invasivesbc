@@ -11,8 +11,11 @@ class BaseCSVTest(BaseTestCase):
     HEADERS = 0
     FIRST = 1
 
-    def setUp(self, subtype: ActivitySubtypes, filter_id: str):
+    def setUp(
+        self, subtype: ActivitySubtypes, filter_id: str, expected_unfiltered_rows: int
+    ):
         """Prepare the generic template for CSV Response"""
+        self.expected_rows = expected_unfiltered_rows
         self.set_annotations(subtype)
         self.set_filters(subtype, filter_id)
         self.client = Client()
@@ -101,3 +104,16 @@ class BaseCSVTest(BaseTestCase):
             0,
             f"The Following fields had nothing populated: {missing_fields}",
         )
+
+    def verify_unfiltered_csv(self):
+        rows = self.get_csv()
+        self.assertEqual(len(rows), self.expected_rows)
+
+    def verify_csv_filters(self):
+        """Test filtering on an ID for a record with one plant entries."""
+        rows = self.get_csv(filter=True)
+
+        self.assertGreaterEqual(len(rows), 2)  # ensure at least 1 entry exists
+        for row in rows[1:]:
+            targ_index = rows[self.HEADERS].index("ID")
+            self.assertEqual(row[targ_index], self.filter_id)

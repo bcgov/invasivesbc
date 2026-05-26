@@ -20,7 +20,9 @@ class TestTerrestrialObservationCSV(BaseCSVTest):
     def setUp(self):
         self.filter_id = None
         super().setUp(
-            ActivitySubtypes.Observation_Plant_Terrestrial.name, self.filter_id
+            subtype=ActivitySubtypes.Observation_Plant_Terrestrial.name,
+            filter_id=self.filter_id,
+            expected_unfiltered_rows=None,
         )
 
     def test_unauthenticated(self):

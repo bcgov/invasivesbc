@@ -2,21 +2,20 @@ from api.models.activity import ActivitySubtypes
 from .base_csv import BaseCSVTest
 
 
-class TestMonitoringBiocontrolReleaseCSV(BaseCSVTest):
+class TestTreatmentMechanicalTerrestrialCSV(BaseCSVTest):
     fixtures = [
         "test/common/test_invasive_plant_codes",
-        "test/common/test_wind",
-        "test/subtypes/monitoring/test_biocontrol_release_monitoring_codes",
-        "test/subtypes/monitoring/test_biocontrol_release_monitoring",
+        "test/subtypes/treatments/test_mechanical_treatment_codes",
+        "test/subtypes/treatments/test_terrestrial_mechanical_treatment",
         "test/common/test_participants",
     ]
 
     def setUp(self):
-        self.filter_id = "25PBM6BBA2749"
+        self.filter_id = "25PTMCD542709"
         super().setUp(
-            subtype=ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial.name,
+            subtype=ActivitySubtypes.Treatment_Mechanical_Plant_Terrestrial.name,
             filter_id=self.filter_id,
-            expected_unfiltered_rows=3,
+            expected_unfiltered_rows=4,
         )
 
     def test_get_unfiltered_csv(self):
