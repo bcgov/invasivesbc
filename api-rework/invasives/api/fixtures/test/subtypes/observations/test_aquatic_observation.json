@@ -27,7 +27,7 @@
     "model": "api.Activity",
     "pk": "CD542709-F767-402F-818E-117B3FBC797D",
     "fields": {
-      "short_id": "25PAO6BBA2749",
+      "short_id": "25PAOCD542709",
       "type": "ActivityType.Observation",
       "date": "2025-10-03",
       "created_by": "johnsmith@identifier",
@@ -316,7 +316,7 @@
   },
   {
     "model": "api.WaterbodyContext",
-    "pk": 1,
+    "pk": 2,
     "fields": {
       "activity_data_record_id": 1000,
       "type": "Discharging Pond",
@@ -332,7 +332,7 @@
   },
   {
     "model": "api.WaterbodyContext",
-    "pk": 2,
+    "pk": 3,
     "fields": {
       "activity_data_record_id": 1001,
       "type": "Confined Pond",

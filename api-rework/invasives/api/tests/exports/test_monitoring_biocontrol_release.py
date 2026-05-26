@@ -19,11 +19,6 @@ class TestMonitoringBiocontrolReleaseCSV(BaseCSVTest):
         )
 
     def test_get_unfiltered_csv(self):
-        """
-        Expect a CSV containing 4 rows.
-            - Headers (1 row)
-            - 3 Plants (1 plant per row)
-        """
         EXPECTED_ROWS = 3
         rows = self.get_csv()
         self.assertEqual(len(rows), EXPECTED_ROWS)

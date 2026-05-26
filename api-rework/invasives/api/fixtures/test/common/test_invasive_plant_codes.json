@@ -52,5 +52,14 @@
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }
+  },
+  {
+    "model": "api.PlantsWithBiocontrol",
+    "pk": "CT",
+    "fields": {
+      "full": "Common Tansy",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
   }
 ]
