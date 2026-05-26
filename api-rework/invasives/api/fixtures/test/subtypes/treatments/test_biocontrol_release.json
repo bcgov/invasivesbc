@@ -27,8 +27,8 @@
     "model": "api.Activity",
     "pk": "CD542709-F767-402F-818E-117B3FBC797D",
     "fields": {
-      "short_id": "25PBR6BBA2749",
-      "type": "ActivityType.Observation",
+      "short_id": "25PBRCD542709",
+      "type": "ActivityType.Treatment",
       "date": "2025-10-03",
       "created_by": "johnsmith@identifier",
       "form_status": "Submitted",

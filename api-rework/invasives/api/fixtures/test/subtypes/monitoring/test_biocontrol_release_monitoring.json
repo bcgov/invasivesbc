@@ -27,10 +27,9 @@
     "model": "api.Activity",
     "pk": "CD542709-F767-402F-818E-117B3FBC797D",
     "fields": {
-      "short_id": "25PBMCD542709",
+      "short_id": "25PBM6BBA2749",
       "type": "ActivityType.Monitoring",
       "date": "2025-10-03",
-      "form_status": "Submitted",
       "created_by": "johnsmith@identifier",
       "access_description": "Fixture access description",
       "comment": "Fixture for: Monitoring_Biocontrol_Release_Plant_Terrestrial",
@@ -53,119 +52,7 @@
   },
   {
     "model": "api.ActivityDataRecord",
-    "pk": 1100,
-    "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7"
-    }
-  },
-  {
-    "model": "api.ActivityDataRecord",
-    "pk": 1101,
-    "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7"
-    }
-  },
-  {
-    "model": "api.ActivityDataRecord",
-    "pk": 1102,
-    "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7"
-    }
-  },
-  {
-    "model": "api.ActivityDataRecord",
-    "pk": 1103,
-    "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7"
-    }
-  },
-  {
-    "model": "api.ActivityDataRecord",
-    "pk": 1104,
-    "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7"
-    }
-  },
-  {
-    "model": "api.ActivityDataRecord",
-    "pk": 1105,
-    "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7"
-    }
-  },
-  {
-    "model": "api.ActivityDataRecord",
-    "pk": 1106,
-    "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7"
-    }
-  },
-  {
-    "model": "api.ActivityDataRecord",
-    "pk": 1107,
-    "fields": {
-      "activity_id": "6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7"
-    }
-  },
-  {
-    "model": "api.ActivityDataRecord",
-    "pk": 1108,
-    "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D"
-    }
-  },
-  {
-    "model": "api.ActivityDataRecord",
-    "pk": 1000,
-    "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D"
-    }
-  },
-  {
-    "model": "api.ActivityDataRecord",
     "pk": 1001,
-    "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D"
-    }
-  },
-  {
-    "model": "api.ActivityDataRecord",
-    "pk": 1002,
-    "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D"
-    }
-  },
-  {
-    "model": "api.ActivityDataRecord",
-    "pk": 1003,
-    "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D"
-    }
-  },
-  {
-    "model": "api.ActivityDataRecord",
-    "pk": 1004,
-    "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D"
-    }
-  },
-  {
-    "model": "api.ActivityDataRecord",
-    "pk": 1005,
-    "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D"
-    }
-  },
-  {
-    "model": "api.ActivityDataRecord",
-    "pk": 1006,
-    "fields": {
-      "activity_id": "CD542709-F767-402F-818E-117B3FBC797D"
-    }
-  },
-  {
-    "model": "api.ActivityDataRecord",
-    "pk": 1007,
     "fields": {
       "activity_id": "CD542709-F767-402F-818E-117B3FBC797D"
     }
@@ -174,37 +61,45 @@
     "model": "api.TargetPlantPhenology",
     "pk": 1,
     "fields": {
-      "activity_data_record_id": 1100,
-      "winter_dormant": 10,
-      "seedlings": 11,
-      "rosettes": 12,
-      "bolts": 13,
-      "flowering": 14,
-      "seeds_forming": 15,
-      "senescent": 25
+      "activity_data_record_id": 1000,
+      "winter_dormant": "10",
+      "seedlings": "11",
+      "rosettes": "12",
+      "bolts": "13",
+      "flowering": "14",
+      "seeds_forming": "15",
+      "senescent": "25"
     }
   },
   {
     "model": "api.TargetPlantHeights",
     "pk": 1,
     "fields": {
-      "activity_data_record_id": 1101,
+      "activity_data_record_id": 1000,
       "height_cm": 4
     }
   },
   {
     "model": "api.TargetPlantHeights",
-    "pk": 1,
+    "pk": 2,
     "fields": {
-      "activity_data_record_id": 1102,
-      "height_cm": 4
+      "activity_data_record_id": 1000,
+      "height_cm": 5
+    }
+  },
+  {
+    "model": "api.TargetPlantHeights",
+    "pk": 3,
+    "fields": {
+      "activity_data_record_id": 1000,
+      "height_cm": 6
     }
   },
   {
     "model": "api.MicrositeCondition",
     "pk": 1,
     "fields": {
-      "activity_data_record_id": 1103,
+      "activity_data_record_id": 1000,
       "mesoslope_position": "LV",
       "site_surface_shape": "LN"
     }
@@ -213,7 +108,7 @@
     "model": "api.MicrositeCondition",
     "pk": 2,
     "fields": {
-      "activity_data_record_id": 1000,
+      "activity_data_record_id": 1001,
       "mesoslope_position": "DP",
       "site_surface_shape": "NA"
     }
@@ -222,7 +117,7 @@
     "model": "api.WeatherConditions",
     "pk": 1,
     "fields": {
-      "activity_data_record_id": 1104,
+      "activity_data_record_id": 1001,
       "wind_speed_kmh": 0,
       "temperature": 26,
       "cloud_cover": "2",
@@ -234,7 +129,7 @@
     "model": "api.WeatherConditions",
     "pk": 2,
     "fields": {
-      "activity_data_record_id": 1002,
+      "activity_data_record_id": 1000,
       "wind_speed_kmh": 22,
       "temperature": 32,
       "cloud_cover": "1",
@@ -246,14 +141,14 @@
     "model": "api.TerrestrialBiocontrolDispersalMonitoringEntry",
     "pk": 1,
     "fields": {
-      "activity_data_record_id": 1105,
+      "activity_data_record_id": 1000,
       "biocontrol_present": true,
       "monitoring_type": "Timed",
       "plant_count": 33,
       "count_duration_minutes": 22,
       "number_of_sweeps": null,
-      "start_time": "2026-01-02T08:00:00.000Z",
-      "stop_time": "2026-01-02T08:00:00.000Z",
+      "start_time": "2026-01-02 00:00:00.000 -0800",
+      "stop_time": "2026-01-02 00:00:00.000 -0800",
       "suitable_for_collection": "No",
       "biocontrol_agent": "CHEIURB",
       "monitoring_method": "Ob",
@@ -264,14 +159,14 @@
     "model": "api.TerrestrialBiocontrolDispersalMonitoringEntry",
     "pk": 2,
     "fields": {
-      "activity_data_record_id": 1003,
+      "activity_data_record_id": 1001,
       "biocontrol_present": true,
       "monitoring_type": "Count",
       "plant_count": 33,
       "count_duration_minutes": 22,
       "number_of_sweeps": null,
-      "start_time": "2026-01-02T08:00:00.000Z",
-      "stop_time": "2026-01-02T08:00:00.000Z",
+      "start_time": "2026-01-02 00:00:00.000 -0800",
+      "stop_time": "2026-01-02 00:00:00.000 -0800",
       "suitable_for_collection": "Yes",
       "biocontrol_agent": "CHEIURB",
       "monitoring_method": "Ob",
@@ -282,7 +177,7 @@
     "model": "api.TerrestrialBiocontrolAgentCountExtended",
     "pk": 1,
     "fields": {
-      "activity_data_record_id": 1106,
+      "activity_data_record_id": 1000,
       "agent_location": "Pe",
       "plant_position": "Pu",
       "stage": "EG",
@@ -294,7 +189,7 @@
     "model": "api.TerrestrialBiocontrolAgentCountExtended",
     "pk": 2,
     "fields": {
-      "activity_data_record_id": 1004,
+      "activity_data_record_id": 1000,
       "agent_location": "Me",
       "plant_position": "Pl",
       "stage": "AD",
@@ -306,7 +201,7 @@
     "model": "api.SignOfBiocontrolPresenceTerrestrial",
     "pk": 1,
     "fields": {
-      "activity_data_record_id": 1107,
+      "activity_data_record_id": 1000,
       "sign_of_presence": "EH"
     }
   },
@@ -314,7 +209,7 @@
     "model": "api.SignOfBiocontrolPresenceTerrestrial",
     "pk": 2,
     "fields": {
-      "activity_data_record_id": 1005,
+      "activity_data_record_id": 1000,
       "sign_of_presence": "ST"
     }
   },
@@ -322,7 +217,7 @@
     "model": "api.SpreadResults",
     "pk": 1,
     "fields": {
-      "activity_data_record_id": 1108,
+      "activity_data_record_id": 1000,
       "agent_density": 55,
       "plant_attack": 20,
       "max_spread_distance_m": 300,
@@ -333,7 +228,7 @@
     "model": "api.SpreadResults",
     "pk": 2,
     "fields": {
-      "activity_data_record_id": 1006,
+      "activity_data_record_id": 1001,
       "agent_density": 32,
       "plant_attack": 22,
       "max_spread_distance_m": 330,
