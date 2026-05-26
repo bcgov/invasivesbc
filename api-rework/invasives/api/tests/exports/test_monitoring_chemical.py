@@ -15,7 +15,7 @@ class TestMonitoringChemicalCSV(BaseCSVTest):
         super().setUp(
             subtype=ActivitySubtypes.Monitoring_Chemical_Plant_Terrestrial_Aquatic.name,
             filter_id=self.filter_id,
-            expected_unfiltered_rows=4,
+            number_expected_entries=3,
         )
 
     def test_get_unfiltered_csv(self):

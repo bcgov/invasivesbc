@@ -15,7 +15,7 @@ class TestTerrestrialObservationCSV(BaseCSVTest):
         super().setUp(
             subtype=ActivitySubtypes.Observation_Plant_Terrestrial.name,
             filter_id=self.filter_id,
-            expected_unfiltered_rows=4,
+            number_expected_entries=3,
         )
 
     def test_get_unfiltered_csv(self):

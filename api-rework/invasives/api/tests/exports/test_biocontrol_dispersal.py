@@ -16,7 +16,7 @@ class TestBiocontrolDispersalCSV(BaseCSVTest):
         super().setUp(
             subtype=ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial.name,
             filter_id=self.filter_id,
-            expected_unfiltered_rows=3,
+            number_expected_entries=2,
         )
 
     def test_get_unfiltered_csv(self):

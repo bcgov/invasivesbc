@@ -16,7 +16,7 @@ class TestBiocontrolCollectionCSV(BaseCSVTest):
         super().setUp(
             subtype=ActivitySubtypes.Biocontrol_Collection.name,
             filter_id=self.filter_id,
-            expected_unfiltered_rows=3,
+            number_expected_entries=2,
         )
 
     def test_get_unfiltered_csv(self):

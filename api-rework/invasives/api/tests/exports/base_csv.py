@@ -12,16 +12,25 @@ class BaseCSVTest(BaseTestCase):
     FIRST = 1
 
     def setUp(
-        self, subtype: ActivitySubtypes, filter_id: str, expected_unfiltered_rows: int
+        self, subtype: ActivitySubtypes, filter_id: str, number_expected_entries: int
     ):
-        """Prepare the generic template for CSV Response"""
-        self.expected_rows = expected_unfiltered_rows
+        """
+        Setup the Test suite for the inheriting class
+         :subtype: Activity Subtype to filter
+         :filter_id: Specific Short ID of a record to filter on, to ensure filtering logic works as intended
+         :expected_unfiltered_rows: The total number of entries that are expected to appear in an entry.
+                                    Generally this is 1 row per entry, but records like chemical treatments
+                                    can contain different numbers based on the combination of jurisdiction/plant/herbicide
+        """
+        self.number_expected_entries = number_expected_entries
         self.set_annotations(subtype)
         self.set_filters(subtype, filter_id)
         self.client = Client()
 
-    def set_annotations(self, subtype):
-        """Build Annotation for the inheriting subtype"""
+    def set_annotations(self, subtype: ActivitySubtypes):
+        """
+        Iterate the chosen subtype for the Annotations belonging to an export.
+        """
         config = CSV_SUBTYPE_CONFIG.get(subtype)
         self.subtype_annotations = config["annotations"]
         self.assertIsNotNone(self.subtype_annotations)
@@ -31,6 +40,9 @@ class BaseCSVTest(BaseTestCase):
         self.assertIsNotNone(self.CSV_HEADERS)
 
     def set_filters(self, subtype, filter_id):
+        """
+        Preset the filters for the request with the expected CSV Type, and the Record ID we will filter on
+        """
         self.NO_FILTER = {
             "filterObjects": [
                 {
@@ -62,6 +74,11 @@ class BaseCSVTest(BaseTestCase):
         }
 
     def get_csv(self, filter: bool = False, auth=True):
+        """
+        Request the CSV from target endpoint with given params.
+         :filter: Request the CSV using the supplied filters (filter on record id)
+         :auth: Request the CSV as an authenticated user (unauthenticated users will be denied)
+        """
         auth = {"Authorization": "Bearer act_as_user=test_user"} if auth else None
         filter = self.FILTER if filter else self.NO_FILTER
         response = self.client.post(
@@ -88,7 +105,10 @@ class BaseCSVTest(BaseTestCase):
 
     def verify_subtype_columns_populate(self):
         """
-        Check that between all results, all subtype columns are populated at least once.
+        Parse the entries in the CSV and ensure that for each annotation header, at least one row will populate each column
+        *Not all records will fill every column*
+        Pass Requirements:
+         - For every annotation, at least one row has an entry.
         """
         sub_headers = [anno["header"] for anno in self.subtype_annotations]
         rows = self.get_csv()
@@ -106,14 +126,27 @@ class BaseCSVTest(BaseTestCase):
         )
 
     def verify_unfiltered_csv(self):
+        """
+        Request CSV Using no added filters.
+        Generally there is 1 row per plant entry. In some cases there are more (chemical treatments)
+        Pass Requirements:
+         - Number of rows equals expected values
+        """
         rows = self.get_csv()
-        self.assertEqual(len(rows), self.expected_rows)
+        # Entries + 1 row for Headers.
+        expected_value = 1 + self.number_expected_entries
+        self.assertEqual(len(rows), expected_value)
 
     def verify_csv_filters(self):
-        """Test filtering on an ID for a record with one plant entries."""
+        """
+        Request CSV using filter on ID.
+        Pass Requirements:
+         - Minimum one Entry is returned
+         - All entries have the same ID as the filter.
+        """
         rows = self.get_csv(filter=True)
 
-        self.assertGreaterEqual(len(rows), 2)  # ensure at least 1 entry exists
+        self.assertGreaterEqual(len(rows), 2)  # 1 Header, 1 Row (minimum)
         for row in rows[1:]:
             targ_index = rows[self.HEADERS].index("ID")
             self.assertEqual(row[targ_index], self.filter_id)
