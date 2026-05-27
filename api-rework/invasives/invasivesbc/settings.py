@@ -18,11 +18,16 @@ INSTALLED_APPS = [
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.gis",
+    "django.contrib.staticfiles",
     "django_celery_beat",
     "ninja",
     "api",
     "corsheaders",
+    "silk"
 ]
+
+STATIC_URL='static/'
+STATIC_ROOT='static/'
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -30,7 +35,9 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'silk.middleware.SilkyMiddleware',
 ]
+SILKY_PYTHON_PROFILER = True
 
 ROOT_URLCONF = "api.urls"
 

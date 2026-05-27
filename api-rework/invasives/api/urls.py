@@ -32,3 +32,4 @@ ninja_api = NinjaAPI()
 ninja_api.add_router("/activities", activity_router)
 
 urlpatterns = [path("", include(ROUTER.urls)), path("ninja/", ninja_api.urls)]
+urlpatterns += [path('silk/', include('silk.urls', namespace='silk'))]

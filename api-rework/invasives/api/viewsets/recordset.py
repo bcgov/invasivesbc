@@ -1,25 +1,20 @@
-import logging, json
-from itertools import batched
-from rest_framework.decorators import action
-from django.core.serializers.json import DjangoJSONEncoder
-from django.contrib.gis.db.models.functions import Centroid, AsGeoJSON
-from django.db.models import Q
-from rest_framework import viewsets, status
-from rest_framework.response import Response
+from api.constants import short_id_regex, uuid_regex
 from api.models.activity import Activity
 from api.permissions import HasAdminRole
 from api.serializers.activity_recordset_row import (
-    ActivityRecordsetRowSerializer,
-    CachedActivityRecordsetRowSerializer,
+  ActivityRecordsetRowSerializer,
+  CachedActivityRecordsetRowSerializer,
 )
 from api.utils.filtered_activity_queryset import FilteredActivityQueryset
-from api.constants import uuid_regex, short_id_regex
-
-import logging, csv
-from django.db.models import FilteredRelation
-
+from django.contrib.gis.db.models.functions import AsGeoJSON, Centroid
+from django.db.models import FilteredRelation, Q
 from django.http import StreamingHttpResponse
-from api.configs.exports import build_csv_annotation_object, CSV_SUBTYPE_CONFIG
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
+import logging
+
+from silk.profiling.profiler import silk_profile
 
 log = logging.getLogger("invasives")
 
@@ -31,37 +26,30 @@ class RecordsetRowsViewSet(viewsets.GenericViewSet):
     permission_classes = [HasAdminRole]
 
     @action(detail=False, methods=["POST"])
+    @silk_profile()
     def experiment(self, request, *args, **kwargs):
-        CHUNK_SIZE = 250
+        filter_objects = request.data.get("filterObjects", [])
+        filter_helper = FilteredActivityQueryset(filter_objects=filter_objects)
 
-        def data_generator():
-            filter_objects = request.data.get("filterObjects", [])
-            filter_helper = FilteredActivityQueryset(filter_objects=filter_objects)
+        filter_helper.apply_sorting()
 
-            filter_helper.apply_sorting()
-
-            filter_helper.select_output_format()
-            base_queryset = filter_helper.query.annotate(
-                centroid=AsGeoJSON(Centroid("shape"))
-            )
-
-            records_iterator = base_queryset.iterator(chunk_size=CHUNK_SIZE)
-
-            for chunk in batched(records_iterator, CHUNK_SIZE):
-                yield json.dumps(
-                    CachedActivityRecordsetRowSerializer(
-                        chunk, many=True, read_only=True, context={"request": request}
-                    ).data,
-                    cls=DjangoJSONEncoder,
-                ) + "\n"
-
-        response = StreamingHttpResponse(
-            data_generator(),
-            content_type="application/x-ndjson",
-            status=status.HTTP_200_OK,
+        filter_helper.select_output_format()
+        base_queryset = filter_helper.query.annotate(
+            centroid=AsGeoJSON(Centroid("shape"))
         )
-        response["X-Accel-Buffering"] = "no"
-        return response
+
+
+        #
+        # response = StreamingHttpResponse(
+        #     data_generator(),
+        #     content_type="application/x-ndjson",
+        #     status=status.HTTP_200_OK,
+        # )
+        # response["X-Accel-Buffering"] = "no"
+
+        return Response(CachedActivityRecordsetRowSerializer(base_queryset.all()[:200], many=True, read_only=True, context={"request": request}).data, status=status.HTTP_200_OK, content_type="application/x-ndjson",)
+
+        # return response
 
     @action(detail=False, methods=["get"])
     def cache(self, request, *args, **kwargs):
