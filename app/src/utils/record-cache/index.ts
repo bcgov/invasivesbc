@@ -305,7 +305,7 @@ abstract class RecordCacheService extends BaseCacheService<
     let processedCaches = spec.idsToCache.length - uncachedRecords.length;
     let lastProgressCallback: null | number = null;
     const totalRecordsToCache = spec.idsToCache.length;
-
+    let last = Date.now();
     for (let i = 0; i < uncachedRecords.length && pauseOrAbort === CacheDownloadMode.DEFAULT; i += this.BATCH_AMOUNT) {
       if (executing.size >= this.CONCURRENCY_LIMIT) {
         await Promise.race(executing);
@@ -326,6 +326,12 @@ abstract class RecordCacheService extends BaseCacheService<
       processedCaches += ids.length;
       const currentProgress = processedCaches / totalRecordsToCache;
 
+      if (processedCaches >= 250) {
+        const now = Date.now();
+        const time = ((now - last) / 1000).toFixed(2);
+        last = now;
+        console.log(`Received ~250 objects in ${time}s:`);
+      }
       // trigger a callback on the first run, on the last run, every 3%
       if (
         lastProgressCallback == null ||

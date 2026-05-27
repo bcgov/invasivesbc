@@ -287,9 +287,4 @@ class CachedActivityRecordsetRowSerializer(ActivityRecordsetRowSerializer):
         fields = ActivityRecordsetRowSerializer.Meta.fields + ("data",)
 
     def get_data(self, obj):
-        # Refetch the object and annotate the centroid value.
-        annotated_obj = Activity.objects.annotate(
-            centroid=AsGeoJSON(Centroid("shape"))
-        ).get(pk=obj.pk)
-
-        return ActivitySerializer(annotated_obj, context=self.context).data
+        return ActivitySerializer(obj, context=self.context).data
