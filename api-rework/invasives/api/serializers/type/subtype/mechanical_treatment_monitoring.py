@@ -11,17 +11,21 @@ from api.serializers.common import (
 
 
 class MechanicalMonitoringSerializer(serializers.Serializer):
-    terrestrial_entries = serializers.SerializerMethodField()
-    aquatic_entries = serializers.SerializerMethodField()
+    entries = serializers.SerializerMethodField()
 
-    def get_terrestrial_entries(self, obj):
-        children = TerrestrialTreatmentMonitoringEntry.objects.filter(
+    def get_entries(self, obj):
+        terrestrial_queryset = TerrestrialTreatmentMonitoringEntry.objects.filter(
             activity_data_record__activity_id=obj.id
         )
-        return TerrestrialTreatmentMonitoringSerializer(children, many=True).data
+        terrestrial_data = TerrestrialTreatmentMonitoringSerializer(
+            terrestrial_queryset, many=True
+        ).data
 
-    def get_aquatic_entries(self, obj):
-        children = AquaticTreatmentMonitoringEntry.objects.filter(
+        aquatic_queryset = AquaticTreatmentMonitoringEntry.objects.filter(
             activity_data_record__activity_id=obj.id
         )
-        return AquaticTreatmentMonitoringSerializer(children, many=True).data
+        aquatic_data = AquaticTreatmentMonitoringSerializer(
+            aquatic_queryset, many=True
+        ).data
+
+        return list(terrestrial_data) + list(aquatic_data)

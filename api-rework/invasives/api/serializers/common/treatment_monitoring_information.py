@@ -7,12 +7,9 @@ from api.models.activity import (
 from api.models.activity.monitoring.plant_treatment_monitoring import (
     InvasivePlantsOnSite,
 )
-from api.serializers.common.codes import InvasivePlantsOnSiteCodeSerializer
 
 
 class InvasivePlantsOnSiteSerializer(serializers.ModelSerializer):
-    invasive_plants_on_site = InvasivePlantsOnSiteCodeSerializer()
-
     class Meta:
         model = InvasivePlantsOnSite
         fields = ("invasive_plants_on_site",)
@@ -43,6 +40,7 @@ class TerrestrialTreatmentMonitoringSerializer(serializers.ModelSerializer):
 
 class AquaticTreatmentMonitoringSerializer(serializers.ModelSerializer):
     invasive_plants_on_site = serializers.SerializerMethodField()
+    invasive_plant_aquatic = serializers.CharField(source="invasive_plant")
 
     def get_invasive_plants_on_site(self, obj):
         children = InvasivePlantsOnSite.objects.filter(
@@ -56,7 +54,7 @@ class AquaticTreatmentMonitoringSerializer(serializers.ModelSerializer):
             "evidence_of_treatment",
             "treatment_pass",
             "comment",
-            "invasive_plant",
+            "invasive_plant_aquatic",
             "invasive_plants_on_site",
             "management_efficacy_rating",
             "treatment_efficacy_rating",
