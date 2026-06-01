@@ -130,7 +130,7 @@ def resolve_chemical_type(v: Any) -> str:
     raise ValueError("Chemical treatment values created an invalid scenario.")
 
 
-class BaseChemicalDetails(ChemicalWeatherInformation):
+class Context(ChemicalWeatherInformation):
     service_license_number: Optional[ServiceLicenseNumberAndCompanyType] = None
     pesticide_use_permit: Optional[str] = None
     pest_management_plan: Optional[PestManagementPlanType] = None
@@ -142,16 +142,6 @@ class BaseChemicalDetails(ChemicalWeatherInformation):
     rationale_for_ntz_reduction: Optional[str] = None
     additional_unmapped_well_water_bool: bool
     pest_injury_threshold_determination_bool: bool
-    treatment_context: Annotated[
-        Union[
-            Annotated[TankMixChemicalContext, Tag("Tank Mix")],
-            Annotated[ChemicalContextDilution, Tag(Calculations.DILUTION)],
-            Annotated[
-                ChemicalContextApplicationRate, Tag(Calculations.APPLICATION_RATE)
-            ],
-        ],
-        Discriminator(resolve_chemical_type),
-    ]
 
     @field_validator("application_start_time")
     def validate_start_time(cls, v):
@@ -176,6 +166,20 @@ class BaseChemicalDetails(ChemicalWeatherInformation):
                 'Either "Pest Management Plan" or "PMP # not in dropdown" has to be filled.'
             )
         return self
+
+
+class BaseChemicalDetails(CleanSchema):
+    context: Context
+    treatment_context: Annotated[
+        Union[
+            Annotated[TankMixChemicalContext, Tag("Tank Mix")],
+            Annotated[ChemicalContextDilution, Tag(Calculations.DILUTION)],
+            Annotated[
+                ChemicalContextApplicationRate, Tag(Calculations.APPLICATION_RATE)
+            ],
+        ],
+        Discriminator(resolve_chemical_type),
+    ]
 
 
 class TreatmentChemicalAquatic(BaseFormSchema):
