@@ -2,8 +2,8 @@ from api.constants import short_id_regex, uuid_regex
 from api.models.activity import Activity
 from api.permissions import HasAdminRole
 from api.serializers.activity_recordset_row import (
-  ActivityRecordsetRowSerializer,
-  CachedActivityRecordsetRowSerializer,
+    ActivityRecordsetRowSerializer,
+    CachedActivityRecordsetRowSerializer,
 )
 from api.utils.filtered_activity_queryset import FilteredActivityQueryset
 from django.contrib.gis.db.models.functions import AsGeoJSON, Centroid
@@ -38,7 +38,6 @@ class RecordsetRowsViewSet(viewsets.GenericViewSet):
             centroid=AsGeoJSON(Centroid("shape"))
         )
 
-
         #
         # response = StreamingHttpResponse(
         #     data_generator(),
@@ -47,7 +46,16 @@ class RecordsetRowsViewSet(viewsets.GenericViewSet):
         # )
         # response["X-Accel-Buffering"] = "no"
 
-        return Response(CachedActivityRecordsetRowSerializer(base_queryset.all()[:200], many=True, read_only=True, context={"request": request}).data, status=status.HTTP_200_OK, content_type="application/x-ndjson",)
+        return Response(
+            CachedActivityRecordsetRowSerializer(
+                base_queryset.all()[:200],
+                many=True,
+                read_only=True,
+                context={"request": request},
+            ).data,
+            status=status.HTTP_200_OK,
+            content_type="application/x-ndjson",
+        )
 
         # return response
 

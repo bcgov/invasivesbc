@@ -65,6 +65,424 @@ class Activity(
 
     migration_remarks = models.TextField(max_length=16384, blank=True, null=True)
 
+    @property
+    def invasive_plants(self):
+
+        # local import to avoid circular import. clean this up?
+        from api.models.activity import (
+            TerrestrialPlantObservationEntries,
+            AquaticPlantObservationEntry,
+            ChemicalTreatmentAquaticInvasivePlantRecord,
+            ChemicalTreatmentTerrestrialInvasivePlantRecord,
+            AquaticPlantMechanicalTreatmentEntry,
+            TerrestrialPlantMechanicalTreatmentEntry,
+            TerrestrialBiocontrolDispersalMonitoringEntry,
+            TerrestrialBiocontrolReleaseEntry,
+            TerrestrialBiocontrolCollectionEntry,
+            TerrestrialTreatmentMonitoringEntry,
+            AquaticTreatmentMonitoringEntry,
+        )
+
+        if (
+            ActivitySubtypes[self.subtype]
+            == ActivitySubtypes.Observation_Plant_Terrestrial
+        ):
+            return (
+                TerrestrialPlantObservationEntries.objects.filter(
+                    activity_data_record__activity_id=self.id
+                )
+                .distinct()
+                .order_by("invasive_plant__full")
+                .values_list("invasive_plant__full", flat=True)
+            )
+
+        if ActivitySubtypes[self.subtype] == ActivitySubtypes.Observation_Plant_Aquatic:
+            return (
+                AquaticPlantObservationEntry.objects.filter(
+                    activity_data_record__activity_id=self.id
+                )
+                .distinct()
+                .order_by("invasive_plant__full")
+                .values_list("invasive_plant__full", flat=True)
+            )
+
+        if (
+            ActivitySubtypes[self.subtype]
+            == ActivitySubtypes.Treatment_Chemical_Plant_Aquatic
+        ):
+            return (
+                ChemicalTreatmentAquaticInvasivePlantRecord.objects.filter(
+                    activity_data_record__activity_id=self.id
+                )
+                .distinct()
+                .order_by("invasive_plant__full")
+                .values_list("invasive_plant__full", flat=True)
+            )
+
+        if (
+            ActivitySubtypes[self.subtype]
+            == ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial
+        ):
+            return (
+                ChemicalTreatmentTerrestrialInvasivePlantRecord.objects.filter(
+                    activity_data_record__activity_id=self.id
+                )
+                .distinct()
+                .order_by("invasive_plant__full")
+                .values_list("invasive_plant__full", flat=True)
+            )
+
+        if (
+            ActivitySubtypes[self.subtype]
+            == ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic
+        ):
+            return (
+                AquaticPlantMechanicalTreatmentEntry.objects.filter(
+                    activity_data_record__activity_id=self.id
+                )
+                .distinct()
+                .order_by("invasive_plant__full")
+                .values_list("invasive_plant__full", flat=True)
+            )
+
+        if (
+            ActivitySubtypes[self.subtype]
+            == ActivitySubtypes.Treatment_Mechanical_Plant_Terrestrial
+        ):
+            return (
+                TerrestrialPlantMechanicalTreatmentEntry.objects.filter(
+                    activity_data_record__activity_id=self.id
+                )
+                .distinct()
+                .order_by("invasive_plant__full")
+                .values_list("invasive_plant__full", flat=True)
+            )
+
+        if (
+            ActivitySubtypes[self.subtype]
+            == ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial
+        ):
+            return (
+                TerrestrialBiocontrolDispersalMonitoringEntry.objects.filter(
+                    activity_data_record__activity_id=self.id
+                )
+                .distinct()
+                .order_by("invasive_plant__full")
+                .values_list("invasive_plant__full", flat=True)
+            )
+
+        if (
+            ActivitySubtypes[self.subtype]
+            == ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial
+        ):
+            return (
+                TerrestrialBiocontrolReleaseEntry.objects.filter(
+                    activity_data_record__activity_id=self.id
+                )
+                .distinct()
+                .order_by("invasive_plant__full")
+                .values_list("invasive_plant__full", flat=True)
+            )
+
+        if ActivitySubtypes[self.subtype] in [
+            ActivitySubtypes.Monitoring_Chemical_Plant_Terrestrial_Aquatic,
+            ActivitySubtypes.Monitoring_Mechanical_Plant_Terrestrial_Aquatic,
+        ]:
+
+            terrestrial = (
+                TerrestrialTreatmentMonitoringEntry.objects.filter(
+                    activity_data_record__activity_id=self.id
+                )
+                .distinct()
+                .values_list("invasive_plant__full", flat=True)
+            )
+            aquatic = (
+                AquaticTreatmentMonitoringEntry.objects.filter(
+                    activity_data_record__activity_id=self.id
+                )
+                .distinct()
+                .values_list("invasive_plant__full", flat=True)
+            )
+            return terrestrial.union(aquatic).order_by("invasive_plant__full")
+
+        if ActivitySubtypes[self.subtype] == ActivitySubtypes.Biocontrol_Collection:
+            return (
+                TerrestrialBiocontrolCollectionEntry.objects.filter(
+                    activity_data_record__activity_id=self.id
+                )
+                .distinct()
+                .order_by("invasive_plant__full")
+                .values_list("invasive_plant__full", flat=True)
+            )
+
+        if ActivitySubtypes[self.subtype] == ActivitySubtypes.Biocontrol_Release:
+            return (
+                TerrestrialBiocontrolReleaseEntry.objects.filter(
+                    activity_data_record__activity_id=self.id
+                )
+                .distinct()
+                .order_by("invasive_plant__full")
+                .values_list("invasive_plant__full", flat=True)
+            )
+
+        return []
+
+    @property
+    def species_treated_full(self):
+
+        # differs from invasive_plants only by omission of Observations. verify this is correct behaviour
+
+        # local import to avoid circular import. clean this up?
+        from api.models.activity import (
+            ChemicalTreatmentAquaticInvasivePlantRecord,
+            ChemicalTreatmentTerrestrialInvasivePlantRecord,
+            AquaticPlantMechanicalTreatmentEntry,
+            TerrestrialPlantMechanicalTreatmentEntry,
+            TerrestrialBiocontrolDispersalMonitoringEntry,
+            TerrestrialBiocontrolReleaseEntry,
+            TerrestrialBiocontrolCollectionEntry,
+            TerrestrialTreatmentMonitoringEntry,
+            AquaticTreatmentMonitoringEntry,
+        )
+
+        if (
+            ActivitySubtypes[self.subtype]
+            == ActivitySubtypes.Treatment_Chemical_Plant_Aquatic
+        ):
+            return (
+                ChemicalTreatmentAquaticInvasivePlantRecord.objects.filter(
+                    activity_data_record__activity_id=self.id
+                )
+                .distinct()
+                .order_by("invasive_plant__full")
+                .values_list("invasive_plant__full", flat=True)
+            )
+
+        if (
+            ActivitySubtypes[self.subtype]
+            == ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial
+        ):
+            return (
+                ChemicalTreatmentTerrestrialInvasivePlantRecord.objects.filter(
+                    activity_data_record__activity_id=self.id
+                )
+                .distinct()
+                .order_by("invasive_plant__full")
+                .values_list("invasive_plant__full", flat=True)
+            )
+
+        if (
+            ActivitySubtypes[self.subtype]
+            == ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic
+        ):
+            return (
+                AquaticPlantMechanicalTreatmentEntry.objects.filter(
+                    activity_data_record__activity_id=self.id
+                )
+                .distinct()
+                .order_by("invasive_plant__full")
+                .values_list("invasive_plant__full", flat=True)
+            )
+
+        if (
+            ActivitySubtypes[self.subtype]
+            == ActivitySubtypes.Treatment_Mechanical_Plant_Terrestrial
+        ):
+            return (
+                TerrestrialPlantMechanicalTreatmentEntry.objects.filter(
+                    activity_data_record__activity_id=self.id
+                )
+                .distinct()
+                .order_by("invasive_plant__full")
+                .values_list("invasive_plant__full", flat=True)
+            )
+
+        if (
+            ActivitySubtypes[self.subtype]
+            == ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial
+        ):
+            return (
+                TerrestrialBiocontrolDispersalMonitoringEntry.objects.filter(
+                    activity_data_record__activity_id=self.id
+                )
+                .distinct()
+                .order_by("invasive_plant__full")
+                .values_list("invasive_plant__full", flat=True)
+            )
+
+        if (
+            ActivitySubtypes[self.subtype]
+            == ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial
+        ):
+            return (
+                TerrestrialBiocontrolDispersalMonitoringEntry.objects.filter(  # is this the right model? copied from other implementation
+                    activity_data_record__activity_id=self.id
+                )
+                .distinct()
+                .order_by("invasive_plant__full")
+                .values_list("invasive_plant__full", flat=True)
+            )
+
+        if ActivitySubtypes[self.subtype] in [
+            ActivitySubtypes.Monitoring_Chemical_Plant_Terrestrial_Aquatic,
+            ActivitySubtypes.Monitoring_Mechanical_Plant_Terrestrial_Aquatic,
+        ]:
+
+            terrestrial = (
+                TerrestrialTreatmentMonitoringEntry.objects.filter(
+                    activity_data_record__activity_id=self.id
+                )
+                .distinct()
+                .values_list("invasive_plant__full", flat=True)
+            )
+            aquatic = (
+                AquaticTreatmentMonitoringEntry.objects.filter(
+                    activity_data_record__activity_id=self.id
+                )
+                .distinct()
+                .values_list("invasive_plant__full", flat=True)
+            )
+            return terrestrial.union(aquatic).order_by("invasive_plant__full")
+
+        if ActivitySubtypes[self.subtype] == ActivitySubtypes.Biocontrol_Collection:
+            return (
+                TerrestrialBiocontrolCollectionEntry.objects.filter(
+                    activity_data_record__activity_id=self.id
+                )
+                .distinct()
+                .order_by("invasive_plant__full")
+                .values_list("invasive_plant__full", flat=True)
+            )
+
+        if ActivitySubtypes[self.subtype] == ActivitySubtypes.Biocontrol_Release:
+            return (
+                TerrestrialBiocontrolReleaseEntry.objects.filter(
+                    activity_data_record__activity_id=self.id
+                )
+                .distinct()
+                .order_by("invasive_plant__full")
+                .values_list("invasive_plant__full", flat=True)
+            )
+
+        return []
+
+    @property
+    def species_negative_full(self):
+        from api.models.activity import (
+            TerrestrialPlantObservationEntries,
+            AquaticPlantObservationEntry,
+        )
+
+        if (
+            ActivitySubtypes[self.subtype]
+            == ActivitySubtypes.Observation_Plant_Terrestrial
+        ):
+            return (
+                TerrestrialPlantObservationEntries.objects.filter(
+                    activity_data_record__activity_id=self.id
+                )
+                .filter(observation_type="Negative")
+                .distinct()
+                .order_by("invasive_plant__full")
+                .values_list("invasive_plant__full", flat=True)
+            )
+
+        if ActivitySubtypes[self.subtype] == ActivitySubtypes.Observation_Plant_Aquatic:
+            return (
+                AquaticPlantObservationEntry.objects.filter(
+                    activity_data_record__activity_id=self.id
+                )
+                .filter(observation_type="Negative")
+                .distinct()
+                .order_by("invasive_plant__full")
+                .values_list("invasive_plant__full", flat=True)
+            )
+
+        return []
+
+    @property
+    def species_positive_full(self):
+        from api.models.activity import (
+            TerrestrialPlantObservationEntries,
+            AquaticPlantObservationEntry,
+        )
+
+        if (
+            ActivitySubtypes[self.subtype]
+            == ActivitySubtypes.Observation_Plant_Terrestrial
+        ):
+            return (
+                TerrestrialPlantObservationEntries.objects.filter(
+                    activity_data_record__activity_id=self.id
+                )
+                .filter(observation_type="Positive")
+                .distinct()
+                .order_by("invasive_plant__full")
+                .values_list("invasive_plant__full", flat=True)
+            )
+
+        if ActivitySubtypes[self.subtype] == ActivitySubtypes.Observation_Plant_Aquatic:
+            return (
+                AquaticPlantObservationEntry.objects.filter(
+                    activity_data_record__activity_id=self.id
+                )
+                .filter(observation_type="Positive")
+                .distinct()
+                .order_by("invasive_plant__full")
+                .values_list("invasive_plant__full", flat=True)
+            )
+
+        return []
+
+    @property
+    def biocontrol_full(self):
+        from api.models.activity import (
+            TerrestrialBiocontrolDispersalMonitoringEntry,
+            TerrestrialBiocontrolReleaseEntry,
+            TerrestrialBiocontrolCollectionEntry,
+        )
+
+        if ActivitySubtypes[self.subtype] == ActivitySubtypes.Biocontrol_Collection:
+            return (
+                TerrestrialBiocontrolCollectionEntry.objects.filter(
+                    activity_data_record__activity_id=self.id
+                )
+                .distinct()
+                .values_list("biological_agent__full", flat=True)
+            )
+        if ActivitySubtypes[self.subtype] == ActivitySubtypes.Biocontrol_Release:
+            return (
+                TerrestrialBiocontrolReleaseEntry.objects.filter(
+                    activity_data_record__activity_id=self.id
+                )
+                .distinct()
+                .values_list("biocontrol_agent__full", flat=True)
+            )
+        if (
+            ActivitySubtypes[self.subtype]
+            == ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial
+        ):
+            return (
+                TerrestrialBiocontrolDispersalMonitoringEntry.objects.filter(
+                    activity_data_record__activity_id=self.id
+                )
+                .distinct()
+                .values_list("biocontrol_agent__full", flat=True)
+            )
+        if (
+            ActivitySubtypes[self.subtype]
+            == ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial
+        ):
+            return (
+                TerrestrialBiocontrolDispersalMonitoringEntry.objects.filter(  # is this the right model? copied from other implementation
+                    activity_data_record__activity_id=self.id
+                )
+                .distinct()
+                .values_list("biocontrol_agent__full", flat=True)
+            )
+
+        return []
+
     class Meta:
         db_table = '"activity"."activity"'
         db_table_comment = (

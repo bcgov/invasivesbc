@@ -23,11 +23,11 @@ INSTALLED_APPS = [
     "ninja",
     "api",
     "corsheaders",
-    "silk"
+    "silk",
 ]
 
-STATIC_URL='static/'
-STATIC_ROOT='static/'
+STATIC_URL = "static/"
+STATIC_ROOT = "static/"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -35,7 +35,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    'silk.middleware.SilkyMiddleware',
+    "silk.middleware.SilkyMiddleware",
 ]
 SILKY_PYTHON_PROFILER = True
 

@@ -1,8 +1,16 @@
 import json
 from rest_framework import serializers
 from django.contrib.gis.db.models.functions import Centroid, AsGeoJSON
+from silk.profiling.profiler import silk_profile
+
 from api.models.activity.activity import Activity
-from api.models.activity import ActivitySubtypes, RisoArea, ProjectCode, FundingAgency
+from api.models.activity import (
+    ActivitySubtypes,
+    RisoArea,
+    ProjectCode,
+    FundingAgency,
+    Jurisdiction,
+)
 from api.serializers.activity import ActivitySerializer
 
 
@@ -38,66 +46,6 @@ class ActivityRecordsetRowSerializer(serializers.ModelSerializer):
     activity_date = serializers.CharField(source="date", read_only=True)
     activity_id = serializers.CharField(source="id", read_only=True)
 
-    PATH_TO_PLANT_MAP = {
-        ActivitySubtypes.Observation_Plant_Aquatic.name: [
-            "aquaticplantobservationentry_set"
-        ],
-        ActivitySubtypes.Observation_Plant_Terrestrial.name: [
-            "terrestrialplantobservationentries_set"
-        ],
-        ActivitySubtypes.Treatment_Chemical_Plant_Aquatic.name: [
-            "chemicaltreatmentaquaticinvasiveplantrecord_set"
-        ],
-        ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial.name: [
-            "chemicaltreatmentterrestrialinvasiveplantrecord_set"
-        ],
-        ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic.name: [
-            "aquaticplantmechanicaltreatmententry_set"
-        ],
-        ActivitySubtypes.Treatment_Mechanical_Plant_Terrestrial.name: [
-            "terrestrialplantmechanicaltreatmententry_set"
-        ],
-        ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial.name: [
-            "terrestrialbiocontroldispersalmonitoringentry_set"
-        ],
-        ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial.name: [
-            "terrestrialbiocontroldispersalmonitoringentry_set"
-        ],
-        ActivitySubtypes.Monitoring_Chemical_Plant_Terrestrial_Aquatic.name: [
-            "terrestrialtreatmentmonitoringentry_set",
-            "aquatictreatmentmonitoringentry_set",
-        ],
-        ActivitySubtypes.Monitoring_Mechanical_Plant_Terrestrial_Aquatic.name: [
-            "terrestrialtreatmentmonitoringentry_set",
-            "aquatictreatmentmonitoringentry_set",
-        ],
-        ActivitySubtypes.Biocontrol_Collection.name: [
-            "terrestrialbiocontrolcollectionentry_set"
-        ],
-        ActivitySubtypes.Biocontrol_Release.name: [
-            "terrestrialbiocontrolreleaseentry_set"
-        ],
-    }
-
-    PATH_TO_AGENT_MAP = {
-        ActivitySubtypes.Biocontrol_Collection.name: {
-            "set": "terrestrialbiocontrolcollectionentry_set",
-            "key": "biological_agent",
-        },
-        ActivitySubtypes.Biocontrol_Release.name: {
-            "set": "terrestrialbiocontrolreleaseentry_set",
-            "key": "biocontrol_agent",
-        },
-        ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial.name: {
-            "set": "terrestrialbiocontroldispersalmonitoringentry_set",
-            "key": "biocontrol_agent",
-        },
-        ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial.name: {
-            "set": "terrestrialbiocontroldispersalmonitoringentry_set",
-            "key": "biocontrol_agent",
-        },
-    }
-
     class Meta:
         model = Activity
         fields = (
@@ -126,16 +74,6 @@ class ActivityRecordsetRowSerializer(serializers.ModelSerializer):
             "geom",
         )
 
-    def get_entry_destination(self, subtype):
-        dest = self.PATH_TO_PLANT_MAP.get(subtype)
-        if isinstance(dest, str):
-            return [dest]
-        return dest  # returns list or None
-
-    def build_response_value(self, values):
-        """Join response values to return to client"""
-        return ", ".join(filter(None, values)) or None
-
     def get_geom(self, obj):
         return {
             "type": "Feature",
@@ -143,96 +81,32 @@ class ActivityRecordsetRowSerializer(serializers.ModelSerializer):
         }
 
     def get_invasive_plant(self, obj):
-        destinations = self.get_entry_destination(obj.subtype)
-        if not destinations:
-            return None
-
-        all_plants = []
-        for record in obj.activitydatarecord_set.all():
-            for destination in destinations:  # Loop through all possible entry sets
-                entries = getattr(record, destination).all()
-                all_plants.extend(
-                    [e.invasive_plant.full for e in entries if e.invasive_plant]
-                )
-
-        return self.build_response_value(sorted(set(all_plants)))
+        return ", ".join(
+            obj.invasive_plants
+        )  # point of style -- I'd rather just return the list and let the particular serialization format join it into a string if needed (eg yes for CSV, no for JSON). joining for now. change later.
 
     def get_reported_area(self, obj):
         return obj.area_m
 
     def get_species_positive_full(self, obj):
-        destinations = self.get_entry_destination(obj.subtype)
-        if not destinations:
-            return None
-
-        is_observation = ActivitySubtypes[obj.subtype].typeOfActivity == "Observation"
-        plants = []
-
-        for record in obj.activitydatarecord_set.all():
-            for destination in destinations:
-                entries = getattr(record, destination).all()
-                for e in entries:
-                    if (
-                        is_observation
-                        and getattr(e, "observation_type", None) == "Positive"
-                        and e.invasive_plant
-                    ):
-                        plants.append(e.invasive_plant.full)
-
-        return self.build_response_value(sorted(set(plants)))
+        return ", ".join(
+            obj.species_positive_full
+        )  # point of style -- I'd rather just return the list and let the particular serialization format join it into a string if needed (eg yes for CSV, no for JSON). joining for now. change later.
 
     def get_species_negative_full(self, obj):
-        """Fetch Negative Species (Only for Observations)"""
-        destinations = self.get_entry_destination(obj.subtype)
-
-        is_observation = ActivitySubtypes[obj.subtype].typeOfActivity == "Observation"
-        plants = []
-
-        for record in obj.activitydatarecord_set.all():
-            for destination in destinations:
-                entries = getattr(record, destination).all()
-                for e in entries:
-                    if (
-                        is_observation
-                        and getattr(e, "observation_type", None) == "Negative"
-                        and e.invasive_plant
-                    ):
-                        plants.append(e.invasive_plant.full)
-
-        return self.build_response_value(sorted(set(plants)))
+        return ", ".join(
+            obj.species_negative_full
+        )  # point of style -- I'd rather just return the list and let the particular serialization format join it into a string if needed (eg yes for CSV, no for JSON). joining for now. change later.
 
     def get_species_treated_full(self, obj):
-        """Fetch Treated Species from all associated DataRecords"""
-        activity_type = ActivitySubtypes[obj.subtype].typeOfActivity
-        if activity_type not in ["Treatment", "Biocontrol", "Monitoring"]:
-            return None
-
-        destinations = self.get_entry_destination(obj.subtype)
-
-        plants = []
-        for record in obj.activitydatarecord_set.all():
-            for destination in destinations:
-                entries = getattr(record, destination).all()
-                plants.extend(
-                    [e.invasive_plant.full for e in entries if e.invasive_plant]
-                )
-        return self.build_response_value(sorted(set(plants)))
+        return ", ".join(
+            obj.species_treated_full
+        )  # point of style -- I'd rather just return the list and let the particular serialization format join it into a string if needed (eg yes for CSV, no for JSON). joining for now. change later.
 
     def get_species_biocontrol_full(self, obj):
-        """Transform Biocontrol agents across all records into string names"""
-        config = self.PATH_TO_AGENT_MAP.get(obj.subtype)
-        if not config:
-            return None
-
-        agents = []
-        for record in obj.activitydatarecord_set.all():
-            entries = getattr(record, config["set"]).all()
-            for e in entries:
-                agent_obj = getattr(e, config["key"], None)
-                if agent_obj and hasattr(agent_obj, "full"):
-                    agents.append(agent_obj.full)
-
-        return self.build_response_value(sorted(set(agents)))
+        return ", ".join(
+            obj.biocontrol_full
+        )  # point of style -- I'd rather just return the list and let the particular serialization format join it into a string if needed (eg yes for CSV, no for JSON). joining for now. change later.
 
     def get_regional_invasive_species_organization_areas(self, obj):
         risos = (
@@ -248,11 +122,15 @@ class ActivityRecordsetRowSerializer(serializers.ModelSerializer):
         Aggregates jurisdictions across all data records for this activity
         """
         jurisdictions = []
-        for record in obj.activitydatarecord_set.all():
-            for j in record.jurisdiction_set.all():
-                jurisdictions.append(f"{j.jurisdiction.full} ({j.percent_covered}%)")
 
-        return ", ".join(sorted(set(jurisdictions))) or None
+        for j in (
+            Jurisdiction.objects.filter(activity_data_record__activity_id=obj.id)
+            .values_list("jurisdiction__full", "percent_covered")
+            .order_by("jurisdiction__full")
+        ):
+            jurisdictions.append(f"{j[0]} ({j[1]}%)")
+
+        return ", ".join(jurisdictions)
 
     def get_project_code(self, obj):
         codes = (
@@ -286,5 +164,6 @@ class CachedActivityRecordsetRowSerializer(ActivityRecordsetRowSerializer):
     class Meta(ActivityRecordsetRowSerializer.Meta):
         fields = ActivityRecordsetRowSerializer.Meta.fields + ("data",)
 
+    @silk_profile("data serializer")
     def get_data(self, obj):
         return ActivitySerializer(obj, context=self.context).data
