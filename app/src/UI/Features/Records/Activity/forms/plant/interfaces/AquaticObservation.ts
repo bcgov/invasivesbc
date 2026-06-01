@@ -36,21 +36,24 @@ interface AquaticPlantObservationSchema extends BaseForm {
       shoreline_type: string;
       percent_covered: number;
     }>;
-
-    inflow_permanent: string[];
-    inflow_seasonal: string[];
-    outflow_permanent: string[];
-    outflow_seasonal: string[];
-    access: string;
-    colour: string;
-    comment: string;
-    max_depth_m: number;
-    name_gazetted: string;
-    name_local: string;
-    suitable_for_biocontrol: string;
-    secchi_depth: number;
-    tidal_influence: string;
-    type: string;
+    context: {
+      suitable_for_biocontrol: string;
+    };
+    waterbody_context: {
+      inflow_permanent: string[];
+      inflow_seasonal: string[];
+      outflow_permanent: string[];
+      outflow_seasonal: string[];
+      access: string;
+      colour: string;
+      comment: string;
+      max_depth_m: number;
+      name_gazetted: string;
+      name_local: string;
+      secchi_depth: number;
+      tidal_influence: string;
+      type: string;
+    };
   };
 }
 export type { AquaticPlantObservationSchema };

@@ -26,6 +26,26 @@ from api.protocol.activity.validators.code_validation import (
 )
 
 
+class Context(CleanSchema):
+    suitable_for_biocontrol: YesNoUnknown
+
+
+class WaterbodyContext(CleanSchema):
+    inflow_permanent: Optional[List[WaterbodyFlowCodeType]] = None
+    inflow_seasonal: Optional[List[WaterbodyFlowSeasonalCodeType]] = None
+    outflow_permanent: Optional[List[WaterbodyFlowCodeType]] = None
+    outflow_seasonal: Optional[List[WaterbodyFlowCodeType]] = None
+    access: Optional[str] = None
+    comment: Optional[str] = None
+    name_local: Optional[str] = None
+    name_gazetted: Optional[str] = None
+    tidal_influence: YesNoUnknown
+    type: WaterbodyTypeCodeType
+    colour: Optional[str] = None
+    max_depth_m: Optional[int] = Field(..., gt=0)
+    secchi_depth: Optional[int] = Field(..., gt=0)
+
+
 class ShorelineType(CleanSchema):
     shoreline_type: ShorelineTypeCodeType
     percent_covered: int = Field(..., gt=0, le=100)
@@ -56,34 +76,19 @@ class Entry(CleanSchema):
 
 
 class SubtypeData(CleanSchema):
+    context: Context
+    waterbody_context: WaterbodyContext
+
     entries: List[Entry] = Field(..., min_length=1)
 
-    adjacent_land_use: List[AdjacentLandUseCodeType]
-    pretreatment_observation: YesNoUnknown
-    suitable_for_biocontrol: YesNoUnknown
-
-    # Shoreline
-    shoreline_types: List[ShorelineType] = Field(..., min_length=1)
-
-    # Waterbody Context
     substrate_type: List[WaterbodySubstrateCodeType]
     water_use: List[WaterbodyUseCodeType]
     waterlevel_management: Optional[List[WaterLevelManagementType]] = None
-    inflow_permanent: Optional[List[WaterbodyFlowCodeType]] = None
-    inflow_seasonal: Optional[List[WaterbodyFlowSeasonalCodeType]] = None
-    outflow_permanent: Optional[List[WaterbodyFlowCodeType]] = None
-    outflow_seasonal: Optional[List[WaterbodyFlowCodeType]] = None
-    access: Optional[str] = None
-    comment: Optional[str] = None
-    name_local: Optional[str] = None
-    name_gazetted: Optional[str] = None
-    tidal_influence: YesNoUnknown
-    type: WaterbodyTypeCodeType
+    adjacent_land_use: List[AdjacentLandUseCodeType]
+    pretreatment_observation: YesNoUnknown
 
-    # Water Quality
-    colour: Optional[str] = None
-    max_depth_m: Optional[int] = Field(None, gt=0)
-    secchi_depth: Optional[int] = Field(None, gt=0)
+    # Shoreline
+    shoreline_types: List[ShorelineType] = Field(..., min_length=1)
 
     @field_validator("entries")
     @classmethod
