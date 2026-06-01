@@ -56,6 +56,7 @@ class FundingAgency(CleanSchema):
 class Media(CleanSchema):
     description: str
     encoded_file: str
+    file_name: str
 
 
 class ProjectCode(CleanSchema):
