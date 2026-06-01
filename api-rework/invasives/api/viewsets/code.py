@@ -16,6 +16,7 @@ class CodeViewSet(ViewSet):
     code_models = [
         AdjacentLandUseCode,
         AgentLocationFoundCode,
+        AgentLocationFoundTerrainCode,
         AquaticPlantCode,
         AspectCode,
         BioAgentCollectionMethodCode,

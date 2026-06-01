@@ -10,7 +10,7 @@ import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips'
 import useFieldPath from 'UI/Features/Records/Activity/forms/plant/hooks/useFieldPath';
 
 const BiocontrolWeatherConditions = () => {
-  const { getPath } = useFieldPath<BiocontrolReleaseSchema>('subtype_data');
+  const { getPath } = useFieldPath<BiocontrolReleaseSchema>('subtype_data.weather_conditions');
   const { register } = useFormContext<BiocontrolReleaseSchema>();
   const codes = useSelector((state) => state.ActivityPage.formCodes);
 

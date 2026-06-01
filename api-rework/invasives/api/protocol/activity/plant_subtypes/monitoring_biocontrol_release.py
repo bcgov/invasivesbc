@@ -16,9 +16,9 @@ from api.protocol.activity.plant_subtypes.common import (
 from api.models.enums import YesNoUnknown, CollectionType
 from api.protocol.activity.validators.code_validation import (
     BiocontrolAgentCodeType,
-    BioAgentCollectionMethodCodeType,
+    BioAgentMonitoringMethodCodeType,
     PlantsWithBiocontrolType,
-    AgentLocationFoundCodeType,
+    AgentLocationFoundTerrainCodeType,
     BiocontrolPresenceCodeType,
 )
 
@@ -28,10 +28,10 @@ class Entry(CleanSchema):
     biocontrol_present: bool
     invasive_plant: PlantsWithBiocontrolType
     monitoring_type: CollectionType
-    monitoring_method: BioAgentCollectionMethodCodeType
+    monitoring_method: BioAgentMonitoringMethodCodeType
     count_duration_minutes: Optional[int] = None
     plant_count: Optional[int] = None
-    location_agent_found: List[AgentLocationFoundCodeType]
+    location_agent_found: List[AgentLocationFoundTerrainCodeType]
     sign_of_biocontrol_presence: List[BiocontrolPresenceCodeType]
     start_time: NaiveDatetime
     stop_time: NaiveDatetime
@@ -91,8 +91,11 @@ class Entry(CleanSchema):
         return no_future_date(v)
 
 
-class SubtypeData(MicrositeCondition, WeatherConditions, SpreadResultsMixin):
+class SubtypeData(SpreadResultsMixin):
     entries: List[Entry]
+    microsite_conditions: MicrositeCondition
+    weather_conditions: WeatherConditions
+    spread_results: Optional[SpreadResultsMixin] = None
     target_plant_phenology: Optional[TargetPlantPhenology] = None
 
 

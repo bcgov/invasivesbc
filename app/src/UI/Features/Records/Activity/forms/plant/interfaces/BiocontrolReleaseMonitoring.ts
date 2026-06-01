@@ -42,20 +42,26 @@ interface BiocontrolReleaseMonitoringSchema extends BaseForm {
       target_plant_heights: Array<{ height_cm: number }>;
     };
     // Microsite
-    mesoslope_position: string;
-    site_surface_shape: string;
+    microsite_condition: {
+      mesoslope_position: string;
+      site_surface_shape: string;
+    };
     // Spread
-    agent_density?: number;
-    plant_attack?: number;
-    max_spread_distance_m?: number;
-    max_spread_aspect_deg?: number;
+    spread_results: {
+      agent_density?: number;
+      plant_attack?: number;
+      max_spread_distance_m?: number;
+      max_spread_aspect_deg?: number;
+    };
     // Weather
-    comments: string;
-    cloud_cover: string;
-    precipitation: string;
-    temperature: number;
-    wind_direction: string;
-    wind_speed_kmh: number;
+    weather_condition: {
+      comments: string;
+      cloud_cover: string;
+      precipitation: string;
+      temperature: number;
+      wind_direction: string;
+      wind_speed_kmh: number;
+    };
   };
 }
 
