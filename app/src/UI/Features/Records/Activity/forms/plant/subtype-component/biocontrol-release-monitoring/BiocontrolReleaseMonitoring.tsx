@@ -1,11 +1,10 @@
-import { useEffect, useState } from 'react';
 import CheckboxUI from 'UI/Features/Records/Activity/forms/common/CheckboxUI/CheckboxUI';
 import MicrositeConditions from 'UI/Features/Records/Activity/forms/plant/subtype-component/common/MicrositeConditions';
 import TargetPlantPhenology from 'UI/Features/Records/Activity/forms/plant/subtype-component/common/TargetPlantPhenology';
 import BiocontrolWeatherConditions from 'UI/Features/Records/Activity/forms/plant/subtype-component/common/WeatherConditions';
 import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
 import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
-import { get, useFormContext } from 'react-hook-form';
+import { get, useFormContext, useWatch } from 'react-hook-form';
 import { BiocontrolReleaseMonitoringSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import { distinctEntries, lessThanEqual, greaterThanEqual } from 'UI/Features/Records/Activity/forms/common/validators';
@@ -19,17 +18,29 @@ import useFieldPath from 'UI/Features/Records/Activity/forms/plant/hooks/useFiel
 const BiocontrolReleaseMonitoring = () => {
   const {
     register,
-    getValues,
-    formState: { errors, isDirty }
+    setValue,
+    control,
+    formState: { errors }
   } = useFormContext<BiocontrolReleaseMonitoringSchema>();
-  const [isSpreadResultsPresent, setIsSpreadResultsPresent] = useState<boolean>(false);
 
-  useEffect(() => {
-    const isResults = !!getValues().subtype_data.max_spread_aspect_deg != undefined;
-    setIsSpreadResultsPresent(isResults);
-  }, []);
+  const { getPath, basePath } = useFieldPath<BiocontrolReleaseMonitoringSchema>('subtype_data.spread_results');
+  const spreadResultsExists = useWatch({ control, name: basePath });
+  const isSpreadResultsPresent = !!spreadResultsExists;
 
-  const { getPath } = useFieldPath<BiocontrolReleaseMonitoringSchema>('subtype_data');
+  const handleCheckboxChange = () => {
+    if (isSpreadResultsPresent) {
+      // If closing, clear the values
+      setValue(basePath, undefined, { shouldDirty: true });
+    } else {
+      // Set the values to default state
+      const defaultState = (
+        getDefaultFormState(
+          ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial
+        ) as BiocontrolReleaseMonitoringSchema
+      ).subtype_data.spread_results;
+      setValue(basePath, defaultState, { shouldDirty: true });
+    }
+  };
 
   return (
     <>
@@ -59,11 +70,7 @@ const BiocontrolReleaseMonitoring = () => {
 
       <TargetPlantPhenology />
       <Fieldset label={'Spread Results'} tooltip={tooltips.plant.spread_results.recorded}>
-        <CheckboxUI
-          label={'Spread Details Recorded'}
-          state={isSpreadResultsPresent}
-          onChange={() => setIsSpreadResultsPresent((prev) => !prev)}
-        />
+        <CheckboxUI label={'Spread Details Recorded'} state={isSpreadResultsPresent} onChange={handleCheckboxChange} />
         {isSpreadResultsPresent && (
           <>
             <NumberInput
