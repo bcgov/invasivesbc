@@ -78,7 +78,7 @@ class BaseFormSchema(CleanSchema):
 
     # Geometry Values
     area_m: int = Field(..., gt=0, le=MAX_AREA_FOR_RECORD)
-    geom: Union[PointModel, FeatureModel, PolygonModel, MultiPolygonModel]
+    shape: Union[PointModel, FeatureModel, PolygonModel, MultiPolygonModel]
     latitude: float
     longitude: float
     utm_easting: int

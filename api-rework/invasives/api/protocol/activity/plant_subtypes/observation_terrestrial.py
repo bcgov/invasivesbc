@@ -1,4 +1,4 @@
-from typing import List, Literal, Optional
+from typing import List, Literal, Optional, TypedDict
 from pydantic import Field, model_validator, field_validator
 from api.protocol.activity.plant_subtypes.base_form_schema import (
     BaseFormSchema,
@@ -19,6 +19,20 @@ from api.protocol.activity.validators.code_validation import (
     SoilTextureCodeType,
     SpecificUseCodeType,
 )
+
+
+class SpecificUseType(CleanSchema):
+    specific_use: SpecificUseCodeType
+
+
+class Context(TypedDict):
+    research_observation: YesNoUnknown
+    suitable_for_biocontrol_agent: YesNoUnknown
+    visible_well_nearby: YesNoUnknown
+    aspect: AspectCodeType
+    slope_percent: SlopePercentCodeType
+    soil_texture: Optional[SoilTextureCodeType] = None
+    specific_uses: List[SpecificUseType] = Field(..., min_length=1)
 
 
 class Entry(CleanSchema):
@@ -45,16 +59,8 @@ class Entry(CleanSchema):
 
 
 class SubtypeData(CleanSchema):
+    context: Context
     pretreatment_observation: YesNoUnknown
-    research_observation: YesNoUnknown
-    suitable_for_biocontrol_agent: YesNoUnknown
-    visible_well_nearby: YesNoUnknown
-
-    aspect: AspectCodeType
-    slope_percent: SlopePercentCodeType
-    soil_texture: Optional[SoilTextureCodeType] = None
-    specific_uses: List[SpecificUseCodeType] = Field(..., min_length=1)
-
     entries: List[Entry] = Field(..., min_length=1)
 
     @field_validator("entries")

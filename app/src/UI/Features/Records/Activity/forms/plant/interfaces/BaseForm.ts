@@ -12,7 +12,7 @@ interface BaseForm {
     label: string;
     full: string;
   }>;
-  geom?: Feature;
+  shape?: Feature;
   date: string;
   area_m: number;
   latitude: number;
