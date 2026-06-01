@@ -2,7 +2,6 @@ import { get, useFormContext, useWatch } from 'react-hook-form';
 import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
 import { BiocontrolReleaseSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import CheckboxUI from 'UI/Features/Records/Activity/forms/common/CheckboxUI/CheckboxUI';
-import { useEffect, useState } from 'react';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
 import ArrayField from 'UI/Features/Records/Activity/forms/common/ArrayField/ArrayField';
@@ -20,11 +19,11 @@ const TargetPlantPhenology = () => {
     getValues,
     clearErrors,
     setError,
-    formState: { disabled, isDirty, errors }
+    formState: { disabled, errors }
   } = useFormContext<BiocontrolReleaseSchema>();
   const { basePath, getPath } = useFieldPath<BiocontrolReleaseSchema>('subtype_data.target_plant_phenology');
   const plantPhenologyExists = useWatch({ control, name: basePath });
-  const [isPhenologyDetails, setIsPhenologyDetails] = useState<boolean>(false);
+  const isPhenologyDetails = !!plantPhenologyExists;
 
   const handleChange = async () => {
     const data = getValues(basePath);
@@ -38,17 +37,17 @@ const TargetPlantPhenology = () => {
     }
   };
 
-  useEffect(() => {
-    // Delete Phenology if box unchecked
-    if (!isPhenologyDetails) {
-      setValue(basePath, undefined);
+  const handleCheckboxChange = () => {
+    if (isPhenologyDetails) {
+      // If closing, clear the values
+      setValue(basePath, undefined, { shouldDirty: true });
+    } else {
+      // Set the values to default state
+      const defaultState = (getDefaultFormState(ActivitySubtypes.Biocontrol_Release) as BiocontrolReleaseSchema)
+        .subtype_data.target_plant_phenology;
+      setValue(basePath, defaultState, { shouldDirty: true });
     }
-  }, [isPhenologyDetails]);
-
-  useEffect(() => {
-    if (isDirty) return;
-    setIsPhenologyDetails(!!plantPhenologyExists);
-  }, [plantPhenologyExists]);
+  };
 
   return (
     <Fieldset label={'Target Plant Phenology'}>
@@ -56,7 +55,7 @@ const TargetPlantPhenology = () => {
         label={'Phenology Details Recorded'}
         state={isPhenologyDetails}
         disabled={disabled}
-        onChange={() => setIsPhenologyDetails((prev) => !prev)}
+        onChange={handleCheckboxChange}
       />
       {isPhenologyDetails && (
         <>
