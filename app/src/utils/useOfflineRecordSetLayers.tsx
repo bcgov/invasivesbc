@@ -23,7 +23,7 @@ import {
   createLabelLayer,
   getPaintBySchemeOrColor
 } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/reusable-layer-specifications';
-import { RecordSetId, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
+import { RecordSetId, RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
 import { RecordCacheServiceFactory } from './record-cache/context';
 import { Md5 } from 'ts-md5';
 import Alerts from 'state/actions/alerts/Alerts';
@@ -73,8 +73,8 @@ const useOfflineRecordSetLayers = () => {
     const service = await RecordCacheServiceFactory.getPlatformInstance();
     if (!service) throw new Error('Service unavailable');
     const r = await service.getRepository(rec.id);
-
-    if (!r?.cached_geojson || !r?.cached_centroid) {
+    const IS_IBC_RECORD = rec.recordSetType === RecordSetType.Activity;
+    if (!r?.cached_geojson || (IS_IBC_RECORD && !r?.cached_centroid)) {
       console.warn(`[ABORTED] ${rec?.id} returned false positive for being cached.`);
       return null;
     }
@@ -121,48 +121,83 @@ const useOfflineRecordSetLayers = () => {
       color: color,
       filters: globalFilterObj
     };
-
-    return {
-      sources: {
-        [SOURCE_ID]: {
-          type: 'geojson',
-          data: r.cached_geojson.data
+    if (IS_IBC_RECORD) {
+      return {
+        sources: {
+          [SOURCE_ID]: {
+            type: 'geojson',
+            data: r.cached_geojson.data
+          },
+          [CENTROID_LAYER_ID]: {
+            type: 'geojson',
+            data: r.cached_centroid.data
+          }
         },
-        [CENTROID_LAYER_ID]: {
-          type: 'geojson',
-          data: r.cached_centroid.data
-        }
-      },
-      definitions: [
-        {
-          name: rec.id,
-          displayName: OVERSIZED ? 'DENY' : 'displayName',
-          icon: 'N/A',
-          mode: 'overlay',
-          selectionMode: null,
-          tooltip: '',
-          predicates: new MapDefinitionEligibilityPredicatesBuilder()
-            .requiresAuthentication(true)
-            .requiresNetwork(false)
-            .build(),
-          layers: [
-            createFillLayer({ ...layerConfiguration, minzoom: 12 }),
-            createCircleLayer({ ...layerConfiguration, minzoom: 12 }),
-            createBorderLayer({ ...layerConfiguration, minzoom: 12 }),
-            createLabelLayer({
-              ...layerConfiguration,
-              get_tag: 'name',
-              visibility: rec.labelToggle ? 'visible' : 'none',
-              minzoom: 12
-            }),
-            // Add slight overlap so layers don't disappear randomly while transitioning.
-            createFillLayer({ ...centroidLayerConfiguration, maxzoom: 12.5 }),
-            createCircleLayer({ ...centroidLayerConfiguration, maxzoom: 12.5 }),
-            createBorderLayer({ ...centroidLayerConfiguration, maxzoom: 12.5 })
-          ]
-        }
-      ]
-    };
+        definitions: [
+          {
+            name: rec.id,
+            displayName: OVERSIZED ? 'DENY' : 'displayName',
+            icon: 'N/A',
+            mode: 'overlay',
+            selectionMode: null,
+            tooltip: '',
+            predicates: new MapDefinitionEligibilityPredicatesBuilder()
+              .requiresAuthentication(true)
+              .requiresNetwork(false)
+              .build(),
+            layers: [
+              createFillLayer({ ...layerConfiguration, minzoom: 12 }),
+              createCircleLayer({ ...layerConfiguration, minzoom: 12 }),
+              createBorderLayer({ ...layerConfiguration, minzoom: 12 }),
+              createLabelLayer({
+                ...layerConfiguration,
+                get_tag: 'name',
+                visibility: rec.labelToggle ? 'visible' : 'none',
+                minzoom: 12
+              }),
+              // Add slight overlap so layers don't disappear randomly while transitioning.
+              createFillLayer({ ...centroidLayerConfiguration, maxzoom: 12.5 }),
+              createCircleLayer({ ...centroidLayerConfiguration, maxzoom: 12.5 }),
+              createBorderLayer({ ...centroidLayerConfiguration, maxzoom: 12.5 })
+            ]
+          }
+        ]
+      };
+    } else {
+      return {
+        sources: {
+          [SOURCE_ID]: {
+            type: 'geojson',
+            data: r.cached_geojson.data
+          }
+        },
+        definitions: [
+          {
+            name: rec.id,
+            displayName: OVERSIZED ? 'DENY' : 'displayName',
+            icon: 'N/A',
+            mode: 'overlay',
+            selectionMode: null,
+            tooltip: '',
+            predicates: new MapDefinitionEligibilityPredicatesBuilder()
+              .requiresAuthentication(true)
+              .requiresNetwork(false)
+              .build(),
+            layers: [
+              createFillLayer(layerConfiguration),
+              createCircleLayer(layerConfiguration),
+              createBorderLayer(layerConfiguration),
+              createLabelLayer({
+                ...layerConfiguration,
+                get_tag: 'name',
+                visibility: rec.labelToggle ? 'visible' : 'none',
+                minzoom: 12
+              })
+            ]
+          }
+        ]
+      };
+    }
   }
 
   const [recordsetLayers, setRecordsetLayers] = useState<LayerSpecificationWithStackingOrder[]>([]);
