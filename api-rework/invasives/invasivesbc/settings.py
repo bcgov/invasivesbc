@@ -4,13 +4,11 @@ from pathlib import Path
 import sys
 import shutil
 
-from celery import Celery
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = "django-insecure-&3i*dwyfxin1+336nfgz861&1z(56@qod5mq!^9f&-8y(r8qio"
 
-DEBUG = True
+DEBUG = os.getenv("DJANGO_DEBUG", "false").lower() == "true"
 
 ALLOWED_HOSTS = ["*"]
 
@@ -88,6 +86,7 @@ CELERY_TIMEZONE = "America/Vancouver"
 CELERY_TASK_TRACK_STARTED = True
 CELERY_ACCEPT_CONTENT = ["pickle", "json"]
 CELERY_TASK_SERIALIZER = "pickle"  # by default - more efficient than json, less compatible with other platforms though
+CELERY_TASK_ACKS_LATE = True # enable re-queuing on worker loss
 
 """
 Settings related to map generation and tile caching
@@ -223,6 +222,11 @@ LOGGING = {
             "handlers": ["timestamped"],
             "level": "DEBUG",
             "propagate": False,
+        },
+        "psycopg.pool": {
+          "handlers": ["timestamped"],
+          "level": "WARNING",
+          "propagate": False,
         },
         "invasives": {
             "handlers": ["timestamped"],

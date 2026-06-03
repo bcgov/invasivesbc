@@ -2,6 +2,7 @@ import logging
 
 from datetime import datetime
 from django.db.models import Q
+from django.db import transaction
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND
@@ -46,7 +47,11 @@ class MapGenerationRequestViewSet(viewsets.ViewSet):
         )
 
         # queue the actual generation process via celery
-        process_map_generation_request.delay_on_commit(created.id)
+        transaction.on_commit(
+            lambda: process_map_generation_request.apply_async(
+                args=[created.id], priority=6
+            )  # higher-than-default priority
+        )
 
         return Response(serializer.data, status=HTTP_200_OK)
 

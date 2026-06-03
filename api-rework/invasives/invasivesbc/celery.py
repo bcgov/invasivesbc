@@ -1,12 +1,25 @@
 import os
 
 from celery import Celery
+from kombu import Exchange, Queue
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "invasivesbc.settings")
 
 app = Celery("invasivesbc")
 
 app.config_from_object("django.conf:settings", namespace="CELERY")
+
+# enable task priority. lower priority executes earlier.
+
+app.conf.task_queues = [
+  Queue('tasks', Exchange('tasks'), routing_key='tasks',
+        queue_arguments={'x-max-priority': 10}),
+]
+
+app.conf.task_queue_max_priority = 10
+app.conf.task_default_priority = 5
+app.conf.task_default_queue = 'tasks'
+
 
 app.autodiscover_tasks()
 
