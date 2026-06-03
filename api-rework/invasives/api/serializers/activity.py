@@ -35,8 +35,8 @@ Serializers for all Common models in an Activity
 
 
 class UploadedImageSerializer(serializers.ModelSerializer):
-    file_name = serializers.CharField(source="file_name")
-    description = serializers.CharField(source="description")
+    file_name = serializers.CharField()
+    description = serializers.CharField()
     encoded_file = serializers.SerializerMethodField()
 
     class Meta:
