@@ -175,6 +175,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://normalization-fe-dev-invasivesbci.apps.silver.devops.gov.bc.ca",
     "https://normalization-fe-prod-invasivesbci.apps.silver.devops.gov.bc.ca",
     "https://invasivesbc.gov.bc.ca",
+    "invasivesbc://localhost"
 ]
 
 CORS_EXPOSE_HEADERS = ["Content-Disposition"]
