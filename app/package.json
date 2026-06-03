@@ -15,7 +15,7 @@
   "dependencies": {
     "@bcgov/bc-sans": "^2.1.0",
     "@capacitor-community/background-geolocation": "^1.2.26",
-    "@capacitor-community/sqlite": "^7.0.2",
+    "@capacitor-community/sqlite": "^8.1.0",
     "@capacitor/android": "^8.3.4",
     "@capacitor/camera": "^8.2.0",
     "@capacitor/core": "^8.3.4",
@@ -60,7 +60,7 @@
     "proj4": "^2.20.8",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "react-dropzone": "^14.3.8",
+    "react-dropzone": "^15.0.0",
     "react-redux": "^9.3.0",
     "react-router": "^7.15.1",
     "redux": "^5.0.1",
