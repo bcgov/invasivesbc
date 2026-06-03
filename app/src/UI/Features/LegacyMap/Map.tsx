@@ -37,6 +37,7 @@ import { DEMO_DOWNLOADED_FILENAME } from 'UI/Features/LegacyMap/helpers/function
 import LayerDataMarker from './helpers/components/LayerDataMarker/LayerDataMarker';
 import { useRecordSetControls } from 'utils/useRecordSetControls';
 import OfflineRecordsetLayer from './helpers/components/OfflineRecordsetLayer';
+import { useOfflineRecordSetLayers } from 'utils/useOfflineRecordSetLayers';
 
 const OfflineProtoMapsDebugModal = React.lazy(
   () => import('UI/Features/LegacyMap/helpers/components/OfflineProtomaps/Debug')
@@ -60,7 +61,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
   // Map position jump
   const map_center = useSelector((state) => state.Map.map_center);
   const map_zoom = useSelector((state) => state.Map.map_zoom);
-
+  const { recordsetLayers: offlineLayers, recordsetSources: offlineSources } = useOfflineRecordSetLayers();
   const [map, setMap] = useState<InvasivesMap>();
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
   const [mapReady, setMapReady] = useState<boolean>(false);
@@ -69,6 +70,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
 
   const { sources, layers, availableLayerDefinitions, setActiveBaseMap, setOverlayState } = useInvasivesMapLayers();
   const { recordsetLayers, recordsetSources } = useRecordSetControls();
+
   useEffect(() => {
     if (!mapContainer.current) {
       console.error('Mapinit invoked with invalid reference');
@@ -320,15 +322,17 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
 
           <ButtonContainer selectLayer={buttonContainerLayerSelect} layers={availableLayerDefinitions} />
 
-          {[...Object.entries(recordsetSources), ...Object.entries(sources)].map(([key, source]) => (
-            <SourceComponent mapReady={mapReady} key={key} id={key} source={source} />
-          ))}
+          {[...Object.entries(recordsetSources), ...Object.entries(sources), ...Object.entries(offlineSources)].map(
+            ([key, source]) => (
+              <SourceComponent mapReady={mapReady} key={key} id={key} source={source} />
+            )
+          )}
 
-          {[...layers, ...recordsetLayers].map((layer) => (
+          {[...layers, ...recordsetLayers, ...offlineLayers].map((layer) => (
             <LayerComponent mapReady={mapReady} key={layer.id} id={layer.id} layer={layer} />
           ))}
 
-          {[...Object.keys(sources), ...Object.keys(recordsetSources)].map((key) => (
+          {[...Object.keys(sources), ...Object.keys(recordsetSources), ...Object.keys(offlineSources)].map((key) => (
             <SourceCleanupComponent mapReady={mapReady} key={key} id={key} />
           ))}
 

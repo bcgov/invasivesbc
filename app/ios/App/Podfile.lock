@@ -1,31 +1,33 @@
 PODS:
-  - AppAuth (1.7.5):
-    - AppAuth/Core (= 1.7.5)
-    - AppAuth/ExternalUserAgent (= 1.7.5)
-  - AppAuth/Core (1.7.5)
-  - AppAuth/ExternalUserAgent (1.7.5):
+  - AppAuth (2.0.0):
+    - AppAuth/Core (= 2.0.0)
+    - AppAuth/ExternalUserAgent (= 2.0.0)
+  - AppAuth/Core (2.0.0)
+  - AppAuth/ExternalUserAgent (2.0.0):
     - AppAuth/Core
-  - Capacitor (8.0.0):
+  - Capacitor (8.3.4):
     - CapacitorCordova
-  - CapacitorCamera (8.0.0):
+  - CapacitorCamera (8.2.0):
     - Capacitor
+    - IONCameraLib (~> 1.0.4)
   - CapacitorCommunityBackgroundGeolocation (1.2.26):
     - Capacitor
-  - CapacitorCommunitySqlite (7.0.2):
+  - CapacitorCommunitySqlite (7.0.3):
     - Capacitor
     - SQLCipher
     - ZIPFoundation
-  - CapacitorCordova (8.0.0)
-  - CapacitorGeolocation (8.0.0):
+  - CapacitorCordova (8.3.4)
+  - CapacitorGeolocation (8.2.0):
     - Capacitor
-    - IONGeolocationLib (= 2.0.0)
-  - IONGeolocationLib (2.0.0)
-  - SQLCipher (4.5.1):
-    - SQLCipher/standard (= 4.5.1)
-  - SQLCipher/common (4.5.1)
-  - SQLCipher/standard (4.5.1):
+    - IONGeolocationLib (= 2.1.0)
+  - IONCameraLib (1.0.4)
+  - IONGeolocationLib (2.1.0)
+  - SQLCipher (4.10.0):
+    - SQLCipher/standard (= 4.10.0)
+  - SQLCipher/common (4.10.0)
+  - SQLCipher/standard (4.10.0):
     - SQLCipher/common
-  - ZIPFoundation (0.9.13)
+  - ZIPFoundation (0.9.20)
 
 DEPENDENCIES:
   - AppAuth
@@ -39,6 +41,7 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - AppAuth
+    - IONCameraLib
     - IONGeolocationLib
     - SQLCipher
     - ZIPFoundation
@@ -58,16 +61,17 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/geolocation"
 
 SPEC CHECKSUMS:
-  AppAuth: 501c04eda8a8d11f179dbe8637b7a91bb7e5d2fa
-  Capacitor: 341ff7cf652ec695d1a8ebf604db448ac7b6d635
-  CapacitorCamera: 592acb7ab9fb748e2d8571eb03af30ec4e1ace12
+  AppAuth: 1c1a8afa7e12f2ec3a294d9882dfa5ab7d3cb063
+  Capacitor: d13cad5fa09155679672808cc4ca9fbc2997e1b4
+  CapacitorCamera: 8f6acf83664118321111e76acef86390211ccb08
   CapacitorCommunityBackgroundGeolocation: 750523ec6dd1cc94cf4e2bf7787605106753f73c
-  CapacitorCommunitySqlite: a57c58e1c37f4bc250ef01e66b0055cb6ddd775e
-  CapacitorCordova: 5dc3912d25ef770a3fe0f431bb65c9fbfa2e92f9
-  CapacitorGeolocation: 8a405e707de9aff6ac9eca7f408966a370f7ca33
-  IONGeolocationLib: a5e40b54edc2ee9902036eda5aaa41ddf07bb68d
-  SQLCipher: 712e8416685e8e575b9b0706ffee71678b2fdcf8
-  ZIPFoundation: ae5b4b813d216d3bf0a148773267fff14bd51d37
+  CapacitorCommunitySqlite: 4813d82ad33001e612a39d313cb5d28066cbafda
+  CapacitorCordova: c07921bdcfec6f691bae22274446b4d606ebf6a4
+  CapacitorGeolocation: b36f6287bfc9f2eefa04dc900496f2c8ae666136
+  IONCameraLib: f2349804460bd9e3f892e42109b8d996ab3fa19d
+  IONGeolocationLib: 6a7b6f76063fb1b01cfb14fae7d0f526e3c9b271
+  SQLCipher: eb79c64049cb002b4e9fcb30edb7979bf4706dfc
+  ZIPFoundation: dfd3d681c4053ff7e2f7350bc4e53b5dba3f5351
 
 PODFILE CHECKSUM: 69fc9b9b6f34dc46a2fca5e2bede775827aa2574
 

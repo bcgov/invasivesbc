@@ -87,10 +87,9 @@ const createLabelLayer = (options: LabelOptions): LayerSpecificationWithStacking
   layout: {
     'text-field': [
       'format',
-      ['get', options.get_tag ?? 'short_id'],
-      { 'font-scale': 0.9 },
-      ['get', options.get_tag ?? 'site_id'],
-      { 'font-scale': 0.9 },
+      ...(options.get_tag
+        ? [['get', options.get_tag], { 'font-scale': 0.9 }]
+        : [['get', 'short_id'], { 'font-scale': 0.9 }, ['get', 'site_id'], { 'font-scale': 0.9 }]),
       '\n',
       {},
       ['get', 'map_symbol'],
