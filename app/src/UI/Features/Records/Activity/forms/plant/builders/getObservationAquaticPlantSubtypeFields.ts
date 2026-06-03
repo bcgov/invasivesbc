@@ -26,20 +26,25 @@ const getObservationAquaticPlantSubtypeFields = (): AquaticPlantObservationSchem
       percent_covered: 0
     }
   ],
-  inflow_permanent: [],
-  inflow_seasonal: [],
-  outflow_permanent: [],
-  outflow_seasonal: [],
-  access: '',
-  colour: '',
-  comment: '',
-  max_depth_m: 0,
-  name_gazetted: '',
-  name_local: '',
-  suitable_for_biocontrol: '',
-  secchi_depth: 0,
-  tidal_influence: '',
-  type: ''
+  context: {
+    suitable_for_biocontrol: ''
+  },
+
+  waterbody_context: {
+    inflow_permanent: [],
+    inflow_seasonal: [],
+    outflow_permanent: [],
+    outflow_seasonal: [],
+    access: '',
+    colour: '',
+    comment: '',
+    max_depth_m: 0,
+    name_gazetted: '',
+    name_local: '',
+    secchi_depth: 0,
+    tidal_influence: '',
+    type: ''
+  }
 });
 
 export default getObservationAquaticPlantSubtypeFields;

@@ -34,7 +34,7 @@ const ActivityForm = () => {
   const updateGeometryState = () => {
     const GEOM_FIELDS: Array<keyof FormSchema> = [
       'area_m',
-      'geom',
+      'shape',
       'latitude',
       'longitude',
       'utm_zone',

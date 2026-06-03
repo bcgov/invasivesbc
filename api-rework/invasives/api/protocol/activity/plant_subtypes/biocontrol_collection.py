@@ -95,8 +95,10 @@ class Entry(CleanSchema):
         return self
 
 
-class SubtypeData(MicrositeCondition, WeatherConditions):
+class SubtypeData(CleanSchema):
     entries: List[Entry]
+    microsite_conditions: MicrositeCondition
+    weather_conditions: WeatherConditions
     target_plant_phenology: Optional[TargetPlantPhenology] = None
 
 

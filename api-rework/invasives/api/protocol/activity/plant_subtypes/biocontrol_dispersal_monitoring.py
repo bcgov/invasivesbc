@@ -16,8 +16,8 @@ from api.models.enums import CollectionType, YesNoUnknown
 from api.protocol.activity.validators.code_validation import (
     BiocontrolAgentCodeType,
     PlantsWithBiocontrolType,
-    BioAgentCollectionMethodCodeType,
-    AgentLocationFoundCodeType,
+    BioAgentMonitoringMethodCodeType,
+    AgentLocationFoundTerrainCodeType,
     BiocontrolPresenceCodeType,
 )
 
@@ -29,13 +29,11 @@ class Entry(CleanSchema):
     monitoring_type: CollectionType
     plant_count: Optional[int] = Field(None, gt=0)
     linear_segment: Optional[bool] = Field(None)
-    monitoring_method: BioAgentCollectionMethodCodeType
+    monitoring_method: BioAgentMonitoringMethodCodeType
     count_duration_minutes: Optional[int] = Field(None, gt=0)
-    location_agent_found: List[AgentLocationFoundCodeType] = Field(..., min_length=1)
+    location_agent_found: List[AgentLocationFoundTerrainCodeType] = Field()
     number_of_sweeps: Optional[int] = Field(None, gt=0)
-    sign_of_biocontrol_presence: List[BiocontrolPresenceCodeType] = Field(
-        None, min_length=1
-    )
+    sign_of_biocontrol_presence: List[BiocontrolPresenceCodeType] = Field()
     start_time: NaiveDatetime
     stop_time: NaiveDatetime
     suitable_for_collection: bool
@@ -98,9 +96,25 @@ class Entry(CleanSchema):
             raise ValueError("Start time cannot occur after stop time.")
         return self
 
+    @model_validator(mode="after")
+    def validate_sign_of_presence_found(self):
+        sign_of_biocontrol_presence = len(self.sign_of_biocontrol_presence)
+        if self.biocontrol_present and sign_of_biocontrol_presence == 0:
+            raise ValueError("Must include one sign of biocontrol presence")
+        return self
 
-class SubtypeData(MicrositeCondition, WeatherConditions):
+    @model_validator(mode="after")
+    def validate_location_found(self):
+        location_agent_found = len(self.location_agent_found)
+        if self.biocontrol_present and location_agent_found == 0:
+            raise ValueError("Must include one location agent was found.")
+        return self
+
+
+class SubtypeData(CleanSchema):
     entries: List[Entry]
+    microsite_conditions: MicrositeCondition
+    weather_conditions: WeatherConditions
     target_plant_phenology: Optional[TargetPlantPhenology] = None
 
 

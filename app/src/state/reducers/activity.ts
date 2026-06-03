@@ -34,7 +34,7 @@ interface ActivityState {
   wellsInRecordArea?: TerrestrialChemicalTreatmentSchema['subtype_data']['well_entries'];
   formId?: string;
   geometry_details?: {
-    geom: Feature;
+    shape: Feature;
     area_m?: number;
     latitude?: number;
     longitude?: number;
@@ -308,7 +308,7 @@ function createActivityReducer() {
         }));
         draftState.wellsInRecordArea = structuredClone(formattedWells);
         draftState.geometry_details = {
-          geom: geometry?.[0] as Feature,
+          shape: geometry?.[0] as Feature,
           area_m: reported_area ?? undefined,
           latitude: lat ?? undefined,
           longitude: long ?? undefined,

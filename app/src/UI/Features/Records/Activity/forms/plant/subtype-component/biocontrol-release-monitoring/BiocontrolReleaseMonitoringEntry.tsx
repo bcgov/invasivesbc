@@ -49,10 +49,9 @@ const BiocontrolReleaseMonitoringEntry = ({ index }: PropTypes) => {
 
   // Remove Sweep and Transplant Options as they are not needed for ReleaseMonitoring
   const monitoringMethodCodes = useMemo(
-    () => codes?.BioAgentCollectionMethodCode.filter((c) => !['Sw', 'Tp'].includes(c.code as string)),
-    [codes?.BioAgentCollectionMethodCode]
+    () => codes?.BioAgentMonitoringMethodCode.filter((c) => !['Sw', 'Tp'].includes(c.code as string)),
+    [codes?.BioAgentMonitoringMethodCode]
   );
-
   useEffect(() => {
     // Cleanup sign_of_biocontrol_presence when no biocontrol present.
     if (isDirty && !biocontrolPresent) {
@@ -224,7 +223,8 @@ const BiocontrolReleaseMonitoringEntry = ({ index }: PropTypes) => {
           <MultiSelect
             label={'Location Agents Found'}
             name={getPath('location_agent_found')}
-            options={codes?.AgentLocationFoundCode}
+            options={codes?.AgentLocationFoundTerrainCode}
+            required
             rules={{ required: true }}
             tooltip={tooltips.plant.biocontrol.monitoring.location_found}
             width={Width.Half}

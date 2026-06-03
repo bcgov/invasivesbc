@@ -14,7 +14,7 @@ import MultiSelect from 'UI/Features/Records/Activity/forms/common/MultiSelect/M
 import useFieldPath from 'UI/Features/Records/Activity/forms/plant/hooks/useFieldPath';
 
 const ObservationPlantTerrestrial = () => {
-  const { getPath } = useFieldPath<TerrestrialPlantObservationSchema>('subtype_data');
+  const { getPath } = useFieldPath<TerrestrialPlantObservationSchema>('subtype_data.context');
 
   const validateSlopeAspect = (val, formValues) => {
     const aspect = val?.code ?? val;
@@ -41,6 +41,7 @@ const ObservationPlantTerrestrial = () => {
           options={codes?.SpecificUseCode}
           name={getPath('specific_uses')}
           required
+          valueKey="specific_use"
           tooltip={tooltips.plant.terrestrial_specific_use}
           rules={{ required: true }}
           width={Width.Half}
@@ -102,7 +103,7 @@ const ObservationPlantTerrestrial = () => {
           label="Pre-treatment Observation"
           options={YesNoUnknown}
           tooltip={tooltips.basic.pretreatment_observation}
-          name={getPath('pretreatment_observation')}
+          name={'subtype_data.pretreatment_observation'}
           width={Width.Half}
           required
           rules={{ required: true }}

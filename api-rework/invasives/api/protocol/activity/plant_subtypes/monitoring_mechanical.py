@@ -16,15 +16,17 @@ from api.protocol.activity.validators.code_validation import (
 )
 
 
+class InvasivePlantOnSite(CleanSchema):
+    invasive_plants_on_site: InvasivePlantsOnSiteCodeType
+
+
 class Entry(CleanSchema):
     invasive_plant: Optional[TerrestrialPlantCodeType] = None
     invasive_plant_aquatic: Optional[AquaticPlantCodeType] = None
     evidence_of_treatment: YesNo
     treatment_pass: Optional[TreatmentPass] = None
     comment: Optional[str] = None
-    invasive_plants_on_site: List[InvasivePlantsOnSiteCodeType] = Field(
-        ..., min_length=1
-    )
+    invasive_plants_on_site: List[InvasivePlantOnSite] = Field(..., min_length=1)
     management_efficacy_rating: EfficacyManagementRatingCodeType
     treatment_efficacy_rating: Optional[TreatmentEfficacyRatingCodeType] = None
 

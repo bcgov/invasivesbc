@@ -12,6 +12,7 @@ from api.models.activity import (
     ProjectCode,
 )
 from api.models.activity.activity import Activity
+from api.models.activity import UploadedImage
 from api.models.mixins.geometry import Geometry
 from api.serializers.type.subtype import (
     AquaticChemicalTreatmentSerializer,
@@ -33,6 +34,23 @@ Serializers for all Common models in an Activity
 """
 
 
+class UploadedImageSerializer(serializers.ModelSerializer):
+    file_name = serializers.CharField(source="file_name")
+    description = serializers.CharField(source="description")
+    encoded_file = serializers.SerializerMethodField()
+
+    class Meta:
+        model = UploadedImage
+        fields = (
+            "file_name",
+            "description",
+            "encoded_file",
+        )
+
+    def get_encoded_file(self, obj):
+        return "TODO"
+
+
 class EmployerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employer
@@ -45,8 +63,6 @@ class FundingAgencySerializer(serializers.ModelSerializer):
     class Meta:
         model = FundingAgency
         fields = ["invasive_species_agency_code"]
-
-    pass
 
 
 class JurisdictionSerializer(serializers.ModelSerializer):
@@ -102,6 +118,7 @@ class ActivitySerializer(serializers.ModelSerializer):
 
     shape = serializers.SerializerMethodField()
     centroid = serializers.SerializerMethodField()
+    media = serializers.SerializerMethodField()
 
     def get_jurisdictions(self, obj):
         children = Jurisdiction.objects.filter(activity_data_record__activity_id=obj.id)
@@ -124,6 +141,12 @@ class ActivitySerializer(serializers.ModelSerializer):
     def get_employer(self, obj):
         children = Employer.objects.filter(activity_data_record__activity_id=obj.id)
         return EmployerSerializer(children, many=True).data
+
+    def get_media(self, obj):
+        children = UploadedImage.objects.filter(
+            activity_data_record__activity_id=obj.id
+        )
+        return UploadedImageSerializer(children, many=True).data
 
     class Meta:
         model = Activity
@@ -157,6 +180,7 @@ class ActivitySerializer(serializers.ModelSerializer):
             "location_description",
             "shape",
             "centroid",
+            "media",
             "migration_remarks",
         )
 

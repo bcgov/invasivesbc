@@ -27,13 +27,15 @@ interface TerrestrialPlantObservationSchema extends BaseForm {
       };
     }>;
     pretreatment_observation: string;
-    research_observation: string;
-    visible_well_nearby: string;
-    aspect: string;
-    slope_percent: string;
-    soil_texture: string;
-    specific_uses: Array<string>;
-    suitable_for_biocontrol_agent: string;
+    context: {
+      research_observation: string;
+      visible_well_nearby: string;
+      aspect: string;
+      slope_percent: string;
+      soil_texture: string;
+      specific_uses: Array<string>;
+      suitable_for_biocontrol_agent: string;
+    };
   };
 }
 

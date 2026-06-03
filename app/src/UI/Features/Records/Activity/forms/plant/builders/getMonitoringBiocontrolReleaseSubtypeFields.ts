@@ -44,20 +44,26 @@ const getMonitoringBiocontrolReleaseSubtypeFields = (): BiocontrolReleaseMonitor
     target_plant_heights: [{ height_cm: 0 }]
   },
   // Microsite Condition
-  mesoslope_position: '',
-  site_surface_shape: '',
+  microsite_condition: {
+    mesoslope_position: '',
+    site_surface_shape: ''
+  },
   // Spread Results
-  agent_density: 0,
-  plant_attack: 0,
-  max_spread_distance_m: 0,
-  max_spread_aspect_deg: 0,
+  spread_results: {
+    agent_density: 0,
+    plant_attack: 0,
+    max_spread_distance_m: 0,
+    max_spread_aspect_deg: 0
+  },
   // Weather
-  comments: '',
-  cloud_cover: '',
-  precipitation: '',
-  temperature: 0,
-  wind_direction: '',
-  wind_speed_kmh: 0
+  weather_condition: {
+    comments: '',
+    cloud_cover: '',
+    precipitation: '',
+    temperature: 0,
+    wind_direction: '',
+    wind_speed_kmh: 0
+  }
 });
 
 export default getMonitoringBiocontrolReleaseSubtypeFields;

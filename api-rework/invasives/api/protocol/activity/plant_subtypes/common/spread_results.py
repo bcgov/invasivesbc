@@ -11,13 +11,6 @@ class SpreadResultsMixin(CleanSchema):
 
     @model_validator(mode="after")
     def validate_spread_results(self) -> "SpreadResultsMixin":
-        fields = [
-            self.agent_density,
-            self.plant_attack,
-            self.max_spread_aspect_deg,
-            self.max_spread_distance_m,
-        ]
-
         if self.max_spread_distance_m == None and self.max_spread_aspect_deg != None:
             raise ValueError("Max Spread Distance (M) is a required field")
         elif self.max_spread_aspect_deg == None and self.max_spread_distance_m != None:

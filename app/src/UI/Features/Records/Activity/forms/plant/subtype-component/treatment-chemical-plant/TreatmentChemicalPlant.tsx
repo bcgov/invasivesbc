@@ -35,8 +35,8 @@ const TreatmentChemicalPlant = () => {
    * @desc Validate only PMP or Manual PMP are filled in, not both.
    */
   const validatePMPSelection = (_, formValues: ChemTreatment): true | string => {
-    const pmp = formValues.subtype_data?.pest_management_plan;
-    const manual = formValues.subtype_data?.pest_management_plan_manual;
+    const pmp = formValues.subtype_data?.context?.pest_management_plan;
+    const manual = formValues.subtype_data?.context?.pest_management_plan_manual;
     if ((pmp && !manual) || (!pmp && manual)) return true;
     if (!pmp && !manual) return 'You must only fill either Pest Management Plan or Unlisted Drop Down field.';
     return 'Either "Pest Management Plan" or "PMP # not in dropdown" has to be filled.';
@@ -51,13 +51,14 @@ const TreatmentChemicalPlant = () => {
   } = useFormContext<ChemTreatment>();
 
   const { getPath } = useFieldPath<ChemTreatment>('subtype_data');
+  const { getPath: getContextPath } = useFieldPath<ChemTreatment>('subtype_data.context');
   const codes = useSelector((state) => state.ActivityPage.formCodes);
   const wellsInArea = useSelector((state) => state.ActivityPage?.wellsInRecordArea);
 
   const well_entries = watch(getPath('well_entries'));
-  const ntz_bool = watch(getPath('ntz_reduction_bool'));
-  const temp_c = watch(getPath('temperature_c'));
-  const wind_speed = watch(getPath('wind_speed_kmh'));
+  const ntz_bool = watch(getContextPath('ntz_reduction_bool'));
+  const temp_c = watch(getContextPath('temperature_c'));
+  const wind_speed = watch(getContextPath('wind_speed_kmh'));
 
   const temperatureConsent = useLocalStorage('isTemperatureAccurate');
   const windSpeedConsent = useLocalStorage('isWindSpeedAccurate');
@@ -150,12 +151,12 @@ const TreatmentChemicalPlant = () => {
       {/* Weather Information */}
       <Fieldset label={'Weather Information'}>
         <NumberInput
-          error={get(errors, getPath('temperature_c'))}
+          error={get(errors, getContextPath('temperature_c'))}
           label={'Temperature (C°)'}
           required
           tooltip={tooltips.plant.chemical.weather.temperature_c}
           width={Width.Half}
-          {...register(getPath('temperature_c'), {
+          {...register(getContextPath('temperature_c'), {
             required: true,
             valueAsNumber: true,
             validate: {
@@ -168,12 +169,12 @@ const TreatmentChemicalPlant = () => {
           })}
         />
         <NumberInput
-          error={get(errors, getPath('wind_speed_kmh'))}
+          error={get(errors, getContextPath('wind_speed_kmh'))}
           label={'Wind Speed (km/h)'}
           required
           tooltip={tooltips.plant.chemical.weather.wind_speed_kmh}
           width={Width.Half}
-          {...register(getPath('wind_speed_kmh'), {
+          {...register(getContextPath('wind_speed_kmh'), {
             required: true,
             valueAsNumber: true,
             // If user verifies weather accurate, check for clearly accidental values (extra digits)
@@ -186,14 +187,14 @@ const TreatmentChemicalPlant = () => {
         />
         <SingleSelect
           label={'Wind Direction'}
-          name={getPath('wind_direction')}
+          name={getContextPath('wind_direction')}
           options={codes?.WindDirectionCode}
           required
           tooltip={tooltips.plant.chemical.weather.wind_direction}
           width={Width.Half}
           rules={{
             required: true,
-            deps: [getPath('wind_speed_kmh')],
+            deps: [getContextPath('wind_speed_kmh')],
             validate: (direction, formValues) => {
               const windSpeed = formValues.subtype_data?.wind_speed_kmh;
               if (direction === 'NA' && windSpeed > 0) {
@@ -204,11 +205,11 @@ const TreatmentChemicalPlant = () => {
           }}
         />
         <NumberInput
-          error={get(errors, getPath('humidity'))}
+          error={get(errors, getContextPath('humidity'))}
           label={'Humidity (%)'}
           tooltip={tooltips.plant.chemical.weather.humidity}
           width={Width.Half}
-          {...register(getPath('humidity'), {
+          {...register(getContextPath('humidity'), {
             valueAsNumber: true,
             validate: {
               min: (val) => greaterThanEqual(val, 0),
@@ -252,7 +253,7 @@ const TreatmentChemicalPlant = () => {
       <Fieldset label={'Chemical Treatment Information'}>
         <SingleSelect
           label={'Service License Number and Company Name'}
-          name={getPath('service_license_number')}
+          name={getContextPath('pesticide_employer_code')}
           options={serviceLicenseCodes}
           required
           rules={{ required: true }}
@@ -260,36 +261,36 @@ const TreatmentChemicalPlant = () => {
           width={Width.Half}
         />
         <TextInput
-          error={get(errors, getPath('pesticide_use_permit'))}
+          error={get(errors, getContextPath('pesticide_use_permit'))}
           label={'Pesticide Use Permit'}
           tooltip={tooltips.plant.chemical.pesticide_use_permit}
           width={Width.Half}
-          {...register(getPath('pesticide_use_permit'))}
+          {...register(getContextPath('pesticide_use_permit'))}
         />
         <SingleSelect
           label={'Pest Management Plan (PMP)'}
-          name={getPath('pest_management_plan')}
+          name={getContextPath('pest_management_plan')}
           options={codes?.PestManagementPlan}
           tooltip={tooltips.plant.chemical.pest_management_plan}
           width={Width.Half}
           rules={{
-            deps: [getPath('pest_management_plan_manual')],
+            deps: [getContextPath('pest_management_plan_manual')],
             validate: validatePMPSelection
           }}
         />
         <TextInput
-          error={get(errors, getPath('pest_management_plan_manual'))}
+          error={get(errors, getContextPath('pest_management_plan_manual'))}
           label={'PMP # Not in Dropdown'}
           tooltip={tooltips.plant.chemical.pest_management_plan_manual}
           width={Width.Half}
-          {...register(getPath('pest_management_plan_manual'), {
-            deps: [getPath('pest_management_plan')],
+          {...register(getContextPath('pest_management_plan_manual'), {
+            deps: [getContextPath('pest_management_plan')],
             validate: validatePMPSelection
           })}
         />
         <SingleSelect
           label={'Treatment Notice Signs'}
-          name={getPath('treatment_notice_signs')}
+          name={getContextPath('treatment_notice_signs')}
           options={YesNoUnknown}
           required
           rules={{ required: true }}
@@ -298,7 +299,7 @@ const TreatmentChemicalPlant = () => {
         />
         <SingleSelect
           label={'Precautionary Statement'}
-          name={getPath('precautionary_statement')}
+          name={getContextPath('precautionary_statement')}
           options={codes?.ChemicalPrecautionaryStatement}
           required
           rules={{ required: true }}
@@ -306,22 +307,22 @@ const TreatmentChemicalPlant = () => {
           width={Width.Half}
         />
         <DateInput
-          error={get(errors, getPath('application_start_time'))}
+          error={get(errors, getContextPath('application_start_time'))}
           includeTime
           label={'Application Start Time'}
           required
           width={Width.Half}
-          {...register(getPath('application_start_time'), { required: true, validate: noFutureDate })}
+          {...register(getContextPath('application_start_time'), { required: true, validate: noFutureDate })}
         />
         <CheckboxInput
           label={'Additional/Unmapped Wells or Water License intakes within 30m'}
           tooltip={tooltips.plant.chemical.additional_unmapped_water}
           width={Width.Half}
-          {...register(getPath('additional_unmapped_well_water_bool'))}
+          {...register(getContextPath('additional_unmapped_well_water_bool'))}
         />
         <RadioInput
           label={'NTZ Reduction'}
-          name={getPath('ntz_reduction_bool')}
+          name={getContextPath('ntz_reduction_bool')}
           required
           rules={{ validate: (value) => value !== undefined || 'NTZ reduction is required' }}
           tooltip={tooltips.plant.chemical.required_under_license}
@@ -334,12 +335,12 @@ const TreatmentChemicalPlant = () => {
         {ntz_bool ? (
           <TextInput
             advisoryText="Only the PMP or permit holder may approve an NTZ reduction on public lands."
-            error={get(errors, getPath('rationale_for_ntz_reduction'))}
+            error={get(errors, getContextPath('rationale_for_ntz_reduction'))}
             label={'Rationale for NTZ Reduction'}
             tooltip={tooltips.plant.chemical.required_under_license}
             required
             width={Width.Half}
-            {...register(getPath('rationale_for_ntz_reduction'), { required: true })}
+            {...register(getContextPath('rationale_for_ntz_reduction'), { required: true })}
           />
         ) : (
           <FormSpacer width={Width.Half} />
@@ -350,7 +351,7 @@ const TreatmentChemicalPlant = () => {
       <Fieldset label={'Pest Injury Threshold Determination'}>
         <RadioInput
           label={'Choose either option'}
-          name={getPath('pest_injury_threshold_determination_bool')}
+          name={getContextPath('pest_injury_threshold_determination_bool')}
           required
           rules={{ validate: (value) => value !== undefined || 'NTZ reduction is required' }}
           tooltip={tooltips.plant.chemical.required_under_license}

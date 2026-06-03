@@ -110,6 +110,7 @@ const MonitoringChemMechPlantEntry = ({ index }: PropTypes) => {
         label={'Invasive Plants on Site'}
         name={getPath('invasive_plants_on_site')}
         options={codes?.InvasivePlantsOnSiteCode}
+        valueKey="invasive_plants_on_site"
         required
         rules={{ validate: (arr) => minArrayLength(arr, 1) }}
         tooltip={tooltips.plant.invasive_plant_on_site}

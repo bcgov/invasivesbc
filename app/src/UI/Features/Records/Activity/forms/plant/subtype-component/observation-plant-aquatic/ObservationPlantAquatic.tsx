@@ -25,6 +25,8 @@ import useFieldPath from 'UI/Features/Records/Activity/forms/plant/hooks/useFiel
 const ObservationPlantAquatic = () => {
   const codes = useSelector((state) => state.ActivityPage?.formCodes);
   const { getPath } = useFieldPath<AquaticPlantObservationSchema>('subtype_data');
+  const { getPath: getWbPath } = useFieldPath<AquaticPlantObservationSchema>('subtype_data.waterbody_context');
+
   const {
     register,
     formState: { errors }
@@ -39,29 +41,29 @@ const ObservationPlantAquatic = () => {
           options={WaterbodyType}
           tooltip={tooltips.plant.waterbody.type}
           required
-          name={getPath('type')}
+          name={getWbPath('type')}
           rules={{ required: true }}
           width={Width.Half}
         />
         <TextInput
           label={'Waterbody Name (Gazetted)'}
           tooltip={tooltips.plant.waterbody.name_gazetted}
-          error={get(errors, getPath('name_gazetted'))}
-          {...register(getPath('name_gazetted'))}
+          error={get(errors, getWbPath('name_gazetted'))}
+          {...register(getWbPath('name_gazetted'))}
           width={Width.Half}
         />
         <TextInput
           label={'Waterbody Name (Local)'}
           tooltip={tooltips.plant.waterbody.name_local}
-          error={get(errors, getPath('name_local'))}
+          error={get(errors, getWbPath('name_local'))}
           {...register(getPath('name_local'))}
           width={Width.Half}
         />
         <TextInput
           label={'Waterbody Access'}
           tooltip={tooltips.plant.waterbody.access}
-          error={get(errors, getPath('access'))}
-          {...register(getPath('access'))}
+          error={get(errors, getWbPath('access'))}
+          {...register(getWbPath('access'))}
           width={Width.Half}
         />
         <MultiSelect
@@ -91,7 +93,7 @@ const ObservationPlantAquatic = () => {
           label={'Tidal Influence'}
           tooltip={tooltips.plant.waterbody.tidal_influence}
           options={YesNoUnknown}
-          name={getPath('tidal_influence')}
+          name={getWbPath('tidal_influence')}
           required
           rules={{ required: true }}
           width={Width.Half}
@@ -106,36 +108,36 @@ const ObservationPlantAquatic = () => {
         <MultiSelect
           tooltip={tooltips.plant.waterbody.inflow}
           label={'Inflow (Permanent)'}
-          name={getPath('inflow_permanent')}
+          name={getWbPath('inflow_permanent')}
           options={codes?.WaterbodyFlowCode}
           width={Width.Half}
         />
         <MultiSelect
           label={'Inflow (Temp. or Seasonal)'}
           tooltip={tooltips.plant.waterbody.inflow}
-          name={getPath('inflow_seasonal')}
+          name={getWbPath('inflow_seasonal')}
           options={codes?.WaterbodyFlowSeasonalCode}
           width={Width.Half}
         />
         <MultiSelect
           label={'Outflow (Permanent)'}
           options={codes?.WaterbodyFlowCode}
-          name={getPath('outflow_permanent')}
+          name={getWbPath('outflow_permanent')}
           tooltip={tooltips.plant.waterbody.outflow}
           width={Width.Half}
         />
         <MultiSelect
           label={'Outflow (Seasonal)'}
           options={codes?.WaterbodyFlowCode}
-          name={getPath('outflow_seasonal')}
+          name={getWbPath('outflow_seasonal')}
           tooltip={tooltips.plant.waterbody.outflow}
           width={Width.Half}
         />
         <TextArea
-          error={get(errors, getPath('comment'))}
+          error={get(errors, getWbPath('comment'))}
           label={'Comment'}
           width={Width.Half}
-          {...register(getPath('comment'))}
+          {...register(getWbPath('comment'))}
         />
       </Fieldset>
 
@@ -179,24 +181,24 @@ const ObservationPlantAquatic = () => {
       {/* Water Quality Start */}
       <Fieldset label={'Water Quality'}>
         <NumberInput
-          error={get(errors, getPath('max_depth_m'))}
+          error={get(errors, getWbPath('max_depth_m'))}
           label="Maximum Depth (m)"
           tooltip={tooltips.plant.waterbody.depth}
           width={Width.Half}
-          {...register(getPath('max_depth_m'), { valueAsNumber: true, validate: (val) => greaterThan(val, 0) })}
+          {...register(getWbPath('max_depth_m'), { valueAsNumber: true, validate: (val) => greaterThan(val, 0) })}
         />
         <NumberInput
-          error={get(errors, getPath('secchi_depth'))}
+          error={get(errors, getWbPath('secchi_depth'))}
           label="Secchi Depth (m)"
           tooltip={tooltips.plant.waterbody.secchi_depth}
           width={Width.Half}
-          {...register(getPath('secchi_depth'), { valueAsNumber: true, validate: (val) => greaterThan(val, 0) })}
+          {...register(getWbPath('secchi_depth'), { valueAsNumber: true, validate: (val) => greaterThan(val, 0) })}
         />
         <TextInput
-          error={get(errors, getPath('colour'))}
+          error={get(errors, getWbPath('colour'))}
           label="Water Colour"
           width={Width.Half}
-          {...register(getPath('colour'))}
+          {...register(getWbPath('colour'))}
         />
       </Fieldset>
       <Fieldset label={'Observation Information'}>
@@ -204,7 +206,7 @@ const ObservationPlantAquatic = () => {
           label="Suitable For Biocontrol Agent(s)"
           options={YesNoUnknown}
           tooltip={tooltips.plant.suitable_for_biocontrol_agent}
-          name={getPath('suitable_for_biocontrol')}
+          name={getPath('context.suitable_for_biocontrol')}
           width={Width.Half}
           required
           rules={{ required: true }}

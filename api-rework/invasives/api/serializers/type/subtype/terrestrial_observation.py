@@ -11,7 +11,6 @@ from api.models.activity.observations import (
     TerrestrialPlantObservationContext,
 )
 from api.serializers.common.codes import (
-    SpecificUseCodeSerializer,
     SoilTextureCodeSerializer,
     AspectCodeSerializer,
     SlopeCodeSerializer,
@@ -61,7 +60,7 @@ class TerrestrialPlantObservationEntriesSerializer(serializers.ModelSerializer):
 
 
 class SpecificUseSerializer(serializers.ModelSerializer):
-    specific_use = SpecificUseCodeSerializer()
+    specific_use = serializers.CharField()
 
     class Meta:
         model = SpecificUse
