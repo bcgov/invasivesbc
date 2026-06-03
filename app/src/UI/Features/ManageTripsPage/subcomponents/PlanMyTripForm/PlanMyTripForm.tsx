@@ -128,7 +128,7 @@ const PlanMyTripForm = () => {
 
   return (
     <div id="trip-planning-form">
-      <form>
+      <form onSubmit={(e) => e.preventDefault()}>
         <h2>Planning Your Trip</h2>
         <p className="overview">
           Draw a region on the map and download detailed information for that area, including maps, records, and well
