@@ -1,0 +1,4 @@
+from .observation_terrestrial import (
+    MINIMAL_TERRESTRIAL_OBSERVATION,
+    UPDATED_TERRESTRIAL_OBSERVATION,
+)
