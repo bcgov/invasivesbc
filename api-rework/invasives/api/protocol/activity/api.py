@@ -7,6 +7,8 @@ import uuid
 from api.models.activity import Activity
 from api.ninja_authentication import NinjaKeycloakAuthentication
 from api.models.enums import FormStatus
+from api.models.activity import UploadedImage, ActivityDataRecord, Activity
+from django.db import transaction
 from api.protocol.activity.activity import (
     ActivityMinimal,
     ActivityOut,
@@ -60,10 +62,28 @@ def activity_search(request, search: ActivitySearchParameters):
 @router.post("/submit")
 def submit_record(request, data: PlantActivitySchema = Body(...)):
     data = data.model_dump()
-    val = mock_record_id()
-    data["id"] = val["id"]
-    data["short_id"] = val["short_id"]
     data["type"] = "Submitted"
+    if not Activity.objects.filter(id=data["id"]).exists():
+        val = mock_record_id()
+        data["id"] = val["id"]
+        data["short_id"] = val["short_id"]
+        return data  # Creation not implemented
+
+    with transaction.atomic():
+        rec = Activity.objects.filter(id=data["id"]).first()
+        if not rec:
+            return data
+        for image in data["media"]:
+            adr = ActivityDataRecord.objects.create(activity=rec)
+            instance, created = UploadedImage.objects.get_or_create(
+                activity_data_record=adr,
+                file_name=image["file_name"],
+                description=image["description"],
+                encoded_file=image["encoded_file"],
+            )
+            if not created:
+                adr.delete()
+
     return data
 
 
