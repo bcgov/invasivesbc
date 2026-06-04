@@ -14,7 +14,7 @@ from api.models.activity import (
 from api.models.activity.activity import Activity
 from api.models.activity import UploadedImage
 from api.models.mixins.geometry import Geometry
-from api.utils.fetch_s3_activity_photos import FetchS3MediaFiles
+from api.utils.s3_media_files import S3MediaFiles
 from api.serializers.type.subtype import (
     AquaticChemicalTreatmentSerializer,
     AquaticObservationSerializer,
@@ -49,7 +49,7 @@ class UploadedImageSerializer(serializers.ModelSerializer):
         )
 
     def get_encoded_file(self, obj):
-        encoded_image = FetchS3MediaFiles().get_b64_encoded_image(obj.file_name)
+        encoded_image = S3MediaFiles().get_b64_encoded_image(obj.file_name)
         return encoded_image
 
 

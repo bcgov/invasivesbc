@@ -1,6 +1,6 @@
 import hashlib
 from django.db import models
-from api.utils.fetch_s3_activity_photos import FetchS3MediaFiles
+from api.utils.s3_media_files import S3MediaFiles
 
 from api.models.activity import RepeatedFormData
 
@@ -37,7 +37,7 @@ class UploadedImageManager(models.Manager):
 
         instance.file_name = generated_file_name
 
-        success = FetchS3MediaFiles().upload_b64_encoded_image(
+        success = S3MediaFiles().upload_b64_encoded_image(
             b64_image=encoded_file, file_name=instance.file_name
         )
 
