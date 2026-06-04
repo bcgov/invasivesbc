@@ -1,4 +1,3 @@
-import uuid
 import hashlib
 from django.db import models
 from api.utils.fetch_s3_activity_photos import FetchS3MediaFiles
