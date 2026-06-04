@@ -37,18 +37,23 @@ class S3MediaFiles:
         )
         return response["Body"]
 
-    def get_b64_encoded_image(self, file_name) -> str:
+    def get_b64_encoded_image(self, file_name):
         """
         Take Raw image obtained from S3 and convert into Base64 encoded image
         """
-        ext = file_name.split(".")[-1].lower()
-        if ext == "jpg":
-            ext = "jpeg"
+        try:
 
-        raw_image = self.get_image(file_name)
-        bytes = base64.b64encode(raw_image.read())
-        b64_string = bytes.decode("utf-8")
-        return f"data:image/{ext};base64,{b64_string}"
+            ext = file_name.split(".")[-1].lower()
+            if ext == "jpg":
+                ext = "jpeg"
+
+            raw_image = self.get_image(file_name)
+            bytes = base64.b64encode(raw_image.read())
+            b64_string = bytes.decode("utf-8")
+
+            return f"data:image/{ext};base64,{b64_string}"
+        except Exception:
+            return None
 
     def _parse_b64_encoded_image_to_binary(self, b64_string: str) -> str:
         if "base64," in b64_string:

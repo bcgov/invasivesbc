@@ -3,6 +3,7 @@ import { useFieldArray, useFormContext } from 'react-hook-form';
 import { FormSchema } from '../interfaces';
 import StyledModal from 'UI/Reusable/StyledModal/StyledModal';
 import { WebOnly } from 'UI/Reusable/Predicates/WebOnly';
+import { BrokenImage } from '@mui/icons-material';
 
 const Photo = ({ photo, index, remove }) => {
   const handleClose = () => setIsModalOpen(false);
@@ -35,8 +36,9 @@ const Photo = ({ photo, index, remove }) => {
    * Primarily intended as a safe guard from SVG images.
    * @param {string} dataUri - The full string (e.g., "data:image/svg+xml;base64,...")
    */
-  const createSafeLink = (dataUri) => {
+  const createSafeLink = (dataUri: string | undefined) => {
     try {
+      if (!dataUri) return;
       const parts = dataUri.split(',');
       if (parts.length < 2) throw new Error('Invalid Data URI format');
 
@@ -86,7 +88,14 @@ const Photo = ({ photo, index, remove }) => {
         </div>
       </StyledModal>
       <div className="photo">
-        <img src={photo.encoded_file} onClick={handleOpen} alt={photo.description} />
+        {photo?.encoded_file ? (
+          <img src={photo.encoded_file} onClick={handleOpen} alt={photo.description} />
+        ) : (
+          <div className="missing-image">
+            <BrokenImage />
+            Image not found
+          </div>
+        )}
       </div>
       <div className="description">
         <p>{photo.description}</p>

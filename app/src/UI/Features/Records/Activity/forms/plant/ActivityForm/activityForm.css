@@ -207,15 +207,21 @@ input[type='button']:hover {
         width: 100%;
         display: flex;
 
+        .missing-image {
+          display: flex;
+          color: gray;
+          align-items: center;
+        }
+
         img {
           object-fit: contain;
           width: 100%;
           height: 100%;
           max-height: 350px;
-        }
 
-        &:hover {
-          cursor: zoom-in;
+          &:hover {
+            cursor: zoom-in;
+          }
         }
       }
 
