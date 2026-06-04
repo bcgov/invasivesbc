@@ -32,6 +32,10 @@ body {
   padding: 0;
 }
 
+html {
+  overscroll-behavior: none;
+}
+
 #app {
   width: 100%;
   text-align: center;
