@@ -1,4 +1,4 @@
-from typing import List, Literal, Optional, TypedDict
+from typing import List, Literal, Optional
 from pydantic import Field, model_validator, field_validator
 from api.protocol.activity.plant_subtypes.base_form_schema import (
     BaseFormSchema,
@@ -25,7 +25,7 @@ class SpecificUseType(CleanSchema):
     specific_use: SpecificUseCodeType
 
 
-class Context(TypedDict):
+class Context(CleanSchema):
     research_observation: YesNoUnknown
     suitable_for_biocontrol_agent: YesNoUnknown
     visible_well_nearby: YesNoUnknown
