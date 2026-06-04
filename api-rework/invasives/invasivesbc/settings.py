@@ -86,7 +86,7 @@ CELERY_TIMEZONE = "America/Vancouver"
 CELERY_TASK_TRACK_STARTED = True
 CELERY_ACCEPT_CONTENT = ["pickle", "json"]
 CELERY_TASK_SERIALIZER = "pickle"  # by default - more efficient than json, less compatible with other platforms though
-CELERY_TASK_ACKS_LATE = True # enable re-queuing on worker loss
+CELERY_TASK_ACKS_LATE = True  # enable re-queuing on worker loss
 
 """
 Settings related to map generation and tile caching
@@ -175,7 +175,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://normalization-fe-dev-invasivesbci.apps.silver.devops.gov.bc.ca",
     "https://normalization-fe-prod-invasivesbci.apps.silver.devops.gov.bc.ca",
     "https://invasivesbc.gov.bc.ca",
-    "invasivesbc://localhost"
+    "invasivesbc://localhost",
 ]
 
 CORS_EXPOSE_HEADERS = ["Content-Disposition"]
@@ -186,6 +186,9 @@ OBJECT_STORE_ENDPOINT_URL = os.getenv(
 OBJECT_STORE_ACCESS_KEY_ID = os.getenv("OBJECT_STORE_ACCESS_KEY_ID", "unset")
 OBJECT_STORE_SECRET_ACCESS_KEY = os.getenv("OBJECT_STORE_SECRET_ACCESS_KEY", "unset")
 OBJECT_STORE_MAP_UPLOAD_BUCKET = os.getenv("OBJECT_STORE_MAP_UPLOAD_BUCKET", "maps")
+OBJECT_STORE_PHOTO_UPLOAD_BUCKET = os.getenv(
+    "OBJECT_STORE_PHOTO_UPLOAD_BUCKET", "photos"
+)
 OBJECT_STORE_REGION = os.getenv(
     "OBJECT_STORE_REGION", "unset"
 )  # certain operations, like generating pre-signed URLS, require this to match the service expectation
@@ -225,9 +228,9 @@ LOGGING = {
             "propagate": False,
         },
         "psycopg.pool": {
-          "handlers": ["timestamped"],
-          "level": "WARNING",
-          "propagate": False,
+            "handlers": ["timestamped"],
+            "level": "WARNING",
+            "propagate": False,
         },
         "invasives": {
             "handlers": ["timestamped"],
