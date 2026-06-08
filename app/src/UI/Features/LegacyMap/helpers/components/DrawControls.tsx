@@ -2,7 +2,6 @@ import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { useDispatch, useSelector } from 'utils/use_selector';
-import TileCache from 'state/actions/cache/TileCache';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { DoNothing } from 'UI/Features/LegacyMap/helpers/functional/do-nothing-mode';
 import { IControl } from 'maplibre-gl/dist/maplibre-gl-dev';
@@ -32,11 +31,8 @@ import { useLocation, useNavigate } from 'react-router';
 import DrawControlCrosshair from './DrawControlCrosshair/DrawControlCrosshair';
 import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
 
-// @ts-expect-error mapboxdraw compatibility with maplibre-gl issue
 MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl';
-// @ts-expect-error mapboxdraw compatibility with maplibre-gl issue
 MapboxDraw.constants.classes.CONTROL_PREFIX = 'maplibregl-ctrl-';
-// @ts-expect-error mapboxdraw compatibility with maplibre-gl issue
 MapboxDraw.constants.classes.CONTROL_GROUP = 'maplibregl-ctrl-group';
 
 const DrawControls = () => {
@@ -66,9 +62,9 @@ const DrawControls = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const drawInstance = useRef<MapboxDraw>();
-  const drawModeDisplay = useRef<DrawModeDisplay>();
-  const editControls = useRef<EditControls>();
+  const drawInstance = useRef<MapboxDraw | undefined>(undefined);
+  const drawModeDisplay = useRef<DrawModeDisplay | undefined>(undefined);
+  const editControls = useRef<EditControls | undefined>(undefined);
   const isEditing = useRef(false);
 
   // keep a ref to mode so we don't need to keep re-binding the callback for maplibre. keep it in sync with a hook.
@@ -290,7 +286,6 @@ const DrawControls = () => {
       );
     } else {
       if (mode === TargetMode.TRIP_PLANNING) {
-        dispatch(TileCache.clearTileCacheShape());
         dispatch(PlanMyTrip.clearShape());
       } else if (mode === TargetMode.WHATS_HERE) {
         dispatch(WhatsHere.clear_whats_here());
@@ -343,7 +338,6 @@ const DrawControls = () => {
         dispatch(DrawToolActions.updateShape(feature));
         break;
       case TargetMode.TRIP_PLANNING: {
-        dispatch(TileCache.setTileCacheShape({ geometry: feature.geometry }));
         dispatch(PlanMyTrip.setShape({ geometry: feature.geometry }));
         break;
       }
@@ -572,7 +566,7 @@ const DrawControls = () => {
       map.off('draw.selectionChange', (evt) => drawShapeUpdate(evt, map));
 
       if (drawInstance.current) {
-        (map as unknown as mapboxgl.Map).removeControl(drawInstance.current);
+        map.removeControl(drawInstance.current);
         drawInstance.current = undefined;
       }
 

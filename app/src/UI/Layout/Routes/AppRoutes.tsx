@@ -162,7 +162,7 @@ const AppRoutes = () => {
       />
 
       <Route
-        path="/ManageTrips"
+        path="/ManageTrips/*"
         Component={() => (
           <Suspense fallback={<Spinner />}>
             <ManageTripsPage />

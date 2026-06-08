@@ -1,25 +1,21 @@
 import { useEffect, useMemo, useState } from 'react';
-import { LayerSpecification, SourceSpecification } from 'maplibre-gl/dist/maplibre-gl-dev';
+import { SourceSpecification } from 'maplibre-gl/dist/maplibre-gl-dev';
 import debounce from 'lodash.debounce';
 import { produce } from 'immer';
-import { shallowEqual } from 'react-redux';
 import { MAP_DEFINITIONS, SOURCES } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/layer-definitions';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import {
+  hasStackingOrder,
   InvasivesMapLayerDefinition,
-  layerStacking,
-  POSITIONING_LAYER
+  LayerSpecificationWithStackingOrder,
+  layerStacking
 } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/types';
 import { Platform } from 'state/configuration/build-time-config';
 import UserSettings from 'state/actions/userSettings/UserSettings';
+import OfflineProtomaps from 'state/actions/cache/OfflineProtomaps';
 
 type InvasivesMapLayerDefinitionWithState = InvasivesMapLayerDefinition & {
   active: boolean;
-};
-
-type LayerSpecificationWithStackingOrder = LayerSpecification & {
-  stackLayer: POSITIONING_LAYER;
-  source?: string | number | undefined;
 };
 
 const useInvasivesMapLayers = () => {
@@ -29,10 +25,6 @@ const useInvasivesMapLayers = () => {
 
   const [layers, setLayers] = useState<LayerSpecificationWithStackingOrder[]>([]);
   const [sources, setSources] = useState<{ [_: string]: SourceSpecification }>({});
-
-  const tileCacheState = useSelector((state) => state.TileCache, {
-    equalityFn: shallowEqual
-  });
 
   const [availableLayerDefinitions, setAvailableLayerDefinitions] = useState<InvasivesMapLayerDefinitionWithState[]>(
     []
@@ -44,18 +36,24 @@ const useInvasivesMapLayers = () => {
   const MOBILE = useSelector((state) => state.Configuration.current.build.MOBILE);
   const DEBUG = useSelector((state) => state.Configuration.current.build.DEBUG);
 
+  const protomapsLayers = useSelector((state) => state.Protomaps.mapLayers);
+  const protoMapsSources = useSelector((state) => state.Protomaps.mapSources);
+
   const platform = useSelector((state) => state.Configuration.current.build.PLATFORM);
   const features = useSelector((state) => state.Configuration.current.features);
 
+  useEffect(() => {
+    dispatch(OfflineProtomaps.refreshList());
+  }, [dispatch]);
+
   /* evaluate which layers are currently available to select */
   useEffect(() => {
-    const offlineDefinitions = tileCacheState?.mapSpecifications || [];
     const newFilteredLayerDefinitions: InvasivesMapLayerDefinitionWithState[] = [];
 
     const selectedBaseMap = preferredBaseMap;
 
     // evaluate each potential map definition and remove those not eligible at this moment
-    for (const l of [...MAP_DEFINITIONS, ...offlineDefinitions] as InvasivesMapLayerDefinition[]) {
+    for (const l of [...MAP_DEFINITIONS, ...protomapsLayers] as InvasivesMapLayerDefinition[]) {
       const pass = (() => {
         switch (true) {
           case !l.predicates.directlySelectable:
@@ -103,12 +101,13 @@ const useInvasivesMapLayers = () => {
   }, [
     features,
     connected,
-    tileCacheState,
+    DEBUG,
     MOBILE,
     platform,
     loggedInOrWorkingOffline,
     preferredBaseMap,
-    preferredOverlayLayers
+    preferredOverlayLayers,
+    protomapsLayers
   ]);
 
   /* set the state of the public vector layer correctly on auth state change */
@@ -134,20 +133,20 @@ const useInvasivesMapLayers = () => {
 
   /* evaluate which layers are active and should be added to the map */
   useEffect(() => {
-    const offlineSources = tileCacheState?.sources || {};
+    const offlineSources = {};
 
     const newLayers: LayerSpecificationWithStackingOrder[] = [];
     const newSources: { [_: string]: SourceSpecification } = {};
 
     const requiredSources: (keyof typeof SOURCES | string)[] = [];
 
-    const COMBINED_SOURCES = { ...SOURCES, ...offlineSources };
+    const COMBINED_SOURCES = { ...SOURCES, ...offlineSources, ...protoMapsSources };
 
     for (const l of availableLayerDefinitions) {
       if (l.active) {
         for (const subLayer of l.layers) {
           newLayers.push({
-            stackLayer: layerStacking(l),
+            stackLayer: hasStackingOrder(subLayer) ? subLayer.stackLayer : layerStacking(l),
             ...subLayer
           });
           if (subLayer.source && !requiredSources.includes(subLayer.source)) {
@@ -163,7 +162,7 @@ const useInvasivesMapLayers = () => {
 
     setLayers(newLayers);
     setSources(newSources);
-  }, [availableLayerDefinitions, tileCacheState]);
+  }, [availableLayerDefinitions, protoMapsSources]);
 
   const setActiveBaseMap = useMemo(
     () =>

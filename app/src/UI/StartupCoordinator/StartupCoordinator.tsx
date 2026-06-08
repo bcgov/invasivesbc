@@ -4,19 +4,16 @@ import { BrowserRouter } from 'react-router';
 import setupStore from 'state/store';
 import { Provider } from 'react-redux';
 import App from 'UI/App';
-import { TileCacheService } from 'utils/tile-cache';
 import { PersistorContext } from 'utils/PersistorContext';
 import { createContext } from 'react';
 import { RecordCacheService } from 'utils/record-cache';
 import { Store } from 'redux';
 import { UnifiedConfig } from 'state/configuration/unified-config';
-import { LOAD_TILE_CACHES } from 'UI/StartupCoordinator/Tasks/TileCache';
 import { LOAD_RECORDSET_CACHES } from 'UI/StartupCoordinator/Tasks/RecordsetCache';
 import { OfflineProtomapsService } from 'utils/offline-protomaps';
 import { LOAD_OFFLINE_PROTOMAPS } from 'UI/StartupCoordinator/Tasks/OfflineProtomapsService';
 
 type StartupContext = {
-  tileService?: TileCacheService;
   recordService?: RecordCacheService;
   offlineProtomapsService?: OfflineProtomapsService;
 };
@@ -39,7 +36,7 @@ async function StartupCoordinator() {
 
   const { store, persistor } = setupStore(unifiedConfig);
 
-  const tasks: StartupTask[] = [LOAD_TILE_CACHES, LOAD_RECORDSET_CACHES, LOAD_OFFLINE_PROTOMAPS];
+  const tasks: StartupTask[] = [LOAD_RECORDSET_CACHES, LOAD_OFFLINE_PROTOMAPS];
 
   let providedContext: StartupContext = {};
 

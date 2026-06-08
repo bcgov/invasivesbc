@@ -1,12 +1,11 @@
 import { GeoJSONSourceSpecification } from 'maplibre-gl/dist/maplibre-gl-dev';
-import { Feature } from 'geojson';
+import { Feature, GeoJSON } from 'geojson';
 import IappRecord from 'interfaces/IappRecord';
 import IappTableRow from 'interfaces/IappTableRecord';
 import UserRecord from 'interfaces/UserRecord';
 import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import BaseCacheService from 'utils/base-classes/BaseCacheService';
-import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
 import FilterObjects from 'interfaces/FilterObjects';
 import { EFilterType } from 'state/actions/userSettings/RecordSet';
 
@@ -53,7 +52,7 @@ interface RecordCacheDownloadRequestSpec {
  *     - In majority of use cases, ids_to_filter is undefined.
  */
 interface RepositoryMetadata {
-  bbox?: RepositoryBoundingBoxSpec;
+  bbox?: GeoJSON.BBox;
   cache_time: Date;
   cached_centroid?: GeoJSONSourceSpecification;
   cached_geojson?: GeoJSONSourceSpecification;
@@ -82,7 +81,7 @@ interface RecordCacheProgressCallbackParameters {
 }
 
 interface CacheDownloadSpec {
-  bbox: RepositoryBoundingBoxSpec;
+  bbox: GeoJSON.BBox;
   idsToCache: string[];
   setId: string;
   setName: string;

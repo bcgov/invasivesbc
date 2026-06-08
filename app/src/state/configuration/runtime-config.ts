@@ -1,5 +1,6 @@
 interface AppConfig {
   API_BASE: string;
+  NORMALIZED_API_BASE: string;
 
   COMMIT_HASH: string;
 
@@ -19,6 +20,7 @@ interface AppConfig {
 declare global {
   const CONFIGURATION_SOURCE: string;
   const CONFIGURATION_API_BASE: string | null;
+  const CONFIGURATION_NORMALIZED_API_BASE: string | null;
   const CONFIGURATION_KEYCLOAK_CLIENT_ID: string | null;
   const CONFIGURATION_KEYCLOAK_REALM: string | null;
   const CONFIGURATION_KEYCLOAK_URL: string | null;
@@ -37,6 +39,7 @@ switch (CONFIGURATION_SOURCE) {
     runtimeConfig = {
       COMMIT_HASH: INJECTED_COMMIT_HASH && INJECTED_COMMIT_HASH.length > 0 ? INJECTED_COMMIT_HASH : 'unknown',
       API_BASE: '{{env "API_BASE"}}',
+      NORMALIZED_API_BASE: '{{env "NORMALIZED_API_BASE"}}',
       KEYCLOAK_CLIENT_ID: '{{env "KEYCLOAK_CLIENT_ID"}}',
       KEYCLOAK_REALM: '{{env "KEYCLOAK_REALM"}}',
       KEYCLOAK_URL: '{{env "KEYCLOAK_URL"}}',
@@ -51,6 +54,7 @@ switch (CONFIGURATION_SOURCE) {
     runtimeConfig = {
       COMMIT_HASH: INJECTED_COMMIT_HASH && INJECTED_COMMIT_HASH.length > 0 ? INJECTED_COMMIT_HASH : 'unknown',
       API_BASE: CONFIGURATION_API_BASE || 'unset',
+      NORMALIZED_API_BASE: CONFIGURATION_NORMALIZED_API_BASE || 'unset',
       KEYCLOAK_CLIENT_ID: CONFIGURATION_KEYCLOAK_CLIENT_ID || 'unset',
       KEYCLOAK_REALM: CONFIGURATION_KEYCLOAK_REALM || 'unset',
       KEYCLOAK_URL: CONFIGURATION_KEYCLOAK_URL || 'unset',

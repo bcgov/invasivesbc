@@ -23,6 +23,10 @@
   src: url('../../node_modules/@bcgov/bc-sans/fonts/BCSans-BoldItalic.woff') format('woff');
 }
 
+html {
+  overscroll-behavior: none;
+}
+
 body {
   background-color: #036;
   height: 100vh;
@@ -44,8 +48,7 @@ html {
   flex-flow: column wrap;
   position: relative;
   box-sizing: border-box;
-  padding: max(env(safe-area-inset-top, 0), var(--extra-top-padding)) env(safe-area-inset-right, 0)
-    max(env(safe-area-inset-bottom, 0), var(--extra-bottom-padding)) env(safe-area-inset-left, 0);
+  padding: max(env(safe-area-inset-top, 0), var(--extra-top-padding)) env(safe-area-inset-right, 0) max(env(safe-area-inset-bottom, 0), var(--extra-bottom-padding)) env(safe-area-inset-left, 0);
   overflow: hidden;
   height: 100svh;
 
