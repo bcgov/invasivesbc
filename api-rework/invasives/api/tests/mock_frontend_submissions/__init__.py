@@ -23,3 +23,7 @@ from .mech_treatment_terrestrial import (
     UPDATED_MECH_TREATMENT_TERRESTRIAL,
 )
 from .biocontrol_release import MINIMAL_BIOCONTROL_RELEASE, UPDATED_BIOCONTROL_RELEASE
+from .biocontrol_collection import (
+    MINIMAL_BIOCONTROL_RELEASE,
+    UPDATED_BIOCONTROL_RELEASE,
+)
