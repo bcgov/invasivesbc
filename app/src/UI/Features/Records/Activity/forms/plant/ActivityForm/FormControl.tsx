@@ -8,6 +8,8 @@ import { useDispatch, useSelector } from 'utils/use_selector';
 import Prompt from 'state/actions/prompts/Prompt';
 import getDefaultFormState from '../builders/getDefaultState';
 import { Role } from 'constants/roles';
+import { Debug } from 'UI/Reusable/Predicates/Debug';
+import Activity from 'state/actions/activity/Activity';
 
 /**
  * @desc Popover menu for form controls, handle Submit/Draft/Duplication fields.
@@ -17,6 +19,9 @@ const FormControl = () => {
     setAnchorEl(evt.currentTarget);
   };
 
+  const handleRefetchForm = () => {
+    if (currId) dispatch(Activity.getActivity(currId));
+  };
   const handleDelete = () => {
     dispatch(
       Prompt.confirmation({
@@ -81,7 +86,7 @@ const FormControl = () => {
   const created_by = useSelector((state) => state.ActivityPage?.formState?.created_by);
   const subtype = useSelector((state) => state.ActivityPage.formType);
   const isFormSubmitted = useSelector((state) => state.ActivityPage.formState?.form_status === 'Submitted');
-
+  const currId = useSelector((state) => state.ActivityPage.formId);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   const isRecordCreator: boolean = useMemo(() => {
@@ -134,6 +139,9 @@ const FormControl = () => {
             <input className="control-button" disabled={disabled} onClick={handleDelete} type="button" value="Delete" />
           )}
           <input type="button" className="control-button" onClick={handleDuplicateForm} value="Duplicate Form" />
+          <Debug>
+            <input type="button" className="control-button" onClick={handleRefetchForm} value="[Debug] Refetch Form" />
+          </Debug>
         </div>
       </CustomPopover>
     </>

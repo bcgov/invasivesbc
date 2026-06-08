@@ -64,14 +64,14 @@ export const Activity = () => {
             <Button
               variant="contained"
               className={'records__activity__photos_button ' + (mode === 'form' ? ' selectedFormTab' : '')}
-              onClick={() => navigate(`/Records/Activity/${id}/photos`)}
+              onClick={() => navigate(`/Records/LegacyForm/${id}/photos`)}
             >
               Photos
             </Button>
             <Button
               variant="contained"
               className={'records__activity__form_button ' + (mode === 'form' ? ' selectedFormTab' : '')}
-              onClick={() => navigate(`/Records/Activity/${id}/form`)}
+              onClick={() => navigate(`/Records/LegacyForm/${id}/form`)}
             >
               Form
             </Button>

@@ -33,7 +33,7 @@ const DebugFormData = () => {
           {JSON.stringify(
             formData,
             (key, value) => {
-              if (key === 'encoded_file') {
+              if (key === 'encoded_file' && value) {
                 return value.slice(0, 25) + '... [Truncated]';
               }
               return value;
