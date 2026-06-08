@@ -45,15 +45,19 @@ const getBiocontrolDispersalMonitoringSubtypeFields = (): BiocontrolDispersalMon
     target_plant_heights: [{ height_cm: 0 }]
   },
   // Microsite Condition
-  mesoslope_position: '',
-  site_surface_shape: '',
+  microsite_conditions: {
+    mesoslope_position: '',
+    site_surface_shape: ''
+  },
   // Weather
-  comments: '',
-  cloud_cover: '',
-  precipitation: '',
-  temperature: 0,
-  wind_direction: '',
-  wind_speed_kmh: 0
+  weather_conditions: {
+    comments: '',
+    cloud_cover: '',
+    precipitation: '',
+    temperature: 0,
+    wind_direction: '',
+    wind_speed_kmh: 0
+  }
 });
 
 export default getBiocontrolDispersalMonitoringSubtypeFields;
