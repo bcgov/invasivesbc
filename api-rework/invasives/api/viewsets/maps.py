@@ -1,9 +1,9 @@
-import logging
-
 from datetime import datetime
-from django.db.models import Q
+
 from django.db import transaction
+from django.db.models import Q
 from rest_framework import viewsets
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND
 
@@ -15,9 +15,10 @@ from api.serializers.map_generation import (
     MapGenerationRequestSerializer,
     MapGenerationRequestShallowSerializer,
 )
+from api.serializers.map_generation import (
+    MapGenerationRequestProgressAndLinkSerializer,
+)
 from api.tasks import process_map_generation_request
-
-from rest_framework.decorators import action
 
 
 class MapGenerationRequestViewSet(viewsets.ViewSet):
@@ -61,6 +62,16 @@ class MapGenerationRequestViewSet(viewsets.ViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save(owner=request.user)
         return Response(serializer.data, status=HTTP_200_OK)
+
+    @action(detail=False, methods=["get"])
+    def offline_maps_page_list(self, request):
+        result = RasterMapGenerationRequest.objects.filter(owner=request.user).order_by(
+            "-updated"
+        )
+
+        serializer = MapGenerationRequestProgressAndLinkSerializer(result, many=True)
+
+        return Response(data=serializer.data, status=HTTP_200_OK)
 
     def list(self, request):
         result = RasterMapGenerationRequest.objects.filter(owner=request.user).order_by(

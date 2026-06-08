@@ -1,10 +1,16 @@
+import uuid
+
 from django.core.validators import MaxValueValidator
 from django.db import models
-from django.db.models import SET_NULL
+from django.db.models import SET_NULL, Q
 
 from api.models.mixins.dated import Dated
 from api.models.mixins.owned import OptionallyOwned
 from django.contrib.gis.db import models as geomodels
+
+
+def generate_legacy_trip_name():
+    return f"trip-{uuid.uuid4().hex[:12].upper()}"
 
 
 class MapGenerationRecord(OptionallyOwned, Dated, models.Model):
@@ -15,6 +21,13 @@ class MapGenerationRecord(OptionallyOwned, Dated, models.Model):
         unique=True,
         null=True,
         blank=True,
+    )
+
+    trip_name = models.CharField(
+        max_length=256,
+        null=False,
+        default=generate_legacy_trip_name,
+        db_comment="trip name, used as a client-side identifier. Eventually to be replaced with server-side trip reference",
     )
 
     file_size = models.PositiveIntegerField(null=True, blank=True)
@@ -60,3 +73,13 @@ class MapGenerationRecord(OptionallyOwned, Dated, models.Model):
 
     class Meta:
         db_table = '"activity"."raster_map_generation_rcord"'
+        db_table_comment = (
+            "Permanent record of generated raster maps (both public and private)"
+        )
+        constraints = [
+            models.UniqueConstraint(
+                fields=["owner", "trip_name"],
+                condition=Q(owner__isnull=False) & Q(trip_name__isnull=False),
+                name="raster_map_generation_record_trip_name_unique_if_not_null",
+            )
+        ]

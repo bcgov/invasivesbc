@@ -12,3 +12,5 @@ from .monitoring import *
 from .observations import *
 from .treatments import *
 from .biocontrol import *
+
+from .uploaded_image import *

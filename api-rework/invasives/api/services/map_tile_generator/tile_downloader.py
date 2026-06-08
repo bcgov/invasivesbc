@@ -263,6 +263,9 @@ class TileDownloader:
                                 "remaining_tiles": mgr.total_tile_count
                                 - stats.total_tiles,
                                 "owner": mgr.owner,
+                                "seconds_elapsed": (
+                                    datetime.now() - start_time
+                                ).total_seconds(),
                                 "status_information": f"{(datetime.now() - start_time).__str__()} elapsed",
                             },
                         )
@@ -313,6 +316,7 @@ class TileDownloader:
                     defaults={
                         "generation_request": mgr,
                         "file_size": os.path.getsize(pmtiles_filename),
+                        "trip_name": mgr.trip_name,
                         "expires": (
                             timezone.now() + timedelta(days=7)
                             if mgr.owner is not None

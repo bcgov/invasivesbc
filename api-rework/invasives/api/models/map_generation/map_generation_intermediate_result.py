@@ -43,5 +43,8 @@ class MapGenerationIntermediateResult(OptionallyOwned, Dated, models.Model):
         default="",
     )
 
+    seconds_elapsed = models.PositiveIntegerField(null=True, blank=True)
+
     class Meta:
         db_table = '"activity"."raster_map_generation_intermediate_result"'
+        db_table_comment = "Temporary record with intermediate results of generation request (for reporting download progress to client, and cache statistics tracking)"
