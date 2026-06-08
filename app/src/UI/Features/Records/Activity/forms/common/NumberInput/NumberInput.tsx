@@ -38,7 +38,7 @@ export const NumberInput = forwardRef<HTMLInputElement, PropTypes>(
     ref
   ) => {
     // Allow any float if acceptFloats is true, or set step size if provided. Else default to integers
-    const stepVal = !Number.isNaN(step) || acceptFloats ? step : 1;
+    const stepVal = typeof step === 'number' || acceptFloats ? step : 1;
     return (
       <div className={`form-number-input ${getInputWidth(width)}`}>
         {label && (
