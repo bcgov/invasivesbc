@@ -4,6 +4,7 @@ import 'UI/Global.css';
 import { DeviceUnknown, Hd, Landscape, Map, SaveAlt, Sd, SignalCellularNodata } from '@mui/icons-material';
 import { InvasivesMapLayerDefinitionWithState } from 'UI/Features/LegacyMap/helpers/functional/layers-hook';
 import { useSelector } from 'utils/use_selector';
+import { Platform } from 'state/configuration/build-time-config';
 
 type PrimaryLayerSelectProps = {
   layers: InvasivesMapLayerDefinitionWithState[];
@@ -14,6 +15,7 @@ const PrimaryLayerSelect = ({ layers, selectLayer }: PrimaryLayerSelectProps) =>
   const [toolTip, setToolTip] = useState('');
 
   const DEBUG = useSelector((state) => state.Configuration.current.build.DEBUG);
+  const IOS = useSelector((state) => state.Configuration.current.build.PLATFORM === Platform.IOS);
 
   function renderIcon(def: InvasivesMapLayerDefinitionWithState) {
     switch (def.icon) {
@@ -42,7 +44,7 @@ const PrimaryLayerSelect = ({ layers, selectLayer }: PrimaryLayerSelectProps) =>
   return (
     <div className={'basemap-btn-group'}>
       {layers
-        .filter((l) => (DEBUG || l.mode === 'basemap') && l.selectionMode === 'primary-selector')
+        .filter((l) => l.mode === 'basemap' && l.selectionMode === 'primary-selector')
         .map((l) => {
           return (
             <div className={l.active ? 'selected' : ''} key={l.name}>

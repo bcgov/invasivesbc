@@ -5,7 +5,7 @@
   #app.overlay-layout {
     position: relative;
 
-    .overlayMenuResizeButtons {
+    .overlaymenuresizebuttons {
       display: flex;
       flex-direction: row;
     }
@@ -50,10 +50,7 @@
 
     .map-containing-block {
       position: absolute;
-      left: 0;
-      right: 0;
-      top: var(--header-bar-height);
-      bottom: var(--footer-bar-height);
+      inset: var(--header-bar-height) 0 var(--footer-bar-height) 0;
     }
 
     .MapWrapper {

@@ -42,7 +42,7 @@ const MyTripAtAGlance = ({ statuses }: PropTypes) => {
         <WellIcon color={getColor(wellData)} />
       </Tooltip>
       <Tooltip classes={{ tooltip: 'toolTip' }} title={`Offline Map: ${mapTiles}`}>
-        <OfflineMapIcon color={getColor(mapTiles)} />
+        <OfflineMapIcon color={'disabled'} />
       </Tooltip>
     </>
   );

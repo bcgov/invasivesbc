@@ -5,10 +5,6 @@ import { BAKED_VECTOR_LAYERS } from 'UI/Features/LegacyMap/helpers/functional/la
 import { BAKED_RASTER_LAYERS } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/baked-raster';
 import { PUBLIC_VECTOR_LAYERS } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/public-vector';
 import { DATABC_LAYERS, DATABC_SOURCES } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/wms';
-import {
-  DEMO_LAYERS,
-  DEMO_SOURCES
-} from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/demo-offline-vector';
 
 const SOURCES: { [key: string]: SourceSpecification } = {
   'Esri-Sat-Label-Source': {
@@ -50,7 +46,7 @@ const SOURCES: { [key: string]: SourceSpecification } = {
   },
   'Offline-Vector': {
     type: 'vector',
-    url: 'pmtiles:///assets/tiles/tiles14.pmtiles',
+    url: `pmtiles:///${window.location}/assets/tiles/tiles14.pmtiles`,
     attribution: '© OpenMapTiles © OpenStreetMap contributors',
     maxzoom: 14 // must match bundled tiles
   },
@@ -58,8 +54,7 @@ const SOURCES: { [key: string]: SourceSpecification } = {
     type: 'vector',
     url: 'pmtiles://https://nrs.objectstore.gov.bc.ca/rzivsz/invasives-prod.pmtiles'
   },
-  ...DATABC_SOURCES,
-  ...DEMO_SOURCES
+  ...DATABC_SOURCES
 };
 
 const MAP_DEFINITIONS: InvasivesMapLayerDefinition[] = [
@@ -67,8 +62,7 @@ const MAP_DEFINITIONS: InvasivesMapLayerDefinition[] = [
   ...BAKED_VECTOR_LAYERS,
   ...BAKED_RASTER_LAYERS,
   ...PUBLIC_VECTOR_LAYERS,
-  ...DATABC_LAYERS,
-  ...DEMO_LAYERS
+  ...DATABC_LAYERS
 ];
 
 export { MAP_DEFINITIONS, SOURCES };

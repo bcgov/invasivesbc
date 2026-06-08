@@ -1,18 +1,22 @@
 import { Button } from '@mui/material';
-import './planMyTripForm.css';
+import './TripForm.css';
 import { Draw } from '@mui/icons-material';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
-import { IPlanMyTripCacheStatuses } from 'utils/plan-my-trip-cache';
-import MapSlider from 'UI/Features/TileCache/MapSlider';
+import {
+  IPlanMyTripCacheStatuses,
+  IPlanMyTripRepositoryMetadata,
+  PlanMyTripCacheService
+} from 'utils/plan-my-trip-cache';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import PlanMyTrip, { ICreateMyTrip } from 'state/actions/planMyTrip/PlanMyTrip';
-import { AVAILABLE_ZOOMS } from 'UI/Features/TileCache/constants';
-import TileCache from 'state/actions/cache/TileCache';
 import Alerts from 'state/actions/alerts/Alerts';
 import tripAlertMessages from 'constants/alerts/tripAlerts';
 import { FeatureFlags } from 'state/configuration/feature-flags';
 import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
+import MapEstimator from 'UI/Features/TileCache/ProtomapsImplementation/MapEstimator';
+import { PlanMyTripCacheServiceFactory } from 'utils/plan-my-trip-cache/context';
+import { NavLink, useNavigate } from 'react-router';
 
 interface CacheOption {
   tooltip: string;
@@ -21,7 +25,9 @@ interface CacheOption {
   featureFlag: keyof FeatureFlags;
 }
 
-const PlanMyTripForm = () => {
+const TripForm = () => {
+  const navigate = useNavigate();
+
   const CACHE_OPTIONS: Array<CacheOption> = [
     {
       tooltip: 'Creates an IAPP Recordset with your drawn region as the primary filter',
@@ -78,6 +84,7 @@ const PlanMyTripForm = () => {
     }
     dispatch(PlanMyTrip.create(request));
     setTripName('');
+    navigate('/ManageTrips/maps');
   };
 
   const dispatch = useDispatch();
@@ -90,12 +97,32 @@ const PlanMyTripForm = () => {
   );
 
   const planMyTripRegion = useSelector((state) => state.PlanMyTrip?.drawnShape);
+
   const connected = useSelector((state) => state.Network.connected);
+
+  const [tripService, setTripService] = useState<PlanMyTripCacheService>();
+  const [repositories, setRepositories] = useState<IPlanMyTripRepositoryMetadata[]>([]);
+
+  useEffect(() => {
+    if (!tripService) return;
+    (async () => {
+      const repositories = await tripService.listRepositories();
+      setRepositories(repositories);
+    })();
+  }, [tripService]);
+
+  useEffect(() => {
+    (async () => {
+      const service = await PlanMyTripCacheServiceFactory.getPlatformInstance();
+      setTripService(service);
+    })();
+  }, []);
 
   const [tripName, setTripName] = useState<string>('');
   const [formValid, setFormValid] = useState<boolean>(false);
-  const [mapZoomLevel, setMapZoomLevel] = useState<number>(AVAILABLE_ZOOMS[0].value);
-  const [isOversizedTileDownload, setIsOversizedTileDownload] = useState<boolean>(false);
+  const [mapEstimateValid, setMapEstimateValid] = useState<boolean>(true);
+  const [nameUniqueWarning, setNameUniqueWarning] = useState<boolean>(false);
+  const [mapZoomLevel, setMapZoomLevel] = useState<number>(12);
   const [userSelectedCaches, setUserSelectedCaches] = useState<Record<keyof IPlanMyTripCacheStatuses, boolean>>({
     wellData: false,
     iappRecordset: false,
@@ -109,9 +136,10 @@ const PlanMyTripForm = () => {
     const isNameSet = !!tripName;
     const isRegionDefined = planMyTripRegion != undefined;
     const isAnyCacheTypeSelected = Object.values(userSelectedCaches).some(Boolean);
-    const isTileRequestOversized = isOversizedTileDownload && userSelectedCaches.mapTiles;
-    setFormValid(isNameSet && isRegionDefined && isAnyCacheTypeSelected && !isTileRequestOversized);
-  }, [tripName, planMyTripRegion, userSelectedCaches, isOversizedTileDownload]);
+    const isNameUnique = !repositories.some((r) => r.name === tripName);
+    setFormValid(isNameSet && isRegionDefined && isAnyCacheTypeSelected && isNameUnique && mapEstimateValid);
+    setNameUniqueWarning(isNameSet && !isNameUnique);
+  }, [tripName, planMyTripRegion, userSelectedCaches, repositories, mapEstimateValid]);
 
   /**
    * @desc Set Draw tools mode while component is active.
@@ -121,14 +149,13 @@ const PlanMyTripForm = () => {
     return () => {
       // Clear Tile Cache states from state,
       dispatch(PlanMyTrip.setPlanMyTripDrawMode(false));
-      dispatch(TileCache.clearTileCacheShape());
       dispatch(PlanMyTrip.clearShape());
     };
   }, []);
 
   return (
     <div id="trip-planning-form">
-      <form>
+      <form onSubmit={(e) => e.preventDefault()}>
         <h2>Planning Your Trip</h2>
         <p className="overview">
           Draw a region on the map and download detailed information for that area, including maps, records, and well
@@ -140,6 +167,7 @@ const PlanMyTripForm = () => {
               Name of Trip:<span className="required">*</span>
             </label>
             <input type="text" id="trip-planning-form-name" value={tripName} onChange={handleNameChange} />
+            {nameUniqueWarning && <span className={'red'}>Name must be unique</span>}
           </div>
           <div className="drawn-field">
             {drawPolygonRef?.current && (
@@ -184,13 +212,22 @@ const PlanMyTripForm = () => {
             <legend>
               Offline Map Detail<span className="required">*</span>
             </legend>
+            <p className={'help'}>
+              When map tiles are included in your trip, they will be processed by the server into an archive for fast
+              download. After submitting your trip, it is no longer necessary to keep your device active while the
+              server prepares the map archive. Once ready, you can view and install it on the{' '}
+              <NavLink to={'/ManageTrips/maps'}>Offline Maps</NavLink> page.
+            </p>
             {planMyTripRegion ? (
-              <MapSlider
-                drawnShape={planMyTripRegion}
-                zoom={mapZoomLevel}
-                setZoom={setMapZoomLevel}
-                setOversizedTileDownload={setIsOversizedTileDownload}
-              />
+              <>
+                <MapEstimator
+                  drawnShape={planMyTripRegion as GeoJSON.Polygon}
+                  zoom={mapZoomLevel}
+                  setZoom={setMapZoomLevel}
+                  setValid={setMapEstimateValid}
+                  valid={mapEstimateValid}
+                />
+              </>
             ) : (
               <p>Please draw a region on the map to see offline map details</p>
             )}
@@ -213,4 +250,4 @@ const PlanMyTripForm = () => {
   );
 };
 
-export default PlanMyTripForm;
+export default TripForm;

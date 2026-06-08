@@ -1,9 +1,9 @@
 import { createAction, createAsyncThunk, nanoid } from '@reduxjs/toolkit';
 import { Feature, GeoJSON } from 'geojson';
+import { bbox, bboxPolygon } from '@turf/turf';
 import { EFilterType } from 'state/actions/userSettings/RecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import RecordCache from 'state/actions/cache/RecordCache';
-import TileCache from 'state/actions/cache/TileCache';
 import WellCache from 'state/actions/cache/WellCache';
 import { RootState } from 'state/reducers/rootReducer';
 import { PlanMyTripCacheServiceFactory } from 'utils/plan-my-trip-cache/context';
@@ -11,6 +11,7 @@ import { IPlanMyTripCacheStatus, IPlanMyTripCacheStatuses } from 'utils/plan-my-
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import Alerts from 'state/actions/alerts/Alerts';
 import tripAlertMessages from 'constants/alerts/tripAlerts';
+import OfflineProtomaps from 'state/actions/cache/OfflineProtomaps';
 
 /**
  * @desc Parameters for a user planning their trip
@@ -30,13 +31,15 @@ interface ICreateMyTrip {
   wmsLayers?: boolean;
 }
 
+type tripIdentifier = string;
+
 /**
  * @property { keyof IPlanMyTripCacheStatuses } cache subcache being modified.
- * @property { string } id Trip's Identifier
+ * @property { tripIdentifier } id Trip's Identifier
  */
 interface IModifySubCache {
   cache: keyof IPlanMyTripCacheStatuses;
-  id: string;
+  id: tripIdentifier;
 }
 
 class PmtRecordset {
@@ -155,12 +158,11 @@ class PlanMyTrip {
     `${this.PREFIX}/create`,
     async (spec: ICreateMyTrip, { dispatch, getState }) => {
       const state: RootState = getState() as RootState;
-      const bounds = state.TileCache?.drawnShapeBounds;
       const geojson = state.PlanMyTrip?.drawnShape;
-      if (!bounds || !geojson) {
+      if (!geojson) {
         throw Error('Cannot create this trip - no shape data available.');
       }
-      const tripId = `${this.TRIP_ID_PREFIX}${nanoid()}`;
+      const tripId: tripIdentifier = `${this.TRIP_ID_PREFIX}${nanoid()}`;
       const service = await PlanMyTripCacheServiceFactory.getPlatformInstance();
 
       // Define initial cache statuses
@@ -202,16 +204,19 @@ class PlanMyTrip {
           })
         );
       }
-      if (spec?.wellData) {
-        dispatch(WellCache.requestCaching({ id: tripId, bounds: bounds }));
+      if (spec?.wellData && geojson) {
+        dispatch(WellCache.requestCaching({ id: tripId, bounds: bbox(geojson) }));
       }
-      if (spec?.zoom != undefined) {
+      if (spec?.zoom != undefined && geojson) {
         dispatch(
-          TileCache.requestCaching({
-            description: spec.name,
-            id: tripId,
-            bounds: bounds,
-            maxZoom: spec.zoom
+          OfflineProtomaps.mapGeneration({
+            tripId: tripId,
+            request: {
+              trip_name: spec.name,
+              maximum_zoom: spec.zoom,
+              minimum_zoom: 0,
+              bounds: bboxPolygon(bbox(geojson)).geometry
+            }
           })
         );
       }
@@ -225,9 +230,10 @@ class PlanMyTrip {
       const repo = await service.getRepository(spec.id);
       if (!repo) return;
       switch (spec.cache) {
-        case 'mapTiles':
-          await dispatch(TileCache.deleteRepository(spec.id));
-          break;
+        // @todo
+        // case 'mapTiles':
+        //   await dispatch(TileCache.deleteRepository(spec.id));
+        //   break;
         case 'wellData':
           await dispatch(WellCache.deleteRepository(spec.id));
           break;
@@ -268,4 +274,4 @@ class PlanMyTrip {
 }
 
 export default PlanMyTrip;
-export type { ICreateMyTrip, IModifySubCache };
+export type { ICreateMyTrip, IModifySubCache, tripIdentifier };

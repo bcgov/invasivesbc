@@ -11,11 +11,12 @@ import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
  *                                  Used to keep trip pages updated (while viewing) without storing all trip data in memory.
  */
 interface PlanMyTripState {
-  drawnShape?: GeoJSON;
+  drawnShape: GeoJSON.Polygon | GeoJSON.MultiPolygon | undefined;
   lastUpdate: number;
 }
 
 const defaultState: PlanMyTripState = {
+  drawnShape: undefined,
   lastUpdate: 0
 };
 
@@ -24,13 +25,15 @@ function createPlanMyTripReducer(): (AlertsAndPromptsState, AnyAction) => PlanMy
     return createNextState(state, (draftState) => {
       if (PlanMyTrip.setShape.match(action)) {
         const { geometry } = action.payload;
-        const newGeom = (() => {
+        draftState.drawnShape = (() => {
           if (geometry.type === GeoShapes.Point || geometry.type === GeoShapes.LineString) {
-            return buffer(geometry, 1, { units: 'meters' })?.geometry as GeoJSON;
+            return buffer(geometry, 1, { units: 'meters' })?.geometry;
+          } else if (geometry.type === GeoShapes.Polygon || geometry.type === GeoShapes.MultiPolygon) {
+            return geometry;
+          } else {
+            throw new Error(`Unexpected geojson type: ${geometry.type}`);
           }
-          return geometry as GeoJSON;
         })();
-        draftState.drawnShape = newGeom;
       } else if (PlanMyTrip.clearShape.match(action)) {
         delete draftState.drawnShape;
       } else if (PlanMyTrip.refresh.match(action)) {

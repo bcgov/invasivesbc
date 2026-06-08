@@ -1,7 +1,7 @@
 import 'UI/Layout/WideLayout/WideLayout.css';
 import { AppRoutes } from 'UI/Layout/Routes/AppRoutes';
 import { LayoutMode, usePrimaryNavigationLinks } from 'UI/Layout/Routes/PrimaryNavigation';
-import { Link } from 'react-router';
+import { Link, NavLink } from 'react-router';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import { useEffect, useState } from 'react';
 import NewRecordDialog from 'UI/Features/Records/NewRecordDialog';
@@ -72,6 +72,9 @@ const WideLayout = () => {
                   </Link>
                 </li>
               ))}
+              <li>
+                <NavLink to="/ManageTrips">Plan My Trip</NavLink>
+              </li>
             </ul>
             <div className={'spacer'} />
             <DebugMenu />

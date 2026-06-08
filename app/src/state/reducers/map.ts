@@ -18,7 +18,6 @@ import MapActions from 'state/actions/map';
 import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
 import AppActions from 'state/actions/appActions/appActions';
 import ExportActions from 'state/actions/exports/exportActions';
-import { OfflineProtomapsActions } from 'state/actions/offlineProtomaps';
 
 /**
  * Filter Categories, Each of these represents a globally applied filter a user is able to select on the map.
@@ -581,12 +580,8 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
       } else if (ExportActions.resetCsvUrl.match(action)) {
         draftState.linkToCSV = null;
         draftState.recordSetForCSV = null;
-      } else if (OfflineProtomapsActions.setDebugPanelState.match(action)) {
-        draftState.offlineProtomaps.debugPanelOpen = action.payload;
       } else if (UserSettings.Map.toggleGlobalMapFilter.match(action)) {
         draftState.globalMapFilters[action.payload] = !draftState.globalMapFilters[action.payload];
-      } else if (OfflineProtomapsActions.toggleDebugPanelState.match(action)) {
-        draftState.offlineProtomaps.debugPanelOpen = !state.offlineProtomaps.debugPanelOpen;
       }
     }) as unknown as MapState;
   };

@@ -5,18 +5,18 @@ PODS:
   - AppAuth/Core (2.0.0)
   - AppAuth/ExternalUserAgent (2.0.0):
     - AppAuth/Core
-  - Capacitor (8.3.4):
+  - Capacitor (8.4.0):
     - CapacitorCordova
   - CapacitorCamera (8.2.0):
     - Capacitor
     - IONCameraLib (~> 1.0.4)
   - CapacitorCommunityBackgroundGeolocation (1.2.26):
     - Capacitor
-  - CapacitorCommunitySqlite (7.0.3):
+  - CapacitorCommunitySqlite (8.1.0):
     - Capacitor
     - SQLCipher
     - ZIPFoundation
-  - CapacitorCordova (8.3.4)
+  - CapacitorCordova (8.4.0)
   - CapacitorGeolocation (8.2.0):
     - Capacitor
     - IONGeolocationLib (= 2.1.0)
@@ -62,11 +62,11 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   AppAuth: 1c1a8afa7e12f2ec3a294d9882dfa5ab7d3cb063
-  Capacitor: d13cad5fa09155679672808cc4ca9fbc2997e1b4
+  Capacitor: 75bd117ba037a51bb0f19ded32c67f4b3bc16600
   CapacitorCamera: 8f6acf83664118321111e76acef86390211ccb08
   CapacitorCommunityBackgroundGeolocation: 750523ec6dd1cc94cf4e2bf7787605106753f73c
-  CapacitorCommunitySqlite: 4813d82ad33001e612a39d313cb5d28066cbafda
-  CapacitorCordova: c07921bdcfec6f691bae22274446b4d606ebf6a4
+  CapacitorCommunitySqlite: eac6acfb852f46e7988fc59604d7f900498d354e
+  CapacitorCordova: 71d81f350e6c30bf2a846593b5c480fbd68e9bac
   CapacitorGeolocation: b36f6287bfc9f2eefa04dc900496f2c8ae666136
   IONCameraLib: f2349804460bd9e3f892e42109b8d996ab3fa19d
   IONGeolocationLib: 6a7b6f76063fb1b01cfb14fae7d0f526e3c9b271

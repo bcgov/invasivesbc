@@ -1,7 +1,6 @@
 import { IPlanMyTripRepositoryMetadata } from 'utils/plan-my-trip-cache';
-import TripStatusHandler from './TripStatusHandler';
+import TripStatusHandler from 'UI/Features/ManageTripsPage/subcomponents/Shared/TripStatusHandler';
 import { useDispatch } from 'utils/use_selector';
-import bbox from '@turf/bbox';
 import WellCache from 'state/actions/cache/WellCache';
 import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
 
@@ -11,14 +10,9 @@ type PropTypes = {
 const TripWellModule = ({ trip }: PropTypes) => {
   const handleDelete = () => dispatch(PlanMyTrip.removeSubCache({ id: trip.id, cache: 'wellData' }));
   const handleStartDownload = () => {
-    const [minX, minY, maxX, maxY] = bbox(trip.geojson);
-    const bounds = {
-      minLatitude: minY,
-      maxLatitude: maxY,
-      minLongitude: minX,
-      maxLongitude: maxX
-    };
-    dispatch(WellCache.requestCaching({ id: trip.id, bounds: bounds }));
+    if (trip?.geojson?.bbox) {
+      dispatch(WellCache.requestCaching({ id: trip.id, bounds: trip.geojson.bbox }));
+    }
   };
 
   const dispatch = useDispatch();

@@ -39,7 +39,9 @@ interface OfflineMapsPlugin {
   delete(options: { type: 'vectors' | 'rasters'; name: string }): Promise<void>;
 }
 
-const OfflineMaps = registerPlugin<OfflineMapsPlugin>('OfflineMaps');
+const OfflineMaps = registerPlugin<OfflineMapsPlugin>('OfflineMaps', {
+  web: () => import('./web-implementation').then((p) => new p.OfflineMapsPluginWebImplementation())
+});
 
 class OfflineMapsPluginPMTilesSource implements Source {
   private readonly filename: string;
@@ -65,6 +67,14 @@ class OfflineMapsPluginPMTilesSource implements Source {
   }
 }
 
-export type { DownloadRequestCallback, DownloadRequestCallbackParams, OfflineMapRecord };
+export type {
+  DownloadRequestCallback,
+  DownloadRequestCallbackParams,
+  OfflineMapRecord,
+  OfflineMapsPlugin,
+  ByteRangeRequestOptions,
+  RequestDownloadOptions,
+  DownloadRequestCallbackID
+};
 export { OfflineMapsPluginPMTilesSource };
 export default OfflineMaps;
