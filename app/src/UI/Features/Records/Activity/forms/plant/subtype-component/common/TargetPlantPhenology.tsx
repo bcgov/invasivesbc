@@ -71,7 +71,7 @@ const TargetPlantPhenology = () => {
             }
             renderRow={(index) => (
               <NumberInput
-                label="Height"
+                label="Height (cm)"
                 required
                 error={get(errors, getPath(`target_plant_heights.${index}.height_cm`))}
                 {...register(getPath(`target_plant_heights.${index}.height_cm`), {
