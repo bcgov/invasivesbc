@@ -1,4 +1,4 @@
-MINIMAL_BIOCONTROL_RELEASE = {
+MINIMAL_BIOCONTROL_COLLECTION = {
     "id": "c4ebf7e3-f0b6-400a-9dd1-37587b903dda",
     "short_id": "26PBCC4EBF7E3",
     "employer": [{"employer": "MOTI"}],
@@ -81,7 +81,7 @@ MINIMAL_BIOCONTROL_RELEASE = {
     },
 }
 
-UPDATED_BIOCONTROL_RELEASE = {
+UPDATED_BIOCONTROL_COLLECTION = {
     "id": "c4ebf7e3-f0b6-400a-9dd1-37587b903dda",
     "short_id": "26PBCC4EBF7E3",
     "employer": [{"employer": "MOTI"}],

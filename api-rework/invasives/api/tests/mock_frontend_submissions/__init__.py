@@ -24,8 +24,8 @@ from .mech_treatment_terrestrial import (
 )
 from .biocontrol_release import MINIMAL_BIOCONTROL_RELEASE, UPDATED_BIOCONTROL_RELEASE
 from .biocontrol_collection import (
-    MINIMAL_BIOCONTROL_RELEASE,
-    UPDATED_BIOCONTROL_RELEASE,
+    MINIMAL_BIOCONTROL_COLLECTION,
+    UPDATED_BIOCONTROL_COLLECTION,
 )
 from .biocontrol_dispersal_monitoring import (
     MINIMAL_BIOCONTROL_DISPERSAL_MONITORING,
