@@ -6,7 +6,7 @@ interface BiocontrolDispersalMonitoringSchema extends BaseForm {
   subtype_data: {
     entries: Array<{
       biocontrol_agent: string;
-      biocontrol_present: boolean;
+      biocontrol_present?: boolean;
       invasive_plant: string;
       monitoring_type: string;
       plant_count?: number;

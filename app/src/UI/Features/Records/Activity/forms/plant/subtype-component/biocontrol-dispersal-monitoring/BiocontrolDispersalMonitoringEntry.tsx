@@ -53,9 +53,11 @@ const BiocontrolDispersalMonitoringEntry = ({ index }: PropTypes) => {
   );
 
   useEffect(() => {
-    // Cleanup sign_of_biocontrol_presence when no biocontrol present.
-    if (isDirty && !biocontrolPresent) {
+    // Cleanup Irrelevant fields when biocontrol present set to false.
+    if (isDirty && biocontrolPresent == false) {
       setValue(getPath('sign_of_biocontrol_presence'), []);
+      setValue(getPath('estimated_biological_agents'), []);
+      setValue(getPath('actual_biological_agents'), []);
     }
   }, [biocontrolPresent]);
 

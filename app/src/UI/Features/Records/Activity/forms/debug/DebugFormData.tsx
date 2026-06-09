@@ -3,6 +3,7 @@ import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces'
 import { Debug } from 'UI/Reusable/Predicates/Debug';
 import Accordion from 'UI/Reusable/Accordion/Accordion';
 import { BugReport } from '@mui/icons-material';
+import { CopyToClipboardButton } from 'UI/Features/Batch/batch-upload/ClipboardHelper';
 
 const DebugFormData = () => {
   const style: React.CSSProperties = {
@@ -28,6 +29,7 @@ const DebugFormData = () => {
           </>
         }
       >
+        <CopyToClipboardButton content={JSON.stringify(formData)} /> Copy JSON to Clipboard
         <pre style={style}>
           {/* Truncate any Encoded media Files to avoid massive print outs  */}
           {JSON.stringify(

@@ -4,7 +4,7 @@ const getBiocontrolDispersalMonitoringSubtypeFields = (): BiocontrolDispersalMon
   entries: [
     {
       biocontrol_agent: '',
-      biocontrol_present: false,
+      biocontrol_present: undefined,
       invasive_plant: '',
       monitoring_type: '',
       monitoring_method: '',
