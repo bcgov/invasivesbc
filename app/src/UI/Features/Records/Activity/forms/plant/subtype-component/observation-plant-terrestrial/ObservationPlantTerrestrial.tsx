@@ -18,7 +18,8 @@ const ObservationPlantTerrestrial = () => {
 
   const validateSlopeAspect = (val, formValues) => {
     const aspect = val?.code ?? val;
-    const slope = formValues.subtype_data?.slope_percent?.code ?? formValues.subtype_data?.slope_percent;
+    const slope =
+      formValues.subtype_data?.context?.slope_percent?.code ?? formValues.subtype_data?.context?.slope_percent;
     if ([aspect, slope].includes('FL') && aspect !== slope)
       return 'If either Aspect or Slope is flat, both of them must be flat.';
     return true;
