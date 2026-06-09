@@ -38,6 +38,25 @@ class BaseActivitySubtypeTest(BaseTestCase, ABC):
     def fetch_b(self):
         return self.fetch(self.ID_B)
 
+    def parse_422_response(self, raw_http_response):
+        """
+        Clean up the returned 422 errors for display in error log.
+        e.g.:   [employer]: Invalid selection: 'ABCD' is not a recognized code.
+                [pest_management_plan]: Invalid selection: 'PLAN-1234' is not a recognized code.
+        """
+        parsed = raw_http_response.json()
+        formatted_errors = set()
+        for e in parsed.get("detail", []):
+            clean_loc = [
+                x
+                for x in e["loc"]
+                if not (isinstance(x, str) and x.startswith("function-"))
+            ]
+            field = clean_loc[-1] if clean_loc else e["loc"][-1]
+            msg = e.get("ctx", {}).get("error") or e.get("msg", "Validation error")
+            formatted_errors.add(f"[{field}]: {msg}\n")
+        return "".join(formatted_errors)
+
     def _post_record(self, type, payload):
         """Submit a record to the API for creation."""
         client = Client()
@@ -49,25 +68,8 @@ class BaseActivitySubtypeTest(BaseTestCase, ABC):
         )
 
         if result.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY:
-            """
-            Clean up the returned 422 errors for display in error log.
-            e.g.:   [employer]: Invalid selection: 'ABCD' is not a recognized code.
-                    [pest_management_plan]: Invalid selection: 'PLAN-1234' is not a recognized code.
-            """
-            parsed = result.json()
-            formatted_errors = set()
-            for e in parsed.get("detail", []):
-                clean_loc = [
-                    x
-                    for x in e["loc"]
-                    if not (isinstance(x, str) and x.startswith("function-"))
-                ]
-                field = clean_loc[-1] if clean_loc else e["loc"][-1]
-                msg = e.get("ctx", {}).get("error") or e.get("msg", "Validation error")
-                formatted_errors.add(f"[{field}]: {msg}\n")
-
-            values = "".join(formatted_errors)
-            self.fail(values)
+            errors = self.parse_422_response(result)
+            self.fail(errors)
 
         self.assertEqual(result.status_code, 200)
         return result
