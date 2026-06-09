@@ -78,7 +78,7 @@ UPDATED_MONITORING_MECH_TREATMENT = {
     "projects": [{"description": "Description"}],
     "location_description": "Location Description",
     "access_description": "Access Description",
-    "form_status": "Draft",
+    "form_status": "Submitted",
     "date": "2026-06-09",
     "comment": "Comment",
     "area_m": 4,

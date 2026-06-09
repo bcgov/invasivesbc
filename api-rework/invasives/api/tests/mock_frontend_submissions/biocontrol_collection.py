@@ -8,7 +8,7 @@ MINIMAL_BIOCONTROL_COLLECTION = {
     "projects": [],
     "location_description": "Location",
     "access_description": "",
-    "form_status": "Draft",
+    "form_status": "Submitted",
     "date": "2026-06-08",
     "comment": "",
     "area_m": 4,

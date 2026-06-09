@@ -8,7 +8,7 @@ MINIMAL_CHEM_TREATMENT_TERRESTRIAL = {
     "projects": [],
     "location_description": "Location Description",
     "access_description": "Access Description",
-    "form_status": "Submitted",
+    "form_status": "Draft",
     "date": "2026-06-08",
     "comment": "Comment Field",
     "area_m": 4,

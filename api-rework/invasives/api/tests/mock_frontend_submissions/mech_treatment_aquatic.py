@@ -68,7 +68,7 @@ UPDATED_MECH_TREATMENT_AQUATIC = {
     "projects": [{"description": "Project Code"}],
     "location_description": "Location Description",
     "access_description": "Access Description",
-    "form_status": "Draft",
+    "form_status": "Submitted",
     "date": "2026-06-08",
     "comment": "Comment Description",
     "area_m": 3,

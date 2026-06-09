@@ -77,7 +77,7 @@ UPDATED_CHEM_TREATMENT_MONITORING = {
     "projects": [],
     "location_description": "Location Description",
     "access_description": "Access Description",
-    "form_status": "Draft",
+    "form_status": "Submitted",
     "date": "2026-06-09",
     "comment": "General Comments",
     "area_m": 6,

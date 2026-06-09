@@ -90,7 +90,7 @@ UPDATED_CHEM_TREATMENT_AQUATIC = {
     "projects": [],
     "location_description": "Location Description",
     "access_description": "Access Description",
-    "form_status": "Draft",
+    "form_status": "Submitted",
     "date": "2026-06-08",
     "comment": "Comment Field",
     "area_m": 5,

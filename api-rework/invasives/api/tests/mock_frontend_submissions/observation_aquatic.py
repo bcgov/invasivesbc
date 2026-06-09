@@ -88,7 +88,7 @@ UPDATED_AQUATIC_OBSERVATION = {
     "projects": [],
     "location_description": "Location Area",
     "access_description": "Access Description",
-    "form_status": "Draft",
+    "form_status": "Submitted",
     "date": "2026-06-08",
     "comment": "Comment",
     "area_m": 10,
