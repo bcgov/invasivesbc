@@ -31,7 +31,7 @@ MINIMAL_BIOCONTROL_RELEASE = {
                 "comment": "",
                 "actual_biological_agents": [{"quantity": 32, "stage": "AD"}],
                 "estimated_biological_agents": [{"quantity": 11, "stage": "DE"}],
-                "historical_iapp_site": null,
+                "historical_iapp_site": None,
                 "time_collection_duration_minutes": 32,
             }
         ],

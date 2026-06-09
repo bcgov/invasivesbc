@@ -27,3 +27,11 @@ from .biocontrol_collection import (
     MINIMAL_BIOCONTROL_RELEASE,
     UPDATED_BIOCONTROL_RELEASE,
 )
+from .biocontrol_release_monitoring import (
+    MINIMAL_BIOCONTROL_RELEASE_MONITORING,
+    UPDATED_BIOCONTROL_RELEASE_MONITORING,
+)
+from .monitoring_chemical_treatment import (
+    MINIMAL_CHEM_TREATMENT_MONITORING,
+    UPDATED_CHEM_TREATMENT_MONITORING,
+)
