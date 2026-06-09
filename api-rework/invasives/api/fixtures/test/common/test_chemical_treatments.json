@@ -1,7 +1,7 @@
 [
   {
-    "model": "api.TerrestrialPlantCode",
-    "pk": "JK",
+    "model": "api.HerbicideApplicationMethodCode",
+    "pk": "24388",
     "fields": {
       "full": "Japanese Knotweed",
       "valid_from": "2025-06-01",
@@ -9,73 +9,64 @@
     }
   },
   {
-    "model": "api.TerrestrialPlantCode",
-    "pk": "CT",
+    "model": "api.PestManagementPlan",
+    "pk": "N/A",
     "fields": {
-      "full": "Common Tansy",
+      "full": "PMP Not Required",
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }
   },
   {
-    "model": "api.AquaticPlantCode",
-    "pk": "RC",
+    "model": "api.ChemicalApplicationMethodSprayCode",
+    "pk": "BPA",
     "fields": {
-      "full": "RC Plant",
+      "full": "Back Pack",
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }
   },
   {
-    "model": "api.AquaticPlantCode",
-    "pk": "JK",
+    "model": "api.ChemicalApplicationMethodDirectCode",
+    "pk": "WCK",
     "fields": {
-      "full": "Japanese Knotweed",
+      "full": "Wick",
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }
   },
   {
-    "model": "api.AquaticPlantCode",
-    "pk": "AB",
+    "model": "api.HerbicideApplicationMethodCode",
+    "pk": "BPA",
     "fields": {
-      "full": "American Beachgrass",
+      "full": "Back Pack",
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }
   },
   {
-    "model": "api.AquaticPlantCode",
-    "pk": "CT",
+    "model": "api.ChemicalPrecautionaryStatement",
+    "pk": "IRR",
     "fields": {
-      "full": "CT",
+      "full": "Irrigation Restrictions",
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }
   },
   {
-    "model": "api.AquaticPlantCode",
-    "pk": "SK",
+    "model": "api.GranularHerbicideCode",
+    "pk": "24388",
     "fields": {
-      "full": "Spotted Knapweed",
+      "full": "Metsulfuron methyl 24388",
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }
   },
   {
-    "model": "api.PlantsWithBiocontrol",
-    "pk": "CT",
+    "model": "api.LiquidHerbicideCode",
+    "pk": "23545",
     "fields": {
-      "full": "Common Tansy",
-      "valid_from": "2025-06-01",
-      "created_at": "2025-06-01 12:00:00-08:00"
-    }
-  },
-  {
-    "model": "api.PlantsWithBiocontrol",
-    "pk": "JK",
-    "fields": {
-      "full": "Japanese Knotweed",
+      "full": "Clopyralid 23545",
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }
