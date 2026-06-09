@@ -54,6 +54,15 @@
     }
   },
   {
+    "model": "api.TreatmentEfficacyRatingCode",
+    "pk": "10",
+    "fields": {
+      "full": "100%",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
     "model": "api.InvasivePlantsOnSiteCode",
     "pk": "ROP",
     "fields": {
@@ -76,6 +85,15 @@
     "pk": "FSUP",
     "fields": {
       "full": "Few Scattered Untreated Plants",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.InvasivePlantsOnSiteCode",
+    "pk": "NA",
+    "fields": {
+      "full": "Not Applicable",
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }
