@@ -4,7 +4,7 @@ const getMonitoringBiocontrolReleaseSubtypeFields = (): BiocontrolReleaseMonitor
   entries: [
     {
       biocontrol_agent: '',
-      biocontrol_present: false,
+      biocontrol_present: undefined,
       invasive_plant: '',
       monitoring_type: '',
       monitoring_method: '',
@@ -44,7 +44,7 @@ const getMonitoringBiocontrolReleaseSubtypeFields = (): BiocontrolReleaseMonitor
     target_plant_heights: [{ height_cm: 0 }]
   },
   // Microsite Condition
-  microsite_condition: {
+  microsite_conditions: {
     mesoslope_position: '',
     site_surface_shape: ''
   },
@@ -56,7 +56,7 @@ const getMonitoringBiocontrolReleaseSubtypeFields = (): BiocontrolReleaseMonitor
     max_spread_aspect_deg: 0
   },
   // Weather
-  weather_condition: {
+  weather_conditions: {
     comments: '',
     cloud_cover: '',
     precipitation: '',
