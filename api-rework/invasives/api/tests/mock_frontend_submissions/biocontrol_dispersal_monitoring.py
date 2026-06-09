@@ -1,10 +1,10 @@
 MINIMAL_BIOCONTROL_DISPERSAL_MONITORING = {
     "id": "f6784a14-27af-495f-a26d-7085e018d8c8",
     "short_id": "26PBDF6784A14",
-    "employer": "MOTI",
+    "employer": [{"employer": "MOTI"}],
     "subtype": "Monitoring_Biocontrol_Dispersal_Plant_Terrestrial",
     "funding_agencies": [{"invasive_species_agency_code": "MOTI"}],
-    "jurisdictions": [{"jurisdiction": "MOTI", "percent_covered": 0}],
+    "jurisdictions": [{"jurisdiction": "MOTI", "percent_covered": 100}],
     "projects": [],
     "location_description": "Location Description",
     "access_description": "",
