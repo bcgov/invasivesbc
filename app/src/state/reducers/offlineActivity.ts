@@ -67,13 +67,14 @@ function createOfflineActivityReducer(
         draftState.serial = moment.now();
       } else if (FormActions.saveMobileForm.match(action)) {
         const { data, type } = action.payload;
+        const cleanedData = FormActions.drillAndSimplify(data);
         const currTime = moment.now();
         data.form_status = type === 'submit' ? ActivityStatus.SUBMITTED : data.form_status;
         const id = data?.id ?? crypto.randomUUID();
         draftState.serializedActivities[id] = {
-          data: JSON.stringify(data),
+          data: JSON.stringify(cleanedData),
           saved_at: currTime,
-          short_id: data?.short_id ?? id,
+          short_id: cleanedData?.short_id ?? id,
           record_type: data.subtype,
           sync_state: OfflineActivitySyncState.LOCALLY_MODIFIED
         };

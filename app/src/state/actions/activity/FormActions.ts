@@ -145,7 +145,7 @@ class FormActions {
   /**
    * @desc Iterate payload object and convert {code, full} pairs into code strings, reducing payload size.
    */
-  private static readonly drillAndSimplify = (data: unknown) => {
+  static readonly drillAndSimplify = (data: unknown) => {
     if (Array.isArray(data)) {
       return data.map(this.drillAndSimplify);
     }
