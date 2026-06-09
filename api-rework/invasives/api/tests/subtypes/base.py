@@ -2,9 +2,7 @@ from abc import ABC
 
 from django.test.client import Client
 from django.test import override_settings
-
-from api.models.activity.activity import Activity
-from api.serializers.activity import ActivitySerializer
+from rest_framework import status
 from api.tests.base_test_case import BaseTestCase
 
 
@@ -39,3 +37,43 @@ class BaseActivitySubtypeTest(BaseTestCase, ABC):
 
     def fetch_b(self):
         return self.fetch(self.ID_B)
+
+    def _post_record(self, type, payload):
+        """Submit a record to the API for creation."""
+        client = Client()
+        result = client.post(
+            f"/ninja/activities/{type}",
+            headers={"Authorization": "Bearer act_as_user=test_user"},
+            content_type="application/json",
+            data=payload,
+        )
+
+        if result.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY:
+            """
+            Clean up the returned 422 errors for display in error log.
+            e.g.:   [employer]: Invalid selection: 'ABCD' is not a recognized code.
+                    [pest_management_plan]: Invalid selection: 'PLAN-1234' is not a recognized code.
+            """
+            parsed = result.json()
+            formatted_errors = set()
+            for e in parsed.get("detail", []):
+                clean_loc = [
+                    x
+                    for x in e["loc"]
+                    if not (isinstance(x, str) and x.startswith("function-"))
+                ]
+                field = clean_loc[-1] if clean_loc else e["loc"][-1]
+                msg = e.get("ctx", {}).get("error") or e.get("msg", "Validation error")
+                formatted_errors.add(f"[{field}]: {msg}\n")
+
+            values = "".join(formatted_errors)
+            self.fail(values)
+
+        self.assertEqual(result.status_code, 200)
+        return result
+
+    def draft_record(self, payload):
+        return self._post_record("draft", payload)
+
+    def submit_record(self, payload):
+        return self._post_record("submit", payload)
