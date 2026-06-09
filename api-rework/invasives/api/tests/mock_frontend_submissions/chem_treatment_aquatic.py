@@ -30,7 +30,7 @@ MINIMAL_CHEM_TREATMENT_AQUATIC = {
         "context": {
             "pesticide_employer_code": "0",
             "pesticide_use_permit": "",
-            "pest_management_plan": "BC HYDRO 105-0985-21/26",
+            "pest_management_plan": "N/A",
             "pest_management_plan_manual": "",
             "temperature_c": 14,
             "wind_speed_kmh": 2,
@@ -112,7 +112,7 @@ UPDATED_CHEM_TREATMENT_AQUATIC = {
         "context": {
             "pesticide_employer_code": "0",
             "pesticide_use_permit": "PUP Information",
-            "pest_management_plan": "BC HYDRO 105-0985-21/26",
+            "pest_management_plan": "N/A",
             "pest_management_plan_manual": "",
             "temperature_c": 14,
             "wind_speed_kmh": 2,
