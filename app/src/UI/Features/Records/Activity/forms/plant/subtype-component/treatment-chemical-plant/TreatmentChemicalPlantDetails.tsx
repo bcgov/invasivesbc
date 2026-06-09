@@ -193,6 +193,7 @@ const TreatmentChemicalPlantDetails = () => {
         width={Width.Half}
         tooltip={tooltips.plant.chemical.calculation_fields.amount_mix_used}
         required
+        acceptFloats
         error={get(errors, getPath('amount_mix_used_l'))}
         {...register(getPath('amount_mix_used_l'), {
           valueAsNumber: true,
@@ -208,6 +209,7 @@ const TreatmentChemicalPlantDetails = () => {
             width={Width.Half}
             tooltip={tooltips.plant.chemical.calculation_fields.dilution_percent}
             required
+            acceptFloats
             error={get(errors, getPath('dilution_percent'))}
             {...register(getPath('dilution_percent'), {
               required: true,
