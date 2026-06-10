@@ -21,6 +21,8 @@
     margin-top: 0.5rem;
     padding: 8px;
     align-items: center;
+    box-sizing: border-box;
+    max-width: 100%;
     display: flex;
     justify-content: center;
   }

@@ -243,7 +243,7 @@ const ProtomapsList = () => {
   };
 
   return (
-    <div className={'protomapsList'}>
+    <div className={'protomaps-list'}>
       <Button
         disabled={loading || monitoringProgress}
         onClick={() => {
@@ -262,32 +262,34 @@ const ProtomapsList = () => {
         {monitoringProgress ? 'Auto-Refreshing' : 'Refresh'}
       </Button>
       {error && <span className={'error'}>{errorMessage}</span>}
-      <table>
-        <thead>
-          <tr>
-            <th>Trip Name</th>
-            <th>Updated</th>
-            <th>Expires</th>
-            <th>Size</th>
-            <th>Status</th>
-            <th>Installed</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {maps.map((r) => (
-            <tr key={r.id}>
-              <td>{r.trip_name}</td>
-              <td>{renderISO8601TimeInLocalTime(r.updated)}</td>
-              <td>{r.time_to_expiry && renderISO8601Duration(r.time_to_expiry)}</td>
-              <td>{r.file_size !== null && convertBytesToReadableString(r.file_size)}</td>
-              <td>{renderStatus(r)}</td>
-              <td>{renderInstalled(r)}</td>
-              <td>{renderActions(r)}</td>
+      <div className="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Trip Name</th>
+              <th>Updated</th>
+              <th>Expires</th>
+              <th>Size</th>
+              <th>Status</th>
+              <th>Installed</th>
+              <th>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {maps.map((r) => (
+              <tr key={r.id}>
+                <td>{r.trip_name}</td>
+                <td>{renderISO8601TimeInLocalTime(r.updated)}</td>
+                <td>{r.time_to_expiry && renderISO8601Duration(r.time_to_expiry)}</td>
+                <td>{r.file_size !== null && convertBytesToReadableString(r.file_size)}</td>
+                <td>{renderStatus(r)}</td>
+                <td>{renderInstalled(r)}</td>
+                <td>{renderActions(r)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

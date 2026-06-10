@@ -16,18 +16,18 @@ const ManageTripsPage = () => {
           {atRoot || (
             <NavLink to={'/ManageTrips'} className={'back'}>
               <ArrowBackIos />
-              Back To Manage My Trips
+              Main
             </NavLink>
           )}
 
           <>
             <NavLink to={'/ManageTrips/new'}>
               <FiberNewSharp />
-              Plan a New Trip
+              Plan Trip
             </NavLink>
             <NavLink to={'/ManageTrips/trips'}>
               <TripOrigin />
-              Manage My Trips
+              Manage Trips
             </NavLink>
             <NavLink to={'/ManageTrips/maps'}>
               <DownloadOutlined />
