@@ -1,9 +1,16 @@
 from .base import BaseActivitySubtypeTest
+from api.tests.mock_frontend_submissions import (
+    MINIMAL_TERRESTRIAL_OBSERVATION,
+    UPDATED_TERRESTRIAL_OBSERVATION,
+)
 
 
 class TerrestrialObservationTest(BaseActivitySubtypeTest):
 
     fixtures = [
+        "test/common/test_employer",
+        "test/common/test_jurisdictions",
+        "test/common/test_funding_agency",
         "test/common/test_invasive_plant_codes",
         "test/subtypes/observations/test_terrestrial_observation_codes",
         "test/subtypes/observations/test_terrestrial_observation",
@@ -85,3 +92,11 @@ class TerrestrialObservationTest(BaseActivitySubtypeTest):
         ]
 
         self.assertCountEqual(obs_detail, sd["entries"])
+
+    def test_submit_record(self):
+        """Expect Submitting a record returns 200"""
+        self.submit_record(MINIMAL_TERRESTRIAL_OBSERVATION)
+
+    def test_update_record(self):
+        """Expect Submitting an updated record returns 200"""
+        self.submit_record(UPDATED_TERRESTRIAL_OBSERVATION)

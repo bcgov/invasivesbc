@@ -18,10 +18,46 @@
     }
   },
   {
+    "model": "api.BiocontrolAgentCode",
+    "pk": "APHAITA",
+    "fields": {
+      "full": "APHAITA",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.SiteSurfaceShapeCode",
+    "pk": "HO",
+    "fields": {
+      "full": "Hollow",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.AgentLocationFoundTerrainCode",
+    "pk": "BS",
+    "fields": {
+      "full": "Base of Slope",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
     "model": "api.AgentLocationFoundCode",
     "pk": "Pe",
     "fields": {
       "full": "Root (internal)",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.AgentLocationFoundCode",
+    "pk": "Ax",
+    "fields": {
+      "full": "Axil",
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }
@@ -46,6 +82,24 @@
   },
   {
     "model": "api.PlantPositionCode",
+    "pk": "Bg",
+    "fields": {
+      "full": "Basal Growth",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.PlantPositionCode",
+    "pk": "Is",
+    "fields": {
+      "full": "In soil",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.PlantPositionCode",
     "pk": "Pu",
     "fields": {
       "full": "Plant Upper",
@@ -58,6 +112,33 @@
     "pk": "AD",
     "fields": {
       "full": "Adult",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.BioAgentLifeStageCode",
+    "pk": "LA",
+    "fields": {
+      "full": "Larva",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.BioAgentLifeStageCode",
+    "pk": "DE",
+    "fields": {
+      "full": "Dead",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.BioAgentLifeStageCode",
+    "pk": "AL",
+    "fields": {
+      "full": "All",
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }
@@ -85,6 +166,24 @@
     "pk": "As",
     "fields": {
       "full": "Aspirate",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.MesoslopePositionCode",
+    "pk": "CR",
+    "fields": {
+      "full": "Crest",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.MesoslopePositionCode",
+    "pk": "NA",
+    "fields": {
+      "full": "Not Applicable",
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }
@@ -135,6 +234,15 @@
     }
   },
   {
+    "model": "api.PrecipitationCode",
+    "pk": "NA",
+    "fields": {
+      "full": "Not Applicable",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
     "model": "api.CloudCoverCode",
     "pk": "1",
     "fields": {
@@ -163,6 +271,15 @@
   },
   {
     "model": "api.BiocontrolPresenceCode",
+    "pk": "CY",
+    "fields": {
+      "full": "Current Year Evidence",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.BiocontrolPresenceCode",
     "pk": "ST",
     "fields": {
       "full": "Stem Feeding Damage",
@@ -175,6 +292,15 @@
     "pk": "Ob",
     "fields": {
       "full": "Observe",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.BioAgentMonitoringMethodCode",
+    "pk": "Ex",
+    "fields": {
+      "full": "Excavate",
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }

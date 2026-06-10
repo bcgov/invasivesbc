@@ -38,14 +38,18 @@ const getBiocontrolCollectionSubtypeFields = (): BiocontrolCollectionSchema['sub
       }
     ]
   },
-  mesoslope_position: '',
-  site_surface_shape: '',
-  comments: '',
-  cloud_cover: '',
-  precipitation: '',
-  temperature: 0,
-  wind_direction: '',
-  wind_speed_kmh: 0
+  microsite_conditions: {
+    mesoslope_position: '',
+    site_surface_shape: ''
+  },
+  weather_conditions: {
+    comments: '',
+    cloud_cover: '',
+    precipitation: '',
+    temperature: 0,
+    wind_direction: '',
+    wind_speed_kmh: 0
+  }
 });
 
 export default getBiocontrolCollectionSubtypeFields;

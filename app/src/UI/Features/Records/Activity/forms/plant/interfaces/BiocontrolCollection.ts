@@ -38,15 +38,19 @@ interface BiocontrolCollectionSchema extends BaseForm {
       }>;
     };
     // Microsite Condition
-    mesoslope_position: string;
-    site_surface_shape: string;
+    microsite_conditions: {
+      mesoslope_position: string;
+      site_surface_shape: string;
+    };
     // Weather
-    comments: string;
-    cloud_cover: string;
-    precipitation: string;
-    temperature: number;
-    wind_direction: string;
-    wind_speed_kmh: number;
+    weather_conditions: {
+      comments: string;
+      cloud_cover: string;
+      precipitation: string;
+      temperature: number;
+      wind_direction: string;
+      wind_speed_kmh: number;
+    };
   };
 }
 

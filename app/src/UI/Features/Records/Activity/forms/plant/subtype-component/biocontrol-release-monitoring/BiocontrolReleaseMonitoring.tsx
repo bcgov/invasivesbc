@@ -76,7 +76,7 @@ const BiocontrolReleaseMonitoring = () => {
             <NumberInput
               label={'Agent Density %'}
               width={Width.Half}
-              tooltip={tooltips.plant.spread_results.max_spread_deg}
+              tooltip={tooltips.plant.spread_results.agent_density}
               error={get(errors, getPath('agent_density'))}
               {...register(getPath('agent_density'), {
                 valueAsNumber: true,
