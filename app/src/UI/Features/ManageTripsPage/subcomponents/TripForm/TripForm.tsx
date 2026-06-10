@@ -199,7 +199,7 @@ const TripForm = () => {
                     checked={userSelectedCaches[name]}
                     onChange={handleSelectionChange}
                   />
-                  <label htmlFor="IAPP Records">
+                  <label htmlFor={name}>
                     {labelText} <TooltipWithIcon tooltipText={tooltip} />
                   </label>
                 </div>
