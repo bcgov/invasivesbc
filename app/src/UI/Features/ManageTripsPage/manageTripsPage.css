@@ -5,6 +5,10 @@
   flex-direction: column;
   align-items: center;
 
+  .intro {
+    padding: 5px;
+  }
+
   .trip-header {
     z-index: 1;
     background-color: white;

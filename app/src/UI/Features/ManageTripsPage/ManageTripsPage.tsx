@@ -11,6 +11,12 @@ const ManageTripsPage = () => {
   const navState = atRoot ? 'expanded' : 'collapsed';
   return (
     <div id="manage-trips">
+      {atRoot && (
+        <div className="intro">
+          <h2>Plan Your Trip</h2>
+          <p>Going out of service? Download your maps, records, and well data now to use them anywhere.</p>
+        </div>
+      )}
       <div className={`nav-wrapper ${navState}`}>
         <nav className={`navigation ${navState}`}>
           {atRoot || (
@@ -23,7 +29,7 @@ const ManageTripsPage = () => {
           <>
             <NavLink to={'/ManageTrips/new'}>
               <FiberNewSharp />
-              Plan Trip
+              Plan A Trip
             </NavLink>
             <NavLink to={'/ManageTrips/trips'}>
               <TripOrigin />

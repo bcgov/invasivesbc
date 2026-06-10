@@ -8,7 +8,8 @@ const MapList = () => {
     <div className="trip-module">
       <h2>Offline Maps</h2>
       <p className={'help'}>
-        It is not necessary to keep the application open while maps are being prepared by the server.
+        Closing the app won't stop your progress. Maps will download automatically once prepared, or you can manually
+        start them whenever you return.
       </p>
       <ProtomapsList />
     </div>
