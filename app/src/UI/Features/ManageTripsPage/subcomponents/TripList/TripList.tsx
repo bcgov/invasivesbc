@@ -2,15 +2,17 @@ import { useEffect, useState } from 'react';
 import './TripList.css';
 import { PlanMyTripCacheServiceFactory } from 'utils/plan-my-trip-cache/context';
 import { IPlanMyTripRepositoryMetadata, PlanMyTripCacheService } from 'utils/plan-my-trip-cache';
-import { useSelector } from 'utils/use_selector';
+import { useDispatch, useSelector } from 'utils/use_selector';
 import TripView from 'UI/Features/ManageTripsPage/subcomponents/Shared/TripView';
 import EmptyCollection from 'UI/Features/LegacyMap/LayerPicker/EmptyCollection/EmptyCollection';
+import OfflineProtomaps from 'state/actions/cache/OfflineProtomaps';
 
 const TripList = () => {
   const lastUpdate = useSelector((state) => state.PlanMyTrip?.lastUpdate);
 
   const [tripService, setTripService] = useState<PlanMyTripCacheService>();
   const [repositories, setRepositories] = useState<IPlanMyTripRepositoryMetadata[]>([]);
+  const dispatch = useDispatch();
 
   // Update Repositories when changes noted or service ready
   useEffect(() => {
@@ -27,6 +29,7 @@ const TripList = () => {
       const service = await PlanMyTripCacheServiceFactory.getPlatformInstance();
       setTripService(service);
     })();
+    dispatch(OfflineProtomaps.syncTripService());
   }, []);
 
   return (

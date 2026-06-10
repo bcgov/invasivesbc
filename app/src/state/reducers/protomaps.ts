@@ -21,11 +21,16 @@ interface ProtomapsState {
   definitions: SavedProtomapDefinition[];
   mapLayers: InvasivesMapLayerDefinition[];
   mapSources: { [key: string]: SourceSpecification };
+  installationsRequested: {
+    tripName: string;
+    percent: number;
+  }[];
 }
 
 const initialState: ProtomapsState = {
   loading: false,
   definitions: [],
+  installationsRequested: [],
   mapLayers: [],
   mapSources: {}
 };
@@ -120,6 +125,25 @@ function createProtomapsReducer(): (OfflineActivityState, AnyAction) => Protomap
           } catch (_) {
             console.error('unable to parse record (old data?)');
           }
+        }
+      } else if (OfflineProtomaps.installRequested.match(action)) {
+        if (!draftState.installationsRequested.some((i) => i.tripName == action.payload)) {
+          draftState.installationsRequested.push({
+            tripName: action.payload,
+            percent: 0
+          });
+        }
+      } else if (OfflineProtomaps.installCompleted.match(action)) {
+        if (draftState.installationsRequested.some((i) => i.tripName == action.payload)) {
+          draftState.installationsRequested.splice(
+            draftState.installationsRequested.findIndex((i) => i.tripName == action.payload),
+            1
+          );
+        }
+      } else if (OfflineProtomaps.installProgress.match(action)) {
+        const found = draftState.installationsRequested.find((i) => i.tripName == action.payload.tripName);
+        if (found) {
+          found.percent = action.payload.percent;
         }
       }
     });

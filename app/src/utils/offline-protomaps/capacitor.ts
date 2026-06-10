@@ -10,7 +10,8 @@ type RequestDownloadOptions = {
 };
 
 type DownloadRequestCallbackParams = {
-  status: string;
+  status: 'success' | 'download queued' | 'downloading';
+  percent?: number;
 };
 
 type DownloadRequestCallbackID = string;

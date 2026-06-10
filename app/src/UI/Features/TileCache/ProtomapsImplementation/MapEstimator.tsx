@@ -25,19 +25,50 @@ const MapEstimator = ({ drawnShape, setZoom, zoom, valid, setValid }: PropTypes)
   const [errorMessage, setErrorMessage] = useState<string>('');
   const NORMALIZED_API_BASE = useSelector((state) => state.Configuration.current.runtime.NORMALIZED_API_BASE);
 
-  const debouncedZoomChange = useMemo(() => {
+  const debouncedEstimate = useMemo(() => {
     return debounce(
-      (z: number) => {
-        setZoom(z);
+      (req: MapGenerationEstimateRequest) => {
+        if (!req.bounds) return;
+
+        setLoading(true);
+        setError(false);
+
+        (async () => {
+          fetch(`${NORMALIZED_API_BASE}/maps/requests/estimate`, {
+            headers: {
+              Authorization: await getCurrentJWT(),
+              'Content-Type': 'application/json'
+            },
+            method: 'POST',
+            body: JSON.stringify(req)
+          })
+            .then(async (res) => {
+              setLoading(false);
+              if (res.status === 200) {
+                const serverResult: MapRecord[] = await res.json();
+                const newEstimate = serverResult as unknown as MapGenerationEstimateResponse;
+                setEstimateResponse(newEstimate);
+                setValid(newEstimate.is_size_valid);
+              } else {
+                setEstimateResponse(undefined);
+                setError(true);
+              }
+            })
+            .catch((reason) => {
+              setLoading(false);
+              setError(true);
+              setErrorMessage(`${reason}`);
+            });
+        })();
       },
-      50,
-      { trailing: true }
+      250,
+      { leading: true }
     );
   }, []);
 
   useEffect(() => {
     return () => {
-      debouncedZoomChange.cancel();
+      debouncedEstimate.cancel();
     };
   }, []);
 
@@ -58,38 +89,7 @@ const MapEstimator = ({ drawnShape, setZoom, zoom, valid, setValid }: PropTypes)
   }, [drawnShape, zoom]);
 
   useEffect(() => {
-    if (!estimateRequest.bounds) return;
-
-    setLoading(true);
-    setError(false);
-
-    (async () => {
-      fetch(`${NORMALIZED_API_BASE}/maps/requests/estimate`, {
-        headers: {
-          Authorization: await getCurrentJWT(),
-          'Content-Type': 'application/json'
-        },
-        method: 'POST',
-        body: JSON.stringify(estimateRequest)
-      })
-        .then(async (res) => {
-          setLoading(false);
-          if (res.status === 200) {
-            const serverResult: MapRecord[] = await res.json();
-            const newEstimate = serverResult as unknown as MapGenerationEstimateResponse;
-            setEstimateResponse(newEstimate);
-            setValid(newEstimate.is_size_valid);
-          } else {
-            setEstimateResponse(undefined);
-            setError(true);
-          }
-        })
-        .catch((reason) => {
-          setLoading(false);
-          setError(true);
-          setErrorMessage(`${reason}`);
-        });
-    })();
+    debouncedEstimate(estimateRequest);
   }, [estimateRequest]);
 
   return (
@@ -97,7 +97,6 @@ const MapEstimator = ({ drawnShape, setZoom, zoom, valid, setValid }: PropTypes)
       <p>Select Zoom Level:</p>
       <Slider
         value={zoom}
-        disabled={loading}
         step={1}
         aria-label={'Zoom Level'}
         marks={[
@@ -108,17 +107,15 @@ const MapEstimator = ({ drawnShape, setZoom, zoom, valid, setValid }: PropTypes)
           { label: '1:9k', value: 16 },
           { label: '1:4k', value: 17 },
           { label: '1:2k', value: 18 },
-          { label: 'Max', value: 19 }
+          { label: '1:1k', value: 19 },
+          { label: 'Max', value: 20 }
         ]}
         sx={{ width: '80%' }}
         color={valid ? 'primary' : 'error'}
         min={12}
-        max={19}
+        max={20}
         onChange={(_e, value) => {
-          if (typeof value === 'number') {
-            setLoading(true);
-            debouncedZoomChange(value);
-          }
+          setZoom(value);
         }}
       />
       <div className={`${loading ? 'loading' : ''} estimateDetails`}>

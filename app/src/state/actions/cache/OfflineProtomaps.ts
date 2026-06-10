@@ -1,4 +1,4 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
+import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from 'state/reducers/rootReducer';
 import {
   MapGenerationExecutionResponse,
@@ -8,7 +8,10 @@ import {
 } from 'UI/Features/TileCache/ProtomapsImplementation/definitions';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import { tripIdentifier } from 'state/actions/planMyTrip/PlanMyTrip';
-import OfflineMaps from 'utils/offline-protomaps/capacitor';
+import OfflineMaps, { DownloadRequestCallbackParams } from 'utils/offline-protomaps/capacitor';
+import { PlanMyTripCacheServiceFactory } from 'utils/plan-my-trip-cache/context';
+import { MapGenerationRequestWithProgress } from 'UI/Features/TileCache/ProtomapsImplementation/ProtomapsList';
+import { IPlanMyTripCacheStatus } from 'utils/plan-my-trip-cache';
 
 const plugin = OfflineMaps;
 
@@ -17,7 +20,7 @@ class OfflineProtomaps {
 
   static readonly mapGeneration = createAsyncThunk(
     `${this.PREFIX}/mapGeneration`,
-    async (spec: { request: MapGenerationRequest; tripId: tripIdentifier }, { getState, dispatch }) => {
+    async (spec: { request: MapGenerationRequest; tripId: tripIdentifier }, { getState }) => {
       const state: RootState = getState() as RootState;
 
       const generationResult = await fetch(`${state.Configuration.current.runtime.NORMALIZED_API_BASE}/maps/requests`, {
@@ -57,23 +60,6 @@ class OfflineProtomaps {
         const monitorResultBody: MapGenerationRequestMonitoringResponse = await monitoringResult.json();
         if (monitorResultBody.status === 'COMPLETED' || monitorResultBody.status === 'FAILED') {
           finished = true;
-          await plugin.requestDownload(
-            {
-              name: spec.request.trip_name,
-              format: 'pmtiles',
-              url: monitorResultBody.generation_record.download_link,
-              type: 'raster',
-              metadata: JSON.stringify({
-                tripId: spec.request.trip_name,
-                tripName: spec.request.trip_name,
-                generationRecord: monitorResultBody.generation_record
-              })
-            },
-            () => {
-              // download is done
-              dispatch(OfflineProtomaps.refreshList());
-            }
-          );
           return {
             tripId: spec.tripId,
             generationRecord: monitorResultBody.generation_record
@@ -110,6 +96,10 @@ class OfflineProtomaps {
 
       const generationRecord: MapRecord = await response.json();
 
+      if (generationRecord.trip_name) {
+        dispatch(OfflineProtomaps.installRequested(generationRecord.trip_name));
+      }
+
       await plugin.requestDownload(
         {
           name: generationRecord.trip_name !== null ? generationRecord.trip_name : generationRecord.file_name,
@@ -122,16 +112,97 @@ class OfflineProtomaps {
             generationRecord: generationRecord
           })
         },
-        () => {
-          // download is done
-          dispatch(OfflineProtomaps.refreshList());
+        (spec: DownloadRequestCallbackParams | null) => {
+          if (spec && spec.status == 'success') {
+            // download is done
+            if (generationRecord.trip_name) {
+              dispatch(OfflineProtomaps.installCompleted(generationRecord.trip_name));
+            }
+            dispatch(OfflineProtomaps.refreshList());
+            dispatch(OfflineProtomaps.syncTripService());
+          }
+          if (spec && spec.status == 'downloading' && spec.percent !== undefined && generationRecord.trip_name) {
+            dispatch(
+              OfflineProtomaps.installProgress({
+                tripName: generationRecord.trip_name,
+                percent: spec.percent
+              })
+            );
+          }
         }
       );
     }
   );
 
+  static readonly installRequested = createAction<string>(`${this.PREFIX}/installRequested`);
+  static readonly installCompleted = createAction<string>(`${this.PREFIX}/installCompleted`);
+  static readonly installProgress = createAction<{ percent: number; tripName: string }>(
+    `${this.PREFIX}/installProgress`
+  );
+
   static readonly refreshList = createAsyncThunk(`${this.PREFIX}/refreshList`, async () => {
     return await OfflineMaps.listDownloads({});
+  });
+
+  static readonly syncTripService = createAsyncThunk(`${this.PREFIX}/syncTrips`, async (_, { getState }) => {
+    // a brute-force approach to synchronizing the PlanMyTrip service with the actual state of things
+
+    // read the actual cache status from the plugin and the map generation statuses from the server and then make pmt understand
+
+    const tripService = await PlanMyTripCacheServiceFactory.getPlatformInstance();
+    const installedMapsList = await OfflineMaps.listDownloads({});
+    const state: RootState = getState() as RootState;
+
+    const serverMapList = await (async () => {
+      const response = await fetch(
+        `${state.Configuration.current.runtime.NORMALIZED_API_BASE}/maps/requests/offline_maps_page_list`,
+        {
+          headers: {
+            Authorization: await getCurrentJWT(),
+            'Content-Type': 'application/json'
+          },
+          method: 'GET'
+        }
+      );
+
+      if (response.status !== 200) {
+        throw new Error(`Unexpected status code ${response.status}`);
+      }
+
+      return (await response.json()) as MapGenerationRequestWithProgress[];
+    })();
+
+    const actualTrips = await tripService.listRepositories();
+
+    for (const tripDetails of actualTrips) {
+      const isAlreadyInstalled = installedMapsList.rasters.some((m) => m.name === tripDetails.name);
+
+      const isInProgress = serverMapList
+        .filter((m) => ['PENDING', 'PROCESSING', 'STALE'].includes(m.status))
+        .some((m) => m.trip_name === tripDetails.name);
+      const isReadyToInstall = serverMapList
+        .filter((m) => ['COMPLETED'].includes(m.status))
+        .some((m) => m.trip_name === tripDetails.name);
+      const isInErrorState = serverMapList
+        .filter((m) => ['FAILED', 'EXPIRED'].includes(m.status))
+        .some((m) => m.trip_name === tripDetails.name);
+
+      let desiredStatus: IPlanMyTripCacheStatus = tripDetails.cacheStatuses.mapTiles;
+
+      if (isAlreadyInstalled) {
+        desiredStatus = IPlanMyTripCacheStatus.CACHED;
+      } else if (isInProgress) {
+        desiredStatus = IPlanMyTripCacheStatus.IN_PROGRESS;
+      } else if (isInErrorState) {
+        desiredStatus = IPlanMyTripCacheStatus.FAILED;
+      } else if (isReadyToInstall) {
+        desiredStatus = IPlanMyTripCacheStatus.NOT_CACHED;
+      }
+
+      if (desiredStatus !== tripDetails.cacheStatuses.mapTiles) {
+        await tripService.updateSubCacheStatus(tripDetails.id, 'mapTiles', desiredStatus);
+      }
+    }
   });
 }
 

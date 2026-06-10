@@ -75,6 +75,8 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
   useEffect(() => {
     const addedSources: string[] = [];
     Object.entries(sources).forEach(([key, value]) => {
+      if (value === undefined) return;
+
       if (Object.hasOwn(value, 'url') && !addedSources.includes(key) && !alreadyAddedProtomapsSources.includes(key)) {
         addedSources.push(key);
         if (value.url.startsWith('pmtiles://')) {
