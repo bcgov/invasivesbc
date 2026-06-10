@@ -1,8 +1,11 @@
 import logging
-from datetime import timedelta, datetime
+import math
+from datetime import timedelta
 
 import boto3
 from botocore.exceptions import ClientError
+from django.db.models import Q
+from pydantic import TypeAdapter
 from rest_framework import serializers
 
 from api.models import (
@@ -10,8 +13,6 @@ from api.models import (
     MapGenerationRecord,
     MapGenerationIntermediateResult,
 )
-from django.db.models import Q
-
 from api.models.map_generation.map_generation_request import MAX_TILE_COUNT
 from api.serializers.common.polygon import CentroidSerializer, PolygonSerializer
 from invasivesbc.settings import (
@@ -149,11 +150,11 @@ class MapGenerationRequestProgressAndLinkSerializer(
 
         return record.file_size
 
-    def get_download_link(self, obj):
+    progress = serializers.SerializerMethodField(read_only=True)
+    file_size = serializers.SerializerMethodField(read_only=True)
+    time_to_expiry = serializers.SerializerMethodField(read_only=True)
 
-        if obj.status != "COMPLETED":
-            return None
-
+    def get_time_to_expiry(self, obj):
         record = MapGenerationRecord.objects.filter(
             Q(owner=obj.owner) & Q(generation_request=obj)
         ).first()
@@ -161,49 +162,31 @@ class MapGenerationRequestProgressAndLinkSerializer(
         if record is None:
             return None
 
-        # todo use django's caching mechanisms to speed this up
-        try:
-            s3_client = boto3.client(
-                "s3",
-                endpoint_url=OBJECT_STORE_ENDPOINT_URL,
-                aws_access_key_id=OBJECT_STORE_ACCESS_KEY_ID,
-                aws_secret_access_key=OBJECT_STORE_SECRET_ACCESS_KEY,
-                region_name=OBJECT_STORE_REGION,
-                aws_session_token=None,
-                config=boto3.session.Config(
-                    signature_version="s3v4",
-                    request_checksum_calculation="when_required",
-                    response_checksum_validation="when_required",
-                ),
-            )
-            response = s3_client.generate_presigned_url(
-                ClientMethod="get_object",
-                Params={
-                    "Bucket": OBJECT_STORE_MAP_UPLOAD_BUCKET,
-                    "Key": record.file_name,
-                },
-                ExpiresIn=int(timedelta(days=7).total_seconds()),
-            )
-            return response
-        except ClientError:
-            logging.error("Unable to generate pre-signed URL", exc_info=True)
-            return None
+        resolution_seconds = 300
 
-    download_link = serializers.SerializerMethodField(read_only=True)
-    progress = serializers.SerializerMethodField(read_only=True)
-    file_size = serializers.SerializerMethodField(read_only=True)
+        timedelta_adapter = TypeAdapter(timedelta)
+        rounded = (
+            round(record.time_to_expiry.total_seconds() / resolution_seconds)
+            * resolution_seconds
+        )
+
+        return timedelta_adapter.dump_python(timedelta(seconds=rounded), mode="json")
 
     class Meta:
         model = MapGenerationRequestShallowSerializer.Meta.model
         read_only_fields = (
             MapGenerationRequestShallowSerializer.Meta.read_only_fields
-            + ("download_link", "progress", "file_size")
+            + (
+                "progress",
+                "file_size",
+                "time_to_expiry",
+            )
         )
 
         fields = MapGenerationRequestShallowSerializer.Meta.fields + (
-            "download_link",
             "progress",
             "file_size",
+            "time_to_expiry",
         )
 
 

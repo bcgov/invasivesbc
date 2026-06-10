@@ -30,6 +30,15 @@ TILES_PER_SECOND_BEST_CASE = 15
 
 MAX_TILE_COUNT = 20000
 
+VALID_MAP_GENERATION_STATUSES = [
+    "PENDING",
+    "PROCESSING",
+    "COMPLETED",
+    "FAILED",
+    "STALE",
+    "EXPIRED",
+]
+
 
 class RasterMapGenerationRequest(OptionallyOwned, Dated, models.Model):
     id = models.AutoField(primary_key=True, null=False, blank=False)
@@ -39,6 +48,13 @@ class RasterMapGenerationRequest(OptionallyOwned, Dated, models.Model):
         null=False,
         default=generate_legacy_trip_name,
         db_comment="trip name, used as a client-side identifier. Eventually to be replaced with server-side trip reference",
+    )
+
+    celery_task_id = models.CharField(
+        max_length=128,
+        null=True,
+        blank=True,
+        db_comment="The id assigned by celery when the task is scheduled. can be used to track execution status",
     )
 
     bounds = geomodels.PolygonField(null=False, blank=False)
@@ -128,12 +144,7 @@ class RasterMapGenerationRequest(OptionallyOwned, Dated, models.Model):
                 }
             )
 
-        if self.status not in [
-            "PENDING",
-            "PROCESSING",
-            "COMPLETED",
-            "FAILED",
-        ]:
+        if self.status not in VALID_MAP_GENERATION_STATUSES:
             raise ValidationError(
                 {
                     "status": "Unknown status",

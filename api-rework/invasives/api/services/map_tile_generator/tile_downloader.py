@@ -185,13 +185,13 @@ class TileDownloader:
             logging.warning(
                 f"map generation request {options.map_generation_request_id} not found"
             )
-            return
+            return None
 
         if mgr.status != "PENDING":
             logging.warning(
                 f"map generation request {options.map_generation_request_id} has unexpected status: {mgr.status}, not processing"
             )
-            return
+            return None
 
         logging.info(
             f"Processing map generation request {mgr.file_name}"

@@ -4,6 +4,7 @@ import threading
 from pprint import pformat
 
 from django.core.management.base import BaseCommand
+from django.db import transaction
 
 from api.models import MapGenerationRecord, RasterMapGenerationRequest
 from api.services.map_tile_generator.definitions import (
@@ -14,7 +15,7 @@ from api.services.map_tile_generator.tile_definitions import NTSGridTileDefiniti
 from api.services.map_tile_generator.tile_downloader import TileDownloader
 from api.services.map_tile_generator.tile_source import ESRIWorldImageryTileSource
 from invasivesbc.settings import SCRATCH_DIRECTORY, TILE_CACHE_MAXIMUM_SIZE
-from api.tasks import process_download_request
+from api.tasks import process_download_request, dispatch_map_generation_request
 from django.contrib.gis.geos import Polygon
 
 
@@ -120,7 +121,11 @@ class Command(BaseCommand):
 
             if options["async"]:
                 # ask celery to do it later
-                process_download_request.s(generation_options).apply_async()
+                transaction.on_commit(
+                    lambda: dispatch_map_generation_request(
+                        generation_options, priority=1  # low priority
+                    )
+                )
             else:
                 # call synchronously, now, in this thread
                 process_download_request.s(generation_options).apply()

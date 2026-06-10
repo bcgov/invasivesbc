@@ -12,13 +12,17 @@ app.config_from_object("django.conf:settings", namespace="CELERY")
 # enable task priority. lower priority executes earlier.
 
 app.conf.task_queues = [
-  Queue('tasks', Exchange('tasks'), routing_key='tasks',
-        queue_arguments={'x-max-priority': 10}),
+    Queue(
+        "tasks",
+        Exchange("tasks"),
+        routing_key="tasks",
+        queue_arguments={"x-max-priority": 10},
+    ),
 ]
 
 app.conf.task_queue_max_priority = 10
 app.conf.task_default_priority = 5
-app.conf.task_default_queue = 'tasks'
+app.conf.task_default_queue = "tasks"
 
 
 app.autodiscover_tasks()
@@ -32,10 +36,17 @@ app.conf.update(
 app.conf.update(
     {
         "beat_schedule": {
-            "scheduler_working_check": {
-                "task": "api.tasks.scheduler_working_check.scheduler_working_check",
-                "schedule": 600.0,
-            }
+            "expire_generated_maps": {
+                "task": "api.tasks.expire_generated_maps.expire_generated_maps",
+                "schedule": 60.0,
+            },
+            "flag_stale_requests": {
+                "task": "api.tasks.expire_generated_maps.flag_stale_requests",
+                "schedule": 45.0,
+                "options": {
+                    "priority": 9,
+                },
+            },
         }
     }
     # {"cache_cleanup": {"task": "api.tasks.cache_cleanup", "schedule": 3600.0}}

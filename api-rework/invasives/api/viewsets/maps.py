@@ -18,7 +18,8 @@ from api.serializers.map_generation import (
 from api.serializers.map_generation import (
     MapGenerationRequestProgressAndLinkSerializer,
 )
-from api.tasks import process_map_generation_request
+from api.services.map_tile_generator.definitions import ProtomapGenerationParameters
+from api.tasks import dispatch_map_generation_request
 
 
 class MapGenerationRequestViewSet(viewsets.ViewSet):
@@ -49,9 +50,9 @@ class MapGenerationRequestViewSet(viewsets.ViewSet):
 
         # queue the actual generation process via celery
         transaction.on_commit(
-            lambda: process_map_generation_request.apply_async(
-                args=[created.id], priority=6
-            )  # higher-than-default priority
+            lambda: dispatch_map_generation_request(
+                ProtomapGenerationParameters(map_generation_request_id=created.id)
+            )
         )
 
         return Response(serializer.data, status=HTTP_200_OK)

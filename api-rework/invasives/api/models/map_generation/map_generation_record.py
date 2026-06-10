@@ -3,6 +3,7 @@ import uuid
 from django.core.validators import MaxValueValidator
 from django.db import models
 from django.db.models import SET_NULL, Q
+from django.utils import timezone
 
 from api.models.mixins.dated import Dated
 from api.models.mixins.owned import OptionallyOwned
@@ -70,6 +71,14 @@ class MapGenerationRecord(OptionallyOwned, Dated, models.Model):
     @property
     def area_km2(self):
         return round(self.bounds.transform(6933, clone=True).area / 1000000.0, 2)
+
+    @property
+    def expired(self):
+        return timezone.now() >= self.expires
+
+    @property
+    def time_to_expiry(self):
+        return self.expires - timezone.now()
 
     class Meta:
         db_table = '"activity"."raster_map_generation_rcord"'

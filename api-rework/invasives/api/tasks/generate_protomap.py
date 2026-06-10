@@ -10,25 +10,30 @@ from api.services.map_tile_generator.definitions import (
     TileCacheStatistics,
 )
 from api.services.map_tile_generator.tile_definitions import NTSGridTileDefinition
-
 from api.services.map_tile_generator.tile_source import ESRIWorldImageryTileSource
 from invasivesbc import celery_app
 from invasivesbc.settings import SCRATCH_DIRECTORY, TILE_CACHE_MAXIMUM_SIZE
 
 
-@celery_app.task
-def process_map_generation_request(map_generation_request_id: int):
-    from api.services.map_tile_generator.tile_downloader import TileDownloader
+def dispatch_map_generation_request(
+    parameters: ProtomapGenerationParameters, priority=6
+) -> None:
+    # For use in post-commit hooks, mostly. queues it for execution and saves the celery task ID in the object
 
-    TileDownloader.generate_protomap_archive(
-        ProtomapGenerationParameters(
-            map_generation_request_id=map_generation_request_id
-        )
+    result = process_download_request.apply_async(
+        args=[parameters],
+        priority=priority,
     )
 
+    RasterMapGenerationRequest.objects.filter(
+        id=parameters.map_generation_request_id
+    ).update(
+        celery_task_id=result.id
+    )  # save the id of the celery task so we can look it up later
 
-@celery_app.task
-def process_download_request(options: ProtomapGenerationParameters):
+
+@celery_app.task(acks_late=True, bind=True, track_started=True)
+def process_download_request(self, options: ProtomapGenerationParameters):
     # wrap this call in a task so we can optionally call it asynchronously
     from api.services.map_tile_generator.tile_downloader import TileDownloader
 
