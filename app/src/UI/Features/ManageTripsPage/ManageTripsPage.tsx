@@ -8,33 +8,33 @@ import { ArrowBackIos, FiberNewSharp, TripOrigin, DownloadOutlined } from '@mui/
 
 const ManageTripsPage = () => {
   const atRoot = useMatch('/ManageTrips/') !== null;
-
+  const navState = atRoot ? 'expanded' : 'collapsed';
   return (
     <div id="manage-trips">
-      <div className={`navigation ${atRoot ? 'expanded' : 'collapsed'}`}>
-        {atRoot || (
-          <>
+      <div className={`nav-wrapper ${navState}`}>
+        <nav className={`navigation ${navState}`}>
+          {atRoot || (
             <NavLink to={'/ManageTrips'} className={'back'}>
               <ArrowBackIos />
               Back To Manage My Trips
             </NavLink>
-          </>
-        )}
+          )}
 
-        <>
-          <NavLink to={'/ManageTrips/new'}>
-            <FiberNewSharp />
-            Plan a New Trip
-          </NavLink>
-          <NavLink to={'/ManageTrips/trips'}>
-            <TripOrigin />
-            Manage My Trips
-          </NavLink>
-          <NavLink to={'/ManageTrips/maps'}>
-            <DownloadOutlined />
-            Offline Maps
-          </NavLink>
-        </>
+          <>
+            <NavLink to={'/ManageTrips/new'}>
+              <FiberNewSharp />
+              Plan a New Trip
+            </NavLink>
+            <NavLink to={'/ManageTrips/trips'}>
+              <TripOrigin />
+              Manage My Trips
+            </NavLink>
+            <NavLink to={'/ManageTrips/maps'}>
+              <DownloadOutlined />
+              Offline Maps
+            </NavLink>
+          </>
+        </nav>
       </div>
 
       <div className={'content'}>
