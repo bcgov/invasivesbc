@@ -92,7 +92,8 @@ public class OfflineMaps: CAPPlugin, CAPBridgedPlugin {
     }
 
     let fullPath = URL.cachesDirectory.appendingPathComponent(fileType)
-      .appendingPathComponent(name)
+      .appendingPathComponent(name + ".pmtiles")
+      
 
     do {
       try FileManager.default.removeItem(at: fullPath)

@@ -128,7 +128,21 @@ export class OfflineMapsPluginWebImplementation extends WebPlugin implements Off
     await this.store.setItem('rasters', rasters);
     await this.store.setItem('vectors', vectors);
 
-    callback({ status: 'OK' });
+    callback({ status: 'downloading', percent: 10.5 });
+
+    // arbitrary delays to simulate a real device
+
+    await (async () => {
+      return new Promise((resolve) => setTimeout(resolve, 1000));
+    })();
+
+    callback({ status: 'downloading', percent: 84.1 });
+
+    await (async () => {
+      return new Promise((resolve) => setTimeout(resolve, 1000));
+    })();
+
+    callback({ status: 'success' });
 
     return 'n/a';
   }

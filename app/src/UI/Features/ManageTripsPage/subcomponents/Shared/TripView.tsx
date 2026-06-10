@@ -15,6 +15,7 @@ import {
 } from 'UI/Features/ManageTripsPage/iconography';
 import Prompt from 'state/actions/prompts/Prompt';
 import './TripView.css';
+import { NavLink } from 'react-router';
 
 type PropTypes = {
   trip: IPlanMyTripRepositoryMetadata;
@@ -78,11 +79,17 @@ const TripView = ({ trip }: PropTypes) => {
           </li>
           <li className="trip-maps trip-option">
             <div className="cache-status">
-              <OfflineMapIcon /> <p>Offline Maps:&nbsp;</p>
-              <span className="emphasis">SEE OFFLINE MAPS PAGE</span>
+              <OfflineMapIcon />
+              <p>
+                Offline Maps:&nbsp;
+                <span className="emphasis">{trip.cacheStatuses.mapTiles}</span>
+              </p>
             </div>
             <div className="trip-module">
-              <DownloadOutlined />
+              <NavLink to={'/ManageTrips/maps'}>
+                SEE OFFLINE MAPS PAGE
+                <DownloadOutlined />
+              </NavLink>
             </div>
           </li>
           <li className="delete-trip trip-option">

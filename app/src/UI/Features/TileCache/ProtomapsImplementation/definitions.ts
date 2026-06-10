@@ -49,6 +49,7 @@ type MapGenerationRequestMonitoringResponse = MapGenerationExecutionResponse & {
   status: 'PENDING' | 'PROCESSING' | 'FAILED' | 'COMPLETED';
   tile_definition_source_name: string;
   total_tile_count: number;
+  trip_name: string;
   intermediate_results?: {
     tiles_downloaded: number;
     tiles_remaining: number;
