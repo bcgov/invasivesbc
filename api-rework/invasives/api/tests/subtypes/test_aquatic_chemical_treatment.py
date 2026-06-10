@@ -1,9 +1,17 @@
 from .base import BaseActivitySubtypeTest
+from api.tests.mock_frontend_submissions import (
+    MINIMAL_CHEM_TREATMENT_AQUATIC,
+    UPDATED_CHEM_TREATMENT_AQUATIC,
+)
 
 
 class AquaticChemicalTreatmentTest(BaseActivitySubtypeTest):
 
     fixtures = [
+        "test/common/test_chemical_treatments.json",
+        "test/common/test_employer",
+        "test/common/test_jurisdictions",
+        "test/common/test_funding_agency",
         "test/common/test_invasive_plant_codes",
         "test/common/test_wind",
         "test/subtypes/treatments/test_chemical_treatment_codes",
@@ -39,3 +47,11 @@ class AquaticChemicalTreatmentTest(BaseActivitySubtypeTest):
         for well in wells:
             self.assertIsNotNone(well["well_tag"])
             self.assertIsNotNone(well["distance"])
+
+    def test_submit_record(self):
+        """Expect Submitting a record returns 200"""
+        self.submit_record(MINIMAL_CHEM_TREATMENT_AQUATIC)
+
+    def test_update_record(self):
+        """Expect Submitting an updated record returns 200"""
+        self.submit_record(UPDATED_CHEM_TREATMENT_AQUATIC)

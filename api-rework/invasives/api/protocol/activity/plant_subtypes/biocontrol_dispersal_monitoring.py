@@ -28,7 +28,7 @@ class Entry(CleanSchema):
     invasive_plant: PlantsWithBiocontrolType
     monitoring_type: CollectionType
     plant_count: Optional[int] = Field(None, gt=0)
-    linear_segment: Optional[bool] = Field(None)
+    linear_segment: Optional[YesNoUnknown] = Field(None)
     monitoring_method: BioAgentMonitoringMethodCodeType
     count_duration_minutes: Optional[int] = Field(None, gt=0)
     location_agent_found: List[AgentLocationFoundTerrainCodeType] = Field()
@@ -36,10 +36,10 @@ class Entry(CleanSchema):
     sign_of_biocontrol_presence: List[BiocontrolPresenceCodeType] = Field()
     start_time: NaiveDatetime
     stop_time: NaiveDatetime
-    suitable_for_collection: bool
+    suitable_for_collection: Optional[YesNoUnknown] = None
 
-    actual_biological_agents: List[BiocontrolCountExtended]
-    estimated_biological_agents: List[BiocontrolCountExtended]
+    actual_biological_agents: List[BiocontrolCountExtended] = []
+    estimated_biological_agents: List[BiocontrolCountExtended] = []
 
     @model_validator(mode="after")
     def validate_collection_type_followup(self) -> "Entry":
@@ -72,7 +72,9 @@ class Entry(CleanSchema):
     @model_validator(mode="after")
     def validate_min_number_biological_agent_entries(self) -> "Entry":
         if (
-            len(self.actual_biological_agents) + len(self.estimated_biological_agents)
+            self.biocontrol_present
+            and len(self.actual_biological_agents)
+            + len(self.estimated_biological_agents)
             == 0
         ):
             raise ValueError(
@@ -112,7 +114,7 @@ class Entry(CleanSchema):
 
 
 class SubtypeData(CleanSchema):
-    entries: List[Entry]
+    entries: List[Entry] = Field(..., min_length=1)
     microsite_conditions: MicrositeCondition
     weather_conditions: WeatherConditions
     target_plant_phenology: Optional[TargetPlantPhenology] = None

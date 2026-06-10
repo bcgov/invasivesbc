@@ -116,15 +116,26 @@ class ChemicalContextApplicationRate(
     tank_mix: Literal[False]
 
 
-def resolve_chemical_type(v: Any) -> str:
-    """Helper for Treatment Context Discriminator"""
-    calc_type = v.get("calculation_type")
-    if v.get("tank_mix") is True and calc_type == Calculations.APPLICATION_RATE.value:
+def resolve_chemical_type(v: Any) -> str | Enum:
+    """Helper for Treatment Context Discriminator that handles both dicts and objects"""
+    # Normalize input date (Pydantic Object vs Dict)
+    if isinstance(v, dict):
+        calc_type = v.get("calculation_type")
+        tank_mix = v.get("tank_mix")
+    else:
+        # It's a Pydantic Object
+        calc_type = getattr(v, "calculation_type", None)
+        tank_mix = getattr(v, "tank_mix", None)
+
+    # Safely extract discriminator value.
+    calc_value = calc_type.value if isinstance(calc_type, Enum) else calc_type
+
+    if tank_mix is True and calc_value == Calculations.APPLICATION_RATE.value:
         return "Tank Mix"
 
-    if calc_type == Calculations.DILUTION.value:
+    if calc_value == Calculations.DILUTION.value:
         return Calculations.DILUTION
-    elif calc_type == Calculations.APPLICATION_RATE.value:
+    elif calc_value == Calculations.APPLICATION_RATE.value:
         return Calculations.APPLICATION_RATE
 
     raise ValueError("Chemical treatment values created an invalid scenario.")

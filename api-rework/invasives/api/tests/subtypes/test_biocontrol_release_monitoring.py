@@ -1,9 +1,17 @@
 from .base import BaseActivitySubtypeTest
+from api.tests.mock_frontend_submissions import (
+    MINIMAL_BIOCONTROL_DISPERSAL_MONITORING,
+    UPDATED_BIOCONTROL_DISPERSAL_MONITORING,
+)
 
 
 class BiocontrolReleaseTest(BaseActivitySubtypeTest):
 
     fixtures = [
+        "test/common/test_chemical_treatments.json",
+        "test/common/test_employer",
+        "test/common/test_jurisdictions",
+        "test/common/test_funding_agency",
         "test/common/test_invasive_plant_codes",
         "test/common/test_wind",
         "test/subtypes/monitoring/test_biocontrol_release_monitoring_codes",
@@ -84,3 +92,11 @@ class BiocontrolReleaseTest(BaseActivitySubtypeTest):
         self.assertEqual(sd["spread_results"]["plant_attack"], 20)
         self.assertEqual(sd["spread_results"]["max_spread_distance_m"], 300)
         self.assertEqual(sd["spread_results"]["max_spread_aspect_deg"], 320)
+
+    def test_submit_record(self):
+        """Expect Submitting a record returns 200"""
+        self.submit_record(MINIMAL_BIOCONTROL_DISPERSAL_MONITORING)
+
+    def test_update_record(self):
+        """Expect Submitting an updated record returns 200"""
+        self.submit_record(UPDATED_BIOCONTROL_DISPERSAL_MONITORING)

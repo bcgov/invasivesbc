@@ -16,11 +16,29 @@ interface PropTypes extends InputHTMLAttributes<HTMLInputElement> {
   required?: boolean;
   tooltip?: string;
   width?: Width;
+  acceptFloats?: boolean;
+  step?: number | 'any';
 }
 
 // Use forwardRef so Hook Form can manage the input focus
 export const NumberInput = forwardRef<HTMLInputElement, PropTypes>(
-  ({ error, label, advisoryText, readOnly = false, required = false, tooltip, width, ...props }, ref) => {
+  (
+    {
+      acceptFloats = false,
+      step = 'any',
+      error,
+      label,
+      advisoryText,
+      readOnly = false,
+      required = false,
+      tooltip,
+      width,
+      ...props
+    },
+    ref
+  ) => {
+    // Allow any float if acceptFloats is true, or set step size if provided. Else default to integers
+    const stepVal = typeof step === 'number' || acceptFloats ? step : 1;
     return (
       <div className={`form-number-input ${getInputWidth(width)}`}>
         {label && (
@@ -37,6 +55,7 @@ export const NumberInput = forwardRef<HTMLInputElement, PropTypes>(
           aria-invalid={!!error}
           placeholder={props?.placeholder ?? label}
           readOnly={readOnly}
+          step={stepVal}
           ref={ref}
           {...props}
         />

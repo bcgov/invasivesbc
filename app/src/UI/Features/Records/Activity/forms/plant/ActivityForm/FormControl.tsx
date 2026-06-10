@@ -46,7 +46,7 @@ const FormControl = () => {
         callback: (confirmation: boolean) => {
           if (confirmation) {
             dispatch(FormActions.clearFormState());
-            reset(getDefaultFormState(subtype));
+            reset(getDefaultFormState(subtype, created_by));
           }
         }
       })

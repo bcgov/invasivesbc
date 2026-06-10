@@ -6,7 +6,7 @@ interface BiocontrolDispersalMonitoringSchema extends BaseForm {
   subtype_data: {
     entries: Array<{
       biocontrol_agent: string;
-      biocontrol_present: boolean;
+      biocontrol_present?: boolean;
       invasive_plant: string;
       monitoring_type: string;
       plant_count?: number;
@@ -45,15 +45,19 @@ interface BiocontrolDispersalMonitoringSchema extends BaseForm {
       }>;
     };
     // Microsites
-    mesoslope_position: string;
-    site_surface_shape: string;
+    microsite_conditions: {
+      mesoslope_position: string;
+      site_surface_shape: string;
+    };
     // Weather
-    comments: string;
-    cloud_cover: string;
-    precipitation: string;
-    temperature: number;
-    wind_direction: string;
-    wind_speed_kmh: number;
+    weather_conditions: {
+      comments: string;
+      cloud_cover: string;
+      precipitation: string;
+      temperature: number;
+      wind_direction: string;
+      wind_speed_kmh: number;
+    };
   };
 }
 

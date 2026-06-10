@@ -35,7 +35,7 @@ class Entry(CleanSchema):
     sign_of_biocontrol_presence: List[BiocontrolPresenceCodeType]
     start_time: NaiveDatetime
     stop_time: NaiveDatetime
-    suitable_for_collection: YesNoUnknown
+    suitable_for_collection: Optional[YesNoUnknown] = None
     number_of_sweeps: Optional[int] = None
 
     actual_biological_agents: List[BiocontrolCountExtended]
@@ -80,6 +80,19 @@ class Entry(CleanSchema):
             raise ValueError("Start time cannot occur after stop time.")
         return self
 
+    @model_validator(mode="after")
+    def validate_min_number_biological_agent_entries(self) -> "Entry":
+        if (
+            self.biocontrol_present
+            and len(self.actual_biological_agents)
+            + len(self.estimated_biological_agents)
+            == 0
+        ):
+            raise ValueError(
+                'Record must contain at least one "Actual" or "Estimated" biological agents entry'
+            )
+        return self
+
     @field_validator("start_time")
     @classmethod
     def validate_no_future_start_time(cls, v):
@@ -91,7 +104,7 @@ class Entry(CleanSchema):
         return no_future_date(v)
 
 
-class SubtypeData(SpreadResultsMixin):
+class SubtypeData(CleanSchema):
     entries: List[Entry]
     microsite_conditions: MicrositeCondition
     weather_conditions: WeatherConditions

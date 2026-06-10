@@ -6,7 +6,7 @@ interface BiocontrolReleaseMonitoringSchema extends BaseForm {
   subtype_data: {
     entries: Array<{
       biocontrol_agent: string;
-      biocontrol_present: boolean;
+      biocontrol_present?: boolean;
       invasive_plant: string;
       monitoring_type: string;
       plant_count?: number;
@@ -42,7 +42,7 @@ interface BiocontrolReleaseMonitoringSchema extends BaseForm {
       target_plant_heights: Array<{ height_cm: number }>;
     };
     // Microsite
-    microsite_condition: {
+    microsite_conditions: {
       mesoslope_position: string;
       site_surface_shape: string;
     };
@@ -54,7 +54,7 @@ interface BiocontrolReleaseMonitoringSchema extends BaseForm {
       max_spread_aspect_deg?: number;
     };
     // Weather
-    weather_condition: {
+    weather_conditions: {
       comments: string;
       cloud_cover: string;
       precipitation: string;

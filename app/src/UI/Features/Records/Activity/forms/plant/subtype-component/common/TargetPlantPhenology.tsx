@@ -41,6 +41,7 @@ const TargetPlantPhenology = () => {
     if (isPhenologyDetails) {
       // If closing, clear the values
       setValue(basePath, undefined, { shouldDirty: true });
+      clearErrors(getPath('root'));
     } else {
       // Set the values to default state
       const defaultState = (getDefaultFormState(ActivitySubtypes.Biocontrol_Release) as BiocontrolReleaseSchema)
@@ -70,7 +71,7 @@ const TargetPlantPhenology = () => {
             }
             renderRow={(index) => (
               <NumberInput
-                label="Height"
+                label="Height (cm)"
                 required
                 error={get(errors, getPath(`target_plant_heights.${index}.height_cm`))}
                 {...register(getPath(`target_plant_heights.${index}.height_cm`), {

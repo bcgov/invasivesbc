@@ -117,6 +117,7 @@ const HerbicideEntry = ({ idx, type }: PropTypes) => {
             label={`Product Application Rate (${units}/ha)`}
             tooltip={tooltips.plant.chemical.calculation_fields.application_rate}
             required
+            acceptFloats
             error={get(errors, getPath('application_rate'))}
             {...register(getPath('application_rate'), {
               required: true,

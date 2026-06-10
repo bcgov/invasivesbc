@@ -1,9 +1,17 @@
 from .base import BaseActivitySubtypeTest
+from api.tests.mock_frontend_submissions import (
+    MINIMAL_MECH_TREATMENT_TERRESTRIAL,
+    UPDATED_MECH_TREATMENT_TERRESTRIAL,
+)
 
 
 class TerrestrialMechanicalTreatmentTest(BaseActivitySubtypeTest):
 
     fixtures = [
+        "test/common/test_employer",
+        "test/common/test_jurisdictions",
+        "test/common/test_funding_agency",
+        "test/common/test_invasive_plant_codes",
         "test/common/test_invasive_plant_codes",
         "test/subtypes/treatments/test_mechanical_treatment_codes",
         "test/subtypes/treatments/test_terrestrial_mechanical_treatment",
@@ -48,3 +56,11 @@ class TerrestrialMechanicalTreatmentTest(BaseActivitySubtypeTest):
             },
         ]
         self.assertCountEqual(mt, expected)
+
+    def test_submit_record(self):
+        """Expect Submitting a record returns 200"""
+        self.submit_record(MINIMAL_MECH_TREATMENT_TERRESTRIAL)
+
+    def test_update_record(self):
+        """Expect Submitting an updated record returns 200"""
+        self.submit_record(UPDATED_MECH_TREATMENT_TERRESTRIAL)

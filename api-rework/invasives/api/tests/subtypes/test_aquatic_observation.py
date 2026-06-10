@@ -1,8 +1,15 @@
 from .base import BaseActivitySubtypeTest
+from api.tests.mock_frontend_submissions import (
+    MINIMAL_AQUATIC_OBSERVATION,
+    UPDATED_AQUATIC_OBSERVATION,
+)
 
 
 class AquaticObservationTest(BaseActivitySubtypeTest):
     fixtures = [
+        "test/common/test_employer",
+        "test/common/test_jurisdictions",
+        "test/common/test_funding_agency",
         "test/common/test_invasive_plant_codes",
         "test/common/test_wind",
         "test/common/test_waterlevel_management",
@@ -90,3 +97,11 @@ class AquaticObservationTest(BaseActivitySubtypeTest):
         ]
 
         self.assertCountEqual(obs_detail, sd["entries"])
+
+    def test_submit_record(self):
+        """Expect Submitting a record returns 200"""
+        self.submit_record(MINIMAL_AQUATIC_OBSERVATION)
+
+    def test_update_record(self):
+        """Expect Submitting an updated record returns 200"""
+        self.submit_record(UPDATED_AQUATIC_OBSERVATION)
