@@ -1,14 +1,12 @@
-div.protomapsList {
+div.protomaps-list {
   min-height: 8rem;
   display: flex;
   flex-direction: column;
 
-
   .status {
     display: grid;
     text-align: end;
-    grid-template:
-      "icon status" auto "progress progress" auto / auto 1fr;
+    grid-template: 'icon status' auto 'progress progress' auto / auto 1fr;
 
     .progress {
       grid-area: progress;
@@ -17,8 +15,21 @@ div.protomapsList {
     }
   }
 
+  .table-wrapper {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    overflow-x: auto;
+    width: 100%;
+    text-size-adjust: 100%; /* Disables iOS Autoscaling text size */
+    margin: 8px 0;
+  }
 
   table {
+    white-space: nowrap;
+    width: 100%;
+    border-collapse: collapse;
+
     thead {
       border-bottom: 2px solid black;
     }
@@ -32,14 +43,20 @@ div.protomapsList {
       }
     }
 
-    td:not(:last-child), th:not(:last-child) {
+    td:not(:last-child),
+    th:not(:last-child) {
       border-right: 1px solid var(--bc-blue);
     }
 
-    width: 100%;
-    border-collapse: collapse;
-
     tbody {
+      tr {
+        height: 40px;
+
+        td {
+          padding: 5px 8px;
+        }
+      }
+
       tr:nth-child(even) {
         background-color: var(--even-list-item-bg-color);
       }
