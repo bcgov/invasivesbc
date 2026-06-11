@@ -66,6 +66,12 @@ class Geometry(models.Model):
         plant_codes = self.get_invasive_plant_codes()
         self.computed_map_symbol = ", ".join(plant_codes)
 
+    def save(self, *args, **kwargs):
+        vt_geom = self.shape.clone()
+        vt_geom.transform(3857)
+        self.computed_tile_shape = vt_geom
+        super().save(*args, **kwargs)
+
     def get_invasive_plant_codes(self):
         from api.utils.filtered_activity_queryset import ALL_PLANT_PATHS
 
