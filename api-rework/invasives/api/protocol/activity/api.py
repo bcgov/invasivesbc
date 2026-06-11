@@ -4,11 +4,13 @@ from ninja import Router, Body
 from ninja.errors import HttpError
 from datetime import datetime
 import uuid
-from api.models.activity import Activity
+from api.models.activity import Activity, ActivitySubtypes
+from api.serializers.activity import ActivitySerializer
 from api.ninja_authentication import NinjaKeycloakAuthentication
 from api.models.enums import FormStatus
-from api.models.activity import UploadedImage, ActivityDataRecord, Activity
+from api.models.activity import Activity
 from django.db import transaction
+from api.serializers.activity_write import ActivityWriteSerializer
 from api.protocol.activity.activity import (
     ActivityMinimal,
     ActivityOut,
@@ -18,6 +20,7 @@ from api.protocol.activity.activity import (
 from api.protocol.activity.plant_subtypes.union_definition import PlantActivitySchema
 
 router = Router(auth=NinjaKeycloakAuthentication())
+# router = Router()
 
 
 # Helper
@@ -61,30 +64,31 @@ def activity_search(request, search: ActivitySearchParameters):
 
 @router.post("/submit")
 def submit_record(request, data: PlantActivitySchema = Body(...)):
-    data = data.model_dump()
-    data["type"] = "Submitted"
-    if not Activity.objects.filter(id=data["id"]).exists():
-        val = mock_record_id()
-        data["id"] = val["id"]
-        data["short_id"] = val["short_id"]
-        return data  # Creation not implemented
-
     with transaction.atomic():
-        rec = Activity.objects.filter(id=data["id"]).first()
-        if not rec:
-            return data
-        for image in data["media"]:
-            adr = ActivityDataRecord.objects.create(activity=rec)
-            instance, created = UploadedImage.objects.get_or_create(
-                activity_data_record=adr,
-                file_name=image["file_name"],
-                description=image["description"],
-                encoded_file=image["encoded_file"],
-            )
-            if not created:
-                adr.delete()
+        payload = data.model_dump()
+        payload["form_status"] = FormStatus.Submitted.value
 
-    return data
+        # Determine if create or update
+        try:
+            instance = Activity.objects.get(id=payload["id"])
+            is_update = True
+        except Activity.DoesNotExist:
+            instance = None
+            is_update = False
+
+        if not is_update:
+            payload["type"] = ActivitySubtypes[payload["subtype"]].typeOfActivity
+
+        serializer = ActivityWriteSerializer(
+            instance=instance,
+            data=payload,
+            partial=is_update,
+        )
+
+        serializer.is_valid(raise_exception=True)
+        activity = serializer.save()
+
+        return ActivitySerializer(activity).data
 
 
 @router.post("/draft")
