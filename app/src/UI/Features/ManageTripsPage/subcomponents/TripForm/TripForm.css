@@ -51,6 +51,7 @@
   .input-label {
     align-items: center;
     display: flex;
+    padding: 5px;
     justify-content: flex-start;
 
     & > :first-child {
