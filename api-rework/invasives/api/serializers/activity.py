@@ -11,6 +11,7 @@ from api.models.activity import (
     Participant,
     ProjectCode,
 )
+from django.contrib.gis.geos import GEOSGeometry
 from api.models.activity.activity import Activity
 from api.models.activity import UploadedImage
 from api.models.mixins.geometry import Geometry
@@ -216,8 +217,11 @@ class ActivitySerializer(serializers.ModelSerializer):
 
         return feature_object
 
-    def get_centroid(self, obj: Geometry):
-        return json.loads(obj.centroid)
+    def get_centroid(self, obj):
+        if not obj.shape:
+            return None
+        centroid = obj.shape.centroid
+        return json.loads(centroid.json)
 
     def get_subtype_data(self, obj: Activity):
         """Maps the Activity to the proper Subtype Serializer, populating the form specific information"""
@@ -242,3 +246,78 @@ class ActivitySerializer(serializers.ModelSerializer):
             return None
 
         return serializer_cls(obj, context=self.context).data
+
+
+class ActivityWriteSerializer(serializers.ModelSerializer):
+    linked_activities = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Activity.objects.all(), required=False, allow_empty=True
+    )
+
+    shape = serializers.JSONField(required=False)
+    id = serializers.UUIDField(required=False)
+
+    class Meta:
+        model = Activity
+        fields = [
+            "id",
+            "short_id",
+            "type",
+            "subtype",
+            "date",
+            "created_by",
+            "form_status",
+            "access_description",
+            "comment",
+            "linked_activities",
+            "migration_remarks",
+            "shape",
+            "utm_easting",
+            "utm_northing",
+            "utm_zone",
+            "latitude",
+            "longitude",
+            "location_description",
+            "area_m",
+            "batch_id",
+            "batch_row_id",
+            "shape_radius",
+            "comment",
+        ]
+        extra_kwargs = {
+            "short_id": {"read_only": True},
+        }
+
+    def validate_shape(self, value):
+        if value is None:
+            return None
+        geometry = value.get("geometry", value)
+        return GEOSGeometry(json.dumps(geometry))
+
+    def to_internal_value(self, data):
+        linked = data.get("linked_activities")
+
+        if linked and isinstance(linked, list):
+            cleaned = []
+            for item in linked:
+                if isinstance(item, dict) and "full" in item:
+                    cleaned.append(item["full"])
+                else:
+                    cleaned.append(item)
+            data["linked_activities"] = cleaned
+
+        return super().to_internal_value(data)
+
+    def create(self, validated_data):
+        linked = validated_data.pop("linked_activities", [])
+        instance = Activity.objects.create(**validated_data)
+        instance.linked_activities.set(linked)
+        return instance
+
+    def update(self, instance, validated_data):
+        linked = validated_data.pop("linked_activities", None)
+        for field, value in validated_data.items():
+            setattr(instance, field, value)
+        instance.save()
+        if linked is not None:
+            instance.linked_activities.set(linked)
+        return instance
