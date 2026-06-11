@@ -37,7 +37,7 @@ class ActivitySubtypes(ActivitySubtype, Enum):
         SubtypePrimary.Biocontrol,
         None,
         None,
-        "BCC",
+        "PBC",
         ["Activity_Biocontrol_Collection"],
         "Biocontrol Collection",
     )
@@ -46,7 +46,7 @@ class ActivitySubtypes(ActivitySubtype, Enum):
         SubtypePrimary.Biocontrol,
         None,
         None,
-        "BCR",
+        "PBR",
         ["Activity_Biocontrol_Release"],
         "Biocontrol Release",
     )
@@ -54,7 +54,7 @@ class ActivitySubtypes(ActivitySubtype, Enum):
         SubtypePrimary.Biocontrol,
         None,
         Species.TerrestrialPlant,
-        "BCMD",
+        "PBD",
         ["Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant"],
         "Biocontrol Dispersal Monitoring",
     )
@@ -62,7 +62,7 @@ class ActivitySubtypes(ActivitySubtype, Enum):
         SubtypePrimary.Biocontrol,
         None,
         Species.TerrestrialPlant,
-        "BCMR",
+        "PBM",
         ["Activity_Monitoring_BiocontrolRelease_TerrestrialPlant"],
         "Biocontrol Release Monitoring",
     )
@@ -70,7 +70,7 @@ class ActivitySubtypes(ActivitySubtype, Enum):
         SubtypePrimary.Monitoring,
         TreatmentMethod.Chemical,
         Species.TerrestrialPlant | Species.AquaticPlant,
-        "MCP",
+        "PMC",
         ["Activity_Monitoring_ChemicalTerrestrialAquaticPlant"],
         "Chemical Treatment Monitoring",
     )
@@ -78,7 +78,7 @@ class ActivitySubtypes(ActivitySubtype, Enum):
         SubtypePrimary.Monitoring,
         TreatmentMethod.Mechanical,
         Species.TerrestrialPlant | Species.AquaticPlant,
-        "MMP",
+        "PMM",
         ["Activity_Monitoring_MechanicalTerrestrialAquaticPlant"],
         "Mechanical Treatment Monitoring",
     )
@@ -94,7 +94,7 @@ class ActivitySubtypes(ActivitySubtype, Enum):
         SubtypePrimary.Observation,
         None,
         Species.AquaticPlant,
-        "OBSA",
+        "PAO",
         ["Activity_Observation_PlantAquatic"],
         "Aquatic Invasive Plant Observation",
     )
@@ -103,7 +103,7 @@ class ActivitySubtypes(ActivitySubtype, Enum):
         SubtypePrimary.Observation,
         None,
         Species.TerrestrialPlant,
-        "OBST",
+        "PTO",
         ["Activity_Observation_PlantTerrestrial"],
         "Terrestrial Invasive Plant Observation",
     )
@@ -121,7 +121,7 @@ class ActivitySubtypes(ActivitySubtype, Enum):
         SubtypePrimary.Treatment,
         TreatmentMethod.Chemical,
         Species.AquaticPlant,
-        "TCPA",
+        "PAC",
         ["Activity_Treatment_ChemicalPlantAquatic"],
         "Aquatic Plant Treatment - Chemical",
     )
@@ -130,7 +130,7 @@ class ActivitySubtypes(ActivitySubtype, Enum):
         SubtypePrimary.Treatment,
         TreatmentMethod.Chemical,
         Species.TerrestrialPlant,
-        "TCPT",
+        "PTC",
         ["Activity_Treatment_ChemicalPlantTerrestrial"],
         "Terrestrial Plant Treatment - Chemical",
     )
@@ -138,7 +138,7 @@ class ActivitySubtypes(ActivitySubtype, Enum):
         SubtypePrimary.Treatment,
         TreatmentMethod.Mechanical,
         Species.AquaticPlant,
-        "TMPA",
+        "PAM",
         ["Activity_Treatment_MechanicalPlantAquatic"],
         "Aquatic Plant Treatment - Mechanical",
     )
@@ -146,7 +146,7 @@ class ActivitySubtypes(ActivitySubtype, Enum):
         SubtypePrimary.Treatment,
         TreatmentMethod.Mechanical,
         Species.AquaticPlant,
-        "TMPT",
+        "PTM",
         [
             "Activity_Treatment_MechanicalPlantTerrestrial",
             "Treatment - Mechanical - Aquatic Plant",
