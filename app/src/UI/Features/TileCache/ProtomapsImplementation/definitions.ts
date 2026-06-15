@@ -17,6 +17,7 @@ type MapRecord = {
 type MapRecordComplete = MapRecord & {};
 
 type MapGenerationEstimateRequest = {
+  trip_name?: string;
   bounds: geojson.Polygon | undefined;
   minimum_zoom: number;
   maximum_zoom: number;
@@ -36,6 +37,7 @@ type MapGenerationEstimateResponse = MapGenerationCommonResponse & {
   estimated_download_time_best_case: number;
   estimated_download_time_worst_case: number;
   is_size_valid: boolean;
+  is_trip_name_valid: boolean;
 };
 
 type MapGenerationExecutionResponse = MapGenerationCommonResponse & {
@@ -43,7 +45,9 @@ type MapGenerationExecutionResponse = MapGenerationCommonResponse & {
   status: string;
 };
 
-type MapGenerationRequest = MapGenerationEstimateRequest & {};
+type MapGenerationRequest = MapGenerationEstimateRequest & {
+  trip_name: string;
+};
 
 type MapGenerationRequestMonitoringResponse = MapGenerationExecutionResponse & {
   status: 'PENDING' | 'PROCESSING' | 'FAILED' | 'COMPLETED';

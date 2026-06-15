@@ -6,6 +6,8 @@ import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
 import { IPlanMyTripCacheStatus, IPlanMyTripCacheStatuses, PlanMyTripCacheService } from 'utils/plan-my-trip-cache';
 import { PlanMyTripCacheServiceFactory } from 'utils/plan-my-trip-cache/context';
 import OfflineProtomaps from 'state/actions/cache/OfflineProtomaps';
+import Alerts from 'state/actions/alerts/Alerts';
+import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 
 function* createQueueWorker(channel) {
   while (true) {
@@ -59,6 +61,15 @@ function* handleTripSubcacheFailure(action) {
     yield handleUpdateSubcacheStatus(action, IPlanMyTripCacheStatus.NO_DATA);
   } else {
     yield handleUpdateSubcacheStatus(action, IPlanMyTripCacheStatus.FAILED);
+  }
+  if (OfflineProtomaps.mapGeneration.rejected.match(action)) {
+    yield put(
+      Alerts.create({
+        severity: AlertSeverity.Error,
+        subject: AlertSubjects.PlanMyTrip,
+        content: 'Map Generation Request failed (server was unable to process request)'
+      })
+    );
   }
 }
 function* handleTripSubcacheDeleteSuccess(action) {

@@ -13,13 +13,14 @@ import './ProtomapsImplementation.css';
 
 type PropTypes = {
   drawnShape: GeoJSON.Polygon;
+  tripName: string;
   zoom: number;
   setZoom: (newVal: number) => void;
   valid: boolean;
   setValid: (valid: boolean) => void;
 };
 
-const MapEstimator = ({ drawnShape, setZoom, zoom, valid, setValid }: PropTypes) => {
+const MapEstimator = ({ drawnShape, tripName, setZoom, zoom, valid, setValid }: PropTypes) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -48,7 +49,7 @@ const MapEstimator = ({ drawnShape, setZoom, zoom, valid, setValid }: PropTypes)
                 const serverResult: MapRecord[] = await res.json();
                 const newEstimate = serverResult as unknown as MapGenerationEstimateResponse;
                 setEstimateResponse(newEstimate);
-                setValid(newEstimate.is_size_valid);
+                setValid(newEstimate.is_size_valid && newEstimate.is_trip_name_valid);
               } else {
                 setEstimateResponse(undefined);
                 setError(true);
@@ -75,6 +76,7 @@ const MapEstimator = ({ drawnShape, setZoom, zoom, valid, setValid }: PropTypes)
   const [estimateResponse, setEstimateResponse] = useState<MapGenerationEstimateResponse | undefined>(undefined);
 
   const [estimateRequest, setEstimateRequest] = useState<MapGenerationEstimateRequest>({
+    trip_name: tripName,
     minimum_zoom: 0,
     maximum_zoom: 10,
     bounds: undefined
@@ -83,10 +85,11 @@ const MapEstimator = ({ drawnShape, setZoom, zoom, valid, setValid }: PropTypes)
   useEffect(() => {
     setEstimateRequest({
       ...estimateRequest,
+      trip_name: tripName,
       maximum_zoom: zoom,
       bounds: bboxPolygon(bbox(drawnShape)).geometry
     });
-  }, [drawnShape, zoom]);
+  }, [drawnShape, zoom, tripName]);
 
   useEffect(() => {
     debouncedEstimate(estimateRequest);
@@ -119,7 +122,14 @@ const MapEstimator = ({ drawnShape, setZoom, zoom, valid, setValid }: PropTypes)
         }}
       />
       <div className={`${loading ? 'loading' : ''} estimateDetails`}>
-        <>{!valid && <p className={'red'}>Too many tiles. Please reduce the drawn area or the zoom level.</p>}</>
+        <>
+          {!valid && (
+            <p className={'red'}>
+              Invalid request. Please reduce the drawn area or the zoom level and verify the trip name has not been
+              previously-used.
+            </p>
+          )}
+        </>
         <>{error && <p className={'red'}>An error occurred: {errorMessage}</p>}</>
         <>{valid && estimateResponse && <MapEstimateRenderer estimate={estimateResponse} />}</>
       </div>
