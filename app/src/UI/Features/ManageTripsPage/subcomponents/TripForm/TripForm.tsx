@@ -84,7 +84,9 @@ const TripForm = () => {
     }
     dispatch(PlanMyTrip.create(request));
     setTripName('');
-    navigate('/ManageTrips/maps');
+    if (userSelectedCaches.mapTiles) {
+      navigate('/ManageTrips/maps');
+    }
   };
 
   const dispatch = useDispatch();
@@ -221,6 +223,7 @@ const TripForm = () => {
             {planMyTripRegion ? (
               <>
                 <MapEstimator
+                  tripName={tripName}
                   drawnShape={planMyTripRegion as GeoJSON.Polygon}
                   zoom={mapZoomLevel}
                   setZoom={setMapZoomLevel}

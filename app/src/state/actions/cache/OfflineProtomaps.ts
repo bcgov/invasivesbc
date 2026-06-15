@@ -153,6 +153,12 @@ class OfflineProtomaps {
     const installedMapsList = await OfflineMaps.listDownloads({});
     const state: RootState = getState() as RootState;
 
+    const result = {
+      installed: []
+    } as {
+      installed: string[];
+    };
+
     const serverMapList = await (async () => {
       const response = await fetch(
         `${state.Configuration.current.runtime.NORMALIZED_API_BASE}/maps/requests/offline_maps_page_list`,
@@ -191,6 +197,7 @@ class OfflineProtomaps {
 
       if (isAlreadyInstalled) {
         desiredStatus = IPlanMyTripCacheStatus.CACHED;
+        result.installed.push(tripDetails.id);
       } else if (isInProgress) {
         desiredStatus = IPlanMyTripCacheStatus.IN_PROGRESS;
       } else if (isInErrorState) {
@@ -203,6 +210,7 @@ class OfflineProtomaps {
         await tripService.updateSubCacheStatus(tripDetails.id, 'mapTiles', desiredStatus);
       }
     }
+    return result;
   });
 }
 

@@ -145,6 +145,17 @@ function createProtomapsReducer(): (OfflineActivityState, AnyAction) => Protomap
         if (found) {
           found.percent = action.payload.percent;
         }
+      } else if (OfflineProtomaps.syncTripService.fulfilled.match(action)) {
+        // a fallback in case we missed a download completion handler
+        const payload = action.payload;
+        for (const trip of payload.installed) {
+          if (draftState.installationsRequested.some((i) => i.tripName == trip)) {
+            draftState.installationsRequested.splice(
+              draftState.installationsRequested.findIndex((i) => i.tripName == trip),
+              1
+            );
+          }
+        }
       }
     });
   };
