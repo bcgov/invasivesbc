@@ -38,11 +38,11 @@ app.conf.update(
         "beat_schedule": {
             "expire_generated_maps": {
                 "task": "api.tasks.expire_generated_maps.expire_generated_maps",
-                "schedule": 60.0,
+                "schedule": 600.0,
             },
             "flag_stale_requests": {
                 "task": "api.tasks.expire_generated_maps.flag_stale_requests",
-                "schedule": 45.0,
+                "schedule": 900.0,
                 "options": {
                     "priority": 9,
                 },

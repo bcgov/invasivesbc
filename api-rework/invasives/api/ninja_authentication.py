@@ -1,13 +1,14 @@
 import json
 import logging
 
-from django.conf import settings
 import jwt
 import requests
-from rest_framework import authentication, exceptions
-
-from api.models.auth import User
+from django.conf import settings
 from ninja.security import HttpBearer
+from rest_framework import exceptions
+
+from api.keycloak_authentication import update_user_attributes_if_needed
+from api.models.auth import User
 
 
 class NinjaKeycloakAuthentication(HttpBearer):
@@ -68,8 +69,6 @@ class NinjaKeycloakAuthentication(HttpBearer):
                 "\n".join([str(error) for error in token_validation_errors]),
             )
 
-        try:
-            user = User.objects.get(subject=user_token["sub"])
-            return user
-        except User.DoesNotExist:
-            raise exceptions.AuthenticationFailed("User does not exist")
+        user, _ = User.objects.get_or_create(subject=user_token["sub"])
+        update_user_attributes_if_needed(user, user_token)
+        return user

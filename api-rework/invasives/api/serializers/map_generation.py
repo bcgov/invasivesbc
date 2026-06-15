@@ -42,9 +42,21 @@ class MapGenerationEstimateSerializer(serializers.ModelSerializer):
     bounds = PolygonSerializer()
 
     is_size_valid = serializers.SerializerMethodField(read_only=True)
+    is_trip_name_valid = serializers.SerializerMethodField(read_only=True)
 
     def get_is_size_valid(self, obj):
         return obj.total_tile_count <= MAX_TILE_COUNT
+
+    def get_is_trip_name_valid(self, obj):
+        if obj.trip_name is None:
+            return None
+
+        request = self.context.get("request", None)
+
+        return not RasterMapGenerationRequest.objects.filter(
+            trip_name=obj.trip_name,
+            owner=request.user if request else None,
+        ).exists()
 
     def create(self, validated_data, **kwargs):
         # this serializer does not persist anything to the database - it's for estimating download time only
@@ -60,6 +72,7 @@ class MapGenerationEstimateSerializer(serializers.ModelSerializer):
             "estimated_download_time_worst_case",
             "area_km2",
             "is_size_valid",
+            "is_trip_name_valid",
         )
         fields = (
             "minimum_zoom",
@@ -73,6 +86,7 @@ class MapGenerationEstimateSerializer(serializers.ModelSerializer):
             "estimated_download_time_worst_case",
             "area_km2",
             "is_size_valid",
+            "is_trip_name_valid",
         )
 
 
