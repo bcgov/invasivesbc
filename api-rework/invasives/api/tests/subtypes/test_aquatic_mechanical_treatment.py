@@ -40,7 +40,7 @@ class AquaticMechanicalTreatmentTest(BaseActivitySubtypeTest):
         self.assertEqual(st["shoreline_type"], "RR")
 
         self.assertEqual(
-            sd["authorization_information"][0]["detail"],
+            sd["authorization_information"],
             "The test looks for this",
         )
 
@@ -49,7 +49,7 @@ class AquaticMechanicalTreatmentTest(BaseActivitySubtypeTest):
         response_object = self.fetch_b().json()
         sd = response_object["subtype_data"]
         self.assertEqual(
-            sd["authorization_information"][0]["detail"],
+            sd["authorization_information"],
             "The test looks for this",
         )
         mt = sd["entries"]
@@ -76,9 +76,33 @@ class AquaticMechanicalTreatmentTest(BaseActivitySubtypeTest):
         self.assertCountEqual(mt, expected)
 
     def test_submit_record(self):
-        """Expect Submitting a record returns 200"""
-        self.submit_record(MINIMAL_MECH_TREATMENT_AQUATIC)
+        """
+        Expect:
+            - Submitting Record returns 200
+            - Record is created in DB
+            - Fetching record matches result returned by API
+        """
+        create_return = self.submit_record(MINIMAL_MECH_TREATMENT_AQUATIC).json()
+        fetch_return = self.fetch(id=MINIMAL_MECH_TREATMENT_AQUATIC["id"]).json()
+
+        self.assertEqual(
+            create_return,
+            fetch_return,
+            "Serialized response from API did not match expected result from fetch request.",
+        )
 
     def test_update_record(self):
-        """Expect Submitting an updated record returns 200"""
-        self.submit_record(UPDATED_MECH_TREATMENT_AQUATIC)
+        """
+        Expect:
+            - Submitting an updated record returns 200
+            - Existing record is updated
+            - Fetching record matches results.
+        """
+        update_return = self.submit_record(UPDATED_MECH_TREATMENT_AQUATIC).json()
+        fetch_return = self.fetch(id=UPDATED_MECH_TREATMENT_AQUATIC["id"]).json()
+
+        self.assertEqual(
+            update_return,
+            fetch_return,
+            "Serialized response from API did not match expected result from fetch request.",
+        )

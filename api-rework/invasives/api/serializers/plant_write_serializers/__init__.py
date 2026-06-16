@@ -5,12 +5,16 @@ from .observation_aquatic import ObservationAquaticWriteSerializer
 from .monitoring_chemical_mechanical_treatment import (
     MonitoringChemicalMechanicalWriteSerializer,
 )
+from .treatment_mechanical_aquatic import TreatmentMechanicalAquaticWriteSerializer
+from .treatment_mechanical_terrestrial import (
+    TreatmentMechanicalTerrestrialWriteSerializer,
+)
 
 WRITE_SERIALIZERS = {
     ActivitySubtypes.Observation_Plant_Terrestrial.name: ObservationTerrestrialWriteSerializer,
     ActivitySubtypes.Observation_Plant_Aquatic.name: ObservationAquaticWriteSerializer,
-    ActivitySubtypes.Treatment_Mechanical_Plant_Terrestrial.name: ObservationTerrestrialWriteSerializer,
-    ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic.name: ObservationTerrestrialWriteSerializer,
+    ActivitySubtypes.Treatment_Mechanical_Plant_Terrestrial.name: TreatmentMechanicalTerrestrialWriteSerializer,
+    ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic.name: TreatmentMechanicalAquaticWriteSerializer,
     ActivitySubtypes.Monitoring_Mechanical_Plant_Terrestrial_Aquatic.name: MonitoringChemicalMechanicalWriteSerializer,
     ActivitySubtypes.Monitoring_Chemical_Plant_Terrestrial_Aquatic.name: MonitoringChemicalMechanicalWriteSerializer,
     ActivitySubtypes.Biocontrol_Release.name: ObservationTerrestrialWriteSerializer,
