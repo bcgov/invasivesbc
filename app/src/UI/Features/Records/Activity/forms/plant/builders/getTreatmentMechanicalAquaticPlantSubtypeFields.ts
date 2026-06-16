@@ -17,7 +17,7 @@ const getTreatmentMechanicalAquaticPlantSubtypeFields = (): AquaticMechTreatment
       percent_covered: 0
     }
   ],
-  authorization_info: ''
+  authorization_information: ''
 });
 
 export default getTreatmentMechanicalAquaticPlantSubtypeFields;

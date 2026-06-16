@@ -12,7 +12,7 @@ interface AquaticMechTreatment extends BaseForm {
       mechanical_method: string;
       treated_area_msq: number;
     }>;
-    authorization_info: string;
+    authorization_information: string;
     shoreline_types: Array<{
       shoreline_type: string;
       percent_covered: number;

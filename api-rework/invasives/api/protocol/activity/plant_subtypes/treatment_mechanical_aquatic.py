@@ -45,7 +45,7 @@ class ShorelineType(CleanSchema):
 class SubtypeData(CleanSchema):
     entries: List[Entry] = Field(..., min_length=1)
     shoreline_types: List[ShorelineType]
-    authorization_info: Optional[str] = None
+    authorization_information: Optional[str] = None
 
     @field_validator("entries")
     @classmethod

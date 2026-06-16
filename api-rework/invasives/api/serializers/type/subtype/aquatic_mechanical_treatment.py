@@ -4,17 +4,8 @@ from api.models.activity import (
     AquaticPlantMechanicalTreatmentEntry,
     AquaticMechanicalAuthorization,
     ShorelineTypes,
-    WellEntry,
 )
-from api.serializers.common import ShorelineTypesSerializer, NearestWellSerializer
-
-
-class AquaticMechanicalAuthorizationSerializer(serializers.ModelSerializer):
-    detail = serializers.CharField(source="authorization_information")
-
-    class Meta:
-        model = AquaticMechanicalAuthorization
-        fields = ("detail",)
+from api.serializers.common import ShorelineTypesSerializer
 
 
 class AquaticPlantMechanicalTreatmentSerializer(serializers.ModelSerializer):
@@ -31,16 +22,15 @@ class AquaticPlantMechanicalTreatmentSerializer(serializers.ModelSerializer):
 
 
 class AquaticPlantTreatmentMechanicalSerializer(serializers.Serializer):
-
     authorization_information = serializers.SerializerMethodField()
     entries = serializers.SerializerMethodField()
     shoreline_types = serializers.SerializerMethodField()
 
     def get_authorization_information(self, obj):
-        children = AquaticMechanicalAuthorization.objects.filter(
+        child = AquaticMechanicalAuthorization.objects.filter(
             activity_data_record__activity_id=obj.id
-        )
-        return AquaticMechanicalAuthorizationSerializer(children, many=True).data
+        ).first()
+        return child.authorization_information if child else None
 
     def get_shoreline_types(self, obj):
         children = ShorelineTypes.objects.filter(
