@@ -1,0 +1,19 @@
+from api.models.activity import ActivitySubtypes
+from .base_activity import ActivityWriteSerializer
+from .observation_terrestrial import ObservationTerrestrialWriteSerializer
+from .observation_aquatic import ObservationAquaticWriteSerializer
+
+WRITE_SERIALIZERS = {
+    ActivitySubtypes.Observation_Plant_Terrestrial.name: ObservationTerrestrialWriteSerializer,
+    ActivitySubtypes.Observation_Plant_Aquatic.name: ObservationAquaticWriteSerializer,
+    ActivitySubtypes.Treatment_Mechanical_Plant_Terrestrial.name: ObservationTerrestrialWriteSerializer,
+    ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic.name: ObservationTerrestrialWriteSerializer,
+    ActivitySubtypes.Monitoring_Mechanical_Plant_Terrestrial_Aquatic.name: ObservationTerrestrialWriteSerializer,
+    ActivitySubtypes.Monitoring_Chemical_Plant_Terrestrial_Aquatic.name: ObservationTerrestrialWriteSerializer,
+    ActivitySubtypes.Biocontrol_Release.name: ObservationTerrestrialWriteSerializer,
+    ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial.name: ObservationTerrestrialWriteSerializer,
+    ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial.name: ObservationTerrestrialWriteSerializer,
+    ActivitySubtypes.Biocontrol_Collection.name: ObservationTerrestrialWriteSerializer,
+    ActivitySubtypes.Treatment_Chemical_Plant_Aquatic.name: ObservationTerrestrialWriteSerializer,
+    ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial.name: ObservationTerrestrialWriteSerializer,
+}

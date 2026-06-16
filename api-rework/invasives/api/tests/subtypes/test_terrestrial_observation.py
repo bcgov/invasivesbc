@@ -94,9 +94,33 @@ class TerrestrialObservationTest(BaseActivitySubtypeTest):
         self.assertCountEqual(obs_detail, sd["entries"])
 
     def test_submit_record(self):
-        """Expect Submitting a record returns 200"""
-        self.submit_record(MINIMAL_TERRESTRIAL_OBSERVATION)
+        """
+        Expect:
+            - Submitting Record returns 200
+            - Record is created in DB
+            - Fetching record matches result returned by API
+        """
+        create_return = self.submit_record(MINIMAL_TERRESTRIAL_OBSERVATION).json()
+        fetch_return = self.fetch(id=MINIMAL_TERRESTRIAL_OBSERVATION["id"]).json()
+
+        self.assertEqual(
+            create_return,
+            fetch_return,
+            "Serialized response from API did not match expected result from fetch request.",
+        )
 
     def test_update_record(self):
-        """Expect Submitting an updated record returns 200"""
-        self.submit_record(UPDATED_TERRESTRIAL_OBSERVATION)
+        """
+        Expect:
+            - Submitting an updated record returns 200
+            - Existing record is updated
+            - Fetching record matches results.
+        """
+        update_return = self.submit_record(UPDATED_TERRESTRIAL_OBSERVATION).json()
+        fetch_return = self.fetch(id=UPDATED_TERRESTRIAL_OBSERVATION["id"]).json()
+
+        self.assertEqual(
+            update_return,
+            fetch_return,
+            "Serialized response from API did not match expected result from fetch request.",
+        )
