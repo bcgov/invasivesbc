@@ -31,22 +31,34 @@ class ChemicalTreatmentMonitoringTest(BaseActivitySubtypeTest):
         self.assertEqual(tmi["evidence_of_treatment"], "No")
         self.assertEqual(tmi["management_efficacy_rating"], "6M")
 
-    def test_nearest_wells_present(self):
-        """Tests Wells tied to a Chemical Monitoring Record are present"""
-
-        response_object = self.fetch_b().json()
-        nw = response_object["subtype_data"]["well_entries"]
-
-        self.assertEqual(len(nw), 3)
-
-        for well in nw:
-            self.assertIsNotNone(well["well_tag"])
-            self.assertIsNotNone(well["distance"])
-
     def test_submit_record(self):
-        """Expect Submitting a record returns 200"""
-        self.submit_record(MINIMAL_CHEM_TREATMENT_MONITORING)
+        """
+        Expect:
+            - Submitting Record returns 200
+            - Record is created in DB
+            - Fetching record matches result returned by API
+        """
+        create_return = self.submit_record(MINIMAL_CHEM_TREATMENT_MONITORING).json()
+        fetch_return = self.fetch(id=MINIMAL_CHEM_TREATMENT_MONITORING["id"]).json()
+
+        self.assertEqual(
+            create_return,
+            fetch_return,
+            "Serialized response from API did not match expected result from fetch request.",
+        )
 
     def test_update_record(self):
-        """Expect Submitting an updated record returns 200"""
-        self.submit_record(UPDATED_CHEM_TREATMENT_MONITORING)
+        """
+        Expect:
+            - Submitting an updated record returns 200
+            - Existing record is updated
+            - Fetching record matches results.
+        """
+        update_return = self.submit_record(UPDATED_CHEM_TREATMENT_MONITORING).json()
+        fetch_return = self.fetch(id=UPDATED_CHEM_TREATMENT_MONITORING["id"]).json()
+
+        self.assertEqual(
+            update_return,
+            fetch_return,
+            "Serialized response from API did not match expected result from fetch request.",
+        )

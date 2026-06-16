@@ -31,9 +31,33 @@ class MechanicalTreatmentMonitoringTest(BaseActivitySubtypeTest):
         self.assertEqual(tmi["management_efficacy_rating"], "6M")
 
     def test_submit_record(self):
-        """Expect Submitting a record returns 200"""
-        self.submit_record(MINIMAL_MONITORING_MECH_TREATMENT)
+        """
+        Expect:
+            - Submitting Record returns 200
+            - Record is created in DB
+            - Fetching record matches result returned by API
+        """
+        create_return = self.submit_record(MINIMAL_MONITORING_MECH_TREATMENT).json()
+        fetch_return = self.fetch(id=MINIMAL_MONITORING_MECH_TREATMENT["id"]).json()
+
+        self.assertEqual(
+            create_return,
+            fetch_return,
+            "Serialized response from API did not match expected result from fetch request.",
+        )
 
     def test_update_record(self):
-        """Expect Submitting an updated record returns 200"""
-        self.submit_record(UPDATED_MONITORING_MECH_TREATMENT)
+        """
+        Expect:
+            - Submitting an updated record returns 200
+            - Existing record is updated
+            - Fetching record matches results.
+        """
+        update_return = self.submit_record(UPDATED_MONITORING_MECH_TREATMENT).json()
+        fetch_return = self.fetch(id=UPDATED_MONITORING_MECH_TREATMENT["id"]).json()
+
+        self.assertEqual(
+            update_return,
+            fetch_return,
+            "Serialized response from API did not match expected result from fetch request.",
+        )
