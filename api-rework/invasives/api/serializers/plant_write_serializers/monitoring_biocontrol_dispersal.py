@@ -12,26 +12,23 @@ from api.models.activity import (
     Activity,
     ActivityDataRecord,
 )
+from .common import (
+    MicrositeConditionsSerializer,
+    TerrestrialBiocontrolAgentCountExtendedWriteSerializer,
+    TargetPlantPhenologyWriteSerializer,
+    WeatherConditionsSerializer,
+)
 from api.models.codes import AgentLocationFoundTerrainCode, BiocontrolPresenceCode
 
 
-class TerrrestrialBiocontrolAgentCountWriteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TerrestrialBiocontrolAgentCountExtended
-        fields = (
-            "quantity",
-            "stage",
-            "plant_position",
-            "agent_location",
-        )
-
-
 class EntrySerializer(serializers.ModelSerializer):
-    actual_biological_agents = TerrrestrialBiocontrolAgentCountWriteSerializer(
+    actual_biological_agents = TerrestrialBiocontrolAgentCountExtendedWriteSerializer(
         many=True, allow_empty=True
     )
-    estimated_biological_agents = TerrrestrialBiocontrolAgentCountWriteSerializer(
-        many=True, allow_empty=True
+    estimated_biological_agents = (
+        TerrestrialBiocontrolAgentCountExtendedWriteSerializer(
+            many=True, allow_empty=True
+        )
     )
     location_agent_found = serializers.SlugRelatedField(
         many=True,
@@ -67,48 +64,6 @@ class EntrySerializer(serializers.ModelSerializer):
             "linear_segment",
             "estimated_biological_agents",
             "actual_biological_agents",
-        )
-
-
-class TargetPlantHeightsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TargetPlantHeights
-        fields = ("height_cm",)
-
-
-class TargetPlantPhenologyWriteSerializer(serializers.ModelSerializer):
-    target_plant_heights = TargetPlantHeightsSerializer(many=True)
-
-    class Meta:
-        model = TargetPlantPhenology
-        fields = (
-            "winter_dormant",
-            "seedlings",
-            "rosettes",
-            "bolts",
-            "flowering",
-            "seeds_forming",
-            "senescent",
-            "target_plant_heights",
-        )
-
-
-class MicrositeConditionsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = MicrositeCondition
-        fields = ("mesoslope_position", "site_surface_shape")
-
-
-class WeatherConditionsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = WeatherConditions
-        fields = (
-            "comments",
-            "cloud_cover",
-            "precipitation",
-            "temperature",
-            "wind_direction",
-            "wind_speed_kmh",
         )
 
 

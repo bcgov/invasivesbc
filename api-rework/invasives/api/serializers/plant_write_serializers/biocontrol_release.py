@@ -10,22 +10,19 @@ from api.models.activity import (
     Activity,
     ActivityDataRecord,
 )
-
-
-class TerrrestrialBiocontrolAgentCountWriteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TerrestrialBiocontrolAgentCount
-        fields = (
-            "quantity",
-            "stage",
-        )
+from .common import (
+    MicrositeConditionsSerializer,
+    TerrestrialBiocontrolAgentCountWriteSerializer,
+    TargetPlantPhenologyWriteSerializer,
+    WeatherConditionsSerializer,
+)
 
 
 class EntrySerializer(serializers.ModelSerializer):
-    actual_biological_agents = TerrrestrialBiocontrolAgentCountWriteSerializer(
+    actual_biological_agents = TerrestrialBiocontrolAgentCountWriteSerializer(
         many=True, allow_empty=True
     )
-    estimated_biological_agents = TerrrestrialBiocontrolAgentCountWriteSerializer(
+    estimated_biological_agents = TerrestrialBiocontrolAgentCountWriteSerializer(
         many=True, allow_empty=True
     )
 
@@ -42,48 +39,6 @@ class EntrySerializer(serializers.ModelSerializer):
             "plant_collected_from_manual",
             "estimated_biological_agents",
             "actual_biological_agents",
-        )
-
-
-class TargetPlantHeightsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TargetPlantHeights
-        fields = ("height_cm",)
-
-
-class TargetPlantPhenologyWriteSerializer(serializers.ModelSerializer):
-    target_plant_heights = TargetPlantHeightsSerializer(many=True)
-
-    class Meta:
-        model = TargetPlantPhenology
-        fields = (
-            "winter_dormant",
-            "seedlings",
-            "rosettes",
-            "bolts",
-            "flowering",
-            "seeds_forming",
-            "senescent",
-            "target_plant_heights",
-        )
-
-
-class MicrositeConditionsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = MicrositeCondition
-        fields = ("mesoslope_position", "site_surface_shape")
-
-
-class WeatherConditionsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = WeatherConditions
-        fields = (
-            "comments",
-            "cloud_cover",
-            "precipitation",
-            "temperature",
-            "wind_direction",
-            "wind_speed_kmh",
         )
 
 
