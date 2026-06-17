@@ -80,8 +80,6 @@ class ActivityWriteSerializer(serializers.ModelSerializer):
         }
 
     def validate_shape(self, value):
-        if value is None:
-            return None
         geometry = value.get("geometry", value)
         return GEOSGeometry(json.dumps(geometry))
 
@@ -105,8 +103,6 @@ class ActivityWriteSerializer(serializers.ModelSerializer):
         parent: Activity,
         entries: list[dict] | None,
     ):
-        if not entries:
-            return
         for e in entries:
             adr = ActivityDataRecord.objects.create(activity=parent)
             model.objects.create(activity_data_record=adr, **e)
@@ -164,9 +160,6 @@ class ActivityWriteSerializer(serializers.ModelSerializer):
         for field, value in validated_data.items():
             setattr(instance, field, value)
         instance.save()
-        for value in ef["media"]["entries"]:
-            for key in value.values():
-                print(bool(key))
         linked = ef.pop("linked_activities")["entries"]
         if linked:
             instance.linked_activities.set(linked)

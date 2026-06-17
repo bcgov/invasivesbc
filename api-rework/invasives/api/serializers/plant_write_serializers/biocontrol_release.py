@@ -89,7 +89,9 @@ class WeatherConditionsSerializer(serializers.ModelSerializer):
 
 class SubtypeSerializer(serializers.Serializer):
     entries = EntrySerializer(required=True, many=True)
-    target_plant_phenology = TargetPlantPhenologyWriteSerializer(required=False)
+    target_plant_phenology = TargetPlantPhenologyWriteSerializer(
+        required=False, allow_null=True
+    )
     microsite_conditions = MicrositeConditionsSerializer()
     weather_conditions = WeatherConditionsSerializer()
 
