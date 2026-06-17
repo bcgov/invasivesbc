@@ -35,6 +35,7 @@ class ActivityWriteSerializer(serializers.ModelSerializer):
     funding_agencies = FundingAgencySerializer(many=True, required=True)
     projects = ProjectCodeSerializer(many=True, required=True)
     jurisdictions = JurisdictionSerializer(many=True, required=True)
+    # Pydantic validation adds Z-indexes which get lost in translatio for being 0, so declare as JSON and convert.
     shape = serializers.JSONField(required=False)
     id = serializers.UUIDField(required=False)
 
@@ -97,82 +98,67 @@ class ActivityWriteSerializer(serializers.ModelSerializer):
 
         return super().to_internal_value(data)
 
-    def _create_from_list(
-        self,
-        model: type[Model],
-        parent: Activity,
-        entries: list[dict] | None,
-    ):
-        for e in entries:
-            adr = ActivityDataRecord.objects.create(activity=parent)
-            model.objects.create(activity_data_record=adr, **e)
+    def _bulk_create_nested_models(self, parent: Activity, nested_models: dict):
+        """
+        Iterate through nested fields and create the related model.
+        """
+        adr = ActivityDataRecord.objects.create(activity=parent)
+        for model, entries in nested_models.items():
+            model.objects.bulk_create(
+                model(activity_data_record=adr, **values) for values in entries
+            )
 
-    def _remove_extra_fields(self, validated_data: dict) -> dict:
-        """Remove all the extra fields from the validated data, and return as own object for later parsing."""
+    def _remove_nested_models(self, validated_data: dict) -> dict:
+        """
+        Removes models from the Serializers not belonging to the parent Activity but are common in all record types.
+        """
         return {
-            "linked_activities": {
-                "entries": validated_data.pop("linked_activities", []),
-                "model": None,
-            },
-            "participants": {
-                "entries": validated_data.pop("participants", []),
-                "model": Participant,
-            },
-            "funding_agencies": {
-                "entries": validated_data.pop("funding_agencies", []),
-                "model": FundingAgency,
-            },
-            "employers": {
-                "entries": validated_data.pop("employer", []),
-                "model": Employer,
-            },
-            "jurisdictions": {
-                "entries": validated_data.pop("jurisdictions", []),
-                "model": Jurisdiction,
-            },
-            "media": {
-                "entries": validated_data.pop("media", []),
-                "model": UploadedImage,
-            },
-            "projects": {
-                "entries": validated_data.pop("projects", []),
-                "model": ProjectCode,
-            },
+            Participant: validated_data.pop("participants", []),
+            FundingAgency: validated_data.pop("funding_agencies", []),
+            Employer: validated_data.pop("employer", []),
+            Jurisdiction: validated_data.pop("jurisdictions", []),
+            UploadedImage: validated_data.pop("media", []),
+            ProjectCode: validated_data.pop("projects", []),
         }
 
     def create(self, validated_data):
+        # Remove nested fields not directly attributed to Activity object (else throws Error)
         subtype_data = validated_data.pop("subtype_data")
-        ef = self._remove_extra_fields(validated_data)
+        linked = validated_data.pop("linked_activities", None)
+        nested_models = self._remove_nested_models(validated_data)
+
+        # Create Activity so we have parent reference
         instance = Activity.objects.create(**validated_data)
-        linked = ef.pop("linked_activities")["entries"]
-        if linked:
-            instance.linked_activities.set(linked)
-        for field in ef.values():
-            self._create_from_list(
-                model=field["model"], parent=instance, entries=field["entries"]
-            )
+        instance.linked_activities.set(linked)
+
+        self._bulk_create_nested_models(parent=instance, nested_models=nested_models)
+        # Start subtype specific creation methods.
         self.save_subtype_records(subtype_data=subtype_data, parent=instance)
         return instance
 
     def update(self, instance, validated_data):
         subtype_data = validated_data.pop("subtype_data")
-        ef = self._remove_extra_fields(validated_data)
+        nested_models = self._remove_nested_models(validated_data)
+        ###
+        # TODO: Add some auditing logic here. (changelog)
+        ###
+
+        # Update Top level Activity Object with new information.
         for field, value in validated_data.items():
             setattr(instance, field, value)
         instance.save()
-        linked = ef.pop("linked_activities")["entries"]
-        if linked:
-            instance.linked_activities.set(linked)
 
+        linked = validated_data.pop("linked_activities", None)
+        instance.linked_activities.set(linked)
+
+        # Erase all nested items for an activity before recreating.
         ActivityDataRecord.objects.filter(activity=instance).delete()
+        self._bulk_create_nested_models(parent=instance, nested_models=nested_models)
 
-        for field in ef.values():
-            self._create_from_list(
-                model=field["model"], parent=instance, entries=field["entries"]
-            )
-
+        # Start subtype specific creation methods.
         self.save_subtype_records(subtype_data=subtype_data, parent=instance)
         return instance
 
     def save_subtype_records(self, subtype_data: dict, parent: Activity):
+        """Handles the specific parsing for models under a record subtype."""
         raise NotImplementedError("Subclasses must implement `save_subtype_records`.")
