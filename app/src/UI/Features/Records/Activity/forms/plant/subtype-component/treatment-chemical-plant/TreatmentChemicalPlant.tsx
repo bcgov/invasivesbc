@@ -56,7 +56,7 @@ const TreatmentChemicalPlant = () => {
   const wellsInArea = useSelector((state) => state.ActivityPage?.wellsInRecordArea);
 
   const well_entries = watch(getPath('well_entries'));
-  const ntz_bool = watch(getContextPath('ntz_reduction_bool'));
+  const ntz_bool = watch(getContextPath('ntz_reduction'));
   const temp_c = watch(getContextPath('temperature_c'));
   const wind_speed = watch(getContextPath('wind_speed_kmh'));
 
@@ -318,11 +318,11 @@ const TreatmentChemicalPlant = () => {
           label={'Additional/Unmapped Wells or Water License intakes within 30m'}
           tooltip={tooltips.plant.chemical.additional_unmapped_water}
           width={Width.Half}
-          {...register(getContextPath('additional_unmapped_well_water_bool'))}
+          {...register(getContextPath('additional_unmapped_well_water'))}
         />
         <RadioInput
           label={'NTZ Reduction'}
-          name={getContextPath('ntz_reduction_bool')}
+          name={getContextPath('ntz_reduction')}
           required
           rules={{ validate: (value) => value !== undefined || 'NTZ reduction is required' }}
           tooltip={tooltips.plant.chemical.required_under_license}
@@ -351,7 +351,7 @@ const TreatmentChemicalPlant = () => {
       <Fieldset label={'Pest Injury Threshold Determination'}>
         <RadioInput
           label={'Choose either option'}
-          name={getContextPath('pest_injury_threshold_determination_bool')}
+          name={getContextPath('pest_injury_threshold_determination')}
           required
           rules={{ validate: (value) => value !== undefined || 'NTZ reduction is required' }}
           tooltip={tooltips.plant.chemical.required_under_license}

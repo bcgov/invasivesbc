@@ -19,15 +19,15 @@ const ChemTreatmentInfo = ({ subtypeData }: SubtypeData) => {
         <TextInput label={'humidity'} value={subtypeData?.context?.humidity} />
         <TextInput label={'treatment notice signs'} value={subtypeData?.context?.treatment_notice_signs} />
         <TextInput label={'precautionary statement'} value={subtypeData?.context?.precautionary_statement} />
-        <TextInput label={'ntz reduction'} value={subtypeData?.context?.ntz_reduction_bool ? 'Yes' : 'No'} />
+        <TextInput label={'ntz reduction'} value={subtypeData?.context?.ntz_reduction ? 'Yes' : 'No'} />
         <TextInput label={'rationale for ntz reduction'} value={subtypeData?.context?.rationale_for_ntz_reduction} />
         <TextInput
           label={'additional unmapped well water'}
-          value={subtypeData?.additional_unmapped_well_water_bool ? 'Yes' : 'No'}
+          value={subtypeData?.additional_unmapped_well_water ? 'Yes' : 'No'}
         />
       </Fieldset>
       <Fieldset label={'Pest injury threshold Determination'}>
-        <TextInput value={subtypeData?.pest_injury_threshold_determination_bool ? 'Yes' : 'No'} />
+        <TextInput value={subtypeData?.pest_injury_threshold_determination ? 'Yes' : 'No'} />
       </Fieldset>
       <Fieldset label={'Chem Treatment Details'}>
         <TextInput label={'Tank Mix'} value={subtypeData.detail?.tank_mix ? 'Yes' : 'No'} />

@@ -14,10 +14,10 @@ const getTreatmentChemicalPlantSubtypeFields = (): ChemTreatment['subtype_data']
     humidity: undefined,
     treatment_notice_signs: '',
     precautionary_statement: '',
-    ntz_reduction_bool: false,
+    ntz_reduction: false,
     rationale_for_ntz_reduction: '',
-    additional_unmapped_well_water_bool: false,
-    pest_injury_threshold_determination_bool: true
+    additional_unmapped_well_water: false,
+    pest_injury_threshold_determination: true
   },
   treatment_context: {
     tank_mix: false,

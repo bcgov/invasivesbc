@@ -142,17 +142,17 @@ def resolve_chemical_type(v: Any) -> str | Enum:
 
 
 class Context(ChemicalWeatherInformation):
-    service_license_number: Optional[ServiceLicenseNumberAndCompanyType] = None
+    pesticide_employer_code: Optional[ServiceLicenseNumberAndCompanyType] = None
     pesticide_use_permit: Optional[str] = None
     pest_management_plan: Optional[PestManagementPlanType] = None
     pest_management_plan_manual: Optional[str] = None
     treatment_notice_signs: YesNoUnknown
     precautionary_statement: ChemicalPrecautionaryStatementType
     application_start_time: NaiveDatetime
-    ntz_reduction_bool: bool
+    ntz_reduction: bool
     rationale_for_ntz_reduction: Optional[str] = None
-    additional_unmapped_well_water_bool: bool
-    pest_injury_threshold_determination_bool: bool
+    additional_unmapped_well_water: bool
+    pest_injury_threshold_determination: bool
 
     @field_validator("application_start_time")
     def validate_start_time(cls, v):
@@ -160,7 +160,7 @@ class Context(ChemicalWeatherInformation):
 
     @model_validator(mode="after")
     def validate_ntz_reduction_rationale(self):
-        if self.ntz_reduction_bool and not self.rationale_for_ntz_reduction:
+        if self.ntz_reduction and not self.rationale_for_ntz_reduction:
             raise ValueError(
                 "Rationale for NTZ Reduction is required when NTZ Reduction is positive"
             )
@@ -193,9 +193,18 @@ class BaseChemicalDetails(CleanSchema):
     ]
 
 
+class AquaticChemicalDetails(BaseChemicalDetails):
+    well_entries: List[WellEntry]
+
+
+class TreatmentChemicalTerrestrial(BaseFormSchema):
+    subtype: Literal["Treatment_Chemical_Plant_Terrestrial"]
+    subtype_data: BaseChemicalDetails
+
+
 class TreatmentChemicalAquatic(BaseFormSchema):
     subtype: Literal["Treatment_Chemical_Plant_Aquatic"]
-    subtype_data: BaseChemicalDetails
+    subtype_data: AquaticChemicalDetails
 
     @model_validator(mode="after")
     def get_chemical_treatment_calculations(self) -> Self:
@@ -204,7 +213,3 @@ class TreatmentChemicalAquatic(BaseFormSchema):
             treatment_context=self.subtype_data.treatment_context, area_m=self.area_m
         )
         return self
-
-
-class TreatmentChemicalTerrestrial(TreatmentChemicalAquatic):
-    subtype: Literal["Treatment_Chemical_Plant_Terrestrial"]
