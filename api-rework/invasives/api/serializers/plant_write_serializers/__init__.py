@@ -12,6 +12,8 @@ from .treatment_mechanical_terrestrial import (
 from .biocontrol_release import BiocontrolReleaseWriteSerializer
 from .biocontrol_collection import BiocontrolCollectionWriteSerializer
 from .monitoring_biocontrol_release import MonitoringBiocontrolRelease
+from .monitoring_biocontrol_dispersal import MonitoringBiocontrolDispersal
+from .treatment_chemical_aquatic import TreatmentChemicalAquaticWriteSerializer
 
 WRITE_SERIALIZERS = {
     ActivitySubtypes.Observation_Plant_Terrestrial.name: ObservationTerrestrialWriteSerializer,
@@ -22,8 +24,8 @@ WRITE_SERIALIZERS = {
     ActivitySubtypes.Monitoring_Chemical_Plant_Terrestrial_Aquatic.name: MonitoringChemicalMechanicalWriteSerializer,
     ActivitySubtypes.Biocontrol_Release.name: BiocontrolReleaseWriteSerializer,
     ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial.name: MonitoringBiocontrolRelease,
-    ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial.name: ObservationTerrestrialWriteSerializer,
+    ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial.name: MonitoringBiocontrolDispersal,
     ActivitySubtypes.Biocontrol_Collection.name: BiocontrolCollectionWriteSerializer,
-    ActivitySubtypes.Treatment_Chemical_Plant_Aquatic.name: ObservationTerrestrialWriteSerializer,
+    ActivitySubtypes.Treatment_Chemical_Plant_Aquatic.name: TreatmentChemicalAquaticWriteSerializer,
     ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial.name: ObservationTerrestrialWriteSerializer,
 }
