@@ -1,7 +1,7 @@
 from .base import BaseActivitySubtypeTest
 from api.tests.mock_frontend_submissions import (
-    MINIMAL_BIOCONTROL_RELEASE,
-    UPDATED_BIOCONTROL_RELEASE,
+    MINIMAL_BIOCONTROL_COLLECTION,
+    UPDATED_BIOCONTROL_COLLECTION,
 )
 
 
@@ -74,9 +74,33 @@ class BiocontrolReleaseTest(BaseActivitySubtypeTest):
         self.assertEqual(sd["weather_conditions"]["wind_direction"], "NW")
 
     def test_submit_record(self):
-        """Expect Submitting a record returns 200"""
-        self.submit_record(MINIMAL_BIOCONTROL_RELEASE)
+        """
+        Expect:
+            - Submitting Record returns 200
+            - Record is created in DB
+            - Fetching record matches result returned by API
+        """
+        create_return = self.submit_record(MINIMAL_BIOCONTROL_COLLECTION).json()
+        fetch_return = self.fetch(id=MINIMAL_BIOCONTROL_COLLECTION["id"]).json()
+
+        self.assertEqual(
+            create_return,
+            fetch_return,
+            "Serialized response from API did not match expected result from fetch request.",
+        )
 
     def test_update_record(self):
-        """Expect Submitting an updated record returns 200"""
-        self.submit_record(UPDATED_BIOCONTROL_RELEASE)
+        """
+        Expect:
+            - Submitting an updated record returns 200
+            - Existing record is updated
+            - Fetching record matches results.
+        """
+        update_return = self.submit_record(UPDATED_BIOCONTROL_COLLECTION).json()
+        fetch_return = self.fetch(id=UPDATED_BIOCONTROL_COLLECTION["id"]).json()
+
+        self.assertEqual(
+            update_return,
+            fetch_return,
+            "Serialized response from API did not match expected result from fetch request.",
+        )

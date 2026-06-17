@@ -35,8 +35,6 @@ MINIMAL_BIOCONTROL_COLLECTION = {
                 "time_collection_duration_minutes": 32,
             }
         ],
-        "mesoslope_position": "",
-        "site_surface_shape": "",
         "comments": "",
         "cloud_cover": "",
         "precipitation": "",
@@ -134,8 +132,6 @@ UPDATED_BIOCONTROL_COLLECTION = {
             "senescent": 19,
             "target_plant_heights": [{"height_cm": 42}, {"height_cm": 240}],
         },
-        "mesoslope_position": "",
-        "site_surface_shape": "",
         "comments": "",
         "cloud_cover": "",
         "precipitation": "",
