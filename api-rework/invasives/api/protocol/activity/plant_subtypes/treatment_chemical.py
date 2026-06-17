@@ -181,6 +181,7 @@ class Context(ChemicalWeatherInformation):
 
 class BaseChemicalDetails(CleanSchema):
     context: Context
+    well_entries: List[WellEntry]
     treatment_context: Annotated[
         Union[
             Annotated[TankMixChemicalContext, Tag("Tank Mix")],
@@ -193,18 +194,13 @@ class BaseChemicalDetails(CleanSchema):
     ]
 
 
-class AquaticChemicalDetails(BaseChemicalDetails):
-    well_entries: List[WellEntry]
-
-
 class TreatmentChemicalTerrestrial(BaseFormSchema):
     subtype: Literal["Treatment_Chemical_Plant_Terrestrial"]
     subtype_data: BaseChemicalDetails
 
 
-class TreatmentChemicalAquatic(BaseFormSchema):
+class TreatmentChemicalAquatic(TreatmentChemicalTerrestrial):
     subtype: Literal["Treatment_Chemical_Plant_Aquatic"]
-    subtype_data: AquaticChemicalDetails
 
     @model_validator(mode="after")
     def get_chemical_treatment_calculations(self) -> Self:

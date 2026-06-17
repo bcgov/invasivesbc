@@ -54,7 +54,7 @@ class SubtypeWriteSerializer(serializers.Serializer):
     treatment_context = serializers.JSONField(required=True)  # NEEDS IMPLEMENTATION
 
 
-class TreatmentChemicalAquaticWriteSerializer(ActivityWriteSerializer):
+class TreatmentChemicalTerrestrialWriteSerializer(ActivityWriteSerializer):
     subtype_data = SubtypeWriteSerializer(write_only=True, required=True)
 
     def save_subtype_records(self, subtype_data: dict, parent: Activity):
