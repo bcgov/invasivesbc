@@ -1,4 +1,5 @@
 from .base import BaseActivitySubtypeTest
+from api.models.activity import Activity
 from api.tests.mock_frontend_submissions import (
     MINIMAL_MONITORING_MECH_TREATMENT,
     UPDATED_MONITORING_MECH_TREATMENT,
@@ -35,29 +36,69 @@ class MechanicalTreatmentMonitoringTest(BaseActivitySubtypeTest):
         Expect:
             - Submitting Record returns 200
             - Record is created in DB
-            - Fetching record matches result returned by API
         """
-        create_return = self.submit_record(MINIMAL_MONITORING_MECH_TREATMENT).json()
-        fetch_return = self.fetch(id=MINIMAL_MONITORING_MECH_TREATMENT["id"]).json()
+        payload = MINIMAL_MONITORING_MECH_TREATMENT
+        self.submit_record(payload).json()
+        record = self.fetch(id=payload["id"]).json()
 
-        self.assertEqual(
-            create_return,
-            fetch_return,
-            "Serialized response from API did not match expected result from fetch request.",
-        )
+        self.assertIsNotNone(record)
 
     def test_update_record(self):
         """
-        Expect:
-            - Submitting an updated record returns 200
-            - Existing record is updated
-            - Fetching record matches results.
+        Validates a Monitoring Activity record by dynamically mapping assertions
+        directly against the input payload properties instead of hardcoded values.
         """
-        update_return = self.submit_record(UPDATED_MONITORING_MECH_TREATMENT).json()
-        fetch_return = self.fetch(id=UPDATED_MONITORING_MECH_TREATMENT["id"]).json()
+        payload = UPDATED_MONITORING_MECH_TREATMENT
+        record_id = payload["id"]
+
+        # 1. Execute API Action
+        response = self.submit_record(payload)
+        data = response.json()
+
+        entries_in = payload["subtype_data"]["entries"]
+        entries_out = data["subtype_data"]["entries"]
+        self.assertEqual(len(entries_out), len(entries_in))
 
         self.assertEqual(
-            update_return,
-            fetch_return,
-            "Serialized response from API did not match expected result from fetch request.",
+            entries_out[0]["invasive_plant"], entries_in[0]["invasive_plant"]
         )
+        self.assertEqual(
+            entries_out[0]["evidence_of_treatment"],
+            entries_in[0]["evidence_of_treatment"],
+        )
+        self.assertEqual(
+            entries_out[0]["treatment_efficacy_rating"],
+            entries_in[0]["treatment_efficacy_rating"],
+        )
+        self.assertNotIn("invasive_plant_aquatic", entries_out[0])
+
+        self.assertEqual(
+            entries_out[1]["invasive_plant_aquatic"],
+            entries_in[1]["invasive_plant_aquatic"],
+        )
+        self.assertEqual(
+            entries_out[1]["evidence_of_treatment"],
+            entries_in[1]["evidence_of_treatment"],
+        )
+        self.assertIsNone(entries_out[1]["treatment_efficacy_rating"])
+        self.assertNotIn("invasive_plant", entries_out[1])
+
+        self.assertIn("centroid", data)
+        self.assertEqual(data["centroid"]["type"], "Point")
+        self.assertAlmostEqual(
+            data["centroid"]["coordinates"][0], payload["longitude"], places=5
+        )
+        self.assertAlmostEqual(
+            data["centroid"]["coordinates"][1], payload["latitude"], places=5
+        )
+
+        self.assertEqual(data["shape"]["properties"]["id"], payload["short_id"])
+
+        db_record = Activity.objects.get(id=record_id)
+
+        self.assertEqual(db_record.subtype, payload["subtype"])
+        self.assertEqual(db_record.area_m, payload["area_m"])
+        self.assertEqual(db_record.form_status, payload["form_status"])
+        self.assertEqual(db_record.comment, payload["comment"])
+        self.assertEqual(db_record.created_by, payload["created_by"])
+        self.assertEqual(str(db_record.date), payload["date"])

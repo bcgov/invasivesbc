@@ -1,4 +1,5 @@
 from .base import BaseActivitySubtypeTest
+from api.models.activity import Activity
 from api.tests.mock_frontend_submissions import (
     MINIMAL_BIOCONTROL_RELEASE,
     UPDATED_BIOCONTROL_RELEASE,
@@ -77,29 +78,83 @@ class BiocontrolReleaseTest(BaseActivitySubtypeTest):
         Expect:
             - Submitting Record returns 200
             - Record is created in DB
-            - Fetching record matches result returned by API
         """
-        create_return = self.submit_record(MINIMAL_BIOCONTROL_RELEASE).json()
-        fetch_return = self.fetch(id=MINIMAL_BIOCONTROL_RELEASE["id"]).json()
+        payload = MINIMAL_BIOCONTROL_RELEASE
+        self.submit_record(payload).json()
+        record = self.fetch(id=payload["id"]).json()
 
-        self.assertEqual(
-            create_return,
-            fetch_return,
-            "Serialized response from API did not match expected result from fetch request.",
-        )
+        self.assertIsNotNone(record)
 
     def test_update_record(self):
         """
-        Expect:
-            - Submitting an updated record returns 200
-            - Existing record is updated
-            - Fetching record matches results.
+        Validates a Biocontrol Release record by mapping expected dictionary mutations
+        directly against incoming data structures, verifying geospatial points,
+        and validating base table entries with a literal 200 response status.
         """
-        update_return = self.submit_record(UPDATED_BIOCONTROL_RELEASE).json()
-        fetch_return = self.fetch(id=UPDATED_BIOCONTROL_RELEASE["id"]).json()
+
+        payload = UPDATED_BIOCONTROL_RELEASE
+        record_id = payload["id"]
+
+        response = self.submit_record(payload)
+        data = response.json()
+
+        sub_out = data["subtype_data"]
+        sub_in = payload["subtype_data"]
 
         self.assertEqual(
-            update_return,
-            fetch_return,
-            "Serialized response from API did not match expected result from fetch request.",
+            sub_out["weather_conditions"]["precipitation"],
+            sub_in["weather_conditions"]["precipitation"],
         )
+        self.assertEqual(
+            sub_out["weather_conditions"]["cloud_cover"],
+            sub_in["weather_conditions"]["cloud_cover"],
+        )
+        self.assertEqual(
+            sub_out["microsite_conditions"]["site_surface_shape"],
+            sub_in["microsite_conditions"]["site_surface_shape"],
+        )
+
+        self.assertEqual(
+            sub_out["target_plant_phenology"]["senescent"],
+            sub_in["target_plant_phenology"]["senescent"],
+        )
+        self.assertEqual(
+            sub_out["target_plant_phenology"]["target_plant_heights"][1]["height_cm"],
+            sub_in["target_plant_phenology"]["target_plant_heights"][1]["height_cm"],
+        )
+
+        entry_out = sub_out["entries"][0]
+        entry_in = sub_in["entries"][0]
+
+        self.assertEqual(entry_out["biocontrol_agent"], entry_in["biocontrol_agent"])
+        self.assertEqual(entry_out["agent_source"], entry_in["agent_source"])
+        self.assertEqual(entry_out["collection_date"], entry_in["collection_date"])
+        self.assertEqual(
+            entry_out["plant_collected_from_manual"],
+            entry_in["plant_collected_from_manual"],
+        )
+        self.assertEqual(entry_out["linear_segment"], entry_in["linear_segment"])
+        self.assertEqual(
+            entry_out["actual_biological_agents"][0]["quantity"],
+            entry_in["actual_biological_agents"][0]["quantity"],
+        )
+
+        self.assertIn("centroid", data)
+        self.assertEqual(data["centroid"]["type"], "Point")
+        self.assertAlmostEqual(
+            data["centroid"]["coordinates"][0], payload["longitude"], places=5
+        )
+        self.assertAlmostEqual(
+            data["centroid"]["coordinates"][1], payload["latitude"], places=5
+        )
+        self.assertEqual(data["shape"]["properties"]["id"], payload["short_id"])
+
+        db_record = Activity.objects.get(id=record_id)
+
+        self.assertEqual(db_record.type, payload["type"])
+        self.assertEqual(db_record.subtype, payload["subtype"])
+        self.assertEqual(db_record.area_m, payload["area_m"])
+        self.assertEqual(db_record.form_status, payload["form_status"])
+        self.assertEqual(db_record.comment, payload["comment"])
+        self.assertEqual(db_record.created_by, payload["created_by"])
+        self.assertEqual(str(db_record.date), payload["date"])

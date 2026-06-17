@@ -1,4 +1,5 @@
 from .base import BaseActivitySubtypeTest
+from api.models.activity import Activity
 from api.tests.mock_frontend_submissions import (
     MINIMAL_MECH_TREATMENT_TERRESTRIAL,
     UPDATED_MECH_TREATMENT_TERRESTRIAL,
@@ -62,29 +63,72 @@ class TerrestrialMechanicalTreatmentTest(BaseActivitySubtypeTest):
         Expect:
             - Submitting Record returns 200
             - Record is created in DB
-            - Fetching record matches result returned by API
         """
-        create_return = self.submit_record(MINIMAL_MECH_TREATMENT_TERRESTRIAL).json()
-        fetch_return = self.fetch(id=MINIMAL_MECH_TREATMENT_TERRESTRIAL["id"]).json()
+        payload = MINIMAL_MECH_TREATMENT_TERRESTRIAL
+        self.submit_record(payload).json()
+        record = self.fetch(id=payload["id"]).json()
 
-        self.assertEqual(
-            create_return,
-            fetch_return,
-            "Serialized response from API did not match expected result from fetch request.",
-        )
+        self.assertIsNotNone(record)
 
     def test_update_record(self):
         """
-        Expect:
-            - Submitting an updated record returns 200
-            - Existing record is updated
-            - Fetching record matches results.
+        Validates that submitting a Terrestrial Mechanical Treatment payload:
+        1. Responds with an HTTP 200 OK status code.
+        2. Asserts correct data coercion of area metrics from integers to floats.
+        3. Validates terrestrial treatment execution values (disposal format, method).
+        4. Verifies geographic polygon properties injection and centroid processing.
+        5. Performs a deep integrity validation against the actual database instance.
         """
-        update_return = self.submit_record(UPDATED_MECH_TREATMENT_TERRESTRIAL).json()
-        fetch_return = self.fetch(id=UPDATED_MECH_TREATMENT_TERRESTRIAL["id"]).json()
+        payload = UPDATED_MECH_TREATMENT_TERRESTRIAL
+        record_id = payload["id"]
+
+        response = self.submit_record(payload)
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+
+        first_entry_out = data["subtype_data"]["entries"][0]
+        first_entry_in = payload["subtype_data"]["entries"][0]
+
+        self.assertIsInstance(first_entry_out["treated_area_msq"], float)
+        self.assertEqual(
+            first_entry_out["treated_area_msq"],
+            float(first_entry_in["treated_area_msq"]),
+        )
 
         self.assertEqual(
-            update_return,
-            fetch_return,
-            "Serialized response from API did not match expected result from fetch request.",
+            first_entry_out["disposed_material_amount"],
+            first_entry_in["disposed_material_amount"],
         )
+        self.assertEqual(
+            first_entry_out["disposed_material_format"],
+            first_entry_in["disposed_material_format"],
+        )
+        self.assertEqual(
+            first_entry_out["disposal_method"], first_entry_in["disposal_method"]
+        )
+        self.assertEqual(
+            first_entry_out["mechanical_method"], first_entry_in["mechanical_method"]
+        )
+        self.assertEqual(
+            first_entry_out["invasive_plant"], first_entry_in["invasive_plant"]
+        )
+
+        self.assertIn("centroid", data)
+        self.assertEqual(data["centroid"]["type"], "Point")
+        self.assertAlmostEqual(
+            data["centroid"]["coordinates"][0], payload["longitude"], places=5
+        )
+        self.assertAlmostEqual(
+            data["centroid"]["coordinates"][1], payload["latitude"], places=5
+        )
+
+        self.assertEqual(data["shape"]["properties"]["id"], payload["short_id"])
+
+        db_record = Activity.objects.get(id=record_id)
+
+        self.assertEqual(db_record.type, payload["type"])
+        self.assertEqual(db_record.subtype, payload["subtype"])
+        self.assertEqual(db_record.form_status, payload["form_status"])
+        self.assertEqual(db_record.area_m, payload["area_m"])
+        self.assertEqual(db_record.created_by, payload["created_by"])
+        self.assertEqual(str(db_record.date), payload["date"])

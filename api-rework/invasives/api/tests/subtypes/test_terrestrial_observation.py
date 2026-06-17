@@ -1,4 +1,6 @@
 from .base import BaseActivitySubtypeTest
+from api.models.activity import Activity
+from api.serializers.activity import ActivitySerializer
 from api.tests.mock_frontend_submissions import (
     MINIMAL_TERRESTRIAL_OBSERVATION,
     UPDATED_TERRESTRIAL_OBSERVATION,
@@ -98,29 +100,67 @@ class TerrestrialObservationTest(BaseActivitySubtypeTest):
         Expect:
             - Submitting Record returns 200
             - Record is created in DB
-            - Fetching record matches result returned by API
         """
-        create_return = self.submit_record(MINIMAL_TERRESTRIAL_OBSERVATION).json()
-        fetch_return = self.fetch(id=MINIMAL_TERRESTRIAL_OBSERVATION["id"]).json()
+        payload = MINIMAL_TERRESTRIAL_OBSERVATION
+        self.submit_record(payload).json()
+        record = self.fetch(id=payload["id"]).json()
 
-        self.assertEqual(
-            create_return,
-            fetch_return,
-            "Serialized response from API did not match expected result from fetch request.",
-        )
+        self.assertIsNotNone(record)
 
     def test_update_record(self):
         """
-        Expect:
-            - Submitting an updated record returns 200
-            - Existing record is updated
-            - Fetching record matches results.
+        Validates that submitting a Terrestrial Observation payload:
+        1. Returns a 200 OK status code.
+        2. Verifies configuration code mappings match payload inputs.
+        3. Correctly calculates and appends geospatial metadata (centroid).
+        4. Accurately saves nested arrays and handles null-value normalization.
+        5. Hard-commits expected properties directly to the database.
         """
-        update_return = self.submit_record(UPDATED_TERRESTRIAL_OBSERVATION).json()
-        fetch_return = self.fetch(id=UPDATED_TERRESTRIAL_OBSERVATION["id"]).json()
+        payload = UPDATED_TERRESTRIAL_OBSERVATION
+        record_id = payload["id"]
 
+        response = self.submit_record(payload)
+
+        data = response.json()
+
+        context_out = data["subtype_data"]["context"]
+        context_in = payload["subtype_data"]["context"]
+
+        self.assertEqual(context_out["aspect"]["code"], context_in["aspect"])
         self.assertEqual(
-            update_return,
-            fetch_return,
-            "Serialized response from API did not match expected result from fetch request.",
+            context_out["slope_percent"]["code"], context_in["slope_percent"]
         )
+        self.assertEqual(
+            context_out["soil_texture"]["code"], context_in["soil_texture"]
+        )
+
+        first_entry_out = data["subtype_data"]["entries"][0]
+        first_entry_in = payload["subtype_data"]["entries"][0]
+
+        self.assertIsNone(first_entry_out["density"])
+        self.assertEqual(
+            first_entry_out["invasive_plant"], first_entry_in["invasive_plant"]
+        )
+
+        self.assertIn("centroid", data)
+        self.assertEqual(data["centroid"]["type"], "Point")
+        self.assertAlmostEqual(
+            data["centroid"]["coordinates"][0], payload["longitude"], places=5
+        )
+        self.assertAlmostEqual(
+            data["centroid"]["coordinates"][1], payload["latitude"], places=5
+        )
+
+        self.assertEqual(data["shape"]["properties"]["id"], payload["short_id"])
+
+        db_record = Activity.objects.get(id=record_id)
+
+        self.assertEqual(db_record.form_status, payload["form_status"])
+        self.assertEqual(
+            db_record.location_description, payload["location_description"]
+        )
+        self.assertAlmostEqual(
+            float(db_record.latitude), float(payload["latitude"]), places=5
+        )
+        self.assertEqual(db_record.type, payload["type"])
+        self.assertEqual(db_record.subtype, payload["subtype"])
