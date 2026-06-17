@@ -26,6 +26,9 @@ class ChemicalTreatmentContext(UnrepeatedFormData):
     pest_management_plan = models.ForeignKey(
         PestManagementPlan, on_delete=models.PROTECT, blank=True, null=True
     )
+    pest_management_plan_manual = models.CharField(
+        max_length=128, blank=True, null=True
+    )
     pesticide_employer_code = models.CharField(max_length=128, blank=True, null=True)
 
     # Ideal temperature should be between 10-28 degrees. But allow greater to catch non-compliance.

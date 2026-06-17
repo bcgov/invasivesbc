@@ -236,6 +236,7 @@ class ChemicalTreatmentContextSerializer(serializers.ModelSerializer):
         fields = (
             "pesticide_use_permit",
             "pest_management_plan",
+            "pest_management_plan_manual",
             "pesticide_employer_code",
             "temperature_c",
             "wind_speed_kmh",
