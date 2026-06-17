@@ -1,14 +1,13 @@
 from .base import BaseActivitySubtypeTest
 from api.tests.mock_frontend_submissions import (
-    MINIMAL_BIOCONTROL_DISPERSAL_MONITORING,
-    UPDATED_BIOCONTROL_DISPERSAL_MONITORING,
+    MINIMAL_BIOCONTROL_RELEASE_MONITORING,
+    UPDATED_BIOCONTROL_RELEASE_MONITORING,
 )
 
 
 class BiocontrolReleaseTest(BaseActivitySubtypeTest):
 
     fixtures = [
-        "test/common/test_chemical_treatments.json",
         "test/common/test_employer",
         "test/common/test_jurisdictions",
         "test/common/test_funding_agency",
@@ -100,12 +99,8 @@ class BiocontrolReleaseTest(BaseActivitySubtypeTest):
             - Record is created in DB
             - Fetching record matches result returned by API
         """
-        create_return = self.submit_record(
-            MINIMAL_BIOCONTROL_DISPERSAL_MONITORING
-        ).json()
-        fetch_return = self.fetch(
-            id=MINIMAL_BIOCONTROL_DISPERSAL_MONITORING["id"]
-        ).json()
+        create_return = self.submit_record(MINIMAL_BIOCONTROL_RELEASE_MONITORING).json()
+        fetch_return = self.fetch(id=MINIMAL_BIOCONTROL_RELEASE_MONITORING["id"]).json()
 
         self.assertEqual(
             create_return,
@@ -120,12 +115,8 @@ class BiocontrolReleaseTest(BaseActivitySubtypeTest):
             - Existing record is updated
             - Fetching record matches results.
         """
-        update_return = self.submit_record(
-            UPDATED_BIOCONTROL_DISPERSAL_MONITORING
-        ).json()
-        fetch_return = self.fetch(
-            id=UPDATED_BIOCONTROL_DISPERSAL_MONITORING["id"]
-        ).json()
+        update_return = self.submit_record(UPDATED_BIOCONTROL_RELEASE_MONITORING).json()
+        fetch_return = self.fetch(id=UPDATED_BIOCONTROL_RELEASE_MONITORING["id"]).json()
 
         self.assertEqual(
             update_return,

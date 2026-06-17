@@ -1,9 +1,9 @@
 MINIMAL_BIOCONTROL_RELEASE_MONITORING = {
     "id": "dfb52848-152c-4094-a146-858157e5c717",
     "short_id": "26PBMDFB52848",
-    "employer": [{"employer": "AA"}],
+    "employer": [{"employer": "MOTI"}],
     "subtype": "Monitoring_Biocontrol_Release_Plant_Terrestrial",
-    "funding_agencies": [{"invasive_species_agency_code": "AA"}],
+    "funding_agencies": [{"invasive_species_agency_code": "MOTI"}],
     "jurisdictions": [{"jurisdiction": "MOTI", "percent_covered": 100}],
     "projects": [{"description": "Description"}],
     "location_description": "Location Description",
@@ -77,9 +77,9 @@ MINIMAL_BIOCONTROL_RELEASE_MONITORING = {
 UPDATED_BIOCONTROL_RELEASE_MONITORING = {
     "id": "dfb52848-152c-4094-a146-858157e5c717",
     "short_id": "26PBMDFB52848",
-    "employer": [{"employer": "AA"}],
+    "employer": [{"employer": "MOTI"}],
     "subtype": "Monitoring_Biocontrol_Release_Plant_Terrestrial",
-    "funding_agencies": [{"invasive_species_agency_code": "AA"}],
+    "funding_agencies": [{"invasive_species_agency_code": "MOTI"}],
     "jurisdictions": [{"jurisdiction": "MOTI", "percent_covered": 100}],
     "projects": [{"description": "Description"}],
     "location_description": "Location Description",
