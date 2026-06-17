@@ -68,27 +68,29 @@ class BiocontrolCollectionWriteSerializer(ActivityWriteSerializer):
 
     def save_subtype_records(self, subtype_data: dict, parent: Activity):
         adr = ActivityDataRecord.objects.create(activity=parent)
-        tpp = subtype_data.get("target_plant_phenology")
-        if tpp:
-            plant_heights = tpp.pop("target_plant_heights")
-            TargetPlantPhenology.objects.create(activity_data_record=adr, **tpp)
+        phenology = subtype_data.get("target_plant_phenology")
+        if phenology:
+            plant_heights = phenology.pop("target_plant_heights")
+            TargetPlantPhenology.objects.create(activity_data_record=adr, **phenology)
 
             TargetPlantHeights.objects.bulk_create(
                 TargetPlantHeights(activity_data_record=adr, **tph)
                 for tph in plant_heights
             )
 
-        mc = subtype_data.get("microsite_conditions")
-        if mc:
-            MicrositeCondition.objects.create(activity_data_record=adr, **mc)
+        microsite = subtype_data.get("microsite_conditions")
+        if microsite:
+            MicrositeCondition.objects.create(activity_data_record=adr, **microsite)
 
-        wc = subtype_data.get("weather_conditions")
-        if wc:
-            WeatherConditions.objects.create(activity_data_record=adr, **wc)
+        weather_conditions = subtype_data.get("weather_conditions")
+        if weather_conditions:
+            WeatherConditions.objects.create(
+                activity_data_record=adr, **weather_conditions
+            )
 
         for entry in subtype_data.get("entries", []):
-            aba = entry.pop("actual_biological_agents", [])
-            eba = entry.pop("estimated_biological_agents", [])
+            actual_agents = entry.pop("actual_biological_agents", [])
+            estimated_agents = entry.pop("estimated_biological_agents", [])
             adr = ActivityDataRecord.objects.create(activity=parent)
             TerrestrialBiocontrolCollectionEntry.objects.create(
                 activity_data_record=adr, **entry
@@ -97,11 +99,11 @@ class BiocontrolCollectionWriteSerializer(ActivityWriteSerializer):
                 TerrestrialBiocontrolAgentCount(
                     activity_data_record=adr, is_estimate=False, **count
                 )
-                for count in aba
+                for count in actual_agents
             )
             TerrestrialBiocontrolAgentCount.objects.bulk_create(
                 TerrestrialBiocontrolAgentCount(
                     activity_data_record=adr, is_estimate=True, **count
                 )
-                for count in eba
+                for count in estimated_agents
             )

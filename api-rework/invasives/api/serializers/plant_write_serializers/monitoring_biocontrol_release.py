@@ -94,10 +94,10 @@ class MonitoringBiocontrolRelease(ActivityWriteSerializer):
 
     def save_subtype_records(self, subtype_data: dict, parent: Activity):
         adr = ActivityDataRecord.objects.create(activity=parent)
-        tpp = subtype_data.get("target_plant_phenology")
-        if tpp:
-            plant_heights = tpp.pop("target_plant_heights")
-            TargetPlantPhenology.objects.create(activity_data_record=adr, **tpp)
+        phenology = subtype_data.get("target_plant_phenology")
+        if phenology:
+            plant_heights = phenology.pop("target_plant_heights")
+            TargetPlantPhenology.objects.create(activity_data_record=adr, **phenology)
 
             TargetPlantHeights.objects.bulk_create(
                 TargetPlantHeights(activity_data_record=adr, **tph)
@@ -106,19 +106,21 @@ class MonitoringBiocontrolRelease(ActivityWriteSerializer):
         spread_results = subtype_data.get("spread_results")
         if spread_results:
             SpreadResults.objects.create(activity_data_record=adr, **spread_results)
-        mc = subtype_data.get("microsite_conditions")
-        if mc:
-            MicrositeCondition.objects.create(activity_data_record=adr, **mc)
+        microsite = subtype_data.get("microsite_conditions")
+        if microsite:
+            MicrositeCondition.objects.create(activity_data_record=adr, **microsite)
 
-        wc = subtype_data.get("weather_conditions")
-        if wc:
-            WeatherConditions.objects.create(activity_data_record=adr, **wc)
+        weather_conditions = subtype_data.get("weather_conditions")
+        if weather_conditions:
+            WeatherConditions.objects.create(
+                activity_data_record=adr, **weather_conditions
+            )
 
         for entry in subtype_data.get("entries", []):
-            aba = entry.pop("actual_biological_agents", [])
-            eba = entry.pop("estimated_biological_agents", [])
-            laf = entry.pop("location_agent_found", [])
-            sobc = entry.pop("sign_of_biocontrol_presence", [])
+            actual_agents = entry.pop("actual_biological_agents", [])
+            estimated_agents = entry.pop("estimated_biological_agents", [])
+            location_found = entry.pop("location_agent_found", [])
+            sign_of_presence = entry.pop("sign_of_biocontrol_presence", [])
             adr = ActivityDataRecord.objects.create(activity=parent)
             TerrestrialBiocontrolDispersalMonitoringEntry.objects.create(
                 activity_data_record=adr, **entry
@@ -127,23 +129,23 @@ class MonitoringBiocontrolRelease(ActivityWriteSerializer):
                 TerrestrialBiocontrolAgentCountExtended(
                     activity_data_record=adr, is_estimate=False, **count
                 )
-                for count in aba
+                for count in actual_agents
             )
             TerrestrialBiocontrolAgentCountExtended.objects.bulk_create(
                 TerrestrialBiocontrolAgentCountExtended(
                     activity_data_record=adr, is_estimate=True, **count
                 )
-                for count in eba
+                for count in estimated_agents
             )
             LocationBiocontrolAgentsFoundTerrestrial.objects.bulk_create(
                 LocationBiocontrolAgentsFoundTerrestrial(
                     activity_data_record=adr, location_agent_found=loc
                 )
-                for loc in laf
+                for loc in location_found
             )
             SignOfBiocontrolPresenceTerrestrial.objects.bulk_create(
                 SignOfBiocontrolPresenceTerrestrial(
                     activity_data_record=adr, sign_of_presence=sign
                 )
-                for sign in sobc
+                for sign in sign_of_presence
             )
