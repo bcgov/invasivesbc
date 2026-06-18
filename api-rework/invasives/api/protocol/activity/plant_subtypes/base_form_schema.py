@@ -1,7 +1,7 @@
 from typing import List, Literal, Optional
 from datetime import date
 from ninja import Schema
-from pydantic import Field, model_validator, field_validator, RootModel
+from pydantic import Field, model_validator, field_validator, RootModel, ConfigDict
 from api.models.activity import FormStatus
 from api.protocol.activity.validators.no_repeat_key import no_repeat_key
 from api.protocol.activity.validators.check_sum import check_sum
@@ -19,6 +19,8 @@ class CleanSchema(Schema):
     """
     Cleanup method to set all Empty strings in form to None
     """
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @model_validator(mode="before")
     def remove_empty_strings(cls, values):
@@ -49,7 +51,7 @@ class LinkedActivity(CleanSchema):
 
 
 class FundingAgency(CleanSchema):
-    invasive_species_agency_code: FundingAgencyCodeType
+    agency: FundingAgencyCodeType = Field(..., alias="invasive_species_agency_code")
 
 
 class Media(CleanSchema):
