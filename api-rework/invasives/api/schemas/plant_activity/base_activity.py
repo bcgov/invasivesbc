@@ -17,7 +17,6 @@ MODEL_MAPPING = {
     "funding_agencies": FundingAgency,
     "employer": Employer,
     "jurisdictions": Jurisdiction,
-    "media": UploadedImage,
     "projects": ProjectCode,
 }
 
@@ -44,14 +43,21 @@ class BaseActivityProcessor:
         cls, payload: Dict[str, Any], linked_ids: List[int]
     ) -> Activity:
         # Remove nested fields not directly attributed to Activity object
+        media_data = payload.pop("media", [])
         nested_data = {
             key: payload.pop(key, []) for key in MODEL_MAPPING if key in payload
         }
 
         # Instantiate parent
         activity = Activity.objects.create(**payload)
+
         if linked_ids:
             activity.linked_activities.set(linked_ids)
+        if media_data:
+            # Manually create each image, due to S3 upload/processing.
+            adr = ActivityDataRecord.objects.create(activity=activity)
+            for img in media_data:
+                UploadedImage.objects.create(activity_data_record=adr, **img)
 
         cls._bulk_create_nested_models(activity, nested_data)
         return activity
@@ -63,6 +69,7 @@ class BaseActivityProcessor:
         ###
         # TODO: Add some auditing logic here. (changelog)
         ###
+        media_data = payload.pop("media", [])
         nested_data = {
             key: payload.pop(key, []) for key in MODEL_MAPPING if key in payload
         }
@@ -74,6 +81,11 @@ class BaseActivityProcessor:
         instance.linked_activities.set(linked_ids)
         # Erase all nested items for an activity before recreating.
         ActivityDataRecord.objects.filter(activity=instance).delete()
+        if media_data:
+            # Manually create each image, due to S3 upload/processing.
+            adr = ActivityDataRecord.objects.create(activity=instance)
+            for img in media_data:
+                UploadedImage.objects.create(activity_data_record=adr, **img)
         cls._bulk_create_nested_models(instance, nested_data)
         return instance
 
