@@ -22,7 +22,7 @@ const BatchCodeTables = () => {
       const downloadURL = URL.createObjectURL(await res.blob());
       const downloadLink = document.createElement('a');
       downloadLink.href = downloadURL;
-      downloadLink.download = 'InvasivesBC CSV Code Refernce.csv';
+      downloadLink.download = 'InvasivesBC CSV Code Reference.csv';
       document.body.appendChild(downloadLink);
       downloadLink.click();
       document.body.removeChild(downloadLink);
