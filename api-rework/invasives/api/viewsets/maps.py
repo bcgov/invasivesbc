@@ -4,6 +4,7 @@ from django.db import transaction
 from django.db.models import Q
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND
 
@@ -23,7 +24,7 @@ from api.tasks import dispatch_map_generation_request
 
 
 class MapGenerationRequestViewSet(viewsets.ViewSet):
-    permission_classes = [HasAdminRole]
+    permission_classes = [IsAuthenticated]
     http_method_names = ["get", "post", "put"]
 
     def retrieve(self, request, *args, **kwargs):
@@ -59,7 +60,9 @@ class MapGenerationRequestViewSet(viewsets.ViewSet):
 
     @action(detail=False, methods=["post"])
     def estimate(self, request, *args, **kwargs):
-        serializer = MapGenerationEstimateSerializer(data=request.data)
+        serializer = MapGenerationEstimateSerializer(
+            data=request.data, context={"request": request}
+        )
         serializer.is_valid(raise_exception=True)
         serializer.save(owner=request.user)
         return Response(serializer.data, status=HTTP_200_OK)

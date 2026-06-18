@@ -1,14 +1,39 @@
 import json
 import logging
 
-from django.conf import settings
 import jwt
 import requests
-from django.db.models import Model
+from django.conf import settings
+from django.core.exceptions import ValidationError
+from django.db.utils import DatabaseError
+from django.utils import timezone
 from rest_framework import authentication, exceptions
 
 from api.constants import WellKnownRoles
 from api.models.auth import User, Role
+
+
+def update_user_attributes_if_needed(user: User, user_token: dict):
+    today = timezone.now().date()
+
+    if user.last_seen != today:
+        User.objects.filter(subject=user_token["sub"]).update(last_seen=today)
+
+    email = user_token["email"] if "email" in user_token else None
+
+    display_name = user_token["display_name"] if "display_name" in user_token else None
+
+    if display_name is None and "name" in user_token and user_token["name"] is not None:
+        display_name = user_token["name"]
+
+    if user.email != email or user.display_name != display_name:
+        try:
+            User.objects.filter(subject=user_token["sub"]).update(
+                email=email,
+                display_name=display_name,
+            )
+        except (DatabaseError, ValidationError):
+            logging.warning("Error updating user email or display name", exc_info=True)
 
 
 class UserAuthentication(authentication.BaseAuthentication):
@@ -94,5 +119,8 @@ class UserAuthentication(authentication.BaseAuthentication):
             )
 
         user, _ = User.objects.get_or_create(subject=user_token["sub"])
+
+        update_user_attributes_if_needed(user, user_token)
+
         logging.debug(f"User roles: [{','.join(r.name for r in user.roles.all())}]")
         return user, None

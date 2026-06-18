@@ -24,6 +24,14 @@ class User(AbstractBaseUser):
 
     roles = models.ManyToManyField(Role, db_table='"authentication"."user_roles"')
 
+    display_name = models.CharField(null=True, blank=True, max_length=512)
+    email = models.EmailField(null=True, blank=True, max_length=512)
+
+    last_seen = models.DateField(
+        null=True,
+        db_comment="Date (not including time information, to reduce database updates) the user last authenticated.",
+    )
+
     def natural_key(self):
         return (self.subject,)
 
