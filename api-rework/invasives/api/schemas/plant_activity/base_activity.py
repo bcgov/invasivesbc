@@ -11,13 +11,6 @@ from api.models.activity import (
     UploadedImage,
 )
 
-from ninja import Router
-from django.db import transaction
-from typing import Any, Dict
-from api.models.activity.activity import Activity
-
-router = Router()
-
 # Common Sub-Models
 MODEL_MAPPING = {
     "participants": Participant,
