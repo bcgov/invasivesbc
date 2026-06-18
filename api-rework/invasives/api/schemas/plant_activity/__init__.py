@@ -1,0 +1,29 @@
+from api.models.activity import ActivitySubtypes
+from .base_activity import BaseActivityProcessor
+from .observation_terrestrial import PlantObservationTerrestrialIn
+from .observation_aquatic import PlantObservationAquaticIn
+from .treatment_mechanical_terrestrial import PlantTreatmentMechanicalTerrestrialIn
+from .treatment_mechanical_aquatic import PlantTreatmentMechanicalAquaticIn
+from .monitoring_mechanical import PlantMonitoringMechanicalIn
+from .monitoring_chemical import PlantMonitoringChemicalIn
+from .biocontrol_release import BiocontrolReleaseIn
+from .biocontrol_collection import BiocontrolCollectionIn
+from .monitoring_biocontrol_release import MonitoringBiocontrolReleaseIn
+from .monitoring_biocontrol_dispersal import MonitoringBiocontrolDispersalIn
+from .treatment_chemical_terrestrial import TreatmentChemicalTerrestrialIn
+from .treatment_chemical_aquatic import TreatmentChemicalAquaticIn
+
+ACTIVITY_PROCESSORS = {
+    ActivitySubtypes.Observation_Plant_Terrestrial.name: PlantObservationTerrestrialIn,
+    ActivitySubtypes.Observation_Plant_Aquatic.name: PlantObservationAquaticIn,
+    ActivitySubtypes.Treatment_Mechanical_Plant_Terrestrial.name: PlantTreatmentMechanicalTerrestrialIn,
+    ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic.name: PlantTreatmentMechanicalAquaticIn,
+    ActivitySubtypes.Monitoring_Mechanical_Plant_Terrestrial_Aquatic.name: PlantMonitoringMechanicalIn,
+    ActivitySubtypes.Monitoring_Chemical_Plant_Terrestrial_Aquatic.name: PlantMonitoringChemicalIn,
+    ActivitySubtypes.Biocontrol_Release.name: BiocontrolReleaseIn,
+    ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial.name: MonitoringBiocontrolReleaseIn,
+    ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial.name: MonitoringBiocontrolDispersalIn,
+    ActivitySubtypes.Biocontrol_Collection.name: BiocontrolCollectionIn,
+    ActivitySubtypes.Treatment_Chemical_Plant_Aquatic.name: TreatmentChemicalAquaticIn,
+    ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial.name: TreatmentChemicalTerrestrialIn,
+}
