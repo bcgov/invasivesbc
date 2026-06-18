@@ -63,6 +63,14 @@ const templateList: Template[] = [
   MonitoringBiocontrolReleaseTerrestrialPlant
 ];
 
+type DownloadableCodeTableReference = {
+  template_name: string;
+  column_name: string;
+  code_internal_name: string;
+  code_value: string;
+  code_description: string;
+};
+
 export const TemplateService = {
   listTemplatesShallow: async () => {
     return templateList.map((t) => ({
@@ -70,6 +78,28 @@ export const TemplateService = {
       key: t.key,
       selectable: t.selectable
     }));
+  },
+
+  codeValues: async function* (): AsyncGenerator<DownloadableCodeTableReference> {
+    const dbConnection = await getDBConnection();
+
+    for (const t of templateList.filter((t) => t.selectable)) {
+      await t.hydrateAllCodes(dbConnection);
+
+      for (const c of t.columns) {
+        if (c.dataType === 'codeReference' || c.dataType === 'codeReferenceMulti') {
+          for (const code of c.codes) {
+            yield {
+              template_name: t.name,
+              column_name: c.name,
+              code_internal_name: code.header,
+              code_value: code.code,
+              code_description: code.description
+            };
+          }
+        }
+      }
+    }
   },
 
   listTemplates: async () => {
@@ -116,3 +146,5 @@ export const TemplateService = {
     }
   }
 };
+
+export type { DownloadableCodeTableReference };
