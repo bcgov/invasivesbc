@@ -31,7 +31,7 @@ MINIMAL_MECH_TREATMENT_AQUATIC = {
             }
         ],
         "shoreline_types": [{"shoreline_type": "O", "percent_covered": 100}],
-        "authorization_info": "",
+        "authorization_information": "",
     },
     "type": "Treatment",
     "media": [],
@@ -91,7 +91,7 @@ UPDATED_MECH_TREATMENT_AQUATIC = {
             }
         ],
         "shoreline_types": [{"shoreline_type": "O", "percent_covered": 100}],
-        "authorization_info": "Waterbody Authorization Field",
+        "authorization_information": "Waterbody Authorization Field",
     },
     "type": "Treatment",
     "media": [],

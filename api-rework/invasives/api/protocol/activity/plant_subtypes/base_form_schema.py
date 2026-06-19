@@ -1,8 +1,7 @@
-from typing import List, Union, Optional
+from typing import List, Literal, Optional
 from datetime import date
 from ninja import Schema
-from pydantic import Field, model_validator, field_validator
-from pydantic_geojson import PointModel, FeatureModel, PolygonModel, MultiPolygonModel
+from pydantic import Field, model_validator, field_validator, RootModel, ConfigDict
 from api.models.activity import FormStatus
 from api.protocol.activity.validators.no_repeat_key import no_repeat_key
 from api.protocol.activity.validators.check_sum import check_sum
@@ -20,6 +19,8 @@ class CleanSchema(Schema):
     """
     Cleanup method to set all Empty strings in form to None
     """
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @model_validator(mode="before")
     def remove_empty_strings(cls, values):
@@ -50,7 +51,7 @@ class LinkedActivity(CleanSchema):
 
 
 class FundingAgency(CleanSchema):
-    invasive_species_agency_code: FundingAgencyCodeType
+    agency: FundingAgencyCodeType = Field(..., alias="invasive_species_agency_code")
 
 
 class Media(CleanSchema):
@@ -61,6 +62,21 @@ class Media(CleanSchema):
 
 class ProjectCode(CleanSchema):
     description: str
+
+
+class Position2D(RootModel[tuple[float, float]]):
+    pass
+
+
+class PolygonGeometry2D(CleanSchema):
+    type: Literal["Polygon"]
+    coordinates: list[list[Position2D]]
+
+
+class Feature2D(CleanSchema):
+    type: Literal["Feature"]
+    geometry: PolygonGeometry2D
+    properties: dict | None = None
 
 
 class BaseFormSchema(CleanSchema):
@@ -79,7 +95,7 @@ class BaseFormSchema(CleanSchema):
 
     # Geometry Values
     area_m: int = Field(..., gt=0, le=MAX_AREA_FOR_RECORD)
-    shape: Union[PointModel, FeatureModel, PolygonModel, MultiPolygonModel]
+    shape: Feature2D
     latitude: float
     longitude: float
     utm_easting: int

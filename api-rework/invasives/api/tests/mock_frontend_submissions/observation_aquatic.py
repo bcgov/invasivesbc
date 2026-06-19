@@ -139,7 +139,7 @@ UPDATED_AQUATIC_OBSERVATION = {
     },
     "type": "Observation",
     "media": [],
-    "created_by": "johnsmith@idir",
+    "created_by": "johnsmith@identifier",
     "shape": {
         "type": "Feature",
         "properties": {"error": "false"},

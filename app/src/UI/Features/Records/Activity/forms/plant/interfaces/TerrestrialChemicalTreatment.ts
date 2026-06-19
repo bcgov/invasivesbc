@@ -20,10 +20,10 @@ interface TerrestrialChemicalTreatmentSchema extends BaseForm {
       humidity?: number;
       treatment_notice_signs: string;
       precautionary_statement: string;
-      ntz_reduction_bool: boolean;
+      ntz_reduction: boolean;
       rationale_for_ntz_reduction?: string;
-      additional_unmapped_well_water_bool: boolean;
-      pest_injury_threshold_determination_bool: boolean;
+      additional_unmapped_well_water: boolean;
+      pest_injury_threshold_determination: boolean;
     };
     treatment_context: ChemicalTreatmentContext;
   };

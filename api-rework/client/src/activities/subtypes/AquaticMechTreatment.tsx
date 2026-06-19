@@ -7,7 +7,7 @@ import Spacer from 'common-components/inputs/Spacer';
 const AquaticMechTreatment = ({ subtypeData }: SubtypeData) => (
   <>
     <Fieldset label={'Authorization Info'}>
-      <TextInput value={subtypeData?.authorization_info} />
+      <TextInput value={subtypeData?.authorization_information} />
     </Fieldset>
     <Spacer />
     <Fieldset label={'Shoreline Types'}>

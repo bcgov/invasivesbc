@@ -33,7 +33,7 @@ const TreatmentMechPlantAquatic = () => {
         <TextInput
           label={'Authorization Information'}
           tooltip={tooltips.plant.waterbody.authorization_info}
-          {...register(getPath('authorization_info'))}
+          {...register(getPath('authorization_information'))}
         />
       </Fieldset>
 

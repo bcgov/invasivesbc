@@ -1,14 +1,14 @@
 from .base import BaseActivitySubtypeTest
+from api.models.activity import Activity
 from api.tests.mock_frontend_submissions import (
-    MINIMAL_BIOCONTROL_DISPERSAL_MONITORING,
-    UPDATED_BIOCONTROL_DISPERSAL_MONITORING,
+    MINIMAL_BIOCONTROL_RELEASE_MONITORING,
+    UPDATED_BIOCONTROL_RELEASE_MONITORING,
 )
 
 
 class BiocontrolReleaseTest(BaseActivitySubtypeTest):
 
     fixtures = [
-        "test/common/test_chemical_treatments.json",
         "test/common/test_employer",
         "test/common/test_jurisdictions",
         "test/common/test_funding_agency",
@@ -94,9 +94,86 @@ class BiocontrolReleaseTest(BaseActivitySubtypeTest):
         self.assertEqual(sd["spread_results"]["max_spread_aspect_deg"], 320)
 
     def test_submit_record(self):
-        """Expect Submitting a record returns 200"""
-        self.submit_record(MINIMAL_BIOCONTROL_DISPERSAL_MONITORING)
+        """
+        Expect:
+            - Submitting Record returns 200
+            - Record is created in DB
+        """
+        payload = MINIMAL_BIOCONTROL_RELEASE_MONITORING
+        self.submit_record(payload).json()
+        record = self.fetch(id=payload["id"]).json()
+
+        self.assertIsNotNone(record)
 
     def test_update_record(self):
-        """Expect Submitting an updated record returns 200"""
-        self.submit_record(UPDATED_BIOCONTROL_DISPERSAL_MONITORING)
+        """
+        Validates a Biocontrol Release Monitoring record by dynamically matching
+        API output parameters directly against the submitted payload source data.
+        """
+
+        payload = UPDATED_BIOCONTROL_RELEASE_MONITORING
+        record_id = payload["id"]
+
+        response = self.submit_record(payload)
+        data = response.json()
+
+        sub_out = data["subtype_data"]
+        sub_in = payload["subtype_data"]
+
+        self.assertEqual(
+            sub_out["spread_results"]["agent_density"],
+            sub_in["spread_results"]["agent_density"],
+        )
+        self.assertEqual(
+            sub_out["spread_results"]["max_spread_distance_m"],
+            sub_in["spread_results"]["max_spread_distance_m"],
+        )
+        self.assertEqual(
+            sub_out["spread_results"]["max_spread_aspect_deg"],
+            sub_in["spread_results"]["max_spread_aspect_deg"],
+        )
+
+        self.assertEqual(
+            sub_out["weather_conditions"]["precipitation"],
+            sub_in["weather_conditions"]["precipitation"],
+        )
+        self.assertEqual(
+            sub_out["target_plant_phenology"]["bolts"],
+            sub_in["target_plant_phenology"]["bolts"],
+        )
+
+        entry_out = sub_out["entries"][0]
+        entry_in = sub_in["entries"][0]
+
+        self.assertEqual(entry_out["biocontrol_agent"], entry_in["biocontrol_agent"])
+        self.assertEqual(entry_out["monitoring_method"], entry_in["monitoring_method"])
+        self.assertEqual(
+            entry_out["location_agent_found"], entry_in["location_agent_found"]
+        )
+        self.assertEqual(
+            entry_out["sign_of_biocontrol_presence"],
+            entry_in["sign_of_biocontrol_presence"],
+        )
+
+        self.assertIsNone(entry_out["plant_count"])
+        self.assertIsNone(entry_out["number_of_sweeps"])
+        self.assertIsNone(entry_out["linear_segment"])
+
+        self.assertIn("centroid", data)
+        self.assertEqual(data["centroid"]["type"], "Point")
+        self.assertAlmostEqual(
+            data["centroid"]["coordinates"][0], payload["longitude"], places=5
+        )
+        self.assertAlmostEqual(
+            data["centroid"]["coordinates"][1], payload["latitude"], places=5
+        )
+        self.assertEqual(data["shape"]["properties"]["id"], payload["short_id"])
+
+        db_record = Activity.objects.get(id=record_id)
+
+        self.assertEqual(db_record.subtype, payload["subtype"])
+        self.assertEqual(db_record.area_m, payload["area_m"])
+        self.assertEqual(db_record.form_status, payload["form_status"])
+        self.assertEqual(db_record.comment, payload["comment"])
+        self.assertEqual(db_record.created_by, payload["created_by"])
+        self.assertEqual(str(db_record.date), payload["date"])

@@ -47,7 +47,7 @@ MINIMAL_BIOCONTROL_RELEASE = {
             "wind_speed_kmh": 0,
         },
     },
-    "type": "Biocontrol",
+    "type": "Treatment",
     "media": [],
     "created_by": "johnsmith@identifier",
     "shape": {
@@ -130,7 +130,7 @@ UPDATED_BIOCONTROL_RELEASE = {
             "wind_speed_kmh": 0,
         },
     },
-    "type": "Biocontrol",
+    "type": "Treatment",
     "media": [],
     "created_by": "johnsmith@identifier",
     "shape": {

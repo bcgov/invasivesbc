@@ -13,7 +13,6 @@ from api.models.activity import (
 )
 from api.models.activity.activity import Activity
 from api.models.activity import UploadedImage
-from api.models.mixins.geometry import Geometry
 from api.utils.s3_media_files import S3MediaFiles
 from api.serializers.type.subtype import (
     AquaticChemicalTreatmentSerializer,
@@ -38,7 +37,7 @@ Serializers for all Common models in an Activity
 class UploadedImageSerializer(serializers.ModelSerializer):
     file_name = serializers.CharField()
     description = serializers.CharField()
-    encoded_file = serializers.SerializerMethodField()
+    encoded_file = serializers.CharField(required=True, write_only=True)
 
     class Meta:
         model = UploadedImage
@@ -48,9 +47,16 @@ class UploadedImageSerializer(serializers.ModelSerializer):
             "encoded_file",
         )
 
-    def get_encoded_file(self, obj):
-        encoded_image = S3MediaFiles().get_b64_encoded_image(obj.file_name)
-        return encoded_image
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        # Inject the base64 string from S3 into the response
+        try:
+            ret["encoded_file"] = S3MediaFiles().get_b64_encoded_image(
+                instance.file_name
+            )
+        except Exception:
+            ret["encoded_file"] = None
+        return ret
 
 
 class EmployerSerializer(serializers.ModelSerializer):
@@ -216,8 +222,11 @@ class ActivitySerializer(serializers.ModelSerializer):
 
         return feature_object
 
-    def get_centroid(self, obj: Geometry):
-        return json.loads(obj.centroid)
+    def get_centroid(self, obj):
+        if not obj.shape:
+            return None
+        centroid = obj.shape.centroid
+        return json.loads(centroid.json)
 
     def get_subtype_data(self, obj: Activity):
         """Maps the Activity to the proper Subtype Serializer, populating the form specific information"""

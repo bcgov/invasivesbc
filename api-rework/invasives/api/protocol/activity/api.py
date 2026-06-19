@@ -1,13 +1,16 @@
 from typing import List
-
+from django.http import JsonResponse
 from ninja import Router, Body
 from ninja.errors import HttpError
 from datetime import datetime
-import uuid
-from api.models.activity import Activity
+import uuid, json
+from django.contrib.gis.geos import GEOSGeometry
+from api.models.activity import Activity, ActivitySubtypes
+from api.serializers.activity import ActivitySerializer
+from api.schemas.plant_activity import ACTIVITY_PROCESSORS
 from api.ninja_authentication import NinjaKeycloakAuthentication
 from api.models.enums import FormStatus
-from api.models.activity import UploadedImage, ActivityDataRecord, Activity
+from api.models.activity import Activity
 from django.db import transaction
 from api.protocol.activity.activity import (
     ActivityMinimal,
@@ -59,32 +62,32 @@ def activity_search(request, search: ActivitySearchParameters):
     return result
 
 
-@router.post("/submit")
-def submit_record(request, data: PlantActivitySchema = Body(...)):
-    data = data.model_dump()
-    data["type"] = "Submitted"
-    if not Activity.objects.filter(id=data["id"]).exists():
-        val = mock_record_id()
-        data["id"] = val["id"]
-        data["short_id"] = val["short_id"]
-        return data  # Creation not implemented
-
+@router.post("/submit", response={200: dict})
+def submit_record(request, data: PlantActivitySchema):
     with transaction.atomic():
-        rec = Activity.objects.filter(id=data["id"]).first()
-        if not rec:
-            return data
-        for image in data["media"]:
-            adr = ActivityDataRecord.objects.create(activity=rec)
-            instance, created = UploadedImage.objects.get_or_create(
-                activity_data_record=adr,
-                file_name=image["file_name"],
-                description=image["description"],
-                encoded_file=image["encoded_file"],
-            )
-            if not created:
-                adr.delete()
+        payload = data.model_dump(exclude_unset=True)
+        payload["form_status"] = FormStatus.Submitted.value
 
-    return data
+        shape_data = payload.get("shape")
+        if shape_data:
+            geometry_dict = shape_data.get("geometry", shape_data)
+            payload["shape"] = GEOSGeometry(json.dumps(geometry_dict))
+
+        # Determine if Create or Update
+        activity_id = payload.get("id")
+        instance = Activity.objects.filter(id=activity_id).first()
+
+        if not instance:
+            payload["type"] = ActivitySubtypes[payload["subtype"]].typeOfActivity
+
+        subtype_key = payload.get("subtype")
+        processor = ACTIVITY_PROCESSORS.get(subtype_key)
+        if not processor:
+            raise HttpError(400, f"Unsupported activity subtype: {subtype_key}")
+
+        processed_activity = processor.process(payload=payload, instance=instance)
+        serialized_data = ActivitySerializer(processed_activity).data
+        return JsonResponse(serialized_data, status=200, safe=False)
 
 
 @router.post("/draft")

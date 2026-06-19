@@ -1,4 +1,5 @@
 from .base import BaseActivitySubtypeTest
+from api.models.activity import Activity
 from api.tests.mock_frontend_submissions import (
     MINIMAL_AQUATIC_OBSERVATION,
     UPDATED_AQUATIC_OBSERVATION,
@@ -99,9 +100,94 @@ class AquaticObservationTest(BaseActivitySubtypeTest):
         self.assertCountEqual(obs_detail, sd["entries"])
 
     def test_submit_record(self):
-        """Expect Submitting a record returns 200"""
-        self.submit_record(MINIMAL_AQUATIC_OBSERVATION)
+        """
+        Expect:
+            - Submitting Record returns 200
+            - Record is created in DB
+        """
+        payload = MINIMAL_AQUATIC_OBSERVATION
+        self.submit_record(payload).json()
+        record = self.fetch(id=payload["id"]).json()
+
+        self.assertIsNotNone(record)
 
     def test_update_record(self):
-        """Expect Submitting an updated record returns 200"""
-        self.submit_record(UPDATED_AQUATIC_OBSERVATION)
+        """
+        Validates that submitting an Aquatic Observation payload:
+        1. Correctly handles empty strings in nested entry lists by turning them to null.
+        2. Preserves and validates waterbody contexts (inflows/outflows, depths).
+        3. Asserts the shape properties dictionary successfully receives the system short_id.
+        4. Calculates and maps the calculated Point centroid.
+        5. Confirms persistent commits directly down to the DB layout level.
+        """
+        payload = UPDATED_AQUATIC_OBSERVATION
+        record_id = payload["id"]
+
+        response = self.submit_record(payload)
+        data = response.json()
+
+        first_entry_out = data["subtype_data"]["entries"][0]
+        first_entry_in = payload["subtype_data"]["entries"][0]
+
+        self.assertIsNone(first_entry_out["density"])
+        self.assertIsNone(first_entry_out["distribution"])
+        self.assertIsNone(first_entry_out["sample_point_id"])
+        self.assertIsNone(first_entry_out["voucher_specimen"])
+        self.assertEqual(
+            first_entry_out["invasive_plant"], first_entry_in["invasive_plant"]
+        )
+
+        wb_context_out = data["subtype_data"]["waterbody_context"]
+        wb_context_in = payload["subtype_data"]["waterbody_context"]
+
+        self.assertEqual(wb_context_out["type"], wb_context_in["type"])
+        self.assertEqual(wb_context_out["max_depth_m"], wb_context_in["max_depth_m"])
+        self.assertIsNone(wb_context_out["name_local"])
+
+        self.assertEqual(
+            wb_context_out["inflow_permanent"], wb_context_in["inflow_permanent"]
+        )
+        self.assertEqual(
+            wb_context_out["inflow_seasonal"], wb_context_in["inflow_seasonal"]
+        )
+        self.assertEqual(
+            wb_context_out["outflow_permanent"], wb_context_in["outflow_permanent"]
+        )
+        self.assertEqual(
+            wb_context_out["outflow_seasonal"], wb_context_in["outflow_seasonal"]
+        )
+
+        subtype_out = data["subtype_data"]
+        subtype_in = payload["subtype_data"]
+
+        self.assertEqual(subtype_out["substrate_type"], subtype_in["substrate_type"])
+        self.assertEqual(
+            len(subtype_out["shoreline_types"]), len(subtype_in["shoreline_types"])
+        )
+        self.assertEqual(
+            subtype_out["shoreline_types"][0]["shoreline_type"],
+            subtype_in["shoreline_types"][0]["shoreline_type"],
+        )
+        self.assertEqual(
+            subtype_out["shoreline_types"][0]["percent_covered"],
+            subtype_in["shoreline_types"][0]["percent_covered"],
+        )
+
+        self.assertIn("centroid", data)
+        self.assertEqual(data["centroid"]["type"], "Point")
+        self.assertAlmostEqual(
+            data["centroid"]["coordinates"][0], payload["longitude"], places=5
+        )
+        self.assertAlmostEqual(
+            data["centroid"]["coordinates"][1], payload["latitude"], places=5
+        )
+
+        self.assertEqual(data["shape"]["properties"]["id"], payload["short_id"])
+
+        db_record = Activity.objects.get(id=record_id)
+        self.assertEqual(db_record.type, payload["type"])
+        self.assertEqual(db_record.subtype, payload["subtype"])
+        self.assertEqual(db_record.area_m, payload["area_m"])
+        self.assertEqual(db_record.created_by, payload["created_by"])
+        self.assertEqual(db_record.form_status, payload["form_status"])
+        self.assertEqual(str(db_record.date), payload["date"])
