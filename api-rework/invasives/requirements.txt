@@ -36,6 +36,7 @@ mypy_extensions==1.1.0
 numpy==2.4.3
 packaging==25.0
 pathspec==1.0.0
+pillow==12.2.0
 platformdirs==4.5.1
 prompt_toolkit==3.0.52
 psycopg==3.3.2
