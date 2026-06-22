@@ -357,8 +357,47 @@ async function _validateCell(
       }
       break;
     case 'codeReferenceMulti':
-      //@todo
-      result.parsedValue = data;
+      {
+        const parsedValues: string[] = [];
+        const parsedDescriptions: string[] = [];
+        for (const code of data.split(',')) {
+          if (code.trim().length == 0) {
+            continue;
+          }
+          const foundCode = templateColumn.codes.find((c) => c.code === code.trim());
+          if (!foundCode) {
+            result.validationMessages.push({
+              severity: 'error',
+              messageTitle: 'Invalid code',
+              messageDetail: `Input string '${code}' is not valid for this cell.`
+            });
+          } else {
+            parsedValues.push(foundCode.code);
+            parsedDescriptions.push(foundCode.description);
+          }
+        }
+        if (new Set(parsedValues).size !== parsedValues.length) {
+          result.validationMessages.push({
+            severity: 'error',
+            messageTitle: 'Duplicate values',
+            messageDetail: `Input string '${data}' contains duplicate values.`
+          });
+        }
+        if (parsedValues.length === 0 && templateColumn.required) {
+          result.validationMessages.push({
+            severity: 'error',
+            messageTitle: 'A code is required and no valid codes were found',
+            messageDetail: `Input string '${data}' contained no valid codes, and a code is required.`
+          });
+        }
+
+        if (parsedValues.length > 0) {
+          result.parsedValue = parsedValues.join(','); // we don't actually store it as an array, for some reason!?
+          if (parsedDescriptions.length > 0) {
+            result.friendlyValue = parsedDescriptions.join(', ');
+          }
+        }
+      }
       break;
     case 'numeric':
       try {

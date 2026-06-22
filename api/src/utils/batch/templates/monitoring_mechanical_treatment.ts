@@ -1,3 +1,4 @@
+import { TREATMENT_PASS_CODES, YES_NO_CODES } from 'utils/batch/hard-coded-codes';
 import { Template, TemplateColumnBuilder } from 'utils/batch/definitions';
 import {
   ActivityPersons,
@@ -9,7 +10,6 @@ import {
   TreatmentEfficacyValidator,
   TreatmentMonitoringValidator
 } from 'utils/batch/shared-columns';
-import { TREATMENT_PASS_CODES, YES_NO_CODES } from '../hard-coded-codes';
 
 const MonitoringMechanical = new Template('monitoring_mechanical_treatment', 'Monitoring - Mechanical', null);
 
@@ -74,7 +74,7 @@ MonitoringMechanical.columns = [
 
   new TemplateColumnBuilder(
     'Monitoring - Invasive Plants on Site 1',
-    'codeReference',
+    'codeReferenceMulti',
     'form_data.activity_subtype_data.Monitoring_MechanicalTerrestrialAquaticPlant_Information[0].invasive_plants_on_site'
   )
     .isRequired()
@@ -134,7 +134,7 @@ MonitoringMechanical.columns = [
 
   new TemplateColumnBuilder(
     'Monitoring - Invasive Plants on Site 2',
-    'codeReference',
+    'codeReferenceMulti',
     'form_data.activity_subtype_data.Monitoring_MechanicalTerrestrialAquaticPlant_Information[1].invasive_plants_on_site'
   )
     .referencesCode('monitoring_evidence_code')
@@ -193,7 +193,7 @@ MonitoringMechanical.columns = [
 
   new TemplateColumnBuilder(
     'Monitoring - Invasive Plants on Site 3',
-    'codeReference',
+    'codeReferenceMulti',
     'form_data.activity_subtype_data.Monitoring_MechanicalTerrestrialAquaticPlant_Information[2].invasive_plants_on_site'
   )
     .referencesCode('monitoring_evidence_code')
