@@ -1,5 +1,7 @@
-import boto3, base64, io, logging
+import boto3, base64, logging
 from botocore.exceptions import ClientError
+from PIL import Image
+from io import BytesIO
 from invasivesbc.settings import (
     OBJECT_STORE_SECRET_ACCESS_KEY,
     OBJECT_STORE_ACCESS_KEY_ID,
@@ -58,16 +60,38 @@ class S3MediaFiles:
     def _parse_b64_encoded_image_to_binary(self, b64_string: str) -> str:
         if "base64," in b64_string:
             b64_string = b64_string.split("base64,")[-1]
-        return base64.b64decode(b64_string)  # binary
+        return base64.b64decode(b64_string, validate=True)  # binary
 
     def upload_b64_encoded_image(self, b64_image: str, file_name: str) -> bool:
         """Take User submitted URI Image and upload to S3"""
         try:
             binary = self._parse_b64_encoded_image_to_binary(b64_string=b64_image)
-            image_buffer = io.BytesIO(binary)
-            content_type = "image/jpeg"
-            if file_name.lower().endswith(".png"):
-                content_type = "image/png"
+            image_buffer = BytesIO(binary)
+
+            # Validate incoming "image"
+            image = Image.open(image_buffer)
+            image.verify()  # Confirms it's a real image
+
+            # Re-open because verify() closes/invalidates the image
+            image_buffer = BytesIO(binary)
+            image = Image.open(image_buffer)
+
+            # Determine content type from Pillow types
+            format_to_mime = {
+                "JPEG": "image/jpeg",
+                "PNG": "image/png",
+                "WEBP": "image/webp",
+                "GIF": "image/gif",
+            }
+
+            if image.format not in format_to_mime:
+                return False
+
+            content_type = format_to_mime[image.format]
+
+            # Reset buffer pointer
+            image_buffer.seek(0)
+
             self.s3_client.upload_fileobj(
                 Fileobj=image_buffer,
                 Bucket=OBJECT_STORE_PHOTO_UPLOAD_BUCKET,
