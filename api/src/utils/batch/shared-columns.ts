@@ -1374,7 +1374,7 @@ export const CalculationType = (row): RowValidationResult => {
   let valid = true;
   const rowData = row.data;
   const validationMessages = [];
-  let appliesToFields = [];
+  const appliesToFields = [];
 
   const calculationType = rowData[`Chemical Treatment - Calculation Type`]?.parsedValue;
   const dilutionFields = ['Herbicide - 1 - Dilution - Dilution %', 'Herbicide - 1 - Area Treated (Dilution)'];
@@ -1497,7 +1497,7 @@ export const BioAgentValidator = (row): RowValidationResult => {
   const rowData = row.data;
   const biocontrolPresent = rowData['Monitoring - Biocontrol Present']?.parsedValue;
   const validationMessages = [];
-  let appliesToFields = [];
+  const appliesToFields = [];
   let actualFields = [];
   let estimatedFields = [];
 
@@ -1624,7 +1624,7 @@ export const SpreadResultsValidator = (row): RowValidationResult => {
   ];
   const spreadDetailsRecorded = rowData['Monitoring - Results - Spread - Recorded?']?.parsedValue;
   const validationMessages = [];
-  let appliesToFields = [];
+  const appliesToFields = [];
 
   const allFieldsHaveData = (fields) => fields.every((field) => rowData[field]?.parsedValue);
 
