@@ -76,18 +76,7 @@ class S3MediaFiles:
             image_buffer = BytesIO(binary)
             image = Image.open(image_buffer)
 
-            # Determine content type from Pillow types
-            format_to_mime = {
-                "JPEG": "image/jpeg",
-                "PNG": "image/png",
-                "WEBP": "image/webp",
-                "GIF": "image/gif",
-            }
-
-            if image.format not in format_to_mime:
-                return False
-
-            content_type = format_to_mime[image.format]
+            content_type = image.get_format_mimetype()
 
             # Reset buffer pointer
             image_buffer.seek(0)
