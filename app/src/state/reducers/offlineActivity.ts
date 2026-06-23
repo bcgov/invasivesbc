@@ -69,7 +69,7 @@ function createOfflineActivityReducer(
         const { data, type } = action.payload;
         const cleanedData = FormActions.drillAndSimplify(data);
         const currTime = moment.now();
-        data.form_status = type === 'submit' ? ActivityStatus.SUBMITTED : data.form_status;
+        cleanedData.form_status = type === 'submit' ? ActivityStatus.SUBMITTED : data.form_status;
         const id = data?.id ?? crypto.randomUUID();
         draftState.serializedActivities[id] = {
           data: JSON.stringify(cleanedData),
