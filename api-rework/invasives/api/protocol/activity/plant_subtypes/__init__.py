@@ -1,4 +1,7 @@
-from .observation_terrestrial import ObservationTerrestrialSchema
+from .observation_terrestrial import (
+    ObservationTerrestrialSchema,
+    DraftObservationTerrestrialSchema,
+)
 from .observation_aquatic import ObservationAquaticSchema
 from .treatment_mechanical_terrestrial import TreatmentMechanicalTerrestrial
 from .treatment_mechanical_aquatic import TreatmentMechanicalAquatic

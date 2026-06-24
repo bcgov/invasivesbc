@@ -2,6 +2,7 @@ from typing import Union, Annotated
 from pydantic import Field
 from api.protocol.activity.plant_subtypes import (
     ObservationTerrestrialSchema,
+    DraftObservationTerrestrialSchema,
     ObservationAquaticSchema,
     TreatmentBiocontrolRelease,
     TreatmentChemicalTerrestrial,
@@ -31,4 +32,8 @@ PlantActivitySchema = Annotated[
         BiocontrolDispersalMonitoring,
     ],
     Field(discriminator="subtype"),
+]
+
+DraftPlantActivitySchema = Annotated[
+    Union[DraftObservationTerrestrialSchema], Field(discriminator="subtype")
 ]

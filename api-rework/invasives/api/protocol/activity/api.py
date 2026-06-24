@@ -18,9 +18,13 @@ from api.protocol.activity.activity import (
     ActivitySearchParameters,
     ActivitySearchResult,
 )
-from api.protocol.activity.plant_subtypes.union_definition import PlantActivitySchema
+from api.protocol.activity.plant_subtypes.union_definition import (
+    PlantActivitySchema,
+    DraftPlantActivitySchema,
+)
 
 router = Router(auth=NinjaKeycloakAuthentication())
+# router = Router()
 
 
 # Helper
@@ -91,12 +95,8 @@ def submit_record(request, data: PlantActivitySchema):
 
 
 @router.post("/draft")
-def submit_draft_record(request, data: PlantActivitySchema = Body(...)):
+def submit_draft_record(request, data: DraftPlantActivitySchema = Body(...)):
     data = data.model_dump()
-    val = mock_record_id()
-    data["id"] = val["id"]
-    data["short_id"] = val["short_id"]
-    data["type"] = "Draft"
     return data
 
 

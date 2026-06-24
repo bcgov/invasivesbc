@@ -31,14 +31,23 @@ class CleanSchema(Schema):
         return values
 
 
-class JurisdictionSchema(CleanSchema):
+class DraftJurisdictionSchema(CleanSchema):
+    jurisdiction: Optional[JurisdictionCodeType]
+    percent_covered: Optional[int]
+
+
+class JurisdictionSchema(DraftJurisdictionSchema):
     jurisdiction: JurisdictionCodeType
     percent_covered: int = Field(..., ge=0, le=100)
 
 
-class Participant(CleanSchema):
-    name: str
+class DraftParticipant(CleanSchema):
+    name: Optional[str] = None
     pac_number: Optional[int] = None
+
+
+class Participant(DraftParticipant, CleanSchema):
+    name: str
 
 
 class Employer(CleanSchema):
@@ -79,21 +88,41 @@ class Feature2D(CleanSchema):
     properties: dict | None = None
 
 
-class BaseFormSchema(CleanSchema):
+class DraftBaseFormSchema(CleanSchema):
     # Identifying Information (Subtype defined in Inherited Classes)
     date: date
-    id: Optional[str] = None  # Optional for first entries, required for updating.
-    linked_activities: List[LinkedActivity]
+    id: str
     created_by: str
-    employer: List[Employer] = Field(..., min_length=1)
-    form_status: Optional[FormStatus] = None
-    funding_agencies: List[FundingAgency] = Field(..., min_length=1)
-    jurisdictions: List[JurisdictionSchema] = Field(..., min_length=1)
+    form_status: FormStatus
+    linked_activities: List[LinkedActivity]
+    employer: List[Employer]
+    funding_agencies: List[FundingAgency]
+    jurisdictions: List[DraftJurisdictionSchema]
     media: List[Media]
-    participants: List[Participant] = Field(..., min_length=1)
+    participants: List[DraftParticipant]
     projects: List[ProjectCode]
 
     # Geometry Values
+    area_m: Optional[int]
+    shape: Optional[Feature2D] = None
+    latitude: Optional[float]
+    longitude: Optional[float]
+    utm_easting: Optional[int]
+    utm_northing: Optional[int]
+    utm_zone: Optional[int]
+
+    # Top-level Comments
+    access_description: Optional[str]
+    comment: Optional[str]
+    location_description: Optional[str]
+
+
+class BaseFormSchema(DraftBaseFormSchema, CleanSchema):
+    linked_activities: List[LinkedActivity]
+    employer: List[Employer] = Field(..., min_length=1)
+    funding_agencies: List[FundingAgency] = Field(..., min_length=1)
+    jurisdictions: List[JurisdictionSchema] = Field(..., min_length=1)
+    participants: List[Participant] = Field(..., min_length=1)
     area_m: int = Field(..., gt=0, le=MAX_AREA_FOR_RECORD)
     shape: Feature2D
     latitude: float
@@ -101,10 +130,6 @@ class BaseFormSchema(CleanSchema):
     utm_easting: int
     utm_northing: int
     utm_zone: int
-
-    # Top-level Comments
-    access_description: Optional[str] = None
-    comment: Optional[str] = None
     location_description: str = Field(..., min_length=5)
 
     @field_validator("date")

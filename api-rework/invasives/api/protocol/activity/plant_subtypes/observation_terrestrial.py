@@ -3,6 +3,7 @@ from pydantic import Field, model_validator, field_validator
 from api.protocol.activity.plant_subtypes.base_form_schema import (
     BaseFormSchema,
     CleanSchema,
+    DraftBaseFormSchema,
 )
 from api.protocol.activity.plant_subtypes.common.voucher_specimen import (
     VoucherSpecimenSchema,
@@ -25,25 +26,39 @@ class SpecificUseType(CleanSchema):
     specific_use: SpecificUseCodeType
 
 
-class Context(CleanSchema):
+class DraftContext(CleanSchema):
+    research_observation: Optional[YesNoUnknown]
+    suitable_for_biocontrol_agent: Optional[YesNoUnknown]
+    visible_well_nearby: Optional[YesNoUnknown]
+    aspect: Optional[AspectCodeType]
+    slope_percent: Optional[SlopePercentCodeType]
+    soil_texture: Optional[SoilTextureCodeType]
+    specific_uses: List[SpecificUseType]
+
+
+class Context(DraftContext):
     research_observation: YesNoUnknown
     suitable_for_biocontrol_agent: YesNoUnknown
     visible_well_nearby: YesNoUnknown
     aspect: AspectCodeType
     slope_percent: SlopePercentCodeType
-    soil_texture: Optional[SoilTextureCodeType] = None
     specific_uses: List[SpecificUseType] = Field(..., min_length=1)
 
 
-class Entry(CleanSchema):
-    observation_type: ObservationType
-    invasive_plant: TerrestrialPlantCodeType  # Always required
+class DraftEntry(CleanSchema):
+    observation_type: Optional[ObservationType]
+    invasive_plant: Optional[TerrestrialPlantCodeType]
 
     # These are technically Optional in the schema to allow "Negative" types to pass
     density: Optional[DensityCodeType] = None
     distribution: Optional[DistributionCodeType] = None
     life_stage: Optional[PlantLifeStageCodeType] = None
     voucher_specimen: Optional[VoucherSpecimenSchema] = None
+
+
+class Entry(DraftEntry):
+    observation_type: ObservationType
+    invasive_plant: TerrestrialPlantCodeType  # Always required
 
     @model_validator(mode="after")
     def check_observation_logic(self) -> "Entry":
@@ -58,7 +73,13 @@ class Entry(CleanSchema):
         return self
 
 
-class SubtypeData(CleanSchema):
+class DraftSubtypeData(CleanSchema):
+    context: DraftContext
+    pretreatment_observation: Optional[YesNoUnknown]
+    entries: List[DraftEntry]
+
+
+class SubtypeData(DraftSubtypeData):
     context: Context
     pretreatment_observation: YesNoUnknown
     entries: List[Entry] = Field(..., min_length=1)
@@ -67,6 +88,11 @@ class SubtypeData(CleanSchema):
     @classmethod
     def unique_plants(cls, v):
         return no_repeat_key(v, key="invasive_plant", key_label="Invasive Plant")
+
+
+class DraftObservationTerrestrialSchema(DraftBaseFormSchema):
+    subtype: Literal["Observation_Plant_Terrestrial"]
+    subtype_data: DraftSubtypeData = Field(...)
 
 
 class ObservationTerrestrialSchema(BaseFormSchema):
