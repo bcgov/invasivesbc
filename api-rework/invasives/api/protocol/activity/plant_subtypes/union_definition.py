@@ -4,11 +4,14 @@ from api.protocol.activity.plant_subtypes import (
     ObservationTerrestrialSchema,
     DraftObservationTerrestrialSchema,
     ObservationAquaticSchema,
+    DraftObservationAquaticSchema,
     TreatmentBiocontrolRelease,
     TreatmentChemicalTerrestrial,
     TreatmentChemicalAquatic,
     TreatmentMechanicalTerrestrial,
+    DraftTreatmentMechanicalTerrestrial,
     TreatmentMechanicalAquatic,
+    DraftTreatmentMechanicalAquatic,
     BiocontrolCollection,
     BiocontrolDispersalMonitoring,
     MonitoringMechanical,
@@ -35,5 +38,11 @@ PlantActivitySchema = Annotated[
 ]
 
 DraftPlantActivitySchema = Annotated[
-    Union[DraftObservationTerrestrialSchema], Field(discriminator="subtype")
+    Union[
+        DraftObservationTerrestrialSchema,
+        DraftObservationAquaticSchema,
+        DraftTreatmentMechanicalAquatic,
+        DraftTreatmentMechanicalTerrestrial,
+    ],
+    Field(discriminator="subtype"),
 ]

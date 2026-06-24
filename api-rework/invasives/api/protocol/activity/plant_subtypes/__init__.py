@@ -2,9 +2,18 @@ from .observation_terrestrial import (
     ObservationTerrestrialSchema,
     DraftObservationTerrestrialSchema,
 )
-from .observation_aquatic import ObservationAquaticSchema
-from .treatment_mechanical_terrestrial import TreatmentMechanicalTerrestrial
-from .treatment_mechanical_aquatic import TreatmentMechanicalAquatic
+from .observation_aquatic import (
+    ObservationAquaticSchema,
+    DraftObservationAquaticSchema,
+)
+from .treatment_mechanical_terrestrial import (
+    TreatmentMechanicalTerrestrial,
+    DraftTreatmentMechanicalTerrestrial,
+)
+from .treatment_mechanical_aquatic import (
+    TreatmentMechanicalAquatic,
+    DraftTreatmentMechanicalAquatic,
+)
 from .monitoring_mechanical import MonitoringMechanical
 from .monitoring_chemical import MonitoringChemical
 from .monitoring_biocontrol_release import MonitoringBiocontrolRelease

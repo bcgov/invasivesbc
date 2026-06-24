@@ -5,6 +5,7 @@ from api.protocol.activity.validators.check_sum import check_sum
 from api.protocol.activity.plant_subtypes.base_form_schema import (
     BaseFormSchema,
     CleanSchema,
+    DraftBaseFormSchema,
 )
 
 from api.models.enums import PlantDisposalFormat
@@ -16,9 +17,16 @@ from api.protocol.activity.validators.code_validation import (
 )
 
 
-class Entry(CleanSchema):
+class DraftEntry(CleanSchema):
     disposed_material_amount: Optional[int]
     disposed_material_format: Optional[PlantDisposalFormat]
+    disposal_method: Optional[DisposalMethodCodeType]
+    invasive_plant: Optional[AquaticPlantCodeType]
+    mechanical_method: Optional[PlantMechanicalTreatmentMethodCodeType]
+    treated_area_msq: Optional[int]
+
+
+class Entry(DraftEntry):
     disposal_method: DisposalMethodCodeType
     invasive_plant: AquaticPlantCodeType
     mechanical_method: PlantMechanicalTreatmentMethodCodeType
@@ -37,15 +45,25 @@ class Entry(CleanSchema):
         return self
 
 
-class ShorelineType(CleanSchema):
+class DraftShorelineType(CleanSchema):
+    shoreline_type: Optional[ShorelineTypeCodeType]
+    percent_covered: Optional[int]
+
+
+class ShorelineType(DraftShorelineType):
     shoreline_type: ShorelineTypeCodeType
     percent_covered: int = Field(..., gt=0, le=100)
 
 
-class SubtypeData(CleanSchema):
+class DraftSubtypeData(CleanSchema):
+    entries: List[DraftEntry]
+    shoreline_types: List[DraftShorelineType]
+    authorization_information: Optional[str] = None
+
+
+class SubtypeData(DraftSubtypeData):
     entries: List[Entry] = Field(..., min_length=1)
     shoreline_types: List[ShorelineType]
-    authorization_information: Optional[str] = None
 
     @field_validator("entries")
     @classmethod
@@ -61,6 +79,11 @@ class SubtypeData(CleanSchema):
     @classmethod
     def unique_shoreline_types(cls, v):
         return no_repeat_key(v, key="shoreline_type", key_label="Shoreline Types")
+
+
+class DraftTreatmentMechanicalAquatic(DraftBaseFormSchema):
+    subtype: Literal["Treatment_Mechanical_Plant_Aquatic"]
+    subtype_data: DraftSubtypeData
 
 
 class TreatmentMechanicalAquatic(BaseFormSchema):
