@@ -323,7 +323,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
           {map.current !== null && (
             <>
               <DisplayComposite />
-              <DrawControls />
+              <DrawControls mapReady={mapReady} />
 
               <Suspense fallback={<Spinner />}>
                 <OfflineProtoMapsDebugModal />
