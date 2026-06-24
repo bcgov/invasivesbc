@@ -9,15 +9,14 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND
 
 from api.models import MapGenerationRecord, RasterMapGenerationRequest
-from api.permissions import HasAdminRole
 from api.serializers.map_generation import (
-    MapGenerationEstimateSerializer,
-    MapGenerationRecordSerializer,
-    MapGenerationRequestSerializer,
-    MapGenerationRequestShallowSerializer,
+  MapGenerationEstimateSerializer,
+  MapGenerationRecordSerializer,
+  MapGenerationRequestSerializer,
+  MapGenerationRequestShallowSerializer,
 )
 from api.serializers.map_generation import (
-    MapGenerationRequestProgressAndLinkSerializer,
+  MapGenerationRequestProgressAndLinkSerializer,
 )
 from api.services.map_tile_generator.definitions import ProtomapGenerationParameters
 from api.tasks import dispatch_map_generation_request
@@ -89,7 +88,7 @@ class MapGenerationRequestViewSet(viewsets.ViewSet):
 
 class MapGenerationRecordViewset(viewsets.ViewSet):
 
-    permission_classes = [HasAdminRole]
+    permission_classes = [IsAuthenticated]
     http_method_names = ["get"]
 
     def retrieve(self, request, *args, **kwargs):
