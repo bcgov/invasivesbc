@@ -104,12 +104,6 @@ const ActivityForm = () => {
     if (!id || id.length !== 36) return;
     dispatch(ActivityActions.loadActivityIfRequired(id));
   }, [id]);
-  /**
-   *  Register geom key (Shape appearing on map, not values assigned to components)
-   */
-  useEffect(() => {
-    register('geom');
-  }, [register]);
 
   /** Trigger Geometry Updates when Redux state changes */
   useEffect(() => {

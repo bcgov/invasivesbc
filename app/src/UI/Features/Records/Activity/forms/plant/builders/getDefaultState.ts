@@ -66,7 +66,7 @@ const getDefaultFormState = (subtype: ActivitySubtypes, created_by?: string): Fo
   return {
     id,
     short_id,
-    employer: '',
+    employer: [],
     subtype: subtype,
     funding_agencies: [],
     jurisdictions: [{ jurisdiction: '', percent_covered: 0 }],
@@ -77,7 +77,7 @@ const getDefaultFormState = (subtype: ActivitySubtypes, created_by?: string): Fo
     date: new Date().toISOString().slice(0, 10),
     comment: '',
     area_m: 0,
-    geom: undefined,
+    shape: undefined,
     latitude: 0,
     longitude: 0,
     utm_zone: 0,

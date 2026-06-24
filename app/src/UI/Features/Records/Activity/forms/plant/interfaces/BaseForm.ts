@@ -20,7 +20,7 @@ interface BaseForm {
   utm_zone: number;
   utm_easting: number;
   utm_northing: number;
-  employer: string;
+  employer: Array<{ employer: string }>;
   participants: Array<{
     name: string;
     pac_number?: number;
