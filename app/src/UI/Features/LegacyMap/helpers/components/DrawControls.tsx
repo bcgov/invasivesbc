@@ -66,9 +66,9 @@ const DrawControls = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const drawInstance = useRef<MapboxDraw>();
-  const drawModeDisplay = useRef<DrawModeDisplay>();
-  const editControls = useRef<EditControls>();
+  const drawInstance = useRef<MapboxDraw | undefined>(undefined);
+  const drawModeDisplay = useRef<DrawModeDisplay | undefined>(undefined);
+  const editControls = useRef<EditControls | undefined>(undefined);
   const isEditing = useRef(false);
 
   // keep a ref to mode so we don't need to keep re-binding the callback for maplibre. keep it in sync with a hook.
@@ -454,7 +454,7 @@ const DrawControls = () => {
   }, [mode]);
 
   useEffect(() => {
-    if (!map) {
+    if (map == null) {
       return;
     }
 
@@ -564,26 +564,26 @@ const DrawControls = () => {
 
     // cleanup
     return () => {
-      if (!map) {
+      if (map == null) {
         return;
       }
 
-      map.off('draw.create', drawCreate);
-      map.off('draw.selectionChange', (evt) => drawShapeUpdate(evt, map));
-
-      if (drawInstance.current) {
-        (map as unknown as mapboxgl.Map).removeControl(drawInstance.current);
-        drawInstance.current = undefined;
-      }
-
-      if (drawModeDisplay.current) {
-        map.removeControl(drawModeDisplay.current);
-        drawModeDisplay.current = undefined;
-      }
-      if (editControls.current) {
-        map.removeControl(editControls.current);
-        editControls.current = undefined;
-      }
+      // map.off('draw.create', drawCreate);
+      // map.off('draw.selectionChange', (evt) => drawShapeUpdate(evt, map));
+      //
+      // if (drawInstance.current) {
+      //   (map as unknown as mapboxgl.Map).removeControl(drawInstance.current);
+      //   drawInstance.current = undefined;
+      // }
+      //
+      // if (drawModeDisplay.current) {
+      //   map.removeControl(drawModeDisplay.current);
+      //   drawModeDisplay.current = undefined;
+      // }
+      // if (editControls.current) {
+      //   map.removeControl(editControls.current);
+      //   editControls.current = undefined;
+      // }
     };
   }, [map]);
 

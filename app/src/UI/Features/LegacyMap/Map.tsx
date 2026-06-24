@@ -6,12 +6,10 @@ import { useSelector } from 'utils/use_selector';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
 import { InvasivesMap } from 'UI/Features/LegacyMap/InvasivesMap';
-import { PositionMarkers } from 'UI/Features/LegacyMap/helpers/components/PositionMarkers';
 import * as maplibregl from 'maplibre-gl/dist/maplibre-gl-dev';
 import { PMTiles, Protocol } from 'pmtiles';
 import { TileCacheService } from 'utils/tile-cache';
 import { CurrentActivityLayer } from 'UI/Features/LegacyMap/helpers/components/CurrentActivityLayer';
-import { DrawControls } from 'UI/Features/LegacyMap/helpers/components/DrawControls';
 import DisplayComposite from './helpers/components/DisplayComposite/DisplayComposite';
 import { StartupContext } from 'UI/StartupCoordinator/StartupCoordinator';
 import {
@@ -38,6 +36,8 @@ import LayerDataMarker from './helpers/components/LayerDataMarker/LayerDataMarke
 import { useRecordSetControls } from 'utils/useRecordSetControls';
 import OfflineRecordsetLayer from './helpers/components/OfflineRecordsetLayer';
 import { useOfflineRecordSetLayers } from 'utils/useOfflineRecordSetLayers';
+import { DrawControls } from 'UI/Features/LegacyMap/helpers/components/DrawControls';
+import { PositionMarkers } from 'UI/Features/LegacyMap/helpers/components/PositionMarkers';
 
 const OfflineProtoMapsDebugModal = React.lazy(
   () => import('UI/Features/LegacyMap/helpers/components/OfflineProtomaps/Debug')
@@ -46,7 +46,7 @@ const OfflineProtoMapsDebugModal = React.lazy(
 export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
   const { tileService: tileCache } = useContext(StartupContext);
 
-  const mapContainer: React.MutableRefObject<HTMLDivElement | null> = useRef<HTMLDivElement>(null);
+  const mapContainer = useRef<HTMLDivElement>(null);
 
   // Auth + Network
   const loggedInOrWorkingOffline = useSelector((state) => state.Auth.loggedInOrWorkingOffline);
@@ -62,7 +62,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
   const map_center = useSelector((state) => state.Map.map_center);
   const map_zoom = useSelector((state) => state.Map.map_zoom);
   const { recordsetLayers: offlineLayers, recordsetSources: offlineSources } = useOfflineRecordSetLayers();
-  const [map, setMap] = useState<InvasivesMap>();
+  const map = useRef<InvasivesMap | null>(null);
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
   const [mapReady, setMapReady] = useState<boolean>(false);
 
@@ -73,8 +73,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
 
   useEffect(() => {
     if (!mapContainer.current) {
-      console.error('Mapinit invoked with invalid reference');
-      throw new Error('Mapinit invoked with invalid reference');
+      return;
     }
 
     maplibregl.addProtocol('api', async (request) => {
@@ -208,87 +207,96 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
       return {};
     })();
 
-    setMap(
-      new InvasivesMap({
-        container: mapContainer.current,
-        maxZoom: 24,
-        ...tileCacheSettings,
-        zoom: 3,
-        minZoom: 0,
-        center: [map_center[0], map_center[1]],
-        style: {
-          glyphs: configuration.build.MOBILE
-            ? '/assets/basemaps/fonts/{fontstack}/{range}.pbf'
-            : 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
-          version: 8,
-          sources: {},
-          layers: POSITIONING_LAYERS
-        }
-      })
-    );
-  }, []);
-
-  useEffect(() => {
-    if (!map || mapReady) return;
-
-    map.once('idle', function () {
-      if (map !== null) {
-        map.resize();
+    map.current = new InvasivesMap({
+      container: mapContainer.current,
+      maxZoom: 24,
+      ...tileCacheSettings,
+      zoom: 3,
+      minZoom: 0,
+      center: [map_center[0], map_center[1]],
+      style: {
+        glyphs: configuration.build.MOBILE
+          ? '/assets/basemaps/fonts/{fontstack}/{range}.pbf'
+          : 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
+        version: 8,
+        sources: {},
+        layers: POSITIONING_LAYERS
       }
     });
 
-    if (map.isStyleLoaded()) {
-      setMapReady(true);
-    }
-  }, [map?.isStyleLoaded()]);
+    map.current.once('idle', function () {
+      if (map.current !== null) {
+        map.current.resize();
+      }
+      if (map.current.isStyleLoaded()) {
+        setMapReady(true);
+      }
+    });
+
+    return () => {
+      if (map.current !== null) {
+        map.current.remove();
+      }
+    };
+  }, [mapContainer.current]);
 
   useEffect(() => {
-    if (!mapReady || !map) return;
+    if (!mapReady) return;
+    if (map.current == null) return;
+
     if (loggedInOrWorkingOffline) {
-      addServerBoundariesIfNotExists(serverBoundaries, map);
-      refreshServerBoundariesOnToggle(serverBoundaries, map);
+      addServerBoundariesIfNotExists(serverBoundaries, map.current);
+      refreshServerBoundariesOnToggle(serverBoundaries, map.current);
     }
-  }, [serverBoundaries, loggedInOrWorkingOffline, map, mapReady]);
+  }, [serverBoundaries, loggedInOrWorkingOffline, map.current, mapReady]);
 
   // Custom Layers:
   useEffect(() => {
-    if (!mapReady || !map) return;
+    if (!mapReady) return;
+    if (map.current == null) return;
 
     if (!loggedInOrWorkingOffline) {
-      removeClientBoundaries(clientBoundaries, map);
+      removeClientBoundaries(clientBoundaries, map.current);
       return;
     }
 
-    addClientBoundariesIfNotExists(clientBoundaries, map);
-    refreshClientBoundariesOnToggle(clientBoundaries, map);
-    removeOrphanClientBoundaries(clientBoundaries, map);
-  }, [clientBoundaries, map, mapReady, loggedInOrWorkingOffline]);
+    addClientBoundariesIfNotExists(clientBoundaries, map.current);
+    refreshClientBoundariesOnToggle(clientBoundaries, map.current);
+    removeOrphanClientBoundaries(clientBoundaries, map.current);
+  }, [clientBoundaries, map.current, mapReady, loggedInOrWorkingOffline]);
 
   // Jump Nav
   useEffect(() => {
     if (!mapReady) return;
-    if (!map) return;
+    if (map.current == null) return;
 
     try {
       if (map_center && map_zoom) {
-        map.easeTo({
+        map.current.easeTo({
           center: map_center,
           zoom: map_zoom,
-          offset: [0, map.getContainer().clientHeight * -0.2]
+          offset: [0, map.current.getContainer().clientHeight * -0.2]
         });
       }
     } catch (e) {
       console.error(e);
     }
-  }, [map, mapReady, map_center, map_zoom]);
+  }, [map.current, mapReady, map_center, map_zoom]);
 
   useEffect(() => {
-    setInterval(() => {
-      if (map) {
-        setMapLoaded(map.areTilesLoaded());
+    if (map.current == null) {
+      return;
+    }
+
+    const intervalID = setInterval(() => {
+      if (map.current !== null) {
+        setMapLoaded(map.current.areTilesLoaded());
       }
     }, 1000);
-  }, [map]);
+    return () => {
+      clearInterval(intervalID);
+    };
+  }, [map.current]);
 
   const buttonContainerLayerSelect = useCallback(
     (name: string) => {
@@ -311,42 +319,48 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
         <div id="LoadingMap" className={!mapLoaded ? 'loadingMap' : 'loadedMap'}>
           Loading tiles...
         </div>
+        <MapContext.Provider value={map.current}>
+          {map.current !== null && (
+            <>
+              <DisplayComposite />
+              <DrawControls />
 
-        <MapContext.Provider value={map}>
-          <DisplayComposite />
-          <DrawControls />
+              <Suspense fallback={<Spinner />}>
+                <OfflineProtoMapsDebugModal />
+              </Suspense>
 
-          <Suspense fallback={<Spinner />}>
-            <OfflineProtoMapsDebugModal />
-          </Suspense>
+              <ButtonContainer selectLayer={buttonContainerLayerSelect} layers={availableLayerDefinitions} />
 
-          <ButtonContainer selectLayer={buttonContainerLayerSelect} layers={availableLayerDefinitions} />
+              {[...Object.entries(recordsetSources), ...Object.entries(sources), ...Object.entries(offlineSources)].map(
+                ([key, source]) => (
+                  <SourceComponent mapReady={mapReady} key={key} id={key} source={source} />
+                )
+              )}
 
-          {[...Object.entries(recordsetSources), ...Object.entries(sources), ...Object.entries(offlineSources)].map(
-            ([key, source]) => (
-              <SourceComponent mapReady={mapReady} key={key} id={key} source={source} />
-            )
+              {[...layers, ...recordsetLayers, ...offlineLayers].map((layer) => (
+                <LayerComponent mapReady={mapReady} key={layer.id} id={layer.id} layer={layer} />
+              ))}
+
+              {[...Object.keys(sources), ...Object.keys(recordsetSources), ...Object.keys(offlineSources)].map(
+                (key) => (
+                  <SourceCleanupComponent mapReady={mapReady} key={key} id={key} />
+                )
+              )}
+
+              <PositionMarkers mapReady={mapReady} />
+              <LayerDataMarker />
+              <CurrentActivityLayer mapReady={mapReady} />
+              {loggedInOrWorkingOffline && (
+                <LayerPicker layers={availableLayerDefinitions} setOverlayState={setOverlayState} />
+              )}
+              <MobileOnly>
+                <CachedMapLayer mapReady={mapReady} />
+                <OfflineRecordsetLayer mapReady={mapReady} />
+              </MobileOnly>
+            </>
           )}
-
-          {[...layers, ...recordsetLayers, ...offlineLayers].map((layer) => (
-            <LayerComponent mapReady={mapReady} key={layer.id} id={layer.id} layer={layer} />
-          ))}
-
-          {[...Object.keys(sources), ...Object.keys(recordsetSources), ...Object.keys(offlineSources)].map((key) => (
-            <SourceCleanupComponent mapReady={mapReady} key={key} id={key} />
-          ))}
-
-          <PositionMarkers mapReady={mapReady} />
-          <LayerDataMarker />
-          <CurrentActivityLayer mapReady={mapReady} />
-          {loggedInOrWorkingOffline && (
-            <LayerPicker layers={availableLayerDefinitions} setOverlayState={setOverlayState} />
-          )}
-          <MobileOnly>
-            <CachedMapLayer mapReady={mapReady} />
-            <OfflineRecordsetLayer mapReady={mapReady} />
-          </MobileOnly>
         </MapContext.Provider>
+
         {children}
       </div>
     </div>
