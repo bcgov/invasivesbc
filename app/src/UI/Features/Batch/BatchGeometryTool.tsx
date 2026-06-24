@@ -228,7 +228,7 @@ const BatchGeometryTool = () => {
     <div className={'geometry-tool'}>
       <h2 className={'header'}>WKT Geometry Tool</h2>
       <div className={'help'}>
-        <h4>About</h4>
+        <h3>About</h3>
         <p>
           The batch templates accept activity geometries in WKT format. These tools are provided to help you draw and
           verify WKT values.
@@ -289,7 +289,7 @@ const BatchGeometryTool = () => {
         </Button>
       </div>
       <div className={'result'}>
-        <h4>Results</h4>
+        <h3>Results</h3>
         <p>{descriptiveText}</p>
         {shapeArea && <p>Area {shapeArea.toLocaleString()} m²</p>}
         {tooBig && <p>Shape exceeds {(50000).toLocaleString()} m²</p>}

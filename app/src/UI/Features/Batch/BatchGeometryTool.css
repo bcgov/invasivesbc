@@ -27,11 +27,11 @@ div.geometry-tool {
     grid-area: help;
 
     p,
-    h4 {
+    h3 {
       text-align: justify;
     }
 
-    h4 {
+    h3 {
       margin: 0;
     }
   }
