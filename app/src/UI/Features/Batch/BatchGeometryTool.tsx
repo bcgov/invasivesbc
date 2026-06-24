@@ -10,6 +10,7 @@ import { Button, Slider } from '@mui/material';
 import { CopyAll } from '@mui/icons-material';
 
 const BatchGeometryTool = () => {
+  const MAX_AREA_MSQ = 500000;
   const mapContainer = useRef<HTMLDivElement | null>(null);
   const map = useRef<InvasivesMap | null>(null);
   const [mapReady, setMapReady] = useState(false);
@@ -93,7 +94,7 @@ const BatchGeometryTool = () => {
 
     const computedArea = (polygon && Math.round(area(polygon))) || undefined;
     setShapeArea(computedArea);
-    setTooBig((computedArea && computedArea > 50000) || false);
+    setTooBig((computedArea && computedArea > MAX_AREA_MSQ) || false);
 
     if (polygon) {
       if (polygon.geometry.type === 'Polygon') {
