@@ -252,6 +252,7 @@ const BatchGeometryTool = () => {
           value={bufferedRadius}
           disabled={bufferSliderDisabled}
           className={'radius-slider'}
+          sx={{ width: '80%' }}
           min={1}
           max={10}
           marks
@@ -291,7 +292,7 @@ const BatchGeometryTool = () => {
       <div className={'result'}>
         <h3>Results</h3>
         <p>{descriptiveText}</p>
-        {shapeArea && <p>Area {shapeArea.toLocaleString()} m²</p>}
+        {shapeArea && <p>Area: {shapeArea.toLocaleString()} m²</p>}
         {tooBig && <p>Shape exceeds {(50000).toLocaleString()} m²</p>}
         {kinked && <p>The polygon you've drawn is self-intersecting</p>}
       </div>
