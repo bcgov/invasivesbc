@@ -69,7 +69,7 @@ def activity_search(request, search: ActivitySearchParameters):
 @router.post("/submit", response={200: dict})
 def submit_record(request, data: PlantActivitySchema):
     with transaction.atomic():
-        payload = data.model_dump(exclude_unset=True)
+        payload = data.model_dump(mode="python", exclude_unset=True)
         payload["form_status"] = FormStatus.Submitted.value
 
         shape_data = payload.get("shape")
@@ -96,8 +96,8 @@ def submit_record(request, data: PlantActivitySchema):
 
 @router.post("/draft")
 def submit_draft_record(request, data: DraftPlantActivitySchema = Body(...)):
-    data = data.model_dump()
-    return data
+    data = data.model_dump(mode="json")
+    return JsonResponse(data, status=200, safe=False)
 
 
 @router.api_operation(["GET"], "/{id}", response=ActivityOut)
