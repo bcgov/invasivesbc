@@ -1,11 +1,10 @@
-import { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import TileCache from 'state/actions/cache/TileCache';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { DoNothing } from 'UI/Features/LegacyMap/helpers/functional/do-nothing-mode';
-import { IControl } from 'maplibre-gl/dist/maplibre-gl-dev';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import { InvasivesMap } from 'UI/Features/LegacyMap/InvasivesMap';
 import Prompt from 'state/actions/prompts/Prompt';
@@ -39,7 +38,7 @@ MapboxDraw.constants.classes.CONTROL_PREFIX = 'maplibregl-ctrl-';
 // @ts-expect-error mapboxdraw compatibility with maplibre-gl issue
 MapboxDraw.constants.classes.CONTROL_GROUP = 'maplibregl-ctrl-group';
 
-const DrawControls = () => {
+const DrawControls: React.FC<{ mapReady: boolean }> = ({ mapReady }) => {
   const map = useContext(MapContext);
 
   const whatsHereToggle = useSelector((state) => state.Map.whatsHere.toggle);
@@ -66,9 +65,9 @@ const DrawControls = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const drawInstance = useRef<MapboxDraw>();
-  const drawModeDisplay = useRef<DrawModeDisplay>();
-  const editControls = useRef<EditControls>();
+  const drawInstance = useRef<MapboxDraw | undefined>(undefined);
+  const drawModeDisplay = useRef<DrawModeDisplay | undefined>(undefined);
+  const editControls = useRef<EditControls | undefined>(undefined);
   const isEditing = useRef(false);
 
   // keep a ref to mode so we don't need to keep re-binding the callback for maplibre. keep it in sync with a hook.
@@ -78,6 +77,54 @@ const DrawControls = () => {
   const prevMode = useRef<TargetMode>(TargetMode.DISABLED);
 
   const isEditDisabled = ![TargetMode.ACTIVITY].includes(mode);
+
+  const installHandlers = useCallback(() => {
+    if (map == null) {
+      return;
+    }
+    if (!mapReady) {
+      return;
+    }
+
+    map.on('draw.create', drawCreate);
+    map.on('draw.selectionchange', (evt) => drawShapeUpdate(evt, map));
+
+    if (drawInstance.current) {
+      map.addControl(drawInstance.current as unknown as IControl, 'top-left');
+    }
+    if (editControls.current) {
+      map.addControl(editControls.current, 'top-left');
+    }
+    if (drawModeDisplay.current) {
+      map.addControl(drawModeDisplay.current, 'top-left');
+    }
+  }, [map, mapReady, drawInstance.current, editControls.current, drawModeDisplay.current]);
+
+  const removeHandlers = useCallback(() => {
+    if (map == null) {
+      return;
+    }
+    if (!mapReady) {
+      return;
+    }
+
+    map.off('draw.create', drawCreate);
+    map.off('draw.selectionChange', (evt) => drawShapeUpdate(evt, map));
+
+    if (drawInstance.current) {
+      (map as unknown as mapboxgl.Map).removeControl(drawInstance.current);
+      drawInstance.current = undefined;
+    }
+
+    if (drawModeDisplay.current) {
+      map.removeControl(drawModeDisplay.current);
+      drawModeDisplay.current = undefined;
+    }
+    if (editControls.current) {
+      map.removeControl(editControls.current);
+      editControls.current = undefined;
+    }
+  }, [map, mapReady, drawInstance.current, editControls.current, drawModeDisplay.current]);
 
   /**
    * @desc Dispatch Custom event for when the Edit Button is used. Listened to by `LayerDataMarker.tsx`
@@ -454,7 +501,10 @@ const DrawControls = () => {
   }, [mode]);
 
   useEffect(() => {
-    if (!map) {
+    if (map == null) {
+      return;
+    }
+    if (!mapReady) {
       return;
     }
 
@@ -555,37 +605,13 @@ const DrawControls = () => {
     drawModeDisplay.current = new DrawModeDisplay(mode);
     editControls.current = new EditControls(handleEdit, handleSave, isEditDisabled);
 
-    map.on('draw.create', drawCreate);
-    map.on('draw.selectionchange', (evt) => drawShapeUpdate(evt, map));
-
-    map.addControl(drawInstance.current as unknown as IControl, 'top-left');
-    map.addControl(editControls.current, 'top-left');
-    map.addControl(drawModeDisplay.current, 'top-left');
+    installHandlers();
 
     // cleanup
     return () => {
-      if (!map) {
-        return;
-      }
-
-      map.off('draw.create', drawCreate);
-      map.off('draw.selectionChange', (evt) => drawShapeUpdate(evt, map));
-
-      if (drawInstance.current) {
-        (map as unknown as mapboxgl.Map).removeControl(drawInstance.current);
-        drawInstance.current = undefined;
-      }
-
-      if (drawModeDisplay.current) {
-        map.removeControl(drawModeDisplay.current);
-        drawModeDisplay.current = undefined;
-      }
-      if (editControls.current) {
-        map.removeControl(editControls.current);
-        editControls.current = undefined;
-      }
+      removeHandlers();
     };
-  }, [map]);
+  }, [map, mapReady]);
 
   if (![TargetMode.DISABLED, TargetMode.ACTIVITY_GEO_TRACK].includes(mode)) {
     return (
