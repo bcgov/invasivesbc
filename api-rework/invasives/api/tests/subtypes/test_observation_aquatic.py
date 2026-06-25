@@ -1,6 +1,7 @@
 from .base import BaseActivitySubtypeTest
 from api.models.activity import Activity
 from api.tests.mock_frontend_submissions import (
+    EMPTY_AQUATIC_OBSERVATION,
     MINIMAL_AQUATIC_OBSERVATION,
     UPDATED_AQUATIC_OBSERVATION,
 )
@@ -98,6 +99,13 @@ class AquaticObservationTest(BaseActivitySubtypeTest):
         ]
 
         self.assertCountEqual(obs_detail, sd["entries"])
+
+    def test_draft_submissions(self):
+        self.draft_pydantic_protocol_test(
+            empty_record=EMPTY_AQUATIC_OBSERVATION,
+            minimal_record=MINIMAL_AQUATIC_OBSERVATION,
+            full_record=UPDATED_AQUATIC_OBSERVATION,
+        )
 
     def test_submit_record(self):
         """

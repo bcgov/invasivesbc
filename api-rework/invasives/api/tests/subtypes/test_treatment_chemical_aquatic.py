@@ -1,5 +1,6 @@
 from .base import BaseActivitySubtypeTest
 from api.tests.mock_frontend_submissions import (
+    EMPTY_CHEM_TREATMENT_AQUATIC,
     MINIMAL_CHEM_TREATMENT_AQUATIC,
     UPDATED_CHEM_TREATMENT_AQUATIC,
 )
@@ -19,6 +20,13 @@ class AquaticChemicalTreatmentTest(BaseActivitySubtypeTest):
         "test/common/test_nearest_wells",
         "test/common/test_participants",
     ]
+
+    def test_draft_submissions(self):
+        self.draft_pydantic_protocol_test(
+            empty_record=EMPTY_CHEM_TREATMENT_AQUATIC,
+            minimal_record=MINIMAL_CHEM_TREATMENT_AQUATIC,
+            full_record=UPDATED_CHEM_TREATMENT_AQUATIC,
+        )
 
     def test_subtype_values(self):
         record = self.fetch_a().json()

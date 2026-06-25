@@ -1,6 +1,7 @@
 from .base import BaseActivitySubtypeTest
 from api.models.activity import Activity
 from api.tests.mock_frontend_submissions import (
+    EMPTY_MONITORING_MECH_TREATMENT,
     MINIMAL_MONITORING_MECH_TREATMENT,
     UPDATED_MONITORING_MECH_TREATMENT,
 )
@@ -30,6 +31,13 @@ class MechanicalTreatmentMonitoringTest(BaseActivitySubtypeTest):
         self.assertEqual(tmi["invasive_plant"], "JK")
         self.assertEqual(tmi["evidence_of_treatment"], "No")
         self.assertEqual(tmi["management_efficacy_rating"], "6M")
+
+    def test_draft_submissions(self):
+        self.draft_pydantic_protocol_test(
+            empty_record=EMPTY_MONITORING_MECH_TREATMENT,
+            minimal_record=MINIMAL_MONITORING_MECH_TREATMENT,
+            full_record=UPDATED_MONITORING_MECH_TREATMENT,
+        )
 
     def test_submit_record(self):
         """

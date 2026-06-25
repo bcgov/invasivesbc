@@ -1,5 +1,6 @@
 from .base import BaseActivitySubtypeTest
 from api.tests.mock_frontend_submissions import (
+    EMPTY_CHEM_TREATMENT_TERRESTRIAL,
     MINIMAL_CHEM_TREATMENT_TERRESTRIAL,
     UPDATED_CHEM_TREATMENT_TERRESTRIAL,
 )
@@ -47,6 +48,13 @@ class TerrestrialChemicalTreatmentTest(BaseActivitySubtypeTest):
         for well in wells:
             self.assertIsNotNone(well["well_tag"])
             self.assertIsNotNone(well["distance"])
+
+    def test_draft_submissions(self):
+        self.draft_pydantic_protocol_test(
+            empty_record=EMPTY_CHEM_TREATMENT_TERRESTRIAL,
+            minimal_record=MINIMAL_CHEM_TREATMENT_TERRESTRIAL,
+            full_record=UPDATED_CHEM_TREATMENT_TERRESTRIAL,
+        )
 
     def test_submit_record(self):
         """Expect Submitting a record returns 200"""
