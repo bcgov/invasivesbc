@@ -178,12 +178,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: PayloadAction<Featur
     if (reported_area < MAX_AREA && !isWIPLinestring && latitude && longitude) {
       const nearestWells = yield getClosestWells(sanitizedGeo);
       wellsAreWithinRecordArea = nearestWells.areWellsInside;
-      if (nearestWells?.well_objects.length === 0) {
-        wellInformationArr.push({
-          well_id: 'No wells found',
-          well_proximity: 'No wells found'
-        });
-      } else {
+      if (nearestWells?.well_objects.length > 0) {
         nearestWells.well_objects.forEach((well) => {
           if (well.proximity || well.inside) {
             wellInformationArr.push({
