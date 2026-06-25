@@ -1,6 +1,45 @@
+EMPTY_CHEM_TREATMENT_MONITORING = {
+    "id": "108eabd2-1d44-4b44-8cb1-cf6a9ebca2c5",
+    "short_id": "26PMC108EABD2",
+    "employer": [],
+    "subtype": "Monitoring_Chemical_Plant_Terrestrial_Aquatic",
+    "funding_agencies": [],
+    "jurisdictions": [{"jurisdiction": "", "percent_covered": 0}],
+    "projects": [],
+    "location_description": "",
+    "access_description": "",
+    "form_status": "Draft",
+    "date": "2026-06-25",
+    "comment": "",
+    "area_m": 0,
+    "latitude": 0,
+    "longitude": 0,
+    "utm_zone": 0,
+    "utm_easting": 0,
+    "utm_northing": 0,
+    "linked_activities": [],
+    "participants": [{"name": ""}],
+    "subtype_data": {
+        "entries": [
+            {
+                "invasive_plant": "",
+                "evidence_of_treatment": "",
+                "treatment_pass": "",
+                "comment": "",
+                "invasive_plants_on_site": [],
+                "management_efficacy_rating": "",
+                "treatment_efficacy_rating": "",
+                "invasive_plant_aquatic": "",
+            }
+        ]
+    },
+    "type": "Monitoring",
+    "media": [],
+    "created_by": "johnsmith@identifier",
+}
 MINIMAL_CHEM_TREATMENT_MONITORING = {
-    "id": "626790d1-aee1-476c-a224-80a4b76f1e6f",
-    "short_id": "26PMC626790D1",
+    "id": "108eabd2-1d44-4b44-8cb1-cf6a9ebca2c5",
+    "short_id": "26PMC108EABD2",
     "employer": [{"employer": "MOTI"}],
     "subtype": "Monitoring_Chemical_Plant_Terrestrial_Aquatic",
     "funding_agencies": [{"invasive_species_agency_code": "MOTI"}],
@@ -68,8 +107,8 @@ MINIMAL_CHEM_TREATMENT_MONITORING = {
     },
 }
 UPDATED_CHEM_TREATMENT_MONITORING = {
-    "id": "626790d1-aee1-476c-a224-80a4b76f1e6f",
-    "short_id": "26PMC626790D1",
+    "id": "108eabd2-1d44-4b44-8cb1-cf6a9ebca2c5",
+    "short_id": "26PMC108EABD2",
     "employer": [{"employer": "MOTI"}],
     "subtype": "Monitoring_Chemical_Plant_Terrestrial_Aquatic",
     "funding_agencies": [{"invasive_species_agency_code": "MOTI"}],

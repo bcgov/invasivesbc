@@ -1,3 +1,85 @@
+EMPTY_BIOCONTROL_RELEASE_MONITORING = {
+    "id": "dfb52848-152c-4094-a146-858157e5c717",
+    "short_id": "26PBMDFB52848",
+    "employer": [],
+    "subtype": "Monitoring_Biocontrol_Release_Plant_Terrestrial",
+    "funding_agencies": [],
+    "jurisdictions": [{"jurisdiction": "", "percent_covered": 0}],
+    "projects": [],
+    "location_description": "",
+    "access_description": "",
+    "form_status": "Draft",
+    "date": "2026-06-25",
+    "comment": "",
+    "area_m": 0,
+    "latitude": 0,
+    "longitude": 0,
+    "utm_zone": 0,
+    "utm_easting": 0,
+    "utm_northing": 0,
+    "linked_activities": [],
+    "participants": [{"name": ""}],
+    "subtype_data": {
+        "entries": [
+            {
+                "biocontrol_agent": "",
+                "invasive_plant": "",
+                "monitoring_type": "",
+                "monitoring_method": "",
+                "location_agent_found": [],
+                "sign_of_biocontrol_presence": [],
+                "start_time": "",
+                "stop_time": "",
+                "suitable_for_collection": "",
+                "actual_biological_agents": [
+                    {
+                        "quantity": 0,
+                        "stage": "",
+                        "plant_position": "",
+                        "agent_location": "",
+                    }
+                ],
+                "estimated_biological_agents": [
+                    {
+                        "quantity": 0,
+                        "stage": "",
+                        "plant_position": "",
+                        "agent_location": "",
+                    }
+                ],
+            }
+        ],
+        "target_plant_phenology": {
+            "winter_dormant": 0,
+            "seedlings": 0,
+            "rosettes": 0,
+            "bolts": 0,
+            "flowering": 0,
+            "seeds_forming": 0,
+            "senescent": 0,
+            "target_plant_heights": [{"height_cm": 0}],
+        },
+        "microsite_conditions": {"mesoslope_position": "", "site_surface_shape": ""},
+        "spread_results": {
+            "agent_density": 0,
+            "plant_attack": 0,
+            "max_spread_distance_m": 0,
+            "max_spread_aspect_deg": 0,
+        },
+        "weather_conditions": {
+            "comments": "",
+            "cloud_cover": "",
+            "precipitation": "",
+            "temperature": 0,
+            "wind_direction": "",
+            "wind_speed_kmh": 0,
+        },
+    },
+    "type": "Monitoring",
+    "media": [],
+    "created_by": "johnsmith@identifier",
+}
+
 MINIMAL_BIOCONTROL_RELEASE_MONITORING = {
     "id": "dfb52848-152c-4094-a146-858157e5c717",
     "short_id": "26PBMDFB52848",
@@ -8,7 +90,7 @@ MINIMAL_BIOCONTROL_RELEASE_MONITORING = {
     "projects": [{"description": "Description"}],
     "location_description": "Location Description",
     "access_description": "",
-    "form_status": "Submitted",
+    "form_status": "Draft",
     "date": "2026-06-09",
     "comment": "",
     "area_m": 9,

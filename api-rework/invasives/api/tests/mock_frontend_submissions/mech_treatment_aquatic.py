@@ -1,6 +1,46 @@
+EMPTY_MECH_TREATMENT_AQUATIC = {
+    "id": "f6b2693c-7877-4ca4-962d-a57ea0f409e2",
+    "short_id": "26PAMF6B2693C",
+    "employer": [],
+    "subtype": "Treatment_Mechanical_Plant_Aquatic",
+    "funding_agencies": [],
+    "jurisdictions": [{"jurisdiction": "", "percent_covered": 0}],
+    "projects": [],
+    "location_description": "",
+    "access_description": "",
+    "form_status": "Draft",
+    "date": "2026-06-25",
+    "comment": "",
+    "area_m": 0,
+    "latitude": 0,
+    "longitude": 0,
+    "utm_zone": 0,
+    "utm_easting": 0,
+    "utm_northing": 0,
+    "linked_activities": [],
+    "participants": [{"name": ""}],
+    "subtype_data": {
+        "entries": [
+            {
+                "disposed_material_amount": None,
+                "disposed_material_format": "",
+                "disposal_method": "",
+                "invasive_plant": "",
+                "mechanical_method": "",
+                "treated_area_msq": 0,
+            }
+        ],
+        "shoreline_types": [{"shoreline_type": "", "percent_covered": 0}],
+        "authorization_information": "",
+    },
+    "type": "Treatment",
+    "media": [],
+    "created_by": "johnsmith@identifier",
+}
+
 MINIMAL_MECH_TREATMENT_AQUATIC = {
-    "id": "bb3cf28f-812d-45c3-bcd7-f309c5377da4",
-    "short_id": "26PAMBB3CF28F",
+    "id": "f6b2693c-7877-4ca4-962d-a57ea0f409e2",
+    "short_id": "26PAMF6B2693C",
     "employer": [{"employer": "MOTI"}],
     "subtype": "Treatment_Mechanical_Plant_Aquatic",
     "funding_agencies": [{"invasive_species_agency_code": "MOTI"}],
@@ -59,8 +99,8 @@ MINIMAL_MECH_TREATMENT_AQUATIC = {
 }
 
 UPDATED_MECH_TREATMENT_AQUATIC = {
-    "id": "bb3cf28f-812d-45c3-bcd7-f309c5377da4",
-    "short_id": "26PAMBB3CF28F",
+    "id": "f6b2693c-7877-4ca4-962d-a57ea0f409e2",
+    "short_id": "26PAMF6B2693C",
     "employer": [{"employer": "MOTI"}],
     "subtype": "Treatment_Mechanical_Plant_Aquatic",
     "funding_agencies": [{"invasive_species_agency_code": "MOTI"}],

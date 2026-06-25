@@ -1,6 +1,44 @@
+EMPTY_MECH_TREATMENT_TERRESTRIAL = {
+    "id": "54ac5320-96e5-4dae-a1e2-41b32f08b41f",
+    "short_id": "26PTM54AC5320",
+    "employer": [],
+    "subtype": "Treatment_Mechanical_Plant_Terrestrial",
+    "funding_agencies": [],
+    "jurisdictions": [{"jurisdiction": "", "percent_covered": 0}],
+    "projects": [],
+    "location_description": "",
+    "access_description": "",
+    "form_status": "Draft",
+    "date": "2026-06-25",
+    "comment": "",
+    "area_m": 0,
+    "latitude": 0,
+    "longitude": 0,
+    "utm_zone": 0,
+    "utm_easting": 0,
+    "utm_northing": 0,
+    "linked_activities": [],
+    "participants": [{"name": ""}],
+    "subtype_data": {
+        "entries": [
+            {
+                "disposed_material_amount": None,
+                "disposed_material_format": "",
+                "disposal_method": "",
+                "invasive_plant": "",
+                "mechanical_method": "",
+                "treated_area_msq": 0,
+            }
+        ]
+    },
+    "type": "Treatment",
+    "media": [],
+    "created_by": "johnsmith@identifier",
+}
+
 MINIMAL_MECH_TREATMENT_TERRESTRIAL = {
-    "id": "914ee203-b4a9-4035-9a03-26b235ab7bb7",
-    "short_id": "26PTM914EE203",
+    "id": "54ac5320-96e5-4dae-a1e2-41b32f08b41f",
+    "short_id": "26PTM54AC5320",
     "employer": [{"employer": "MOTI"}],
     "subtype": "Treatment_Mechanical_Plant_Terrestrial",
     "funding_agencies": [{"invasive_species_agency_code": "MOTI"}],
@@ -57,8 +95,8 @@ MINIMAL_MECH_TREATMENT_TERRESTRIAL = {
 }
 
 UPDATED_MECH_TREATMENT_TERRESTRIAL = {
-    "id": "914ee203-b4a9-4035-9a03-26b235ab7bb7",
-    "short_id": "26PTM914EE203",
+    "id": "54ac5320-96e5-4dae-a1e2-41b32f08b41f",
+    "short_id": "26PTM54AC5320",
     "employer": [{"employer": "MOTI"}],
     "subtype": "Treatment_Mechanical_Plant_Terrestrial",
     "funding_agencies": [{"invasive_species_agency_code": "MOTI"}],
