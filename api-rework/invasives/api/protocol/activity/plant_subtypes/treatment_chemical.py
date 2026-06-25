@@ -35,6 +35,7 @@ from .common.chem_calculations import get_chem_calculation_results
 class Calculations(Enum):
     APPLICATION_RATE = "Product Application Rate"
     DILUTION = "Dilution"
+    DRAFT = "Draft"
 
 
 class WellEntry(CleanSchema):
@@ -66,8 +67,8 @@ class ChemicalWeatherInformation(DraftChemicalWeatherInformation):
 
 
 class DraftBaseHerbicide(CleanSchema):
-    type: Optional[Literal["granular", "liquid"]]
-    name: Optional[LiquidHerbicideCodeType | GranularHerbicideCodeType]
+    type: Optional[Literal["granular", "liquid"]] = None
+    name: Optional[LiquidHerbicideCodeType | GranularHerbicideCodeType] = None
 
 
 class BaseHerbicide(DraftBaseHerbicide):
@@ -123,14 +124,14 @@ class ProductDilutionRate(DraftProductDilutionRate):
 
 
 class DraftBaseChemicalTreatmentContext(CleanSchema):
-    model_config = ConfigDict(extra="forbid")
-    plants_treated: List[TreatedPlant] = Field(..., min_length=1)
+    plants_treated: List[DraftTreatedPlant]
     tank_mix: bool
-    calculation_type: Literal["Product Application Rate", "Dilution"]
+    calculation_type: Optional[Literal["Product Application Rate", "Dilution"]] = None
     application_method: Optional[
         ChemicalApplicationMethodDirectCodeType | ChemicalApplicationMethodSprayCodeType
-    ]
-    results: Optional[List[Any]] = Field(None, validate_default=False)
+    ] = None
+    results: Optional[List[Any]] = None
+    herbicide: Optional[List[DraftBaseHerbicide]] = None
 
 
 class BaseChemicalTreatmentContext(CleanSchema):
@@ -150,21 +151,39 @@ class BaseChemicalTreatmentContext(CleanSchema):
         return check_sum(v, expected=100, key="percent_covered")
 
 
+class DraftTankMixChemicalContext(
+    DraftBaseChemicalTreatmentContext, DraftProductApplicationRate
+):
+    tank_mix: Literal[True] = True
+
+
 class TankMixChemicalContext(BaseChemicalTreatmentContext, ProductApplicationRate):
     tank_mix: Literal[True] = True
+
+
+class DraftChemicalContextDilution(
+    DraftBaseChemicalTreatmentContext, DraftProductDilutionRate
+):
+    tank_mix: Literal[False] = False
 
 
 class ChemicalContextDilution(BaseChemicalTreatmentContext, ProductDilutionRate):
     tank_mix: Literal[False] = False
 
 
+class DraftChemicalContextApplicationRate(
+    DraftBaseChemicalTreatmentContext, DraftProductApplicationRate
+):
+    tank_mix: Literal[False] = False
+
+
 class ChemicalContextApplicationRate(
     BaseChemicalTreatmentContext, ProductApplicationRate
 ):
-    tank_mix: Literal[False]
+    tank_mix: Literal[False] = False
 
 
-def resolve_chemical_type(v: Any) -> str | Enum:
+def base_resolve_chemical_type(v: Any) -> str | Enum:
     """Helper for Treatment Context Discriminator that handles both dicts and objects"""
     # Normalize input date (Pydantic Object vs Dict)
     if isinstance(v, dict):
@@ -186,7 +205,21 @@ def resolve_chemical_type(v: Any) -> str | Enum:
     elif calc_value == Calculations.APPLICATION_RATE.value:
         return Calculations.APPLICATION_RATE
 
-    raise ValueError("Chemical treatment values created an invalid scenario.")
+    return None
+
+
+def resolve_draft_chemical_type(v: Any):
+    val = base_resolve_chemical_type(v)
+    if not val:
+        return Calculations.DRAFT
+    return val
+
+
+def resolve_chemical_type(v: Any) -> str | Enum:
+    val = base_resolve_chemical_type(v)
+    if not val:
+        raise ValueError("Chemical treatment values created an invalid scenario.")
+    return val
 
 
 class DraftContext(DraftChemicalWeatherInformation):
@@ -244,12 +277,21 @@ class Context(ChemicalWeatherInformation):
 class DraftBaseChemicalDetails(CleanSchema):
     context: DraftContext
     well_entries: List[WellEntry]
-    treatment_context: Annotated
+    treatment_context: Annotated[
+        Union[
+            Annotated[DraftTankMixChemicalContext, Tag("Tank Mix")],
+            Annotated[DraftChemicalContextDilution, Tag(Calculations.DILUTION)],
+            Annotated[
+                DraftChemicalContextApplicationRate, Tag(Calculations.APPLICATION_RATE)
+            ],
+            Annotated[DraftBaseChemicalTreatmentContext, Tag(Calculations.DRAFT)],
+        ],
+        Discriminator(resolve_draft_chemical_type),
+    ]
 
 
-class BaseChemicalDetails(CleanSchema):
+class BaseChemicalDetails(DraftBaseChemicalDetails):
     context: Context
-    well_entries: List[WellEntry]
     treatment_context: Annotated[
         Union[
             Annotated[TankMixChemicalContext, Tag("Tank Mix")],
