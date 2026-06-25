@@ -1,12 +1,13 @@
 from typing import List, Literal, Optional
 from pydantic import model_validator, field_validator, NaiveDatetime, Field
+
 from api.protocol.activity.validators.no_future_date import no_future_date
+from api.models.enums import CollectionType, YesNoUnknown
 from api.protocol.activity.plant_subtypes.base_form_schema import (
     BaseFormSchema,
     CleanSchema,
     DraftBaseFormSchema,
 )
-
 from api.protocol.activity.plant_subtypes.common import (
     MicrositeCondition,
     DraftMicrositeCondition,
@@ -17,7 +18,6 @@ from api.protocol.activity.plant_subtypes.common import (
     TargetPlantPhenology,
     DraftTargetPlantPhenology,
 )
-from api.models.enums import CollectionType, YesNoUnknown
 from api.protocol.activity.validators.code_validation import (
     BiocontrolAgentCodeType,
     PlantsWithBiocontrolType,

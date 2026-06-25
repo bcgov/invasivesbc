@@ -17,10 +17,14 @@ MAX_AREA_FOR_RECORD = 500000
 
 class CleanSchema(Schema):
     """
-    Cleanup method to set all Empty strings in form to None
+    Base class inherited by all Sub Schema types.
+    Cleans up any incoming data before validation occurs by setting empty strings to None values.
     """
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    class Meta:
+        abstract = True
 
     @model_validator(mode="before")
     @classmethod
@@ -55,7 +59,7 @@ class DraftParticipant(CleanSchema):
     pac_number: Optional[int] = None
 
 
-class Participant(DraftParticipant, CleanSchema):
+class Participant(DraftParticipant):
     name: str
 
 
@@ -69,10 +73,14 @@ class LinkedActivity(CleanSchema):
 
 
 class FundingAgency(CleanSchema):
+    """Single Funding Agency Entry, Casts alias to match the incoming payload to the db column"""
+
     agency: FundingAgencyCodeType = Field(..., alias="invasive_species_agency_code")
 
 
 class Media(CleanSchema):
+    """Single Media Entry (Photo Upload) for Plant Activity Forms"""
+
     description: str
     encoded_file: str
     file_name: str
@@ -83,22 +91,36 @@ class ProjectCode(CleanSchema):
 
 
 class Position2D(RootModel[tuple[float, float]]):
+    """Loosely defined coordinate type for incoming Geometry"""
+
     pass
 
 
 class PolygonGeometry2D(CleanSchema):
+    """
+    Custom Polygon GeoJSON Type.
+    Pydantics build in Geometry types add 0-value Z-indexes that error out when casting to GeosGeometry.
+    """
+
     type: Literal["Polygon"]
     coordinates: list[list[Position2D]]
 
 
 class Feature2D(CleanSchema):
+    """
+    Custom 2D GeoJSON Feature type.
+    Pydantics build in Geometry types add 0-value Z-indexes that error out when casting to GeosGeometry.
+    """
+
     type: Literal["Feature"]
     geometry: PolygonGeometry2D
     properties: dict | None = None
 
 
 class DraftBaseFormSchema(CleanSchema):
-    # Identifying Information (Subtype defined in Inherited Classes)
+    """Loosely Typed BaseSchema for Plant Activity Forms"""
+
+    # Identifying Information (Subtype defined by the Inheriting Classes)
     date: date
     id: str
     created_by: str
@@ -126,8 +148,13 @@ class DraftBaseFormSchema(CleanSchema):
     comment: Optional[str]
     location_description: Optional[str]
 
+    class Meta:
+        abstract = True
 
-class BaseFormSchema(DraftBaseFormSchema, CleanSchema):
+
+class BaseFormSchema(DraftBaseFormSchema):
+    """Strictly Typed BaseSchema for Plant Activity Forms"""
+
     linked_activities: List[LinkedActivity]
     employer: List[Employer] = Field(..., min_length=1)
     form_status: FormStatus
@@ -142,6 +169,9 @@ class BaseFormSchema(DraftBaseFormSchema, CleanSchema):
     utm_northing: int
     utm_zone: int
     location_description: str = Field(..., min_length=5)
+
+    class Meta:
+        abstract = True
 
     @field_validator("date")
     @classmethod

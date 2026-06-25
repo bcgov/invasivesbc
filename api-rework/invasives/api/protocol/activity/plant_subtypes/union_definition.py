@@ -2,35 +2,45 @@ from typing import Union, Annotated
 from pydantic import Field
 from api.protocol.activity.plant_subtypes import (
     # Observations
+    ## Submissions
     ObservationTerrestrialSchema,
-    DraftObservationTerrestrialSchema,
     ObservationAquaticSchema,
+    ## Drafts
+    DraftObservationTerrestrialSchema,
     DraftObservationAquaticSchema,
     # Biocontrol
+    ## Submissions
     TreatmentBiocontrolRelease,
-    DraftTreatmentBiocontrolRelease,
     BiocontrolCollection,
-    DraftBiocontrolCollection,
     BiocontrolDispersalMonitoring,
+    ## Drafts
+    DraftTreatmentBiocontrolRelease,
+    DraftBiocontrolCollection,
     DraftBiocontrolDispersalMonitoring,
     #  Treatments
+    ## Submissions
     TreatmentChemicalTerrestrial,
-    DraftTreatmentChemicalTerrestrial,
-    TreatmentChemicalAquatic,
-    DraftTreatmentChemicalAquatic,
-    TreatmentMechanicalTerrestrial,
-    DraftTreatmentMechanicalTerrestrial,
     TreatmentMechanicalAquatic,
+    TreatmentChemicalAquatic,
+    TreatmentMechanicalTerrestrial,
+    ## Drafts
+    DraftTreatmentChemicalAquatic,
+    DraftTreatmentMechanicalTerrestrial,
+    DraftTreatmentChemicalTerrestrial,
     DraftTreatmentMechanicalAquatic,
     # Monitoring
+    ## Submissions
     MonitoringMechanical,
-    DraftMonitoringMechanical,
     MonitoringChemical,
-    DraftMonitoringChemical,
     MonitoringBiocontrolRelease,
+    ## Drafts
+    DraftMonitoringChemical,
+    DraftMonitoringMechanical,
     DraftMonitoringBiocontrolRelease,
 )
 
+#: Protocol for incoming record "submissions".
+#: Covers all 12 Plant Subtypes with Strict Validation.
 PlantActivitySchema = Annotated[
     Union[
         # Observations
@@ -53,6 +63,9 @@ PlantActivitySchema = Annotated[
     Field(discriminator="subtype"),
 ]
 
+#: Protocol for incoming records flagged as drafts.
+#: Covers all 12 Plant Subtypes with Loose Validation.
+#: Provides cleaning on incoming data (key pruning, code validations)
 DraftPlantActivitySchema = Annotated[
     Union[
         # Observation
