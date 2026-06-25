@@ -23,11 +23,20 @@ class CleanSchema(Schema):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @model_validator(mode="before")
+    @classmethod
     def remove_empty_strings(cls, values):
-        # Convert empty string fields to None
-        for f in cls.__pydantic_fields__:
-            if getattr(values, f, None) == "":
-                setattr(values, f, None)
+        # If it's a dictionary payload (normal use-case)
+        if isinstance(values, dict):
+            for field_name in cls.model_fields:
+                if values.get(field_name) == "":
+                    values[field_name] = None
+
+        # If it's already an instantiated object or arbitrary type
+        elif hasattr(values, "__dict__"):
+            for field_name in cls.model_fields:
+                if getattr(values, field_name, None) == "":
+                    setattr(values, field_name, None)
+
         return values
 
 
@@ -93,7 +102,8 @@ class DraftBaseFormSchema(CleanSchema):
     date: date
     id: str
     created_by: str
-    form_status: FormStatus
+    # Should only accept drafts, not submissions.
+    form_status: Literal[FormStatus.Draft]
     linked_activities: List[LinkedActivity]
     employer: List[Employer]
     funding_agencies: List[FundingAgency]
@@ -120,6 +130,7 @@ class DraftBaseFormSchema(CleanSchema):
 class BaseFormSchema(DraftBaseFormSchema, CleanSchema):
     linked_activities: List[LinkedActivity]
     employer: List[Employer] = Field(..., min_length=1)
+    form_status: FormStatus
     funding_agencies: List[FundingAgency] = Field(..., min_length=1)
     jurisdictions: List[JurisdictionSchema] = Field(..., min_length=1)
     participants: List[Participant] = Field(..., min_length=1)
