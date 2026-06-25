@@ -4,13 +4,18 @@ from api.protocol.activity.validators.no_future_date import no_future_date
 from api.protocol.activity.plant_subtypes.base_form_schema import (
     BaseFormSchema,
     CleanSchema,
+    DraftBaseFormSchema,
 )
 
 from api.protocol.activity.plant_subtypes.common import (
     MicrositeCondition,
+    DraftMicrositeCondition,
     WeatherConditions,
+    DraftWeatherConditions,
     BiocontrolCountSimple,
+    DraftBiocontrolCountSimple,
     TargetPlantPhenology,
+    DraftTargetPlantPhenology,
 )
 from api.models.enums import CollectionType
 from api.protocol.activity.validators.code_validation import (
@@ -20,7 +25,23 @@ from api.protocol.activity.validators.code_validation import (
 )
 
 
-class Entry(CleanSchema):
+class DraftEntry(CleanSchema):
+    invasive_plant: Optional[PlantsWithBiocontrolType]
+    biological_agent: Optional[BiocontrolAgentCodeType]
+    historical_iapp_site: Optional[int] = None
+    collection_type: Optional[CollectionType]
+    plant_count_collection: Optional[int] = None
+    time_collection_duration_minutes: Optional[int] = None
+    collection_method: Optional[BioAgentCollectionMethodCodeType]
+    number_of_sweeps: Optional[int] = None
+    start_time_collecting: Optional[NaiveDatetime]
+    end_time_collecting: Optional[NaiveDatetime]
+    comment: Optional[str]
+    actual_biological_agents: List[DraftBiocontrolCountSimple]
+    estimated_biological_agents: List[DraftBiocontrolCountSimple]
+
+
+class Entry(DraftEntry):
     invasive_plant: PlantsWithBiocontrolType
     biological_agent: BiocontrolAgentCodeType
     historical_iapp_site: Optional[int] = Field(None, ge=0)
@@ -31,7 +52,6 @@ class Entry(CleanSchema):
     number_of_sweeps: Optional[int] = Field(None, gt=0)
     start_time_collecting: NaiveDatetime
     end_time_collecting: NaiveDatetime
-    comment: Optional[str] = None
 
     actual_biological_agents: List[BiocontrolCountSimple]
     estimated_biological_agents: List[BiocontrolCountSimple]
@@ -95,11 +115,23 @@ class Entry(CleanSchema):
         return self
 
 
-class SubtypeData(CleanSchema):
+class DraftSubtypeData(CleanSchema):
+    entries: List[DraftEntry]
+    microsite_conditions: Optional[DraftMicrositeCondition]
+    weather_conditions: Optional[DraftWeatherConditions]
+    target_plant_phenology: Optional[DraftTargetPlantPhenology] = None
+
+
+class SubtypeData(DraftSubtypeData):
     entries: List[Entry]
     microsite_conditions: MicrositeCondition
     weather_conditions: WeatherConditions
     target_plant_phenology: Optional[TargetPlantPhenology] = None
+
+
+class DraftBiocontrolCollection(DraftBaseFormSchema):
+    subtype: Literal["Biocontrol_Collection"]
+    subtype_data: DraftSubtypeData
 
 
 class BiocontrolCollection(BaseFormSchema):

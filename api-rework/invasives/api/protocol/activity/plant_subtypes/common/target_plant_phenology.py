@@ -3,11 +3,26 @@ from pydantic import model_validator, Field
 from typing import Optional, List
 
 
+class DraftPlantHeight(CleanSchema):
+    height_cm: Optional[int]
+
+
 class PlantHeight(CleanSchema):
     height_cm: int = Field(..., gt=1)
 
 
-class TargetPlantPhenology(CleanSchema):
+class DraftTargetPlantPhenology(CleanSchema):
+    winter_dormant: Optional[int]
+    seedlings: Optional[int]
+    rosettes: Optional[int]
+    bolts: Optional[int]
+    flowering: Optional[int]
+    seeds_forming: Optional[int]
+    senescent: Optional[int]
+    target_plant_heights: List[DraftPlantHeight] = None
+
+
+class TargetPlantPhenology(DraftTargetPlantPhenology):
     winter_dormant: int = Field(..., ge=0, le=100)
     seedlings: int = Field(..., ge=0, le=100)
     rosettes: int = Field(..., ge=0, le=100)
@@ -15,7 +30,7 @@ class TargetPlantPhenology(CleanSchema):
     flowering: int = Field(..., ge=0, le=100)
     seeds_forming: int = Field(..., ge=0, le=100)
     senescent: int = Field(..., ge=0, le=100)
-    target_plant_heights: Optional[List[PlantHeight]] = None
+    target_plant_heights: List[PlantHeight] = None
 
     @model_validator(mode="after")
     def validate_sum_percentages(self) -> "TargetPlantPhenology":

@@ -4,13 +4,18 @@ from api.protocol.activity.validators.no_future_date import no_future_date
 from api.protocol.activity.plant_subtypes.base_form_schema import (
     BaseFormSchema,
     CleanSchema,
+    DraftBaseFormSchema,
 )
 
 from api.protocol.activity.plant_subtypes.common import (
     MicrositeCondition,
+    DraftMicrositeCondition,
     WeatherConditions,
+    DraftWeatherConditions,
     BiocontrolCountSimple,
+    DraftBiocontrolCountSimple,
     TargetPlantPhenology,
+    DraftTargetPlantPhenology,
 )
 from api.models.enums import YesNoUnknown
 from api.protocol.activity.validators.code_validation import (
@@ -19,7 +24,21 @@ from api.protocol.activity.validators.code_validation import (
 )
 
 
-class Entry(CleanSchema):
+class DraftEntry(CleanSchema):
+    invasive_plant: Optional[PlantsWithBiocontrolType]
+    biocontrol_agent: Optional[BiocontrolAgentCodeType]
+    linear_segment: Optional[YesNoUnknown]
+    mortality: Optional[int]
+    agent_source: Optional[str]
+    collection_date: Optional[NaiveDatetime]
+    plant_collected_from: Optional[PlantsWithBiocontrolType]
+    plant_collected_from_manual: Optional[str]
+
+    actual_biological_agents: List[DraftBiocontrolCountSimple]
+    estimated_biological_agents: List[DraftBiocontrolCountSimple]
+
+
+class Entry(DraftEntry):
     invasive_plant: PlantsWithBiocontrolType
     biocontrol_agent: BiocontrolAgentCodeType
     linear_segment: YesNoUnknown
@@ -56,11 +75,23 @@ class Entry(CleanSchema):
         return no_future_date(v)
 
 
-class SubtypeData(CleanSchema):
+class DraftSubtypeData(CleanSchema):
+    entries: List[DraftEntry]
+    microsite_conditions: DraftMicrositeCondition
+    weather_conditions: DraftWeatherConditions
+    target_plant_phenology: Optional[DraftTargetPlantPhenology] = None
+
+
+class SubtypeData(DraftSubtypeData):
     entries: List[Entry]
     microsite_conditions: MicrositeCondition
     weather_conditions: WeatherConditions
     target_plant_phenology: Optional[TargetPlantPhenology] = None
+
+
+class DraftTreatmentBiocontrolRelease(DraftBaseFormSchema):
+    subtype: Literal["Biocontrol_Release"]
+    subtype_data: DraftSubtypeData
 
 
 class TreatmentBiocontrolRelease(BaseFormSchema):

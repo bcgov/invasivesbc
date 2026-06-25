@@ -4,6 +4,7 @@ from api.protocol.activity.validators.no_repeat_key import no_repeat_key
 from api.protocol.activity.plant_subtypes.base_form_schema import (
     BaseFormSchema,
     CleanSchema,
+    DraftBaseFormSchema,
 )
 
 from api.models.enums import TreatmentPass, YesNo
@@ -20,15 +21,21 @@ class InvasivePlantOnSite(CleanSchema):
     invasive_plants_on_site: InvasivePlantsOnSiteCodeType
 
 
-class Entry(CleanSchema):
+class DraftEntry(CleanSchema):
     invasive_plant: Optional[TerrestrialPlantCodeType] = None
     invasive_plant_aquatic: Optional[AquaticPlantCodeType] = None
-    evidence_of_treatment: YesNo
+    evidence_of_treatment: Optional[YesNo]
     treatment_pass: Optional[TreatmentPass] = None
     comment: Optional[str] = None
+    invasive_plants_on_site: List[InvasivePlantOnSite]
+    management_efficacy_rating: Optional[EfficacyManagementRatingCodeType]
+    treatment_efficacy_rating: Optional[TreatmentEfficacyRatingCodeType] = None
+
+
+class Entry(DraftEntry):
+    evidence_of_treatment: YesNo
     invasive_plants_on_site: List[InvasivePlantOnSite] = Field(..., min_length=1)
     management_efficacy_rating: EfficacyManagementRatingCodeType
-    treatment_efficacy_rating: Optional[TreatmentEfficacyRatingCodeType] = None
 
     @model_validator(mode="after")
     def validate_exclusive_plant_type(self) -> "Entry":
@@ -48,7 +55,11 @@ class Entry(CleanSchema):
         return self
 
 
-class SubtypeData(CleanSchema):
+class DraftSubtypeData(CleanSchema):
+    entries: List[DraftEntry]
+
+
+class SubtypeData(DraftSubtypeData):
     entries: List[Entry] = Field(..., min_length=1)
 
     @field_validator("entries")
@@ -59,6 +70,11 @@ class SubtypeData(CleanSchema):
         ) and no_repeat_key(
             v, key="aquatic_invasive_plant", key_label="Aquatic Invasive Plant"
         )
+
+
+class DraftMonitoringMechanical(DraftBaseFormSchema):
+    subtype: Literal["Monitoring_Mechanical_Plant_Terrestrial_Aquatic"]
+    subtype_data: DraftSubtypeData
 
 
 class MonitoringMechanical(BaseFormSchema):

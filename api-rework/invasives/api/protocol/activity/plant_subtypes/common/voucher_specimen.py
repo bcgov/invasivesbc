@@ -5,17 +5,25 @@ from typing import Optional
 from datetime import date
 
 
-class VoucherSpecimenSchema(CleanSchema):
+class DraftVoucherSpecimen(CleanSchema):
     voucher_sample_id: str
     herbarium: Optional[str] = None
     accession_number: Optional[str] = None
     completed_by_person: Optional[str] = None
     completed_by_org: Optional[str] = None
+    utm_zone: Optional[int]
+    utm_easting: Optional[int]
+    utm_northing: Optional[int]
+    date_collected: Optional[date]
+    date_verified: Optional[date] = None
+
+
+class VoucherSpecimenSchema(DraftVoucherSpecimen):
+    voucher_sample_id: str
     utm_zone: int = Field(..., gt=0)
     utm_easting: int = Field(..., gt=0)
     utm_northing: int = Field(..., gt=0)
     date_collected: date
-    date_verified: Optional[date] = None
 
     @field_validator("date_collected")
     @classmethod

@@ -8,8 +8,16 @@ from api.protocol.activity.validators.code_validation import (
 )
 
 
-class WeatherConditions(CleanSchema):
+class DraftWeatherConditions(CleanSchema):
     comments: Optional[str] = None
+    cloud_cover: Optional[CloudCoverCodeType]
+    precipitation: Optional[PrecipitationCodeType]
+    wind_direction: Optional[WindDirectionCodeType]
+    wind_speed_kmh: Optional[int]
+    temperature: Optional[int]
+
+
+class WeatherConditions(DraftWeatherConditions):
     cloud_cover: CloudCoverCodeType
     precipitation: PrecipitationCodeType
     wind_direction: WindDirectionCodeType

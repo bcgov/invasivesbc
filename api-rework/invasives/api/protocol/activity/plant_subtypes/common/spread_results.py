@@ -3,7 +3,14 @@ from pydantic import Field, model_validator
 from typing import Optional
 
 
-class SpreadResultsMixin(CleanSchema):
+class DraftSpreadResultsMixin(CleanSchema):
+    agent_density: Optional[int]
+    plant_attack: Optional[int]
+    max_spread_distance_m: Optional[int]
+    max_spread_aspect_deg: Optional[int]
+
+
+class SpreadResultsMixin(DraftSpreadResultsMixin):
     agent_density: Optional[int] = Field(None, ge=0, le=100)
     plant_attack: Optional[int] = Field(None, ge=0, le=100)
     max_spread_distance_m: Optional[int] = Field(None, gt=0)
