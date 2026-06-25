@@ -1,4 +1,5 @@
 from typing import List, Literal, Optional, Annotated, Union, Any, Self
+from enum import Enum
 from pydantic import (
     model_validator,
     field_validator,
@@ -8,7 +9,8 @@ from pydantic import (
     Tag,
     ConfigDict,
 )
-from enum import Enum
+from .common.chem_calculations import get_chem_calculation_results
+from api.models.enums import YesNoUnknown
 from api.protocol.activity.validators.check_sum import check_sum
 from api.protocol.activity.validators.no_future_date import no_future_date
 from api.protocol.activity.plant_subtypes.base_form_schema import (
@@ -16,7 +18,6 @@ from api.protocol.activity.plant_subtypes.base_form_schema import (
     CleanSchema,
     DraftBaseFormSchema,
 )
-from api.models.enums import YesNoUnknown
 from api.protocol.activity.validators.code_validation import (
     WindDirectionCodeType,
     ServiceLicenseNumberAndCompanyType,
@@ -29,7 +30,6 @@ from api.protocol.activity.validators.code_validation import (
     LiquidHerbicideCodeType,
     GranularHerbicideCodeType,
 )
-from .common.chem_calculations import get_chem_calculation_results
 
 
 class Calculations(Enum):
@@ -304,6 +304,7 @@ class BaseChemicalDetails(DraftBaseChemicalDetails):
     ]
 
 
+# Terrestrial Treatment Types (Draft/Submit)
 class DraftTreatmentChemicalTerrestrial(DraftBaseFormSchema):
     subtype: Literal["Treatment_Chemical_Plant_Terrestrial"]
     subtype_data: DraftBaseChemicalDetails
@@ -314,6 +315,7 @@ class TreatmentChemicalTerrestrial(BaseFormSchema):
     subtype_data: BaseChemicalDetails
 
 
+# Aquatic Treatment Types (Draft/Submit)
 class DraftTreatmentChemicalAquatic(DraftTreatmentChemicalTerrestrial):
     subtype: Literal["Treatment_Chemical_Plant_Aquatic"]
 
