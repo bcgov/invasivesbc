@@ -21,6 +21,10 @@ export const BasicInformation = [
   })
     .isRequired()
     .build(),
+  new TemplateColumnBuilder('Point Area', 'numeric', null)
+    .withHelpText('Area in square meters. Required when the geometry supplied in WKT is of type POINT.')
+    .isIntentionallyUnmapped()
+    .build(),
   new TemplateColumnBuilder('Basic - Date', 'datetime', 'form_data.activity_data.activity_date_time')
     .isRequired()
     .mustNotBeFuture()
