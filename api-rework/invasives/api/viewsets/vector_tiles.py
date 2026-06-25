@@ -1,6 +1,6 @@
 from django.db.models import Aggregate, F, Func
 from django.contrib.gis.db.models import GeometryField, BinaryField
-from django.contrib.gis.db.models.functions import Centroid
+from django.contrib.gis.db.models.functions import PointOnSurface
 from django.http import HttpResponse
 import json
 from rest_framework import viewsets
@@ -72,7 +72,7 @@ class VectorTileViewset(viewsets.GenericViewSet):
         tile_geom = ST_TileEnvelope(z, x, y)
 
         if z < CENTROID_ZOOM_LIMIT:
-            target_geometry = Centroid(
+            target_geometry = PointOnSurface(
                 F("computed_tile_shape"), output_field=GeometryField(srid=3857)
             )
         else:
