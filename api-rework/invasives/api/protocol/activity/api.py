@@ -24,7 +24,6 @@ from api.protocol.activity.plant_subtypes.union_definition import (
 )
 
 router = Router(auth=NinjaKeycloakAuthentication())
-# router = Router()
 
 
 # Helper
