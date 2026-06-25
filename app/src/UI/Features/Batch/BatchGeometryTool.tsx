@@ -10,6 +10,7 @@ import { Button, Slider } from '@mui/material';
 import { CopyAll } from '@mui/icons-material';
 
 const BatchGeometryTool = () => {
+  const MAX_AREA_MSQ = 500000;
   const mapContainer = useRef<HTMLDivElement | null>(null);
   const map = useRef<InvasivesMap | null>(null);
   const [mapReady, setMapReady] = useState(false);
@@ -93,7 +94,7 @@ const BatchGeometryTool = () => {
 
     const computedArea = (polygon && Math.round(area(polygon))) || undefined;
     setShapeArea(computedArea);
-    setTooBig((computedArea && computedArea > 50000) || false);
+    setTooBig((computedArea && computedArea > MAX_AREA_MSQ) || false);
 
     if (polygon) {
       if (polygon.geometry.type === 'Polygon') {
@@ -227,7 +228,7 @@ const BatchGeometryTool = () => {
     <div className={'geometry-tool'}>
       <h2 className={'header'}>WKT Geometry Tool</h2>
       <div className={'help'}>
-        <h4>About</h4>
+        <h3>About</h3>
         <p>
           The batch templates accept activity geometries in WKT format. These tools are provided to help you draw and
           verify WKT values.
@@ -251,6 +252,7 @@ const BatchGeometryTool = () => {
           value={bufferedRadius}
           disabled={bufferSliderDisabled}
           className={'radius-slider'}
+          sx={{ width: '80%' }}
           min={1}
           max={10}
           marks
@@ -288,9 +290,9 @@ const BatchGeometryTool = () => {
         </Button>
       </div>
       <div className={'result'}>
-        <h4>Results</h4>
+        <h3>Results</h3>
         <p>{descriptiveText}</p>
-        {shapeArea && <p>Area {shapeArea.toLocaleString()} m²</p>}
+        {shapeArea && <p>Area: {shapeArea.toLocaleString()} m²</p>}
         {tooBig && <p>Shape exceeds {(50000).toLocaleString()} m²</p>}
         {kinked && <p>The polygon you've drawn is self-intersecting</p>}
       </div>

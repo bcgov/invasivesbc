@@ -27,11 +27,11 @@ div.geometry-tool {
     grid-area: help;
 
     p,
-    h4 {
+    h3 {
       text-align: justify;
     }
 
-    h4 {
+    h3 {
       margin: 0;
     }
   }
@@ -50,6 +50,10 @@ div.geometry-tool {
     justify-content: space-between;
     grid-template-columns: 20px 1fr;
 
+    #buffer-radius {
+      box-sizing: border-box;
+    }
+
     .radius-slider {
       margin: 1rem;
     }
@@ -58,7 +62,7 @@ div.geometry-tool {
   }
 
   .result {
-    text-align: justify;
+    text-align: left;
     grid-area: result;
   }
 
