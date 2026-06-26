@@ -2,6 +2,7 @@ from .base import BaseActivitySubtypeTest
 from api.models.activity import Activity
 from api.serializers.activity import ActivitySerializer
 from api.tests.mock_frontend_submissions import (
+    EMPTY_TERRESTRIAL_OBSERVATION,
     MINIMAL_TERRESTRIAL_OBSERVATION,
     UPDATED_TERRESTRIAL_OBSERVATION,
 )
@@ -94,6 +95,13 @@ class TerrestrialObservationTest(BaseActivitySubtypeTest):
         ]
 
         self.assertCountEqual(obs_detail, sd["entries"])
+
+    def test_draft_submissions(self):
+        self.draft_pydantic_protocol_test(
+            empty_record=EMPTY_TERRESTRIAL_OBSERVATION,
+            minimal_record=MINIMAL_TERRESTRIAL_OBSERVATION,
+            full_record=UPDATED_TERRESTRIAL_OBSERVATION,
+        )
 
     def test_submit_record(self):
         """

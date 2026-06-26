@@ -1,6 +1,7 @@
 from .base import BaseActivitySubtypeTest
 from api.models.activity import Activity
 from api.tests.mock_frontend_submissions import (
+    EMPTY_CHEM_TREATMENT_MONITORING,
     MINIMAL_CHEM_TREATMENT_MONITORING,
     UPDATED_CHEM_TREATMENT_MONITORING,
 )
@@ -31,6 +32,13 @@ class ChemicalTreatmentMonitoringTest(BaseActivitySubtypeTest):
         self.assertEqual(tmi["invasive_plant"], "JK")
         self.assertEqual(tmi["evidence_of_treatment"], "No")
         self.assertEqual(tmi["management_efficacy_rating"], "6M")
+
+    def test_draft_submissions(self):
+        self.draft_pydantic_protocol_test(
+            empty_record=EMPTY_CHEM_TREATMENT_MONITORING,
+            minimal_record=MINIMAL_CHEM_TREATMENT_MONITORING,
+            full_record=UPDATED_CHEM_TREATMENT_MONITORING,
+        )
 
     def test_submit_record(self):
         """

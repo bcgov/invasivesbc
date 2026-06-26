@@ -1,4 +1,5 @@
 from typing import List, Literal, Optional, Annotated, Union, Any, Self
+from enum import Enum
 from pydantic import (
     model_validator,
     field_validator,
@@ -8,14 +9,15 @@ from pydantic import (
     Tag,
     ConfigDict,
 )
-from enum import Enum
+from .common.chem_calculations import get_chem_calculation_results
+from api.models.enums import YesNoUnknown
 from api.protocol.activity.validators.check_sum import check_sum
 from api.protocol.activity.validators.no_future_date import no_future_date
 from api.protocol.activity.plant_subtypes.base_form_schema import (
     BaseFormSchema,
     CleanSchema,
+    DraftBaseFormSchema,
 )
-from api.models.enums import YesNoUnknown
 from api.protocol.activity.validators.code_validation import (
     WindDirectionCodeType,
     ServiceLicenseNumberAndCompanyType,
@@ -28,12 +30,12 @@ from api.protocol.activity.validators.code_validation import (
     LiquidHerbicideCodeType,
     GranularHerbicideCodeType,
 )
-from .common.chem_calculations import get_chem_calculation_results
 
 
 class Calculations(Enum):
     APPLICATION_RATE = "Product Application Rate"
     DILUTION = "Dilution"
+    DRAFT = "Draft"
 
 
 class WellEntry(CleanSchema):
@@ -41,7 +43,14 @@ class WellEntry(CleanSchema):
     distance: int
 
 
-class ChemicalWeatherInformation(CleanSchema):
+class DraftChemicalWeatherInformation(CleanSchema):
+    humidity: Optional[int] = None
+    temperature_c: Optional[int] = None
+    wind_speed_kmh: Optional[int] = None
+    wind_direction: Optional[WindDirectionCodeType]
+
+
+class ChemicalWeatherInformation(DraftChemicalWeatherInformation):
     humidity: Optional[int] = Field(None, ge=0, le=100)
     temperature_c: int = Field(..., ge=0, lt=100)
     wind_speed_kmh: int = Field(..., ge=0, lt=100)
@@ -55,21 +64,43 @@ class ChemicalWeatherInformation(CleanSchema):
 
 
 ## Chemical Building Blocks
-class BaseHerbicide(CleanSchema):
+
+
+class DraftBaseHerbicide(CleanSchema):
+    type: Optional[Literal["granular", "liquid"]] = None
+    name: Optional[LiquidHerbicideCodeType | GranularHerbicideCodeType] = None
+
+
+class BaseHerbicide(DraftBaseHerbicide):
     type: Literal["granular", "liquid"]
     name: LiquidHerbicideCodeType | GranularHerbicideCodeType
+
+
+class DraftApplicationRateHerbicide(DraftBaseHerbicide):
+    application_rate: Optional[float]
 
 
 class ApplicationRateHerbicide(BaseHerbicide):
     application_rate: float
 
 
-class TreatedPlant(CleanSchema):
+class DraftTreatedPlant(CleanSchema):
+    invasive_plant: Optional[TerrestrialPlantCodeType | AquaticPlantCodeType]
+    percent_covered: Optional[int]
+
+
+class TreatedPlant(DraftTreatedPlant):
     invasive_plant: TerrestrialPlantCodeType | AquaticPlantCodeType
     percent_covered: int = Field(..., gt=0, le=100)
 
 
 ## Rate Mix Definitions
+
+
+class DraftProductApplicationRate(CleanSchema):
+    herbicide: List[DraftApplicationRateHerbicide]
+    delivery_rate: Optional[float] = None
+    amount_mix_used_l: Optional[float] = None
 
 
 class ProductApplicationRate(CleanSchema):
@@ -78,11 +109,29 @@ class ProductApplicationRate(CleanSchema):
     amount_mix_used_l: float = Field(..., gt=0)
 
 
-class ProductDilutionRate(CleanSchema):
+class DraftProductDilutionRate(CleanSchema):
+    herbicide: List[BaseHerbicide]
+    amount_mix_used_l: Optional[float] = None
+    dilution_percent: Optional[float] = None
+    area_treated_sqm: Optional[float] = None
+
+
+class ProductDilutionRate(DraftProductDilutionRate):
     herbicide: List[BaseHerbicide] = Field(..., min_length=1)
     amount_mix_used_l: float = Field(..., gt=0, le=100)
     dilution_percent: float = Field(..., gt=0, le=100)
     area_treated_sqm: float = Field(..., gt=0)
+
+
+class DraftBaseChemicalTreatmentContext(CleanSchema):
+    plants_treated: List[DraftTreatedPlant]
+    tank_mix: bool
+    calculation_type: Optional[Literal["Product Application Rate", "Dilution"]] = None
+    application_method: Optional[
+        ChemicalApplicationMethodDirectCodeType | ChemicalApplicationMethodSprayCodeType
+    ] = None
+    results: Optional[List[Any]] = None
+    herbicide: Optional[List[DraftBaseHerbicide]] = None
 
 
 class BaseChemicalTreatmentContext(CleanSchema):
@@ -102,21 +151,39 @@ class BaseChemicalTreatmentContext(CleanSchema):
         return check_sum(v, expected=100, key="percent_covered")
 
 
+class DraftTankMixChemicalContext(
+    DraftBaseChemicalTreatmentContext, DraftProductApplicationRate
+):
+    tank_mix: Literal[True] = True
+
+
 class TankMixChemicalContext(BaseChemicalTreatmentContext, ProductApplicationRate):
     tank_mix: Literal[True] = True
+
+
+class DraftChemicalContextDilution(
+    DraftBaseChemicalTreatmentContext, DraftProductDilutionRate
+):
+    tank_mix: Literal[False] = False
 
 
 class ChemicalContextDilution(BaseChemicalTreatmentContext, ProductDilutionRate):
     tank_mix: Literal[False] = False
 
 
+class DraftChemicalContextApplicationRate(
+    DraftBaseChemicalTreatmentContext, DraftProductApplicationRate
+):
+    tank_mix: Literal[False] = False
+
+
 class ChemicalContextApplicationRate(
     BaseChemicalTreatmentContext, ProductApplicationRate
 ):
-    tank_mix: Literal[False]
+    tank_mix: Literal[False] = False
 
 
-def resolve_chemical_type(v: Any) -> str | Enum:
+def base_resolve_chemical_type(v: Any) -> str | Enum:
     """Helper for Treatment Context Discriminator that handles both dicts and objects"""
     # Normalize input date (Pydantic Object vs Dict)
     if isinstance(v, dict):
@@ -138,7 +205,35 @@ def resolve_chemical_type(v: Any) -> str | Enum:
     elif calc_value == Calculations.APPLICATION_RATE.value:
         return Calculations.APPLICATION_RATE
 
-    raise ValueError("Chemical treatment values created an invalid scenario.")
+    return None
+
+
+def resolve_draft_chemical_type(v: Any):
+    val = base_resolve_chemical_type(v)
+    if not val:
+        return Calculations.DRAFT
+    return val
+
+
+def resolve_chemical_type(v: Any) -> str | Enum:
+    val = base_resolve_chemical_type(v)
+    if not val:
+        raise ValueError("Chemical treatment values created an invalid scenario.")
+    return val
+
+
+class DraftContext(DraftChemicalWeatherInformation):
+    pesticide_employer_code: Optional[ServiceLicenseNumberAndCompanyType]
+    pesticide_use_permit: Optional[str]
+    pest_management_plan: Optional[PestManagementPlanType]
+    pest_management_plan_manual: Optional[str]
+    treatment_notice_signs: Optional[YesNoUnknown]
+    precautionary_statement: Optional[ChemicalPrecautionaryStatementType]
+    application_start_time: Optional[NaiveDatetime]
+    ntz_reduction: Optional[bool]
+    rationale_for_ntz_reduction: Optional[str]
+    additional_unmapped_well_water: Optional[bool]
+    pest_injury_threshold_determination: Optional[bool]
 
 
 class Context(ChemicalWeatherInformation):
@@ -179,9 +274,24 @@ class Context(ChemicalWeatherInformation):
         return self
 
 
-class BaseChemicalDetails(CleanSchema):
-    context: Context
+class DraftBaseChemicalDetails(CleanSchema):
+    context: DraftContext
     well_entries: List[WellEntry]
+    treatment_context: Annotated[
+        Union[
+            Annotated[DraftTankMixChemicalContext, Tag("Tank Mix")],
+            Annotated[DraftChemicalContextDilution, Tag(Calculations.DILUTION)],
+            Annotated[
+                DraftChemicalContextApplicationRate, Tag(Calculations.APPLICATION_RATE)
+            ],
+            Annotated[DraftBaseChemicalTreatmentContext, Tag(Calculations.DRAFT)],
+        ],
+        Discriminator(resolve_draft_chemical_type),
+    ]
+
+
+class BaseChemicalDetails(DraftBaseChemicalDetails):
+    context: Context
     treatment_context: Annotated[
         Union[
             Annotated[TankMixChemicalContext, Tag("Tank Mix")],
@@ -194,9 +304,20 @@ class BaseChemicalDetails(CleanSchema):
     ]
 
 
+# Terrestrial Treatment Types (Draft/Submit)
+class DraftTreatmentChemicalTerrestrial(DraftBaseFormSchema):
+    subtype: Literal["Treatment_Chemical_Plant_Terrestrial"]
+    subtype_data: DraftBaseChemicalDetails
+
+
 class TreatmentChemicalTerrestrial(BaseFormSchema):
     subtype: Literal["Treatment_Chemical_Plant_Terrestrial"]
     subtype_data: BaseChemicalDetails
+
+
+# Aquatic Treatment Types (Draft/Submit)
+class DraftTreatmentChemicalAquatic(DraftTreatmentChemicalTerrestrial):
+    subtype: Literal["Treatment_Chemical_Plant_Aquatic"]
 
 
 class TreatmentChemicalAquatic(TreatmentChemicalTerrestrial):

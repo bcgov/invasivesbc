@@ -1,6 +1,7 @@
 from .base import BaseActivitySubtypeTest
 from api.models.activity import Activity
 from api.tests.mock_frontend_submissions import (
+    EMPTY_MECH_TREATMENT_TERRESTRIAL,
     MINIMAL_MECH_TREATMENT_TERRESTRIAL,
     UPDATED_MECH_TREATMENT_TERRESTRIAL,
 )
@@ -57,6 +58,13 @@ class TerrestrialMechanicalTreatmentTest(BaseActivitySubtypeTest):
             },
         ]
         self.assertCountEqual(mt, expected)
+
+    def test_draft_submissions(self):
+        self.draft_pydantic_protocol_test(
+            empty_record=EMPTY_MECH_TREATMENT_TERRESTRIAL,
+            minimal_record=MINIMAL_MECH_TREATMENT_TERRESTRIAL,
+            full_record=UPDATED_MECH_TREATMENT_TERRESTRIAL,
+        )
 
     def test_submit_record(self):
         """

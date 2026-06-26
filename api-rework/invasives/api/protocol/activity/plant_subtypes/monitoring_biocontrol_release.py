@@ -1,17 +1,23 @@
 from typing import List, Literal, Optional
-from pydantic import model_validator, field_validator, NaiveDatetime
+from pydantic import model_validator, field_validator, NaiveDatetime, Field
 from api.protocol.activity.validators.no_future_date import no_future_date
 from api.protocol.activity.plant_subtypes.base_form_schema import (
     BaseFormSchema,
     CleanSchema,
+    DraftBaseFormSchema,
 )
 
 from api.protocol.activity.plant_subtypes.common import (
     MicrositeCondition,
+    DraftMicrositeCondition,
     WeatherConditions,
+    DraftWeatherConditions,
     SpreadResultsMixin,
+    DraftSpreadResultsMixin,
     BiocontrolCountExtended,
+    DraftBiocontrolCountExtended,
     TargetPlantPhenology,
+    DraftTargetPlantPhenology,
 )
 from api.models.enums import YesNoUnknown, CollectionType
 from api.protocol.activity.validators.code_validation import (
@@ -23,7 +29,25 @@ from api.protocol.activity.validators.code_validation import (
 )
 
 
-class Entry(CleanSchema):
+class DraftEntry(CleanSchema):
+    biocontrol_agent: Optional[BiocontrolAgentCodeType]
+    biocontrol_present: Optional[bool] = False
+    invasive_plant: Optional[PlantsWithBiocontrolType]
+    monitoring_type: Optional[CollectionType]
+    monitoring_method: Optional[BioAgentMonitoringMethodCodeType]
+    count_duration_minutes: Optional[int] = None
+    plant_count: Optional[int] = None
+    location_agent_found: List[AgentLocationFoundTerrainCodeType]
+    sign_of_biocontrol_presence: List[BiocontrolPresenceCodeType]
+    start_time: Optional[NaiveDatetime]
+    stop_time: Optional[NaiveDatetime]
+    suitable_for_collection: Optional[YesNoUnknown] = None
+    number_of_sweeps: Optional[int] = None
+    actual_biological_agents: List[DraftBiocontrolCountExtended]
+    estimated_biological_agents: List[DraftBiocontrolCountExtended]
+
+
+class Entry(DraftEntry):
     biocontrol_agent: BiocontrolAgentCodeType
     biocontrol_present: bool
     invasive_plant: PlantsWithBiocontrolType
@@ -104,12 +128,25 @@ class Entry(CleanSchema):
         return no_future_date(v)
 
 
-class SubtypeData(CleanSchema):
-    entries: List[Entry]
+class DraftSubtypeData(CleanSchema):
+    entries: List[DraftEntry]
+    microsite_conditions: DraftMicrositeCondition
+    weather_conditions: DraftWeatherConditions
+    spread_results: Optional[DraftSpreadResultsMixin] = None
+    target_plant_phenology: Optional[DraftTargetPlantPhenology] = None
+
+
+class SubtypeData(DraftSubtypeData):
+    entries: List[Entry] = Field(..., min_length=1)
     microsite_conditions: MicrositeCondition
     weather_conditions: WeatherConditions
     spread_results: Optional[SpreadResultsMixin] = None
     target_plant_phenology: Optional[TargetPlantPhenology] = None
+
+
+class DraftMonitoringBiocontrolRelease(DraftBaseFormSchema):
+    subtype: Literal["Monitoring_Biocontrol_Release_Plant_Terrestrial"]
+    subtype_data: DraftSubtypeData
 
 
 class MonitoringBiocontrolRelease(BaseFormSchema):

@@ -1,6 +1,46 @@
+EMPTY_MONITORING_MECH_TREATMENT = {
+    "id": "6e28e81d-cfcd-4e38-b1b0-1a7dff5cd100",
+    "short_id": "26PMM6E28E81D",
+    "employer": [],
+    "subtype": "Monitoring_Mechanical_Plant_Terrestrial_Aquatic",
+    "funding_agencies": [],
+    "jurisdictions": [{"jurisdiction": "", "percent_covered": 0}],
+    "projects": [],
+    "location_description": "",
+    "access_description": "",
+    "form_status": "Draft",
+    "date": "2026-06-25",
+    "comment": "",
+    "area_m": 0,
+    "latitude": 0,
+    "longitude": 0,
+    "utm_zone": 0,
+    "utm_easting": 0,
+    "utm_northing": 0,
+    "linked_activities": [],
+    "participants": [{"name": ""}],
+    "subtype_data": {
+        "entries": [
+            {
+                "invasive_plant": "",
+                "evidence_of_treatment": "",
+                "treatment_pass": "",
+                "comment": "",
+                "invasive_plants_on_site": [],
+                "management_efficacy_rating": "",
+                "treatment_efficacy_rating": "",
+                "invasive_plant_aquatic": "",
+            }
+        ]
+    },
+    "type": "Monitoring",
+    "media": [],
+    "created_by": "johnsmith@identifier",
+}
+
 MINIMAL_MONITORING_MECH_TREATMENT = {
-    "id": "421ee86e-370d-4beb-9f84-7f2c5ffaec45",
-    "short_id": "26PMM421EE86E",
+    "id": "6e28e81d-cfcd-4e38-b1b0-1a7dff5cd100",
+    "short_id": "26PMM6E28E81D",
     "employer": [{"employer": "MOTI"}],
     "subtype": "Monitoring_Mechanical_Plant_Terrestrial_Aquatic",
     "funding_agencies": [{"invasive_species_agency_code": "MOTI"}],
@@ -69,8 +109,8 @@ MINIMAL_MONITORING_MECH_TREATMENT = {
 }
 
 UPDATED_MONITORING_MECH_TREATMENT = {
-    "id": "421ee86e-370d-4beb-9f84-7f2c5ffaec45",
-    "short_id": "26PMM421EE86E",
+    "id": "6e28e81d-cfcd-4e38-b1b0-1a7dff5cd100",
+    "short_id": "26PMM6E28E81D",
     "employer": [{"employer": "MOTI"}],
     "subtype": "Monitoring_Mechanical_Plant_Terrestrial_Aquatic",
     "funding_agencies": [{"invasive_species_agency_code": "MOTI"}],

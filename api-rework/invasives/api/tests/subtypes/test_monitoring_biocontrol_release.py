@@ -1,6 +1,7 @@
 from .base import BaseActivitySubtypeTest
 from api.models.activity import Activity
 from api.tests.mock_frontend_submissions import (
+    EMPTY_BIOCONTROL_RELEASE_MONITORING,
     MINIMAL_BIOCONTROL_RELEASE_MONITORING,
     UPDATED_BIOCONTROL_RELEASE_MONITORING,
 )
@@ -92,6 +93,13 @@ class BiocontrolReleaseTest(BaseActivitySubtypeTest):
         self.assertEqual(sd["spread_results"]["plant_attack"], 20)
         self.assertEqual(sd["spread_results"]["max_spread_distance_m"], 300)
         self.assertEqual(sd["spread_results"]["max_spread_aspect_deg"], 320)
+
+    def test_draft_submissions(self):
+        self.draft_pydantic_protocol_test(
+            empty_record=EMPTY_BIOCONTROL_RELEASE_MONITORING,
+            minimal_record=MINIMAL_BIOCONTROL_RELEASE_MONITORING,
+            full_record=UPDATED_BIOCONTROL_RELEASE_MONITORING,
+        )
 
     def test_submit_record(self):
         """

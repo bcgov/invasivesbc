@@ -1,6 +1,7 @@
 from .base import BaseActivitySubtypeTest
 from api.models.activity import Activity
 from api.tests.mock_frontend_submissions import (
+    EMPTY_MECH_TREATMENT_AQUATIC,
     MINIMAL_MECH_TREATMENT_AQUATIC,
     UPDATED_MECH_TREATMENT_AQUATIC,
 )
@@ -75,6 +76,13 @@ class AquaticMechanicalTreatmentTest(BaseActivitySubtypeTest):
             },
         ]
         self.assertCountEqual(mt, expected)
+
+    def test_draft_submissions(self):
+        self.draft_pydantic_protocol_test(
+            empty_record=EMPTY_MECH_TREATMENT_AQUATIC,
+            minimal_record=MINIMAL_MECH_TREATMENT_AQUATIC,
+            full_record=UPDATED_MECH_TREATMENT_AQUATIC,
+        )
 
     def test_submit_record(self):
         """

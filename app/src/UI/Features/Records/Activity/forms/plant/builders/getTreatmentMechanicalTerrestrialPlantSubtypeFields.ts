@@ -4,7 +4,7 @@ const getTreatmentMechanicalTerrestrialPlantSubtypeFields = (): TerrestrialMechT
   entries: [
     {
       disposed_material_amount: undefined,
-      disposed_material_format: undefined,
+      disposed_material_format: '',
       disposal_method: '',
       invasive_plant: '',
       mechanical_method: '',
