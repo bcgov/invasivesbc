@@ -430,6 +430,37 @@ async function _validateCell(
         });
       }
       break;
+    case 'integer':
+      try {
+        result.parsedValue = Number.parseInt(data);
+      } catch (e) {
+        result.validationMessages.push({
+          severity: 'error',
+          messageTitle: 'Could not be interpreted as an integer.',
+          messageDetail: e.toString()
+        });
+      }
+      if (
+        templateColumn.validations.minValue !== null &&
+        (result.parsedValue as number) < templateColumn.validations.minValue
+      ) {
+        result.validationMessages.push({
+          severity: 'error',
+          messageTitle: `Below minimum value`,
+          messageDetail: `Value ${result.parsedValue} below minimum required: ${templateColumn.validations.minValue}`
+        });
+      }
+      if (
+        templateColumn.validations.maxValue !== null &&
+        (result.parsedValue as number) > templateColumn.validations.maxValue
+      ) {
+        result.validationMessages.push({
+          severity: 'error',
+          messageTitle: `Above maximum value`,
+          messageDetail: `Value ${result.parsedValue} above maximum required: ${templateColumn.validations.maxValue}`
+        });
+      }
+      break;
     case 'date':
       {
         if (!templateColumn.required && (data === null || data === undefined || data === '')) {

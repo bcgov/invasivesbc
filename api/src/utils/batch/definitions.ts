@@ -5,6 +5,7 @@ import { RowValidationResult } from 'utils/batch/validation/validation';
 type templateDataType =
   | 'text'
   | 'numeric'
+  | 'integer'
   | 'date'
   | 'datetime'
   | 'linked_id'

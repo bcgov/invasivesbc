@@ -21,7 +21,7 @@ export const BasicInformation = [
   })
     .isRequired()
     .build(),
-  new TemplateColumnBuilder('Point Area', 'numeric', null)
+  new TemplateColumnBuilder('Point Area', 'integer', null)
     .withHelpText('Area in square meters. Required when the geometry supplied in WKT is of type POINT.')
     .isIntentionallyUnmapped()
     .build(),
