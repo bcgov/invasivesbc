@@ -1,10 +1,10 @@
 from django.core.validators import MaxValueValidator
 from django.db import models
 
-from api.models.activity import UnrepeatedFormData
+from api.models.activity import UnrepeatedFormData, DraftRepeatedFormData
 
 
-class SpreadResults(UnrepeatedFormData):
+class SpreadResultsMixin(models.Model):
     """
     Spread Result Condition details for activities,
     consumed by:
@@ -23,5 +23,14 @@ class SpreadResults(UnrepeatedFormData):
     )
 
     class Meta:
+        abstract = True
+
+
+class SpreadResults(SpreadResultsMixin, UnrepeatedFormData):
+    class Meta:
         db_table = '"activity"."spread_results"'
-        pass
+
+
+class DraftSpreadResults(SpreadResultsMixin, DraftRepeatedFormData):
+    class Meta:
+        db_table = '"draft_activity"."spread_results"'

@@ -2,7 +2,7 @@ import hashlib
 from django.db import models
 from api.utils.s3_media_files import S3MediaFiles
 
-from api.models.activity import RepeatedFormData
+from api.models.activity import RepeatedFormData, DraftRepeatedFormData
 
 
 class UploadedImageManager(models.Manager):
@@ -53,10 +53,7 @@ class UploadedImageManager(models.Manager):
         return instance
 
 
-class UploadedImage(RepeatedFormData):
-    """
-    Details for User Uploaded Photos
-    """
+class UploadedImageMixin(models.Model):
 
     objects = UploadedImageManager()
 
@@ -69,5 +66,24 @@ class UploadedImage(RepeatedFormData):
     )
 
     class Meta:
+        abstract = True
+
+
+class UploadedImage(UploadedImageMixin, RepeatedFormData):
+    """
+    Details for User Uploaded Photos
+    """
+
+    class Meta:
         db_table = '"activity"."uploaded_image"'
+        db_table_comment = "Image uploads for IBC Records"
+
+
+class DraftUploadedImage(UploadedImageMixin, DraftRepeatedFormData):
+    """
+    Details for User Uploaded Photos
+    """
+
+    class Meta:
+        db_table = '"draft_activity"."uploaded_image"'
         db_table_comment = "Image uploads for IBC Records"

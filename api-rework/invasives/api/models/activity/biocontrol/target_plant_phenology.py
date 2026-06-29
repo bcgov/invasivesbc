@@ -1,10 +1,10 @@
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator
 from django.db import models
-from api.models.activity import UnrepeatedFormData
+from api.models.activity import UnrepeatedFormData, DraftUnrepeatedFormData
 
 
-class TargetPlantPhenology(UnrepeatedFormData):
+class TargetPlantPhenologyMixin(models.Model):
     """
     Phenology Reports for Targetted Invasive Species
       Used in:
@@ -37,8 +37,13 @@ class TargetPlantPhenology(UnrepeatedFormData):
     )
 
     class Meta:
+        abstract = True
+
+
+class TargetPlantPhenology(TargetPlantPhenologyMixin, UnrepeatedFormData):
+
+    class Meta:
         db_table = '"activity"."target_plant_phenology"'
-        pass
 
     def clean(self):
         total = sum(
@@ -52,3 +57,8 @@ class TargetPlantPhenology(UnrepeatedFormData):
         )
         if total != 100:
             raise ValidationError("Sum of all percentages must be equal to 100")
+
+
+class DraftTargetPlantPhenology(TargetPlantPhenologyMixin, DraftUnrepeatedFormData):
+    class Meta:
+        db_table = '"draft_activity"."target_plant_phenology"'

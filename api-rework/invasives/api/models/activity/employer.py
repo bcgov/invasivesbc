@@ -1,9 +1,16 @@
 from django.db import models
-from api.models.activity import RepeatedFormData
+from api.models.activity import RepeatedFormData, DraftRepeatedFormData
 from api.models.codes.code_tables import EmployerCode
 
 
-class Employer(RepeatedFormData):
+class EmployerMixin(models.Model):
+    employer = models.ForeignKey(EmployerCode, on_delete=models.PROTECT)
+
+    class Meta:
+        abstract = True
+
+
+class Employer(EmployerMixin, RepeatedFormData):
     employer = models.ForeignKey(EmployerCode, on_delete=models.PROTECT)
 
     class Meta:
@@ -12,3 +19,10 @@ class Employer(RepeatedFormData):
 
     def __str__(self):
         return f"{self.activity.short_id}: {self.employer.full}"
+
+
+class DraftEmployer(EmployerMixin, DraftRepeatedFormData):
+
+    class Meta:
+        db_table = '"draft_activity"."employer"'
+        db_table_comment = "Employer of the person filling out the activity form. Generally a 1:1 Relation."

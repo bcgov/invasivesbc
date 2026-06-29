@@ -1,7 +1,7 @@
 from django.core.validators import MinValueValidator
 from django.db import models
 
-from api.models.activity import RepeatedFormData
+from api.models.activity import RepeatedFormData, DraftRepeatedFormData
 from api.models.codes.code_tables import (
     AquaticPlantCode,
     TerrestrialPlantCode,
@@ -11,9 +11,9 @@ from api.models.codes.code_tables import (
 from api.models.enums.plant_disposal_format import PlantDisposalFormat
 
 
-class PlantMechanicalTreatmentEntry(RepeatedFormData):
+class PlantMechanicalTreatmentEntryMixin(models.Model):
     """
-    Abstract Model for PlantMechanicalTreatments
+    Abstract Model for DraftPlantMechanicalTreatments
     """
 
     invasive_plant = models.ForeignKey("PlantCode", on_delete=models.PROTECT)
@@ -31,7 +31,10 @@ class PlantMechanicalTreatmentEntry(RepeatedFormData):
         abstract = True
 
 
-class TerrestrialPlantMechanicalTreatmentEntry(PlantMechanicalTreatmentEntry):
+class TerrestrialPlantMechanicalTreatmentEntry(
+    PlantMechanicalTreatmentEntryMixin,
+    RepeatedFormData,
+):
     """
     Mechanical Treatment Information for Terrestrial Plant activities
     """
@@ -42,7 +45,10 @@ class TerrestrialPlantMechanicalTreatmentEntry(PlantMechanicalTreatmentEntry):
         db_table = '"activity"."treatment_mechanical_entries_pt"'
 
 
-class AquaticPlantMechanicalTreatmentEntry(PlantMechanicalTreatmentEntry):
+class AquaticPlantMechanicalTreatmentEntry(
+    PlantMechanicalTreatmentEntryMixin,
+    RepeatedFormData,
+):
     """
     Mechanical Treatment Information for Aquatic Plant activities
     """
@@ -51,3 +57,58 @@ class AquaticPlantMechanicalTreatmentEntry(PlantMechanicalTreatmentEntry):
 
     class Meta:
         db_table = '"activity"."treatment_mechanical_entries_pa"'
+
+
+class DraftPlantMechanicalTreatmentEntry(PlantMechanicalTreatmentEntryMixin):
+    treated_area_msq = models.FloatField(blank=True, null=True)
+    mechanical_method = models.ForeignKey(
+        PlantMechanicalTreatmentMethodCode,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
+    disposal_method = models.ForeignKey(
+        DisposalMethodCode,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        abstract = True
+
+
+class DraftTerrestrialPlantMechanicalTreatmentEntry(
+    DraftPlantMechanicalTreatmentEntry, DraftRepeatedFormData
+):
+    """
+    Mechanical Treatment Information for Terrestrial Plant activities
+    """
+
+    invasive_plant = models.ForeignKey(
+        TerrestrialPlantCode,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        db_table = '"draft_activity"."treatment_mechanical_entries_pt"'
+
+
+class DraftAquaticPlantMechanicalTreatmentEntry(
+    DraftPlantMechanicalTreatmentEntry, DraftRepeatedFormData
+):
+    """
+    Mechanical Treatment Information for Aquatic Plant activities
+    """
+
+    invasive_plant = models.ForeignKey(
+        AquaticPlantCode,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        db_table = '"draft_activity"."treatment_mechanical_entries_pa"'

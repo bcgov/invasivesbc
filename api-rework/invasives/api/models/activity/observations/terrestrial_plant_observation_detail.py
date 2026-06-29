@@ -1,6 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
-from api.models.activity import RepeatedFormData
+from api.models.activity import RepeatedFormData, DraftRepeatedFormData
 from api.models.codes.code_tables import (
     DensityCode,
     DistributionCode,
@@ -10,29 +10,47 @@ from api.models.codes.code_tables import (
 from api.models.enums.observation_type import ObservationType
 
 
-class TerrestrialPlantObservationEntries(RepeatedFormData):
+class TerrestrialPlantObservationEntriesMixin(models.Model):
     """
-    section title:
-      Terrestrial Invasive Plants
     consumed by:
       - Terrestrial Invasive Plant Observation
     """
 
-    invasive_plant = models.ForeignKey(TerrestrialPlantCode, on_delete=models.PROTECT)
+    invasive_plant = models.ForeignKey(
+        TerrestrialPlantCode,
+        on_delete=models.PROTECT,
+    )
     density = models.ForeignKey(
-        DensityCode, on_delete=models.PROTECT, blank=True, null=True
+        DensityCode,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
     )
     distribution = models.ForeignKey(
-        DistributionCode, on_delete=models.PROTECT, blank=True, null=True
+        DistributionCode,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
     )
     life_stage = models.ForeignKey(
-        PlantLifeStageCode, on_delete=models.PROTECT, blank=True, null=True
+        PlantLifeStageCode,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
     )
     observation_type = models.CharField(
         choices=ObservationType,
         db_comment="The invasive plant in this record was [not] seen at the site.",
     )
 
+    class Meta:
+        abstract = True
+
+
+class TerrestrialPlantObservationEntries(
+    TerrestrialPlantObservationEntriesMixin,
+    RepeatedFormData,
+):
     class Meta:
         db_table = '"activity"."observation_entries_pt"'
 
@@ -66,3 +84,24 @@ class TerrestrialPlantObservationEntries(RepeatedFormData):
 
         if errors:
             raise ValidationError(errors)
+
+
+class DraftTerrestrialPlantObservationEntries(
+    TerrestrialPlantObservationEntriesMixin,
+    DraftRepeatedFormData,
+):
+    invasive_plant = models.ForeignKey(
+        TerrestrialPlantCode,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
+    observation_type = models.CharField(
+        choices=ObservationType,
+        db_comment="The invasive plant in this record was [not] seen at the site.",
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        db_table = '"draft_activity"."observation_entries_pt"'

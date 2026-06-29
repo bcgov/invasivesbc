@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
-from api.models.activity import RepeatedFormData
+from api.models.activity import RepeatedFormData, DraftRepeatedFormData
 from api.models.codes.code_tables import (
     BiocontrolAgentCode,
     PlantsWithBiocontrol,
@@ -10,7 +10,7 @@ from api.models.codes.code_tables import (
 from api.models.enums.collection_type import CollectionType
 
 
-class TerrestrialBiocontrolCollectionEntry(RepeatedFormData):
+class TerrestrialBiocontrolCollectionEntryMixin(models.Model):
     """
     Biocontrol 1:M Collection Information for Activities
     Used in:
@@ -34,8 +34,16 @@ class TerrestrialBiocontrolCollectionEntry(RepeatedFormData):
     comment = models.TextField(max_length=16384, blank=True, null=True)
 
     class Meta:
+        abstract = True
+
+
+class TerrestrialBiocontrolCollectionEntry(
+    TerrestrialBiocontrolCollectionEntryMixin,
+    RepeatedFormData,
+):
+
+    class Meta:
         db_table = '"activity"."biocontrol_collection_entries_pt"'
-        pass
 
     def clean(self):
         super().clean()
@@ -72,3 +80,37 @@ class TerrestrialBiocontrolCollectionEntry(RepeatedFormData):
 
         if errors:
             raise ValidationError(errors)
+
+
+class DraftTerrestrialBiocontrolCollectionEntry(
+    TerrestrialBiocontrolCollectionEntryMixin,
+    DraftRepeatedFormData,
+):
+    invasive_plant = models.ForeignKey(
+        PlantsWithBiocontrol,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
+    biological_agent = models.ForeignKey(
+        BiocontrolAgentCode,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
+    collection_type = models.CharField(choices=CollectionType, blank=True, null=True)
+    time_collection_duration_minutes = models.PositiveIntegerField(
+        blank=True,
+        null=True,
+    )
+    collection_method = models.ForeignKey(
+        BioAgentCollectionMethodCode,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
+    start_time_collecting = models.DateTimeField(blank=True, null=True)
+    end_time_collecting = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        db_table = '"draft_activity"."biocontrol_collection_entries_pt"'

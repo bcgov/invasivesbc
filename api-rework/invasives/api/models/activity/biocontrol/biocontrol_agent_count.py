@@ -1,13 +1,12 @@
 from django.core.validators import MinValueValidator
 from django.db import models
 
-from api.models.activity import RepeatedFormData
+from api.models.activity import RepeatedFormData, DraftRepeatedFormData
 from api.models.codes.code_tables import (
     AgentLocationFoundCode,
     BioAgentLifeStageCode,
     PlantPositionCode,
 )
-
 
 ############
 #  For Biocontrol Records using Estimated/Actual Counts
@@ -15,10 +14,7 @@ from api.models.codes.code_tables import (
 ############
 
 
-####
-# Abstracts
-####
-class BiocontrolAgentCountSimple(RepeatedFormData):
+class BiocontrolAgentCountSimpleMixin(models.Model):
     """
     Base Class for Biocontrol Agent Counts.
 
@@ -33,22 +29,14 @@ class BiocontrolAgentCountSimple(RepeatedFormData):
 
     class Meta:
         abstract = True
-        db_table = '"activity"."biocontrol_agent_count_simple"'
 
 
-class BiocontrolAgentCountComplex(BiocontrolAgentCountSimple):
-    """
-    Base Complex Agent Count Forms.
-
-    Contains additional details for agent and plant locations.
-    """
-
+class BiocontrolAgentCountComplexMixin(BiocontrolAgentCountSimpleMixin):
     agent_location = models.ForeignKey(AgentLocationFoundCode, on_delete=models.PROTECT)
     plant_position = models.ForeignKey(PlantPositionCode, on_delete=models.PROTECT)
 
-    class Meta:
+    class Meta(BiocontrolAgentCountSimpleMixin.Meta):
         abstract = True
-        db_table = '"activity"."biocontrol_agent_count_complex"'
 
 
 ####
@@ -56,7 +44,9 @@ class BiocontrolAgentCountComplex(BiocontrolAgentCountSimple):
 ####
 
 
-class TerrestrialBiocontrolAgentCount(BiocontrolAgentCountSimple):
+class TerrestrialBiocontrolAgentCount(
+    BiocontrolAgentCountSimpleMixin, RepeatedFormData
+):
     """
     consumed by:
       - Biocontrol Collection
@@ -68,7 +58,9 @@ class TerrestrialBiocontrolAgentCount(BiocontrolAgentCountSimple):
         pass
 
 
-class TerrestrialBiocontrolAgentCountExtended(BiocontrolAgentCountComplex):
+class TerrestrialBiocontrolAgentCountExtended(
+    BiocontrolAgentCountComplexMixin, RepeatedFormData
+):
     """
     consumed by:
       - Biocontrol Dispersal Monitoring
@@ -76,4 +68,70 @@ class TerrestrialBiocontrolAgentCountExtended(BiocontrolAgentCountComplex):
 
     class Meta:
         db_table = '"activity"."biocontrol_agent_count_extended_pt"'
+        pass
+
+
+class DraftBiocontrolAgentCountSimple(
+    BiocontrolAgentCountSimpleMixin, DraftRepeatedFormData
+):
+    """
+    Base Class for Biocontrol Agent Counts.
+
+    :invasive_plant: Relates to the Dispersal Biocontrol Agent Record
+    :biocontrol_agent: Relates to the Dispersal Biocontrol Agent Record
+    :is_estimate: separates the "Actual Biological Agents" from the "Estimated Biological Agents"
+    """
+
+    stage = models.ForeignKey(
+        BioAgentLifeStageCode,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
+    quantity = models.PositiveIntegerField(
+        blank=True,
+        null=True,
+    )
+    is_estimate = models.BooleanField(
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        abstract = True
+
+
+class DraftBiocontrolAgentCountComplex(
+    BiocontrolAgentCountComplexMixin, DraftBiocontrolAgentCountSimple
+):
+    agent_location = models.ForeignKey(
+        AgentLocationFoundCode,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
+    plant_position = models.ForeignKey(
+        PlantPositionCode,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
+
+    class Meta(BiocontrolAgentCountComplexMixin.Meta):
+        abstract = True
+
+
+class DraftTerrestrialBiocontrolAgentCount(
+    DraftBiocontrolAgentCountSimple, DraftRepeatedFormData
+):
+    class Meta:
+        db_table = '"draft_activity"."biocontrol_agent_count_pt"'
+        pass
+
+
+class DraftTerrestrialBiocontrolAgentCountExtended(
+    DraftBiocontrolAgentCountComplex, DraftRepeatedFormData
+):
+    class Meta:
+        db_table = '"draft_activity"."biocontrol_agent_count_extended_pt"'
         pass
