@@ -113,7 +113,7 @@ class Geometry(GeometryMixin):
         super().save(*args, **kwargs)
 
 
-class DraftGeometry(models.Model):
+class DraftGeometry(GeometryMixin):
     location_description = models.CharField(max_length=16384, null=True, blank=True)
     area_m = models.PositiveBigIntegerField(null=True, blank=True)
     utm_zone = models.PositiveSmallIntegerField(null=True, blank=True)
@@ -137,6 +137,14 @@ class DraftGeometry(models.Model):
         spatial_index=True,
         null=True,
         blank=True,
+    )
+    computed_tile_shape = geomodels.GeometryField(
+        srid=3857,
+        spatial_index=True,
+        geography=False,
+        null=True,
+        blank=True,
+        db_comment="Baked spatial reference for vector tiles generation.",
     )
 
     class Meta:
