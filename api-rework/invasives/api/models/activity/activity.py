@@ -209,11 +209,11 @@ class DraftActivity(
         indexes = [
             models.Index(
                 fields=["type", "date"],
-                name="draft_activity_basic_date_type_idx",
+                name="draft_activity_date_type_idx",
             ),
             models.Index(
                 fields=["subtype", "date"],
-                name="draft_activity_basic_date_sub_idx",
+                name="draft_activity_date_sub_idx",
             ),
         ]
 
