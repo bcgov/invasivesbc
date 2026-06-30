@@ -124,7 +124,7 @@ class Activity {
           return rejectWithValue(404);
         }
       }
-      const req = await fetch(`${Configuration.current.runtime.API_V2_BASE}/activities/${id}`, {
+      const req = await fetch(`${Configuration.current.runtime.API_V2_BASE}/ninja/activities/${id}`, {
         headers: { Authorization: await getCurrentJWT() }
       });
       if (req.status === 404) return rejectWithValue(404);
