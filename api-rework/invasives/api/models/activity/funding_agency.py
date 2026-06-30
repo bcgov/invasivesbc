@@ -16,7 +16,7 @@ class FundingAgency(FundingAgencyMixin, RepeatedFormData):
         db_table_comment = "Agencies funding the activity."
 
 
-class DraftFundingAgency(FundingAgency, DraftRepeatedFormData):
+class DraftFundingAgency(FundingAgencyMixin, DraftRepeatedFormData):
 
     class Meta:
         db_table = '"draft_activity"."funding_agency"'
