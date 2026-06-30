@@ -1,6 +1,5 @@
 from django.db import models
 from api.models.activity import RepeatedFormData, DraftRepeatedFormData
-from api.models.codes import InvasivePlantsOnSiteCode
 from api.models.codes.code_tables import (
     AquaticPlantCode,
     EfficacyManagementRatingCode,
@@ -11,34 +10,7 @@ from api.models.enums.treatment_pass import TreatmentPass
 from api.models.enums.yes_no import YesNo
 
 
-class InvasivePlantsOnSiteMixin(models.Model):
-    invasive_plants_on_site = models.ForeignKey(
-        InvasivePlantsOnSiteCode, on_delete=models.PROTECT
-    )
-
-    class Meta:
-        abstract = True
-
-
-class InvasivePlantsOnSite(InvasivePlantsOnSiteMixin, RepeatedFormData):
-    class Meta:
-        db_table = '"activity"."invasive_plants_on_site"'
-
-
-class DraftInvasivePlantsOnSite(InvasivePlantsOnSiteMixin, DraftRepeatedFormData):
-
-    invasive_plants_on_site = models.ForeignKey(
-        InvasivePlantsOnSiteCode,
-        on_delete=models.PROTECT,
-        blank=True,
-        null=True,
-    )
-
-    class Meta:
-        db_table = '"draft_activity"."invasive_plants_on_site"'
-
-
-class PlantMonitoringBaseMixin(models.Model):
+class BaseModel(models.Model):
     """
     1:M Relationship between for an Activity. PlantMonitoringBase covers Chemical and Mechanical Treatment Monitoring
     Plant Monitoring Base covers the 1:M relationship to an Activity where Monitoring was from a
@@ -60,7 +32,7 @@ class PlantMonitoringBaseMixin(models.Model):
         abstract = True
 
 
-class PlantMonitoringBase(PlantMonitoringBaseMixin, RepeatedFormData):
+class PlantMonitoringBase(BaseModel, RepeatedFormData):
     class Meta:
         abstract = True
 
@@ -108,7 +80,7 @@ class AquaticTreatmentMonitoringEntry(PlantMonitoringBase):
         db_table = '"activity"."monitoring_treatment_entries_pa"'
 
 
-class DraftPlantMonitoringBase(PlantMonitoringBaseMixin, DraftRepeatedFormData):
+class DraftPlantMonitoringBase(BaseModel, DraftRepeatedFormData):
     invasive_plant = models.ForeignKey(
         "PlantCodes",
         on_delete=models.PROTECT,

@@ -13,9 +13,7 @@ from api.models.activity import (
     AquaticTreatmentMonitoringEntry,
     ActivityDataRecord,
 )
-from api.models.activity.monitoring.plant_treatment_monitoring import (
-    InvasivePlantsOnSite,
-)
+from api.models.activity.monitoring import InvasivePlantsOnSite
 from api.models.codes import (
     TerrestrialPlantCode,
     AquaticPlantCode,

@@ -1,8 +1,11 @@
 from .plant_treatment_monitoring import (
     AquaticTreatmentMonitoringEntry,
     TerrestrialTreatmentMonitoringEntry,
-    InvasivePlantsOnSite,
     DraftAquaticTreatmentMonitoringEntry,
     DraftTerrestrialTreatmentMonitoringEntry,
+)
+
+from .invasive_plants_on_site import (
+    InvasivePlantsOnSite,
     DraftInvasivePlantsOnSite,
 )

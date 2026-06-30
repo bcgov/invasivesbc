@@ -11,3 +11,4 @@ from .waterbody_flow_detail import *
 from .waterbody_level_management import *
 from .waterbody_substrate_type import *
 from .waterbody_use import *
+from .waterbody_adjacent_use import *
