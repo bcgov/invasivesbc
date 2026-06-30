@@ -10,24 +10,24 @@ class BaseModel(models.Model):
         abstract = True
 
 
-class WaterbodyOutflowSeasonal(BaseModel):
+class WaterbodyOutflowSeasonal(BaseModel, RepeatedFormData):
     class Meta:
         db_table = '"activity"."water_outflow_s"'
 
 
-class WaterbodyOutflowPermanent(BaseModel):
+class WaterbodyOutflowPermanent(BaseModel, RepeatedFormData):
     class Meta:
         db_table = '"activity"."water_outflow_p"'
 
 
-class WaterbodyInflowSeasonal(BaseModel):
+class WaterbodyInflowSeasonal(BaseModel, RepeatedFormData):
     flow_code = models.ForeignKey(WaterbodyFlowSeasonalCode, on_delete=models.PROTECT)
 
     class Meta:
         db_table = '"activity"."water_inflow_s"'
 
 
-class WaterbodyInflowPermanent(BaseModel):
+class WaterbodyInflowPermanent(BaseModel, RepeatedFormData):
     class Meta:
         db_table = '"activity"."water_inflow_p"'
 
