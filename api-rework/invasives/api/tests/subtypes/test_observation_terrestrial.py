@@ -1,6 +1,5 @@
 from .base import BaseActivitySubtypeTest
-from api.models.activity import Activity
-from api.serializers.activity import ActivitySerializer
+from api.models.activity import Activity, DraftActivity
 from api.tests.mock_frontend_submissions import (
     EMPTY_TERRESTRIAL_OBSERVATION,
     MINIMAL_TERRESTRIAL_OBSERVATION,
@@ -96,24 +95,64 @@ class TerrestrialObservationTest(BaseActivitySubtypeTest):
 
         self.assertCountEqual(obs_detail, sd["entries"])
 
-    def test_draft_submissions(self):
-        self.draft_pydantic_protocol_test(
-            empty_record=EMPTY_TERRESTRIAL_OBSERVATION,
-            minimal_record=MINIMAL_TERRESTRIAL_OBSERVATION,
-            full_record=UPDATED_TERRESTRIAL_OBSERVATION,
-        )
+    def test_initial_draft_submissions(self):
+        """
+        Expect:
+            - Submitting Draft returns 200
+            - Record is created in DB
+        """
+        payload = EMPTY_TERRESTRIAL_OBSERVATION
+        res = self.draft_record(payload)
+        self.assertEqual(res.status_code, 200)
+        record = res.json()
+
+        self.assertEqual(record["id"], payload["id"])
+        self.assertEqual(record["short_id"], payload["short_id"])
+        # Needs Serializers before can expand tests.
+        # self.assertGreater(len(record["subtype_data"]["entries"]), 0)
+        # self.assertEqual(
+        #     record["subtype_data"]["entries"][0]["observation_type"],
+        #     payload["subtype_data"]["entries"][0]["observation_type"],
+        # )
+
+    def test_update_draft_submission(self):
+        """
+        Expect:
+            - Submitting Draft returns 200
+            - Record is updated in DB
+        """
+        payload = MINIMAL_TERRESTRIAL_OBSERVATION
+        res = self.draft_record(payload)
+        self.assertEqual(res.status_code, 200)
+        record = res.json()
+
+        self.assertEqual(record["id"], payload["id"])
+        self.assertEqual(record["short_id"], payload["short_id"])
+        self.assertEqual(record["form_status"], payload["form_status"])
+        rec = DraftActivity.objects.get(id=payload["id"])
+        self.assertIsNotNone(rec)
+        # Needs Serializers before can expand tests.
+        # self.assertEqual(len(record["subtype_data"]["entries"]), 1)
+        # self.assertEqual(
+        #     record["subtype_data"]["entries"][0]["observation_type"],
+        #     payload["subtype_data"]["entries"][0]["observation_type"],
+        # )
 
     def test_submit_record(self):
         """
         Expect:
             - Submitting Record returns 200
             - Record is created in DB
+            - Draft Record is deleted when submitted record instantiated
         """
         payload = MINIMAL_TERRESTRIAL_OBSERVATION
         self.submit_record(payload).json()
         record = self.fetch(id=payload["id"]).json()
 
         self.assertIsNotNone(record)
+        draft_record_exists = DraftActivity.objects.filter(id=payload["id"]).exists()
+        self.assertFalse(draft_record_exists)
+        # self.assertIsNone()
 
     def test_update_record(self):
         """
