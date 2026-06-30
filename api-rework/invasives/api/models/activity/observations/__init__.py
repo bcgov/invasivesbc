@@ -1,5 +1,5 @@
 from .aquatic_plant_observation_entry import *
-from .aquatic_plant_observation_context import AquaticPlantObservationContext
+from .aquatic_plant_observation_context import *
 from .pre_treatment_observation import *
 from .shoreline_types import *
 from .specific_use import *
