@@ -14,7 +14,7 @@ from api.models.codes.code_tables import (
 ############
 
 
-class BiocontrolAgentCountSimpleMixin(models.Model):
+class BaseSimpleModel(models.Model):
     """
     Base Class for Biocontrol Agent Counts.
 
@@ -31,11 +31,11 @@ class BiocontrolAgentCountSimpleMixin(models.Model):
         abstract = True
 
 
-class BiocontrolAgentCountComplexMixin(BiocontrolAgentCountSimpleMixin):
+class BaseComplexModel(BaseSimpleModel):
     agent_location = models.ForeignKey(AgentLocationFoundCode, on_delete=models.PROTECT)
     plant_position = models.ForeignKey(PlantPositionCode, on_delete=models.PROTECT)
 
-    class Meta(BiocontrolAgentCountSimpleMixin.Meta):
+    class Meta(BaseSimpleModel.Meta):
         abstract = True
 
 
@@ -44,9 +44,7 @@ class BiocontrolAgentCountComplexMixin(BiocontrolAgentCountSimpleMixin):
 ####
 
 
-class TerrestrialBiocontrolAgentCount(
-    BiocontrolAgentCountSimpleMixin, RepeatedFormData
-):
+class TerrestrialBiocontrolAgentCount(BaseSimpleModel, RepeatedFormData):
     """
     consumed by:
       - Biocontrol Collection
@@ -58,9 +56,7 @@ class TerrestrialBiocontrolAgentCount(
         pass
 
 
-class TerrestrialBiocontrolAgentCountExtended(
-    BiocontrolAgentCountComplexMixin, RepeatedFormData
-):
+class TerrestrialBiocontrolAgentCountExtended(BaseComplexModel, RepeatedFormData):
     """
     consumed by:
       - Biocontrol Dispersal Monitoring
@@ -71,9 +67,7 @@ class TerrestrialBiocontrolAgentCountExtended(
         pass
 
 
-class DraftBiocontrolAgentCountSimple(
-    BiocontrolAgentCountSimpleMixin, DraftRepeatedFormData
-):
+class DraftBiocontrolAgentCountSimple(BaseSimpleModel, DraftRepeatedFormData):
     """
     Base Class for Biocontrol Agent Counts.
 
@@ -102,7 +96,7 @@ class DraftBiocontrolAgentCountSimple(
 
 
 class DraftBiocontrolAgentCountComplex(
-    BiocontrolAgentCountComplexMixin, DraftBiocontrolAgentCountSimple
+    BaseComplexModel, DraftBiocontrolAgentCountSimple
 ):
     stage = models.ForeignKey(
         BioAgentLifeStageCode,

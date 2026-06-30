@@ -4,7 +4,7 @@ from django.db import models
 from api.models.activity import UnrepeatedFormData, DraftUnrepeatedFormData
 
 
-class TargetPlantPhenologyMixin(models.Model):
+class BaseModel(models.Model):
     """
     Phenology Reports for Targetted Invasive Species
       Used in:
@@ -40,7 +40,7 @@ class TargetPlantPhenologyMixin(models.Model):
         abstract = True
 
 
-class TargetPlantPhenology(TargetPlantPhenologyMixin, UnrepeatedFormData):
+class TargetPlantPhenology(BaseModel, UnrepeatedFormData):
 
     class Meta:
         db_table = '"activity"."target_plant_phenology"'
@@ -59,6 +59,6 @@ class TargetPlantPhenology(TargetPlantPhenologyMixin, UnrepeatedFormData):
             raise ValidationError("Sum of all percentages must be equal to 100")
 
 
-class DraftTargetPlantPhenology(TargetPlantPhenologyMixin, DraftUnrepeatedFormData):
+class DraftTargetPlantPhenology(BaseModel, DraftUnrepeatedFormData):
     class Meta:
         db_table = '"draft_activity"."target_plant_phenology"'

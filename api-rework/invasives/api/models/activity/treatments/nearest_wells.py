@@ -3,7 +3,7 @@ from django.db import models
 from api.models.activity import RepeatedFormData, DraftRepeatedFormData
 
 
-class WellEntryMixin(models.Model):
+class BaseModel(models.Model):
     """
     Identifier for Registered wells in proximity of a Chemical Treatment Site.
     Distance is based on the Centroid value of the Activity shape
@@ -24,11 +24,11 @@ class WellEntryMixin(models.Model):
         abstract = True
 
 
-class WellEntry(WellEntryMixin, RepeatedFormData):
+class WellEntry(BaseModel, RepeatedFormData):
     class Meta:
         db_table = '"activity"."well_entries"'
 
 
-class DraftWellEntry(WellEntryMixin, DraftRepeatedFormData):
+class DraftWellEntry(BaseModel, DraftRepeatedFormData):
     class Meta:
         db_table = '"draft_activity"."well_entries"'

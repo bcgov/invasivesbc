@@ -9,7 +9,7 @@ from api.models.codes.code_tables import (
 from api.models.enums.yes_no_unknown import YesNoUnknown
 
 
-class TerrestrialPlantObservationContextMixin(models.Model):
+class BaseModel(models.Model):
     """
     consumed by:
       - Terrestrial Invasive Plant Observation
@@ -34,10 +34,7 @@ class TerrestrialPlantObservationContextMixin(models.Model):
         abstract = True
 
 
-class TerrestrialPlantObservationContext(
-    TerrestrialPlantObservationContextMixin,
-    UnrepeatedFormData,
-):
+class TerrestrialPlantObservationContext(BaseModel, UnrepeatedFormData):
     class Meta:
         db_table = '"activity"."observation_context_pt"'
         db_table_comment = "Details of surrounding area for a terrestrial activity."
@@ -54,9 +51,7 @@ class TerrestrialPlantObservationContext(
         #   })
 
 
-class DraftTerrestrialPlantObservationContext(
-    TerrestrialPlantObservationContextMixin, DraftUnrepeatedFormData
-):
+class DraftTerrestrialPlantObservationContext(BaseModel, DraftUnrepeatedFormData):
     suitable_for_biocontrol_agent = models.CharField(
         choices=YesNoUnknown,
         default="Unknown",

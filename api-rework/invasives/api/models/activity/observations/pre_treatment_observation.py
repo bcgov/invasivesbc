@@ -3,7 +3,7 @@ from api.models.activity import UnrepeatedFormData, DraftUnrepeatedFormData
 from api.models.enums.yes_no_unknown import YesNoUnknown
 
 
-class PretreatmentObservationMixin(models.Model):
+class BaseModel(models.Model):
     """
     consumed by:
       - Terrestrial Invasive Plant Observation
@@ -16,16 +16,13 @@ class PretreatmentObservationMixin(models.Model):
         abstract = True
 
 
-class PretreatmentObservation(PretreatmentObservationMixin, UnrepeatedFormData):
+class PretreatmentObservation(BaseModel, UnrepeatedFormData):
     class Meta:
         db_table = '"activity"."observation_pre_treatment_p"'
         db_table_comment = "Detail that an Observation has taken place before any known Treatments have occured"
 
 
-class DraftPretreatmentObservation(
-    PretreatmentObservationMixin,
-    DraftUnrepeatedFormData,
-):
+class DraftPretreatmentObservation(BaseModel, DraftUnrepeatedFormData):
 
     pre_treatment_observation = models.CharField(
         choices=YesNoUnknown,

@@ -5,7 +5,7 @@ from api.models.codes import (
 )
 
 
-class SignOfBiocontrolPresenceMixin(models.Model):
+class BaseModel(models.Model):
     sign_of_presence = models.ForeignKey(
         BiocontrolPresenceCode, on_delete=models.PROTECT
     )
@@ -14,17 +14,13 @@ class SignOfBiocontrolPresenceMixin(models.Model):
         abstract = True
 
 
-class SignOfBiocontrolPresenceTerrestrial(
-    SignOfBiocontrolPresenceMixin, RepeatedFormData
-):
+class SignOfBiocontrolPresenceTerrestrial(BaseModel, RepeatedFormData):
 
     class Meta:
         db_table = '"activity"."sign_of_bioagent_presence_pt"'
 
 
-class DraftSignOfBiocontrolPresenceTerrestrial(
-    SignOfBiocontrolPresenceMixin, DraftRepeatedFormData
-):
+class DraftSignOfBiocontrolPresenceTerrestrial(BaseModel, DraftRepeatedFormData):
 
     class Meta:
         db_table = '"draft_activity"."sign_of_bioagent_presence_pt"'

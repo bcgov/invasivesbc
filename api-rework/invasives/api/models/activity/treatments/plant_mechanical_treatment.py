@@ -11,7 +11,7 @@ from api.models.codes.code_tables import (
 from api.models.enums.plant_disposal_format import PlantDisposalFormat
 
 
-class PlantMechanicalTreatmentEntryMixin(models.Model):
+class BaseModel(models.Model):
     """
     Abstract Model for DraftPlantMechanicalTreatments
     """
@@ -31,10 +31,7 @@ class PlantMechanicalTreatmentEntryMixin(models.Model):
         abstract = True
 
 
-class TerrestrialPlantMechanicalTreatmentEntry(
-    PlantMechanicalTreatmentEntryMixin,
-    RepeatedFormData,
-):
+class TerrestrialPlantMechanicalTreatmentEntry(BaseModel, RepeatedFormData):
     """
     Mechanical Treatment Information for Terrestrial Plant activities
     """
@@ -45,10 +42,7 @@ class TerrestrialPlantMechanicalTreatmentEntry(
         db_table = '"activity"."treatment_mechanical_entries_pt"'
 
 
-class AquaticPlantMechanicalTreatmentEntry(
-    PlantMechanicalTreatmentEntryMixin,
-    RepeatedFormData,
-):
+class AquaticPlantMechanicalTreatmentEntry(BaseModel, RepeatedFormData):
     """
     Mechanical Treatment Information for Aquatic Plant activities
     """
@@ -59,7 +53,7 @@ class AquaticPlantMechanicalTreatmentEntry(
         db_table = '"activity"."treatment_mechanical_entries_pa"'
 
 
-class DraftPlantMechanicalTreatmentEntry(PlantMechanicalTreatmentEntryMixin):
+class DraftPlantMechanicalTreatmentEntry(BaseModel):
     treated_area_msq = models.FloatField(blank=True, null=True)
     mechanical_method = models.ForeignKey(
         PlantMechanicalTreatmentMethodCode,

@@ -15,7 +15,7 @@ from api.models.codes.code_tables import (
 from api.models.enums import CollectionType, YesNoUnknown
 
 
-class TerrestrialBiocontrolDispersalMonitoringEntryMixin(models.Model):
+class BaseModel(models.Model):
     """
     Biocontrol 1:M Monitoring Information
     Used in:
@@ -44,10 +44,7 @@ class TerrestrialBiocontrolDispersalMonitoringEntryMixin(models.Model):
         abstract = True
 
 
-class TerrestrialBiocontrolDispersalMonitoringEntry(
-    TerrestrialBiocontrolDispersalMonitoringEntryMixin,
-    RepeatedFormData,
-):
+class TerrestrialBiocontrolDispersalMonitoringEntry(BaseModel, RepeatedFormData):
     class Meta:
         db_table = '"activity"."monitoring_biocontrol_dispersal_entries_pt"'
 
@@ -102,8 +99,7 @@ class TerrestrialBiocontrolDispersalMonitoringEntry(
 
 
 class DraftTerrestrialBiocontrolDispersalMonitoringEntry(
-    TerrestrialBiocontrolDispersalMonitoringEntryMixin,
-    DraftRepeatedFormData,
+    BaseModel, DraftRepeatedFormData
 ):
     invasive_plant = models.ForeignKey(
         PlantsWithBiocontrol, on_delete=models.PROTECT, blank=True, null=True

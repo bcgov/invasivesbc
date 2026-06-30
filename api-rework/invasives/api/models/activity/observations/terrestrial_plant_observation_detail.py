@@ -10,7 +10,7 @@ from api.models.codes.code_tables import (
 from api.models.enums.observation_type import ObservationType
 
 
-class TerrestrialPlantObservationEntriesMixin(models.Model):
+class BaseModel(models.Model):
     """
     consumed by:
       - Terrestrial Invasive Plant Observation
@@ -47,10 +47,7 @@ class TerrestrialPlantObservationEntriesMixin(models.Model):
         abstract = True
 
 
-class TerrestrialPlantObservationEntries(
-    TerrestrialPlantObservationEntriesMixin,
-    RepeatedFormData,
-):
+class TerrestrialPlantObservationEntries(BaseModel, RepeatedFormData):
     class Meta:
         db_table = '"activity"."observation_entries_pt"'
 
@@ -86,10 +83,7 @@ class TerrestrialPlantObservationEntries(
             raise ValidationError(errors)
 
 
-class DraftTerrestrialPlantObservationEntries(
-    TerrestrialPlantObservationEntriesMixin,
-    DraftRepeatedFormData,
-):
+class DraftTerrestrialPlantObservationEntries(BaseModel, DraftRepeatedFormData):
     invasive_plant = models.ForeignKey(
         TerrestrialPlantCode,
         on_delete=models.PROTECT,

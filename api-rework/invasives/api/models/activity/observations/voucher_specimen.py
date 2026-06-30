@@ -3,7 +3,7 @@ from api.models.activity import UnrepeatedFormData, DraftUnrepeatedFormData
 from api.models.codes.code_tables import TerrestrialPlantCode, AquaticPlantCode
 
 
-class VoucherSpecimenMixin(models.Model):
+class BaseModel(models.Model):
     invasive_plant = models.ForeignKey("PlantCodes", on_delete=models.PROTECT)
     voucher_sample_id = models.CharField(max_length=128)
     date_collected = models.DateField()
@@ -20,21 +20,21 @@ class VoucherSpecimenMixin(models.Model):
         abstract = True
 
 
-class TerrestrialVoucherSpecimen(VoucherSpecimenMixin, UnrepeatedFormData):
+class TerrestrialVoucherSpecimen(BaseModel, UnrepeatedFormData):
     invasive_plant = models.ForeignKey(TerrestrialPlantCode, on_delete=models.PROTECT)
 
     class Meta:
         db_table = '"activity"."voucher_specimen_pt"'
 
 
-class AquaticVoucherSpecimen(VoucherSpecimenMixin, UnrepeatedFormData):
+class AquaticVoucherSpecimen(BaseModel, UnrepeatedFormData):
     invasive_plant = models.ForeignKey(AquaticPlantCode, on_delete=models.PROTECT)
 
     class Meta:
         db_table = '"activity"."voucher_specimen_pa"'
 
 
-class DraftBaseVoucherSpecimen(VoucherSpecimenMixin, DraftUnrepeatedFormData):
+class DraftBaseVoucherSpecimen(BaseModel, DraftUnrepeatedFormData):
     invasive_plant = models.ForeignKey(
         "PlantCodes", on_delete=models.PROTECT, blank=True, null=True
     )

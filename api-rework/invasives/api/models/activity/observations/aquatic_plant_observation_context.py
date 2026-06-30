@@ -3,7 +3,7 @@ from api.models.activity import UnrepeatedFormData, DraftUnrepeatedFormData
 from api.models.enums import YesNoUnknown
 
 
-class AquaticPlantObservationContextMixin(models.Model):
+class BaseModel(models.Model):
     suitable_for_biocontrol = models.CharField(
         choices=YesNoUnknown,
     )
@@ -12,18 +12,12 @@ class AquaticPlantObservationContextMixin(models.Model):
         abstract = True
 
 
-class AquaticPlantObservationContext(
-    AquaticPlantObservationContextMixin,
-    UnrepeatedFormData,
-):
+class AquaticPlantObservationContext(BaseModel, UnrepeatedFormData):
     class Meta:
         db_table = '"activity"."observation_context_pa"'
 
 
-class DraftAquaticPlantObservationContext(
-    AquaticPlantObservationContextMixin,
-    DraftUnrepeatedFormData,
-):
+class DraftAquaticPlantObservationContext(BaseModel, DraftUnrepeatedFormData):
     suitable_for_biocontrol = models.CharField(
         choices=YesNoUnknown,
         blank=True,

@@ -5,7 +5,7 @@ from api.models.codes import WindDirectionCode
 from api.models.codes.code_tables import CloudCoverCode, PrecipitationCode
 
 
-class WeatherConditionsMixin(models.Model):
+class BaseModel(models.Model):
     """
     Weather Condition Details for Activity
     consumed by:
@@ -26,7 +26,7 @@ class WeatherConditionsMixin(models.Model):
         abstract = True
 
 
-class WeatherConditions(WeatherConditionsMixin, UnrepeatedFormData):
+class WeatherConditions(BaseModel, UnrepeatedFormData):
 
     class Meta:
         db_table = '"activity"."weather_conditions"'
@@ -40,7 +40,7 @@ class WeatherConditions(WeatherConditionsMixin, UnrepeatedFormData):
             )
 
 
-class DraftWeatherConditions(WeatherConditionsMixin, DraftUnrepeatedFormData):
+class DraftWeatherConditions(BaseModel, DraftUnrepeatedFormData):
     """
     Weather Condition Details for Activity
     consumed by:

@@ -10,7 +10,7 @@ from api.models.codes.code_tables import (
 from api.models.enums.observation_type import ObservationType
 
 
-class AquaticPlantObservationEntryMixin(models.Model):
+class BaseModel(models.Model):
     invasive_plant = models.ForeignKey(AquaticPlantCode, on_delete=models.PROTECT)
     density = models.ForeignKey(
         DensityCode, on_delete=models.PROTECT, blank=True, null=True
@@ -28,7 +28,7 @@ class AquaticPlantObservationEntryMixin(models.Model):
         abstract = True
 
 
-class AquaticPlantObservationEntry(AquaticPlantObservationEntryMixin, RepeatedFormData):
+class AquaticPlantObservationEntry(BaseModel, RepeatedFormData):
     class Meta:
         db_table = '"activity"."observation_entries_pa"'
 
@@ -64,10 +64,7 @@ class AquaticPlantObservationEntry(AquaticPlantObservationEntryMixin, RepeatedFo
             raise ValidationError(errors)
 
 
-class DraftAquaticPlantObservationEntry(
-    AquaticPlantObservationEntryMixin,
-    DraftRepeatedFormData,
-):
+class DraftAquaticPlantObservationEntry(BaseModel, DraftRepeatedFormData):
     invasive_plant = models.ForeignKey(
         AquaticPlantCode,
         on_delete=models.PROTECT,

@@ -4,7 +4,7 @@ from api.models.activity import RepeatedFormData, DraftRepeatedFormData
 from api.models.codes import WaterLevelManagement
 
 
-class WaterbodyLevelManagementMixin(models.Model):
+class BaseModel(models.Model):
     waterlevel_management = models.ForeignKey(
         WaterLevelManagement, on_delete=models.PROTECT
     )
@@ -13,14 +13,11 @@ class WaterbodyLevelManagementMixin(models.Model):
         abstract = True
 
 
-class WaterbodyLevelManagement(WaterbodyLevelManagementMixin, RepeatedFormData):
+class WaterbodyLevelManagement(BaseModel, RepeatedFormData):
     class Meta:
         db_table = '"activity"."water_level_management"'
 
 
-class DraftWaterbodyLevelManagement(
-    WaterbodyLevelManagementMixin,
-    DraftRepeatedFormData,
-):
+class DraftWaterbodyLevelManagement(BaseModel, DraftRepeatedFormData):
     class Meta:
         db_table = '"draft_activity"."water_level_management"'

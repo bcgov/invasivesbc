@@ -4,7 +4,7 @@ from django.db import models
 from api.models.activity import UnrepeatedFormData, DraftRepeatedFormData
 
 
-class SpreadResultsMixin(models.Model):
+class BaseModel(models.Model):
     """
     Spread Result Condition details for activities,
     consumed by:
@@ -26,11 +26,11 @@ class SpreadResultsMixin(models.Model):
         abstract = True
 
 
-class SpreadResults(SpreadResultsMixin, UnrepeatedFormData):
+class SpreadResults(BaseModel, UnrepeatedFormData):
     class Meta:
         db_table = '"activity"."spread_results"'
 
 
-class DraftSpreadResults(SpreadResultsMixin, DraftRepeatedFormData):
+class DraftSpreadResults(BaseModel, DraftRepeatedFormData):
     class Meta:
         db_table = '"draft_activity"."spread_results"'

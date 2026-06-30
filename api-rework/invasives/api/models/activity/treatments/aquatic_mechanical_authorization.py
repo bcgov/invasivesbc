@@ -2,7 +2,7 @@ from django.db import models
 from api.models.activity import UnrepeatedFormData, DraftUnrepeatedFormData
 
 
-class AquaticMechanicalAuthorizationMixin(models.Model):
+class BaseModel(models.Model):
     authorization_information = models.CharField(
         null=True,
         blank=True,
@@ -13,17 +13,11 @@ class AquaticMechanicalAuthorizationMixin(models.Model):
         abstract = True
 
 
-class AquaticMechanicalAuthorization(
-    AquaticMechanicalAuthorizationMixin,
-    UnrepeatedFormData,
-):
+class AquaticMechanicalAuthorization(BaseModel, UnrepeatedFormData):
     class Meta:
         db_table = '"activity"."mechanical_authorization_pa"'
 
 
-class DraftAquaticMechanicalAuthorization(
-    AquaticMechanicalAuthorizationMixin,
-    DraftUnrepeatedFormData,
-):
+class DraftAquaticMechanicalAuthorization(BaseModel, DraftUnrepeatedFormData):
     class Meta:
         db_table = '"draft_activity"."mechanical_authorization_pa"'

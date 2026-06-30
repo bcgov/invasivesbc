@@ -3,7 +3,7 @@ from api.models.activity import RepeatedFormData, DraftRepeatedFormData
 from api.models.codes.code_tables import MesoslopePositionCode, SiteSurfaceShapeCode
 
 
-class MicrositeMixin(models.Model):
+class BaseModel(models.Model):
     """
     Microsite Condition details for activities,
     consumed by:
@@ -30,12 +30,12 @@ class MicrositeMixin(models.Model):
         abstract = True
 
 
-class MicrositeCondition(MicrositeMixin, RepeatedFormData):
+class MicrositeCondition(BaseModel, RepeatedFormData):
     class Meta:
         db_table = '"activity"."microsite_conditions"'
 
 
-class DraftMicrositeCondition(MicrositeMixin, DraftRepeatedFormData):
+class DraftMicrositeCondition(BaseModel, DraftRepeatedFormData):
     mesoslope_position = models.ForeignKey(
         MesoslopePositionCode,
         on_delete=models.PROTECT,

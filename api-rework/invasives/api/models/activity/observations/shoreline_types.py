@@ -4,7 +4,7 @@ from api.models.codes.code_tables import ShorelineTypeCode
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 
-class ShorelineTypesMixin(models.Model):
+class BaseModel(models.Model):
     """
     consumed by:
       - Aquatic Invasive Plant Observation
@@ -21,13 +21,13 @@ class ShorelineTypesMixin(models.Model):
         abstract = True
 
 
-class ShorelineTypes(ShorelineTypesMixin, RepeatedFormData):
+class ShorelineTypes(BaseModel, RepeatedFormData):
     class Meta:
         db_table = '"activity"."shoreline_types"'
         db_table_comment = "Details of surrounding area for a terrestrial activity."
 
 
-class DraftShorelineTypes(DraftRepeatedFormData):
+class DraftShorelineTypes(BaseModel, DraftRepeatedFormData):
     shoreline_type = models.ForeignKey(
         ShorelineTypeCode, on_delete=models.PROTECT, blank=True, null=True
     )

@@ -6,7 +6,7 @@ from api.models.codes.code_tables import BiocontrolAgentCode, PlantsWithBiocontr
 from api.models.enums.yes_no_unknown import YesNoUnknown
 
 
-class TerrestrialBiocontrolReleaseEntryMixin(models.Model):
+class BaseModel(models.Model):
     """
     1:M Details for Biocontrol Releases
     consumed by:
@@ -34,10 +34,7 @@ class TerrestrialBiocontrolReleaseEntryMixin(models.Model):
         abstract = True
 
 
-class TerrestrialBiocontrolReleaseEntry(
-    TerrestrialBiocontrolReleaseEntryMixin,
-    RepeatedFormData,
-):
+class TerrestrialBiocontrolReleaseEntry(BaseModel, RepeatedFormData):
 
     class Meta:
         db_table = '"activity"."biocontrol_release_pt"'
@@ -52,10 +49,7 @@ class TerrestrialBiocontrolReleaseEntry(
             )
 
 
-class DraftTerrestrialBiocontrolReleaseEntry(
-    TerrestrialBiocontrolReleaseEntryMixin,
-    DraftRepeatedFormData,
-):
+class DraftTerrestrialBiocontrolReleaseEntry(BaseModel, DraftRepeatedFormData):
     invasive_plant = models.ForeignKey(
         PlantsWithBiocontrol,
         on_delete=models.PROTECT,

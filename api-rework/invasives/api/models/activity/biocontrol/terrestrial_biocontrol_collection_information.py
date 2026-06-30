@@ -10,7 +10,7 @@ from api.models.codes.code_tables import (
 from api.models.enums.collection_type import CollectionType
 
 
-class TerrestrialBiocontrolCollectionEntryMixin(models.Model):
+class BaseModel(models.Model):
     """
     Biocontrol 1:M Collection Information for Activities
     Used in:
@@ -37,10 +37,7 @@ class TerrestrialBiocontrolCollectionEntryMixin(models.Model):
         abstract = True
 
 
-class TerrestrialBiocontrolCollectionEntry(
-    TerrestrialBiocontrolCollectionEntryMixin,
-    RepeatedFormData,
-):
+class TerrestrialBiocontrolCollectionEntry(BaseModel, RepeatedFormData):
 
     class Meta:
         db_table = '"activity"."biocontrol_collection_entries_pt"'
@@ -82,10 +79,7 @@ class TerrestrialBiocontrolCollectionEntry(
             raise ValidationError(errors)
 
 
-class DraftTerrestrialBiocontrolCollectionEntry(
-    TerrestrialBiocontrolCollectionEntryMixin,
-    DraftRepeatedFormData,
-):
+class DraftTerrestrialBiocontrolCollectionEntry(BaseModel, DraftRepeatedFormData):
     invasive_plant = models.ForeignKey(
         PlantsWithBiocontrol,
         on_delete=models.PROTECT,
