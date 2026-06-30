@@ -204,6 +204,8 @@ class ActivitySerializer(serializers.ModelSerializer):
         return arr
 
     def get_shape(self, obj: Activity):
+        if not obj.shape:  # Shouldn't happen outside of Draft Records.
+            return None
         geojson_py_object = json.loads(obj.shape.json)
 
         if geojson_py_object["type"] == "Feature":
