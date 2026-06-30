@@ -2,7 +2,7 @@ import json
 import logging
 
 import psycopg
-from django.contrib.gis.db.models.functions import Centroid, AsGeoJSON
+from django.contrib.gis.db.models.functions import PointOnSurface, AsGeoJSON
 from django.db.models import Q
 from django.http.response import HttpResponse
 from psycopg.rows import dict_row
@@ -29,7 +29,9 @@ class ActivityViewSet(ReadOnlyModelViewSet):
         )
         .values("id", "type", "subtype", "date", "has_migration_remarks")
         .all(),
-        "default": Activity.objects.annotate(centroid=AsGeoJSON(Centroid("shape")))
+        "default": Activity.objects.annotate(
+            centroid=AsGeoJSON(PointOnSurface("shape"))
+        )
         .prefetch_related()
         .all(),
     }
