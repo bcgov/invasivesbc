@@ -197,7 +197,7 @@ class DraftActivity(
     )
 
     linked_activities = models.ManyToManyField(
-        "api.DraftActivity", db_table='"draft_activity"."linked_activities"'
+        "api.Activity", db_table='"draft_activity"."linked_activities"'
     )
 
     class Meta:
