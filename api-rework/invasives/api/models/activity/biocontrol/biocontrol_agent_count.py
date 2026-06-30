@@ -104,6 +104,12 @@ class DraftBiocontrolAgentCountSimple(
 class DraftBiocontrolAgentCountComplex(
     BiocontrolAgentCountComplexMixin, DraftBiocontrolAgentCountSimple
 ):
+    stage = models.ForeignKey(
+        BioAgentLifeStageCode,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
     agent_location = models.ForeignKey(
         AgentLocationFoundCode,
         on_delete=models.PROTECT,
@@ -117,7 +123,7 @@ class DraftBiocontrolAgentCountComplex(
         null=True,
     )
 
-    class Meta(BiocontrolAgentCountComplexMixin.Meta):
+    class Meta:
         abstract = True
 
 
@@ -126,7 +132,6 @@ class DraftTerrestrialBiocontrolAgentCount(
 ):
     class Meta:
         db_table = '"draft_activity"."biocontrol_agent_count_pt"'
-        pass
 
 
 class DraftTerrestrialBiocontrolAgentCountExtended(
@@ -134,4 +139,3 @@ class DraftTerrestrialBiocontrolAgentCountExtended(
 ):
     class Meta:
         db_table = '"draft_activity"."biocontrol_agent_count_extended_pt"'
-        pass
