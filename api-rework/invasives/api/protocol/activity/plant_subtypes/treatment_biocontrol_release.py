@@ -37,6 +37,14 @@ class DraftEntry(CleanSchema):
     actual_biological_agents: List[DraftBiocontrolCountSimple]
     estimated_biological_agents: List[DraftBiocontrolCountSimple]
 
+    @model_validator(mode="after")
+    def set_estimate_flags(self) -> "Entry":
+        for count in self.actual_biological_agents:
+            count.is_estimate = False
+        for count in self.estimated_biological_agents:
+            count.is_estimate = True
+        return self
+
 
 class Entry(DraftEntry):
     invasive_plant: PlantsWithBiocontrolType
