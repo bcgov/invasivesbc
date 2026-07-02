@@ -1,20 +1,19 @@
 from typing import List
 from django.http import JsonResponse
-from ninja import Router, Body
+from ninja import Router
 from ninja.errors import HttpError
-from datetime import datetime
-import uuid, json
+import json
+from django.shortcuts import get_object_or_404
 from django.contrib.gis.geos import GEOSGeometry
 from api.models.activity import Activity, ActivitySubtypes
 from api.serializers.activity import ActivitySerializer
-from api.schemas.plant_activity import ACTIVITY_PROCESSORS
+from api.schemas.plant_activity import ACTIVITY_PROCESSORS, DRAFT_ACTIVITY_PROCESSORS
 from api.ninja_authentication import NinjaKeycloakAuthentication
 from api.models.enums import FormStatus
-from api.models.activity import Activity
+from api.models.activity import Activity, DraftActivity
 from django.db import transaction
 from api.protocol.activity.activity import (
     ActivityMinimal,
-    ActivityOut,
     ActivitySearchParameters,
     ActivitySearchResult,
 )
@@ -24,19 +23,6 @@ from api.protocol.activity.plant_subtypes.union_definition import (
 )
 
 router = Router(auth=NinjaKeycloakAuthentication())
-
-
-# Helper
-def mock_record_id():
-    """Mock Function for generating short ID's"""
-    year_prefix = datetime.now().strftime("%y")
-    id = uuid.uuid4()
-    short_id = f"{year_prefix}PTO{id.hex[:8]}"
-
-    return {"short_id": short_id.upper(), "id": str(id)}
-
-
-# Routes
 
 
 @router.get("/", response=List[ActivityMinimal])
@@ -67,6 +53,11 @@ def activity_search(request, search: ActivitySearchParameters):
 
 @router.post("/submit", response={200: dict})
 def submit_record(request, data: PlantActivitySchema):
+    """
+    Handler for Incoming records with "Submitted" status.
+    Performs strict validation on payload to ensure data integrity.
+    - Adds record to the 'activity' schema
+    """
     with transaction.atomic():
         payload = data.model_dump(mode="python", exclude_unset=True)
         payload["form_status"] = FormStatus.Submitted.value
@@ -90,19 +81,55 @@ def submit_record(request, data: PlantActivitySchema):
 
         processed_activity = processor.process(payload=payload, instance=instance)
         serialized_data = ActivitySerializer(processed_activity).data
-        return JsonResponse(serialized_data, status=200, safe=False)
+
+        ## Delete Draft Version of record (if exists)
+        DraftActivity.objects.filter(id=activity_id).delete()
+
+        return JsonResponse(serialized_data, status=200)
 
 
 @router.post("/draft")
-def submit_draft_record(request, data: DraftPlantActivitySchema = Body(...)):
-    data = data.model_dump(mode="json")
-    return JsonResponse(data, status=200, safe=False)
+def submit_draft_record(request, data: DraftPlantActivitySchema):
+    """
+    Handler for Incoming records with "Draft" status.
+    Performs loose validation on incoming data to remove extraneous keys and ensure payload integrity
+    - Adds record to the 'draft_activity' schema
+    """
+    with transaction.atomic():
+        payload = data.model_dump(mode="python", exclude_unset=True)
+        shape_data = payload.get("shape", None)
+        if shape_data:
+            geometry_dict = shape_data.get("geometry", shape_data)
+            payload["shape"] = GEOSGeometry(json.dumps(geometry_dict))
+
+        # Determine if Create or Update
+        activity_id = payload.get("id")
+        instance = DraftActivity.objects.filter(id=activity_id).first()
+
+        if not instance:
+            payload["type"] = ActivitySubtypes[payload["subtype"]].typeOfActivity
+
+        subtype_key = payload.get("subtype")
+        processor = DRAFT_ACTIVITY_PROCESSORS.get(subtype_key)
+        if not processor:
+            raise HttpError(400, f"Unsupported activity subtype: {subtype_key}")
+
+        processed_activity = processor.process(payload=payload, instance=instance)
+        serialized_data = ActivitySerializer(processed_activity).data
+        return JsonResponse(serialized_data, status=200)
 
 
-@router.api_operation(["GET"], "/{id}", response=ActivityOut)
+@router.api_operation(["GET"], "/{id}")
 def get_activity_by_id(request, id: str):
-    activity = Activity.objects.get(id=id)
-    return activity
+    activity = Activity.objects.filter(id=id).first()
+    if activity:  # Submission found
+        serialized_data = ActivitySerializer(activity).data
+        return JsonResponse(serialized_data, status=200)
+    # Check if its a users draft record.
+    # TODO: Match user to Draft, to avoid pulling other users Draft records.
+    activity = get_object_or_404(DraftActivity, pk=id)
+    serialized_data = ActivitySerializer(activity).data
+    return JsonResponse(serialized_data, status=200)
 
 
 @router.api_operation(["DELETE"], "/{id}", response={204: None})
