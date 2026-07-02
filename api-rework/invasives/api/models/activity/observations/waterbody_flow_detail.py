@@ -1,42 +1,54 @@
 from django.db import models
 from api.models.codes.code_tables import WaterbodyFlowCode, WaterbodyFlowSeasonalCode
-from api.models.activity import RepeatedFormData
+from api.models.activity import RepeatedFormData, DraftRepeatedFormData
 
 
-class BaseWaterbodyFlow(RepeatedFormData):
+class BaseModel(models.Model):
     flow_code = models.ForeignKey(WaterbodyFlowCode, on_delete=models.PROTECT)
 
     class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=["activity", "flow_code"],
-                name="unique_activity_waterlevel_management",
-            )
-        ]
         abstract = True
 
 
-class WaterbodyOutflowSeasonal(BaseWaterbodyFlow):
+class WaterbodyOutflowSeasonal(BaseModel, RepeatedFormData):
     class Meta:
         db_table = '"activity"."water_outflow_s"'
-        pass
 
 
-class WaterbodyOutflowPermanent(BaseWaterbodyFlow):
+class WaterbodyOutflowPermanent(BaseModel, RepeatedFormData):
     class Meta:
         db_table = '"activity"."water_outflow_p"'
-        pass
 
 
-class WaterbodyInflowSeasonal(BaseWaterbodyFlow):
+class WaterbodyInflowSeasonal(BaseModel, RepeatedFormData):
     flow_code = models.ForeignKey(WaterbodyFlowSeasonalCode, on_delete=models.PROTECT)
 
     class Meta:
         db_table = '"activity"."water_inflow_s"'
-        pass
 
 
-class WaterbodyInflowPermanent(BaseWaterbodyFlow):
+class WaterbodyInflowPermanent(BaseModel, RepeatedFormData):
     class Meta:
         db_table = '"activity"."water_inflow_p"'
-        pass
+
+
+class DraftWaterbodyOutflowSeasonal(BaseModel, DraftRepeatedFormData):
+    class Meta:
+        db_table = '"draft_activity"."water_outflow_s"'
+
+
+class DraftWaterbodyOutflowPermanent(BaseModel, DraftRepeatedFormData):
+    class Meta:
+        db_table = '"draft_activity"."water_outflow_p"'
+
+
+class DraftWaterbodyInflowSeasonal(BaseModel, DraftRepeatedFormData):
+    flow_code = models.ForeignKey(WaterbodyFlowSeasonalCode, on_delete=models.PROTECT)
+
+    class Meta:
+        db_table = '"draft_activity"."water_inflow_s"'
+
+
+class DraftWaterbodyInflowPermanent(BaseModel, DraftRepeatedFormData):
+    class Meta:
+        db_table = '"draft_activity"."water_inflow_p"'

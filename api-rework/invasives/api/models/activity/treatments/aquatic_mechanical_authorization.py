@@ -1,8 +1,8 @@
 from django.db import models
-from api.models.activity import UnrepeatedFormData
+from api.models.activity import UnrepeatedFormData, DraftUnrepeatedFormData
 
 
-class AquaticMechanicalAuthorization(UnrepeatedFormData):
+class BaseModel(models.Model):
     authorization_information = models.CharField(
         null=True,
         blank=True,
@@ -10,4 +10,14 @@ class AquaticMechanicalAuthorization(UnrepeatedFormData):
     )
 
     class Meta:
+        abstract = True
+
+
+class AquaticMechanicalAuthorization(BaseModel, UnrepeatedFormData):
+    class Meta:
         db_table = '"activity"."mechanical_authorization_pa"'
+
+
+class DraftAquaticMechanicalAuthorization(BaseModel, DraftUnrepeatedFormData):
+    class Meta:
+        db_table = '"draft_activity"."mechanical_authorization_pa"'

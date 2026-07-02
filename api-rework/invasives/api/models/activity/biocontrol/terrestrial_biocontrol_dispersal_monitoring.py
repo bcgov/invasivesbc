@@ -2,7 +2,11 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 
-from api.models.activity import RepeatedFormData, ActivitySubtypes
+from api.models.activity import (
+    RepeatedFormData,
+    ActivitySubtypes,
+    DraftRepeatedFormData,
+)
 from api.models.codes.code_tables import (
     BiocontrolAgentCode,
     BioAgentMonitoringMethodCode,
@@ -11,7 +15,7 @@ from api.models.codes.code_tables import (
 from api.models.enums import CollectionType, YesNoUnknown
 
 
-class TerrestrialBiocontrolDispersalMonitoringEntry(RepeatedFormData):
+class BaseModel(models.Model):
     """
     Biocontrol 1:M Monitoring Information
     Used in:
@@ -36,6 +40,11 @@ class TerrestrialBiocontrolDispersalMonitoringEntry(RepeatedFormData):
         choices=YesNoUnknown, blank=True, null=True
     )
 
+    class Meta:
+        abstract = True
+
+
+class TerrestrialBiocontrolDispersalMonitoringEntry(BaseModel, RepeatedFormData):
     class Meta:
         db_table = '"activity"."monitoring_biocontrol_dispersal_entries_pt"'
 
@@ -87,3 +96,27 @@ class TerrestrialBiocontrolDispersalMonitoringEntry(RepeatedFormData):
 
         if errors:
             raise ValidationError(errors)
+
+
+class DraftTerrestrialBiocontrolDispersalMonitoringEntry(
+    BaseModel, DraftRepeatedFormData
+):
+    invasive_plant = models.ForeignKey(
+        PlantsWithBiocontrol, on_delete=models.PROTECT, blank=True, null=True
+    )
+    biocontrol_agent = models.ForeignKey(
+        BiocontrolAgentCode, on_delete=models.PROTECT, blank=True, null=True
+    )
+    biocontrol_present = models.BooleanField(blank=True, null=True)
+    monitoring_type = models.CharField(choices=CollectionType, blank=True, null=True)
+    monitoring_method = models.ForeignKey(
+        BioAgentMonitoringMethodCode,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
+    start_time = models.DateTimeField(blank=True, null=True)
+    stop_time = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        db_table = '"draft_activity"."monitoring_biocontrol_dispersal_entries_pt"'

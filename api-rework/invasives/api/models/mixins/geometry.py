@@ -7,7 +7,7 @@ register_field("GeometryField", dict)
 MAX_AREA = 500000
 
 
-class Geometry(models.Model):
+class GeometryMixin(models.Model):
     """
     Geometry details for an activity Record
     consumed by:
@@ -55,6 +55,46 @@ class Geometry(models.Model):
     class Meta:
         abstract = True
 
+    def get_invasive_plant_codes(self):
+        from api.utils.filtered_activity_queryset import ALL_PLANT_PATHS
+
+        codes = set()
+        for path in ALL_PLANT_PATHS:
+            values = (
+                type(self)
+                .objects.filter(pk=self.pk)
+                .values_list(path + "__code", flat=True)
+            )
+            for val in values:
+                if val:
+                    codes.add(val)
+
+        return sorted(codes)
+
+    def clean(self):
+        if self.shape:
+            vt_geom = self.shape.clone()
+            vt_geom.transform(3857)
+            self.computed_tile_shape = vt_geom
+        # Check Geometry/Lat/Long are in BC.
+        # Check radius is shape is point. No radius is shape is not point.
+        super().clean()
+
+        plant_codes = self.get_invasive_plant_codes()
+        self.computed_map_symbol = ", ".join(plant_codes)
+
+    def save(self, *args, **kwargs):
+        if self.shape:
+            vt_geom = self.shape.clone()
+            vt_geom.transform(3857)
+            self.computed_tile_shape = vt_geom
+        super().save(*args, **kwargs)
+
+
+class Geometry(GeometryMixin):
+    class Meta:
+        abstract = True
+
     def clean(self):
         vt_geom = self.shape.clone()
         vt_geom.transform(3857)
@@ -72,18 +112,40 @@ class Geometry(models.Model):
         self.computed_tile_shape = vt_geom
         super().save(*args, **kwargs)
 
-    def get_invasive_plant_codes(self):
-        from api.utils.filtered_activity_queryset import ALL_PLANT_PATHS
 
-        codes = set()
-        for path in ALL_PLANT_PATHS:
-            values = (
-                type(self)
-                .objects.filter(pk=self.pk)
-                .values_list(path + "__code", flat=True)
-            )
-            for val in values:
-                if val:
-                    codes.add(val)
+class DraftGeometry(GeometryMixin):
+    location_description = models.CharField(max_length=16384, null=True, blank=True)
+    area_m = models.PositiveBigIntegerField(null=True, blank=True)
+    utm_zone = models.PositiveSmallIntegerField(null=True, blank=True)
+    utm_easting = models.PositiveBigIntegerField(null=True, blank=True)
+    utm_northing = models.PositiveBigIntegerField(null=True, blank=True)
+    latitude = models.DecimalField(
+        max_digits=10,
+        decimal_places=7,
+        null=True,
+        blank=True,
+    )
+    longitude = models.DecimalField(
+        max_digits=10,
+        decimal_places=7,
+        null=True,
+        blank=True,
+    )
+    shape = geomodels.GeometryField(
+        srid=4326,
+        geography=False,
+        spatial_index=True,
+        null=True,
+        blank=True,
+    )
+    computed_tile_shape = geomodels.GeometryField(
+        srid=3857,
+        spatial_index=True,
+        geography=False,
+        null=True,
+        blank=True,
+        db_comment="Baked spatial reference for vector tiles generation.",
+    )
 
-        return sorted(codes)
+    class Meta:
+        abstract = True

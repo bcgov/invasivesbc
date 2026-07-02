@@ -1,4 +1,4 @@
-from . import BaseActivityProcessor
+from . import BaseActivityProcessor, DraftBaseActivityProcessor
 from api.models.activity import (
     TerrestrialBiocontrolDispersalMonitoringEntry,
     TargetPlantHeights,
@@ -10,6 +10,16 @@ from api.models.activity import (
     SignOfBiocontrolPresenceTerrestrial,
     Activity,
     ActivityDataRecord,
+    DraftTerrestrialBiocontrolDispersalMonitoringEntry,
+    DraftTargetPlantHeights,
+    DraftTargetPlantPhenology,
+    DraftMicrositeCondition,
+    DraftWeatherConditions,
+    DraftTerrestrialBiocontrolAgentCountExtended,
+    DraftLocationBiocontrolAgentsFoundTerrestrial,
+    DraftSignOfBiocontrolPresenceTerrestrial,
+    DraftActivity,
+    DraftActivityDataRecord,
 )
 
 
@@ -65,6 +75,68 @@ class MonitoringBiocontrolDispersalIn(BaseActivityProcessor):
             )
             SignOfBiocontrolPresenceTerrestrial.objects.bulk_create(
                 SignOfBiocontrolPresenceTerrestrial(
+                    activity_data_record=adr, sign_of_presence=sign
+                )
+                for sign in sign_of_presence
+            )
+
+
+class DraftMonitoringBiocontrolDispersalIn(DraftBaseActivityProcessor):
+
+    @classmethod
+    def save_subtype_records(self, subtype_data: dict, parent: DraftActivity):
+        adr = DraftActivityDataRecord.objects.create(activity=parent)
+        phenology = subtype_data.get("target_plant_phenology")
+        if phenology:
+            plant_heights = phenology.pop("target_plant_heights")
+            DraftTargetPlantPhenology.objects.create(
+                activity_data_record=adr, **phenology
+            )
+
+            DraftTargetPlantHeights.objects.bulk_create(
+                DraftTargetPlantHeights(activity_data_record=adr, **tph)
+                for tph in plant_heights
+            )
+
+        microsite = subtype_data.get("microsite_conditions")
+        if microsite:
+            DraftMicrositeCondition.objects.create(
+                activity_data_record=adr, **microsite
+            )
+
+        wc = subtype_data.get("weather_conditions")
+        if wc:
+            DraftWeatherConditions.objects.create(activity_data_record=adr, **wc)
+
+        for entry in subtype_data.get("entries", []):
+            actual_agents = entry.pop("actual_biological_agents", [])
+            estimated_agents = entry.pop("estimated_biological_agents", [])
+            location_found = entry.pop("location_agent_found", [])
+            sign_of_presence = entry.pop("sign_of_biocontrol_presence", [])
+            adr = DraftActivityDataRecord.objects.create(activity=parent)
+            DraftTerrestrialBiocontrolDispersalMonitoringEntry.objects.create(
+                activity_data_record=adr, **entry
+            )
+            DraftTerrestrialBiocontrolAgentCountExtended.objects.bulk_create(
+                DraftTerrestrialBiocontrolAgentCountExtended(
+                    activity_data_record=adr, **count
+                )
+                for count in actual_agents
+            )
+            DraftTerrestrialBiocontrolAgentCountExtended.objects.bulk_create(
+                DraftTerrestrialBiocontrolAgentCountExtended(
+                    activity_data_record=adr, **count
+                )
+                for count in estimated_agents
+            )
+            DraftLocationBiocontrolAgentsFoundTerrestrial.objects.bulk_create(
+                DraftLocationBiocontrolAgentsFoundTerrestrial(
+                    activity_data_record=adr, location_agent_found=loc
+                )
+                for loc in location_found
+            )
+            DraftSignOfBiocontrolPresenceTerrestrial.objects.bulk_create(
+                DraftSignOfBiocontrolPresenceTerrestrial(
                     activity_data_record=adr, sign_of_presence=sign
                 )
                 for sign in sign_of_presence

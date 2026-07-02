@@ -1,5 +1,5 @@
 from .aquatic_plant_observation_entry import *
-from .aquatic_plant_observation_context import AquaticPlantObservationContext
+from .aquatic_plant_observation_context import *
 from .pre_treatment_observation import *
 from .shoreline_types import *
 from .specific_use import *
@@ -11,3 +11,4 @@ from .waterbody_flow_detail import *
 from .waterbody_level_management import *
 from .waterbody_substrate_type import *
 from .waterbody_use import *
+from .waterbody_adjacent_use import *

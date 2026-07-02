@@ -1,6 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
-from api.models.activity import RepeatedFormData
+from api.models.activity import RepeatedFormData, DraftRepeatedFormData
 from api.models.codes.code_tables import (
     DensityCode,
     DistributionCode,
@@ -10,7 +10,7 @@ from api.models.codes.code_tables import (
 from api.models.enums.observation_type import ObservationType
 
 
-class AquaticPlantObservationEntry(RepeatedFormData):
+class BaseModel(models.Model):
     invasive_plant = models.ForeignKey(AquaticPlantCode, on_delete=models.PROTECT)
     density = models.ForeignKey(
         DensityCode, on_delete=models.PROTECT, blank=True, null=True
@@ -24,6 +24,11 @@ class AquaticPlantObservationEntry(RepeatedFormData):
     observation_type = models.CharField(choices=ObservationType)
     sample_point_id = models.CharField(max_length=16384, blank=True, null=True)
 
+    class Meta:
+        abstract = True
+
+
+class AquaticPlantObservationEntry(BaseModel, RepeatedFormData):
     class Meta:
         db_table = '"activity"."observation_entries_pa"'
 
@@ -57,3 +62,20 @@ class AquaticPlantObservationEntry(RepeatedFormData):
 
         if errors:
             raise ValidationError(errors)
+
+
+class DraftAquaticPlantObservationEntry(BaseModel, DraftRepeatedFormData):
+    invasive_plant = models.ForeignKey(
+        AquaticPlantCode,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
+    observation_type = models.CharField(
+        choices=ObservationType,
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        db_table = '"draft_activity"."observation_entries_pa"'

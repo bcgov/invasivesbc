@@ -3,8 +3,6 @@ from rest_framework import serializers
 from api.models.activity import (
     TerrestrialTreatmentMonitoringEntry,
     AquaticTreatmentMonitoringEntry,
-)
-from api.models.activity.monitoring.plant_treatment_monitoring import (
     InvasivePlantsOnSite,
 )
 

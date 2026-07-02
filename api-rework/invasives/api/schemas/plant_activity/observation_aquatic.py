@@ -1,4 +1,3 @@
-from api.models.activity.activity import Activity
 from api.models.activity import (
     AquaticPlantObservationContext,
     AquaticPlantObservationEntry,
@@ -16,8 +15,24 @@ from api.models.activity import (
     WaterbodyOutflowPermanent,
     WaterbodyOutflowSeasonal,
     WaterbodyLevelManagement,
+    DraftAquaticPlantObservationContext,
+    DraftAquaticPlantObservationEntry,
+    DraftPretreatmentObservation,
+    DraftActivityDataRecord,
+    DraftAquaticVoucherSpecimen,
+    DraftActivity,
+    DraftWaterbodyAdjacentLandUse,
+    DraftShorelineTypes,
+    DraftWaterbodyUse,
+    DraftWaterbodySubstrateType,
+    DraftWaterbodyContext,
+    DraftWaterbodyInflowPermanent,
+    DraftWaterbodyInflowSeasonal,
+    DraftWaterbodyOutflowPermanent,
+    DraftWaterbodyOutflowSeasonal,
+    DraftWaterbodyLevelManagement,
 )
-from . import BaseActivityProcessor
+from . import BaseActivityProcessor, DraftBaseActivityProcessor
 
 
 class PlantObservationAquaticIn(BaseActivityProcessor):
@@ -95,5 +110,84 @@ class PlantObservationAquaticIn(BaseActivityProcessor):
                     **voucher_data
                 )
             AquaticPlantObservationEntry.objects.create(
+                activity_data_record=adr, **entry
+            )
+
+
+class DraftPlantObservationAquaticIn(DraftBaseActivityProcessor):
+    @classmethod
+    def save_subtype_records(self, subtype_data: dict, parent: DraftActivity):
+        adr = DraftActivityDataRecord.objects.create(activity=parent)
+
+        DraftAquaticPlantObservationContext.objects.create(
+            activity_data_record=adr, **subtype_data.get("context", None)
+        )
+
+        DraftPretreatmentObservation.objects.create(
+            activity_data_record=adr,
+            pre_treatment_observation=subtype_data.get(
+                "pretreatment_observation", None
+            ),
+        )
+
+        wb_context: dict = subtype_data.get("waterbody_context", None)
+
+        DraftWaterbodyInflowPermanent.objects.bulk_create(
+            DraftWaterbodyInflowPermanent(activity_data_record=adr, flow_code=flow)
+            for flow in wb_context.pop("inflow_permanent", [])
+        )
+        DraftWaterbodyInflowSeasonal.objects.bulk_create(
+            DraftWaterbodyInflowSeasonal(activity_data_record=adr, flow_code=flow)
+            for flow in wb_context.pop("inflow_seasonal", [])
+        )
+        DraftWaterbodyOutflowPermanent.objects.bulk_create(
+            DraftWaterbodyOutflowPermanent(activity_data_record=adr, flow_code=flow)
+            for flow in wb_context.pop("outflow_permanent", [])
+        )
+        DraftWaterbodyOutflowSeasonal.objects.bulk_create(
+            DraftWaterbodyOutflowSeasonal(activity_data_record=adr, flow_code=flow)
+            for flow in wb_context.pop("outflow_seasonal", [])
+        )
+        DraftWaterbodyContext.objects.create(activity_data_record=adr, **wb_context)
+
+        # Populate 1:M Arrays of strings
+        DraftShorelineTypes.objects.bulk_create(
+            DraftShorelineTypes(activity_data_record=adr, **shoreline_type)
+            for shoreline_type in subtype_data.get("shoreline_types", [])
+        )
+
+        DraftWaterbodyUse.objects.bulk_create(
+            DraftWaterbodyUse(activity_data_record=adr, waterbody_use=code)
+            for code in subtype_data.get("water_use", [])
+        )
+        DraftWaterbodySubstrateType.objects.bulk_create(
+            DraftWaterbodySubstrateType(activity_data_record=adr, substrate_type=code)
+            for code in subtype_data.get("substrate_type", [])
+        )
+        DraftWaterbodyAdjacentLandUse.objects.bulk_create(
+            DraftWaterbodyAdjacentLandUse(
+                activity_data_record=adr, waterbody_adjacent_land_use=code
+            )
+            for code in subtype_data.get("adjacent_land_use", [])
+        )
+        DraftWaterbodyLevelManagement.objects.bulk_create(
+            DraftWaterbodyLevelManagement(
+                activity_data_record=adr, waterlevel_management=code
+            )
+            for code in subtype_data.get("waterlevel_management", [])
+        )
+
+        # Aquatic Entries
+        for entry in subtype_data.get("entries", []):
+            adr = DraftActivityDataRecord.objects.create(activity=parent)
+
+            voucher_data = entry.pop("voucher_specimen", None)
+            if voucher_data:
+                DraftAquaticVoucherSpecimen.objects.create(
+                    activity_data_record=adr,
+                    invasive_plant=entry["invasive_plant"],
+                    **voucher_data
+                )
+            DraftAquaticPlantObservationEntry.objects.create(
                 activity_data_record=adr, **entry
             )

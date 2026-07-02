@@ -1,7 +1,5 @@
 from django.db import models
-from django.core.exceptions import ValidationError
-from api.models.activity import RepeatedFormData
-from api.models.codes import InvasivePlantsOnSiteCode
+from api.models.activity import RepeatedFormData, DraftRepeatedFormData
 from api.models.codes.code_tables import (
     AquaticPlantCode,
     EfficacyManagementRatingCode,
@@ -12,7 +10,7 @@ from api.models.enums.treatment_pass import TreatmentPass
 from api.models.enums.yes_no import YesNo
 
 
-class PlantMonitoringBase(RepeatedFormData):
+class BaseModel(models.Model):
     """
     1:M Relationship between for an Activity. PlantMonitoringBase covers Chemical and Mechanical Treatment Monitoring
     Plant Monitoring Base covers the 1:M relationship to an Activity where Monitoring was from a
@@ -30,6 +28,11 @@ class PlantMonitoringBase(RepeatedFormData):
     treatment_pass = models.CharField(choices=TreatmentPass, blank=True, null=True)
     comment = models.TextField(max_length=16384, blank=True, null=True)
 
+    class Meta:
+        abstract = True
+
+
+class PlantMonitoringBase(BaseModel, RepeatedFormData):
     class Meta:
         abstract = True
 
@@ -77,11 +80,57 @@ class AquaticTreatmentMonitoringEntry(PlantMonitoringBase):
         db_table = '"activity"."monitoring_treatment_entries_pa"'
 
 
-class InvasivePlantsOnSite(RepeatedFormData):
+class DraftPlantMonitoringBase(BaseModel, DraftRepeatedFormData):
+    invasive_plant = models.ForeignKey(
+        "PlantCodes",
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
+    evidence_of_treatment = models.CharField(
+        choices=YesNo,
+        blank=True,
+        null=True,
+    )
 
-    invasive_plants_on_site = models.ForeignKey(
-        InvasivePlantsOnSiteCode, on_delete=models.PROTECT
+    management_efficacy_rating = models.ForeignKey(
+        EfficacyManagementRatingCode,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
     )
 
     class Meta:
-        db_table = '"activity"."invasive_plants_on_site"'
+        abstract = True
+
+
+class DraftTerrestrialTreatmentMonitoringEntry(DraftPlantMonitoringBase):
+    """
+    Terrestrial Plant Specific Monitoring for Chemical / Mechanical treatments.
+    """
+
+    invasive_plant = models.ForeignKey(
+        TerrestrialPlantCode,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        db_table = '"draft_activity"."monitoring_treatment_entries_pt"'
+
+
+class DraftAquaticTreatmentMonitoringEntry(DraftPlantMonitoringBase):
+    """
+    Aquatic Plant Specific Monitoring for Chemical / Mechanical treatments.
+    """
+
+    invasive_plant = models.ForeignKey(
+        AquaticPlantCode,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        db_table = '"draft_activity"."monitoring_treatment_entries_pa"'

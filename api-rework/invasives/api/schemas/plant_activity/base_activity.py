@@ -1,6 +1,6 @@
 from django.db import transaction
 from typing import Dict, Any, List
-from api.models.activity.activity import Activity
+from api.models.activity.activity import Activity, DraftActivity
 from api.models.activity import (
     ActivityDataRecord,
     Participant,
@@ -9,6 +9,13 @@ from api.models.activity import (
     ProjectCode,
     Jurisdiction,
     UploadedImage,
+    DraftActivityDataRecord,
+    DraftParticipant,
+    DraftEmployer,
+    DraftFundingAgency,
+    DraftProjectCode,
+    DraftJurisdiction,
+    DraftUploadedImage,
 )
 
 # Common Sub-Models
@@ -104,4 +111,100 @@ class BaseActivityProcessor:
 
     @classmethod
     def save_subtype_records(cls, subtype_data: Dict[str, Any], parent: Activity):
+        raise NotImplementedError("Subclasses must implement `save_subtype_records`.")
+
+
+DRAFT_MODEL_MAPPING = {
+    "participants": DraftParticipant,
+    "funding_agencies": DraftFundingAgency,
+    "employer": DraftEmployer,
+    "jurisdictions": DraftJurisdiction,
+    "projects": DraftProjectCode,
+}
+
+
+class DraftBaseActivityProcessor:
+    @classmethod
+    def process(
+        cls, payload: Dict[str, Any], instance: DraftActivity = None
+    ) -> DraftActivity:
+        """Determines pipeline path inside an atomic transaction."""
+        with transaction.atomic():
+            subtype_data = payload.pop("subtype_data", {})
+            linked_ids = payload.pop("linked_activities", [])
+
+            if instance:  # Update
+                activity = cls.update_activity(instance, payload, linked_ids)
+            else:  # Create
+                activity = cls.create_activity(payload, linked_ids)
+
+            # Route unique model properties to subclass
+            cls.save_subtype_records(subtype_data, activity)
+            return activity
+
+    @classmethod
+    def create_activity(
+        cls, payload: Dict[str, Any], linked_ids: List[int]
+    ) -> DraftActivity:
+        # Remove nested fields not directly attributed to Activity object
+        media_data = payload.pop("media", [])
+        nested_data = {
+            key: payload.pop(key, []) for key in DRAFT_MODEL_MAPPING if key in payload
+        }
+
+        # Instantiate parent
+        activity = DraftActivity.objects.create(**payload)
+
+        if linked_ids:
+            activity.linked_activities.set(linked_ids)
+        if media_data:
+            # Manually create each image, due to S3 upload/processing.
+            adr = DraftActivityDataRecord.objects.create(activity=activity)
+            for img in media_data:
+                DraftUploadedImage.objects.create(activity_data_record=adr, **img)
+
+        cls._bulk_create_nested_models(activity, nested_data)
+        return activity
+
+    @classmethod
+    def update_activity(
+        cls, instance: DraftActivity, payload: Dict[str, Any], linked_ids: List[int]
+    ) -> DraftActivity:
+        media_data = payload.pop("media", [])
+        nested_data = {
+            key: payload.pop(key, []) for key in DRAFT_MODEL_MAPPING if key in payload
+        }
+        # Update Top level Activity Object with new information.
+        for field, value in payload.items():
+            setattr(instance, field, value)
+        instance.save()
+
+        instance.linked_activities.set(linked_ids)
+        # Erase all nested items for an activity before recreating.
+        DraftActivityDataRecord.objects.filter(activity=instance).delete()
+        if media_data:
+            # Manually create each image, due to S3 upload/processing.
+            adr = DraftActivityDataRecord.objects.create(activity=instance)
+            for img in media_data:
+                DraftUploadedImage.objects.create(activity_data_record=adr, **img)
+        cls._bulk_create_nested_models(instance, nested_data)
+        return instance
+
+    @classmethod
+    def _bulk_create_nested_models(
+        cls, parent: DraftActivity, nested_data: Dict[str, Any]
+    ):
+        """
+        Iterate through nested fields and create the related model.
+        """
+        adr = DraftActivityDataRecord.objects.create(activity=parent)
+        for key, model_cls in DRAFT_MODEL_MAPPING.items():
+            entries = nested_data.get(key, [])
+            if entries:
+                model_cls.objects.bulk_create(
+                    model_cls(activity_data_record=adr, **values) for values in entries
+                )
+
+    @classmethod
+    def save_subtype_records(cls, subtype_data: Dict[str, Any], parent: DraftActivity):
         raise NotImplementedError("Subclasses must implement `save_subtype_records`.")
