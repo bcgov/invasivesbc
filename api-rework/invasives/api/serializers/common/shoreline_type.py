@@ -1,9 +1,19 @@
 from rest_framework import serializers
 
-from api.models.activity import ShorelineTypes
+from api.models.activity import ShorelineTypes, DraftShorelineTypes
 
 
-class ShorelineTypesSerializer(serializers.ModelSerializer):
+class BaseSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ShorelineTypes
+        abstract = True
         fields = ("shoreline_type", "percent_covered")
+
+
+class ShorelineTypesSerializer(BaseSerializer):
+    class Meta(BaseSerializer.Meta):
+        model = ShorelineTypes
+
+
+class DraftShorelineTypesSerializer(BaseSerializer):
+    class Meta(BaseSerializer.Meta):
+        model = DraftShorelineTypes

@@ -1,10 +1,10 @@
 from rest_framework import serializers
-from api.models.activity import WeatherConditions
+from api.models.activity import WeatherConditions, DraftWeatherConditions
 
 
-class WeatherConditionsSerializer(serializers.ModelSerializer):
+class BaseSerializer(serializers.ModelSerializer):
     class Meta:
-        model = WeatherConditions
+        abstract = True
         fields = (
             "comments",
             "cloud_cover",
@@ -13,3 +13,13 @@ class WeatherConditionsSerializer(serializers.ModelSerializer):
             "wind_direction",
             "wind_speed_kmh",
         )
+
+
+class WeatherConditionsSerializer(BaseSerializer):
+    class Meta(BaseSerializer.Meta):
+        model = WeatherConditions
+
+
+class DraftWeatherConditionsSerializer(BaseSerializer):
+    class Meta(BaseSerializer.Meta):
+        model = DraftWeatherConditions

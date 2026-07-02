@@ -1,8 +1,18 @@
 from rest_framework import serializers
-from api.models.activity import MicrositeCondition
+from api.models.activity import MicrositeCondition, DraftMicrositeCondition
 
 
-class MicrositeConditionSerializer(serializers.ModelSerializer):
+class BaseSerializer(serializers.ModelSerializer):
     class Meta:
-        model = MicrositeCondition
+        abstract = True
         fields = ("mesoslope_position", "site_surface_shape")
+
+
+class MicrositeConditionSerializer(BaseSerializer):
+    class Meta(BaseSerializer.Meta):
+        model = MicrositeCondition
+
+
+class DraftMicrositeConditionSerializer(BaseSerializer):
+    class Meta(BaseSerializer.Meta):
+        model = DraftMicrositeCondition

@@ -1,32 +1,25 @@
 from rest_framework import serializers
-from api.serializers.common import TerrestrialBiocontrolAgentCountExtendedSerializer
+from api.serializers.common import (
+    TerrestrialBiocontrolAgentCountExtendedSerializer,
+    DraftTerrestrialBiocontrolAgentCountExtendedSerializer,
+    SignOfBiocontrolPresenceTerrestrialSerializer,
+    DraftSignOfBiocontrolPresenceTerrestrialSerializer,
+    LocationBiocontrolAgentsFoundTerrestrialSerializer,
+    DraftLocationBiocontrolAgentsFoundTerrestrialSerializer,
+)
 from api.models.activity import (
     LocationBiocontrolAgentsFoundTerrestrial,
     TerrestrialBiocontrolDispersalMonitoringEntry,
     SignOfBiocontrolPresenceTerrestrial,
     TerrestrialBiocontrolAgentCountExtended,
+    DraftLocationBiocontrolAgentsFoundTerrestrial,
+    DraftTerrestrialBiocontrolDispersalMonitoringEntry,
+    DraftSignOfBiocontrolPresenceTerrestrial,
+    DraftTerrestrialBiocontrolAgentCountExtended,
 )
 
 
-class SignOfBiocontrolPresenceTerrestrialSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SignOfBiocontrolPresenceTerrestrial
-        fields = ["sign_of_presence"]
-
-    def to_representation(self, instance):
-        return super().to_representation(instance)["sign_of_presence"]
-
-
-class LocationBiocontrolAgentsFoundTerrestrialSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = LocationBiocontrolAgentsFoundTerrestrial
-        fields = ["location_agent_found"]
-
-    def to_representation(self, instance):
-        return super().to_representation(instance)["location_agent_found"]
-
-
-class TerrestrialBiologicalMonitoringEntriesSerializer(serializers.ModelSerializer):
+class BaseSerializer(serializers.ModelSerializer):
     """Serializer for Biocontrol Dispersal/Release Monitoring records"""
 
     biocontrol_present = serializers.SerializerMethodField()
@@ -38,7 +31,7 @@ class TerrestrialBiologicalMonitoringEntriesSerializer(serializers.ModelSerializ
     stop_time = serializers.DateTimeField(format="%Y-%m-%dT%H:%M")
 
     class Meta:
-        model = TerrestrialBiocontrolDispersalMonitoringEntry
+        abstract = True
         fields = (
             "biocontrol_agent",
             "biocontrol_present",
@@ -57,6 +50,11 @@ class TerrestrialBiologicalMonitoringEntriesSerializer(serializers.ModelSerializ
             "actual_biological_agents",
             "estimated_biological_agents",
         )
+
+
+class TerrestrialBiologicalMonitoringEntriesSerializer(BaseSerializer):
+    class Meta(BaseSerializer.Meta):
+        model = TerrestrialBiocontrolDispersalMonitoringEntry
 
     def get_actual_biological_agents(self, obj):
         qs = TerrestrialBiocontrolAgentCountExtended.objects.filter(
@@ -87,5 +85,48 @@ class TerrestrialBiologicalMonitoringEntriesSerializer(serializers.ModelSerializ
     def get_biocontrol_present(self, obj):
         # Inferred by sign of biocontrol presence records existing.
         return SignOfBiocontrolPresenceTerrestrial.objects.filter(
+            activity_data_record=obj.activity_data_record,
+        ).exists()
+
+
+class DraftTerrestrialBiologicalMonitoringEntriesSerializer(BaseSerializer):
+    class Meta(BaseSerializer.Meta):
+        model = DraftTerrestrialBiocontrolDispersalMonitoringEntry
+
+    def get_actual_biological_agents(self, obj):
+        qs = DraftTerrestrialBiocontrolAgentCountExtended.objects.filter(
+            activity_data_record=obj.activity_data_record,
+            is_estimate=False,
+        )
+        return DraftTerrestrialBiocontrolAgentCountExtendedSerializer(
+            qs, many=True
+        ).data
+
+    def get_estimated_biological_agents(self, obj):
+        qs = DraftTerrestrialBiocontrolAgentCountExtended.objects.filter(
+            activity_data_record=obj.activity_data_record,
+            is_estimate=True,
+        )
+        return DraftTerrestrialBiocontrolAgentCountExtendedSerializer(
+            qs, many=True
+        ).data
+
+    def get_sign_of_biocontrol_presence(self, obj):
+        sbpt = DraftSignOfBiocontrolPresenceTerrestrial.objects.filter(
+            activity_data_record=obj.activity_data_record,
+        )
+        return DraftSignOfBiocontrolPresenceTerrestrialSerializer(sbpt, many=True).data
+
+    def get_location_agent_found(self, obj):
+        lbaft = DraftLocationBiocontrolAgentsFoundTerrestrial.objects.filter(
+            activity_data_record=obj.activity_data_record,
+        )
+        return DraftLocationBiocontrolAgentsFoundTerrestrialSerializer(
+            lbaft, many=True
+        ).data
+
+    def get_biocontrol_present(self, obj):
+        # Inferred by sign of biocontrol presence records existing.
+        return DraftSignOfBiocontrolPresenceTerrestrial.objects.filter(
             activity_data_record=obj.activity_data_record,
         ).exists()
