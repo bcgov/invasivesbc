@@ -45,6 +45,16 @@ from api.serializers.type.subtype import (
     TerrestrialChemicalTreatmentSerializer,
     TerrestrialObservationSerializer,
     TerrestrialPlantTreatmentMechanicalSerializer,
+    DraftAquaticObservationSerializer,
+    DraftAquaticPlantTreatmentMechanicalSerializer,
+    DraftBiocontrolCollectionSerializer,
+    DraftBiocontrolDispersalMonitoringSerializer,
+    DraftBiocontrolReleaseMonitoringSerializer,
+    DraftBiocontrolReleaseSerializer,
+    DraftChemicalMonitoringSerializer,
+    DraftMechanicalMonitoringSerializer,
+    DraftTerrestrialObservationSerializer,
+    DraftTerrestrialPlantTreatmentMechanicalSerializer,
 )
 
 
@@ -280,23 +290,25 @@ class DraftActivitySerializer(BaseSerializer):
     def get_subtype_data(self, obj: DraftActivity):
         """Maps the Activity to the proper Subtype Serializer, populating the form specific information"""
         SUBTYPE_SERIALIZER_MAP = {
-            ActivitySubtypes.Observation_Plant_Terrestrial.name: None,
-            ActivitySubtypes.Observation_Plant_Aquatic.name: None,
-            ActivitySubtypes.Treatment_Mechanical_Plant_Terrestrial.name: None,
-            ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic.name: None,
-            ActivitySubtypes.Monitoring_Mechanical_Plant_Terrestrial_Aquatic.name: None,
-            ActivitySubtypes.Monitoring_Chemical_Plant_Terrestrial_Aquatic.name: None,
-            ActivitySubtypes.Biocontrol_Release.name: None,
-            ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial.name: None,
-            ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial.name: None,
-            ActivitySubtypes.Biocontrol_Collection.name: None,
+            ActivitySubtypes.Observation_Plant_Terrestrial.name: DraftTerrestrialObservationSerializer,
+            ActivitySubtypes.Observation_Plant_Aquatic.name: DraftAquaticObservationSerializer,
+            ActivitySubtypes.Treatment_Mechanical_Plant_Terrestrial.name: DraftTerrestrialPlantTreatmentMechanicalSerializer,
+            ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic.name: DraftAquaticPlantTreatmentMechanicalSerializer,
+            ActivitySubtypes.Monitoring_Mechanical_Plant_Terrestrial_Aquatic.name: DraftMechanicalMonitoringSerializer,
+            ActivitySubtypes.Monitoring_Chemical_Plant_Terrestrial_Aquatic.name: DraftChemicalMonitoringSerializer,
+            ActivitySubtypes.Biocontrol_Release.name: DraftBiocontrolReleaseSerializer,
+            ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial.name: DraftBiocontrolReleaseMonitoringSerializer,
+            ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial.name: DraftBiocontrolDispersalMonitoringSerializer,
+            ActivitySubtypes.Biocontrol_Collection.name: DraftBiocontrolCollectionSerializer,
             ActivitySubtypes.Treatment_Chemical_Plant_Aquatic.name: None,
             ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial.name: None,
         }
         serializer_cls = SUBTYPE_SERIALIZER_MAP.get(obj.subtype)
 
         if not serializer_cls:
-            logging.warning("No serializer found for activity subtype %s", obj.subtype)
+            logging.warning(
+                "No serializer found for draft activity subtype: %s", obj.subtype
+            )
             return None
 
         return serializer_cls(obj, context=self.context).data
