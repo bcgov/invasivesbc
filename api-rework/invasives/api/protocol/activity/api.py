@@ -6,7 +6,7 @@ import json
 from django.shortcuts import get_object_or_404
 from django.contrib.gis.geos import GEOSGeometry
 from api.models.activity import Activity, ActivitySubtypes
-from api.serializers.activity import ActivitySerializer
+from api.serializers.activity import ActivitySerializer, DraftActivitySerializer
 from api.schemas.plant_activity import ACTIVITY_PROCESSORS, DRAFT_ACTIVITY_PROCESSORS
 from api.ninja_authentication import NinjaKeycloakAuthentication
 from api.models.enums import FormStatus
@@ -23,6 +23,7 @@ from api.protocol.activity.plant_subtypes.union_definition import (
 )
 
 router = Router(auth=NinjaKeycloakAuthentication())
+# router = Router()
 
 
 @router.get("/", response=List[ActivityMinimal])
@@ -115,7 +116,7 @@ def submit_draft_record(request, data: DraftPlantActivitySchema):
             raise HttpError(400, f"Unsupported activity subtype: {subtype_key}")
 
         processed_activity = processor.process(payload=payload, instance=instance)
-        serialized_data = ActivitySerializer(processed_activity).data
+        serialized_data = DraftActivitySerializer(processed_activity).data
         return JsonResponse(serialized_data, status=200)
 
 

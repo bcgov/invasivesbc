@@ -16,3 +16,9 @@ from .biocontrol_dispersal_monitoring_information import (
     TerrestrialBiologicalMonitoringEntriesSerializer,
 )
 from .chemical_treatment_information import ChemicalTreatmentContextSerializer
+from .uploaded_image import UploadedImageSerializer, DraftUploadedImageSerializer
+from .employer import EmployerSerializer, DraftEmployerSerializer
+from .funding_agency import FundingAgencySerializer, DraftFundingAgencySerializer
+from .jurisdiction import JurisdictionSerializer, DraftJurisdictionSerializer
+from .participant import ParticipantSerializer, DraftParticipantSerializer
+from .project_code import ProjectCodeSerializer, DraftProjectCodeSerializer
