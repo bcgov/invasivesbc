@@ -1,43 +1,46 @@
-from .aquatic_observation import (
-    AquaticObservationSerializer,
-    DraftAquaticObservationSerializer,
-)
-from .aquatic_chemical_treatment import AquaticChemicalTreatmentSerializer
-from .aquatic_mechanical_treatment import (
-    AquaticPlantTreatmentMechanicalSerializer,
-    DraftAquaticPlantTreatmentMechanicalSerializer,
+from .biocontrol_collection import (
+    BiocontrolCollectionSerializer,
+    DraftBiocontrolCollectionSerializer,
 )
 from .biocontrol_release import (
     BiocontrolReleaseSerializer,
     DraftBiocontrolReleaseSerializer,
 )
-from .biocontrol_release_monitoring import (
-    BiocontrolReleaseMonitoringSerializer,
-    DraftBiocontrolReleaseMonitoringSerializer,
-)
-from .biocontrol_dispersal_monitoring import (
+from .monitoring_biocontrol_dispersal import (
     BiocontrolDispersalMonitoringSerializer,
     DraftBiocontrolDispersalMonitoringSerializer,
 )
-from .biocontrol_collection import (
-    BiocontrolCollectionSerializer,
-    DraftBiocontrolCollectionSerializer,
+from .monitoring_biocontrol_release import (
+    BiocontrolReleaseMonitoringSerializer,
+    DraftBiocontrolReleaseMonitoringSerializer,
 )
-from .chemical_treatment_monitoring import (
+from .monitoring_treatment_chemical import (
     ChemicalMonitoringSerializer,
     DraftChemicalMonitoringSerializer,
 )
-from .mechanical_treatment_monitoring import (
+from .monitoring_treatment_mechanical import (
     MechanicalMonitoringSerializer,
     DraftMechanicalMonitoringSerializer,
 )
-
-from .terrestrial_observation import (
+from .observation_aquatic import (
+    AquaticObservationSerializer,
+    DraftAquaticObservationSerializer,
+)
+from .observation_terrestrial import (
     TerrestrialObservationSerializer,
     DraftTerrestrialObservationSerializer,
 )
-from .terrestrial_chemical_treatment import TerrestrialChemicalTreatmentSerializer
-from .terrestrial_mechanical_treatment import (
+from .treatment_chemical_terrestrial import (
+    TerrestrialChemicalTreatmentSerializer,
+)
+from .treatment_mechanical_terrestrial import (
     TerrestrialPlantTreatmentMechanicalSerializer,
     DraftTerrestrialPlantTreatmentMechanicalSerializer,
+)
+from .treatment_chemical_aquatic import (
+    AquaticChemicalTreatmentSerializer,
+)
+from .treatment_mechanical_aquatic import (
+    AquaticPlantTreatmentMechanicalSerializer,
+    DraftAquaticPlantTreatmentMechanicalSerializer,
 )
