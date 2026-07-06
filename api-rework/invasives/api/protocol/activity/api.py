@@ -23,7 +23,6 @@ from api.protocol.activity.plant_subtypes.union_definition import (
 )
 
 router = Router(auth=NinjaKeycloakAuthentication())
-# router = Router()
 
 
 @router.get("/", response=List[ActivityMinimal])
@@ -129,7 +128,7 @@ def get_activity_by_id(request, id: str):
     # Check if its a users draft record.
     # TODO: Match user to Draft, to avoid pulling other users Draft records.
     activity = get_object_or_404(DraftActivity, pk=id)
-    serialized_data = ActivitySerializer(activity).data
+    serialized_data = DraftActivitySerializer(activity).data
     return JsonResponse(serialized_data, status=200)
 
 
