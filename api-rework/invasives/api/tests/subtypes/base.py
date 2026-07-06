@@ -1,6 +1,6 @@
 from abc import ABC
 
-from api.models.activity import Activity, DraftActivity
+from api.models.activity import DraftActivity
 from django.test.client import Client
 from django.test import override_settings
 from rest_framework import status
@@ -114,9 +114,7 @@ class BaseActivitySubtypeTest(BaseTestCase, ABC):
         self.assertEqual(result.status_code, 200)
         return result
 
-    def match_common_fields(
-        self, record_in: dict, record_out: Activity | DraftActivity
-    ):
+    def match_common_fields(self, record_in: dict, record_out: dict):
         """
         Expect:
             - Common fields (jurisdictions, access description, etc) match between Payload/Submission

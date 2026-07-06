@@ -1,6 +1,6 @@
 import copy
 from .base import BaseActivitySubtypeTest
-from api.models.activity import Activity, DraftActivity
+from api.models.activity import DraftActivity
 from api.tests.mock_frontend_submissions import (
     EMPTY_MECH_TREATMENT_TERRESTRIAL,
     MINIMAL_MECH_TREATMENT_TERRESTRIAL,
@@ -60,11 +60,7 @@ class TerrestrialMechanicalTreatmentTest(BaseActivitySubtypeTest):
         ]
         self.assertCountEqual(mt, expected)
 
-    def match_updated_subtype_details(
-        self,
-        record_in: dict,
-        record_out: DraftActivity["subtype_data"] | Activity["subtype_data"],
-    ):
+    def match_updated_subtype_details(self, record_in: dict, record_out: dict):
         # Entries
         entry_in = record_in["entries"][0]
         entry_out = record_out["entries"][0]

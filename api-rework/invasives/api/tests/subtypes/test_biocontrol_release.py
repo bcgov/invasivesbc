@@ -1,6 +1,6 @@
 import copy
 from .base import BaseActivitySubtypeTest
-from api.models.activity import Activity, DraftActivity
+from api.models.activity import DraftActivity
 from api.tests.mock_frontend_submissions import (
     EMPTY_BIOCONTROL_RELEASE,
     MINIMAL_BIOCONTROL_RELEASE,
@@ -78,7 +78,7 @@ class BiocontrolReleaseTest(BaseActivitySubtypeTest):
     def match_updated_subtype_details(
         self,
         record_in: dict,
-        record_out: DraftActivity["subtype_data"] | Activity["subtype_data"],
+        record_out: dict,
     ):
         # Weather Section
         weather_out = record_out["weather_conditions"]

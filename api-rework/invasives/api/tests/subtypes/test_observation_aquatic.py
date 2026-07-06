@@ -1,6 +1,6 @@
 from .base import BaseActivitySubtypeTest
 import copy
-from api.models.activity import Activity, DraftActivity
+from api.models.activity import DraftActivity
 from api.tests.mock_frontend_submissions import (
     EMPTY_AQUATIC_OBSERVATION,
     MINIMAL_AQUATIC_OBSERVATION,
@@ -101,11 +101,7 @@ class AquaticObservationTest(BaseActivitySubtypeTest):
 
         self.assertCountEqual(obs_detail, sd["entries"])
 
-    def match_updated_subtype_details(
-        self,
-        record_in: dict,
-        record_out: DraftActivity["subtype_data"] | Activity["subtype_data"],
-    ):
+    def match_updated_subtype_details(self, record_in: dict, record_out: dict):
         # Context
         self.assertEqual(record_out["context"], record_in["context"])
 

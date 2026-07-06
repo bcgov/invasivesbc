@@ -1,6 +1,6 @@
 import copy
 from .base import BaseActivitySubtypeTest
-from api.models.activity import Activity, DraftActivity
+from api.models.activity import DraftActivity
 from api.tests.mock_frontend_submissions import (
     EMPTY_CHEM_TREATMENT_MONITORING,
     MINIMAL_CHEM_TREATMENT_MONITORING,
@@ -44,7 +44,7 @@ class ChemicalTreatmentMonitoringTest(BaseActivitySubtypeTest):
     def match_updated_subtype_details(
         self,
         record_in: dict,
-        record_out: DraftActivity["subtype_data"] | Activity["subtype_data"],
+        record_out: dict,
     ):
         # Entries Section
         self.assertGreater(

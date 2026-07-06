@@ -1,6 +1,6 @@
 import copy
 from .base import BaseActivitySubtypeTest
-from api.models.activity import Activity, DraftActivity
+from api.models.activity import DraftActivity
 from api.tests.mock_frontend_submissions import (
     EMPTY_TERRESTRIAL_OBSERVATION,
     MINIMAL_TERRESTRIAL_OBSERVATION,
@@ -96,11 +96,7 @@ class TerrestrialObservationTest(BaseActivitySubtypeTest):
 
         self.assertCountEqual(obs_detail, sd["entries"])
 
-    def match_updated_subtype_details(
-        self,
-        record_in: dict,
-        record_out: DraftActivity["subtype_data"] | Activity["subtype_data"],
-    ):
+    def match_updated_subtype_details(self, record_in: dict, record_out: dict):
         """
         Note:
             - Based on the UPDATED_ payload data.

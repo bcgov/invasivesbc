@@ -1,6 +1,6 @@
 import copy
 from .base import BaseActivitySubtypeTest
-from api.models.activity import Activity, DraftActivity
+from api.models.activity import DraftActivity
 from api.tests.mock_frontend_submissions import (
     EMPTY_BIOCONTROL_RELEASE_MONITORING,
     MINIMAL_BIOCONTROL_RELEASE_MONITORING,
@@ -95,11 +95,7 @@ class BiocontrolReleaseTest(BaseActivitySubtypeTest):
         self.assertEqual(sd["spread_results"]["max_spread_distance_m"], 300)
         self.assertEqual(sd["spread_results"]["max_spread_aspect_deg"], 320)
 
-    def match_updated_subtype_details(
-        self,
-        record_in: dict,
-        record_out: DraftActivity["subtype_data"] | Activity["subtype_data"],
-    ):
+    def match_updated_subtype_details(self, record_in: dict, record_out: dict):
         # Weather Section
         weather_out = record_out["weather_conditions"]
         weather_in = record_in["weather_conditions"]
