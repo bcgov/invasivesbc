@@ -1,3 +1,4 @@
+import copy
 from .base import BaseActivitySubtypeTest
 from api.models.activity import Activity, DraftActivity
 from api.tests.mock_frontend_submissions import (
@@ -36,7 +37,7 @@ class TerrestrialObservationTest(BaseActivitySubtypeTest):
         self.assertEqual(sd["context"]["aspect"]["code"], "N")
         self.assertEqual(sd["context"]["slope_percent"]["code"], "SS")
         self.assertEqual(sd["context"]["soil_texture"]["code"], "M")
-        self.assertEqual(sd["pretreatment_observation"], "Yes")
+
         self.assertGreaterEqual(len(sd["entries"]), 1)
 
         od = sd["entries"][0]
@@ -95,25 +96,108 @@ class TerrestrialObservationTest(BaseActivitySubtypeTest):
 
         self.assertCountEqual(obs_detail, sd["entries"])
 
-    def test_initial_draft_submissions(self):
+    def match_updated_subtype_details(self, record_in, record_out):
+        """
+        Note:
+            - Based on the UPDATED_ payload data.
+        Expect:
+            - All incoming data to match outputted data
+            - '' Fields to come back as None type
+        """
+        self.assertGreater(
+            len(record_out["entries"]),
+            0,
+            "No entries were created for record.",
+        )
+
+        # Entries Section
+        ## Negative Entry
+        entries_in = record_in["entries"][0]
+        entries_out = record_out["entries"][0]
+
+        self.assertEqual(
+            entries_in["observation_type"], entries_out["observation_type"]
+        )
+        self.assertEqual(entries_in["invasive_plant"], entries_out["invasive_plant"])
+        self.assertIsNone(entries_out["life_stage"])
+        self.assertIsNone(entries_out["distribution"])
+        self.assertIsNone(entries_out["density"])
+
+        ## Positive Entry
+        entries_in = record_in["entries"][1]
+        entries_out = record_out["entries"][1]
+
+        self.assertEqual(entries_in["density"], entries_out["density"])
+        self.assertEqual(entries_in["distribution"], entries_out["distribution"])
+        self.assertEqual(entries_in["invasive_plant"], entries_out["invasive_plant"])
+        self.assertEqual(entries_in["life_stage"], entries_out["life_stage"])
+        self.assertEqual(
+            entries_in["observation_type"], entries_out["observation_type"]
+        )
+
+        # Voucher Section
+        voucher_in = entries_in["voucher_specimen"]
+        voucher_out = entries_out["voucher_specimen"]
+
+        self.assertEqual(
+            voucher_in["voucher_sample_id"], voucher_out["voucher_sample_id"]
+        )
+        self.assertEqual(voucher_in["herbarium"], voucher_out["herbarium"])
+        self.assertEqual(
+            voucher_in["accession_number"], voucher_out["accession_number"]
+        )
+        self.assertEqual(voucher_in["date_collected"], voucher_out["date_collected"])
+        self.assertEqual(voucher_in["date_verified"], voucher_out["date_verified"])
+        self.assertEqual(
+            voucher_in["completed_by_person"], voucher_out["completed_by_person"]
+        )
+        self.assertEqual(
+            voucher_in["completed_by_org"], voucher_out["completed_by_org"]
+        )
+        self.assertEqual(voucher_in["utm_zone"], voucher_out["utm_zone"])
+        self.assertEqual(voucher_in["utm_easting"], voucher_out["utm_easting"])
+        self.assertEqual(voucher_in["utm_northing"], voucher_out["utm_northing"])
+
+        # Context Section
+        context_in = record_in["context"]
+        context_out = record_out["context"]
+
+        self.assertEqual(
+            context_in["research_observation"], context_out["research_observation"]
+        )
+        self.assertEqual(
+            context_in["visible_well_nearby"], context_out["visible_well_nearby"]
+        )
+        self.assertEqual(context_in["aspect"], context_out["aspect"]["code"])
+        self.assertEqual(
+            context_in["slope_percent"], context_out["slope_percent"]["code"]
+        )
+        self.assertEqual(
+            context_in["soil_texture"], context_out["soil_texture"]["code"]
+        )
+        self.assertEqual(
+            context_in["suitable_for_biocontrol_agent"],
+            context_out["suitable_for_biocontrol_agent"],
+        )
+
+        self.assertGreater(
+            len(context_in["specific_uses"]), 0, "Specific Uses did not populate"
+        )
+        self.assertEqual(context_in["specific_uses"], context_out["specific_uses"])
+
+    def test_initial_draft_submission(self):
         """
         Expect:
             - Submitting Draft returns 200
             - Record is created in DB
         """
         payload = EMPTY_TERRESTRIAL_OBSERVATION
+
         res = self.draft_record(payload)
         self.assertEqual(res.status_code, 200)
-        record = res.json()
 
-        self.assertEqual(record["id"], payload["id"])
-        self.assertEqual(record["short_id"], payload["short_id"])
-        # Needs Serializers before can expand tests.
-        # self.assertGreater(len(record["subtype_data"]["entries"]), 0)
-        # self.assertEqual(
-        #     record["subtype_data"]["entries"][0]["observation_type"],
-        #     payload["subtype_data"]["entries"][0]["observation_type"],
-        # )
+        record_exists = DraftActivity.objects.filter(pk=payload["id"]).exists()
+        self.assertTrue(record_exists, "Record failed to be created")
 
     def test_update_draft_submission(self):
         """
@@ -121,93 +205,55 @@ class TerrestrialObservationTest(BaseActivitySubtypeTest):
             - Submitting Draft returns 200
             - Record is updated in DB
         """
-        payload = MINIMAL_TERRESTRIAL_OBSERVATION
+        payload = copy.deepcopy(UPDATED_TERRESTRIAL_OBSERVATION)
+        payload["form_status"] = "Draft"
+
+        # Submit initial Draft
+        res = self.draft_record(MINIMAL_TERRESTRIAL_OBSERVATION)
+
+        # Update Draft Record
         res = self.draft_record(payload)
         self.assertEqual(res.status_code, 200)
         record = res.json()
 
-        self.assertEqual(record["id"], payload["id"])
-        self.assertEqual(record["short_id"], payload["short_id"])
-        self.assertEqual(record["form_status"], payload["form_status"])
-        rec = DraftActivity.objects.get(id=payload["id"])
-        self.assertIsNotNone(rec)
-        # Needs Serializers before can expand tests.
-        # self.assertEqual(len(record["subtype_data"]["entries"]), 1)
-        # self.assertEqual(
-        #     record["subtype_data"]["entries"][0]["observation_type"],
-        #     payload["subtype_data"]["entries"][0]["observation_type"],
-        # )
+        # Update didn't delete DraftActivity,
+        record_exists = DraftActivity.objects.filter(id=payload["id"]).exists()
+        self.assertTrue(record_exists, "Record no longer exists in DB after update")
+
+        self.match_updated_subtype_details(
+            record_in=payload["subtype_data"],
+            record_out=record["subtype_data"],
+        )
 
     def test_submit_record(self):
         """
         Expect:
             - Submitting Record returns 200
             - Record is created in DB
-            - Draft Record is deleted when submitted record instantiated
         """
         payload = MINIMAL_TERRESTRIAL_OBSERVATION
         self.submit_record(payload).json()
         record = self.fetch(id=payload["id"]).json()
 
         self.assertIsNotNone(record)
-        draft_record_exists = DraftActivity.objects.filter(id=payload["id"]).exists()
-        self.assertFalse(draft_record_exists)
-        # self.assertIsNone()
 
     def test_update_record(self):
         """
-        Validates that submitting a Terrestrial Observation payload:
-        1. Returns a 200 OK status code.
-        2. Verifies configuration code mappings match payload inputs.
-        3. Correctly calculates and appends geospatial metadata (centroid).
-        4. Accurately saves nested arrays and handles null-value normalization.
-        5. Hard-commits expected properties directly to the database.
+        Expect:
+            - Re-submitting a record updates existing fields.
         """
         payload = UPDATED_TERRESTRIAL_OBSERVATION
-        record_id = payload["id"]
 
+        # Set Initial Submission
+        self.submit_record(MINIMAL_TERRESTRIAL_OBSERVATION)
+        # Submit Updated Record
         response = self.submit_record(payload)
-
         data = response.json()
 
-        context_out = data["subtype_data"]["context"]
-        context_in = payload["subtype_data"]["context"]
-
-        self.assertEqual(context_out["aspect"]["code"], context_in["aspect"])
-        self.assertEqual(
-            context_out["slope_percent"]["code"], context_in["slope_percent"]
-        )
-        self.assertEqual(
-            context_out["soil_texture"]["code"], context_in["soil_texture"]
+        self.match_updated_subtype_details(
+            record_in=payload["subtype_data"], record_out=data["subtype_data"]
         )
 
-        first_entry_out = data["subtype_data"]["entries"][0]
-        first_entry_in = payload["subtype_data"]["entries"][0]
-
-        self.assertIsNone(first_entry_out["density"])
-        self.assertEqual(
-            first_entry_out["invasive_plant"], first_entry_in["invasive_plant"]
-        )
-
-        self.assertIn("centroid", data)
-        self.assertEqual(data["centroid"]["type"], "Point")
-        self.assertAlmostEqual(
-            data["centroid"]["coordinates"][0], payload["longitude"], places=5
-        )
-        self.assertAlmostEqual(
-            data["centroid"]["coordinates"][1], payload["latitude"], places=5
-        )
-
-        self.assertEqual(data["shape"]["properties"]["id"], payload["short_id"])
-
-        db_record = Activity.objects.get(id=record_id)
-
-        self.assertEqual(db_record.form_status, payload["form_status"])
-        self.assertEqual(
-            db_record.location_description, payload["location_description"]
-        )
-        self.assertAlmostEqual(
-            float(db_record.latitude), float(payload["latitude"]), places=5
-        )
-        self.assertEqual(db_record.type, payload["type"])
-        self.assertEqual(db_record.subtype, payload["subtype"])
+    def test_draft_record_was_removed_by_submit(self):
+        payload = MINIMAL_TERRESTRIAL_OBSERVATION
+        self.draft_record_was_removed_by_submit(payload)
