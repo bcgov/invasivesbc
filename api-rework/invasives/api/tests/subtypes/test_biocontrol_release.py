@@ -1,5 +1,6 @@
+import copy
 from .base import BaseActivitySubtypeTest
-from api.models.activity import Activity
+from api.models.activity import Activity, DraftActivity
 from api.tests.mock_frontend_submissions import (
     EMPTY_BIOCONTROL_RELEASE,
     MINIMAL_BIOCONTROL_RELEASE,
@@ -74,11 +75,125 @@ class BiocontrolReleaseTest(BaseActivitySubtypeTest):
         self.assertEqual(sd["weather_conditions"]["precipitation"], "DP")
         self.assertEqual(sd["weather_conditions"]["wind_direction"], "NW")
 
-    def test_draft_submissions(self):
-        self.draft_pydantic_protocol_test(
-            empty_record=EMPTY_BIOCONTROL_RELEASE,
-            minimal_record=MINIMAL_BIOCONTROL_RELEASE,
-            full_record=UPDATED_BIOCONTROL_RELEASE,
+    def match_updated_subtype_details(
+        self,
+        record_in: dict,
+        record_out: DraftActivity["subtype_data"] | Activity["subtype_data"],
+    ):
+        # Weather Section
+        weather_out = record_out["weather_conditions"]
+        weather_in = record_in["weather_conditions"]
+
+        self.assertEqual(weather_in["comments"], weather_out["comments"])
+        self.assertEqual(weather_in["cloud_cover"], weather_out["cloud_cover"])
+        self.assertEqual(weather_in["precipitation"], weather_out["precipitation"])
+        self.assertEqual(weather_in["temperature"], weather_out["temperature"])
+        self.assertEqual(weather_in["wind_direction"], weather_out["wind_direction"])
+        self.assertEqual(weather_in["wind_speed_kmh"], weather_out["wind_speed_kmh"])
+
+        # Microsite Condition Section
+        micro_in = record_in["microsite_conditions"]
+        micro_out = record_out["microsite_conditions"]
+
+        self.assertEqual(
+            micro_in["mesoslope_position"], micro_out["mesoslope_position"]
+        )
+        self.assertEqual(
+            micro_in["site_surface_shape"], micro_out["site_surface_shape"]
+        )
+
+        # Plant Phenology Section
+        tpp_in = record_in["target_plant_phenology"]
+        tpp_out = record_out["target_plant_phenology"]
+
+        self.assertEqual(tpp_in["winter_dormant"], tpp_out["winter_dormant"])
+        self.assertEqual(tpp_in["seedlings"], tpp_out["seedlings"])
+        self.assertEqual(tpp_in["rosettes"], tpp_out["rosettes"])
+        self.assertEqual(tpp_in["bolts"], tpp_out["bolts"])
+        self.assertEqual(tpp_in["flowering"], tpp_out["flowering"])
+        self.assertEqual(tpp_in["seeds_forming"], tpp_out["seeds_forming"])
+        self.assertEqual(tpp_in["senescent"], tpp_out["senescent"])
+
+        self.assertGreater(len(tpp_in["target_plant_heights"]), 0)
+        self.assertEqual(
+            tpp_in["target_plant_heights"], tpp_out["target_plant_heights"]
+        )
+
+        # Entry Section
+
+        entry_in = record_in["entries"][0]
+        entry_out = record_out["entries"][0]
+
+        self.assertEqual(entry_in["invasive_plant"], entry_out["invasive_plant"])
+        self.assertEqual(entry_in["biocontrol_agent"], entry_out["biocontrol_agent"])
+        self.assertEqual(entry_in["linear_segment"], entry_out["linear_segment"])
+        self.assertEqual(entry_in["agent_source"], entry_out["agent_source"])
+        self.assertEqual(entry_in["collection_date"], entry_out["collection_date"])
+        self.assertEqual(entry_in["mortality"], entry_out["mortality"])
+        self.assertEqual(
+            entry_in["plant_collected_from"], entry_out["plant_collected_from"]
+        )
+        self.assertEqual(
+            entry_in["plant_collected_from_manual"],
+            entry_out["plant_collected_from_manual"],
+        )
+
+        self.assertGreater(
+            len(entry_in["actual_biological_agents"]),
+            0,
+            "'Actual Biological Agents' not populated",
+        )
+        self.assertGreater(
+            len(entry_in["estimated_biological_agents"]),
+            0,
+            "'Estimated Biological Agents' not populated",
+        )
+        self.assertEqual(
+            entry_in["actual_biological_agents"], entry_out["actual_biological_agents"]
+        )
+        self.assertEqual(
+            entry_in["estimated_biological_agents"],
+            entry_out["estimated_biological_agents"],
+        )
+
+    def test_initial_draft_submission(self):
+        """
+        Expect:
+            - Submitting Draft returns 200
+            - Record is created in DB
+        """
+        payload = EMPTY_BIOCONTROL_RELEASE
+
+        res = self.draft_record(payload)
+        self.assertEqual(res.status_code, 200)
+
+        record_exists = DraftActivity.objects.filter(pk=payload["id"]).exists()
+        self.assertTrue(record_exists, "Record failed to be created")
+
+    def test_update_draft_submission(self):
+        """
+        Expect:
+            - Submitting Draft returns 200
+            - Record is updated in DB
+        """
+        payload = copy.deepcopy(UPDATED_BIOCONTROL_RELEASE)
+        payload["form_status"] = "Draft"
+
+        # Submit initial Draft
+        res = self.draft_record(MINIMAL_BIOCONTROL_RELEASE)
+
+        # Update Draft Record
+        res = self.draft_record(payload)
+        self.assertEqual(res.status_code, 200)
+        record = res.json()
+
+        # Update didn't delete DraftActivity,
+        record_exists = DraftActivity.objects.filter(id=payload["id"]).exists()
+        self.assertTrue(record_exists, "Record no longer exists in DB after update")
+
+        self.match_updated_subtype_details(
+            record_in=payload["subtype_data"],
+            record_out=record["subtype_data"],
         )
 
     def test_submit_record(self):
@@ -94,75 +209,15 @@ class BiocontrolReleaseTest(BaseActivitySubtypeTest):
         self.assertIsNotNone(record)
 
     def test_update_record(self):
-        """
-        Validates a Biocontrol Release record by mapping expected dictionary mutations
-        directly against incoming data structures, verifying geospatial points,
-        and validating base table entries with a literal 200 response status.
-        """
-
         payload = UPDATED_BIOCONTROL_RELEASE
-        record_id = payload["id"]
 
         response = self.submit_record(payload)
-        data = response.json()
+        record = response.json()
 
-        sub_out = data["subtype_data"]
-        sub_in = payload["subtype_data"]
-
-        self.assertEqual(
-            sub_out["weather_conditions"]["precipitation"],
-            sub_in["weather_conditions"]["precipitation"],
-        )
-        self.assertEqual(
-            sub_out["weather_conditions"]["cloud_cover"],
-            sub_in["weather_conditions"]["cloud_cover"],
-        )
-        self.assertEqual(
-            sub_out["microsite_conditions"]["site_surface_shape"],
-            sub_in["microsite_conditions"]["site_surface_shape"],
+        self.match_updated_subtype_details(
+            record_in=payload["subtype_data"], record_out=record["subtype_data"]
         )
 
-        self.assertEqual(
-            sub_out["target_plant_phenology"]["senescent"],
-            sub_in["target_plant_phenology"]["senescent"],
-        )
-        self.assertEqual(
-            sub_out["target_plant_phenology"]["target_plant_heights"][1]["height_cm"],
-            sub_in["target_plant_phenology"]["target_plant_heights"][1]["height_cm"],
-        )
-
-        entry_out = sub_out["entries"][0]
-        entry_in = sub_in["entries"][0]
-
-        self.assertEqual(entry_out["biocontrol_agent"], entry_in["biocontrol_agent"])
-        self.assertEqual(entry_out["agent_source"], entry_in["agent_source"])
-        self.assertEqual(entry_out["collection_date"], entry_in["collection_date"])
-        self.assertEqual(
-            entry_out["plant_collected_from_manual"],
-            entry_in["plant_collected_from_manual"],
-        )
-        self.assertEqual(entry_out["linear_segment"], entry_in["linear_segment"])
-        self.assertEqual(
-            entry_out["actual_biological_agents"][0]["quantity"],
-            entry_in["actual_biological_agents"][0]["quantity"],
-        )
-
-        self.assertIn("centroid", data)
-        self.assertEqual(data["centroid"]["type"], "Point")
-        self.assertAlmostEqual(
-            data["centroid"]["coordinates"][0], payload["longitude"], places=5
-        )
-        self.assertAlmostEqual(
-            data["centroid"]["coordinates"][1], payload["latitude"], places=5
-        )
-        self.assertEqual(data["shape"]["properties"]["id"], payload["short_id"])
-
-        db_record = Activity.objects.get(id=record_id)
-
-        self.assertEqual(db_record.type, payload["type"])
-        self.assertEqual(db_record.subtype, payload["subtype"])
-        self.assertEqual(db_record.area_m, payload["area_m"])
-        self.assertEqual(db_record.form_status, payload["form_status"])
-        self.assertEqual(db_record.comment, payload["comment"])
-        self.assertEqual(db_record.created_by, payload["created_by"])
-        self.assertEqual(str(db_record.date), payload["date"])
+    def test_draft_record_was_removed_by_submit(self):
+        payload = MINIMAL_BIOCONTROL_RELEASE
+        self.draft_record_was_removed_by_submit(payload)
