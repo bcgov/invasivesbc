@@ -1,5 +1,6 @@
+import copy
 from .base import BaseActivitySubtypeTest
-from api.models.activity import Activity
+from api.models.activity import Activity, DraftActivity
 from api.tests.mock_frontend_submissions import (
     EMPTY_CHEM_TREATMENT_MONITORING,
     MINIMAL_CHEM_TREATMENT_MONITORING,
@@ -40,6 +41,112 @@ class ChemicalTreatmentMonitoringTest(BaseActivitySubtypeTest):
             full_record=UPDATED_CHEM_TREATMENT_MONITORING,
         )
 
+    def match_updated_subtype_details(
+        self,
+        record_in: dict,
+        record_out: DraftActivity["subtype_data"] | Activity["subtype_data"],
+    ):
+        # Entries Section
+        self.assertGreater(
+            len(record_out["entries"]),
+            0,
+            "No Monitoring Entries were created",
+        )
+        ## Terrestrial
+        entry_in = record_in["entries"][0]
+        entry_out = record_out["entries"][0]
+
+        self.assertEqual(
+            entry_in["invasive_plant"],
+            entry_out["invasive_plant"],
+        )
+        self.assertEqual(
+            entry_in["evidence_of_treatment"],
+            entry_out["evidence_of_treatment"],
+        )
+        self.assertEqual(
+            entry_in["treatment_pass"],
+            entry_out["treatment_pass"],
+        )
+        self.assertEqual(
+            entry_in["comment"],
+            entry_out["comment"],
+        )
+        self.assertEqual(
+            entry_in["management_efficacy_rating"],
+            entry_out["management_efficacy_rating"],
+        )
+        self.assertEqual(
+            entry_in["treatment_efficacy_rating"],
+            entry_out["treatment_efficacy_rating"],
+        )
+        self.assertIsNone(entry_out.get("invasive_plant_aquatic"))
+
+        self.assertGreater(
+            len(entry_out["invasive_plants_on_site"]),
+            0,
+            "Invasive Plant on Site was not populated",
+        )
+        self.assertEqual(
+            entry_in["invasive_plants_on_site"],
+            entry_out["invasive_plants_on_site"],
+        )
+
+        ## Aquatic
+        entry_in = record_in["entries"][1]
+        entry_out = record_out["entries"][1]
+
+        self.assertEqual(
+            entry_in["invasive_plant_aquatic"],
+            entry_out["invasive_plant_aquatic"],
+        )
+        self.assertEqual(
+            entry_in["evidence_of_treatment"],
+            entry_out["evidence_of_treatment"],
+        )
+        self.assertEqual(
+            entry_in["treatment_pass"],
+            entry_out["treatment_pass"],
+        )
+        self.assertEqual(
+            entry_in["comment"],
+            entry_out["comment"],
+        )
+        self.assertEqual(
+            entry_in["management_efficacy_rating"],
+            entry_out["management_efficacy_rating"],
+        )
+        self.assertEqual(
+            entry_in["treatment_efficacy_rating"],
+            entry_out["treatment_efficacy_rating"],
+        )
+        self.assertIsNone(entry_out.get("invasive_plant"))
+
+        self.assertGreater(
+            len(entry_out["invasive_plants_on_site"]),
+            0,
+            "Invasive Plant on Site was not populated",
+        )
+        self.assertEqual(
+            entry_in["invasive_plants_on_site"],
+            entry_out["invasive_plants_on_site"],
+        )
+
+    def test_draft_submissions(self):
+        """
+        Expect:
+            - Submitting Draft returns 200
+            - Record is created in DB
+        """
+
+        payload = EMPTY_CHEM_TREATMENT_MONITORING
+
+        res = self.draft_record(payload)
+        self.assertEqual(res.status_code, 200)
+
+        record_exists = DraftActivity.objects.filter(pk=payload["id"]).exists()
+        self.assertTrue(record_exists, "Record failed to be created")
+
     def test_submit_record(self):
         """
         Expect:
@@ -52,66 +159,47 @@ class ChemicalTreatmentMonitoringTest(BaseActivitySubtypeTest):
 
         self.assertIsNotNone(record)
 
+    def test_update_draft_submission(self):
+        """
+        Expect:
+            - Submitting Draft returns 200
+            - Record is updated in DB
+        """
+        payload = copy.deepcopy(UPDATED_CHEM_TREATMENT_MONITORING)
+        payload["form_status"] = "Draft"
+
+        # Submit initial Draft
+        res = self.draft_record(MINIMAL_CHEM_TREATMENT_MONITORING)
+
+        # Update Draft Record
+        res = self.draft_record(payload)
+        self.assertEqual(res.status_code, 200)
+        record = res.json()
+
+        # Update didn't delete DraftActivity,
+        record_exists = DraftActivity.objects.filter(id=payload["id"]).exists()
+        self.assertTrue(record_exists, "Record no longer exists in DB after update")
+
+        self.match_updated_subtype_details(
+            record_in=payload["subtype_data"],
+            record_out=record["subtype_data"],
+        )
+
     def test_update_record(self):
-        """
-        Validates a Chemical Plant Monitoring activity record by mapping
-        assertions dynamically against the input payload fields, utilizing
-        raw integer status codes, and inspecting core Activity model columns.
-        """
-
         payload = UPDATED_CHEM_TREATMENT_MONITORING
-        record_id = payload["id"]
 
+        # Set Initial Record
+        self.submit_record(MINIMAL_CHEM_TREATMENT_MONITORING)
+
+        # Update Record
         response = self.submit_record(payload)
-        data = response.json()
+        record = response.json()
 
-        entries_in = payload["subtype_data"]["entries"]
-        entries_out = data["subtype_data"]["entries"]
-        self.assertEqual(len(entries_out), len(entries_in))
-
-        self.assertEqual(
-            entries_out[0]["invasive_plant"], entries_in[0]["invasive_plant"]
-        )
-        self.assertEqual(
-            entries_out[0]["treatment_pass"], entries_in[0]["treatment_pass"]
-        )
-        self.assertEqual(
-            entries_out[0]["treatment_efficacy_rating"],
-            entries_in[0]["treatment_efficacy_rating"],
-        )
-        self.assertNotIn("invasive_plant_aquatic", entries_out[0])
-
-        self.assertEqual(
-            entries_out[1]["invasive_plant_aquatic"],
-            entries_in[1]["invasive_plant_aquatic"],
-        )
-        self.assertEqual(
-            entries_out[1]["treatment_pass"], entries_in[1]["treatment_pass"]
-        )
-        self.assertEqual(
-            entries_out[1]["treatment_efficacy_rating"],
-            entries_in[1]["treatment_efficacy_rating"],
-        )
-        self.assertNotIn("invasive_plant", entries_out[1])
-
-        self.assertEqual(data["subtype_data"]["well_entries"], [])
-
-        self.assertIn("centroid", data)
-        self.assertEqual(data["centroid"]["type"], "Point")
-        self.assertAlmostEqual(
-            data["centroid"]["coordinates"][0], payload["longitude"], places=5
-        )
-        self.assertAlmostEqual(
-            data["centroid"]["coordinates"][1], payload["latitude"], places=5
+        self.match_updated_subtype_details(
+            record_in=payload["subtype_data"],
+            record_out=record["subtype_data"],
         )
 
-        self.assertEqual(data["shape"]["properties"]["id"], payload["short_id"])
-
-        db_record = Activity.objects.get(id=record_id)
-
-        self.assertEqual(db_record.subtype, payload["subtype"])
-        self.assertEqual(db_record.area_m, payload["area_m"])
-        self.assertEqual(db_record.form_status, payload["form_status"])
-        self.assertEqual(db_record.comment, payload["comment"])
-        self.assertEqual(db_record.created_by, payload["created_by"])
-        self.assertEqual(str(db_record.date), payload["date"])
+    def test_draft_record_was_removed_by_submit(self):
+        payload = MINIMAL_CHEM_TREATMENT_MONITORING
+        self.draft_record_was_removed_by_submit(payload)

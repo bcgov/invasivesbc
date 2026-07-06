@@ -203,14 +203,6 @@ class AquaticObservationTest(BaseActivitySubtypeTest):
         self.assertIsNotNone(record)
 
     def test_update_record(self):
-        """
-        Validates that submitting an Aquatic Observation payload:
-        1. Correctly handles empty strings in nested entry lists by turning them to null.
-        2. Preserves and validates waterbody contexts (inflows/outflows, depths).
-        3. Asserts the shape properties dictionary successfully receives the system short_id.
-        4. Calculates and maps the calculated Point centroid.
-        5. Confirms persistent commits directly down to the DB layout level.
-        """
         payload = UPDATED_AQUATIC_OBSERVATION
 
         # Create Initial
