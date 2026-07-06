@@ -51,7 +51,7 @@ class TerrestrialPlantTreatmentMechanicalSerializer(BaseSerializer):
 class DraftTerrestrialPlantTreatmentMechanicalSerializer(BaseSerializer):
 
     def get_entries(self, obj):
-        children = TerrestrialPlantMechanicalTreatmentEntry.objects.filter(
+        children = DraftTerrestrialPlantMechanicalTreatmentEntry.objects.filter(
             activity_data_record__activity_id=obj.id
         )
-        return EntrySerializer(children, many=True).data
+        return DraftEntrySerializer(children, many=True).data
