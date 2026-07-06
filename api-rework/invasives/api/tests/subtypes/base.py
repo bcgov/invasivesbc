@@ -1,5 +1,6 @@
 from abc import ABC
 
+from api.models.activity import DraftActivity
 from django.test.client import Client
 from django.test import override_settings
 from rest_framework import status
@@ -112,3 +113,26 @@ class BaseActivitySubtypeTest(BaseTestCase, ABC):
 
         self.assertEqual(result.status_code, 200)
         return result
+
+    def draft_record_was_removed_by_submit(self, minimal_payload):
+        """
+        Expect:
+            - Draft Record is deleted when submitted record instantiated
+        """
+        # Draft Record.
+        res = self.draft_record(minimal_payload)
+        self.assertEqual(res.status_code, 200)
+
+        # Resubmit Record as Submission.
+        res = self.submit_record(minimal_payload)
+        self.assertEqual(res.status_code, 200)
+
+        # Check if Draft Record still exists
+        draft_record_exists = DraftActivity.objects.filter(
+            id=minimal_payload["id"]
+        ).exists()
+
+        self.assertFalse(
+            draft_record_exists,
+            f"Draft record was not deleted after submission made for {minimal_payload["subtype"]} record",
+        )
