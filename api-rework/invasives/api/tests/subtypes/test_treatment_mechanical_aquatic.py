@@ -187,3 +187,7 @@ class AquaticMechanicalTreatmentTest(BaseActivitySubtypeTest):
         self.match_updated_subtype_details(
             record_in=payload["subtype_data"], record_out=data["subtype_data"]
         )
+
+    def test_draft_record_was_removed_by_submit(self):
+        payload = MINIMAL_MECH_TREATMENT_AQUATIC
+        self.draft_record_was_removed_by_submit(payload)
