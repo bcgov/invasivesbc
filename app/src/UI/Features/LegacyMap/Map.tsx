@@ -1,16 +1,14 @@
 import 'maplibre-gl/dist/maplibre-gl.css';
-import React, { Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import './map.css';
 
 import { useDispatch, useSelector } from 'utils/use_selector';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
 import { InvasivesMap } from 'UI/Features/LegacyMap/InvasivesMap';
-import { PositionMarkers } from 'UI/Features/LegacyMap/helpers/components/PositionMarkers';
 import * as maplibregl from 'maplibre-gl/dist/maplibre-gl-dev';
 import { PMTiles, Protocol } from 'pmtiles';
 import { CurrentActivityLayer } from 'UI/Features/LegacyMap/helpers/components/CurrentActivityLayer';
-import { DrawControls } from 'UI/Features/LegacyMap/helpers/components/DrawControls';
 import DisplayComposite from './helpers/components/DisplayComposite/DisplayComposite';
 import {
   addClientBoundariesIfNotExists,
@@ -54,7 +52,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
   const map_zoom = useSelector((state) => state.Map.map_zoom);
   const { recordsetLayers: offlineLayers, recordsetSources: offlineSources } = useOfflineRecordSetLayers();
 
-  const [map, setMap] = useState<InvasivesMap | undefined>(undefined);
+  const map = useRef<InvasivesMap | null>(null);
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
   const [mapReady, setMapReady] = useState<boolean>(false);
 
@@ -93,8 +91,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
 
   useEffect(() => {
     if (!mapContainer.current) {
-      console.error('Mapinit invoked with invalid reference');
-      throw new Error('Mapinit invoked with invalid reference');
+      return;
     }
 
     maplibregl.addProtocol('api', async (request) => {
@@ -201,87 +198,96 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
       return {};
     })();
 
-    setMap(
-      new InvasivesMap({
-        container: mapContainer.current,
-        maxZoom: 24,
-        ...tileCacheSettings,
-        zoom: 3,
-        minZoom: 0,
-        center: [map_center[0], map_center[1]],
-        style: {
-          glyphs: configuration.build.MOBILE
-            ? '/assets/basemaps/fonts/{fontstack}/{range}.pbf'
-            : 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
-          version: 8,
-          sources: {},
-          layers: POSITIONING_LAYERS
-        }
-      })
-    );
-  }, []);
-
-  useEffect(() => {
-    if (!map || mapReady) return;
-
-    map.once('idle', function () {
-      if (map !== null) {
-        map.resize();
+    map.current = new InvasivesMap({
+      container: mapContainer.current,
+      maxZoom: 24,
+      ...tileCacheSettings,
+      zoom: 3,
+      minZoom: 0,
+      center: [map_center[0], map_center[1]],
+      style: {
+        glyphs: configuration.build.MOBILE
+          ? '/assets/basemaps/fonts/{fontstack}/{range}.pbf'
+          : 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
+        version: 8,
+        sources: {},
+        layers: POSITIONING_LAYERS
       }
     });
 
-    if (map.isStyleLoaded()) {
-      setMapReady(true);
-    }
-  }, [map?.isStyleLoaded()]);
+    map.current.once('idle', function () {
+      if (map.current !== null) {
+        map.current.resize();
+      }
+      if (map.current.isStyleLoaded()) {
+        setMapReady(true);
+      }
+    });
+
+    return () => {
+      if (map.current !== null) {
+        map.current.remove();
+      }
+    };
+  }, [mapContainer.current]);
 
   useEffect(() => {
-    if (!mapReady || !map) return;
+    if (!mapReady) return;
+    if (map.current == null) return;
+
     if (loggedInOrWorkingOffline) {
-      addServerBoundariesIfNotExists(serverBoundaries, map);
-      refreshServerBoundariesOnToggle(serverBoundaries, map);
+      addServerBoundariesIfNotExists(serverBoundaries, map.current);
+      refreshServerBoundariesOnToggle(serverBoundaries, map.current);
     }
-  }, [serverBoundaries, loggedInOrWorkingOffline, map, mapReady]);
+  }, [serverBoundaries, loggedInOrWorkingOffline, map.current, mapReady]);
 
   // Custom Layers:
   useEffect(() => {
-    if (!mapReady || !map) return;
+    if (!mapReady) return;
+    if (map.current == null) return;
 
     if (!loggedInOrWorkingOffline) {
-      removeClientBoundaries(clientBoundaries, map);
+      removeClientBoundaries(clientBoundaries, map.current);
       return;
     }
 
-    addClientBoundariesIfNotExists(clientBoundaries, map);
-    refreshClientBoundariesOnToggle(clientBoundaries, map);
-    removeOrphanClientBoundaries(clientBoundaries, map);
-  }, [clientBoundaries, map, mapReady, loggedInOrWorkingOffline]);
+    addClientBoundariesIfNotExists(clientBoundaries, map.current);
+    refreshClientBoundariesOnToggle(clientBoundaries, map.current);
+    removeOrphanClientBoundaries(clientBoundaries, map.current);
+  }, [clientBoundaries, map.current, mapReady, loggedInOrWorkingOffline]);
 
   // Jump Nav
   useEffect(() => {
     if (!mapReady) return;
-    if (!map) return;
+    if (map.current == null) return;
 
     try {
       if (map_center && map_zoom) {
-        map.easeTo({
+        map.current.easeTo({
           center: map_center,
           zoom: map_zoom,
-          offset: [0, map.getContainer().clientHeight * -0.2]
+          offset: [0, map.current.getContainer().clientHeight * -0.2]
         });
       }
     } catch (e) {
       console.error(e);
     }
-  }, [map, mapReady, map_center, map_zoom]);
+  }, [map.current, mapReady, map_center, map_zoom]);
 
   useEffect(() => {
-    setInterval(() => {
-      if (map) {
-        setMapLoaded(map.areTilesLoaded());
+    if (map.current == null) {
+      return;
+    }
+
+    const intervalID = setInterval(() => {
+      if (map.current !== null) {
+        setMapLoaded(map.current.areTilesLoaded());
       }
     }, 1000);
-  }, [map]);
+    return () => {
+      clearInterval(intervalID);
+    };
+  }, [map.current]);
 
   const buttonContainerLayerSelect = useCallback(
     (name: string) => {
@@ -304,26 +310,29 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
         <div id="LoadingMap" className={!mapLoaded ? 'loadingMap' : 'loadedMap'}>
           Loading tiles...
         </div>
-
-        <MapContext.Provider value={map}>
-          <DisplayComposite />
-          <DrawControls />
+        <MapContext.Provider value={map.current}>
+          {map.current !== null && (
+            <>
+              <DisplayComposite />
+              <DrawControls mapReady={mapReady} />
 
           <ButtonContainer selectLayer={buttonContainerLayerSelect} layers={availableLayerDefinitions} />
 
-          {[...Object.entries(recordsetSources), ...Object.entries(sources), ...Object.entries(offlineSources)].map(
-            ([key, source]) => (
-              <SourceComponent mapReady={mapReady} key={key} id={key} source={source} />
-            )
-          )}
+              {[...Object.entries(recordsetSources), ...Object.entries(sources), ...Object.entries(offlineSources)].map(
+                ([key, source]) => (
+                  <SourceComponent mapReady={mapReady} key={key} id={key} source={source} />
+                )
+              )}
 
-          {[...layers, ...recordsetLayers, ...offlineLayers].map((layer) => (
-            <LayerComponent mapReady={mapReady} key={layer.id} id={layer.id} layer={layer} />
-          ))}
+              {[...layers, ...recordsetLayers, ...offlineLayers].map((layer) => (
+                <LayerComponent mapReady={mapReady} key={layer.id} id={layer.id} layer={layer} />
+              ))}
 
-          {[...Object.keys(sources), ...Object.keys(recordsetSources), ...Object.keys(offlineSources)].map((key) => (
-            <SourceCleanupComponent mapReady={mapReady} key={key} id={key} />
-          ))}
+              {[...Object.keys(sources), ...Object.keys(recordsetSources), ...Object.keys(offlineSources)].map(
+                (key) => (
+                  <SourceCleanupComponent mapReady={mapReady} key={key} id={key} />
+                )
+              )}
 
           <PositionMarkers mapReady={mapReady} />
           <LayerDataMarker />
@@ -335,6 +344,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
             <OfflineRecordsetLayer mapReady={mapReady} />
           </MobileOnly>
         </MapContext.Provider>
+
         {children}
       </div>
     </div>

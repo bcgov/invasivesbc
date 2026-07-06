@@ -1,0 +1,82 @@
+div.geometry-tool {
+  display: grid;
+  margin: 0;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  grid-template: 'header header' 0.1fr 'map help' 0.2fr 'map controls' 0.4fr 'map result' 0.4fr 'wkt result' 0.1fr / 1fr 0.4fr;
+  column-gap: 0.5em;
+  min-height: 85vh;
+
+  div.map-container {
+    display: flex;
+    grid-area: map;
+    flex-direction: row;
+    justify-content: center;
+
+    div.map {
+      height: 100%;
+      width: 100%;
+    }
+  }
+
+  .header {
+    grid-area: header;
+  }
+
+  .help {
+    grid-area: help;
+
+    p,
+    h3 {
+      text-align: justify;
+    }
+
+    h3 {
+      margin: 0;
+    }
+  }
+
+  .controls {
+    padding-top: 0.5rem;
+
+    label {
+      font-weight: bold;
+      padding-left: 0.5rem;
+    }
+
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    justify-content: space-between;
+    grid-template-columns: 20px 1fr;
+
+    #buffer-radius {
+      box-sizing: border-box;
+    }
+
+    .radius-slider {
+      margin: 1rem;
+    }
+
+    grid-area: controls;
+  }
+
+  .result {
+    text-align: left;
+    grid-area: result;
+  }
+
+  .wkt {
+    grid-area: wkt;
+    display: flex;
+    justify-content: space-between;
+    padding-top: 0.5rem;
+
+    input[type='multiline'] {
+      flex-grow: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
