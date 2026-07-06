@@ -285,7 +285,7 @@ UPDATED_BIOCONTROL_DISPERSAL_MONITORING = {
             "site_surface_shape": "NA",
         },
         "weather_conditions": {
-            "comments": "",
+            "comments": "Weather Comments",
             "cloud_cover": "2",
             "precipitation": "NA",
             "temperature": 0,

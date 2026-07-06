@@ -101,7 +101,11 @@ class AquaticObservationTest(BaseActivitySubtypeTest):
 
         self.assertCountEqual(obs_detail, sd["entries"])
 
-    def match_updated_subtype_details(self, record_in, record_out):
+    def match_updated_subtype_details(
+        self,
+        record_in: dict,
+        record_out: DraftActivity["subtype_data"] | Activity["subtype_data"],
+    ):
         # Context
         self.assertEqual(record_out["context"], record_in["context"])
 

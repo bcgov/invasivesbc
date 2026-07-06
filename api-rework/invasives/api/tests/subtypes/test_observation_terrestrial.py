@@ -96,7 +96,11 @@ class TerrestrialObservationTest(BaseActivitySubtypeTest):
 
         self.assertCountEqual(obs_detail, sd["entries"])
 
-    def match_updated_subtype_details(self, record_in, record_out):
+    def match_updated_subtype_details(
+        self,
+        record_in: dict,
+        record_out: DraftActivity["subtype_data"] | Activity["subtype_data"],
+    ):
         """
         Note:
             - Based on the UPDATED_ payload data.

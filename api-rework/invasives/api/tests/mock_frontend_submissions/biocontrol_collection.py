@@ -96,12 +96,6 @@ MINIMAL_BIOCONTROL_COLLECTION = {
                 "time_collection_duration_minutes": 32,
             }
         ],
-        "comments": "",
-        "cloud_cover": "",
-        "precipitation": "",
-        "temperature": 0,
-        "wind_direction": "",
-        "wind_speed_kmh": 0,
         "weather_conditions": {
             "temperature": 22,
             "wind_speed_kmh": 0,
@@ -193,12 +187,6 @@ UPDATED_BIOCONTROL_COLLECTION = {
             "senescent": 19,
             "target_plant_heights": [{"height_cm": 42}, {"height_cm": 240}],
         },
-        "comments": "",
-        "cloud_cover": "",
-        "precipitation": "",
-        "temperature": 0,
-        "wind_direction": "",
-        "wind_speed_kmh": 0,
         "weather_conditions": {
             "temperature": 22,
             "wind_speed_kmh": 3,
