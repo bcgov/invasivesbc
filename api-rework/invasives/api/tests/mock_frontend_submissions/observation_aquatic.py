@@ -144,7 +144,7 @@ UPDATED_AQUATIC_OBSERVATION = {
     "subtype": "Observation_Plant_Aquatic",
     "funding_agencies": [{"invasive_species_agency_code": "MOTI"}],
     "jurisdictions": [{"jurisdiction": "RAIL", "percent_covered": 100}],
-    "projects": [],
+    "projects": [{"description": "Description"}],
     "location_description": "Location Area",
     "access_description": "Access Description",
     "form_status": "Submitted",

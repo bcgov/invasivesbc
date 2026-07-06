@@ -147,7 +147,6 @@ UPDATED_TERRESTRIAL_OBSERVATION = {
                 "invasive_plant": "TC",
                 "life_stage": "U",
                 "observation_type": "Positive",
-                "sample_point_id": "",
                 "voucher_specimen": {
                     "voucher_sample_id": "12345",
                     "herbarium": "John's Herbs",
