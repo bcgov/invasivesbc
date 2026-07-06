@@ -147,18 +147,6 @@ class ChemicalTreatmentMonitoringTest(BaseActivitySubtypeTest):
         record_exists = DraftActivity.objects.filter(pk=payload["id"]).exists()
         self.assertTrue(record_exists, "Record failed to be created")
 
-    def test_submit_record(self):
-        """
-        Expect:
-            - Submitting Record returns 200
-            - Record is created in DB
-        """
-        payload = MINIMAL_CHEM_TREATMENT_MONITORING
-        self.submit_record(payload).json()
-        record = self.fetch(id=payload["id"]).json()
-
-        self.assertIsNotNone(record)
-
     def test_update_draft_submission(self):
         """
         Expect:
@@ -184,6 +172,22 @@ class ChemicalTreatmentMonitoringTest(BaseActivitySubtypeTest):
             record_in=payload["subtype_data"],
             record_out=record["subtype_data"],
         )
+        self.match_common_fields(
+            record_in=payload,
+            record_out=record,
+        )
+
+    def test_submit_record(self):
+        """
+        Expect:
+            - Submitting Record returns 200
+            - Record is created in DB
+        """
+        payload = MINIMAL_CHEM_TREATMENT_MONITORING
+        self.submit_record(payload).json()
+        record = self.fetch(id=payload["id"]).json()
+
+        self.assertIsNotNone(record)
 
     def test_update_record(self):
         payload = UPDATED_CHEM_TREATMENT_MONITORING
@@ -198,6 +202,10 @@ class ChemicalTreatmentMonitoringTest(BaseActivitySubtypeTest):
         self.match_updated_subtype_details(
             record_in=payload["subtype_data"],
             record_out=record["subtype_data"],
+        )
+        self.match_common_fields(
+            record_in=payload,
+            record_out=record,
         )
 
     def test_draft_record_was_removed_by_submit(self):

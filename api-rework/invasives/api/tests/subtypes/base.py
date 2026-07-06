@@ -1,6 +1,6 @@
 from abc import ABC
 
-from api.models.activity import DraftActivity
+from api.models.activity import Activity, DraftActivity
 from django.test.client import Client
 from django.test import override_settings
 from rest_framework import status
@@ -113,6 +113,99 @@ class BaseActivitySubtypeTest(BaseTestCase, ABC):
 
         self.assertEqual(result.status_code, 200)
         return result
+
+    def match_common_fields(
+        self, record_in: dict, record_out: Activity | DraftActivity
+    ):
+        """
+        Expect:
+            - Common fields (jurisdictions, access description, etc) match between Payload/Submission
+        """
+        # General
+        self.assertEqual(record_in["id"], record_out["id"])
+        self.assertEqual(record_in["short_id"], record_out["short_id"])
+        self.assertEqual(record_in["type"], record_out["type"])
+        self.assertEqual(record_in["subtype"], record_out["subtype"])
+        self.assertEqual(record_in["date"], record_out["date"])
+
+        self.assertGreater(
+            len(record_out["projects"]), 0, "Project Codes were not populated"
+        )
+        self.assertEqual(
+            record_in["projects"],
+            record_out["projects"],
+        )
+
+        self.assertGreater(
+            len(record_out["jurisdictions"]), 0, "Project Codes were not populated"
+        )
+        self.assertEqual(
+            record_in["jurisdictions"],
+            record_out["jurisdictions"],
+        )
+
+        # Textbox fields
+        self.assertEqual(
+            record_in["location_description"],
+            record_out["location_description"],
+        )
+        self.assertEqual(
+            record_in["comment"],
+            record_out["comment"],
+        )
+        self.assertEqual(
+            record_in["location_description"],
+            record_out["location_description"],
+        )
+        self.assertEqual(
+            record_in["access_description"],
+            record_out["access_description"],
+        )
+        self.assertEqual(
+            record_in["location_description"],
+            record_out["location_description"],
+        )
+
+        # User Fields
+        self.assertEqual(
+            record_in["created_by"],
+            record_out["created_by"],
+        )
+        self.assertGreater(
+            len(record_out["employer"]), 0, "Employer fields not populated"
+        )
+        self.assertEqual(
+            record_in["employer"],
+            record_out["employer"],
+        )
+        self.assertGreater(
+            len(record_out["funding_agencies"]), 0, "Funding Agencies not populated"
+        )
+        self.assertEqual(
+            record_in["funding_agencies"],
+            record_out["funding_agencies"],
+        )
+
+        self.assertGreater(
+            len(record_out["participants"]), 0, "Participants not populated"
+        )
+        self.assertEqual(
+            record_in["participants"],
+            record_out["participants"],
+        )
+
+        # Spatial Fields
+        self.assertEqual(record_in["area_m"], record_out["area_m"])
+        self.assertEqual(record_in["utm_zone"], record_out["utm_zone"])
+        self.assertEqual(record_in["utm_easting"], record_out["utm_easting"])
+        self.assertEqual(record_in["utm_northing"], record_out["utm_northing"])
+
+        self.assertAlmostEqual(
+            float(record_in["longitude"]), float(record_out["longitude"]), places=5
+        )
+        self.assertAlmostEqual(
+            float(record_in["latitude"]), float(record_out["latitude"]), places=5
+        )
 
     def draft_record_was_removed_by_submit(self, minimal_payload):
         """

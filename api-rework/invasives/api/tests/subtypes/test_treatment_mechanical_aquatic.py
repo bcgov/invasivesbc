@@ -157,6 +157,10 @@ class AquaticMechanicalTreatmentTest(BaseActivitySubtypeTest):
             record_in=payload["subtype_data"],
             record_out=record["subtype_data"],
         )
+        self.match_common_fields(
+            record_in=payload,
+            record_out=record,
+        )
 
     def test_submit_record(self):
         """
@@ -182,10 +186,15 @@ class AquaticMechanicalTreatmentTest(BaseActivitySubtypeTest):
 
         # Submit Updated Record
         response = self.submit_record(payload)
-        data = response.json()
+        record = response.json()
 
         self.match_updated_subtype_details(
-            record_in=payload["subtype_data"], record_out=data["subtype_data"]
+            record_in=payload["subtype_data"],
+            record_out=record["subtype_data"],
+        )
+        self.match_common_fields(
+            record_in=payload,
+            record_out=record,
         )
 
     def test_draft_record_was_removed_by_submit(self):
