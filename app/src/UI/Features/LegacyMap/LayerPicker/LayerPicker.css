@@ -46,6 +46,7 @@ ul > hr {
   z-index: 500;
   box-sizing: border-box;
   border-left: 1pt solid var(--eigengrau);
+  animation: slide-in 0.2s ease-in;
 
   .lp-content {
     height: 100%;
@@ -135,4 +136,16 @@ ul > hr {
   justify-content: flex-start;
   align-items: flex-start;
   text-align: left;
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 0.85;
+  }
 }
