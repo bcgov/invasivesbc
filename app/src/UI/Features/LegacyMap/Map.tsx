@@ -26,13 +26,14 @@ import { LayerComponent } from 'UI/Features/LegacyMap/helpers/components/LayerCo
 import { SourceCleanupComponent } from 'UI/Features/LegacyMap/helpers/components/SourceCleanupComponent';
 import { POSITIONING_LAYERS } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/positioning-layers';
 import { useInvasivesMapLayers } from 'UI/Features/LegacyMap/helpers/functional/layers-hook';
-import Spinner from 'UI/Reusable/Spinner/Spinner';
 import LayerDataMarker from './helpers/components/LayerDataMarker/LayerDataMarker';
 import { useRecordSetControls } from 'utils/useRecordSetControls';
 import OfflineRecordsetLayer from './helpers/components/OfflineRecordsetLayer';
 import { useOfflineRecordSetLayers } from 'utils/useOfflineRecordSetLayers';
 import { OfflineMapsPluginPMTilesSource } from 'utils/offline-protomaps/capacitor';
 import OfflineProtomaps from 'state/actions/cache/OfflineProtomaps';
+import { DrawControls } from 'UI/Features/LegacyMap/helpers/components/DrawControls';
+import { PositionMarkers } from 'UI/Features/LegacyMap/helpers/components/PositionMarkers';
 
 export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
   const mapContainer: React.MutableRefObject<HTMLDivElement | null> = useRef<HTMLDivElement>(null);
@@ -316,7 +317,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
               <DisplayComposite />
               <DrawControls mapReady={mapReady} />
 
-          <ButtonContainer selectLayer={buttonContainerLayerSelect} layers={availableLayerDefinitions} />
+              <ButtonContainer selectLayer={buttonContainerLayerSelect} layers={availableLayerDefinitions} />
 
               {[...Object.entries(recordsetSources), ...Object.entries(sources), ...Object.entries(offlineSources)].map(
                 ([key, source]) => (
@@ -334,15 +335,17 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
                 )
               )}
 
-          <PositionMarkers mapReady={mapReady} />
-          <LayerDataMarker />
-          <CurrentActivityLayer mapReady={mapReady} />
-          {loggedInOrWorkingOffline && (
-            <LayerPicker layers={availableLayerDefinitions} setOverlayState={setOverlayState} />
+              <PositionMarkers mapReady={mapReady} />
+              <LayerDataMarker />
+              <CurrentActivityLayer mapReady={mapReady} />
+              {loggedInOrWorkingOffline && (
+                <LayerPicker layers={availableLayerDefinitions} setOverlayState={setOverlayState} />
+              )}
+              <MobileOnly>
+                <OfflineRecordsetLayer mapReady={mapReady} />
+              </MobileOnly>
+            </>
           )}
-          <MobileOnly>
-            <OfflineRecordsetLayer mapReady={mapReady} />
-          </MobileOnly>
         </MapContext.Provider>
 
         {children}
