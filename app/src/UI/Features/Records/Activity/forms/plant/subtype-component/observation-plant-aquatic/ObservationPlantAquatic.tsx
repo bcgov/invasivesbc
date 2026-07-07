@@ -56,7 +56,7 @@ const ObservationPlantAquatic = () => {
           label={'Waterbody Name (Local)'}
           tooltip={tooltips.plant.waterbody.name_local}
           error={get(errors, getWbPath('name_local'))}
-          {...register(getPath('name_local'))}
+          {...register(getWbPath('name_local'))}
           width={Width.Half}
         />
         <TextInput

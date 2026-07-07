@@ -148,7 +148,7 @@ UPDATED_MONITORING_MECH_TREATMENT = {
                 "comment": "Information Comment B",
                 "invasive_plants_on_site": [{"invasive_plants_on_site": "NA"}],
                 "management_efficacy_rating": "10M",
-                "treatment_efficacy_rating": "",
+                "treatment_efficacy_rating": "9",
                 "invasive_plant_aquatic": "JK",
             },
         ]

@@ -5,12 +5,11 @@ from ninja.errors import HttpError
 import json
 from django.shortcuts import get_object_or_404
 from django.contrib.gis.geos import GEOSGeometry
-from api.models.activity import Activity, ActivitySubtypes
-from api.serializers.activity import ActivitySerializer
+from api.serializers.activity import ActivitySerializer, DraftActivitySerializer
 from api.schemas.plant_activity import ACTIVITY_PROCESSORS, DRAFT_ACTIVITY_PROCESSORS
 from api.ninja_authentication import NinjaKeycloakAuthentication
 from api.models.enums import FormStatus
-from api.models.activity import Activity, DraftActivity
+from api.models.activity import Activity, DraftActivity, ActivitySubtypes
 from django.db import transaction
 from api.protocol.activity.activity import (
     ActivityMinimal,
@@ -97,6 +96,16 @@ def submit_draft_record(request, data: DraftPlantActivitySchema):
     """
     with transaction.atomic():
         payload = data.model_dump(mode="python", exclude_unset=True)
+
+        # Check if record exists as submission
+        submission_exists = Activity.all_objects.filter(pk=payload["id"]).exists()
+        if submission_exists:
+            # Should perform more checks in case ID is a collision [low-likelihood]
+            raise HttpError(
+                "A submitted record already exists with this ID. Cannot convert to draft record.",
+                status=409,
+            )
+
         shape_data = payload.get("shape", None)
         if shape_data:
             geometry_dict = shape_data.get("geometry", shape_data)
@@ -115,7 +124,7 @@ def submit_draft_record(request, data: DraftPlantActivitySchema):
             raise HttpError(400, f"Unsupported activity subtype: {subtype_key}")
 
         processed_activity = processor.process(payload=payload, instance=instance)
-        serialized_data = ActivitySerializer(processed_activity).data
+        serialized_data = DraftActivitySerializer(processed_activity).data
         return JsonResponse(serialized_data, status=200)
 
 
@@ -128,7 +137,7 @@ def get_activity_by_id(request, id: str):
     # Check if its a users draft record.
     # TODO: Match user to Draft, to avoid pulling other users Draft records.
     activity = get_object_or_404(DraftActivity, pk=id)
-    serialized_data = ActivitySerializer(activity).data
+    serialized_data = DraftActivitySerializer(activity).data
     return JsonResponse(serialized_data, status=200)
 
 

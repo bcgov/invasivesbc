@@ -141,7 +141,7 @@ UPDATED_CHEM_TREATMENT_TERRESTRIAL = {
     "subtype": "Treatment_Chemical_Plant_Terrestrial",
     "funding_agencies": [{"invasive_species_agency_code": "MOTI"}],
     "jurisdictions": [{"jurisdiction": "AAFC", "percent_covered": 100}],
-    "projects": [],
+    "projects": [{"description": "Description"}],
     "location_description": "Location Description",
     "access_description": "Access Description",
     "form_status": "Submitted",

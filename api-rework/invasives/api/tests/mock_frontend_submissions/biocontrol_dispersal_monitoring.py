@@ -142,7 +142,7 @@ MINIMAL_BIOCONTROL_DISPERSAL_MONITORING = {
     "subtype": "Monitoring_Biocontrol_Dispersal_Plant_Terrestrial",
     "funding_agencies": [{"invasive_species_agency_code": "MOTI"}],
     "jurisdictions": [{"jurisdiction": "MOTI", "percent_covered": 100}],
-    "projects": [],
+    "projects": [{"description": "Description"}],
     "location_description": "Location Description",
     "access_description": "",
     "form_status": "Draft",
@@ -285,7 +285,7 @@ UPDATED_BIOCONTROL_DISPERSAL_MONITORING = {
             "site_surface_shape": "NA",
         },
         "weather_conditions": {
-            "comments": "",
+            "comments": "Weather Comments",
             "cloud_cover": "2",
             "precipitation": "NA",
             "temperature": 0,

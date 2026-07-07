@@ -17,7 +17,8 @@ from api.legacy_db.model_serializer import LegacyActivity
 from api.models.activity.activity import Activity
 from api.models.migrator.activity_migration_status import ActivityMigrationStatus
 from api.permissions import HasAdminRole
-from api.serializers.activity import ActivityListSerializer, ActivitySerializer
+from api.serializers.activity import ActivitySerializer
+from api.serializers.activity_list import ActivityListSerializer
 from api.serializers.activity_migration_status import ActivityMigrationStatusSerializer
 from invasivesbc.settings import LEGACY_DB_CONNECTION_STRING
 
