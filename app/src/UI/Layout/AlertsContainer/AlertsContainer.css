@@ -1,4 +1,4 @@
-.alertsContainer {
+.alerts-container {
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -9,11 +9,24 @@
   right: 4%;
 }
 
-.alertsContainerAlert {
+.alerts-container-alert {
   width: calc(max(30vw, min(375px, 90vw)));
   box-sizing: border-box;
   text-align: left;
   align-items: center;
   margin: 2pt;
-  opacity: 0.8;
+  opacity: 0.85;
+  animation: slide-in 0.35s ease-out forwards;
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 0.85;
+  }
 }
