@@ -1,4 +1,4 @@
-import centroid from '@turf/centroid';
+import pointOnFeature from '@turf/point-on-feature';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import { LAYER_Z_FOREGROUND } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/types';
 
@@ -8,7 +8,7 @@ export const refreshCurrentRecMakers = (map, options: any) => {
     options.IAPPMarker.addTo(map);
   }
   if (options.activityMarker && options.activityGeo?.[0]?.geometry && options.currentActivityShortID) {
-    options.activityMarker.setLngLat(centroid(options.activityGeo[0]).geometry.coordinates);
+    options.activityMarker.setLngLat(pointOnFeature(options.activityGeo[0]).geometry.coordinates);
     options.activityMarker.addTo(map);
   }
 
@@ -17,7 +17,7 @@ export const refreshCurrentRecMakers = (map, options: any) => {
     (options.userRecordOnHoverRecordGeometry?.geometry?.[0] || options.userRecordOnHoverRecordGeometry?.geometry)
   ) {
     options.whatsHereMarker.setLngLat(
-      centroid(
+      pointOnFeature(
         options.userRecordOnHoverRecordGeometry?.geometry?.[0] || options.userRecordOnHoverRecordGeometry?.geometry
       ).geometry?.coordinates
     );

@@ -1,5 +1,5 @@
 import { put, select } from 'redux-saga/effects';
-import centroid from '@turf/centroid';
+import pointOnFeature from '@turf/point-on-feature';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { selectIAPPSite } from 'state/reducers/iappsite';
 import { selectUserSettings } from 'state/reducers/userSettings';
@@ -52,7 +52,7 @@ export function* handle_IAPP_PAN_AND_ZOOM() {
     if (isPoint) {
       target = geometry.geometry;
     } else {
-      const acentroid = centroid(geometry);
+      const acentroid = pointOnFeature(geometry);
 
       target = acentroid.geometry;
     }
