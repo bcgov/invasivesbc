@@ -138,8 +138,8 @@ export const OfflineDataSyncTable = ({ handleClose }: PropTypes) => {
                       </td>
                     </tr>
                     {(value as OfflineActivityRecord).sync_state == 'Error' && (
-                      <tr>
-                        <td></td>
+                      <tr className="warn">
+                        <td />
                         <td>
                           {(value as OfflineActivityRecord).error_detail
                             ? (value as OfflineActivityRecord).error_detail
