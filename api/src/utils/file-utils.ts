@@ -27,7 +27,7 @@ const S3 = getS3Client();
  * @param {string} key the unique key assigned to the file in S3 when it was originally uploaded
  * @returns {Promise<GetObjectCommandOutput>} the response from S3 or null if required parameters are null
  */
-export async function getFileFromS3(key: string): Promise<GetObjectCommandOutput> {
+async function getFileFromS3(key: string): Promise<GetObjectCommandOutput> {
   if (!key) {
     return null;
   }
@@ -35,7 +35,7 @@ export async function getFileFromS3(key: string): Promise<GetObjectCommandOutput
   return S3.send(new GetObjectCommand({ Bucket: OBJECT_STORE_BUCKET_NAME, Key: key }));
 }
 
-export type UploadFileResult = {
+type UploadFileResult = {
   key: string;
   result: PutObjectCommandOutput;
 };
@@ -50,10 +50,7 @@ export type UploadFileResult = {
  * @param {Metadata} [metadata={}] A metadata object to store additional information with the file
  * @returns {Promise<PutObjectCommandOutput>} the response from S3 or null if required parameters are null
  */
-export async function uploadFileToS3(
-  media: MediaBase64,
-  metadata: Record<string, string> = {}
-): Promise<UploadFileResult> {
+async function uploadFileToS3(media: MediaBase64, metadata: Record<string, string> = {}): Promise<UploadFileResult> {
   if (!media) {
     return null;
   }
@@ -82,7 +79,7 @@ export async function uploadFileToS3(
  * @param {string} key of object to delete from s3 bucket
  * @returns {Promise<DeleteObjectOutput>}
  */
-export async function deleteFileFromS3(key: string): Promise<DeleteObjectOutput> {
+async function deleteFileFromS3(key: string): Promise<DeleteObjectOutput> {
   if (!key) {
     return null;
   }
@@ -109,7 +106,7 @@ export async function deleteFileFromS3(key: string): Promise<DeleteObjectOutput>
  * @param {string} key S3 object key
  * @returns {Promise<string>} the response from S3 or null if required parameters are null
  */
-export async function getS3SignedURL(key: string): Promise<string> {
+async function getS3SignedURL(key: string): Promise<string> {
   if (!key) {
     return null;
   }
@@ -136,7 +133,7 @@ const base64DataURLRegex = new RegExp(/^data:(\w+\/\w+);base64,(.*)/);
  * @return {{ contentType: string; contentString: string }} returns an object with the Data URL encoded strings
  * contentType and contentString, or null if string is invalid or encoded incorrectly.
  */
-export function parseBase64DataURLString(base64String: string): { contentType: string; contentString: string } {
+function parseBase64DataURLString(base64String: string): { contentType: string; contentString: string } {
   if (!base64String) {
     return null;
   }
@@ -149,3 +146,6 @@ export function parseBase64DataURLString(base64String: string): { contentType: s
 
   return { contentType: matches[1], contentString: matches[2] };
 }
+
+export { getFileFromS3, parseBase64DataURLString, getS3SignedURL, deleteFileFromS3, uploadFileToS3 };
+export type { UploadFileResult };
