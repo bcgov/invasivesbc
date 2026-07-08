@@ -135,7 +135,7 @@ export const LandingComponent = () => {
                         <strong>Roles:</strong>
                       </p>
                       {roles.map((role) => (
-                        <p key={role.role_id}>{role.role_name}</p>
+                        <p key={role.role_id}>{role.role_description}</p>
                       ))}
                     </Box>
                   </Grid>
