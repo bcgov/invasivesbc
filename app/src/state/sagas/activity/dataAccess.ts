@@ -1,6 +1,6 @@
 import { all, call, put, select, take } from 'redux-saga/effects';
 import center from '@turf/center';
-import centroid from '@turf/centroid';
+import pointOnFeature from '@turf/point-on-feature';
 import {
   activity_create_function,
   ActivityStatus,
@@ -121,7 +121,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: PayloadAction<Featur
             max: 10,
             callback: (userEnteredArea: number) => {
               // For a Hexagon (6 steps) to have exactly 'finalArea'
-              const STEPS = 8;
+              const STEPS = 6;
               const adjustedRadius = Math.sqrt((2 * userEnteredArea) / (STEPS * Math.sin((2 * Math.PI) / STEPS)));
               const buffered = circle(modifiedPayload[0], adjustedRadius, { units: 'meters', steps: STEPS }) as Feature;
               modifiedPayload[0] = buffered;
@@ -578,7 +578,7 @@ export function* handle_PAN_AND_ZOOM_TO_ACTIVITY() {
     if (isPoint) {
       target = geometry.geometry;
     } else {
-      const acentroid = centroid(geometry);
+      const acentroid = pointOnFeature(geometry);
 
       target = acentroid.geometry;
     }

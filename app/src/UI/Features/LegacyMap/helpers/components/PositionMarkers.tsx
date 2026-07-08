@@ -4,7 +4,7 @@ import {
   refreshCurrentRecMakers,
   refreshHighlightedRecord
 } from 'UI/Features/LegacyMap/helpers/functional/current-record';
-import centroid from '@turf/centroid';
+import pointOnFeature from '@turf/point-on-feature';
 import maplibregl, { LngLatLike } from 'maplibre-gl';
 import { useSelector } from 'utils/use_selector';
 import circle from '@turf/circle';
@@ -126,7 +126,7 @@ const PositionMarkers = ({ mapReady }) => {
 
     refreshHighlightedRecord(map, { userRecordOnHoverRecordGeometry, userRecordOnHoverRecordType });
     if (quickPanToRecord && userRecordOnHoverRecordGeometry) {
-      const c = centroid(userRecordOnHoverRecordGeometry).geometry.coordinates as LngLatLike;
+      const c = pointOnFeature(userRecordOnHoverRecordGeometry).geometry.coordinates as LngLatLike;
       if (c) {
         map.easeTo({
           center: c,
