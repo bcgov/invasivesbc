@@ -1,5 +1,5 @@
 import area from '@turf/area';
-import centroid from '@turf/centroid';
+import pointOnFeature from '@turf/point-on-feature';
 import * as turf from '@turf/helpers';
 import { Feature, Position } from 'geojson';
 import GeoShapes from 'constants/geoShapes';
@@ -57,40 +57,17 @@ export function calculateGeometryArea(geometry: Feature[]) {
  *
  * @param {Feature[]} geom The geometry in GeoJSON format
  */
-export function calculateLatLng(geom: Feature[]) {
-  if (!geom || !geom[geom.length - 1] || !geom[geom.length - 1].geometry) return;
+export function calculateLatLng(geom: Feature[] | Feature) {
+  if (!geom) return;
 
-  const geo = geom[geom.length - 1].geometry;
-  const firstCoord = geo['coordinates'][0];
-
-  let latitude: number | null = null;
-  let longitude: number | null = null;
-
-  /*
-    Calculations based on business rules as to how anchor points need to be calculated
-    for different geometry types
-  */
-  if (geo.type === GeoShapes.Point) {
-    latitude = geo.coordinates[1];
-    longitude = firstCoord;
-  } else if (geo.type === GeoShapes.LineString && geo.coordinates.length > 1) {
-    latitude = firstCoord[1];
-    longitude = firstCoord[0];
-  } else if (geom[0]?.properties?.isRectangle) {
-    latitude = firstCoord[0][1];
-    longitude = firstCoord[0][0];
-  } else {
-    const centerPoint = centroid(geom[0] as any) || centroid(geom as any); //center(turf.polygon(geo['coordinates'])).geometry;
-    latitude = centerPoint.geometry.coordinates[1];
-    longitude = centerPoint.geometry.coordinates[0];
+  if (Array.isArray(geom)) {
+    if (geom.length === 0) return;
+    geom = geom[0];
   }
-
-  if (!latitude || !longitude) {
-    return null;
-  }
+  const pointFromGeom = pointOnFeature(geom);
   return {
-    latitude: parseFloat(latitude.toFixed(6)),
-    longitude: parseFloat(longitude.toFixed(6))
+    longitude: parseFloat(pointFromGeom.geometry.coordinates[0].toFixed(6)),
+    latitude: parseFloat(pointFromGeom.geometry.coordinates[1].toFixed(6))
   };
 }
 

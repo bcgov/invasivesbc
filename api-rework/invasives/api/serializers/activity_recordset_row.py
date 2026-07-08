@@ -1,6 +1,6 @@
 import json
 from rest_framework import serializers
-from django.contrib.gis.db.models.functions import Centroid, AsGeoJSON
+from django.contrib.gis.db.models.functions import PointOnSurface, AsGeoJSON
 from api.models.activity.activity import Activity
 from api.models.activity import ActivitySubtypes, RisoArea, ProjectCode, FundingAgency
 from api.serializers.activity import ActivitySerializer
@@ -289,7 +289,7 @@ class CachedActivityRecordsetRowSerializer(ActivityRecordsetRowSerializer):
     def get_data(self, obj):
         # Refetch the object and annotate the centroid value.
         annotated_obj = Activity.objects.annotate(
-            centroid=AsGeoJSON(Centroid("shape"))
+            centroid=AsGeoJSON(PointOnSurface("shape"))
         ).get(pk=obj.pk)
 
         return ActivitySerializer(annotated_obj, context=self.context).data

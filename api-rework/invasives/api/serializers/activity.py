@@ -177,8 +177,7 @@ class ActivitySerializer(BaseSerializer):
     def get_centroid(self, obj):
         if not obj.shape:
             return None
-        centroid = obj.shape.centroid
-        return json.loads(centroid.json)
+        return json.loads(obj.shape.point_on_surface.json)
 
     def get_subtype_data(self, obj: Activity):
         """Maps the Activity to the proper Subtype Serializer, populating the form specific information"""
@@ -284,8 +283,7 @@ class DraftActivitySerializer(BaseSerializer):
     def get_centroid(self, obj):
         if not obj.shape:
             return None
-        centroid = obj.shape.centroid
-        return json.loads(centroid.json)
+        return json.loads(obj.shape.point_on_surface.json)
 
     def get_subtype_data(self, obj: DraftActivity):
         """Maps the Activity to the proper Subtype Serializer, populating the form specific information"""
