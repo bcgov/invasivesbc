@@ -14,6 +14,7 @@ import EFilterType from 'constants/EFilterType';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import formAlerts from 'constants/alerts/formAlerts';
 import { Role } from 'constants/roles';
+import transformPydanticErrors from 'utils/transformPydanticErrors';
 
 interface FormSubmission {
   data: FormSchema;
@@ -183,8 +184,16 @@ class FormActions {
         });
         if (!res?.ok) {
           // Request failed, alert user.
-          dispatch(Alerts.create(formAlerts.recordSubmittedFailure));
-          return rejectWithValue(await res.json());
+          if (res.status === 422) {
+            const rawErrors = await res.json();
+            const errors = transformPydanticErrors(rawErrors.detail);
+            for (const e of errors) {
+              dispatch(Alerts.create(e));
+            }
+          } else {
+            dispatch(Alerts.create(formAlerts.recordSubmittedFailure));
+            return rejectWithValue(await res.json());
+          }
         }
         dispatch(Alerts.create(formAlerts.recordSubmittedSuccess));
         return await res.json();

@@ -17,6 +17,8 @@ import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import FormActions, { FormSubmission } from 'state/actions/activity/FormActions';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { AppConfig } from 'state/configuration/runtime-config';
+import transformPydanticErrors from 'utils/transformPydanticErrors';
+import formAlerts from 'constants/alerts/formAlerts';
 
 function* handle_ACTIVITY_SAVE_OFFLINE(action: PayloadAction<FormSubmission>) {
   const connected = yield select(selectNetworkConnected);
@@ -102,7 +104,7 @@ function* handle_ACTIVITY_GET_LOCAL_REQUEST(action: PayloadAction<string>) {
 function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
   const config: AppConfig = yield select(selectConfiguration);
   const { serializedActivities } = yield select(selectOfflineActivity);
-  const { activeActivity, activeActivityPermissions } = yield select(selectActivity);
+  const { formId, activeActivityPermissions } = yield select(selectActivity);
   const toSync: OfflineActivityRecord[] = Object.values(serializedActivities).filter(
     (s) =>
       typeof s === 'object' &&
@@ -137,7 +139,7 @@ function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
           })
         );
 
-        if (hydrated.id === activeActivity) {
+        if (hydrated.id === formId) {
           yield put(
             Activity.getSuccess({
               activity: {
@@ -151,16 +153,30 @@ function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
         // Refetch Draft Records now that we're synced
         yield put(WhatsHere.getIdsForRecordset({ recordSetID: RecordSetId.Drafts, tableFiltersHash: 'init' }));
       } else {
+        let errorDetail = networkReturn.data;
+        if (networkReturn.status === 422) {
+          const parsedError = yield networkReturn.json();
+          errorDetail = `Form contains ${parsedError?.detail?.length} error(s).`;
+          // If this record is the active record, alert the errors.
+          if (formId === hydrated['id']) {
+            const errors = transformPydanticErrors(parsedError.detail);
+            for (const e of errors) {
+              yield put(Alerts.create(e));
+            }
+          }
+        } else if (networkReturn.status === 500) {
+          errorDetail = 'There was an internal error. Please try again in a few moments.';
+        }
+        // Request failed, alert user.
+        yield put(Alerts.create(formAlerts.recordSubmittedFailure));
+
         yield put(
           Activity.Offline.updateSyncState({
-            id: hydrated.activity_id,
+            id: hydrated.id,
             data: { ...hydrated, sync_status: ActivitySyncStatus.SAVE_FAILED },
             sync_state: OfflineActivitySyncState.ERROR,
             error_detail: `HTTP response code ${networkReturn.status}`,
-            error_object:
-              networkReturn.status < 500
-                ? networkReturn.data
-                : 'There was an internal error. Please try again in a few moments.'
+            error_object: errorDetail
           })
         );
       }

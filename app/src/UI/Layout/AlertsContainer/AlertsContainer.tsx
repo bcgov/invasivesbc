@@ -78,7 +78,7 @@ const AlertsContainer = () => {
   }, [alerts]);
 
   return (
-    <div className="alertsContainer">
+    <div className="alerts-container">
       {alerts.length > 0 && (
         <Button
           variant="contained"
@@ -95,7 +95,7 @@ const AlertsContainer = () => {
           key={id}
           severity={severity}
           onClose={() => handleClose(id!)}
-          className="alertsContainerAlert"
+          className="alerts-container-alert"
           icon={<Icon color={severity}>{getImageFromSubject(subject)}</Icon>}
         >
           {title && <AlertTitle>{title}</AlertTitle>}
