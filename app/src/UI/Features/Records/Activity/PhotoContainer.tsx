@@ -10,6 +10,7 @@ import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import { Md5 } from 'ts-md5';
 import Photo from './Photo';
 import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
+import { nanoid } from '@reduxjs/toolkit';
 
 export interface IPhotoContainerProps {
   classes?: any;
@@ -34,8 +35,8 @@ const PhotoContainer = (props: IPhotoContainerProps) => {
     }
   };
 
-  const transformImageToFormData = (photo: MediaResult, index = 0): UploadedPhoto => {
-    const fileName = `${new Date().toISOString().slice(0, 10)}-${index}.${photo.metadata?.format}`;
+  const transformImageToFormData = (photo: MediaResult): UploadedPhoto => {
+    const fileName = `${new Date().toISOString().slice(0, 10)}-${nanoid()}.${photo.metadata?.format}`;
     const dataUrl = `data:image/${photo.metadata?.format};base64,${photo.thumbnail}`;
     return {
       file_name: fileName,
@@ -77,7 +78,7 @@ const PhotoContainer = (props: IPhotoContainerProps) => {
         if (isPhotoAlreadyUploaded) {
           dispatch(
             Alerts.create({
-              content: `Uploaded image "${p.file_name}" Already in record. Image was removed.`,
+              content: `Selected image already in record. Image was removed.`,
               severity: AlertSeverity.Error,
               subject: AlertSubjects.Photo,
               autoClose: 8
