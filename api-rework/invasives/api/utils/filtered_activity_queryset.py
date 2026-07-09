@@ -358,10 +358,6 @@ class FilteredActivityQueryset:
                 log.error("Error while handling 'spatialFilterUploaded'", exc_info=True)
                 return Q()
 
-        elif filter_type != "tableFilters":
-            # No other filter types supported. Exit early
-            return Q()
-
         if field == Column.PLANT.value:
             current_q = Q()
             for path in self.ALL_PLANT_PATHS:
