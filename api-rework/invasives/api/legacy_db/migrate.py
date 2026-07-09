@@ -1,12 +1,20 @@
 import json
 import logging
+import re
 from decimal import Decimal, ROUND_DOWN
 from pprint import pformat
 
 import geojson
+import pyproj
 import shapely
+from django.contrib.gis.gdal.geometries import GeometryCollection
 from django.db import DatabaseError
+from geojson import FeatureCollection, geometry, Feature
 from pydantic_core._pydantic_core import ValidationError
+from pyproj.aoi import AreaOfInterest
+from pyproj.database import query_utm_crs_info
+from shapely import point_on_surface, from_wkb, from_wkt, Point, transform, intersects
+from shapely.geometry import mapping
 
 from api.legacy_db.mappings.biocontrol import (
     add_subtype_payload_for_biocontrol_release,
@@ -47,6 +55,7 @@ from api.models.codes import (
     JurisdictionCode,
 )
 from api.models.enums import PlatformSource
+from api.utils.utm_coordinates import point_to_utm
 
 
 def add_subtype_payload(new: Activity, old: LegacyActivity) -> None:
@@ -183,15 +192,91 @@ def migrate(old: LegacyActivity):
     new.batch_id = old.activity_payload.batch_id
 
     new.area_m = old.activity_payload.form_data.activity_data.reported_area
-    new.latitude = round(
-        Decimal(old.activity_payload.form_data.activity_data.latitude), 7
+
+    coordinate_update_message = "During data migration, activity coordinates (both longitude/latitude and UTM coordinates) will updated to use a new method of computing a representative point on the defined shape."
+
+    # this is the original value stored in the legacy activity. it is probably a centroid.
+    original_point = Point(
+        (
+            old.activity_payload.form_data.activity_data.longitude,
+            old.activity_payload.form_data.activity_data.latitude,
+        )
     )
-    new.longitude = round(
-        Decimal(old.activity_payload.form_data.activity_data.longitude), 7
+
+    # compute a better point to represent the geometry using point_on_surface
+    shape = from_wkt(new.shape.wkt)
+    representative_point: shapely.Point = point_on_surface(shape)
+
+    # figure out how far it is from the original point in meters
+    to_pseudo_mercator = pyproj.Transformer.from_crs(
+        "EPSG:4326", "EPSG:3857", always_xy=True
+    ).transform
+
+    cartesian_distance_meters = shapely.distance(
+        shapely.transform(representative_point, to_pseudo_mercator, interleaved=False),
+        shapely.transform(original_point, to_pseudo_mercator, interleaved=False),
     )
-    new.utm_zone = old.activity_payload.form_data.activity_data.utm_zone
-    new.utm_easting = old.activity_payload.form_data.activity_data.utm_easting
-    new.utm_northing = old.activity_payload.form_data.activity_data.utm_northing
+
+    coordinate_update_message += f"\nCoordinates ({original_point.y}, {original_point.x}) => ({representative_point.y}, {representative_point.x}) (shifted {round(cartesian_distance_meters, 2)} meters)"
+
+    if cartesian_distance_meters > 100:  # arbitrary threshold
+        coordinate_update_message += "\nLarge change in representative point position, verification is recommended."
+        logging.warning(
+            f"Activity {new.id} coordinates significant change ({cartesian_distance_meters} meters). Suggest manual verification"
+        )
+
+    # build a geojson object containing both original and new point, for inclusion in the update remarks to aid in verification
+    diagnostic_geojson = FeatureCollection(
+        [
+            Feature(geometry=mapping(shape), properties={"name": "Shape"}),
+            Feature(
+                geometry=mapping(original_point),
+                properties={
+                    "name": "Original Coordinates",
+                    "marker-color": "rgba(255, 0, 0, 1)",
+                },
+            ),
+            Feature(
+                geometry=mapping(representative_point),
+                properties={
+                    "name": "Updated Coordinates",
+                    "marker-color": "rgba(0, 255, 0, 1)",
+                },
+            ),
+        ]
+    )
+
+    # now compute utm zone and coordinates based on the new point
+    recomputed_utm_coordinates = point_to_utm(representative_point)
+
+    if (
+        recomputed_utm_coordinates.zone
+        != old.activity_payload.form_data.activity_data.utm_zone
+    ):
+        coordinate_update_message += f"\nUTM Zone changed from {old.activity_payload.form_data.activity_data.utm_zone} to {recomputed_utm_coordinates.zone}"
+        logging.error(
+            "The UTM Zone for this activity changed (it is possibly it was near a boundary and the representative point update caused the change, but manual verification is recommended)!"
+        )
+
+    coordinate_update_message += (
+        f"\nUTM Coordinates (Zone {old.activity_payload.form_data.activity_data.utm_zone} {old.activity_payload.form_data.activity_data.utm_easting}E {old.activity_payload.form_data.activity_data.utm_northing}N) => "
+        f"(Zone {recomputed_utm_coordinates.zone} {recomputed_utm_coordinates.easting}E {recomputed_utm_coordinates.northing}N)"
+    )
+    if new.migration_remarks is None:
+        new.migration_remarks = ""
+
+    new.migration_remarks += coordinate_update_message
+
+    new.migration_remarks += "\nDiagnostic GeoJSON for the coordinate change is here (for use with a GeoJSON Viewer). Contains the shape and both new and old coordinates (old in red, new in green, if your viewer supports `marker-color`)"
+    new.migration_remarks += f"\n{diagnostic_geojson}"
+
+    # update the object with the recomputed point, discarding the legacy version
+    new.utm_zone = recomputed_utm_coordinates.zone
+    new.utm_easting = recomputed_utm_coordinates.easting
+    new.utm_northing = recomputed_utm_coordinates.northing
+
+    new.latitude = round(Decimal(representative_point.y), 7)
+    new.longitude = round(Decimal(representative_point.x), 7)
 
     try:
         new.full_clean()
