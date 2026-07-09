@@ -163,13 +163,13 @@ export const RecordTable = ({ setID }: PropTypes) => {
             ))}
           </tbody>
         </table>
-        {!mappedRows ||
-          (mappedRows?.length === 0 && (
-            <div className="no-records">
-              <p>There are no records matching your current filters.</p>
-            </div>
-          ))}
       </div>
+      {!mappedRows ||
+        (mappedRows?.length === 0 && (
+          <div className="no-records">
+            <p>There are no records matching your current filters.</p>
+          </div>
+        ))}
     </div>
   );
 };
