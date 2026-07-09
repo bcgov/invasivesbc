@@ -57,23 +57,17 @@ class RecordsetRowsViewSet(viewsets.GenericViewSet):
     def rows(self, request, *args, **kwargs):
         filter_objects = request.data.get("filterObjects", [])
         meta = filter_objects[0] if filter_objects else {}
-        ids_only = (
-            len(meta.get("selectColumns", [])) == 1
-            and meta.get("selectColumns")[0] == "activity_id"
-        )
+        ids_only = meta.get("selectColumns") == ["activity_id"]
+        builder = FilteredActivityQueryset(filter_objects=filter_objects)
 
         if ids_only:  # Early Return, just ship IDs
-            id_list = FilteredActivityQueryset(
-                filter_objects=filter_objects
-            ).select_output_format(fields=["id"])
+            id_list = builder.select_output_format(fields=["id"])
             return Response(list(id_list), status=status.HTTP_200_OK)
-        records = (
-            FilteredActivityQueryset(filter_objects=filter_objects)
-            .apply_sorting()
-            .select_output_format()
-            .paginate()
-        )
-        serializer = self.get_serializer(records.query, many=True)
+
+        builder.apply_sorting().select_output_format().paginate()
+
+        # Access the dynamic (Draft/)Activity serializer set during initialization
+        serializer = builder.serializer_class(builder.query, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(detail=False, methods=["post"], url_path="csv")
