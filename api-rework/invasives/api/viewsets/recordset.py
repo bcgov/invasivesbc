@@ -105,10 +105,11 @@ class RecordsetRowsViewSet(viewsets.GenericViewSet):
         Shared models like for Chemical/Mechanical Monitoring Records.
         """
         # Build up the base filtered/sorted query
-        builder = (
-            FilteredActivityQueryset(filter_objects).apply_filters().apply_sorting()
-        )
+        builder = FilteredActivityQueryset(filter_objects)
+
+        builder.apply_filters().apply_sorting()
         activity_queryset = builder.query.filter(subtype=csv_type)
+
         valid_activity_ids = activity_queryset.values_list("id", flat=True).distinct()
 
         ANNOTATIONS = build_csv_annotation_object(config.get("annotations", []))
