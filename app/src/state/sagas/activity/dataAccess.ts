@@ -15,6 +15,7 @@ import { Feature, FeatureCollection } from 'geojson';
 
 import { PayloadAction } from '@reduxjs/toolkit';
 import cloneDeep from 'lodash.clonedeep';
+import { Md5 } from 'ts-md5';
 import {
   autoFillNameByPAC,
   autoFillTotalBioAgentQuantity,
@@ -652,60 +653,54 @@ export function* handle_ACTIVITY_ADD_PHOTO_REQUEST(action) {
 }
 
 export function* handle_ACTIVITY_DELETE_PHOTO_REQUEST(action) {
-  try {
-    if (action.payload) {
-      const beforeState = yield select(selectActivity);
-      const beforeActivity = beforeState.activity;
-
-      const media = beforeActivity.media.filter((photo: UploadedPhoto) => {
-        if (photo.media_key) {
-          return photo.media_key !== action.payload.media_key;
-        } else {
-          return photo.file_name !== action.payload.file_name;
-        }
-      });
-
-      let media_keys = [];
-      if (beforeActivity.media_keys) {
-        media_keys = beforeActivity.media_keys.filter((key) => {
-          if (action.payload.media_key) {
-            return key !== action.payload.media_key;
-          }
-        });
-      }
-
-      let delete_keys: string[] = [];
-      if (beforeActivity.media_delete_keys?.length) {
-        delete_keys = [...beforeActivity.media_delete_keys];
-      }
-      if (action.payload.media_key) {
-        delete_keys.push(action.payload.media_key);
-      }
-      yield put(
-        Activity.Photo.deleteSuccess({
-          ...beforeActivity,
-          media: media ?? [],
-          media_keys: media_keys ?? [],
-          media_delete_keys: delete_keys
-        })
-      );
+  const beforeState = yield select(selectActivity);
+  const beforeActivity = beforeState.activity;
+  const incomingHash = Md5.hashStr(action.payload.encoded_file);
+  const media = beforeActivity.media.filter((photo: UploadedPhoto) => {
+    if (photo.media_key) {
+      return photo.media_key !== action.payload.media_key;
     }
-  } catch (e) {
-    console.error(e);
-    yield put(Activity.Photo.deleteFailure());
+    return incomingHash !== Md5.hashStr(photo.encoded_file);
+  });
+
+  const media_keys: Array<unknown> = [];
+  if (beforeActivity.media_keys) {
+    media_keys.push(
+      ...beforeActivity.media_keys.filter((key) => {
+        if (action.payload.media_key) {
+          return key !== action.payload.media_key;
+        }
+      })
+    );
   }
+
+  const delete_keys: string[] = [];
+  delete_keys.push(...beforeActivity.media_delete_keys);
+
+  if (action.payload.media_key) {
+    delete_keys.push(action.payload.media_key);
+  }
+  yield put(
+    Activity.Photo.deleteSuccess({
+      ...beforeActivity,
+      media: media ?? [],
+      media_keys: media_keys ?? [],
+      media_delete_keys: delete_keys
+    })
+  );
 }
 
 export function* handle_ACTIVITY_EDIT_PHOTO_REQUEST(action) {
   try {
     const beforeState = yield select(selectActivity);
-    const beforeActivityMedia: UploadedPhoto[] = JSON.parse(JSON.stringify(beforeState.activity.media));
-    const photoIndex = beforeActivityMedia.findIndex((photo) => photo.file_name === action.payload.file_name);
+    const beforeActivityMedia: UploadedPhoto[] = structuredClone(beforeState.activity.media);
+    const incomingHash = Md5.hashStr(action.payload.encoded_file);
+    const idx = beforeActivityMedia.findIndex((photo) => Md5.hashStr(photo.encoded_file) === incomingHash);
 
-    if (photoIndex >= 0) {
-      beforeActivityMedia[photoIndex] = action.payload;
+    if (idx !== -1) {
+      beforeActivityMedia[idx] = action.payload;
+      yield put(Activity.Photo.editSuccess(beforeActivityMedia));
     }
-    yield put(Activity.Photo.editSuccess(beforeActivityMedia));
   } catch (e) {
     console.error(e);
   }

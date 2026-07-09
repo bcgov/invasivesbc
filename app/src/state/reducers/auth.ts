@@ -17,7 +17,7 @@ interface IUserExtendedInfo {
   pac_service_number_2: string | null;
 }
 interface OfflineUserState {
-  roles: { role_id: number; role_name: string }[];
+  roles: { role_id: number; role_name: string; role_description: string }[];
   writePrivilege: Array<ActivitySubtype>;
   extendedInfo: IUserExtendedInfo;
 
@@ -59,9 +59,13 @@ interface AuthState {
   loggedInOrWorkingOffline: boolean;
   loginInProgress: boolean;
 
-  roles: { role_id: number; role_name: string }[];
+  roles: {
+    role_description: string;
+    role_id: number;
+    role_name: string;
+  }[];
   writePrivilege: Array<ActivitySubtype>;
-  accessRoles: { role_id: number; role_name: string }[];
+  accessRoles: { role_id: number; role_name: string; role_description: string }[];
   rolesInitialized: boolean;
 
   extendedInfo: {

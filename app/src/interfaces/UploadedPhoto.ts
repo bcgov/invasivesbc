@@ -1,9 +1,8 @@
 interface UploadedPhoto {
   file_name: string;
   media_key?: string;
-  encoded_file: string | undefined;
+  encoded_file: string;
   description: string;
-  editing: boolean;
 }
 
 export default UploadedPhoto;
