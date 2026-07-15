@@ -64,8 +64,10 @@ class FilteredActivityQueryset:
 
         if self.should_filter_drafts:
             # TODO: Pre-filter Draft Activities to only be by requesting user.
+            self.model = DraftActivity
             self.queryset = DraftActivity.objects.all()
         else:
+            self.model = Activity
             self.queryset = Activity.objects.all()
 
         self._is_filtered = False
@@ -323,7 +325,19 @@ class FilteredActivityQueryset:
         value = f.get("filter")
         operator = f.get("operator")
         filter_type = f.get("filterType")
-
+        one_to_many_relations = [
+            "project_code",
+            "jurisdiction_display",
+            "invasive_plant",
+            "species_positive_full",
+            "species_negative_full",
+            "has_current_positive",
+            "has_current_negative",
+            "species_treated_full",
+            "species_biocontrol_full",
+            "agency",
+            "regional_invasive_species_organization_areas",
+        ]
         if filter_type == "mostRecentObservation":
             return Q()
 
@@ -404,7 +418,12 @@ class FilteredActivityQueryset:
             db_path = self.SORT_MAPPING.get(field, field)
             current_q = Q(**{f"{db_path}__icontains": value})
 
-        return ~current_q if operator == "DOES NOT CONTAIN" else current_q
+        if operator == "DOES NOT CONTAIN":
+            if field in one_to_many_relations:
+                matching_ids = self.model.objects.filter(current_q).values("id")
+                return ~Q(pk__in=matching_ids)
+            return ~current_q
+        return current_q
 
     # Bridge functions to avoid needing to branch into queryset for endpoint specific functionality (Tiles)
     def exists(self):
