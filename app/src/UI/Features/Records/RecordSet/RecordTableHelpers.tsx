@@ -1,6 +1,5 @@
 import IActivityTableRow from 'interfaces/TableRows/IActivityTableRow';
 import IIappTableRow from 'interfaces/TableRows/IIappTableRow';
-import { ActivitySubtypesShortLabels } from 'sharedAPI/src/constants';
 
 export const getUnnestedFieldsForActivity = (activity): IActivityTableRow => {
   // needs to be consistent with API column names
@@ -8,7 +7,7 @@ export const getUnnestedFieldsForActivity = (activity): IActivityTableRow => {
     activity_id: activity?.activity_id,
     short_id: activity?.short_id,
     activity_type: activity?.activity_type,
-    activity_subtype: ActivitySubtypesShortLabels[activity?.activity_subtype],
+    activity_subtype: activity?.activity_subtype,
     activity_date: activity?.activity_date,
     project_code: activity.project_code,
     jurisdiction_display: activity?.jurisdiction_display,

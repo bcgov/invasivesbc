@@ -28,6 +28,7 @@ class BaseSerializer(serializers.ModelSerializer):
     project_code_model = None
     funding_agency_model = None
 
+    activity_subtype = serializers.SerializerMethodField()
     reported_area = serializers.SerializerMethodField()
     geom = serializers.SerializerMethodField()
     invasive_plant = serializers.SerializerMethodField()
@@ -51,7 +52,6 @@ class BaseSerializer(serializers.ModelSerializer):
     )
     elevation = serializers.IntegerField(source="computed_elevation_m", read_only=True)
     activity_type = serializers.CharField(source="type", read_only=True)
-    activity_subtype = serializers.CharField(source="subtype", read_only=True)
     activity_date = serializers.CharField(source="date", read_only=True)
     activity_id = serializers.CharField(source="id", read_only=True)
 
@@ -104,6 +104,9 @@ class BaseSerializer(serializers.ModelSerializer):
                 "geometry": json.loads(obj.shape.point_on_surface.geojson),
             }
         return None
+
+    def get_activity_subtype(self, obj):
+        return ActivitySubtypes[getattr(obj, "subtype")].readableFormat
 
     def get_reported_area(self, obj):
         return getattr(obj, "area_m", None)
