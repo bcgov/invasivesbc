@@ -456,7 +456,7 @@ export const WaterbodyInformation = [
 
   new TemplateColumnBuilder(
     'Waterbody - Water Level Management',
-    'codeReference',
+    'codeReferenceMulti',
     'form_data.activity_subtype_data.WaterbodyData.water_level_management'
   )
     .hardcodedCodes(WATER_LEVEL_MANAGEMENT_CODES)
@@ -464,21 +464,21 @@ export const WaterbodyInformation = [
 
   new TemplateColumnBuilder(
     'Waterbody - Use',
-    'codeReference',
+    'codeReferenceMulti',
     'form_data.activity_subtype_data.WaterbodyData.waterbody_use'
   )
     .referencesCode('waterbody_use_code')
     .build(),
   new TemplateColumnBuilder(
     'Waterbody - Adjacent Land Usage',
-    'codeReference',
+    'codeReferenceMulti',
     'form_data.activity_subtype_data.WaterbodyData.adjacent_land_use'
   )
     .referencesCode('adjacent_land_use_code')
     .build(),
   new TemplateColumnBuilder(
     'Waterbody - Substrate',
-    'codeReference',
+    'codeReferenceMulti',
     'form_data.activity_subtype_data.WaterbodyData.substrate_type'
   )
     .isRequired()
@@ -487,14 +487,14 @@ export const WaterbodyInformation = [
 
   new TemplateColumnBuilder(
     'Waterbody - Inflow - Permanent',
-    'codeReference',
+    'codeReferenceMulti',
     'form_data.activity_subtype_data.WaterbodyData.inflow_permanent'
   )
     .referencesCode('inflow_permanent_code')
     .build(),
   new TemplateColumnBuilder(
     'Waterbody - Inflow - Other',
-    'codeReference',
+    'codeReferenceMulti',
     'form_data.activity_subtype_data.WaterbodyData.inflow_other'
   )
     .referencesCode('inflow_temporary_code')
@@ -502,14 +502,14 @@ export const WaterbodyInformation = [
 
   new TemplateColumnBuilder(
     'Waterbody - Outflow - Permanent',
-    'codeReference',
+    'codeReferenceMulti',
     'form_data.activity_subtype_data.WaterbodyData.outflow'
   )
     .referencesCode('outflow_code')
     .build(),
   new TemplateColumnBuilder(
     'Waterbody - Outflow - Seasonal',
-    'codeReference',
+    'codeReferenceMulti',
     'form_data.activity_subtype_data.WaterbodyData.outflow_other'
   )
     .referencesCode('outflow_code')
