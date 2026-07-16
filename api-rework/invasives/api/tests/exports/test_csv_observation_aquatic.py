@@ -8,10 +8,10 @@ class TestTerrestrialObservationCSV(BaseCSVTest):
         "test/subtypes/observations/test_aquatic_observation_codes",
         "test/subtypes/observations/test_aquatic_observation",
         "test/common/test_participants",
-        "test/common/test_waterbody_substrate.json",
-        "test/common/test_waterbody_type.json",
-        "test/common/test_waterlevel_management.json",
-        "test/common/test_wind.json",
+        "test/common/test_waterbody_substrate_codes.json",
+        "test/common/test_waterbody_type_codes.json",
+        "test/common/test_waterlevel_management_codes.json",
+        "test/common/test_wind_codes.json",
     ]
 
     def setUp(self):

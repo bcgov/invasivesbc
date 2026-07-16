@@ -10,14 +10,16 @@ from api.tests.mock_frontend_submissions import (
 
 class AquaticObservationTest(BaseActivitySubtypeTest):
     fixtures = [
-        "test/common/test_employer",
+        "test/common/test_employer_codes",
+        "test/common/test_jurisdictions_codes",
+        "test/common/test_funding_agency_codes",
+        "test/common/test_invasive_plant_codes",
         "test/common/test_jurisdictions",
         "test/common/test_funding_agency",
-        "test/common/test_invasive_plant_codes",
-        "test/common/test_wind",
-        "test/common/test_waterlevel_management",
-        "test/common/test_waterbody_substrate",
-        "test/common/test_waterbody_type",
+        "test/common/test_employer",
+        "test/common/test_waterlevel_management_codes",
+        "test/common/test_waterbody_substrate_codes",
+        "test/common/test_waterbody_type_codes",
         "test/subtypes/observations/test_aquatic_observation_codes",
         "test/subtypes/observations/test_aquatic_observation",
         "test/common/test_participants",

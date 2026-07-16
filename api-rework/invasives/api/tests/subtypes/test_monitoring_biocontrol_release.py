@@ -11,11 +11,14 @@ from api.tests.mock_frontend_submissions import (
 class BiocontrolReleaseTest(BaseActivitySubtypeTest):
 
     fixtures = [
-        "test/common/test_employer",
+        "test/common/test_employer_codes",
+        "test/common/test_jurisdictions_codes",
+        "test/common/test_funding_agency_codes",
+        "test/common/test_invasive_plant_codes",
+        "test/common/test_wind_codes",
         "test/common/test_jurisdictions",
         "test/common/test_funding_agency",
-        "test/common/test_invasive_plant_codes",
-        "test/common/test_wind",
+        "test/common/test_employer",
         "test/subtypes/monitoring/test_biocontrol_release_monitoring_codes",
         "test/subtypes/monitoring/test_biocontrol_release_monitoring",
         "test/common/test_participants",
