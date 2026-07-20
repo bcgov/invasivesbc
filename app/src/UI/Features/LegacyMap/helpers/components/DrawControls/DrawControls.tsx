@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { useDispatch, useSelector } from 'utils/use_selector';
@@ -19,13 +19,12 @@ import GeoShapes from 'constants/geoShapes';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import { TargetMode } from 'constants/targetModes';
 import { GEO_TRACKING_FEATURE, SUBMITTED_ACTIVITY_SHAPE } from 'UI/Features/LegacyMap/helpers/functional/constants';
-
+import drawControlLayerStyles from './layer-definitions';
 import { DrawModeDisplay, EditControls } from 'UI/Features/LegacyMap/helpers/components/MapCustomControls';
 import Alerts from 'state/actions/alerts/Alerts';
 import mappingAlertMessages from 'constants/alerts/mappingAlerts';
 import { isDrawing, isPaused, isTracking } from 'utils/geoTrackingHelpers';
 import { GeoTrackingStatus } from 'constants/geoTrackingStatus';
-import { LAYER_Z_FOREGROUND } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/types';
 import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
 import DrawToolActions from 'state/actions/drawtool/drawToolActions';
 import { useLocation, useNavigate } from 'react-router';
@@ -39,22 +38,31 @@ MapboxDraw.constants.classes.CONTROL_PREFIX = 'maplibregl-ctrl-';
 // @ts-expect-error mapboxdraw compatibility with maplibre-gl issue
 MapboxDraw.constants.classes.CONTROL_GROUP = 'maplibregl-ctrl-group';
 
+enum UrlStub {
+  Activity = 'Activity',
+  Legacy = 'LegacyForm'
+}
 const DrawControls = () => {
   const map = useContext(MapContext);
 
+  // Draw Feature Bools
   const whatsHereToggle = useSelector((state) => state.Map.whatsHere.toggle);
   const planMyTripDrawMode = useSelector((state) => state.Map.planMyTripDrawMode);
   const drawingCustomLayer = useSelector((state) => state.Map.drawingCustomLayer);
 
+  // GeoTracking Status
   const geoTrackingStatus = useSelector((state) => state.Map.track_me_draw_geo.status);
   const currGeoTrackingMode = isTracking(geoTrackingStatus);
   const isDrawingShape = isDrawing(geoTrackingStatus);
   const isPausedDrawing = isPaused(geoTrackingStatus);
   const [prevGeoTrackingMode, setPrevGeoTrackingMode] = useState<boolean>(false);
 
+  // Form Shapes
   const EMPTY_OBJECT = {}; //  a stable reference for the default value to avoid unnecessary re-renders
-  const activityGeo = (useSelector((state) => state.ActivityPage.activity?.geometry) ?? [])[0] ?? EMPTY_OBJECT;
+  const legacyFormShape = (useSelector((state) => state.ActivityPage.activity?.geometry) ?? [])[0] ?? EMPTY_OBJECT;
+  const formShape = useSelector((state) => state.ActivityPage.geometry_details?.shape);
 
+  // Permissions Settings
   const can_edit = useSelector((state) => !!state.ActivityPage?.activeActivityPermissions?.can_edit);
   const created_by = useSelector((state) => state.ActivityPage?.activity?.created_by);
   const username = useSelector((state) => state.Auth.username);
@@ -66,10 +74,10 @@ const DrawControls = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const drawInstance = useRef<MapboxDraw>();
-  const drawModeDisplay = useRef<DrawModeDisplay>();
-  const editControls = useRef<EditControls>();
-  const isEditing = useRef(false);
+  const drawInstance = useRef<MapboxDraw>(undefined);
+  const drawModeDisplay = useRef<DrawModeDisplay>(undefined);
+  const editControls = useRef<EditControls>(undefined);
+  const isEditing = useRef<boolean>(false);
 
   // keep a ref to mode so we don't need to keep re-binding the callback for maplibre. keep it in sync with a hook.
   const modeRef = useRef<TargetMode>(TargetMode.DISABLED);
@@ -78,6 +86,21 @@ const DrawControls = () => {
   const prevMode = useRef<TargetMode>(TargetMode.DISABLED);
 
   const isEditDisabled = ![TargetMode.LEGACY_FORM].includes(mode);
+
+  /**
+   * @TODO Remove this after LegacyForms deprecated fully.
+   * Can be converted to just formActivity
+   */
+  const activeFormShape = useMemo(() => {
+    switch (mode) {
+      case TargetMode.LEGACY_FORM:
+        return legacyFormShape;
+      case TargetMode.ACTIVITY_FORM:
+        return formShape;
+      default:
+        return undefined;
+    }
+  }, [mode, url, formShape, legacyFormShape]);
 
   /**
    * @desc Dispatch Custom event for when the Edit Button is used. Listened to by `LayerDataMarker.tsx`
@@ -143,16 +166,19 @@ const DrawControls = () => {
 
   useEffect(() => {
     updateEditControlState();
-  }, [isDrawingShape, userCanEdit, activityGeo?.geometry]);
+  }, [isDrawingShape, userCanEdit, activeFormShape?.geometry]);
 
   // make a geometry for previously submitted shapes
   useEffect(() => {
-    if (!activityGeo || mode === TargetMode.ACTIVITY_GEO_TRACK) return;
+    if (!activeFormShape && mode === TargetMode.LEGACY_FORM) return;
+    if (!formShape && mode === TargetMode.ACTIVITY_FORM) return;
+    if (mode === TargetMode.ACTIVITY_GEO_TRACK) return;
 
-    const feature = drawInstance?.current?.getAll()?.features?.[0];
+    const drawFeature = drawInstance?.current?.getAll()?.features?.[0];
     const submittedShapeFeature = drawInstance?.current?.get(SUBMITTED_ACTIVITY_SHAPE);
-    const isActivityGeoEmpty = (activityGeo?.geometry?.coordinates?.length ?? 0) === 0;
-    const isFeaturePresent = (feature?.geometry?.coordinates?.length ?? 0) > 0;
+
+    const isActivityGeoEmpty = (activeFormShape?.geometry?.coordinates?.length ?? 0) === 0;
+    const isFeaturePresent = (drawFeature?.geometry?.coordinates?.length ?? 0) > 0;
 
     if (submittedShapeFeature?.id && !userCanEdit) {
       drawInstance?.current?.delete(String(submittedShapeFeature.id));
@@ -163,22 +189,22 @@ const DrawControls = () => {
     // - A feature is already present
     // - User is not the creator or cannot edit
     // - Not on the Activity page
-    if (isActivityGeoEmpty || isFeaturePresent || !userCanEdit || !url?.includes('Activity')) return;
+    if (isActivityGeoEmpty || isFeaturePresent || !url?.includes(UrlStub.Activity)) return;
 
     drawInstance?.current?.deleteAll();
     drawInstance?.current?.add({
       id: SUBMITTED_ACTIVITY_SHAPE,
       type: 'Feature',
-      geometry: activityGeo.geometry,
+      geometry: activeFormShape.geometry,
       properties: {}
     });
 
     updateEditControlState();
-  }, [activityGeo?.geometry, userCanEdit, url]);
+  }, [activeFormShape, userCanEdit, url]);
 
   // update drawn LineString or Polygon to a red dotted line if an error occurs
   useEffect(() => {
-    if (!activityGeo?.properties?.error) return;
+    if (!activeFormShape?.properties?.error) return;
     const feature = drawInstance?.current?.getAll()?.features?.[0];
 
     if (!feature) return;
@@ -186,14 +212,14 @@ const DrawControls = () => {
     // Update feature properties to reflect error state
     feature.properties = {
       ...feature.properties,
-      error: activityGeo.properties.error,
-      user_error: activityGeo.properties.error
+      error: activeFormShape.properties.error,
+      user_error: activeFormShape.properties.error
     };
 
-    if (activityGeo.geometry?.type && activityGeo.geometry?.coordinates) {
+    if (activeFormShape.geometry?.type && activeFormShape.geometry?.coordinates) {
       feature.geometry = {
-        type: activityGeo.geometry.type,
-        coordinates: activityGeo.geometry.coordinates
+        type: activeFormShape.geometry.type,
+        coordinates: activeFormShape.geometry.coordinates
       };
     }
 
@@ -203,14 +229,14 @@ const DrawControls = () => {
     } catch (error) {
       console.error('Failed to update feature with error styling:', error);
     }
-  }, [activityGeo?.properties?.error, activityGeo?.geometry]);
+  }, [activeFormShape?.properties?.error, activeFormShape?.geometry]);
 
   useEffect(() => {
     const feature = drawInstance?.current?.get(GEO_TRACKING_FEATURE);
-    const isActivityGeoEmpty = Object.keys(activityGeo).length === 0;
+    const isActivityGeoEmpty = activeFormShape && Object.keys(activeFormShape).length === 0;
     const isFeaturePresent = feature && feature?.geometry?.coordinates?.length > 0;
-    const coordinates = activityGeo?.geometry?.coordinates || [];
-    const hasError = String(activityGeo?.properties?.error ?? 'false') === 'true';
+    const coordinates = activeFormShape?.geometry?.coordinates ?? [];
+    const hasError = String(activeFormShape?.properties?.error ?? 'false') === 'true';
 
     const handleInitialDraw = () => {
       setPrevGeoTrackingMode(currGeoTrackingMode);
@@ -234,8 +260,8 @@ const DrawControls = () => {
       return;
     }
 
-    if (!activityGeo?.geometry || !isFeaturePresent) return;
-    const isPolygon = activityGeo.geometry.type === GeoShapes.Polygon;
+    if (!activeFormShape?.geometry || !isFeaturePresent) return;
+    const isPolygon = activeFormShape.geometry.type === GeoShapes.Polygon;
 
     const isInitialDraw = !feature || coordinates.length === 1;
     const exitedTrackingAndDrawing = !prevGeoTrackingMode;
@@ -250,7 +276,7 @@ const DrawControls = () => {
     if (exitedTrackingAndDrawing && isPolygon) {
       handlePolygonConversion();
     }
-  }, [activityGeo?.geometry, currGeoTrackingMode]);
+  }, [activeFormShape?.geometry, currGeoTrackingMode]);
 
   useEffect(() => {
     const feature = drawInstance?.current?.get(GEO_TRACKING_FEATURE);
@@ -279,7 +305,7 @@ const DrawControls = () => {
     };
 
     if (!drawInstance.current) return;
-    if (mode === TargetMode.LEGACY_FORM || mode === TargetMode.ACTIVITY) {
+    if (mode === TargetMode.LEGACY_FORM || mode === TargetMode.ACTIVITY_FORM) {
       dispatch(
         Prompt.confirmation({
           callback,
@@ -330,15 +356,13 @@ const DrawControls = () => {
         }
         break;
       }
-      case TargetMode.ACTIVITY:
+      case TargetMode.ACTIVITY_FORM:
       case TargetMode.LEGACY_FORM: {
         dispatch(DrawToolActions.createShape(feature));
         break;
       }
-
       case TargetMode.ACTIVITY_GEO_TRACK: {
-        // don't do anything
-        break;
+        break; // don't do anything
       }
       case TargetMode.CUSTOM_LAYER:
         dispatch(DrawToolActions.updateShape(feature));
@@ -354,7 +378,6 @@ const DrawControls = () => {
       }
       default: {
         dispatch(DrawToolActions.createShape(feature));
-        break;
       }
     }
   }, []);
@@ -365,22 +388,19 @@ const DrawControls = () => {
 
     if (whatsHereToggle) {
       setMode(TargetMode.WHATS_HERE);
-      return;
     } else if (planMyTripDrawMode) {
       setMode(TargetMode.TRIP_PLANNING);
-      return;
     } else if (drawingCustomLayer) {
       setMode(TargetMode.CUSTOM_LAYER);
-      return;
-    } else if (url?.includes('LegacyForm')) {
+    } else if (url?.includes(UrlStub.Legacy)) {
       if (currGeoTrackingMode || prevGeoTrackingMode) {
         setMode(TargetMode.ACTIVITY_GEO_TRACK);
         disableDrawButtons(true);
       } else {
         setMode(TargetMode.LEGACY_FORM);
       }
-    } else if (url?.includes('Activity')) {
-      setMode(TargetMode.ACTIVITY);
+    } else if (url?.includes(UrlStub.Activity)) {
+      setMode(TargetMode.ACTIVITY_FORM);
       disableDrawButtons(false);
     } else {
       setMode(TargetMode.DISABLED);
@@ -410,14 +430,13 @@ const DrawControls = () => {
     }
 
     const featureId = event.features?.[0]?.id;
+    if (!featureId) return;
     if (!isEditing.current) {
       if (featureId) {
         drawInstance.current.changeMode('simple_select');
       }
       return;
     }
-
-    if (!featureId) return;
 
     drawInstance.current.changeMode('direct_select', { featureId });
 
@@ -458,9 +477,7 @@ const DrawControls = () => {
   }, [mode]);
 
   useEffect(() => {
-    if (!map) {
-      return;
-    }
+    if (!map) return;
 
     drawInstance.current = new MapboxDraw({
       displayControlsDefault: true,
@@ -476,85 +493,7 @@ const DrawControls = () => {
         whats_here_box_mode: WhatsHereBoxMode,
         geo_tracking_mode: GeoTrackingMode
       },
-      styles: [
-        {
-          id: 'gl-edited-line.hot',
-          type: 'line',
-          layout: {
-            'line-cap': 'round',
-            'line-join': 'round'
-          },
-          filter: ['all', ['==', 'active', 'true']],
-          paint: {
-            'line-color': '#FCBA19',
-            'line-dasharray': [0.2, 2],
-            'line-width': 3
-          },
-          slot: LAYER_Z_FOREGROUND
-        },
-        {
-          id: 'gl-drawn-line.hot',
-          type: 'line',
-          layout: {
-            'line-cap': 'round',
-            'line-join': 'round'
-          },
-          filter: ['all', ['==', 'active', 'false'], ['!=', 'user_error', 'true']],
-          paint: {
-            'line-color': '#FCBA19',
-            'line-width': 3
-          },
-          slot: LAYER_Z_FOREGROUND
-        },
-        {
-          id: 'gl-drawn-fill.hot',
-          type: 'fill',
-          layout: {},
-          filter: ['all', ['==', 'active', 'false'], ['!=', 'user_error', 'true'], ['==', '$type', 'Polygon']],
-          paint: {
-            'fill-color': 'white',
-            'fill-opacity': 0.002
-          },
-          slot: LAYER_Z_FOREGROUND
-        },
-        {
-          id: 'gl-error-line.hot',
-          type: 'line',
-          layout: {
-            'line-cap': 'round',
-            'line-join': 'round'
-          },
-          paint: {
-            'line-color': ['match', ['get', 'user_error'], 'true', '#B00020', 'false', '#FCBA19', '#FCBA19'],
-            'line-dasharray': [1, 2],
-            'line-width': 3
-          },
-          slot: LAYER_Z_FOREGROUND
-        },
-        {
-          id: 'gl-draw-polygon-point.hot',
-          type: 'circle',
-          paint: {
-            'circle-radius': 3,
-            'circle-color': ['match', ['get', 'user_error'], 'true', '#B00020', 'false', '#FCBA19', '#FCBA19'],
-            'circle-stroke-width': 1,
-            'circle-stroke-color': '#fff'
-          },
-          slot: LAYER_Z_FOREGROUND
-        },
-        {
-          id: 'whats-here-box-start-point-marker',
-          filter: ['all', ['==', 'mode', 'whats_here_box_mode'], ['==', 'meta:type', 'Point']],
-          type: 'circle',
-          paint: {
-            'circle-radius': 4,
-            'circle-color': '#FCBA19',
-            'circle-stroke-width': 1,
-            'circle-stroke-color': '#fff'
-          },
-          slot: LAYER_Z_FOREGROUND
-        }
-      ]
+      styles: drawControlLayerStyles
     });
     drawModeDisplay.current = new DrawModeDisplay(mode);
     editControls.current = new EditControls(handleEdit, handleSave, isEditDisabled);
@@ -568,9 +507,7 @@ const DrawControls = () => {
 
     // cleanup
     return () => {
-      if (!map) {
-        return;
-      }
+      if (!map) return;
 
       map.off('draw.create', drawCreate);
       map.off('draw.selectionChange', (evt) => drawShapeUpdate(evt, map));
