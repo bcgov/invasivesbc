@@ -32,6 +32,7 @@ const BCGW_SUPPLEMENTAL_LAYERS = [
 ];
 interface Params {
   activity_id: string;
+  subject: string | null;
   latitude: number;
   longitude: number;
   db?: PoolClient;
@@ -107,10 +108,32 @@ const saveWell = async (params: Params): Promise<void> => {
   logger.debug('[getWell]: Entered well proximity', { distance: distance, activity_id });
 };
 
+const bindSubjectToActivity = async (params: Params): Promise<void> => {
+  /**
+   * Future versions of the API will track users by `subject`, which is their SSO primary identifier.
+   * We don't have any logic in this version of the API that depends on it, but saving it will make upgrading easier,
+   * so populate it on any modified records.
+   */
+  const { activity_id, subject } = params;
+
+  if (subject == null) {
+    logger.warn(`No subject for activity ${activity_id}`);
+    return;
+  }
+
+  await (params?.db ?? new QueryHandler()).query(SQL`
+    UPDATE activity_incoming_data
+    SET subject = ${subject}
+    WHERE activity_id = ${activity_id}
+    AND iscurrent IS TRUE
+  `);
+};
+
 const commit = async (params: Params) => {
   await saveBCGW(params); // Insert DataBC BCGW attributes
   await saveElevation(params); // Insert elevation
   await saveWell(params); // Insert closest well
+  await bindSubjectToActivity(params); // keep the token `subject` to reduce ambiguity in ETL
 };
 
 export { commit, BCGW_SUPPLEMENTAL_LAYERS };

@@ -92,7 +92,8 @@ function execBatch(): RequestHandler {
         validatedBatchData: validationResult.validatedBatchData,
         desiredFinalStatus: desiredActivityState,
         errorRowsBehaviour: treatmentOfErrorRows,
-        userInfo: req.authContext.user
+        userInfo: req.authContext.user,
+        subject: req.authContext.subject
       });
       logger.info('[execute] Finished Batch upload', { id, executionTime: `${Date.now() - START_TIME}ms` });
       // Return the success to the user, so they can continue on
