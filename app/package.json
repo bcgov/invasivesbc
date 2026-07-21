@@ -21,6 +21,7 @@
     "@capacitor/core": "^8.3.4",
     "@capacitor/geolocation": "^8.2.0",
     "@capacitor/ios": "^8.3.4",
+    "@mapbox-controls/ruler": "4.1.0",
     "@mapbox/mapbox-gl-draw": "^1.5.1",
     "@mui/icons-material": "^7.3.11",
     "@mui/material": "^7.3.11",
