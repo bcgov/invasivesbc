@@ -100,13 +100,6 @@ export const RecordTable = ({ setID }: PropTypes) => {
     }
   })();
 
-  if (!mappedRows || mappedRows?.length === 0) {
-    return (
-      <div className="no-records">
-        <p>There are no records matching your current filters.</p>
-      </div>
-    );
-  }
   const hash = Md5.hashStr(JSON.stringify(mappedRows));
   return (
     <div>
@@ -140,39 +133,43 @@ export const RecordTable = ({ setID }: PropTypes) => {
                 </th>
               ))}
             </tr>
-            {mappedRows?.map((row) => {
-              return (
-                <tr
-                  onContextMenu={(event) => {
-                    event.preventDefault();
-                    event.stopPropagation();
-                  }}
-                  onMouseOver={() => onUserHoveredRecord(row)}
-                  onFocus={() => onUserHoveredRecord(row)}
-                  className="record_table_row"
-                  key={'activity_id' in row ? row?.activity_id : row?.site_id}
-                >
-                  {tableColumns.map((col) => (
-                    <td
-                      className="record_table_row_column"
-                      key={col.key + col.name}
-                      onClick={(evt) => handlePopoverOpen(evt, row)}
-                    >
-                      <div className="cell">
-                        {row[col.key] ?? (
-                          <span className="null-value" aria-hidden={true}>
-                            None
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                  ))}
-                </tr>
-              );
-            })}
+            {mappedRows?.map((row) => (
+              <tr
+                onContextMenu={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                }}
+                onMouseOver={() => onUserHoveredRecord(row)}
+                onFocus={() => onUserHoveredRecord(row)}
+                className="record_table_row"
+                key={'activity_id' in row ? row?.activity_id : row?.site_id}
+              >
+                {tableColumns.map((col) => (
+                  <td
+                    className="record_table_row_column"
+                    key={col.key + col.name}
+                    onClick={(evt) => handlePopoverOpen(evt, row)}
+                  >
+                    <div className="cell">
+                      {row[col.key] ?? (
+                        <span className="null-value" aria-hidden={true}>
+                          None
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                ))}
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
+      {!mappedRows ||
+        (mappedRows?.length === 0 && (
+          <div className="no-records">
+            <p>There are no records matching your current filters.</p>
+          </div>
+        ))}
     </div>
   );
 };

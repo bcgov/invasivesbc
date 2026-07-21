@@ -9,15 +9,18 @@ from api.tests.mock_frontend_submissions import (
 class AquaticChemicalTreatmentTest(BaseActivitySubtypeTest):
 
     fixtures = [
-        "test/common/test_chemical_treatments.json",
-        "test/common/test_employer",
+        "test/common/test_employer_codes",
+        "test/common/test_jurisdictions_codes",
+        "test/common/test_funding_agency_codes",
+        "test/common/test_invasive_plant_codes",
         "test/common/test_jurisdictions",
         "test/common/test_funding_agency",
-        "test/common/test_invasive_plant_codes",
-        "test/common/test_wind",
+        "test/common/test_employer",
+        "test/common/test_wind_codes",
+        "test/common/test_nearest_wells",
+        "test/common/test_chemical_treatments_codes",
         "test/subtypes/treatments/test_chemical_treatment_codes",
         "test/subtypes/treatments/test_aquatic_chemical_treatment",
-        "test/common/test_nearest_wells",
         "test/common/test_participants",
     ]
 

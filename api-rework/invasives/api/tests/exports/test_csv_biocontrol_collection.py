@@ -5,7 +5,7 @@ from .base_csv import BaseCSVTest
 class TestBiocontrolCollectionCSV(BaseCSVTest):
     fixtures = [
         "test/common/test_invasive_plant_codes",
-        "test/common/test_wind",
+        "test/common/test_wind_codes",
         "test/subtypes/biocontrol/test_biocontrol_codes",
         "test/subtypes/biocontrol/test_biocontrol_collection",
         "test/common/test_participants",

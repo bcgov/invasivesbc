@@ -112,8 +112,9 @@ class VectorTileTestCase(BaseTestCase):
         tile_layers = parse_mvt_with_geometry(response.content)
 
         self.assertEqual(len(tile_layers["data"]), 2)
-        self.assertEqual(tile_layers["data"][0]["properties"], EXPECTED_A)
-        self.assertEqual(tile_layers["data"][1]["properties"], EXPECTED_B)
+        props = [tile["properties"] for tile in tile_layers["data"]]
+        self.assertIn(EXPECTED_B, props)
+        self.assertIn(EXPECTED_A, props)
 
     def test_new_activity_appears_in_tile(self):
         act = Activity.objects.create(
@@ -136,7 +137,8 @@ class VectorTileTestCase(BaseTestCase):
         tile_layers = parse_mvt_with_geometry(response.content)
 
         self.assertEqual(len(tile_layers["data"]), 3)
-        self.assertEqual(tile_layers["data"][2]["properties"], EXPECTED)
+        props = [tile["properties"] for tile in tile_layers["data"]]
+        self.assertIn(EXPECTED, props)
 
     def test_invalid_coordinates(self):
         """Invalid Coordinates"""

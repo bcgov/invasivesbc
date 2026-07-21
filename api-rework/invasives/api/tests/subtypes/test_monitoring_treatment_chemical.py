@@ -11,10 +11,13 @@ from api.tests.mock_frontend_submissions import (
 class ChemicalTreatmentMonitoringTest(BaseActivitySubtypeTest):
 
     fixtures = [
-        "test/common/test_employer",
+        "test/common/test_employer_codes",
+        "test/common/test_jurisdictions_codes",
+        "test/common/test_funding_agency_codes",
+        "test/common/test_invasive_plant_codes",
         "test/common/test_jurisdictions",
         "test/common/test_funding_agency",
-        "test/common/test_invasive_plant_codes",
+        "test/common/test_employer",
         "test/subtypes/monitoring/test_chem_mech_treatment_monitoring_codes",
         "test/subtypes/monitoring/test_chemical_treatment_monitoring",
         "test/common/test_nearest_wells",

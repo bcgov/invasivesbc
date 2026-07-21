@@ -1,41 +1,5 @@
 [
   {
-    "model": "api.JurisdictionCode",
-    "pk": "MOTI",
-    "fields": {
-      "full": "Ministry of Transportation and Transit",
-      "valid_from": "2025-06-01",
-      "created_at": "2025-06-01 12:00:00-08:00"
-    }
-  },
-  {
-    "model": "api.JurisdictionCode",
-    "pk": "RAIL",
-    "fields": {
-      "full": "Other Rail",
-      "valid_from": "2025-06-01",
-      "created_at": "2025-06-01 12:00:00-08:00"
-    }
-  },
-  {
-    "model": "api.JurisdictionCode",
-    "pk": "AAFC",
-    "fields": {
-      "full": "Agriculture and Agri-Food Canada",
-      "valid_from": "2025-06-01",
-      "created_at": "2025-06-01 12:00:00-08:00"
-    }
-  },
-  {
-    "model": "api.JurisdictionCode",
-    "pk": "P",
-    "fields": {
-      "full": "Private Land",
-      "valid_from": "2025-06-01",
-      "created_at": "2025-06-01 12:00:00-08:00"
-    }
-  },
-  {
     "model": "api.ActivityDataRecord",
     "pk": 300,
     "fields": {

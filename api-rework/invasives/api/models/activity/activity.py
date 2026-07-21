@@ -21,7 +21,7 @@ class ActivityManager(models.Manager):
         return super().get_queryset().exclude(form_status=FormStatus.Deleted)
 
 
-class ActivityMixin(models.Model):
+class BaseModel(Platform, ComputedLocationFields, BatchInformation, models.Model):
     """
     Base Model for all form types.
     consumed by:
@@ -63,11 +63,8 @@ class ActivityMixin(models.Model):
 
 
 class Activity(
-    ComputedLocationFields,
     Geometry,
-    BatchInformation,
-    Platform,
-    ActivityMixin,
+    BaseModel,
     models.Model,
 ):
 
@@ -183,9 +180,7 @@ class RepeatedFormData(models.Model):
 ##################
 
 
-class DraftActivity(
-    DraftGeometry, BatchInformation, Platform, ActivityMixin, models.Model
-):
+class DraftActivity(DraftGeometry, BaseModel, models.Model):
     objects = ActivityManager()
     all_objects = models.Manager()
 
