@@ -233,8 +233,8 @@ const CardinalDirection = [
 ];
 
 enum CalculationType {
-  Dilution = 'Dilution',
-  ApplicationRate = 'Product Application Rate'
+  Dilution = 'D',
+  ApplicationRate = 'PAR'
 }
 
 export {

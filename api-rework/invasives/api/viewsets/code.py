@@ -35,6 +35,7 @@ class CodeViewSet(ViewSet):
         FundingAgencyCode,
         GranularHerbicideCode,
         LiquidHerbicideCode,
+        HerbicideTypeCode,
         InvasivePlantsOnSiteCode,
         JurisdictionCode,
         MesoslopePositionCode,

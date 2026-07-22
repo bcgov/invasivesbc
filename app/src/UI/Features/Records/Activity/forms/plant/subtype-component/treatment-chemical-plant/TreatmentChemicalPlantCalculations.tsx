@@ -104,8 +104,8 @@ const TreatmentChemicalPlantCalculations = () => {
       if (isDirectMethod) return 'Direct';
     })();
 
-    const isHerbicideLiquid = herbicide_type === 'liquid';
-    const isHerbicideSolid = herbicide_type === 'granular';
+    const isHerbicideLiquid = herbicide_type === 'L';
+    const isHerbicideSolid = herbicide_type === 'G';
     const isApplicationCalculation = calculation_type === CalculationType.ApplicationRate;
     const isDilutionCalculation = calculation_type === CalculationType.Dilution;
 
