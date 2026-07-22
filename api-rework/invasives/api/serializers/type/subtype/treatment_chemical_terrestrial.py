@@ -2,43 +2,83 @@ from rest_framework import serializers
 
 from api.models.activity import (
     WellEntry,
-    ChemicalTreatmentContext,
-    ChemicalTreatmentDetails,
+    DraftWellEntry,
+    ChemicalTreatmentContext as ChemicalFormContext,
+    DraftChemicalTreatmentContext as DraftChemicalFormContext,
+    ChemTreatmentContext,
+    DraftChemTreatmentContext,
 )
 from api.serializers.common import (
     NearestWellSerializer,
-    ChemicalTreatmentContextSerializer,
-)
-from api.serializers.common.chemical_treatment_information import (
-    ChemicalTreatmentDetailsSerializer,
+    ChemicalTreatmentFormContextSerializer,
+    DraftChemicalTreatmentFormContextSerializer,
+    DraftNearestWellSerializer,
+    DraftChemicalTreatmentContextTerrestrialSerializer,
+    ChemicalTreatmentContextTerrestrialSerializer,
 )
 
 
-class TerrestrialChemicalTreatmentSerializer(serializers.Serializer):
+class BaseSerializer(serializers.Serializer):
     context = serializers.SerializerMethodField()
+    treatment_context = serializers.SerializerMethodField()
     well_entries = serializers.SerializerMethodField()
-    detail = serializers.SerializerMethodField()
 
+    class Meta:
+        abstract = True
+
+
+class TerrestrialChemicalTreatmentSerializer(BaseSerializer):
     def get_context(self, obj):
-        children = ChemicalTreatmentContext.objects.filter(
-            activity_data_record__activity_id=obj.id
+        children = ChemicalFormContext.objects.filter(
+            activity_data_record__activity_id=obj.pk
         ).first()
-        return (
-            ChemicalTreatmentContextSerializer(children).data
-            if children is not None
-            else None
-        )
+        return ChemicalTreatmentFormContextSerializer(children).data
 
-    def get_detail(self, obj):
-        children = ChemicalTreatmentDetails.objects.filter(
-            activity_data_record__activity_id=obj.id
+    def get_treatment_context(self, obj):
+        children = ChemTreatmentContext.objects.filter(
+            activity_data_record__activity_id=obj.pk
         ).first()
-        return (
-            ChemicalTreatmentDetailsSerializer(children).data
-            if children is not None
-            else None
-        )
+        return ChemicalTreatmentContextTerrestrialSerializer(
+            children, context=self.context
+        ).data
 
     def get_well_entries(self, obj):
         children = WellEntry.objects.filter(activity_data_record__activity_id=obj.id)
-        return NearestWellSerializer(children, many=True).data
+        return NearestWellSerializer(children, many=True).data if children else []
+
+
+class DraftTerrestrialChemicalTreatmentSerializer(BaseSerializer):
+
+    def get_context(self, obj):
+        children = DraftChemicalFormContext.objects.filter(
+            activity_data_record__activity_id=obj.id
+        ).first()
+        return (
+            DraftChemicalTreatmentFormContextSerializer(
+                children, context=self.context
+            ).data
+            if children
+            else None
+        )
+
+    def get_treatment_context(self, obj):
+        children = DraftChemTreatmentContext.objects.filter(
+            activity_data_record__activity_id=obj.id
+        ).first()
+        return (
+            DraftChemicalTreatmentContextTerrestrialSerializer(
+                children, context=self.context
+            ).data
+            if children
+            else {}
+        )
+
+    def get_well_entries(self, obj):
+        children = DraftWellEntry.objects.filter(
+            activity_data_record__activity_id=obj.id
+        )
+        return (
+            DraftNearestWellSerializer(children, many=True, context=self.context).data
+            if children
+            else None
+        )
