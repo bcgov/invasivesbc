@@ -5,26 +5,17 @@ from rich.pretty import pprint
 
 from api.legacy_db.mappings.participants import add_persons
 from api.legacy_db.mappings.wells import add_well_information
-from api.legacy_db.model_serializer import (
-    LegacyActivity,
-    LegacyChemTreatmentHerbicideD,
-    LegacyChemTreatmentHerbicidePAR,
-    LegacyChemicalTreatmentTankMixObjectPAR,
-)
+from api.legacy_db.model_serializer import LegacyActivity
 from api.models.activity import (
     Activity,
-    ChemicalTreatmentContext,
     ActivityDataRecord,
-    ChemicalTreatmentDetails,
-    Herbicide,
     ActivitySubtypes,
-    ChemicalTreatmentAquaticInvasivePlantRecord,
-    ChemicalTreatmentTerrestrialInvasivePlantRecord,
-    ChemicalTreatmentCalculationResultsRecord,
-    ChemicalTreatmentCalculationResultsPerPlantRecord,
-    ChemicalTreatmentCalculationResultsPerPlantHerbicideRecord,
-    ChemicalTreatmentTankMix,
-    ChemicalTreatmentTankMixHerbicide,
+    ChemTreatmentContext,
+    ChemicalTreatmentContext,
+    LiquidHerbicideEntry,
+    GranularHerbicideEntry,
+    ChemPlantEntryAquatic,
+    ChemPlantEntryTerrestrial,
 )
 from api.models.codes import (
     PestManagementPlan,
@@ -47,153 +38,87 @@ def add_chemical_treatment_details(new: Activity, old: LegacyActivity):
 
     adr = ActivityDataRecord.objects.create(activity=new)
 
-    ChemicalTreatmentDetails.objects.create(
+    is_tank_mix = d.tank_mix is not None and d.tank_mix
+    plant_list = d.invasive_plants
+    if is_tank_mix:
+        herbicide_list = d.tank_mix_object.herbicides
+        calculation_type = d.tank_mix_object.calculation_type
+        amount_of_mix_used_l = d.tank_mix_object.amount_of_mix
+        delivery_rate_of_mix = d.tank_mix_object.delivery_rate_of_mix
+        area_treated_sqm = None
+        dilution = None
+    else:
+        h = d.herbicides[0]
+        herbicide_list = d.herbicides
+        calculation_type = getattr(h, "calculation_type", None)
+        area_treated_sqm = getattr(h, "area_treated_sqm", None)
+        amount_of_mix_used_l = getattr(h, "amount_of_mix", None)
+        delivery_rate_of_mix = getattr(h, "delivery_rate_of_mix", None)
+        dilution = getattr(h, "dilution", None)
+
+    application_method = HerbicideApplicationMethodCode.objects.get(
+        code=d.chemical_application_method
+    )
+    ChemTreatmentContext.objects.create(
         activity_data_record=adr,
-        tank_mix=d.tank_mix,
-        legacy_object_had_error_flag_set=d.errors if d.errors is not None else False,
-        skip_application_rate_validation=d.skipAppRateValidation,
-        chemical_application_method=HerbicideApplicationMethodCode.objects.get(
-            code=d.chemical_application_method
-        ),
+        application_method=application_method,
+        tank_mix=is_tank_mix,
+        calculation_type=calculation_type,
+        area_treated_sqm=area_treated_sqm,
+        amount_mix_used_l=amount_of_mix_used_l,
+        delivery_rate=delivery_rate_of_mix,
+        dilution_percent=dilution,
     )
 
-    if d.tank_mix_object is not None and d.tank_mix is True:
-        if new.migration_remarks == "":
-            new.migration_remarks = ""
+    for h in herbicide_list:
+        application_rate = getattr(h, "product_application_rate", None)
+        type = h.herbicide_type_code
+        type_code = HerbicideTypeCode.objects.get(code=h.herbicide_type_code)
 
-        if isinstance(d.tank_mix_object, LegacyChemicalTreatmentTankMixObjectPAR):
-            ChemicalTreatmentTankMix.objects.create(
-                activity_data_record=adr,
-                calculation_type=d.tank_mix_object.calculation_type,
-                amount_of_mix=d.tank_mix_object.amount_of_mix,
-                delivery_rate_of_mix=d.tank_mix_object.delivery_rate_of_mix,
-            )
-            if d.tank_mix_object.herbicides is not None:
-                for h in d.tank_mix_object.herbicides:
-                    ChemicalTreatmentTankMixHerbicide.objects.create(
-                        activity_data_record=adr,
-                        index=h.index,
-                        herbicide_type=HerbicideTypeCode.objects.get(
-                            code=h.herbicide_type_code
-                        ),
-                        liquid_herbicide=(
-                            LiquidHerbicideCode.objects.get(code=h.herbicide_code)
-                            if h.herbicide_code is not None
-                            and h.herbicide_type_code == "L"
-                            else None
-                        ),
-                        granular_herbicide=(
-                            GranularHerbicideCode.objects.get(code=h.herbicide_code)
-                            if h.herbicide_code is not None
-                            and h.herbicide_type_code == "G"
-                            else None
-                        ),
-                        product_application_rate=h.product_application_rate,
-                        product_application_rate_calculated=h.product_application_rate_calculated,
-                    )
-        else:
-            new.migration_remarks += (
-                "Unknown tank mix type, skipping tank mix inclusion"
-            )
+        if type == "G":
+            model = GranularHerbicideEntry
+            code_model = GranularHerbicideCode
+        elif type == "L":
+            model = LiquidHerbicideEntry
+            code_model = LiquidHerbicideCode
 
-    if d.calculation_results is not None:
-        ChemicalTreatmentCalculationResultsRecord.objects.create(
-            activity_data_record=adr,
-            calculation_type=d.calculation_results.calculation_type,
-            area_treated_sqm=d.calculation_results.area_treated_sqm,
-            percent_area_covered=d.calculation_results.percent_area_covered,
-            amount_of_undiluted_herbicide_used_liters=d.calculation_results.amount_of_undiluted_herbicide_used_liters,
-            dilution=d.calculation_results.dilution,
+        code = (
+            code_model.objects.get(code=h.herbicide_code)
+            if h.herbicide_code is not None
+            else None
         )
-        if d.calculation_results.invasive_plants is not None:
-            for p in d.calculation_results.invasive_plants:
-                ChemicalTreatmentCalculationResultsPerPlantRecord.objects.create(
-                    activity_data_record=adr,
-                    index=p.index,
-                    area_treated_sqm=p.area_treated_sqm,
-                    percent_area_covered=p.percent_area_covered,
-                    amount_of_undiluted_herbicide_used_liters=p.amount_of_undiluted_herbicide_used_liters,
-                )
-                if p.herbicides is not None:
-                    for h in p.herbicides:
-                        ChemicalTreatmentCalculationResultsPerPlantHerbicideRecord.objects.create(
-                            activity_data_record=adr,
-                            herbicide_index=h.herbIndex,
-                            plant_index=h.plantIndex,
-                            dilution=h.dilution,
-                            amount_of_undiluted_herbicide_used_liters=h.amount_of_undiluted_herbicide_used_liters,
-                            product_application_rate=h.product_application_rate,
-                        )
+        model.objects.create(
+            activity_data_record=adr,
+            type=type_code,
+            name=code,
+            product_application_rate=application_rate,
+        )
 
-    if d.invasive_plants is not None:
-        for p in d.invasive_plants:
-            if (
-                old.activity_subtype
-                == ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial
-            ):
-                ChemicalTreatmentTerrestrialInvasivePlantRecord.objects.create(
-                    activity_data_record=adr,
-                    index=p.index,
-                    percent_area_covered=(
-                        p.percent_area_covered
-                        if p.percent_area_covered is not None
-                        else None
-                    ),
-                    invasive_plant=TerrestrialPlantCode.objects.get(
-                        code=p.invasive_plant_code
-                    ),
-                )
-            if (
-                old.activity_subtype
-                == ActivitySubtypes.Treatment_Chemical_Plant_Aquatic
-            ):
-                ChemicalTreatmentAquaticInvasivePlantRecord.objects.create(
-                    activity_data_record=adr,
-                    index=p.index,
-                    percent_area_covered=(
-                        p.percent_area_covered
-                        if p.percent_area_covered is not None
-                        else None
-                    ),
-                    invasive_plant=AquaticPlantCode.objects.get(
-                        code=p.invasive_plant_code
-                    ),
-                )
+    for p in plant_list:
+        if (
+            old.activity_subtype
+            == ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial
+        ):
+            code_model = TerrestrialPlantCode
+            model = ChemPlantEntryTerrestrial
 
-    if d.herbicides is not None:
-        for h in d.herbicides:
-            extra = {}
-            if isinstance(h, LegacyChemTreatmentHerbicideD):
-                extra = {
-                    "area_treated_sqm": h.area_treated_sqm,
-                    "dilution": h.dilution,
-                    "amount_of_mix": h.amount_of_mix,
-                }
-            if isinstance(h, LegacyChemTreatmentHerbicidePAR):
-                extra = {
-                    "product_application_rate": h.product_application_rate,
-                    "product_application_rate_calculated": h.product_application_rate_calculated,
-                    "delivery_rate_of_mix": h.delivery_rate_of_mix,
-                }
-            Herbicide.objects.create(
-                activity_data_record=adr,
-                index=h.index,
-                calculation_type=h.calculation_type,
-                herbicide_type=HerbicideTypeCode.objects.get(
-                    code=h.herbicide_type_code
-                ),
-                liquid_herbicide=(
-                    LiquidHerbicideCode.objects.get(code=h.herbicide_code)
-                    if h.herbicide_code is not None and h.herbicide_type_code == "L"
-                    else None
-                ),
-                granular_herbicide=(
-                    GranularHerbicideCode.objects.get(code=h.herbicide_code)
-                    if h.herbicide_code is not None and h.herbicide_type_code == "G"
-                    else None
-                ),
-                **extra
-            )
+        elif old.activity_subtype == ActivitySubtypes.Treatment_Chemical_Plant_Aquatic:
+            code_model = AquaticPlantCode
+            model = ChemPlantEntryAquatic
+
+        invasive_plant = code_model.objects.get(code=p.invasive_plant_code)
+
+        # When only a single plant was listed, old forms implictly were 100% coverage unless otherwise stated
+        HUNDRED_PERCENT = 100
+        model.objects.create(
+            activity_data_record=adr,
+            invasive_plant=invasive_plant,
+            percent_covered=(
+                p.percent_area_covered
+                if p.percent_area_covered is not None
+                else HUNDRED_PERCENT
+            ),
+        )
 
 
 def add_chemical_treatment_context(new: Activity, old: LegacyActivity):
@@ -245,6 +170,10 @@ def add_chemical_treatment_context(new: Activity, old: LegacyActivity):
     )
 
 
+def add_calculation_results(new: Activity, old: LegacyActivity):
+    print("UNIMPLEMENTED", "add_calculation_results")
+
+
 def add_subtype_payload_for_plant_terrestrial_chemical_treatment(
     new: Activity, old: LegacyActivity
 ):
@@ -252,6 +181,7 @@ def add_subtype_payload_for_plant_terrestrial_chemical_treatment(
     add_well_information(new, old)
     add_chemical_treatment_context(new, old)
     add_chemical_treatment_details(new, old)
+    add_calculation_results(new, old)
 
 
 def add_subtype_payload_for_plant_aquatic_chemical_treatment(
@@ -261,3 +191,4 @@ def add_subtype_payload_for_plant_aquatic_chemical_treatment(
     add_well_information(new, old)
     add_chemical_treatment_context(new, old)
     add_chemical_treatment_details(new, old)
+    add_calculation_results(new, old)

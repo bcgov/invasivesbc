@@ -11,7 +11,7 @@ from api.models.codes import (
 class BaseModel(models.Model):
     name = models.ForeignKey("Herbicide", on_delete=models.PROTECT)
     type = models.ForeignKey(HerbicideTypeCode, on_delete=models.PROTECT)
-    product_application_rate = models.FloatField()
+    product_application_rate = models.FloatField(null=True, blank=True)
 
     class Meta:
         abstract = True
@@ -39,7 +39,6 @@ class DraftBaseModel(BaseModel):
     type = models.ForeignKey(
         HerbicideTypeCode, null=True, blank=True, on_delete=models.PROTECT
     )
-    product_application_rate = models.FloatField(null=True, blank=True)
 
     class Meta:
         abstract = True

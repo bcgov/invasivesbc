@@ -18,7 +18,7 @@ class BaseModel(models.Model):
     )
     tank_mix = models.BooleanField()
     calculation_type = models.CharField(choices=CalculationType)
-    area_treated_sqm = models.PositiveIntegerField()
+    area_treated_sqm = models.PositiveIntegerField(blank=True, null=True)
     amount_mix_used_l = models.FloatField(validators=[MinValueValidator(0.0)])
 
     # Product application rate Calculations
@@ -45,7 +45,6 @@ class DraftChemTreatmentContext(BaseModel, DraftUnrepeatedFormData):
     )
     tank_mix = models.BooleanField(null=True, blank=True)
     calculation_type = models.CharField(choices=CalculationType, null=True, blank=True)
-    area_treated_sqm = models.PositiveIntegerField(null=True, blank=True)
     amount_mix_used_l = models.FloatField(null=True, blank=True)
 
     class Meta:
