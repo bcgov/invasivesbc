@@ -11,7 +11,7 @@ import maplibregl from 'maplibre-gl';
 import { PMTiles, Protocol } from 'pmtiles';
 import { TileCacheService } from 'utils/tile-cache';
 import { CurrentActivityLayer } from 'UI/Features/LegacyMap/helpers/components/CurrentActivityLayer';
-import { DrawControls } from 'UI/Features/LegacyMap/helpers/components/DrawControls';
+import { DrawControls } from 'UI/Features/LegacyMap/helpers/components/DrawControls/DrawControls';
 import DisplayComposite from './helpers/components/DisplayComposite/DisplayComposite';
 import { StartupContext } from 'UI/StartupCoordinator/StartupCoordinator';
 import {

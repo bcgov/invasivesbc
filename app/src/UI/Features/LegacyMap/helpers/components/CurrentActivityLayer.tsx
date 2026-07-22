@@ -9,21 +9,21 @@ const CurrentActivityLayer = ({ mapReady }) => {
   const [geo, setGeo] = useState<Feature | null>(null);
   // TODO: Remove
   const activityGeometryArray = useSelector((state) => state.ActivityPage.activity?.geometry);
-  const formGeometry = useSelector((state) => state.ActivityPage?.geometry_details?.geom);
+  const formGeometry = useSelector((state) => state.ActivityPage?.geometry_details?.shape);
   const { url } = useSelector((state) => state.AppMode);
 
   // react to changes in the geometry or current page and set our rendered geo appropriately
   // render if a) we're on the Activity page and b) There is a geo object in the Activity
   useEffect(() => {
-    if (activityGeometryArray && activityGeometryArray[0] && url?.includes('LegacyForm')) {
+    if (url && formGeometry && RegExp(/\/Activity/).test(url)) {
+      setGeo(formGeometry);
+    } else if (activityGeometryArray && activityGeometryArray[0] && url?.includes('LegacyForm')) {
       // TODO Remove
       setGeo(activityGeometryArray[0]);
-    } else if (url && formGeometry && RegExp(/\/Activity/).test(url)) {
-      setGeo(formGeometry);
     } else {
       setGeo(null);
     }
-  }, [activityGeometryArray, geo, url]);
+  }, [activityGeometryArray, formGeometry, geo, url]);
 
   useEffect(() => {
     if (!map) return;

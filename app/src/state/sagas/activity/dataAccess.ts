@@ -461,11 +461,11 @@ export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS() {
     if (reportedAreaLessThanMaxArea && !wipLinestring) {
       yield put(Activity.Suggestions.jurisdictions(currentActivity.geometry));
       const isLinkableRecord = !(yield select(isActivityObservation));
-      if (isLinkableRecord && currentState.geometry_details) {
+      if (isLinkableRecord && currentState.geometry_details?.shape) {
         yield put(
           Activity.Suggestions.getLinkedRecordIDs({
             subtype: currentState.formType,
-            bounds: currentState.geometry_details.geom.geometry
+            bounds: currentState.geometry_details.shape.geometry
           })
         );
         // TODO: Remove this
