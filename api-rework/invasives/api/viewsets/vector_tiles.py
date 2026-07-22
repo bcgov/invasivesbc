@@ -27,10 +27,10 @@ class ST_AsMVT(Aggregate):
     template = "%(function)s((SELECT r FROM (SELECT %(expressions)s) r), 'data')"
 
 
-class AsMapSymbol(Func):
-    """Used to force computed_map_symbol to appear as map_symbol in the payload"""
-
-    template = '%(expressions)s AS "map_symbol"'
+class AsColumn(Func):
+    def __init__(self, expression, alias, **extra):
+        super().__init__(expression, **extra)
+        self.template = f'%(expressions)s AS "{alias}"'
 
 
 class VectorTileViewset(viewsets.GenericViewSet):
@@ -101,12 +101,12 @@ class VectorTileViewset(viewsets.GenericViewSet):
 
         mvt_query = mvt_features.aggregate(
             tile_bytes=ST_AsMVT(
-                F("id"),
-                F("short_id"),
-                F("type"),
-                F("subtype"),
-                F("mvt_geom"),
-                AsMapSymbol("map_symbol"),
+                AsColumn("id", "id"),
+                AsColumn("short_id", "short_id"),
+                AsColumn("type", "type"),
+                AsColumn("subtype", "subtype"),
+                AsColumn("mvt_geom", "mvt_geom"),
+                AsColumn("map_symbol", "map_symbol"),
             )
         )
         tile_bytes = mvt_query.get("tile_bytes")

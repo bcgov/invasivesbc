@@ -6,15 +6,18 @@ from .base_csv import BaseCSVTest
 
 class TestTerrestrialObservationCSV(BaseCSVTest):
     fixtures = [
-        "test/subtypes/observations/test_terrestrial_observation_codes.json",
-        "test/subtypes/observations/test_terrestrial_observation.json",
-        "test/common/test_employer.json",
-        "test/common/test_project_codes.json",
-        "test/common/test_funding_agency.json",
-        "test/common/test_invasive_plant_codes.json",
-        "test/common/test_jurisdictions.json",
-        "test/common/test_nearest_wells.json",
-        "test/common/test_participants.json",
+        "test/subtypes/observations/test_terrestrial_observation_codes",
+        "test/subtypes/observations/test_terrestrial_observation",
+        "test/common/test_employer_codes",
+        "test/common/test_funding_agency_codes",
+        "test/common/test_jurisdictions_codes",
+        "test/common/test_employer",
+        "test/common/test_project_codes",
+        "test/common/test_funding_agency",
+        "test/common/test_invasive_plant_codes",
+        "test/common/test_jurisdictions",
+        "test/common/test_nearest_wells",
+        "test/common/test_participants",
     ]
 
     def setUp(self):

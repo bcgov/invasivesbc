@@ -8,8 +8,11 @@ class ActivitySerializerTest(BaseTestCase):
 
     fixtures = [
         "test/common/test_activities.json",
+        "test/common/test_jurisdictions_codes.json",
         "test/common/test_jurisdictions.json",
+        "test/common/test_funding_agency_codes.json",
         "test/common/test_funding_agency.json",
+        "test/common/test_employer_codes.json",
         "test/common/test_employer.json",
     ]
 

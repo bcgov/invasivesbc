@@ -11,10 +11,13 @@ from api.tests.mock_frontend_submissions import (
 class TerrestrialObservationTest(BaseActivitySubtypeTest):
 
     fixtures = [
-        "test/common/test_employer",
+        "test/common/test_employer_codes",
+        "test/common/test_jurisdictions_codes",
+        "test/common/test_funding_agency_codes",
+        "test/common/test_invasive_plant_codes",
         "test/common/test_jurisdictions",
         "test/common/test_funding_agency",
-        "test/common/test_invasive_plant_codes",
+        "test/common/test_employer",
         "test/subtypes/observations/test_terrestrial_observation_codes",
         "test/subtypes/observations/test_terrestrial_observation",
         "test/common/test_participants",

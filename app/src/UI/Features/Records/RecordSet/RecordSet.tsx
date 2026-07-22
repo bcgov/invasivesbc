@@ -26,8 +26,9 @@ export const RecordSet = ({ setID }: PropTypes) => {
   const CACHE_RECORDSETS = useSelector((state) => state.Configuration.current.features.CACHE_RECORDSETS.enabled);
   const isCellPhoneWidth = useSelector((state) => state.AppMode.constraints.tinyScreen);
   const recordSet = useSelector((state) => state.UserSettings?.recordSets?.[setID]);
-
   const canCacheRecordset = MOBILE && CACHE_RECORDSETS && !Object.values(RecordSetId).includes(setID as RecordSetId);
+
+  const isDraftRecordset = setID === RecordSetId.Drafts;
 
   useEffect(() => {
     dispatch(Activity.switchRecordSet({ type: 'Activity', setId: setID }));
@@ -62,7 +63,7 @@ export const RecordSet = ({ setID }: PropTypes) => {
       </div>
       <div className="recordSet_container">
         <Filters recordsetId={setID} />
-        <ExcelExporter setName={setID} />
+        {!isDraftRecordset && <ExcelExporter setName={setID} />}
         <RecordTable setID={setID} />
       </div>
       <RecordSetFooter recordSet={recordSet} />
