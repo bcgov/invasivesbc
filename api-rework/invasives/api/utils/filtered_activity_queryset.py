@@ -123,8 +123,8 @@ class FilteredActivityQueryset:
             f"{leading}aquatictreatmentmonitoringentry__{plant_column}",
             f"{leading}terrestrialbiocontrolcollectionentry__{plant_column}",
             f"{leading}terrestrialbiocontrolreleaseentry__{plant_column}",
-            f"{leading}chemicaltreatmentaquaticinvasiveplantrecord__{plant_column}",
-            f"{leading}chemicaltreatmentterrestrialinvasiveplantrecord__{plant_column}",
+            f"{leading}chemplantentryaquatic__{plant_column}",
+            f"{leading}chemplantentryterrestrial__{plant_column}",
         ]
 
         # All Non-Observations are Treatments.
