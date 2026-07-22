@@ -51,7 +51,7 @@ class Column(Enum):
 class FilteredActivityQueryset:
     """Helper for querying Activities across endpoints using incoming 'filterObjects'"""
 
-    def __init__(self, filter_objects):
+    def __init__(self, filter_objects=None, draft_override: bool = False):
         self.filter_objects = filter_objects or [{}]
         meta = self.filter_objects[0]
 
@@ -62,7 +62,7 @@ class FilteredActivityQueryset:
         self.prefix = "draft" if self.should_filter_drafts else ""
         self.root = self.prefix + "activitydatarecord"
 
-        if self.should_filter_drafts:
+        if self.should_filter_drafts or draft_override:
             # TODO: Pre-filter Draft Activities to only be by requesting user.
             self.model = DraftActivity
             self.queryset = DraftActivity.objects.all()
@@ -123,15 +123,9 @@ class FilteredActivityQueryset:
             f"{leading}aquatictreatmentmonitoringentry__{plant_column}",
             f"{leading}terrestrialbiocontrolcollectionentry__{plant_column}",
             f"{leading}terrestrialbiocontrolreleaseentry__{plant_column}",
+            f"{leading}chemicaltreatmentaquaticinvasiveplantrecord__{plant_column}",
+            f"{leading}chemicaltreatmentterrestrialinvasiveplantrecord__{plant_column}",
         ]
-        if not self.should_filter_drafts:
-            # TODO: Implement Entries for Draft Record, Merge into ALL_PLANT_PATHS
-            self.ALL_PLANT_PATHS.append(
-                f"{leading}chemicaltreatmentaquaticinvasiveplantrecord__{plant_column}"
-            )
-            self.ALL_PLANT_PATHS.append(
-                f"{leading}chemicaltreatmentterrestrialinvasiveplantrecord__{plant_column}"
-            )
 
         # All Non-Observations are Treatments.
         self.TREATMENT_PATHS = self.ALL_PLANT_PATHS[2:]

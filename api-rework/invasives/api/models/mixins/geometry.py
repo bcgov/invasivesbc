@@ -55,22 +55,6 @@ class GeometryMixin(models.Model):
     class Meta:
         abstract = True
 
-    def get_invasive_plant_codes(self):
-        from api.utils.filtered_activity_queryset import ALL_PLANT_PATHS
-
-        codes = set()
-        for path in ALL_PLANT_PATHS:
-            values = (
-                type(self)
-                .objects.filter(pk=self.pk)
-                .values_list(path + "__code", flat=True)
-            )
-            for val in values:
-                if val:
-                    codes.add(val)
-
-        return sorted(codes)
-
     def clean(self):
         if self.shape:
             vt_geom = self.shape.clone()
@@ -112,6 +96,23 @@ class Geometry(GeometryMixin):
         self.computed_tile_shape = vt_geom
         super().save(*args, **kwargs)
 
+    def get_invasive_plant_codes(self):
+        from api.utils.filtered_activity_queryset import FilteredActivityQueryset
+
+        ALL_PLANT_PATHS = FilteredActivityQueryset().ALL_PLANT_PATHS
+        codes = set()
+        for path in ALL_PLANT_PATHS:
+            values = (
+                type(self)
+                .objects.filter(pk=self.pk)
+                .values_list(path + "__code", flat=True)
+            )
+            for val in values:
+                if val:
+                    codes.add(val)
+
+        return sorted(codes)
+
 
 class DraftGeometry(GeometryMixin):
     location_description = models.CharField(max_length=16384, null=True, blank=True)
@@ -146,6 +147,23 @@ class DraftGeometry(GeometryMixin):
         blank=True,
         db_comment="Baked spatial reference for vector tiles generation.",
     )
+
+    def get_invasive_plant_codes(self):
+        from api.utils.filtered_activity_queryset import FilteredActivityQueryset
+
+        ALL_PLANT_PATHS = FilteredActivityQueryset(draft_override=True).ALL_PLANT_PATHS
+        codes = set()
+        for path in ALL_PLANT_PATHS:
+            values = (
+                type(self)
+                .objects.filter(pk=self.pk)
+                .values_list(path + "__code", flat=True)
+            )
+            for val in values:
+                if val:
+                    codes.add(val)
+
+        return sorted(codes)
 
     class Meta:
         abstract = True
