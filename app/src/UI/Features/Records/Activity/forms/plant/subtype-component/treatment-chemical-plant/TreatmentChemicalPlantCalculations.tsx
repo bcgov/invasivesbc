@@ -21,9 +21,10 @@ import { Debug } from 'UI/Reusable/Predicates/Debug';
 import getDefaultFormState from '../../builders/getDefaultState';
 
 enum CalculationType {
-  Dilution = 'Dilution',
-  ApplicationRate = 'Product Application Rate'
+  Dilution = 'D',
+  ApplicationRate = 'PAR'
 }
+
 const TreatmentChemicalPlantCalculations = () => {
   const columnLabelMap = {
     herbicide_name: 'Herbicide',
