@@ -62,7 +62,6 @@ const TreatmentChemicalPlantDetails = () => {
   const calculationOptions = useMemo(() => {
     const calculationCodes = [{ code: 'PAR', full_name: 'Product Application Rate' }];
     if (!tank_mix) calculationCodes.push({ code: 'D', full_name: 'Dilution' });
-    console.log(calculationCodes);
     return calculationCodes;
   }, [tank_mix]);
 
