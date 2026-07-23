@@ -58,7 +58,7 @@ class DraftTerrestrialChemicalTreatmentSerializer(BaseSerializer):
                 children, context=self.context
             ).data
             if children
-            else None
+            else {}
         )
 
     def get_treatment_context(self, obj):
@@ -80,5 +80,5 @@ class DraftTerrestrialChemicalTreatmentSerializer(BaseSerializer):
         return (
             DraftNearestWellSerializer(children, many=True, context=self.context).data
             if children
-            else None
+            else []
         )
