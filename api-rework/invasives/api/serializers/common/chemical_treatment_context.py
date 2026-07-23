@@ -98,6 +98,19 @@ class DraftChemicalTreatmentContextAquaticSerializer(
         )
         return DraftTreatedAquaticPlantSerializer(children, many=True).data
 
+    def get_herbicide(self, obj):
+        activity_id = obj.activity_data_record.activity_id
+        children = DraftLiquidHerbicideEntry.objects.filter(
+            activity_data_record__activity_id=activity_id
+        )
+        liquids = DraftLiquidHerbicideSerializer(children, many=True).data
+        children = DraftGranularHerbicideEntry.objects.filter(
+            activity_data_record__activity_id=activity_id
+        )
+        solids = DraftGranularHerbicideSerializer(children, many=True).data
+
+        return list(liquids) + list(solids)
+
 
 class DraftChemicalTreatmentContextTerrestrialSerializer(
     ChemicalTreatmentContextSerializer
@@ -110,3 +123,16 @@ class DraftChemicalTreatmentContextTerrestrialSerializer(
             activity_data_record__activity_id=obj.activity_data_record.activity_id
         )
         return DraftTreatedTerrestrialPlantSerializer(children, many=True).data
+
+    def get_herbicide(self, obj):
+        activity_id = obj.activity_data_record.activity_id
+        children = DraftLiquidHerbicideEntry.objects.filter(
+            activity_data_record__activity_id=activity_id
+        )
+        liquids = DraftLiquidHerbicideSerializer(children, many=True).data
+        children = DraftGranularHerbicideEntry.objects.filter(
+            activity_data_record__activity_id=activity_id
+        )
+        solids = DraftGranularHerbicideSerializer(children, many=True).data
+
+        return list(liquids) + list(solids)
