@@ -68,6 +68,7 @@ class ChemicalWeatherInformation(DraftChemicalWeatherInformation):
 class DraftBaseHerbicide(CleanSchema):
     type: Optional[HerbicideTypeCodeType] = None
     name: Optional[LiquidHerbicideCodeType | GranularHerbicideCodeType] = None
+    application_rate: Optional[float]
 
 
 class BaseHerbicide(DraftBaseHerbicide):
@@ -128,7 +129,7 @@ class DraftBaseChemicalTreatmentContext(CleanSchema):
     calculation_type: Optional[Literal["PAR", "D"]] = None
     application_method: Optional[HerbicideApplicationMethodCodeType] = None
     results: Optional[List[Any]] = None
-    herbicide: Optional[List[DraftBaseHerbicide]] = None
+    herbicide: Optional[List[DraftApplicationRateHerbicide | DraftBaseHerbicide]] = None
 
 
 class BaseChemicalTreatmentContext(CleanSchema):
