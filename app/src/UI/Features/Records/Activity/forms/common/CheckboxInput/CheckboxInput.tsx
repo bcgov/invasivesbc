@@ -18,7 +18,7 @@ export const CheckboxInput = forwardRef<HTMLInputElement, PropTypes>(
     return (
       <div className={`form-checkbox-input ${getInputWidth(width)}`}>
         <div className="row">
-          <input type="checkbox" aria-invalid={!!error} id={name} ref={ref} {...props} />
+          <input type="checkbox" aria-invalid={!!error} id={name} name={name} ref={ref} {...props} />
           <div className="label-section">
             {label && (
               <label htmlFor={name} className="side-label">
