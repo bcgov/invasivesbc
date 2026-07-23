@@ -25,16 +25,16 @@ from api.protocol.activity.validators.code_validation import (
     ChemicalPrecautionaryStatementType,
     TerrestrialPlantCodeType,
     AquaticPlantCodeType,
-    ChemicalApplicationMethodDirectCodeType,
-    ChemicalApplicationMethodSprayCodeType,
     LiquidHerbicideCodeType,
     GranularHerbicideCodeType,
+    HerbicideApplicationMethodCodeType,
+    HerbicideTypeCodeType,
 )
 
 
 class Calculations(Enum):
-    APPLICATION_RATE = "Product Application Rate"
-    DILUTION = "Dilution"
+    APPLICATION_RATE = "PAR"
+    DILUTION = "D"
     DRAFT = "Draft"
 
 
@@ -67,12 +67,12 @@ class ChemicalWeatherInformation(DraftChemicalWeatherInformation):
 
 
 class DraftBaseHerbicide(CleanSchema):
-    type: Optional[Literal["granular", "liquid"]] = None
+    type: Optional[HerbicideTypeCodeType] = None
     name: Optional[LiquidHerbicideCodeType | GranularHerbicideCodeType] = None
 
 
 class BaseHerbicide(DraftBaseHerbicide):
-    type: Literal["granular", "liquid"]
+    type: HerbicideTypeCodeType
     name: LiquidHerbicideCodeType | GranularHerbicideCodeType
 
 
@@ -126,22 +126,18 @@ class ProductDilutionRate(DraftProductDilutionRate):
 class DraftBaseChemicalTreatmentContext(CleanSchema):
     plants_treated: List[DraftTreatedPlant]
     tank_mix: bool
-    calculation_type: Optional[Literal["Product Application Rate", "Dilution"]] = None
-    application_method: Optional[
-        ChemicalApplicationMethodDirectCodeType | ChemicalApplicationMethodSprayCodeType
-    ] = None
+    calculation_type: Optional[Literal["PAR", "D"]] = None
+    application_method: Optional[HerbicideApplicationMethodCodeType] = None
     results: Optional[List[Any]] = None
     herbicide: Optional[List[DraftBaseHerbicide]] = None
 
 
 class BaseChemicalTreatmentContext(CleanSchema):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict()
     plants_treated: List[TreatedPlant] = Field(..., min_length=1)
     tank_mix: bool
-    calculation_type: Literal["Product Application Rate", "Dilution"]
-    application_method: (
-        ChemicalApplicationMethodDirectCodeType | ChemicalApplicationMethodSprayCodeType
-    )
+    calculation_type: Literal["PAR", "D"]
+    application_method: HerbicideApplicationMethodCodeType
     results: Optional[List[Any]] = Field(
         None, validate_default=False
     )  # Will be filled in by validators
@@ -308,6 +304,14 @@ class BaseChemicalDetails(DraftBaseChemicalDetails):
 class DraftTreatmentChemicalTerrestrial(DraftBaseFormSchema):
     subtype: Literal["Treatment_Chemical_Plant_Terrestrial"]
     subtype_data: DraftBaseChemicalDetails
+
+    @model_validator(mode="after")
+    def get_chemical_treatment_calculations(self) -> Self:
+        """Apply Chemical Validations through the backend"""
+        self.subtype_data.treatment_context.results = get_chem_calculation_results(
+            treatment_context=self.subtype_data.treatment_context, area_m=self.area_m
+        )
+        return self
 
 
 class TreatmentChemicalTerrestrial(BaseFormSchema):

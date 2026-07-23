@@ -88,8 +88,8 @@ def get_chem_calculation_results(treatment_context, area_m):
     IS_HERBICIDE_LIQUID = h.type == "liquid"
     IS_HERBICIDE_SOLID = h.type == "granular"
 
-    IS_APPLICATION_CALCULATION = c.calculation_type == "Product Application Rate"
-    IS_DILUTION_CALCULATION = c.calculation_type == "Dilution"
+    IS_APPLICATION_CALCULATION = c.calculation_type == "PAR"
+    IS_DILUTION_CALCULATION = c.calculation_type == "D"
     try:
         IS_DIRECT_APPLICATION = bool(
             TypeAdapter(ChemicalApplicationMethodDirectCodeType).validate_python(
