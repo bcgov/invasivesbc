@@ -56,6 +56,7 @@ export const WATERBODY_TYPE_CODES: CodeEntry[] = [
 export const SUBSTRATE_TYPE_CODES: CodeEntry[] = [
   new CodeEntry('substrate_type_code', 'Clay', 'Clay'),
   new CodeEntry('substrate_type_code', 'Cobble', 'Cobble'),
+  new CodeEntry('substrate_type_code', 'Concrete', 'Concrete'),
   new CodeEntry('substrate_type_code', 'Gravel', 'Gravel'),
   new CodeEntry('substrate_type_code', 'Rip-rap', 'Rip-rap'),
   new CodeEntry('substrate_type_code', 'Sand', 'Sand'),

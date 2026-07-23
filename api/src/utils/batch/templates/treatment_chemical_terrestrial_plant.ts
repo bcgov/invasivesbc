@@ -12,7 +12,8 @@ import {
   ApplicationMethodType,
   ApplicationMethodValidator,
   GranularHerbicideRate,
-  CalculationType
+  CalculationType,
+  DeliveryRateGreaterThanApplicationRate
 } from 'utils/batch/shared-columns';
 
 const TreatmentChemicalTerrestrialPlant = new Template(
@@ -77,6 +78,7 @@ TreatmentChemicalTerrestrialPlant.rowValidators = [
   ApplicationMethodType,
   ApplicationMethodValidator,
   GranularHerbicideRate,
-  CalculationType
+  CalculationType,
+  DeliveryRateGreaterThanApplicationRate
 ];
 export { TreatmentChemicalTerrestrialPlant };

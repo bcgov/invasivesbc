@@ -87,7 +87,7 @@ export const WaterbodyData_AdditionalFields = {
     substrate_type: {
       type: 'string',
       title: 'Substrate Type',
-      enum: ['Clay', 'Cobble', 'Gravel', 'Rip-rap', 'Sand', 'Silt/Organic'],
+      enum: ['Clay', 'Cobble', 'Concrete', 'Gravel', 'Rip-rap', 'Sand', 'Silt/Organic'],
       'x-tooltip-text': 'Select the most prevalent substrate composition'
     },
     tidal_influence: {
