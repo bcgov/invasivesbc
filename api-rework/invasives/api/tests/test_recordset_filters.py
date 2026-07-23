@@ -134,12 +134,12 @@ class ActivityRecordsetFilterTest(BaseTestCase):
         },
         "invasive_plant": {
             "has": {
-                "expected_num_records": 10,
+                "expected_num_records": 12,
                 "value": "Japanese Knotweed",
             },
             "not_has": {
-                "expected_num_records": 2,
-                "value": "Japanese Knotweed",
+                "expected_num_records": 11,
+                "value": "Common Tansy",
             },
         },
         "species_positive_full": {
@@ -164,11 +164,11 @@ class ActivityRecordsetFilterTest(BaseTestCase):
         },
         "species_treated_full": {
             "has": {
-                "expected_num_records": 8,
+                "expected_num_records": 10,
                 "value": "Japanese Knotweed",
             },
             "not_has": {
-                "expected_num_records": 4,
+                "expected_num_records": 2,
                 "value": "Japanese Knotweed",
             },
         },
@@ -378,7 +378,7 @@ class ActivityRecordsetFilterTest(BaseTestCase):
         """
         Expect:
             - Filtering two 'CONTAINS' filters returns results
-            - 5 Results are returned
+            - 7 Results are returned
             - All results returned contain the features defined in the rule.
             - No Duplicate Activities are present
         """
@@ -386,7 +386,7 @@ class ActivityRecordsetFilterTest(BaseTestCase):
         COLUMN_ONE_VALUE = "Japanese Knotweed"
         COLUMN_TWO = "activity_date"
         COLUMN_TWO_VALUE = "2026-06-08"
-        EXPECTED_RESULTS = 5
+        EXPECTED_RESULTS = 7
         records = self.fetch_rows(
             rules=[
                 self.rule(field=COLUMN_ONE, filter=COLUMN_ONE_VALUE),
@@ -407,16 +407,16 @@ class ActivityRecordsetFilterTest(BaseTestCase):
         """
         Expect:
             - Filtering one 'DOES NOT CONTAIN' and one 'CONTAINS' filter returns results
-            - 2 Results are returned
+            - 7 Results are returned
             - All Record contain the values defined in our 'CONTAINS' rule
             - All records lack the values defined in our 'DOES NOT CONTAIN' rule.
             - No Duplicate IDs are found in the results
         """
         COLUMN_ONE = "invasive_plant"
-        COLUMN_ONE_VALUE = "Japanese Knotweed"
+        COLUMN_ONE_VALUE = "Common Tansy"
         COLUMN_TWO = "activity_date"
         COLUMN_TWO_VALUE = "2026-06-08"
-        EXPECTED_RESULTS = 2
+        EXPECTED_RESULTS = 7
         records = self.fetch_rows(
             rules=[
                 self.rule(field=COLUMN_TWO, filter=COLUMN_TWO_VALUE),
