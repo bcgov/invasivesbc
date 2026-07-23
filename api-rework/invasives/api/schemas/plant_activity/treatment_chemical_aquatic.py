@@ -41,6 +41,7 @@ class TreatmentChemicalAquaticIn(BaseActivityProcessor):
         herb = treatment_info.pop("herbicide", [])
         plant = treatment_info.pop("plants_treated", [])
         calculation_results = treatment_info.pop("results", [])
+        # TODO: Add Results Objects
 
         ChemTreatmentContext.objects.create(activity_data_record=adr, **treatment_info)
         granular = []
@@ -91,6 +92,7 @@ class DraftTreatmentChemicalAquaticIn(DraftBaseActivityProcessor):
         herb = treatment_info.pop("herbicide", [])
         plant = treatment_info.pop("plants_treated", [])
         calculation_results = treatment_info.pop("results", [])
+        # TODO: Add Results Objects
 
         DraftChemTreatmentContext.objects.create(
             activity_data_record=adr, **treatment_info
