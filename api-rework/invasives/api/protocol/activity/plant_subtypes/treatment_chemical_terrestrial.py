@@ -68,7 +68,7 @@ class ChemicalWeatherInformation(DraftChemicalWeatherInformation):
 class DraftBaseHerbicide(CleanSchema):
     type: Optional[HerbicideTypeCodeType] = None
     name: Optional[LiquidHerbicideCodeType | GranularHerbicideCodeType] = None
-    application_rate: Optional[float]
+    application_rate: Optional[float] = None
 
 
 class BaseHerbicide(DraftBaseHerbicide):
