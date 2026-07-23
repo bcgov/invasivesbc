@@ -101,8 +101,8 @@ MINIMAL_CHEM_TREATMENT_AQUATIC = {
         "treatment_context": {
             "tank_mix": False,
             "application_method": "BPA",
-            "calculation_type": "Dilution",
-            "herbicide": [{"type": "granular", "name": "24388"}],
+            "calculation_type": "D",
+            "herbicide": [{"type": "G", "name": "24388"}],
             "plants_treated": [{"invasive_plant": "AB", "percent_covered": 100}],
             "amount_mix_used_l": 3.234,
             "dilution_percent": 33.233,
@@ -183,8 +183,8 @@ UPDATED_CHEM_TREATMENT_AQUATIC = {
         "treatment_context": {
             "tank_mix": False,
             "application_method": "BPA",
-            "calculation_type": "Dilution",
-            "herbicide": [{"type": "granular", "name": "24388"}],
+            "calculation_type": "D",
+            "herbicide": [{"type": "G", "name": "24388"}],
             "plants_treated": [
                 {"invasive_plant": "AB", "percent_covered": 50},
                 {"invasive_plant": "JK", "percent_covered": 50},

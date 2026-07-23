@@ -85,8 +85,8 @@ def get_chem_calculation_results(treatment_context, area_m):
         raise ValueError("Non-Tank mix treatments cannot use multiple Herbicides")
 
     h = c.herbicide[0]
-    IS_HERBICIDE_LIQUID = h.type == "liquid"
-    IS_HERBICIDE_SOLID = h.type == "granular"
+    IS_HERBICIDE_LIQUID = h.type == "L"
+    IS_HERBICIDE_SOLID = h.type == "G"
 
     IS_APPLICATION_CALCULATION = c.calculation_type == "PAR"
     IS_DILUTION_CALCULATION = c.calculation_type == "D"
@@ -283,9 +283,9 @@ def mSpecie_mLGHerb_spray_usingProdAppRate(
         area_covered_pct = (area_treated_sqm / area_m) * 100
 
         for h in p.get("herbicide"):
-            if h.type == "granular":
+            if h.type.pk == "G":
                 dilution = (h.application_rate / 1000 / delivery_rate) * 100
-            elif h.type == "liquid":
+            elif h.type.pk == "L":
                 dilution = (h.application_rate / delivery_rate) * 100
             else:
                 raise ValueError("Herbicide has an undefined type associated with it.")
