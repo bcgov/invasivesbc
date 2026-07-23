@@ -24,7 +24,6 @@ from api.protocol.activity.validators.code_validation import (
     PestManagementPlanType,
     ChemicalPrecautionaryStatementType,
     TerrestrialPlantCodeType,
-    AquaticPlantCodeType,
     LiquidHerbicideCodeType,
     GranularHerbicideCodeType,
     HerbicideApplicationMethodCodeType,
@@ -85,12 +84,12 @@ class ApplicationRateHerbicide(BaseHerbicide):
 
 
 class DraftTreatedPlant(CleanSchema):
-    invasive_plant: Optional[TerrestrialPlantCodeType | AquaticPlantCodeType]
+    invasive_plant: Optional[TerrestrialPlantCodeType]
     percent_covered: Optional[int]
 
 
 class TreatedPlant(DraftTreatedPlant):
-    invasive_plant: TerrestrialPlantCodeType | AquaticPlantCodeType
+    invasive_plant: TerrestrialPlantCodeType
     percent_covered: int = Field(..., gt=0, le=100)
 
 
@@ -300,32 +299,16 @@ class BaseChemicalDetails(DraftBaseChemicalDetails):
     ]
 
 
+#####
 # Terrestrial Treatment Types (Draft/Submit)
 class DraftTreatmentChemicalTerrestrial(DraftBaseFormSchema):
     subtype: Literal["Treatment_Chemical_Plant_Terrestrial"]
     subtype_data: DraftBaseChemicalDetails
 
-    @model_validator(mode="after")
-    def get_chemical_treatment_calculations(self) -> Self:
-        """Apply Chemical Validations through the backend"""
-        self.subtype_data.treatment_context.results = get_chem_calculation_results(
-            treatment_context=self.subtype_data.treatment_context, area_m=self.area_m
-        )
-        return self
-
 
 class TreatmentChemicalTerrestrial(BaseFormSchema):
     subtype: Literal["Treatment_Chemical_Plant_Terrestrial"]
     subtype_data: BaseChemicalDetails
-
-
-# Aquatic Treatment Types (Draft/Submit)
-class DraftTreatmentChemicalAquatic(DraftTreatmentChemicalTerrestrial):
-    subtype: Literal["Treatment_Chemical_Plant_Aquatic"]
-
-
-class TreatmentChemicalAquatic(TreatmentChemicalTerrestrial):
-    subtype: Literal["Treatment_Chemical_Plant_Aquatic"]
 
     @model_validator(mode="after")
     def get_chemical_treatment_calculations(self) -> Self:
