@@ -1459,6 +1459,39 @@ export const GranularHerbicideRate = (row): RowValidationResult => {
   };
 };
 
+export const DeliveryRateGreaterThanApplicationRate = (row): RowValidationResult => {
+  let valid = true;
+  const fields = ['Herbicide - Delivery Rate of Mix'];
+  const rowData = row.data;
+  const validationMessages = [];
+
+  const calculationType = rowData['Chemical Treatment - Calculation Type']?.parsedValue;
+  const deliveryRate = rowData['Herbicide - Delivery Rate of Mix']?.parsedValue;
+
+  if (calculationType === 'PAR' && deliveryRate != null && deliveryRate !== '') {
+    for (let i = 1; i <= 3; i++) {
+      const applicationRate = rowData[`Herbicide - ${i} - PAR - Production Application Rate`]?.parsedValue;
+
+      if (applicationRate != null && applicationRate !== '' && Number(deliveryRate) <= Number(applicationRate)) {
+        valid = false;
+        validationMessages.push({
+          severity: 'error',
+          messageTitle: 'Invalid value',
+          messageDetail: 'Delivery rate must be greater than application rate.'
+        });
+
+        break;
+      }
+    }
+  }
+
+  return {
+    valid,
+    validationMessages,
+    appliesToFields: fields
+  };
+};
+
 export const ApplicationMethodType = (row): RowValidationResult => {
   let valid = true;
   const fields = ['Chemical Treatment (No Tank Mix) - Application Method', 'Chemical Treatment - Calculation Type'];
