@@ -28,7 +28,7 @@ AVERAGE_SIZE_OF_TILE = 16000
 TILES_PER_SECOND_WORST_CASE = 3
 TILES_PER_SECOND_BEST_CASE = 15
 
-MAX_TILE_COUNT = 20000
+MAX_TILE_COUNT = 50000
 
 VALID_MAP_GENERATION_STATUSES = [
     "PENDING",
@@ -92,7 +92,7 @@ class RasterMapGenerationRequest(OptionallyOwned, Dated, models.Model):
 
     @property
     def tileset(self):
-        (xmin, ymin, xmax, ymax) = self.bounds.extent
+        xmin, ymin, xmax, ymax = self.bounds.extent
 
         return list(
             mercantile.tiles(
