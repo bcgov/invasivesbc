@@ -58,7 +58,7 @@ TreatmentMechanicalTerrestrialPlant.columns = [
     'codeReference',
     'form_data.activity_subtype_data.Treatment_MechanicalPlant_Information[0].disposed_material.disposed_material_input_format'
   )
-    .hardcodedCodes(DISPOSED_MATERIAL_FORMAT_CODES)
+    .referencesCode('disposed_material_format')
     .build(),
   new TemplateColumnBuilder(
     'Treatment - Disposed Material Amount 1',
@@ -100,7 +100,7 @@ TreatmentMechanicalTerrestrialPlant.columns = [
     'codeReference',
     'form_data.activity_subtype_data.Treatment_MechanicalPlant_Information[1].disposed_material.disposed_material_input_format'
   )
-    .hardcodedCodes(DISPOSED_MATERIAL_FORMAT_CODES)
+    .referencesCode('disposed_material_format')
     .build(),
   new TemplateColumnBuilder(
     'Treatment - Disposed Material Amount 2',
@@ -142,7 +142,7 @@ TreatmentMechanicalTerrestrialPlant.columns = [
     'codeReference',
     'form_data.activity_subtype_data.Treatment_MechanicalPlant_Information[2].disposed_material.disposed_material_input_format'
   )
-    .hardcodedCodes(DISPOSED_MATERIAL_FORMAT_CODES)
+    .referencesCode('disposed_material_format')
     .build(),
   new TemplateColumnBuilder(
     'Treatment - Disposed Material Amount 3',

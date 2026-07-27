@@ -93,7 +93,7 @@ ObservationTerrestrialPlant.columns = [
     'codeReference',
     'form_data.activity_subtype_data.TerrestrialPlants[0].observation_type'
   )
-    .hardcodedCodes(OBSERVATION_TYPE_CODES)
+    .referencesCode('observation_type')
     .isRequired()
     .build(),
   new TemplateColumnBuilder(

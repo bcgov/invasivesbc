@@ -29,7 +29,7 @@ MonitoringMechanical.columns = [
 
   new TemplateColumnBuilder('Monitoring - Copy Geometry', 'codeReference', 'form_data.activity_type_data.copy_geometry')
     .isRequired()
-    .hardcodedCodes(YES_NO_CODES)
+    .referencesCode('yes_no')
     .build(),
 
   new TemplateColumnBuilder(
@@ -53,7 +53,7 @@ MonitoringMechanical.columns = [
     'form_data.activity_subtype_data.Monitoring_MechanicalTerrestrialAquaticPlant_Information[0].evidence_of_treatment'
   )
     .isRequired()
-    .hardcodedCodes(YES_NO_CODES)
+    .referencesCode('yes_no')
     .build(),
 
   new TemplateColumnBuilder(
@@ -86,7 +86,7 @@ MonitoringMechanical.columns = [
     'codeReference',
     'form_data.activity_subtype_data.Monitoring_MechanicalTerrestrialAquaticPlant_Information[0].treatment_pass'
   )
-    .hardcodedCodes(TREATMENT_PASS_CODES)
+    .referencesCode('treatment_pass_code')
     .build(),
 
   new TemplateColumnBuilder(
@@ -114,7 +114,7 @@ MonitoringMechanical.columns = [
     'codeReference',
     'form_data.activity_subtype_data.Monitoring_MechanicalTerrestrialAquaticPlant_Information[1].evidence_of_treatment'
   )
-    .hardcodedCodes(YES_NO_CODES)
+    .referencesCode('yes_no')
     .build(),
 
   new TemplateColumnBuilder(
@@ -145,7 +145,7 @@ MonitoringMechanical.columns = [
     'codeReference',
     'form_data.activity_subtype_data.Monitoring_MechanicalTerrestrialAquaticPlant_Information[1].treatment_pass'
   )
-    .hardcodedCodes(TREATMENT_PASS_CODES)
+    .referencesCode('treatment_pass_code')
     .build(),
 
   new TemplateColumnBuilder(
@@ -173,7 +173,7 @@ MonitoringMechanical.columns = [
     'codeReference',
     'form_data.activity_subtype_data.Monitoring_MechanicalTerrestrialAquaticPlant_Information[2].evidence_of_treatment'
   )
-    .hardcodedCodes(YES_NO_CODES)
+    .referencesCode('yes_no')
     .build(),
 
   new TemplateColumnBuilder(
@@ -204,7 +204,7 @@ MonitoringMechanical.columns = [
     'codeReference',
     'form_data.activity_subtype_data.Monitoring_MechanicalTerrestrialAquaticPlant_Information[2].treatment_pass'
   )
-    .hardcodedCodes(TREATMENT_PASS_CODES)
+    .referencesCode('treatment_pass_code')
     .build(),
 
   new TemplateColumnBuilder(

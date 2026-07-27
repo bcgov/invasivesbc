@@ -342,7 +342,7 @@ export const WeatherInformation = [
     'form_data.activity_subtype_data.Weather_Conditions.wind_direction_code'
   )
     .isRequired()
-    .hardcodedCodes(WIND_DIRECTION_CODES)
+    .referencesCode('wind_direction')
     .build(),
   new TemplateColumnBuilder(
     'Weather - Cloud Cover',
@@ -436,7 +436,7 @@ export const WaterbodyInformation = [
     'form_data.activity_subtype_data.WaterbodyData.waterbody_type'
   )
     .isRequired()
-    .hardcodedCodes(WATERBODY_TYPE_CODES)
+    .referencesCode('waterbody_type_code')
     .build(),
   new TemplateColumnBuilder(
     'Waterbody - Tidal?',
@@ -459,7 +459,7 @@ export const WaterbodyInformation = [
     'codeReferenceMulti',
     'form_data.activity_subtype_data.WaterbodyData.water_level_management'
   )
-    .hardcodedCodes(WATER_LEVEL_MANAGEMENT_CODES)
+    .referencesCode('water_level_management')
     .build(),
 
   new TemplateColumnBuilder(
@@ -482,7 +482,7 @@ export const WaterbodyInformation = [
     'form_data.activity_subtype_data.WaterbodyData.substrate_type'
   )
     .isRequired()
-    .hardcodedCodes(SUBSTRATE_TYPE_CODES)
+    .referencesCode('substrate_type_code')
     .build(),
 
   new TemplateColumnBuilder(
@@ -556,7 +556,7 @@ export const PhenologyInformation = [
     'form_data.activity_subtype_data.Target_Plant_Phenology.phenology_details_recorded'
   )
     .isRequired()
-    .hardcodedCodes(YES_NO_CODES)
+    .referencesCode('yes_no')
     .build(),
   new TemplateColumnBuilder(
     'Phenology - Target Height',
@@ -1466,21 +1466,30 @@ export const DeliveryRateGreaterThanApplicationRate = (row): RowValidationResult
   const validationMessages = [];
 
   const calculationType = rowData['Chemical Treatment - Calculation Type']?.parsedValue;
-  const deliveryRate = rowData['Herbicide - Delivery Rate of Mix']?.parsedValue;
+  const deliveryRate = Number(rowData['Herbicide - Delivery Rate of Mix']?.parsedValue);
 
-  if (calculationType === 'PAR' && deliveryRate != null && deliveryRate !== '') {
+  if (calculationType === 'PAR' && !isNaN(deliveryRate)) {
     for (let i = 1; i <= 3; i++) {
-      const applicationRate = rowData[`Herbicide - ${i} - PAR - Production Application Rate`]?.parsedValue;
+      const applicationRateValue = rowData[`Herbicide - ${i} - PAR - Production Application Rate`]?.parsedValue;
+      const herbicideType = rowData[`Herbicide - ${i} - Type`]?.parsedValue;
 
-      if (applicationRate != null && applicationRate !== '' && Number(deliveryRate) <= Number(applicationRate)) {
-        valid = false;
-        validationMessages.push({
-          severity: 'error',
-          messageTitle: 'Invalid value',
-          messageDetail: 'Delivery rate must be greater than application rate.'
-        });
+      if (applicationRateValue != null && applicationRateValue !== '') {
+        let applicationRate = Number(applicationRateValue);
 
-        break;
+        if (herbicideType === 'G') {
+          applicationRate /= 1000;
+        }
+
+        if (deliveryRate <= applicationRate) {
+          valid = false;
+          validationMessages.push({
+            severity: 'error',
+            messageTitle: 'Invalid value',
+            messageDetail: 'Delivery rate must be greater than application rate.'
+          });
+
+          break;
+        }
       }
     }
   }
@@ -1812,7 +1821,7 @@ export const ChemicalPlantTreatmentInformation = [
     'codeReference',
     'form_data.activity_subtype_data.Treatment_ChemicalPlant_Information.wind_direction_code'
   )
-    .hardcodedCodes(WIND_DIRECTION_CODES)
+    .referencesCode('wind_direction')
     .isRequired()
     .build(),
   new TemplateColumnBuilder(

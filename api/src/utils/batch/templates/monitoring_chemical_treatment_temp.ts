@@ -36,7 +36,7 @@ MonitoringChemicalTemp.columns = [
   ).build(),
 
   new TemplateColumnBuilder('Monitoring - Copy Geometry', 'codeReference', 'form_data.activity_type_data.copy_geometry')
-    .hardcodedCodes(YES_NO_CODES)
+    .referencesCode('yes_no')
     .build(),
 
   new TemplateColumnBuilder(
@@ -60,7 +60,7 @@ MonitoringChemicalTemp.columns = [
     'form_data.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information[0].evidence_of_treatment'
   )
     .isRequired()
-    .hardcodedCodes(YES_NO_CODES)
+    .referencesCode('yes_no')
     .build(),
 
   new TemplateColumnBuilder(
@@ -95,7 +95,7 @@ MonitoringChemicalTemp.columns = [
     'form_data.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information[0].treatment_pass'
   )
     .isRequired()
-    .hardcodedCodes(TREATMENT_PASS_CODES)
+    .referencesCode('treatment_pass_code')
     .build(),
 
   new TemplateColumnBuilder(
