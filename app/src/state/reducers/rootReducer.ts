@@ -21,13 +21,13 @@ import { createAlertsAndPromptsReducer } from './alertsAndPrompts';
 import { createPlanMyTripReducer } from './planMyTrip';
 import { createDownloadStateReducer } from './downloads';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
-import { createTileCacheReducer } from 'state/reducers/tile_cache';
 import { Platform } from 'state/configuration/build-time-config';
 import { UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import { CacheDownloadMode } from 'utils/record-cache';
 import { SQLiteStorage } from 'utils/redux-persist-sqlite';
 import { UnifiedConfig } from 'state/configuration/unified-config';
 import { createAppModeReducer } from 'state/reducers/appMode';
+import { createProtomapsReducer } from 'state/reducers/protomaps';
 
 const purgeOldStateOnVersionUpgrade = async (state) => {
   // finer-grained or per-reducer controls are possible -- this is a big hammer to reset saved state when this version changes
@@ -171,6 +171,7 @@ function createRootReducer(config: UnifiedConfig) {
     EmailSettings: createEmailSettingsReducer(),
     EmailTemplates: createEmailTemplatesReducer(),
     ErrorHandler: errorHandlerReducer,
+    Protomaps: createProtomapsReducer(),
     OfflineActivity: (() => {
       const persistedReducer = persistReducer<OfflineActivityState>(
         {
@@ -195,7 +196,6 @@ function createRootReducer(config: UnifiedConfig) {
     ...(() => {
       if (config.build.MOBILE) {
         return {
-          TileCache: createTileCacheReducer(),
           PlanMyTrip: createPlanMyTripReducer()
         };
       }

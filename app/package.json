@@ -70,6 +70,7 @@
     "redux-saga": "^1.5.0",
     "reproject": "^1.2.7",
     "sharedAPI": "file:../sharedAPI",
+    "temporal-polyfill": "^0.3.2",
     "ts-md5": "^2.0.1",
     "typescript": "^6.0.3",
     "urlencode": "^2.0.0",

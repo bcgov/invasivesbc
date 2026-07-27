@@ -1,13 +1,12 @@
 import bbox from '@turf/bbox';
 import getSelectColumnsByRecordSetType from 'sharedAPI/src/getSelectColumnsByRecordSetType';
 import { parse } from 'wkt';
-import { RepositoryBoundingBoxSpec } from './tile-cache';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import { RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
 
 const config = await import('state/configuration/runtime-config');
 
-const getBoundingBoxFromRecordsetFilters = async (recordSet: UserRecordSet): Promise<RepositoryBoundingBoxSpec> => {
+const getBoundingBoxFromRecordsetFilters = async (recordSet: UserRecordSet): Promise<GeoJSON.BBox> => {
   const API_BASE = config.runtimeConfig.API_BASE;
 
   const { recordSetType } = recordSet;
@@ -29,13 +28,7 @@ const getBoundingBoxFromRecordsetFilters = async (recordSet: UserRecordSet): Pro
     body: JSON.stringify({ filterObjects: [filterObj] })
   }).then((data) => data.json());
 
-  const [minLongitude, minLatitude, maxLongitude, maxLatitude] = bbox(parse(data.bbox));
-  return {
-    minLatitude,
-    maxLatitude,
-    minLongitude,
-    maxLongitude
-  };
+  return bbox(parse(data.bbox));
 };
 
 export default getBoundingBoxFromRecordsetFilters;

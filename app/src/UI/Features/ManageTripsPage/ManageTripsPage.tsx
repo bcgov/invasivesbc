@@ -1,63 +1,54 @@
-import { useState } from 'react';
 import './manageTripsPage.css';
-import { Button } from '@mui/material';
-import { ArrowBackIos } from '@mui/icons-material';
-import PlanMyTripForm from './subcomponents/PlanMyTripForm/PlanMyTripForm';
-import ManageMyTrips from './subcomponents/ManageMyTrips/ManageMyTrips';
+import TripForm from 'UI/Features/ManageTripsPage/subcomponents/TripForm/TripForm';
+import TripList from 'UI/Features/ManageTripsPage/subcomponents/TripList/TripList';
+import MapList from 'UI/Features/ManageTripsPage/subcomponents/MapList/MapList';
+
+import { NavLink, Route, Routes, useLocation, useMatch } from 'react-router';
+import { ArrowBackIos, FiberNewSharp, TripOrigin, DownloadOutlined } from '@mui/icons-material';
 
 const ManageTripsPage = () => {
-  enum Mode {
-    CREATE,
-    MAIN,
-    MANAGE
-  }
-  const [mode, setMode] = useState<Mode>(Mode.MAIN);
-
+  const atRoot = useMatch('/ManageTrips/') !== null;
+  const navState = atRoot ? 'expanded' : 'collapsed';
   return (
     <div id="manage-trips">
-      {mode !== Mode.MAIN && (
-        <div className="trip-header">
-          <Button onClick={setMode.bind(this, Mode.MAIN)}>
-            <ArrowBackIos /> Back
-          </Button>
+      {atRoot && (
+        <div className="intro">
+          <h2>Plan Your Trip</h2>
+          <p>Going out of service? Download your maps, records, and well data now to use them anywhere.</p>
         </div>
       )}
-      <div className="content">
-        {
-          {
-            [Mode.MAIN]: (
-              <div className="main">
-                <p>I'm Looking To...</p>
-                <Button variant="contained" size="large" onClick={setMode.bind(this, Mode.CREATE)}>
-                  Plan a New Trip
-                </Button>
-                <Button variant="contained" size="large" onClick={setMode.bind(this, Mode.MANAGE)}>
-                  Manage My Trips
-                </Button>
-              </div>
-            ),
-            [Mode.CREATE]: (
-              <div>
-                <PlanMyTripForm />
-                <div className="redirect">
-                  <p>Looking for an existing trip?</p>
-                  <Button onClick={setMode.bind(this, Mode.MANAGE)}>Manage My Trips</Button>
-                </div>
-              </div>
-            ),
-            [Mode.MANAGE]: (
-              <div>
-                <ManageMyTrips />
-                <div className="redirect">
-                  <p>Not seeing what you're looking for?</p>
-                  <Button size="small" onClick={setMode.bind(this, Mode.CREATE)}>
-                    Plan a New Trip
-                  </Button>
-                </div>
-              </div>
-            )
-          }[mode]
-        }
+      <div className={`nav-wrapper ${navState}`}>
+        <nav className={`navigation ${navState}`}>
+          {atRoot || (
+            <NavLink to={'/ManageTrips'} className={'back'}>
+              <ArrowBackIos />
+              Main
+            </NavLink>
+          )}
+
+          <>
+            <NavLink to={'/ManageTrips/new'}>
+              <FiberNewSharp />
+              Plan A Trip
+            </NavLink>
+            <NavLink to={'/ManageTrips/trips'}>
+              <TripOrigin />
+              Manage Trips
+            </NavLink>
+            <NavLink to={'/ManageTrips/maps'}>
+              <DownloadOutlined />
+              Offline Maps
+            </NavLink>
+          </>
+        </nav>
+      </div>
+
+      <div className={'content'}>
+        <Routes>
+          <Route path={'/new'} element={<TripForm />}></Route>
+          <Route path={'/trips'} element={<TripList />}></Route>
+          <Route path={'/maps'} element={<MapList />}></Route>
+        </Routes>
       </div>
     </div>
   );

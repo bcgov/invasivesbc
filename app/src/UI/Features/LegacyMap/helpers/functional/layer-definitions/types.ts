@@ -1,15 +1,27 @@
 import { LayerSpecification } from 'maplibre-gl/dist/maplibre-gl-dev';
+import { useContext, useEffect } from 'react';
 import { FeatureFlags } from 'state/configuration/feature-flags';
 import { Platform } from 'state/configuration/build-time-config';
 import { SOURCES } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/layer-definitions';
-
-type InvasivesLayerSpecification = LayerSpecification & { source?: keyof typeof SOURCES };
+import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
 
 // these layers are used as placeholders so the others can be placed relative to them
 const LAYER_Z_BACKGROUND = 'LAYER_Z_BACKGROUND';
 const LAYER_Z_MID = 'LAYER_Z_MID';
 const LAYER_Z_FOREGROUND = 'LAYER_Z_FOREGROUND';
 type POSITIONING_LAYER = typeof LAYER_Z_FOREGROUND | typeof LAYER_Z_BACKGROUND | typeof LAYER_Z_MID;
+
+type InvasivesLayerSpecification = LayerSpecification & { source?: keyof typeof SOURCES | string };
+
+type LayerSpecificationWithStackingOrder = InvasivesLayerSpecification & {
+  stackLayer: POSITIONING_LAYER;
+};
+
+function hasStackingOrder(
+  layer: LayerSpecificationWithStackingOrder | LayerSpecification
+): layer is LayerSpecificationWithStackingOrder {
+  return (layer as LayerSpecificationWithStackingOrder).stackLayer !== undefined;
+}
 
 type MapDefinitionEligibilityPredicates = {
   // not directly selectable means there won't be a button for it (but it can still be enabled by another definition requiring it)
@@ -136,7 +148,7 @@ type InvasivesMapLayerDefinition = {
   tooltip: string;
 
   // source: keyof typeof SOURCES;
-  layers: InvasivesLayerSpecification[];
+  layers: (InvasivesLayerSpecification | LayerSpecificationWithStackingOrder)[];
 
   predicates: MapDefinitionEligibilityPredicates;
 };
@@ -154,6 +166,7 @@ function layerStacking(l: InvasivesMapLayerDefinition): POSITIONING_LAYER {
 export {
   MapDefinitionEligibilityPredicatesBuilder,
   layerStacking,
+  hasStackingOrder,
   LAYER_Z_FOREGROUND,
   LAYER_Z_BACKGROUND,
   LAYER_Z_MID
@@ -163,5 +176,6 @@ export type {
   MapDefinitionEligibilityPredicates,
   InvasivesMapLayerDefinition,
   InvasivesLayerSpecification,
+  LayerSpecificationWithStackingOrder,
   POSITIONING_LAYER
 };

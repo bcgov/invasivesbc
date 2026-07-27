@@ -1,11 +1,13 @@
 import { buffers } from 'redux-saga';
 import { actionChannel, all, call, fork, put, take } from 'redux-saga/effects';
 import RecordCache from 'state/actions/cache/RecordCache';
-import TileCache from 'state/actions/cache/TileCache';
 import WellCache from 'state/actions/cache/WellCache';
 import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
 import { IPlanMyTripCacheStatus, IPlanMyTripCacheStatuses, PlanMyTripCacheService } from 'utils/plan-my-trip-cache';
 import { PlanMyTripCacheServiceFactory } from 'utils/plan-my-trip-cache/context';
+import OfflineProtomaps from 'state/actions/cache/OfflineProtomaps';
+import Alerts from 'state/actions/alerts/Alerts';
+import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 
 function* createQueueWorker(channel) {
   while (true) {
@@ -17,7 +19,7 @@ function* createQueueWorker(channel) {
 const actionToCacheKey = (action: string, setId?: string): keyof IPlanMyTripCacheStatuses => {
   if (action.startsWith(WellCache.PREFIX)) {
     return 'wellData';
-  } else if (action.startsWith(TileCache.PREFIX)) {
+  } else if (action.startsWith('OfflineProtomaps')) {
     return 'mapTiles';
   } else if (
     (action.startsWith(RecordCache.PREFIX) || action.startsWith(PlanMyTrip.Recordset.PREFIX)) &&
@@ -60,6 +62,15 @@ function* handleTripSubcacheFailure(action) {
   } else {
     yield handleUpdateSubcacheStatus(action, IPlanMyTripCacheStatus.FAILED);
   }
+  if (OfflineProtomaps.mapGeneration.rejected.match(action)) {
+    yield put(
+      Alerts.create({
+        severity: AlertSeverity.Error,
+        subject: AlertSubjects.PlanMyTrip,
+        content: 'Map Generation Request failed (server was unable to process request)'
+      })
+    );
+  }
 }
 function* handleTripSubcacheDeleteSuccess(action) {
   yield handleUpdateSubcacheStatus(action, IPlanMyTripCacheStatus.NOT_CACHED);
@@ -72,32 +83,30 @@ function* processCombinedCacheAction(action) {
   try {
     switch (action.type) {
       // Download starts.
-      case TileCache.requestCaching.pending.type:
       case WellCache.requestCaching.pending.type:
+      case OfflineProtomaps.mapGeneration.pending.type:
       case RecordCache.requestCaching.pending.type:
         yield call(handleTripSubcacheDownloadPending, action);
         break;
 
       // Success Actions
-      case TileCache.requestCaching.fulfilled.type:
+      case OfflineProtomaps.mapGeneration.fulfilled.type:
       case WellCache.requestCaching.fulfilled.type:
       case RecordCache.requestCaching.fulfilled.type:
         yield call(handleTripSubcacheDownloadSuccess, action);
         break;
 
       // All Rejected actions
-      case TileCache.requestCaching.rejected.type:
-      case TileCache.deleteRepository.rejected.type:
       case WellCache.requestCaching.rejected.type:
       case WellCache.deleteRepository.rejected.type:
       case RecordCache.requestCaching.rejected.type:
       case RecordCache.deleteCache.rejected.type:
+      case OfflineProtomaps.mapGeneration.rejected.type:
       case PlanMyTrip.Recordset.download.rejected.type:
         yield call(handleTripSubcacheFailure, action);
         break;
 
       // Successful Deletion
-      case TileCache.deleteRepository.fulfilled.type:
       case WellCache.deleteRepository.fulfilled.type:
       case RecordCache.deleteCache.fulfilled.type:
         yield call(handleTripSubcacheDeleteSuccess, action);
@@ -119,18 +128,17 @@ function* planMyTripSaga() {
   const combinedCacheChannel = yield actionChannel(
     [
       // Pending Actions
-      TileCache.requestCaching.pending,
+      OfflineProtomaps.mapGeneration.pending,
       WellCache.requestCaching.pending,
       RecordCache.requestCaching.pending,
 
       // Fulfilled Actions
-      TileCache.requestCaching.fulfilled,
+      OfflineProtomaps.mapGeneration.fulfilled,
       WellCache.requestCaching.fulfilled,
       RecordCache.requestCaching.fulfilled,
 
       // Rejected Actions (various)
-      TileCache.requestCaching.rejected,
-      TileCache.deleteRepository.rejected,
+      OfflineProtomaps.mapGeneration.rejected,
       WellCache.requestCaching.rejected,
       WellCache.deleteRepository.rejected,
       RecordCache.requestCaching.rejected,
@@ -138,7 +146,6 @@ function* planMyTripSaga() {
       PlanMyTrip.Recordset.download.rejected,
 
       // Delete Fulfilled Actions
-      TileCache.deleteRepository.fulfilled,
       WellCache.deleteRepository.fulfilled,
       RecordCache.deleteCache.fulfilled
     ],

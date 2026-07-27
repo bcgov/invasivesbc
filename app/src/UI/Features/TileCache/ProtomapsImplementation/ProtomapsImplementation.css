@@ -1,0 +1,31 @@
+div.estimateDetails {
+  min-height: 8rem;
+  display: flex;
+  flex-direction: column;
+
+
+  &.loading {
+    filter: blur(4px);
+  }
+
+  dl {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+
+    dt {
+      margin: 0;
+      padding: 0;
+      text-align: right;
+      font-weight: bold;
+      grid-column: 1;
+    }
+
+    dd {
+      text-align: left;
+      margin: 0;
+      padding: 0;
+      grid-column: 2;
+    }
+  }
+}

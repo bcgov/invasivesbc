@@ -1,7 +1,6 @@
 import { ColorSpecification, ExpressionSpecification, FilterSpecification } from 'maplibre-gl/dist/maplibre-gl-dev';
-import { FALLBACK_COLOR } from '../constants';
-import { LayerSpecificationWithStackingOrder } from '../layers-hook';
-import { LAYER_Z_FOREGROUND } from './types';
+import { LAYER_Z_FOREGROUND, LayerSpecificationWithStackingOrder } from './types';
+import { FALLBACK_COLOR } from 'UI/Features/LegacyMap/helpers/functional/constants';
 import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
 import recordsetColourScheme from 'constants/recordsetColourScheme';
 import { white } from 'constants/colors';

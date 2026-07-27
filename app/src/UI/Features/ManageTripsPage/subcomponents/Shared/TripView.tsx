@@ -1,13 +1,12 @@
-import { Delete } from '@mui/icons-material';
+import { Delete, DownloadOutlined } from '@mui/icons-material';
 import Accordion from 'UI/Reusable/Accordion/Accordion';
 import { IPlanMyTripRepositoryMetadata } from 'utils/plan-my-trip-cache';
-import TripRecordsetModule from './TripRecordsetModule';
+import TripRecordsetModule from 'UI/Features/ManageTripsPage/subcomponents/Shared/TripRecordsetModule';
 import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
-import TripMapTileModule from './TripMapTileModule';
-import TripWellModule from './TripWellModule';
+import TripWellModule from 'UI/Features/ManageTripsPage/subcomponents/Shared/TripWellModule';
 import { Button } from '@mui/material';
 import { useDispatch } from 'utils/use_selector';
-import MyTripAtAGlance from './MyTripAtAGlance';
+import MyTripAtAGlance from 'UI/Features/ManageTripsPage/subcomponents/Shared/MyTripAtAGlance';
 import {
   IappRecordsetIcon,
   InvasivesRecordsetIcon,
@@ -15,12 +14,14 @@ import {
   WellIcon
 } from 'UI/Features/ManageTripsPage/iconography';
 import Prompt from 'state/actions/prompts/Prompt';
+import './TripView.css';
+import { NavLink } from 'react-router';
 
 type PropTypes = {
   trip: IPlanMyTripRepositoryMetadata;
 };
 
-const MyTrip = ({ trip }: PropTypes) => {
+const TripView = ({ trip }: PropTypes) => {
   const dispatch = useDispatch();
   const handleDeleteTrip = () => {
     dispatch(
@@ -78,12 +79,18 @@ const MyTrip = ({ trip }: PropTypes) => {
           </li>
           <li className="trip-maps trip-option">
             <div className="cache-status">
-              <OfflineMapIcon />{' '}
+              <OfflineMapIcon />
               <p>
-                Offline Maps:&nbsp; <span className="emphasis">{trip.cacheStatuses.mapTiles}</span>
+                Offline Maps:&nbsp;
+                <span className="emphasis">{trip.cacheStatuses.mapTiles}</span>
               </p>
             </div>
-            <TripMapTileModule trip={trip} />
+            <div className="trip-module">
+              <NavLink to={'/ManageTrips/maps'}>
+                SEE OFFLINE MAPS PAGE
+                <DownloadOutlined />
+              </NavLink>
+            </div>
           </li>
           <li className="delete-trip trip-option">
             <Button color={'error'} onClick={handleDeleteTrip}>
@@ -96,4 +103,4 @@ const MyTrip = ({ trip }: PropTypes) => {
   );
 };
 
-export default MyTrip;
+export default TripView;

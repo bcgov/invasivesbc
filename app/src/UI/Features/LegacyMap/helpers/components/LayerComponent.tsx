@@ -1,19 +1,16 @@
 import { useContext, useEffect } from 'react';
 import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
-import { LayerSpecificationWithStackingOrder } from 'UI/Features/LegacyMap/helpers/functional/layers-hook';
 import { LayerSpecification } from 'maplibre-gl/dist/maplibre-gl-dev';
+import {
+  hasStackingOrder,
+  LayerSpecificationWithStackingOrder
+} from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/types';
 
 type LayerComponentProps = {
   mapReady: boolean;
   id: string;
   layer: LayerSpecification | LayerSpecificationWithStackingOrder;
 };
-
-function hasStackingOrder(
-  layer: LayerSpecificationWithStackingOrder | LayerSpecification
-): layer is LayerSpecificationWithStackingOrder {
-  return (layer as LayerSpecificationWithStackingOrder).stackLayer !== undefined;
-}
 
 const LayerComponent = ({ mapReady, id, layer }: LayerComponentProps) => {
   const map = useContext(MapContext);

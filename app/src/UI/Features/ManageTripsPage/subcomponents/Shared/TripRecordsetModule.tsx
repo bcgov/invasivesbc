@@ -4,7 +4,7 @@ import {
   IPlanMyTripRepositoryMetadata
 } from 'utils/plan-my-trip-cache';
 import { useDispatch, useSelector } from 'utils/use_selector';
-import TripStatusHandler from './TripStatusHandler';
+import TripStatusHandler from 'UI/Features/ManageTripsPage/subcomponents/Shared/TripStatusHandler';
 import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
 import RecordCache from 'state/actions/cache/RecordCache';
 import { RecordSetType } from 'interfaces/UserRecordSet';

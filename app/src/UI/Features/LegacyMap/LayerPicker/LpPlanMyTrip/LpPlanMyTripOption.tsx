@@ -45,7 +45,7 @@ const LpPlanMyTripOption = ({ trip }: PropTypes) => {
           <>
             <hr />
             <li>
-              <OfflineMapControls id={trip.id} hideDelete />
+              <OfflineMapControls id={trip.id} name={trip.name} />
               <Spacer x={40} y={40} />
               <p>Offline Maps</p>
             </li>

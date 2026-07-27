@@ -2,7 +2,6 @@ import React, { useCallback, useContext, useEffect, useRef, useState } from 'rea
 import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { useDispatch, useSelector } from 'utils/use_selector';
-import TileCache from 'state/actions/cache/TileCache';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { DoNothing } from 'UI/Features/LegacyMap/helpers/functional/do-nothing-mode';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
@@ -337,7 +336,6 @@ const DrawControls: React.FC<{ mapReady: boolean }> = ({ mapReady }) => {
       );
     } else {
       if (mode === TargetMode.TRIP_PLANNING) {
-        dispatch(TileCache.clearTileCacheShape());
         dispatch(PlanMyTrip.clearShape());
       } else if (mode === TargetMode.WHATS_HERE) {
         dispatch(WhatsHere.clear_whats_here());
@@ -390,7 +388,6 @@ const DrawControls: React.FC<{ mapReady: boolean }> = ({ mapReady }) => {
         dispatch(DrawToolActions.updateShape(feature));
         break;
       case TargetMode.TRIP_PLANNING: {
-        dispatch(TileCache.setTileCacheShape({ geometry: feature.geometry }));
         dispatch(PlanMyTrip.setShape({ geometry: feature.geometry }));
         break;
       }
