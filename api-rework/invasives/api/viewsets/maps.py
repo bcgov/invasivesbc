@@ -8,7 +8,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND
 
-from api.models import MapGenerationRecord, RasterMapGenerationRequest
+from api.models import (
+    MapGenerationIntermediateResult,
+    MapGenerationRecord,
+    RasterMapGenerationRequest,
+)
 from api.serializers.map_generation import (
     MapGenerationEstimateSerializer,
     MapGenerationRecordSerializer,
@@ -52,6 +56,41 @@ class MapGenerationRequestViewSet(viewsets.ViewSet):
         transaction.on_commit(
             lambda: dispatch_map_generation_request(
                 ProtomapGenerationParameters(map_generation_request_id=created.id)
+            )
+        )
+
+        return Response(serializer.data, status=HTTP_200_OK)
+
+    @action(detail=True, methods=["post"])
+    def regenerate(self, request, *args, **kwargs):
+        result = (
+            RasterMapGenerationRequest.objects.filter(
+                Q(owner=request.user) | Q(owner=None)
+            )
+            .filter(id=kwargs["pk"])
+            .first()
+        )
+
+        if result is None:
+            return Response(status=HTTP_404_NOT_FOUND)
+
+        result.file_name = (
+            f"user_{request.user.subject}-{datetime.now().strftime('%Y%m%d-%H%M%S')}"
+        )
+        result.status = "PENDING"
+        result.save()
+
+        MapGenerationIntermediateResult.objects.filter(
+            Q(generation_request_id=result.id)
+        ).delete()
+        MapGenerationRecord.objects.filter(generation_request=result).delete()
+
+        serializer = MapGenerationRequestSerializer(result)
+
+        # queue the actual generation process via celery
+        transaction.on_commit(
+            lambda: dispatch_map_generation_request(
+                ProtomapGenerationParameters(map_generation_request_id=result.id)
             )
         )
 

@@ -3,6 +3,11 @@ import os
 from celery import Celery
 from kombu import Exchange, Queue
 
+## Uncomment this to enable traces when the celery task crashes with an uncatchable error (like a SIGSEGV)
+## helped me to trace a segfault in psycopg 7/27/2026
+# import faulthandler
+# faulthandler.enable()
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "invasivesbc.settings")
 
 app = Celery("invasivesbc")
