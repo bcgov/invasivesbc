@@ -66,6 +66,7 @@ const PositionMarkers = ({ mapReady }) => {
   // Sets Map Marker for Currently Hovered Record
   useEffect(() => {
     if (!mapReady) return;
+    if (map == null) return;
 
     hoveredFeatureMarker?.current?.remove();
     hoveredFeatureMarker.current = makeMapMarker({
@@ -79,11 +80,13 @@ const PositionMarkers = ({ mapReady }) => {
       whatsHereMarker: hoveredFeatureMarker.current,
       whatsHereFeature: hoveredFeature
     });
-  }, [hoveredFeature, userRecordOnHoverRecordID, readableIdentifier]);
+  }, [hoveredFeature, userRecordOnHoverRecordID, readableIdentifier, mapReady, map]);
 
   // Sets Map Marker for Active IAPP
   useEffect(() => {
     if (!mapReady) return;
+    if (map == null) return;
+
     hoveredFeature?.current?.remove();
     IAPPMarker?.current?.remove();
     IAPPMarker.current = makeMapMarker({
@@ -98,11 +101,12 @@ const PositionMarkers = ({ mapReady }) => {
       currentIAPPGeo,
       IAPPMarker: IAPPMarker.current
     });
-  }, [currentIAPPID, currentIAPPGeo]);
+  }, [currentIAPPID, currentIAPPGeo, map, mapReady]);
 
   // Sets Map Marker for Active Activity
   useEffect(() => {
     if (!mapReady) return;
+    if (map == null) return;
     hoveredFeature?.current?.remove();
     activityMarker?.current?.remove();
     activityMarker.current = makeMapMarker({
@@ -118,12 +122,12 @@ const PositionMarkers = ({ mapReady }) => {
       currentActivityShortID,
       activityMarker: activityMarker.current
     });
-  }, [currentActivityShortID, activityGeo]);
+  }, [currentActivityShortID, activityGeo, mapReady, map]);
 
   // Highlighted Record
   useEffect(() => {
     if (!mapReady) return;
-    if (!map) return;
+    if (map == null) return;
 
     refreshHighlightedRecord(map, { userRecordOnHoverRecordGeometry, userRecordOnHoverRecordType });
     if (quickPanToRecord && userRecordOnHoverRecordGeometry) {
@@ -136,15 +140,21 @@ const PositionMarkers = ({ mapReady }) => {
         });
       }
     }
-  }, [userRecordOnHoverRecordGeometry, quickPanToRecord]);
+  }, [userRecordOnHoverRecordGeometry, quickPanToRecord, map, mapReady]);
 
   useEffect(() => {
+    if (!mapReady) return;
+    if (map == null) {
+      return;
+    }
+
     refreshWhatsHereFeature(map, { whatsHereFeature: hoveredFeature });
   }, [hoveredFeature, appModeUrl, map, mapReady]);
 
   useEffect(() => {
     try {
       if (!mapReady) return;
+      if (map == null) return;
       if (!userCoords?.heading) return;
       if (positionMarker?.current.getRotation() === userCoords?.heading) return;
       positionMarker?.current.setRotationAlignment('map');
@@ -152,11 +162,12 @@ const PositionMarkers = ({ mapReady }) => {
     } catch (e) {
       console.error(e);
     }
-  }, [userCoords?.heading, mapReady]);
+  }, [userCoords?.heading, mapReady, map]);
 
   // User position tracking marker
   useEffect(() => {
     if (!mapReady) return;
+    if (map == null) return;
     if (positionTracking) {
       handlePositionTracking(
         map,
@@ -170,7 +181,7 @@ const PositionMarkers = ({ mapReady }) => {
     } else {
       positionMarker?.current?.remove();
     }
-  }, [userCoords, positionTracking, accuracyToggle, mapReady, panned]);
+  }, [userCoords, positionTracking, accuracyToggle, mapReady, map, panned]);
 
   return null;
 };

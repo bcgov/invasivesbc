@@ -148,7 +148,7 @@ function _mapRowToDBObject(row, form_status, template: Template, userInfo: any):
     try {
       let mappedPath = col?.mappedPath;
 
-      if (mappedPath === null) {
+      if (mappedPath === null && !col.intentionallyUnmapped) {
         mappedPath = `unmapped_fields.${slugify(col.name)}_${row.data[col.name].spreadsheetCellAddress}`;
         messages.push(`Column [${col.name}] has no object mapping defined, using: ${mappedPath}`);
       }
@@ -357,8 +357,47 @@ async function _validateCell(
       }
       break;
     case 'codeReferenceMulti':
-      //@todo
-      result.parsedValue = data;
+      {
+        const parsedValues: string[] = [];
+        const parsedDescriptions: string[] = [];
+        for (const code of data.split(',')) {
+          if (code.trim().length == 0) {
+            continue;
+          }
+          const foundCode = templateColumn.codes.find((c) => c.code === code.trim());
+          if (!foundCode) {
+            result.validationMessages.push({
+              severity: 'error',
+              messageTitle: 'Invalid code',
+              messageDetail: `Input string '${code}' is not valid for this cell.`
+            });
+          } else {
+            parsedValues.push(foundCode.code);
+            parsedDescriptions.push(foundCode.description);
+          }
+        }
+        if (new Set(parsedValues).size !== parsedValues.length) {
+          result.validationMessages.push({
+            severity: 'error',
+            messageTitle: 'Duplicate values',
+            messageDetail: `Input string '${data}' contains duplicate values.`
+          });
+        }
+        if (parsedValues.length === 0 && templateColumn.required) {
+          result.validationMessages.push({
+            severity: 'error',
+            messageTitle: 'A code is required and no valid codes were found',
+            messageDetail: `Input string '${data}' contained no valid codes, and a code is required.`
+          });
+        }
+
+        if (parsedValues.length > 0) {
+          result.parsedValue = parsedValues.join(','); // we don't actually store it as an array, for some reason!?
+          if (parsedDescriptions.length > 0) {
+            result.friendlyValue = parsedDescriptions.join(', ');
+          }
+        }
+      }
       break;
     case 'numeric':
       try {
@@ -367,6 +406,37 @@ async function _validateCell(
         result.validationMessages.push({
           severity: 'error',
           messageTitle: 'Could not be interpreted as a number.',
+          messageDetail: e.toString()
+        });
+      }
+      if (
+        templateColumn.validations.minValue !== null &&
+        (result.parsedValue as number) < templateColumn.validations.minValue
+      ) {
+        result.validationMessages.push({
+          severity: 'error',
+          messageTitle: `Below minimum value`,
+          messageDetail: `Value ${result.parsedValue} below minimum required: ${templateColumn.validations.minValue}`
+        });
+      }
+      if (
+        templateColumn.validations.maxValue !== null &&
+        (result.parsedValue as number) > templateColumn.validations.maxValue
+      ) {
+        result.validationMessages.push({
+          severity: 'error',
+          messageTitle: `Above maximum value`,
+          messageDetail: `Value ${result.parsedValue} above maximum required: ${templateColumn.validations.maxValue}`
+        });
+      }
+      break;
+    case 'integer':
+      try {
+        result.parsedValue = Number.parseInt(data);
+      } catch (e) {
+        result.validationMessages.push({
+          severity: 'error',
+          messageTitle: 'Could not be interpreted as an integer.',
           messageDetail: e.toString()
         });
       }
@@ -478,14 +548,17 @@ async function _validateCell(
     case 'WKT':
       try {
         // validate if not polygon first to avoid WKT autofill and subsequent crashes
-        const shape = data.split(' (')[0];
-        if (shape !== 'POLYGON' && shape !== 'MULTIPOLYGON' && !template.key.includes('temp')) {
+        const shape = data.split('(')[0].trim();
+        const ACCEPTABLE_SHAPES = ['POLYGON', 'MULTIPOLYGON', 'POINT'];
+
+        if (!ACCEPTABLE_SHAPES.includes(shape)) {
           result.validationMessages.push({
             severity: 'error',
-            messageTitle: `Geometry shape must be a Polygon or Multipolygon, value read as ${shape}`
+            messageTitle: `Geometry shape must be a one of [${ACCEPTABLE_SHAPES.join(',')}], value read as ${shape}`
           });
           break;
-        } else if (shape !== 'POINT' && template.key.includes('temp')) {
+        }
+        if (shape !== 'POINT' && template.key.includes('temp')) {
           result.validationMessages.push({
             severity: 'error',
             messageTitle: `Geometry shape must be a Point, value read as ${shape}`
@@ -502,13 +575,15 @@ async function _validateCell(
         }
 
         // hack for year one garbage import data
+        // June 24 2026 - on request: allow point+area data entry
         if (shape === 'POINT') {
           const geojson = parseWKTasGeoJSON(data);
-          const parsedArea = parseInt(row?.['data']?.['Area']);
-          if (geojson !== null && !(parsedArea > 0)) {
+
+          const parsedArea = parseInt(row['data']?.['Area'] || row?.['data']?.['Point Area']);
+          if (geojson !== null && (!(parsedArea >= 1) || !(parsedArea <= 10))) {
             result.validationMessages.push({
               severity: 'error',
-              messageTitle: `Area needs to be a number`
+              messageTitle: `Area must be a positive number in the range 1 - 10`
             });
           }
           if (geojson !== null && parsedArea > 0) {
@@ -519,6 +594,13 @@ async function _validateCell(
             const newPoly = circle(geojson, radius, { units: 'meters', steps: numSides });
             const newWKT = parseGeoJSONasWKT(newPoly);
             data = newWKT;
+          }
+        } else if (shape !== 'POINT') {
+          if (!isNaN(parseInt(row['data']?.['Area'] || row?.['data']?.['Point Area']))) {
+            result.validationMessages.push({
+              severity: 'error',
+              messageTitle: `Area cannot be supplied when geometry is not a POINT`
+            });
           }
         }
 

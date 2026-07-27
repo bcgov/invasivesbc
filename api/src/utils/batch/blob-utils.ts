@@ -36,6 +36,10 @@ export const mapTemplateFields = (
       continue;
     }
 
+    if (cell.templateColumn.intentionallyUnmapped) {
+      continue;
+    }
+
     switch (cell?.templateColumn.dataType) {
       case 'WKT':
         try {
@@ -62,6 +66,7 @@ export const mapTemplateFields = (
         }
         break;
       case 'numeric':
+      case 'integer':
         try {
           if (_shouldCellBeWritten(output, cell) && (cell.parsedValue || JSON.stringify(cell.parsedValue) === '0')) {
             _.set(output, cell?.templateColumn.mappedPath, cell.parsedValue);

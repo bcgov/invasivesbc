@@ -27,6 +27,8 @@ const BatchList = React.lazy(() => import('UI/Features/Batch/BatchList'));
 const BatchView = React.lazy(() => import('UI/Features/Batch/BatchView'));
 const BatchCreateNew = React.lazy(() => import('UI/Features/Batch/BatchCreateNew'));
 const BatchTemplates = React.lazy(() => import('UI/Features/Batch/BatchTemplates'));
+const BatchCodeTables = React.lazy(() => import('UI/Features/Batch/BatchCodeTables'));
+const BatchGeometryTool = React.lazy(() => import('UI/Features/Batch/BatchGeometryTool'));
 
 const LegendsPopup = React.lazy(() => import('UI/Features/Legend/LegendsPopup'));
 const ManageTripsPage = React.lazy(() => import('UI/Features/ManageTripsPage/ManageTripsPage'));
@@ -213,6 +215,26 @@ const AppRoutes = () => {
           <BatchLayout>
             <Suspense fallback={<Spinner />}>
               <BatchTemplates />
+            </Suspense>
+          </BatchLayout>
+        )}
+      />
+      <Route
+        path="/Batch/codes"
+        Component={() => (
+          <BatchLayout>
+            <Suspense fallback={<Spinner />}>
+              <BatchCodeTables />
+            </Suspense>
+          </BatchLayout>
+        )}
+      />
+      <Route
+        path="/Batch/calculator"
+        Component={() => (
+          <BatchLayout>
+            <Suspense fallback={<Spinner />}>
+              <BatchGeometryTool />
             </Suspense>
           </BatchLayout>
         )}

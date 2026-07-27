@@ -57,6 +57,13 @@ const BatchTableCell = ({ field, row }) => {
           setDisplayedValue(row.data[field].inputValue);
         }
         break;
+      case 'codeReferenceMulti':
+        if (row.data[field]['friendlyValue'] !== undefined && row.data[field]['friendlyValue'] !== null) {
+          setDisplayedValue(row.data[field]['friendlyValue']);
+        } else {
+          setDisplayedValue(row.data[field].inputValue);
+        }
+        break;
       case 'WKT':
         setDisplayedValue(`Geometry, ${v.area?.toLocaleString()}m²`);
         break;

@@ -8,7 +8,9 @@ const BatchLayout = ({ children }) => {
   const links: SecondaryNavigationLinkDefinition[] = [
     { to: '/Batch/list', label: 'My Batches' },
     { to: '/Batch/new', label: 'Create New' },
-    { to: '/Batch/templates', label: 'Templates' }
+    { to: '/Batch/templates', label: 'Templates' },
+    { to: '/Batch/calculator', label: 'Geometry Tool' },
+    { to: '/Batch/codes', label: 'Code Tables' }
   ];
   return (
     <>

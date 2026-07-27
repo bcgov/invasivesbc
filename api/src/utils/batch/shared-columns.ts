@@ -21,6 +21,10 @@ export const BasicInformation = [
   })
     .isRequired()
     .build(),
+  new TemplateColumnBuilder('Point Area', 'integer', null)
+    .withHelpText('Area in square meters. Required when the geometry supplied in WKT is of type POINT.')
+    .isIntentionallyUnmapped()
+    .build(),
   new TemplateColumnBuilder('Basic - Date', 'datetime', 'form_data.activity_data.activity_date_time')
     .isRequired()
     .mustNotBeFuture()
@@ -1374,7 +1378,7 @@ export const CalculationType = (row): RowValidationResult => {
   let valid = true;
   const rowData = row.data;
   const validationMessages = [];
-  let appliesToFields = [];
+  const appliesToFields = [];
 
   const calculationType = rowData[`Chemical Treatment - Calculation Type`]?.parsedValue;
   const dilutionFields = ['Herbicide - 1 - Dilution - Dilution %', 'Herbicide - 1 - Area Treated (Dilution)'];
@@ -1497,7 +1501,7 @@ export const BioAgentValidator = (row): RowValidationResult => {
   const rowData = row.data;
   const biocontrolPresent = rowData['Monitoring - Biocontrol Present']?.parsedValue;
   const validationMessages = [];
-  let appliesToFields = [];
+  const appliesToFields = [];
   let actualFields = [];
   let estimatedFields = [];
 
@@ -1624,7 +1628,7 @@ export const SpreadResultsValidator = (row): RowValidationResult => {
   ];
   const spreadDetailsRecorded = rowData['Monitoring - Results - Spread - Recorded?']?.parsedValue;
   const validationMessages = [];
-  let appliesToFields = [];
+  const appliesToFields = [];
 
   const allFieldsHaveData = (fields) => fields.every((field) => rowData[field]?.parsedValue);
 
