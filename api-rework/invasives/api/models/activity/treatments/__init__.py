@@ -2,7 +2,6 @@ from .aquatic_mechanical_authorization import (
     AquaticMechanicalAuthorization,
     DraftAquaticMechanicalAuthorization,
 )
-from .chem_treatment import *
 from .chemical_plant_context import (
     ChemicalTreatmentContext,
     DraftChemicalTreatmentContext,

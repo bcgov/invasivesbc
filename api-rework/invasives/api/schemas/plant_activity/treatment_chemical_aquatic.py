@@ -13,12 +13,14 @@ from api.models.activity import (
     DraftActivity,
     DraftActivityDataRecord,
     DraftWellEntry,
-    LiquidHerbicideCode,
-    GranularHerbicideCode,
     DraftChemTreatmentContext,
     DraftGranularHerbicideEntry,
     DraftLiquidHerbicideEntry,
     DraftChemPlantEntryAquatic,
+)
+from api.models.codes import (
+    LiquidHerbicideCode,
+    GranularHerbicideCode,
 )
 
 log = logging.getLogger(__name__)

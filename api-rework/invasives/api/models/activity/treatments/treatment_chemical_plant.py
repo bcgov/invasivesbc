@@ -8,8 +8,8 @@ from api.models.codes import (
 
 
 class CalculationType(models.TextChoices):
-    APPLICATION_RATE = "Product Application Rate", "Product Application Rate"
-    DILUTION = "Dilution", "Dilution"
+    APPLICATION_RATE = "PAR", "PAR"
+    DILUTION = "D", "D"
 
 
 class BaseModel(models.Model):
