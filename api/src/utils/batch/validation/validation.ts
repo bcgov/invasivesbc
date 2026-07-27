@@ -233,9 +233,16 @@ const _handleGetLinkedId = async (
       return;
     }
     const isItTheRightRecordType = options.expectedRecordTypes.includes(linkedRecord['activity_subtype']);
-    const doTheSpeciesMatch =
-      linkedRecord['species_treated']?.includes(row.data['Monitoring - Terrestrial Invasive Plant']) ||
-      linkedRecord['species_treated']?.includes(row.data['Monitoring - Aquatic Invasive Plant']);
+    const monitoringPlants = Object.entries(row.data)
+      .filter(
+        ([key, value]) =>
+          value &&
+          (key.startsWith('Monitoring - Terrestrial Invasive Plant') ||
+            key.startsWith('Monitoring - Aquatic Invasive Plant'))
+      )
+      .map(([, value]) => value);
+
+    const doTheSpeciesMatch = monitoringPlants.every((plant) => linkedRecord['species_treated']?.includes(plant));
     const thisGeoJSON: any = row.data['WKT'];
     const isValidGeoJSON: boolean = thisGeoJSON ?? false;
     const linkedGeoJSON: any = JSON.parse(linkedRecord['sample']) ?? false;

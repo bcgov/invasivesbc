@@ -7,6 +7,7 @@ import {
   BasicInformationRowValidators,
   CalculationType,
   ChemicalPlantTreatmentInformation,
+  DeliveryRateGreaterThanApplicationRate,
   GranularHerbicideRate,
   HerbicidesInformation,
   PmpValidator,
@@ -78,6 +79,7 @@ TreatmentChemicalAquaticPlant.rowValidators = [
   ApplicationMethodValidator,
   ApplicationMethodType,
   GranularHerbicideRate,
-  CalculationType
+  CalculationType,
+  DeliveryRateGreaterThanApplicationRate
 ];
 export { TreatmentChemicalAquaticPlant };

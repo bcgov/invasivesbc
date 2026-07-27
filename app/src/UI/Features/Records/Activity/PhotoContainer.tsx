@@ -1,43 +1,25 @@
 import { Camera, MediaResult, MediaTypeSelection } from '@capacitor/camera';
-import {
-  Box,
-  Button,
-  Card,
-  CardActions,
-  CardMedia,
-  CircularProgress,
-  FormControl,
-  Grid,
-  IconButton,
-  TextField,
-  Typography
-} from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import { PhotoCamera, PhotoLibrary, DeleteForever } from '@mui/icons-material';
-import React, { useState } from 'react';
+import { Box, Button, CircularProgress, Grid } from '@mui/material';
+import { PhotoCamera, PhotoLibrary } from '@mui/icons-material';
 import Activity from 'state/actions/activity/Activity';
 import UploadedPhoto from 'interfaces/UploadedPhoto';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import 'UI/Features/Records/Activity/PhotoContainer.css';
 import Alerts from 'state/actions/alerts/Alerts';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
-export interface IPhoto {
-  file_name: string;
-  webviewPath?: string;
-  base64?: string;
-  dataUrl?: string;
-  description?: string;
-  editing?: boolean;
-}
+import { Md5 } from 'ts-md5';
+import Photo from './Photo';
+import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
+import { nanoid } from '@reduxjs/toolkit';
 
 export interface IPhotoContainerProps {
   classes?: any;
   isDisabled?: boolean;
 }
 
-const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
+const PhotoContainer = (props: IPhotoContainerProps) => {
   const dispatch = useDispatch();
-  const media = useSelector((state) => state.ActivityPage.activity?.media || []);
+  const media = useSelector((state) => state.ActivityPage.activity?.media) ?? [];
 
   const checkPermissionsAndAlert = async (permission: 'Photo Gallery' | 'Camera'): Promise<void> => {
     const { camera, photos } = await Camera.checkPermissions();
@@ -53,8 +35,8 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
     }
   };
 
-  const transformImageToFormData = (photo: MediaResult, index = 0): UploadedPhoto => {
-    const fileName = `${new Date().toISOString().slice(0, 10)}-${index}.${photo.metadata?.format}`;
+  const transformImageToFormData = (photo: MediaResult): UploadedPhoto => {
+    const fileName = `${new Date().toISOString().slice(0, 10)}-${nanoid()}.${photo.metadata?.format}`;
     const dataUrl = `data:image/${photo.metadata?.format};base64,${photo.thumbnail}`;
     return {
       file_name: fileName,
@@ -89,99 +71,54 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
         quality: 75
       });
       const processedPhotos = results.map(transformImageToFormData);
-      // filter out failed photo conversions
-      processedPhotos.filter(Boolean).forEach((p) => dispatch(Activity.Photo.add(p)));
+      // filter out failed photo conversions / twice-uploaded images
+      processedPhotos.filter(Boolean).forEach((p) => {
+        const hashed = Md5.hashStr(p.encoded_file ?? '');
+        const isPhotoAlreadyUploaded = media.some((m) => Md5.hashStr(m.encoded_file) === hashed);
+        if (isPhotoAlreadyUploaded) {
+          dispatch(
+            Alerts.create({
+              content: `Selected image already in record. Image was removed.`,
+              severity: AlertSeverity.Error,
+              subject: AlertSubjects.Photo,
+              autoClose: 8
+            })
+          );
+        } else {
+          dispatch(Activity.Photo.add(p));
+        }
+      });
     } catch (e) {
       console.error(e);
     }
   };
 
-  const deletePhoto = async (photo: UploadedPhoto) => {
-    dispatch(Activity.Photo.delete(photo));
-  };
-
-  const [newPhotoDesc, setNewPhotoDesc] = useState('untitled');
-
   if (!media) {
     return <CircularProgress />;
   }
-
   return (
     <Box width={1}>
       <Box mb={3}>
         <Grid container>
           <Grid container>
-            {media.map((photo, index) => (
-              <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={index}>
-                <Card>
-                  <CardMedia src={photo.encoded_file} component="img" />
-                  <Typography style={{ marginTop: '15px' }} textAlign={'center'} variant="h5">
-                    {photo.description}
-                  </Typography>
-                  {!props.isDisabled && (
-                    <CardActions style={{ width: '100%', display: 'flex', justifyContent: 'space-around' }}>
-                      <IconButton onClick={() => deletePhoto(photo)}>
-                        <DeleteForever />
-                      </IconButton>
-                      <IconButton
-                        disabled={photo.editing}
-                        onClick={() => {
-                          dispatch(Activity.Photo.edit({ ...photo, editing: true }));
-                        }}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                    </CardActions>
-                  )}
-
-                  <FormControl>
-                    {photo.editing && (
-                      <>
-                        <TextField
-                          label="Change Description"
-                          onChange={(e) => {
-                            setNewPhotoDesc(e.target.value);
-                          }}
-                        />
-                        <Button
-                          onClick={() => {
-                            dispatch(Activity.Photo.edit({ ...photo, description: newPhotoDesc, editing: false }));
-                            setNewPhotoDesc('untitled');
-                          }}
-                        >
-                          Save
-                        </Button>
-                      </>
-                    )}
-                  </FormControl>
-                </Card>
-              </Grid>
+            {media.map((photo) => (
+              <Photo key={Md5.hashStr(photo.encoded_file)} photo={photo} isDisabled={props?.isDisabled} />
             ))}
           </Grid>
         </Grid>
       </Box>
       {!props.isDisabled && (
-        <Box>
-          <Grid container>
-            <Grid container spacing={3} justifyContent="center">
-              <Grid>
-                <Button variant="contained" color="primary" startIcon={<PhotoCamera />} onClick={takePhotoFromCamera}>
-                  Capture Photo
-                </Button>
-              </Grid>
-              <Grid>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  startIcon={<PhotoLibrary />}
-                  onClick={choosePhotosFromLibrary}
-                >
-                  Choose from Gallery
-                </Button>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Box>
+        <div>
+          <MobileOnly>
+            <Button variant="contained" color="primary" startIcon={<PhotoCamera />} onClick={takePhotoFromCamera}>
+              Capture Photo
+            </Button>
+          </MobileOnly>
+
+          <Button variant="contained" color="primary" startIcon={<PhotoLibrary />} onClick={choosePhotosFromLibrary}>
+            Choose from Gallery
+          </Button>
+        </div>
       )}
     </Box>
   );

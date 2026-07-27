@@ -456,7 +456,7 @@ export const WaterbodyInformation = [
 
   new TemplateColumnBuilder(
     'Waterbody - Water Level Management',
-    'codeReference',
+    'codeReferenceMulti',
     'form_data.activity_subtype_data.WaterbodyData.water_level_management'
   )
     .hardcodedCodes(WATER_LEVEL_MANAGEMENT_CODES)
@@ -464,21 +464,21 @@ export const WaterbodyInformation = [
 
   new TemplateColumnBuilder(
     'Waterbody - Use',
-    'codeReference',
+    'codeReferenceMulti',
     'form_data.activity_subtype_data.WaterbodyData.waterbody_use'
   )
     .referencesCode('waterbody_use_code')
     .build(),
   new TemplateColumnBuilder(
     'Waterbody - Adjacent Land Usage',
-    'codeReference',
+    'codeReferenceMulti',
     'form_data.activity_subtype_data.WaterbodyData.adjacent_land_use'
   )
     .referencesCode('adjacent_land_use_code')
     .build(),
   new TemplateColumnBuilder(
     'Waterbody - Substrate',
-    'codeReference',
+    'codeReferenceMulti',
     'form_data.activity_subtype_data.WaterbodyData.substrate_type'
   )
     .isRequired()
@@ -487,14 +487,14 @@ export const WaterbodyInformation = [
 
   new TemplateColumnBuilder(
     'Waterbody - Inflow - Permanent',
-    'codeReference',
+    'codeReferenceMulti',
     'form_data.activity_subtype_data.WaterbodyData.inflow_permanent'
   )
     .referencesCode('inflow_permanent_code')
     .build(),
   new TemplateColumnBuilder(
     'Waterbody - Inflow - Other',
-    'codeReference',
+    'codeReferenceMulti',
     'form_data.activity_subtype_data.WaterbodyData.inflow_other'
   )
     .referencesCode('inflow_temporary_code')
@@ -502,14 +502,14 @@ export const WaterbodyInformation = [
 
   new TemplateColumnBuilder(
     'Waterbody - Outflow - Permanent',
-    'codeReference',
+    'codeReferenceMulti',
     'form_data.activity_subtype_data.WaterbodyData.outflow'
   )
     .referencesCode('outflow_code')
     .build(),
   new TemplateColumnBuilder(
     'Waterbody - Outflow - Seasonal',
-    'codeReference',
+    'codeReferenceMulti',
     'form_data.activity_subtype_data.WaterbodyData.outflow_other'
   )
     .referencesCode('outflow_code')
@@ -1449,6 +1449,39 @@ export const GranularHerbicideRate = (row): RowValidationResult => {
         messageTitle: 'Invalid value',
         messageDetail: `Herbicide - ${i} - PAR - Production Application Rate must be >= 10 for granular herbicide.`
       });
+    }
+  }
+
+  return {
+    valid,
+    validationMessages,
+    appliesToFields: fields
+  };
+};
+
+export const DeliveryRateGreaterThanApplicationRate = (row): RowValidationResult => {
+  let valid = true;
+  const fields = ['Herbicide - Delivery Rate of Mix'];
+  const rowData = row.data;
+  const validationMessages = [];
+
+  const calculationType = rowData['Chemical Treatment - Calculation Type']?.parsedValue;
+  const deliveryRate = rowData['Herbicide - Delivery Rate of Mix']?.parsedValue;
+
+  if (calculationType === 'PAR' && deliveryRate != null && deliveryRate !== '') {
+    for (let i = 1; i <= 3; i++) {
+      const applicationRate = rowData[`Herbicide - ${i} - PAR - Production Application Rate`]?.parsedValue;
+
+      if (applicationRate != null && applicationRate !== '' && Number(deliveryRate) <= Number(applicationRate)) {
+        valid = false;
+        validationMessages.push({
+          severity: 'error',
+          messageTitle: 'Invalid value',
+          messageDetail: 'Delivery rate must be greater than application rate.'
+        });
+
+        break;
+      }
     }
   }
 

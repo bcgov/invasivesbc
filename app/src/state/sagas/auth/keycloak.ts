@@ -81,6 +81,13 @@ function* keepTokenFresh() {
         continue;
       }
 
+      if (authenticated && !keycloakInstance.authenticated) {
+        // we think we are authenticated but keycloak disagrees (possible after a tab is restored from background after a long time, for example)
+
+        // update our state to match
+        put(AuthActions.signoutRequest());
+      }
+
       try {
         if (keycloakInstance.isTokenExpired(MIN_TOKEN_FRESHNESS)) {
           const refreshed = yield keycloakInstance.updateToken(MIN_TOKEN_FRESHNESS);

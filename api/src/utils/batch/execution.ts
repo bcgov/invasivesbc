@@ -114,6 +114,7 @@ interface Config {
   desiredFinalStatus: 'Draft' | 'Submitted';
   errorRowsBehaviour: 'Draft' | 'Skip';
   userInfo: InvasivesRequest['authContext']['user'];
+  subject: string | null;
 }
 
 export const BatchExecutionService = {
@@ -128,7 +129,7 @@ export const BatchExecutionService = {
           activity_id,          short_id,     activity_payload,  batch_id,         activity_type,
           activity_subtype,     form_status,  created_by,        updated_by,       created_by_with_guid,
           updated_by_with_guid, geog,         row_number,        species_positive, species_negative,
-          species_treated,      platform_src         
+          species_treated,      platform_src, subject
         ) VALUES
       `;
       insertValues.forEach((row, index) => {
@@ -186,7 +187,7 @@ export const BatchExecutionService = {
             ${activityId},        ${shortId},                 ${payload},                     ${id},                          ${template.type},
             ${template.subtype},  ${errEntry},                ${userInfo.preferred_username}, ${userInfo.preferred_username}, ${guid},
             ${guid},              ${geog},                    ${index},                       ${sPos},                        ${sNeg},
-            ${sTreat},            ${payload['platform_src']} 
+            ${sTreat},            ${payload['platform_src']}, ${config.subject}
           )
         `);
         if (insertValues.length >= 10) await batchUploadCurrentEntries();
@@ -201,7 +202,7 @@ export const BatchExecutionService = {
       UPDATE batch_uploads
       SET status = 'SUCCESS'
       WHERE id = ${id}
-      AND status = 'NEW';  
+      AND status = 'NEW';
     `);
     return { createdActivityIDs: createdIds };
   }

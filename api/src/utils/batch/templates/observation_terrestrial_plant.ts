@@ -39,7 +39,7 @@ ObservationTerrestrialPlant.columns = [
     .build(),
   new TemplateColumnBuilder(
     'Observation - Terrestrial - Specific Use',
-    'codeReference',
+    'codeReferenceMulti',
     'form_data.activity_subtype_data.Observation_PlantTerrestrial_Information.specific_use_code'
   )
     .referencesCode('specific_use_code')
