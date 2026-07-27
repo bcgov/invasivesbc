@@ -167,6 +167,7 @@ const ProtomapsList = () => {
     const installed = protomapDefinitions.some((d) => d.tripName === r.trip_name);
     const installable = !installed && r.status === 'COMPLETED' && r.trip_name !== null && r.generation_record !== null;
     const installationInProgress = installationsInProgress.some((d) => d.tripName === r.trip_name);
+    const canBeRegenerated = r.status === 'EXPIRED';
 
     if (installationInProgress) {
       return (
@@ -199,6 +200,16 @@ const ProtomapsList = () => {
           }}
         >
           Install
+        </Button>
+      );
+    } else if (canBeRegenerated) {
+      return (
+        <Button
+          onClick={() => {
+            dispatch(OfflineProtomaps.regenerate({ id: r.id, tripId: r.trip_name }));
+          }}
+        >
+          Regenerate
         </Button>
       );
     }

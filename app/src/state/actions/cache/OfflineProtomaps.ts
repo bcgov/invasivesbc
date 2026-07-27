@@ -74,6 +74,59 @@ class OfflineProtomaps {
     dispatch(OfflineProtomaps.refreshList());
   });
 
+  static readonly regenerate = createAsyncThunk(
+    `${this.PREFIX}/regenerate`,
+    async (spec: { id: number; tripId: tripIdentifier }, { getState }) => {
+      const state: RootState = getState() as RootState;
+
+      const regenerationResponse = await fetch(
+        `${state.Configuration.current.runtime.NORMALIZED_API_BASE}/maps/requests/${spec.id}/regenerate`,
+        {
+          headers: {
+            Authorization: await getCurrentJWT(),
+            'Content-Type': 'application/json'
+          },
+          method: 'POST'
+        }
+      );
+
+      if (regenerationResponse.status !== 200) {
+        throw new Error(`Unexpected status code ${regenerationResponse.status}`);
+      }
+
+      const generationResponse: MapGenerationExecutionResponse = await regenerationResponse.json();
+      // now we should have an id we can poll to follow the progress of map generation
+
+      let finished = false;
+
+      while (!finished) {
+        await new Promise((resolve) => setTimeout(resolve, 10000));
+        const monitoringResult = await fetch(
+          `${state.Configuration.current.runtime.NORMALIZED_API_BASE}/maps/requests/${generationResponse.id}`,
+          {
+            headers: {
+              Authorization: await getCurrentJWT(),
+              'Content-Type': 'application/json'
+            },
+            method: 'GET'
+          }
+        );
+
+        if (monitoringResult.status !== 200) {
+          throw new Error(`Unexpected status code ${monitoringResult.status}`);
+        }
+        const monitorResultBody: MapGenerationRequestMonitoringResponse = await monitoringResult.json();
+        if (monitorResultBody.status === 'COMPLETED' || monitorResultBody.status === 'FAILED') {
+          finished = true;
+          return {
+            tripId: spec.tripId,
+            generationRecord: monitorResultBody.generation_record
+          };
+        }
+      }
+    }
+  );
+
   static readonly install = createAsyncThunk(
     `${this.PREFIX}/install`,
     async (spec: { generationRecordId: number }, { getState, dispatch }) => {
