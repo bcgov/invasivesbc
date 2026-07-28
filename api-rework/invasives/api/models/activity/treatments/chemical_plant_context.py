@@ -3,6 +3,7 @@ from api.models.codes.code_tables import (
     ChemicalPrecautionaryStatement,
     PestManagementPlan,
     WindDirectionCode,
+    ServiceLicenseNumberAndCompany,
 )
 from api.models.activity import UnrepeatedFormData, DraftUnrepeatedFormData
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -19,7 +20,9 @@ class BaseModel(models.Model):
     pest_management_plan_manual = models.CharField(
         max_length=128, blank=True, null=True
     )
-    pesticide_employer_code = models.CharField(max_length=128, blank=True, null=True)
+    pesticide_employer_code = models.ForeignKey(
+        ServiceLicenseNumberAndCompany, on_delete=models.PROTECT
+    )
 
     # Ideal temperature should be between 10-28 degrees. But allow greater to catch non-compliance.
     # Prevent >= 100 to catch mistakes e.g. 10 -> 100 (from extra 0 press), etc.
@@ -79,6 +82,9 @@ class ChemicalTreatmentContext(BaseModel, UnrepeatedFormData):
 
 
 class DraftChemicalTreatmentContext(BaseModel, DraftUnrepeatedFormData):
+    pesticide_employer_code = models.ForeignKey(
+        ServiceLicenseNumberAndCompany, on_delete=models.PROTECT, blank=True, null=True
+    )
     temperature_c = models.SmallIntegerField(blank=True, null=True)
     wind_speed_kmh = models.SmallIntegerField(blank=True, null=True)
     application_start_time = models.DateTimeField(blank=True, null=True)

@@ -22,6 +22,7 @@ from api.models.codes import (
     WindDirectionCode,
     ChemicalPrecautionaryStatement,
     HerbicideApplicationMethodCode,
+    ServiceLicenseNumberAndCompany,
     HerbicideTypeCode,
     LiquidHerbicideCode,
     GranularHerbicideCode,
@@ -146,7 +147,13 @@ def add_chemical_treatment_context(new: Activity, old: LegacyActivity):
             if tcpi.pest_management_plan is not None
             else None
         ),
-        pesticide_employer_code=tcpi.pesticide_employer_code,
+        pesticide_employer_code=(
+            ServiceLicenseNumberAndCompany.objects.get(
+                code=(tcpi.pesticide_employer_code)
+            )
+            if tcpi.pesticide_employer_code is not None
+            else None
+        ),
         application_start_time=tcpi.application_start_time,
         temperature_c=tcpi.temperature,
         wind_speed_kmh=tcpi.wind_speed,
@@ -171,6 +178,7 @@ def add_chemical_treatment_context(new: Activity, old: LegacyActivity):
 
 
 def add_calculation_results(new: Activity, old: LegacyActivity):
+
     print("UNIMPLEMENTED", "add_calculation_results")
 
 

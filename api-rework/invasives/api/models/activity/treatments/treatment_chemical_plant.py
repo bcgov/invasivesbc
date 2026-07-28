@@ -1,5 +1,4 @@
 from django.db import models
-from enum import Enum
 from api.models.activity import UnrepeatedFormData, DraftUnrepeatedFormData
 from django.core.validators import MinValueValidator
 from api.models.codes import (

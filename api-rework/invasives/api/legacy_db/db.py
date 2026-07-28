@@ -36,10 +36,12 @@ from api.models.codes import (
     EmployerCode,
     FundingAgencyCode,
     GranularHerbicideCode,
+    HerbicideCode,
     InvasivePlantsOnSiteCode,
     JurisdictionCode,
     LiquidHerbicideCode,
     MesoslopePositionCode,
+    PlantCode,
     PestManagementPlan,
     PlantLifeStageCode,
     PlantMechanicalTreatmentMethodCode,
@@ -275,6 +277,26 @@ class LegacyDB:
 
     @staticmethod
     def add_hardcoded_codes():
+        ap = AquaticPlantCode.objects.all()
+        tp = TerrestrialPlantCode.objects.all()
+
+        PlantCode.objects.bulk_create(
+            [PlantCode(code=p.code, full=p.full) for p in ap], ignore_conflicts=True
+        )
+        PlantCode.objects.bulk_create(
+            [PlantCode(code=p.code, full=p.full) for p in tp], ignore_conflicts=True
+        )
+
+        lherb = LiquidHerbicideCode.objects.all()
+        gherb = GranularHerbicideCode.objects.all()
+        HerbicideCode.objects.bulk_create(
+            [HerbicideCode(code=h.code, full=h.full) for h in lherb],
+            ignore_conflicts=True,
+        )
+        HerbicideCode.objects.bulk_create(
+            [HerbicideCode(code=h.code, full=h.full) for h in gherb],
+            ignore_conflicts=True,
+        )
         WindDirectionCode.objects.update_or_create(
             code="No Wind", full="No Wind", code_sort_order=10
         )
