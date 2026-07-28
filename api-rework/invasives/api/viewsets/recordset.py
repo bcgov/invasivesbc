@@ -5,7 +5,7 @@ from django.db.models import Q
 
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from api.models.activity import Activity
+from api.models.activity import Activity, ActivitySubtypes
 from api.permissions import HasAdminRole
 from api.serializers.activity_recordset_row import (
     ActivityRecordsetRowSerializer,
@@ -111,8 +111,13 @@ class RecordsetRowsViewSet(viewsets.GenericViewSet):
         activity_queryset = builder.query.filter(subtype=csv_type)
 
         valid_activity_ids = activity_queryset.values_list("id", flat=True).distinct()
-
-        ANNOTATIONS = build_csv_annotation_object(config.get("annotations", []))
+        is_chemical_treatment = csv_type in [
+            ActivitySubtypes.Treatment_Chemical_Plant_Aquatic.name,
+            ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial.name,
+        ]
+        ANNOTATIONS = build_csv_annotation_object(
+            config.get("annotations", []), is_chemical_treatment=is_chemical_treatment
+        )
 
         # Decompile the annotations Array into their respective sections
         annotations = {item["key"]: item["annotation"] for item in ANNOTATIONS}
