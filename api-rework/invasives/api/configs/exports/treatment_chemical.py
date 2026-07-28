@@ -10,8 +10,7 @@ from django.db.models import (
     CharField,
     Value,
 )
-from django.db.models.functions import Cast, Concat
-from django.contrib.postgres.aggregates import StringAgg
+from django.db.models.functions import Cast
 from .helpers import agg
 
 ROOT = f"root_activity__activitydatarecord"
