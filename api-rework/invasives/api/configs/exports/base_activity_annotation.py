@@ -9,110 +9,138 @@ SRC = "root_activity"
 ADR_PATH = f"{SRC}__activitydatarecord"
 
 
-BASE_ANNOTATION_CONFIGURATION_LEADING = [
-    {"header": "ID", "key": "short_id_display", "annotation": F(f"{SRC}__short_id")},
-    {
-        "header": "Project Codes",
-        "key": "project_code_display",
-        "annotation": StringAgg(
-            f"{ADR_PATH}__projectcode__description", delimiter=", ", distinct=True
-        ),
-    },
-    {"header": "Date", "key": "date_display", "annotation": F(f"{SRC}__date")},
-    {"header": "Area (m)", "key": "area_display", "annotation": F(f"{SRC}__area_m")},
-    {
-        "header": "Latitude",
-        "key": "latitude_display",
-        "annotation": F(f"{SRC}__latitude"),
-    },
-    {
-        "header": "Longitude",
-        "key": "longitude_display",
-        "annotation": F(f"{SRC}__longitude"),
-    },
-    {
-        "header": "UTM Zone",
-        "key": "utm_zone_display",
-        "annotation": F(f"{SRC}__utm_zone"),
-    },
-    {
-        "header": "UTM Northing",
-        "key": "utm_northing_display",
-        "annotation": F(f"{SRC}__utm_northing"),
-    },
-    {
-        "header": "UTM Easting",
-        "key": "utm_easting_display",
-        "annotation": F(f"{SRC}__utm_easting"),
-    },
-    {
-        "header": "Employer(s)",
-        "key": "employer_display",
-        "annotation": StringAgg(
-            f"{ADR_PATH}__employer__employer__full", delimiter=", ", distinct=True
-        ),
-    },
-    {
-        "header": "Funding Agencies",
-        "key": "funding_agency_display",
-        "annotation": StringAgg(
-            f"{ADR_PATH}__fundingagency__agency__full", delimiter=", ", distinct=True
-        ),
-    },
-    {
-        "header": "Jurisdiction(s)",
-        "key": "jurisdiction_display",
-        "annotation": StringAgg(
-            Concat(
-                f"{ADR_PATH}__jurisdiction__jurisdiction__full",
-                Value(" ("),
-                Cast(f"{ADR_PATH}__jurisdiction__percent_covered", CharField()),
-                Value("%)"),
+def get_BASE_ANNOTATION_CONFIGURATION_LEADING(is_chemical_treatment: bool):
+    return [
+        {
+            "header": "ID",
+            "key": "short_id_display",
+            "annotation": F(f"{SRC}__short_id"),
+        },
+        {
+            "header": "Project Codes",
+            "key": "project_code_display",
+            "annotation": StringAgg(
+                f"{ADR_PATH}__projectcode__description", delimiter=", ", distinct=True
             ),
-            delimiter=", ",
-            distinct=True,
-            # Excludes any row where the jurisdiction name is missing from the calculation
-            filter=Q(
-                **{f"{ADR_PATH}__jurisdiction__jurisdiction__full__isnull": False}
+        },
+        {"header": "Date", "key": "date_display", "annotation": F(f"{SRC}__date")},
+        {
+            "header": "Area (m)",
+            "key": "area_display",
+            "annotation": F(f"{SRC}__area_m"),
+        },
+        {
+            "header": "Latitude",
+            "key": "latitude_display",
+            "annotation": F(f"{SRC}__latitude"),
+        },
+        {
+            "header": "Longitude",
+            "key": "longitude_display",
+            "annotation": F(f"{SRC}__longitude"),
+        },
+        {
+            "header": "UTM Zone",
+            "key": "utm_zone_display",
+            "annotation": F(f"{SRC}__utm_zone"),
+        },
+        {
+            "header": "UTM Northing",
+            "key": "utm_northing_display",
+            "annotation": F(f"{SRC}__utm_northing"),
+        },
+        {
+            "header": "UTM Easting",
+            "key": "utm_easting_display",
+            "annotation": F(f"{SRC}__utm_easting"),
+        },
+        {
+            "header": "Employer(s)",
+            "key": "employer_display",
+            "annotation": StringAgg(
+                f"{ADR_PATH}__employer__employer__full", delimiter=", ", distinct=True
             ),
-        ),
-    },
-    {
-        "header": "Access Description",
-        "key": "access_description_display",
-        "annotation": F(f"{SRC}__access_description"),
-    },
-    {
-        "header": "Location Description",
-        "key": "location_description_display",
-        "annotation": F(f"{SRC}__location_description"),
-    },
-    {"header": "Comment", "key": "comment_display", "annotation": F(f"{SRC}__comment")},
-    {
-        "header": "Participants",
-        "key": "participants_display",
-        "annotation": StringAgg(
-            Case(
-                When(
-                    Q(**{f"{ADR_PATH}__participant__pac_number__isnull": False})
-                    & ~Q(**{f"{ADR_PATH}__participant__pac_number": "None"}),
-                    then=Concat(
-                        f"{ADR_PATH}__participant__name",
-                        Value(" (PAC: "),
-                        f"{ADR_PATH}__participant__pac_number",
-                        Value(")"),
+        },
+        {
+            "header": "Funding Agencies",
+            "key": "funding_agency_display",
+            "annotation": StringAgg(
+                f"{ADR_PATH}__fundingagency__agency__full",
+                delimiter=", ",
+                distinct=True,
+            ),
+        },
+        {
+            "header": "Jurisdiction(s)",
+            "key": "jurisdiction_display",
+            # Chemical Treatments Display one jurisdiction per row for its union, so display differently.
+            "annotation": (
+                Concat(
+                    f"jurisdiction__full",
+                    Value(" ("),
+                    Cast(f"jurisdiction_percent", CharField()),
+                    Value("%)"),
+                )
+                if is_chemical_treatment
+                else StringAgg(
+                    Concat(
+                        f"{ADR_PATH}__jurisdiction__jurisdiction__full",
+                        Value(" ("),
+                        Cast(f"{ADR_PATH}__jurisdiction__percent_covered", CharField()),
+                        Value("%)"),
                     ),
-                ),
-                default=F(f"{ADR_PATH}__participant__name"),
-                output_field=CharField(),
+                    delimiter=", ",
+                    distinct=True,
+                    # Excludes any row where the jurisdiction name is missing from the calculation
+                    filter=Q(
+                        **{
+                            f"{ADR_PATH}__jurisdiction__jurisdiction__full__isnull": False
+                        }
+                    ),
+                )
             ),
-            delimiter=", ",
-            distinct=True,
-            # Only aggregate rows where a name actually exists
-            filter=Q(**{f"{ADR_PATH}__participant__name__isnull": False}),
-        ),
-    },
-]
+        },
+        {
+            "header": "Access Description",
+            "key": "access_description_display",
+            "annotation": F(f"{SRC}__access_description"),
+        },
+        {
+            "header": "Location Description",
+            "key": "location_description_display",
+            "annotation": F(f"{SRC}__location_description"),
+        },
+        {
+            "header": "Comment",
+            "key": "comment_display",
+            "annotation": F(f"{SRC}__comment"),
+        },
+        {
+            "header": "Participants",
+            "key": "participants_display",
+            "annotation": StringAgg(
+                Case(
+                    When(
+                        Q(**{f"{ADR_PATH}__participant__pac_number__isnull": False})
+                        & ~Q(**{f"{ADR_PATH}__participant__pac_number": "None"}),
+                        then=Concat(
+                            f"{ADR_PATH}__participant__name",
+                            Value(" (PAC: "),
+                            f"{ADR_PATH}__participant__pac_number",
+                            Value(")"),
+                        ),
+                    ),
+                    default=F(f"{ADR_PATH}__participant__name"),
+                    output_field=CharField(),
+                ),
+                delimiter=", ",
+                distinct=True,
+                # Only aggregate rows where a name actually exists
+                filter=Q(**{f"{ADR_PATH}__participant__name__isnull": False}),
+            ),
+        },
+    ]
+
 
 photo_exists_subquery = Exists(
     UploadedImage.objects.filter(
@@ -190,9 +218,13 @@ BASE_ANNOTATION_CONFIGURATION_TRAILING = [
 ]
 
 
-def build_csv_annotation_object(subtype_annotations):
+def build_csv_annotation_object(
+    subtype_annotations, is_chemical_treatment: bool = False
+):
     return (
-        BASE_ANNOTATION_CONFIGURATION_LEADING
+        get_BASE_ANNOTATION_CONFIGURATION_LEADING(
+            is_chemical_treatment=is_chemical_treatment
+        )
         + subtype_annotations
         + BASE_ANNOTATION_CONFIGURATION_TRAILING
     )

@@ -10,8 +10,7 @@ from api.models.activity import (
     TerrestrialBiocontrolCollectionEntry,
     TerrestrialPlantMechanicalTreatmentEntry,
     AquaticPlantMechanicalTreatmentEntry,
-    ChemPlantEntryAquatic,
-    ChemPlantEntryTerrestrial,
+    ChemicalApplicationCalculationEntry,
 )
 from . import (
     OBSERVATION_AQUATIC_ANNOTATIONS,
@@ -91,11 +90,11 @@ CSV_SUBTYPE_CONFIG = {
         "annotations": TREATMENT_MECHANICAL_AQUATIC_ANNOTATIONS,
     },
     ActivitySubtypes.Treatment_Chemical_Plant_Aquatic.name: {
-        "entry_models": [ChemPlantEntryAquatic],
+        "entry_models": [ChemicalApplicationCalculationEntry],
         "annotations": TREATMENT_CHEMICAL_ANNOTATIONS,
     },
     ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial.name: {
-        "entry_models": [ChemPlantEntryTerrestrial],
+        "entry_models": [ChemicalApplicationCalculationEntry],
         "annotations": TREATMENT_CHEMICAL_ANNOTATIONS,
     },
 }
