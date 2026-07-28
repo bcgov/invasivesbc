@@ -17,10 +17,13 @@ from api.models.activity import (
     DraftGranularHerbicideEntry,
     DraftLiquidHerbicideEntry,
     DraftChemPlantEntryAquatic,
+    ChemicalApplicationCalculationEntry,
 )
 from api.models.codes import (
     LiquidHerbicideCode,
     GranularHerbicideCode,
+    PlantCode,
+    HerbicideCode,
 )
 
 log = logging.getLogger(__name__)
@@ -42,8 +45,18 @@ class TreatmentChemicalAquaticIn(BaseActivityProcessor):
         treatment_info = subtype_data.get("treatment_context")
         herb = treatment_info.pop("herbicide", [])
         plant = treatment_info.pop("plants_treated", [])
-        calculation_results = treatment_info.pop("results", [])
-        # TODO: Add Results Objects
+
+        for r in treatment_info.pop("results", []):
+            p_inst = r.pop("invasive_plant")
+            h_inst = r.pop("herbicide_name")
+            plant = PlantCode.objects.get(code=p_inst.code)
+            herb = HerbicideCode.objects.get(code=h_inst.code)
+            ChemicalApplicationCalculationEntry.objects.create(
+                activity_data_record=adr,
+                invasive_plant=plant,
+                herbicide_name=herb,
+                **r,
+            )
 
         ChemTreatmentContext.objects.create(activity_data_record=adr, **treatment_info)
         granular = []
@@ -93,8 +106,6 @@ class DraftTreatmentChemicalAquaticIn(DraftBaseActivityProcessor):
         treatment_info = subtype_data.get("treatment_context")
         herb = treatment_info.pop("herbicide", [])
         plant = treatment_info.pop("plants_treated", [])
-        calculation_results = treatment_info.pop("results", [])
-        # TODO: Add Results Objects
 
         DraftChemTreatmentContext.objects.create(
             activity_data_record=adr, **treatment_info

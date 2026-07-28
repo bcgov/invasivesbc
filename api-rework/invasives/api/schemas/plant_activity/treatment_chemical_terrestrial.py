@@ -17,10 +17,13 @@ from api.models.activity import (
     DraftGranularHerbicideEntry,
     DraftLiquidHerbicideEntry,
     DraftChemPlantEntryTerrestrial,
+    ChemicalApplicationCalculationEntry,
 )
 from api.models.codes import (
     LiquidHerbicideCode,
     GranularHerbicideCode,
+    PlantCode,
+    HerbicideCode,
 )
 
 log = logging.getLogger(__name__)
@@ -40,15 +43,24 @@ class TreatmentChemicalTerrestrialIn(BaseActivityProcessor):
         )
 
         treatment_info = subtype_data.get("treatment_context")
-        herb = treatment_info.pop("herbicide", [])
-        plant = treatment_info.pop("plants_treated", [])
-        calculation_results = treatment_info.pop("results", [])
-        # TODO: Add Results Objects
+        herbicides = treatment_info.pop("herbicide", [])
+        plants = treatment_info.pop("plants_treated", [])
+        for r in treatment_info.pop("results", []):
+            p_inst = r.pop("invasive_plant")
+            h_inst = r.pop("herbicide_name")
+            plant = PlantCode.objects.get(code=p_inst.code)
+            herb = HerbicideCode.objects.get(code=h_inst.code)
+            ChemicalApplicationCalculationEntry.objects.create(
+                activity_data_record=adr,
+                invasive_plant=plant,
+                herbicide_name=herb,
+                **r,
+            )
 
         ChemTreatmentContext.objects.create(activity_data_record=adr, **treatment_info)
         granular = []
         liquid = []
-        for h in herb:
+        for h in herbicides:
             name = h.get("name")
 
             if isinstance(name, LiquidHerbicideCode):
@@ -73,7 +85,7 @@ class TreatmentChemicalTerrestrialIn(BaseActivityProcessor):
             for l in liquid
         )
         ChemPlantEntryTerrestrial.objects.bulk_create(
-            ChemPlantEntryTerrestrial(activity_data_record=adr, **p) for p in plant
+            ChemPlantEntryTerrestrial(activity_data_record=adr, **p) for p in plants
         )
 
 
@@ -93,8 +105,6 @@ class DraftTreatmentChemicalTerrestrialIn(DraftBaseActivityProcessor):
         treatment_info = subtype_data.get("treatment_context")
         herb = treatment_info.pop("herbicide", [])
         plant = treatment_info.pop("plants_treated", [])
-        calculation_results = treatment_info.pop("results", [])
-        # TODO: Add Results Objects
 
         DraftChemTreatmentContext.objects.create(
             activity_data_record=adr, **treatment_info

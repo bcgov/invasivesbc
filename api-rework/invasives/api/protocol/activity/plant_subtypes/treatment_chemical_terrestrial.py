@@ -315,6 +315,8 @@ class TreatmentChemicalTerrestrial(BaseFormSchema):
     def get_chemical_treatment_calculations(self) -> Self:
         """Apply Chemical Validations through the backend"""
         self.subtype_data.treatment_context.results = get_chem_calculation_results(
-            treatment_context=self.subtype_data.treatment_context, area_m=self.area_m
+            treatment_context=self.subtype_data.treatment_context,
+            area_m=self.area_m,
+            jurisdictions=self.jurisdictions,
         )
         return self
