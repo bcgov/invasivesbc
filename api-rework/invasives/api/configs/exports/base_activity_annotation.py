@@ -101,14 +101,14 @@ def get_BASE_ANNOTATION_CONFIGURATION_LEADING(is_chemical_treatment: bool):
             ),
         },
         {
-            "header": "Access Description",
-            "key": "access_description_display",
-            "annotation": F(f"{SRC}__access_description"),
-        },
-        {
             "header": "Location Description",
             "key": "location_description_display",
             "annotation": F(f"{SRC}__location_description"),
+        },
+        {
+            "header": "Access Description",
+            "key": "access_description_display",
+            "annotation": F(f"{SRC}__access_description"),
         },
         {
             "header": "Comment",

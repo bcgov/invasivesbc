@@ -9,9 +9,24 @@ from django.db.models import (
     Value,
     CharField,
     Value,
+    OuterRef,
+    Exists,
 )
 from django.db.models.functions import Cast
 from .helpers import agg
+from api.models.activity import ChemTreatmentContext, ChemicalTreatmentContext
+
+tank_mix_subquery = Exists(
+    ChemTreatmentContext.objects.filter(
+        activity_data_record__activity_id=OuterRef(f"root_activity__id"), tank_mix=True
+    )
+)
+pest_injury_subquery = Exists(
+    ChemicalTreatmentContext.objects.filter(
+        activity_data_record__activity_id=OuterRef(f"root_activity__id"),
+        pest_injury_threshold_determination=True,
+    )
+)
 
 ROOT = f"root_activity__activitydatarecord"
 CTX = f"{ROOT}__chemicaltreatmentcontext"
@@ -80,6 +95,15 @@ TREATMENT_CHEMICAL_ANNOTATIONS = [
         ),
     },
     {
+        "header": "Pest Injury Threshold Determination",
+        "key": "PITD-display",
+        "annotation": Case(
+            When(pest_injury_subquery, then=Value("Yes")),
+            default=Value("No"),
+            output_field=CharField(),
+        ),
+    },
+    {
         "header": "Invasive Plant",
         "key": "invasive_plant_display",
         "annotation": F(f"invasive_plant__full"),
@@ -92,12 +116,10 @@ TREATMENT_CHEMICAL_ANNOTATIONS = [
     {
         "header": "Tank Mix Used",
         "key": "tank_mix_display",
-        "annotation": agg(
-            Case(
-                When(**{f"{CHEM_CTX}__tank_mix": True}, then=Value("Yes")),
-                default=Value("No"),
-                output_field=CharField(),
-            )
+        "annotation": Case(
+            When(tank_mix_subquery, then=Value("Yes")),
+            default=Value("No"),
+            output_field=CharField(),
         ),
     },
     {
