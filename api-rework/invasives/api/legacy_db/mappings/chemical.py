@@ -1,11 +1,20 @@
-from typing import cast
-
-from django.db.models import Model
-from rich.pretty import pprint
-
+import logging
+from typing import List
+from pydantic import TypeAdapter
 from api.legacy_db.mappings.participants import add_persons
 from api.legacy_db.mappings.wells import add_well_information
 from api.legacy_db.model_serializer import LegacyActivity
+from api.protocol.activity.plant_subtypes.base_form_schema import JurisdictionSchema
+from api.protocol.activity.plant_subtypes.treatment_chemical_terrestrial import (
+    DraftBaseChemicalDetails as TerrestrialBase,
+)
+from api.protocol.activity.plant_subtypes.treatment_chemical_aquatic import (
+    DraftBaseChemicalDetails as AquaticBase,
+)
+from api.protocol.activity.plant_subtypes.common.chem_calculations import (
+    get_chem_calculation_results,
+)
+from api.serializers.activity import ActivitySerializer
 from api.models.activity import (
     Activity,
     ActivityDataRecord,
@@ -16,6 +25,7 @@ from api.models.activity import (
     GranularHerbicideEntry,
     ChemPlantEntryAquatic,
     ChemPlantEntryTerrestrial,
+    ChemicalApplicationCalculationEntry,
 )
 from api.models.codes import (
     PestManagementPlan,
@@ -28,7 +38,11 @@ from api.models.codes import (
     GranularHerbicideCode,
     TerrestrialPlantCode,
     AquaticPlantCode,
+    PlantCode,
+    HerbicideCode,
 )
+
+log = logging.getLogger(__name__)
 
 
 def add_chemical_treatment_details(new: Activity, old: LegacyActivity):
@@ -177,9 +191,37 @@ def add_chemical_treatment_context(new: Activity, old: LegacyActivity):
     )
 
 
-def add_calculation_results(new: Activity, old: LegacyActivity):
+def add_calculation_results(new: Activity, old: LegacyActivity, chemical_base):
+    """
+    Cast newly added activity data into its form types and get chemical treatment calculations
+    The calculations are used for CSV exports.
+    """
+    jur_adapter = TypeAdapter(List[JurisdictionSchema])
+    subtype_adapter = TypeAdapter(chemical_base)
+    activity = Activity.objects.get(id=new.id)
+    serializer = ActivitySerializer(activity, read_only=True).data
 
-    print("UNIMPLEMENTED", "add_calculation_results")
+    jurisdictions = jur_adapter.validate_python(serializer["jurisdictions"])
+    subtype_data = subtype_adapter.validate_python(serializer["subtype_data"])
+    results = get_chem_calculation_results(
+        treatment_context=subtype_data.treatment_context,
+        area_m=serializer["area_m"],
+        jurisdictions=jurisdictions,
+    )
+
+    adr = ActivityDataRecord.objects.filter(activity=new).first()
+    for r in results:
+        p_inst = r.pop("invasive_plant")
+        h_inst = r.pop("herbicide_name")
+
+        plant = PlantCode.objects.get(code=p_inst.code)
+        herb = HerbicideCode.objects.get(code=h_inst.code)
+        ChemicalApplicationCalculationEntry.objects.create(
+            activity_data_record=adr,
+            invasive_plant=plant,
+            herbicide_name=herb,
+            **r,
+        )
 
 
 def add_subtype_payload_for_plant_terrestrial_chemical_treatment(
@@ -189,7 +231,7 @@ def add_subtype_payload_for_plant_terrestrial_chemical_treatment(
     add_well_information(new, old)
     add_chemical_treatment_context(new, old)
     add_chemical_treatment_details(new, old)
-    add_calculation_results(new, old)
+    add_calculation_results(new=new, old=old, chemical_base=TerrestrialBase)
 
 
 def add_subtype_payload_for_plant_aquatic_chemical_treatment(
@@ -199,4 +241,4 @@ def add_subtype_payload_for_plant_aquatic_chemical_treatment(
     add_well_information(new, old)
     add_chemical_treatment_context(new, old)
     add_chemical_treatment_details(new, old)
-    add_calculation_results(new, old)
+    add_calculation_results(new=new, old=old, chemical_base=AquaticBase)
