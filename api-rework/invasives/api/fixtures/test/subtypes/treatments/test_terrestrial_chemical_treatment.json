@@ -63,6 +63,7 @@
     "pk": 1,
     "fields": {
       "activity_data_record_id": 1000,
+      "pesticide_employer_code": "0",
       "pesticide_use_permit": "none",
       "pest_management_plan": "BCGOV",
       "temperature_c": 23,
@@ -83,6 +84,7 @@
     "pk": 2,
     "fields": {
       "activity_data_record_id": 1001,
+      "pesticide_employer_code": "0",
       "pesticide_use_permit": "none",
       "temperature_c": 98,
       "wind_speed_kmh": 89,
