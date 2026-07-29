@@ -215,7 +215,7 @@ def mSpecie_sLHerb_spray_usingDilutionPercent(
     area_treated_sqm = params.get("area_treated_sqm")
     area_m = params.get("area_m", 0)
     amount_mix_used_l = params.get("amount_mix_used_l")
-    herbicide_name = params.get("herbicide")
+    herbicide_name = params.get("herbicide_name")
     herbicide_type = params.get("herbicide_type")
     results = []
 
