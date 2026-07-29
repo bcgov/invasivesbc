@@ -191,21 +191,25 @@ def add_chemical_treatment_context(new: Activity, old: LegacyActivity):
     )
 
 
-def add_calculation_results(new: Activity, old: LegacyActivity, chemical_base):
+def add_calculation_results(
+    new: Activity, old: LegacyActivity, chemical_base: AquaticBase | TerrestrialBase
+):
     """
     Cast newly added activity data into its form types and get chemical treatment calculations
     The calculations are used for CSV exports.
     """
-    jur_adapter = TypeAdapter(List[JurisdictionSchema])
-    subtype_adapter = TypeAdapter(chemical_base)
     activity = Activity.objects.get(id=new.id)
-    serializer = ActivitySerializer(activity, read_only=True).data
+    serialized_activity = ActivitySerializer(activity, read_only=True).data
+    jurisdiction_adapter = TypeAdapter(List[JurisdictionSchema])
+    subtype_adapter = TypeAdapter(chemical_base)
 
-    jurisdictions = jur_adapter.validate_python(serializer["jurisdictions"])
-    subtype_data = subtype_adapter.validate_python(serializer["subtype_data"])
+    jurisdictions = jurisdiction_adapter.validate_python(
+        serialized_activity["jurisdictions"]
+    )
+    subtype_data = subtype_adapter.validate_python(serialized_activity["subtype_data"])
     results = get_chem_calculation_results(
         treatment_context=subtype_data.treatment_context,
-        area_m=serializer["area_m"],
+        area_m=serialized_activity["area_m"],
         jurisdictions=jurisdictions,
     )
 
@@ -214,8 +218,9 @@ def add_calculation_results(new: Activity, old: LegacyActivity, chemical_base):
         p_inst = r.pop("invasive_plant")
         h_inst = r.pop("herbicide_name")
 
-        plant = PlantCode.objects.get(code=p_inst.code)
-        herb = HerbicideCode.objects.get(code=h_inst.code)
+        # Cast Terrestrial/Aquatic Plants into generics
+        plant = PlantCode(code=p_inst.code)
+        herb = HerbicideCode(code=h_inst.code)
         ChemicalApplicationCalculationEntry.objects.create(
             activity_data_record=adr,
             invasive_plant=plant,
