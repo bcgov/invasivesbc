@@ -78,7 +78,10 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
 
       if (Object.hasOwn(value, 'url') && !addedSources.includes(key) && !alreadyAddedProtomapsSources.includes(key)) {
         addedSources.push(key);
-        if (value.url.startsWith('pmtiles://')) {
+        if (value.url.startsWith('pmtiles://https://')) {
+          // for pmtiles files which are always served live from the server, not cached locally
+          pmtilesProtocol.current.add(new PMTiles(value.url.replace('pmtiles://', '')));
+        } else if (value.url.startsWith('pmtiles://')) {
           pmtilesProtocol.current.add(
             new PMTiles(new OfflineMapsPluginPMTilesSource(value.url.replace('pmtiles://', '')))
           );
@@ -185,11 +188,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
       });
     });
 
-    const PMTILES_URL =
-      configuration.runtime.PUBLIC_MAP_URL || `https://nrs.objectstore.gov.bc.ca/uphjps/invasives-local.pmtiles`;
-    const p = new PMTiles(PMTILES_URL);
-
-    pmtilesProtocol.current.add(p);
+    maplibregl.addProtocol('livepmtiles', pmtilesProtocol.current.tile);
 
     const tileCacheSettings = (() => {
       if (configuration.features.MAP_RESTRICT_TILE_CACHE_SIZE.enabled) {
