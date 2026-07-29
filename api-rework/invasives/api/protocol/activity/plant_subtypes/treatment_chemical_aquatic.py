@@ -95,8 +95,6 @@ class TreatedPlant(DraftTreatedPlant):
 
 
 ## Rate Mix Definitions
-
-
 class DraftProductApplicationRate(CleanSchema):
     herbicide: List[DraftApplicationRateHerbicide]
     delivery_rate: Optional[float] = None

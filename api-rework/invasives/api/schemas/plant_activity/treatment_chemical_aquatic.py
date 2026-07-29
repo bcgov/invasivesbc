@@ -43,8 +43,8 @@ class TreatmentChemicalAquaticIn(BaseActivityProcessor):
         )
 
         treatment_info = subtype_data.get("treatment_context")
-        herb = treatment_info.pop("herbicide", [])
-        plant = treatment_info.pop("plants_treated", [])
+        herbicides = treatment_info.pop("herbicide", [])
+        plants = treatment_info.pop("plants_treated", [])
 
         for r in treatment_info.pop("results", []):
             p_inst = r.pop("invasive_plant")
@@ -61,7 +61,7 @@ class TreatmentChemicalAquaticIn(BaseActivityProcessor):
         ChemTreatmentContext.objects.create(activity_data_record=adr, **treatment_info)
         granular = []
         liquid = []
-        for h in herb:
+        for h in herbicides:
             name = h.get("name")
 
             if isinstance(name, LiquidHerbicideCode):
@@ -86,7 +86,7 @@ class TreatmentChemicalAquaticIn(BaseActivityProcessor):
             for l in liquid
         )
         ChemPlantEntryAquatic.objects.bulk_create(
-            ChemPlantEntryAquatic(activity_data_record=adr, **p) for p in plant
+            ChemPlantEntryAquatic(activity_data_record=adr, **p) for p in plants
         )
 
 
