@@ -187,7 +187,7 @@ BASE_ANNOTATION_CONFIGURATION_TRAILING = [
         "annotation": F(f"{SRC}__computed_moti_districts"),
     },
     {
-        "header": "Elevation",
+        "header": "Elevation (m)",
         "key": "elevation",
         "annotation": F(f"{SRC}__computed_elevation_m"),
     },

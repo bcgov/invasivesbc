@@ -153,17 +153,17 @@ TREATMENT_CHEMICAL_ANNOTATIONS = [
         ),
     },
     {
-        "header": "Delivery Rate of Mix",
+        "header": "Delivery Rate of Mix (L/ha)",
         "key": "delivery_rate_of_mix_display",
         "annotation": agg(Cast(f"{CHEM_CTX}__delivery_rate", CharField())),
     },
     {
-        "header": "Product Application Rate",
+        "header": "Product Application Rate (L/ha,g/ha)",
         "key": "product_application_rate_display",
         "annotation": F(f"product_application_rate"),
     },
     {
-        "header": "Dilution",
+        "header": "Dilution (%)",
         "key": "dilution_display",
         "annotation": F(f"dilution"),
     },
