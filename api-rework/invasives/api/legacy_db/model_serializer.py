@@ -886,8 +886,8 @@ class LegacyActivityPayload(BaseModel):
     species_treated: Optional[list[str]] = Field(default=None)
     date_created: Optional[AwareDatetime] = Field(default=None)
     date_updated: Optional[AwareDatetime] = Field(default=None)
-    platform_src: Optional[Literal["web", "ios", "android", "unknown"]] = Field(
-        default=None
+    platform_src: Optional[Literal["web", "ios", "android", "unknown", "batch"]] = (
+        Field(default=None)
     )
 
 
