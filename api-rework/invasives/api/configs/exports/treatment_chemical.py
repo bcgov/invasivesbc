@@ -140,7 +140,17 @@ TREATMENT_CHEMICAL_ANNOTATIONS = [
     {
         "header": "Calculation Type",
         "key": "calculation_type_display",
-        "annotation": agg(f"{CHEM_CTX}__calculation_type"),  # TODO: CASE FOR FULL
+        "annotation": agg(
+            Case(
+                When(
+                    **{f"{CHEM_CTX}__calculation_type": "PAR"},
+                    then=Value("Product Application Rate"),
+                ),
+                When(**{f"{CHEM_CTX}__calculation_type": "D"}, then=Value("Dilution")),
+                default=Value(None),
+                output_field=CharField(),
+            )
+        ),
     },
     {
         "header": "Delivery Rate of Mix",
@@ -158,7 +168,7 @@ TREATMENT_CHEMICAL_ANNOTATIONS = [
         "annotation": F(f"dilution"),
     },
     {
-        "header": "Amount of Undiluted Herbicide Used",
+        "header": "Amount of Undiluted Herbicide Used (L)",
         "key": "amount_of_undiluted_herbicide_used_l_display",
         "annotation": F(f"undiluted_herbicide_used_l"),
     },
