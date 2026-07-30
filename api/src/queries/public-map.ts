@@ -26,4 +26,6 @@ export const PUBLIC_ACTIVITY_SQL = SQL`select jsonb_build_object(
                                        from activity_incoming_data as a
                                        where a.form_status = 'Submitted'
                                          and a.activity_type = 'Observation'
+                                         and a.iscurrent = true
+                                         and a.species_biocontrol_full is null
                                          and a.geog is not null`;
