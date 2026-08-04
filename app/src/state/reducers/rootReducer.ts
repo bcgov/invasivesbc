@@ -133,7 +133,6 @@ function createRootReducer(config: UnifiedConfig) {
         whitelist: [
           MIGRATION_VERSION_KEY,
           'activeActivity',
-          'activeActivityDescription',
           'activeIAPP',
           'recordSets',
           'recordsExpanded',

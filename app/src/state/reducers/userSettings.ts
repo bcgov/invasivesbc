@@ -24,7 +24,6 @@ interface UserSettingsState {
   error: boolean;
 
   activeActivity: string | null;
-  activeActivityDescription: string | null;
   activeIAPP: string | null;
   apiDocsWithViewOptions: object | null;
   apiDocsWithSelectOptions: object | null;
@@ -55,7 +54,6 @@ const initialState: UserSettingsState = {
   [MIGRATION_VERSION_KEY]: CURRENT_MIGRATION_VERSION,
 
   activeActivity: null,
-  activeActivityDescription: null,
   activeIAPP: null,
 
   preferredBasemap: undefined,
@@ -90,7 +88,6 @@ function createUserSettingsReducer(_configuration: AppConfig) {
         draftState.recordsExpanded = !draftState.recordsExpanded;
       } else if (UserSettings.Activity.setActiveActivityIdSuccess.match(action)) {
         draftState.activeActivity = action.payload;
-        draftState.activeActivityDescription = action.payload;
       } else if (UserSettings.Boundaries.setSuccess.match(action)) {
         draftState.boundaries = action.payload;
       } else if (UserSettings.KML.deleteSuccess.match(action)) {
@@ -260,7 +257,6 @@ function createUserSettingsReducer(_configuration: AppConfig) {
         }
       } else if (Activity.deleteSuccess.match(action)) {
         draftState.activeActivity = null;
-        draftState.activeActivityDescription = null;
       } else if (Activity.get.match(action)) {
         draftState.activeActivity = action.payload;
       } else if (IappActions.getSuccess.match(action)) {
