@@ -7,6 +7,7 @@ import { GeoJSON } from 'geojson';
 import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
 import { useNavigate } from 'react-router';
 import { Debug } from 'UI/Reusable/Predicates/Debug';
+import { BugReport } from '@mui/icons-material';
 
 /**
  * @property { string } recordDisplayId Short ID / Site ID for a Record, displayed in the Popover
@@ -63,13 +64,13 @@ const RecordTablePopoverContent = ({ recordDisplayId: id, recordLookupId, record
       <p>
         {label}: {id}
       </p>
-      {/* // TODO: Remove RJSF Option */}
-      <Button onClick={handleOpenRecordInRJSF} variant="contained">
-        Open <Debug>- RJSF Form</Debug>
+      <Button onClick={handleOpenRecordInRHF} variant="contained">
+        Open
       </Button>
+      {/* // TODO: Remove RJSF Option */}
       <Debug>
-        <Button onClick={handleOpenRecordInRHF} variant="contained">
-          Open - RHF
+        <Button onClick={handleOpenRecordInRJSF} variant="contained">
+          <BugReport /> Open <Debug>- RJSF Form</Debug>
         </Button>
       </Debug>
       {!!geom && (
