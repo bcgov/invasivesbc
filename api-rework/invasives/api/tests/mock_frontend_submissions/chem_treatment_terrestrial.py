@@ -100,10 +100,10 @@ MINIMAL_CHEM_TREATMENT_TERRESTRIAL = {
         "treatment_context": {
             "tank_mix": True,
             "application_method": "BNO",
-            "calculation_type": "Product Application Rate",
+            "calculation_type": "PAR",
             "herbicide": [
-                {"type": "liquid", "name": "27820", "application_rate": 32},
-                {"type": "granular", "name": "29752", "application_rate": 32},
+                {"type": "L", "name": "27820", "application_rate": 32},
+                {"type": "G", "name": "29752", "application_rate": 32},
             ],
             "plants_treated": [{"invasive_plant": "AR", "percent_covered": 100}],
             "amount_mix_used_l": 3.234,
@@ -183,10 +183,10 @@ UPDATED_CHEM_TREATMENT_TERRESTRIAL = {
         "treatment_context": {
             "tank_mix": True,
             "application_method": "BNO",
-            "calculation_type": "Product Application Rate",
+            "calculation_type": "PAR",
             "herbicide": [
-                {"type": "liquid", "name": "27634", "application_rate": 3.321},
-                {"type": "granular", "name": "33128", "application_rate": 1.6544},
+                {"type": "L", "name": "27634", "application_rate": 3.321},
+                {"type": "G", "name": "33128", "application_rate": 1.6544},
             ],
             "plants_treated": [
                 {"invasive_plant": "AR", "percent_covered": 78},

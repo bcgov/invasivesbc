@@ -4,7 +4,7 @@ from api.models.activity import WaterbodyUse, DraftWaterbodyUse
 
 class BaseSerializer(serializers.ModelSerializer):
     class Meta:
-        abtract = True
+        abstract = True
         fields = ["waterbody_use"]
 
     def to_representation(self, instance):

@@ -1,9 +1,63 @@
 [
   {
+    "model": "api.HerbicideApplicationMethodCode",
+    "pk": "BPA",
+    "fields": {
+      "full": "Back Pack",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.HerbicideApplicationMethodCode",
+    "pk": "BNO",
+    "fields": {
+      "full": "Boomless Nozzle",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.HerbicideApplicationMethodCode",
+    "pk": "WCK",
+    "fields": {
+      "full": "Wick",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.HerbicideApplicationMethodCode",
+    "pk": "BPA",
+    "fields": {
+      "full": "Back Pack",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
     "model": "api.ShorelineTypeCode",
     "pk": "RR",
     "fields": {
       "full": "Riprap",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.HerbicideTypeCode",
+    "pk": "G",
+    "fields": {
+      "full": "Granular",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.HerbicideTypeCode",
+    "pk": "L",
+    "fields": {
+      "full": "Liquid",
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }

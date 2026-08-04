@@ -25,10 +25,9 @@ import useFieldPath from 'UI/Features/Records/Activity/forms/plant/hooks/useFiel
 
 const TreatmentChemicalPlantDetails = () => {
   enum CalculationType {
-    Dilution = 'Dilution',
-    ApplicationRate = 'Product Application Rate'
+    Dilution = 'D',
+    ApplicationRate = 'PAR'
   }
-
   const { getPath } = useFieldPath<ChemTreatment>('subtype_data.treatment_context');
   const {
     register,
@@ -61,16 +60,9 @@ const TreatmentChemicalPlantDetails = () => {
 
   // Calculation methods available depending on if a tank mix or not
   const calculationOptions = useMemo(() => {
-    const codes = [
-      { code: CalculationType.ApplicationRate, full_name: CalculationType.ApplicationRate, table: 'CalculationType' }
-    ];
-    if (!tank_mix)
-      codes.push({
-        code: CalculationType.Dilution,
-        full_name: CalculationType.Dilution,
-        table: 'CalculationType'
-      });
-    return codes;
+    const calculationCodes = [{ code: 'PAR', full_name: 'Product Application Rate' }];
+    if (!tank_mix) calculationCodes.push({ code: 'D', full_name: 'Dilution' });
+    return calculationCodes;
   }, [tank_mix]);
 
   // If application_method changes and is no longer valid, reset the field.

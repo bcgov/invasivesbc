@@ -28,8 +28,8 @@ const HerbicideEntry = ({ idx, type }: PropTypes) => {
   };
 
   enum HerbicideType {
-    Granular = 'granular',
-    Liquid = 'liquid'
+    Granular = 'G',
+    Liquid = 'L'
   }
 
   const {
@@ -96,10 +96,7 @@ const HerbicideEntry = ({ idx, type }: PropTypes) => {
         name={getPath('type')}
         required
         tooltip={tooltips.plant.chemical.calculation_fields.herbicide_type}
-        options={[
-          { code: HerbicideType.Granular, full_name: HerbicideType.Granular, table: 'HerbicideType' },
-          { code: HerbicideType.Liquid, full_name: HerbicideType.Liquid, table: 'HerbicideType' }
-        ]}
+        options={codes.HerbicideTypeCode}
         rules={{ required: true }}
       />
       <SingleSelect

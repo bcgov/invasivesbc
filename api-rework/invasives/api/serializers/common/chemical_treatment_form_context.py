@@ -1,12 +1,12 @@
 from rest_framework import serializers
-from api.models.activity import ChemicalTreatmentContext
+from api.models.activity import ChemicalTreatmentContext, DraftChemicalTreatmentContext
 
 
-class ChemicalTreatmentContextSerializer(serializers.ModelSerializer):
+class BaseSerializer(serializers.ModelSerializer):
     application_start_time = serializers.DateTimeField(format="%Y-%m-%dT%H:%M")
 
     class Meta:
-        model = ChemicalTreatmentContext
+        abstract = True
         fields = (
             "pesticide_use_permit",
             "pest_management_plan",
@@ -24,3 +24,13 @@ class ChemicalTreatmentContextSerializer(serializers.ModelSerializer):
             "additional_unmapped_well_water",
             "pest_injury_threshold_determination",
         )
+
+
+class ChemicalTreatmentFormContextSerializer(BaseSerializer):
+    class Meta(BaseSerializer.Meta):
+        model = ChemicalTreatmentContext
+
+
+class DraftChemicalTreatmentFormContextSerializer(BaseSerializer):
+    class Meta(BaseSerializer.Meta):
+        model = DraftChemicalTreatmentContext

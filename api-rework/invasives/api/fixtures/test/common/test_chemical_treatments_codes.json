@@ -115,5 +115,68 @@
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }
+  },
+  {
+    "model": "api.ServiceLicenseNumberAndCompany",
+    "pk": "0",
+    "fields": {
+      "full": "BC Gov",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.HerbicideCode",
+    "pk": "24388",
+    "fields": {
+      "full": "Metsulfuron methyl 24388",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.HerbicideCode",
+    "pk": "27634",
+    "fields": {
+      "full": "2,4-D 27634",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.HerbicideCode",
+    "pk": "29752",
+    "fields": {
+      "full": "Aminopyralid/Metsulfuron-methyl 29752",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.HerbicideCode",
+    "pk": "33128",
+    "fields": {
+      "full": "Flazasulfuron 33128",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.HerbicideCode",
+    "pk": "27820",
+    "fields": {
+      "full": "2,4-D 27820",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.HerbicideCode",
+    "pk": "23545",
+    "fields": {
+      "full": "Clopyralid 23545",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
   }
 ]

@@ -8,7 +8,73 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import ExportActions from 'state/actions/exports/exportActions';
 import { ActivitySubtypes } from 'sharedAPI';
+const iappExportOptions = [
+  { value: 'site_selection_extract', label: 'Site Selection Extract' },
+  { value: 'survey_extract', label: 'Survey Extract' },
+  { value: 'chemical_treatment_extract', label: 'Chemical Treatment Extract' },
+  { value: 'mechanical_treatment_extract', label: 'Mechanical Treatment Extract' },
+  { value: 'chemical_monitoring_extract', label: 'Chemical Monitoring Extract' },
+  { value: 'mechanical_monitoring_extract', label: 'Mechanical Monitoring Extract' },
+  { value: 'biological_treatment_extract', label: 'Biological Treatment Extract' },
+  { value: 'biological_monitoring_extract', label: 'Biological Monitoring Extract' },
+  { value: 'biological_dispersal_extract', label: 'Biological Dispersal Extract' }
+];
 
+/** Ordered by stakeholder request */
+const ibcExportOptions = [
+  // Observations
+  {
+    value: ActivitySubtypes.Observation_Plant_Terrestrial,
+    label: 'Observation – Plant Terrestrial'
+  },
+  {
+    value: ActivitySubtypes.Observation_Plant_Aquatic,
+    label: 'Observation – Plant Aquatic'
+  },
+  // Treatments
+  {
+    value: ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial,
+    label: 'Treatment – Chemical Terrestrial'
+  },
+  {
+    value: ActivitySubtypes.Treatment_Chemical_Plant_Aquatic,
+    label: 'Treatment – Chemical Aquatic'
+  },
+  {
+    value: ActivitySubtypes.Treatment_Mechanical_Plant_Terrestrial,
+    label: 'Treatment – Mechanical Terrestrial'
+  },
+  {
+    value: ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic,
+    label: 'Treatment – Mechanical Aquatic'
+  },
+  // Monitoring
+  {
+    value: ActivitySubtypes.Monitoring_Chemical_Plant_Terrestrial_Aquatic,
+    label: 'Monitoring – Chemical Treatment'
+  },
+  {
+    value: ActivitySubtypes.Monitoring_Mechanical_Plant_Terrestrial_Aquatic,
+    label: 'Monitoring – Mechanical Treatment'
+  },
+  // Biocontrol
+  {
+    value: ActivitySubtypes.Biocontrol_Release,
+    label: 'Biocontrol – Release'
+  },
+  {
+    value: ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial,
+    label: 'Biocontrol – Release Monitoring'
+  },
+  {
+    value: ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial,
+    label: 'Biocontrol – Dispersal Monitoring'
+  },
+  {
+    value: ActivitySubtypes.Biocontrol_Collection,
+    label: 'Biocontrol – Collection'
+  }
+];
 const ExcelExporter = (props) => {
   const handleRequest = () => {
     if (setType === 'IAPP') {
@@ -28,46 +94,9 @@ const ExcelExporter = (props) => {
 
   const items = useMemo(() => {
     if (setType === 'IAPP') {
-      return [
-        <MenuItem value={'site_selection_extract'}>Site Selection Extract</MenuItem>,
-        <MenuItem value={'survey_extract'}>Survey Extract</MenuItem>,
-        <MenuItem value={'chemical_treatment_extract'}>Chemical Treatment Extract</MenuItem>,
-        <MenuItem value={'mechanical_treatment_extract'}>Mechanical Treatment Extract</MenuItem>,
-        <MenuItem value={'chemical_monitoring_extract'}>Chemical Monitoring Extract</MenuItem>,
-        <MenuItem value={'mechanical_monitoring_extract'}>Mechanical Monitoring Extract</MenuItem>,
-        <MenuItem value={'biological_treatment_extract'}>Biological Treatment Extract</MenuItem>,
-        <MenuItem value={'biological_monitoring_extract'}>Biological Monitoring Extract</MenuItem>,
-        <MenuItem value={'biological_dispersal_extract'}>Biological Dispersal Extract</MenuItem>
-      ];
+      return iappExportOptions;
     }
-    return [
-      <MenuItem value={ActivitySubtypes.Observation_Plant_Terrestrial}>Terrestrial Plant Observation Summary</MenuItem>,
-      <MenuItem value={ActivitySubtypes.Observation_Plant_Aquatic}>Aquatic Plant Observation Summary</MenuItem>,
-      <MenuItem value={ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial}>
-        Terrestrial Chemical Treatment Summary
-      </MenuItem>,
-      <MenuItem value={ActivitySubtypes.Treatment_Chemical_Plant_Aquatic}>Aquatic Chemical Treatment Summary</MenuItem>,
-      <MenuItem value={ActivitySubtypes.Treatment_Mechanical_Plant_Terrestrial}>
-        Terrestrial Mechanical Treatment Summary
-      </MenuItem>,
-      <MenuItem value={ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic}>
-        Aquatic Mechanical Treatment Summary
-      </MenuItem>,
-      <MenuItem value={ActivitySubtypes.Biocontrol_Release}>Biocontrol Release Summary</MenuItem>,
-      <MenuItem value={ActivitySubtypes.Biocontrol_Collection}>Biocontrol Collection Summary</MenuItem>,
-      <MenuItem value={ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial}>
-        Biocontrol Dispersal Summary
-      </MenuItem>,
-      <MenuItem value={ActivitySubtypes.Monitoring_Chemical_Plant_Terrestrial_Aquatic}>
-        Chemical Treatment Monitoring Summary
-      </MenuItem>,
-      <MenuItem value={ActivitySubtypes.Monitoring_Mechanical_Plant_Terrestrial_Aquatic}>
-        Mechanical Treatment Monitoring Summary
-      </MenuItem>,
-      <MenuItem value={ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial}>
-        Biocontrol Release Monitoring Summary
-      </MenuItem>
-    ];
+    return ibcExportOptions;
   }, [setType]);
 
   return (
@@ -92,7 +121,7 @@ const ExcelExporter = (props) => {
                 </Button>
               </a>
             ) : (
-              <div className="CSV-spinner">
+              <div className="csv-spinner">
                 {CanTriggerCSV ? (
                   <Button
                     disabled={!CanTriggerCSV}
@@ -101,7 +130,7 @@ const ExcelExporter = (props) => {
                     size={'small'}
                     variant="contained"
                   >
-                    Generate CSV link
+                    Generate CSV
                     <DownloadIcon />
                   </Button>
                 ) : (
@@ -112,7 +141,7 @@ const ExcelExporter = (props) => {
           </Tooltip>
           <Tooltip classes={{ tooltip: 'toolTip' }} title="Choose report type" placement="right">
             <>
-              CSV Type:
+              CSV Summary Type:
               <Select
                 className="excel-exporter-select"
                 value={selection}
@@ -120,7 +149,16 @@ const ExcelExporter = (props) => {
                   setSelection(e.target.value);
                 }}
               >
-                {...items}
+                {items.map((o, i) => (
+                  <MenuItem
+                    sx={{
+                      backgroundColor: i % 2 === 0 ? 'var(--even-list-item-bg-color)' : 'var(--odd-list-item-bg-color)'
+                    }}
+                    value={o.value}
+                  >
+                    {o.label}
+                  </MenuItem>
+                ))}
               </Select>
             </>
           </Tooltip>

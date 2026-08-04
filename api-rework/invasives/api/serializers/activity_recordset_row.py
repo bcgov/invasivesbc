@@ -237,10 +237,10 @@ class ActivityRecordsetRowSerializer(BaseSerializer):
             "terrestrialplantobservationentries_set"
         ],
         ActivitySubtypes.Treatment_Chemical_Plant_Aquatic.name: [
-            "chemicaltreatmentaquaticinvasiveplantrecord_set"
+            "chemplantentryaquatic_set"
         ],
         ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial.name: [
-            "chemicaltreatmentterrestrialinvasiveplantrecord_set"
+            "chemplantentryterrestrial_set"
         ],
         ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic.name: [
             "aquaticplantmechanicaltreatmententry_set"
@@ -321,10 +321,10 @@ class DraftActivityRecordsetRowSerializer(BaseSerializer):
             "draftterrestrialplantobservationentries_set"
         ],
         ActivitySubtypes.Treatment_Chemical_Plant_Aquatic.name: [
-            # TODO: Implement
+            "draftchemplantentryaquatic_set"
         ],
         ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial.name: [
-            # TODO: Implement
+            "draftchemplantentryterrestrial_set"
         ],
         ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic.name: [
             "draftaquaticplantmechanicaltreatmententry_set"

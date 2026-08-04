@@ -32,6 +32,7 @@ from .observation_terrestrial import (
 )
 from .treatment_chemical_terrestrial import (
     TerrestrialChemicalTreatmentSerializer,
+    DraftTerrestrialChemicalTreatmentSerializer,
 )
 from .treatment_mechanical_terrestrial import (
     TerrestrialPlantTreatmentMechanicalSerializer,
@@ -39,6 +40,7 @@ from .treatment_mechanical_terrestrial import (
 )
 from .treatment_chemical_aquatic import (
     AquaticChemicalTreatmentSerializer,
+    DraftAquaticChemicalTreatmentSerializer,
 )
 from .treatment_mechanical_aquatic import (
     AquaticPlantTreatmentMechanicalSerializer,

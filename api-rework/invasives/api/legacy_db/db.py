@@ -36,10 +36,12 @@ from api.models.codes import (
     EmployerCode,
     FundingAgencyCode,
     GranularHerbicideCode,
+    HerbicideCode,
     InvasivePlantsOnSiteCode,
     JurisdictionCode,
     LiquidHerbicideCode,
     MesoslopePositionCode,
+    PlantCode,
     PestManagementPlan,
     PlantLifeStageCode,
     PlantMechanicalTreatmentMethodCode,
@@ -275,6 +277,26 @@ class LegacyDB:
 
     @staticmethod
     def add_hardcoded_codes():
+        ap = AquaticPlantCode.objects.all()
+        tp = TerrestrialPlantCode.objects.all()
+
+        PlantCode.objects.bulk_create(
+            [PlantCode(code=p.code, full=p.full) for p in ap], ignore_conflicts=True
+        )
+        PlantCode.objects.bulk_create(
+            [PlantCode(code=p.code, full=p.full) for p in tp], ignore_conflicts=True
+        )
+
+        lherb = LiquidHerbicideCode.objects.all()
+        gherb = GranularHerbicideCode.objects.all()
+        HerbicideCode.objects.bulk_create(
+            [HerbicideCode(code=h.code, full=h.full) for h in lherb],
+            ignore_conflicts=True,
+        )
+        HerbicideCode.objects.bulk_create(
+            [HerbicideCode(code=h.code, full=h.full) for h in gherb],
+            ignore_conflicts=True,
+        )
         WindDirectionCode.objects.update_or_create(
             code="No Wind", full="No Wind", code_sort_order=10
         )
@@ -445,11 +467,11 @@ class LegacyDB:
 
         match source:
             case "all":
-                sourcing_query = f"select activity_id, activity_type, activity_subtype, activity_payload from invasivesbc.activity_incoming_data where iscurrent=true and activity_payload->>'form_status' like 'Submitted'"
+                sourcing_query = f"select activity_id, activity_type, activity_subtype, activity_payload from invasivesbc.activity_incoming_data where iscurrent=true and form_status like 'Submitted'"
             case "random-sample":
-                sourcing_query = f"select activity_id, activity_type, activity_subtype, activity_payload from invasivesbc.activity_incoming_data where iscurrent=true and activity_payload->>'form_status' like 'Submitted' and random() >= 0.98"
+                sourcing_query = f"select activity_id, activity_type, activity_subtype, activity_payload from invasivesbc.activity_incoming_data where iscurrent=true and form_status like 'Submitted' and random() >= 0.98"
             case "single":
-                sourcing_query = f"select activity_id, activity_type, activity_subtype, activity_payload from invasivesbc.activity_incoming_data where iscurrent=true and activity_payload->>'form_status' like 'Submitted' and activity_id = '{pk}'"
+                sourcing_query = f"select activity_id, activity_type, activity_subtype, activity_payload from invasivesbc.activity_incoming_data where iscurrent=true and form_status like 'Submitted' and activity_id = '{pk}'"
 
         if restrict_to_subtype is not None:
             sourcing_query = (

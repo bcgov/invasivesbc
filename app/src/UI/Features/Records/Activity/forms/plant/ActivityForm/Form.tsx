@@ -81,9 +81,9 @@ const Form = () => {
   return (
     <>
       {!disabled && (
-        <span className="required-advisory">
+        <div className="required-advisory">
           <AdvisoryMessage text={'All fields are required unless otherwise indicated.'} />
-        </span>
+        </div>
       )}
       {/* Start of Geometry Fields */}
       <Fieldset label={'Geometry Information'}>

@@ -10,7 +10,7 @@ class BaseSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         ret = super().to_representation(instance)
         try:
-            if instance.activity.subtype in [
+            if instance.activity_data_record.activity.subtype in [
                 ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial.name,
                 ActivitySubtypes.Treatment_Chemical_Plant_Aquatic.name,
             ]:

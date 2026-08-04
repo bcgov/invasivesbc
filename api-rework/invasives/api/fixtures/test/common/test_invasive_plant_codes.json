@@ -97,5 +97,86 @@
       "valid_from": "2025-06-01",
       "created_at": "2025-06-01 12:00:00-08:00"
     }
+  },
+  {
+    "model": "api.PlantCode",
+    "pk": "JK",
+    "fields": {
+      "full": "Japanese Knotweed",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.PlantCode",
+    "pk": "CT",
+    "fields": {
+      "full": "Canadian Thistle",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.PlantCode",
+    "pk": "TC",
+    "fields": {
+      "full": "Common tansy",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.PlantCode",
+    "pk": "AR",
+    "fields": {
+      "full": "African rue / harmal",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.PlantCode",
+    "pk": "RC",
+    "fields": {
+      "full": "RC Plant",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.PlantCode",
+    "pk": "JK",
+    "fields": {
+      "full": "Japanese Knotweed",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.PlantCode",
+    "pk": "AB",
+    "fields": {
+      "full": "American Beachgrass",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.PlantCode",
+    "pk": "CT",
+    "fields": {
+      "full": "CT",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
+  },
+  {
+    "model": "api.PlantCode",
+    "pk": "SK",
+    "fields": {
+      "full": "Spotted Knapweed",
+      "valid_from": "2025-06-01",
+      "created_at": "2025-06-01 12:00:00-08:00"
+    }
   }
 ]

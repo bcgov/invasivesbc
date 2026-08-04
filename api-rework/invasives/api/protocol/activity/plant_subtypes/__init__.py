@@ -26,11 +26,13 @@ from .treatment_mechanical_aquatic import (
     TreatmentMechanicalAquatic,
     DraftTreatmentMechanicalAquatic,
 )
-from .treatment_chemical import (
-    TreatmentChemicalAquatic,
+from .treatment_chemical_terrestrial import (
     TreatmentChemicalTerrestrial,
-    DraftTreatmentChemicalAquatic,
     DraftTreatmentChemicalTerrestrial,
+)
+from .treatment_chemical_aquatic import (
+    TreatmentChemicalAquatic,
+    DraftTreatmentChemicalAquatic,
 )
 
 ## Monitoring Type Records

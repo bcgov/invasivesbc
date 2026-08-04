@@ -62,6 +62,7 @@
     "model": "api.ChemicalTreatmentContext",
     "pk": 1,
     "fields": {
+      "pesticide_employer_code": "0",
       "activity_data_record_id": 1000,
       "pesticide_use_permit": "none",
       "pest_management_plan": "BCGOV",
@@ -83,6 +84,7 @@
     "pk": 2,
     "fields": {
       "activity_data_record_id": 1001,
+      "pesticide_employer_code": "0",
       "pesticide_use_permit": "none",
       "temperature_c": 98,
       "wind_speed_kmh": 89,

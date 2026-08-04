@@ -21,9 +21,10 @@ import { Debug } from 'UI/Reusable/Predicates/Debug';
 import getDefaultFormState from '../../builders/getDefaultState';
 
 enum CalculationType {
-  Dilution = 'Dilution',
-  ApplicationRate = 'Product Application Rate'
+  Dilution = 'D',
+  ApplicationRate = 'PAR'
 }
+
 const TreatmentChemicalPlantCalculations = () => {
   const columnLabelMap = {
     herbicide_name: 'Herbicide',
@@ -103,8 +104,8 @@ const TreatmentChemicalPlantCalculations = () => {
       if (isDirectMethod) return 'Direct';
     })();
 
-    const isHerbicideLiquid = herbicide_type === 'liquid';
-    const isHerbicideSolid = herbicide_type === 'granular';
+    const isHerbicideLiquid = herbicide_type === 'L';
+    const isHerbicideSolid = herbicide_type === 'G';
     const isApplicationCalculation = calculation_type === CalculationType.ApplicationRate;
     const isDilutionCalculation = calculation_type === CalculationType.Dilution;
 

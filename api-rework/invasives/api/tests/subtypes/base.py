@@ -187,10 +187,10 @@ class BaseActivitySubtypeTest(BaseTestCase, ABC):
         self.assertGreater(
             len(record_out["participants"]), 0, "Participants not populated"
         )
-        self.assertEqual(
-            record_in["participants"],
-            record_out["participants"],
-        )
+        for p_in, p_out in zip(record_in["participants"], record_out["participants"]):
+            self.assertEqual(p_in["name"], p_out["name"])
+            if pac_number := p_in.get("pac_number", None):
+                self.assertEqual(pac_number, int(p_out["pac_number"]))
 
         # Spatial Fields
         self.assertEqual(record_in["area_m"], record_out["area_m"])

@@ -45,6 +45,7 @@ from api.serializers.type.subtype import (
     TerrestrialChemicalTreatmentSerializer,
     TerrestrialObservationSerializer,
     TerrestrialPlantTreatmentMechanicalSerializer,
+    DraftAquaticChemicalTreatmentSerializer,
     DraftAquaticObservationSerializer,
     DraftAquaticPlantTreatmentMechanicalSerializer,
     DraftBiocontrolCollectionSerializer,
@@ -53,6 +54,7 @@ from api.serializers.type.subtype import (
     DraftBiocontrolReleaseSerializer,
     DraftChemicalMonitoringSerializer,
     DraftMechanicalMonitoringSerializer,
+    DraftTerrestrialChemicalTreatmentSerializer,
     DraftTerrestrialObservationSerializer,
     DraftTerrestrialPlantTreatmentMechanicalSerializer,
 )
@@ -298,8 +300,8 @@ class DraftActivitySerializer(BaseSerializer):
             ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial.name: DraftBiocontrolReleaseMonitoringSerializer,
             ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial.name: DraftBiocontrolDispersalMonitoringSerializer,
             ActivitySubtypes.Biocontrol_Collection.name: DraftBiocontrolCollectionSerializer,
-            ActivitySubtypes.Treatment_Chemical_Plant_Aquatic.name: None,
-            ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial.name: None,
+            ActivitySubtypes.Treatment_Chemical_Plant_Aquatic.name: DraftAquaticChemicalTreatmentSerializer,
+            ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial.name: DraftTerrestrialChemicalTreatmentSerializer,
         }
         serializer_cls = SUBTYPE_SERIALIZER_MAP.get(obj.subtype)
 
