@@ -122,7 +122,7 @@ class ProductApplicationRate(CleanSchema):
         MAX_RATE = max(application_rates, default=0)
         if MAX_RATE > self.delivery_rate:
             raise ValueError(
-                "Delivery rate must be greater or equal to declared Application Rate."
+                "Delivery rate cannot be less than the highest declared Product Application Rate"
             )
         return self
 

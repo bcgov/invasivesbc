@@ -61,7 +61,10 @@ const TreatmentChemicalPlantDetails = () => {
         return rate;
       })
     );
-    return maxApplicationRate <= deliveryRate || 'Delivery rate must be greater or equal to declared Application Rate.';
+    return (
+      maxApplicationRate <= deliveryRate ||
+      'Delivery rate cannot be less than the highest declared Product Application Rate'
+    );
   };
 
   // Filter plant codes based on if subtype is Aquatic or Terrestrial.
