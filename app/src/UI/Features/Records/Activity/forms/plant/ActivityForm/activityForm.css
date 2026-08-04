@@ -25,6 +25,23 @@ input[type='button']:hover {
     }
   }
 
+  .alternate-options {
+    a,
+    button {
+      color: var(--blue-primary);
+      margin: 8px;
+      background-color: transparent;
+      outline: none;
+      border: none;
+      font-size: 1rem;
+      text-decoration: underline;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+
   nav {
     display: flex;
     flex-direction: 100%;
