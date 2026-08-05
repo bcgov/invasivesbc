@@ -16,6 +16,7 @@ import Photos from './Photos';
 import FormControl from './FormControl';
 import RecordNotFound from './RecordNotFound/RecordNotFound';
 import UserSettings from 'state/actions/userSettings/UserSettings';
+import LinkingActivities from './LinkingActivities/LinkingActivities';
 
 const FORM_UPDATE_THROTTLE_DELAY = 1000; //ms
 const FORM_UPDATE_MAX_DELAY = 5000; //ms
@@ -159,6 +160,7 @@ const ActivityForm = () => {
       <FormProvider {...methods}>
         <form autoComplete={'off'} id="activity-form" onSubmit={handleSubmit(onSubmit)}>
           <RecordMetadata formState={getValues()} />
+          <LinkingActivities />
           {/* Use conditional Rendering so RHF Doesn't unmount fields in its validation step on submit */}
           <div className={`form-section ${mode === Mode.Form ? 'active' : ''}`}>
             <Form />
