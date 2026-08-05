@@ -88,7 +88,10 @@ class FormActions {
         duplicatedForm.subtype = subtype;
         duplicatedForm.subtype_data = getDefaultFormState(subtype).subtype_data;
       }
-      return duplicatedForm;
+      return {
+        data: duplicatedForm as FormSchema,
+        available_actions: [RecordAction.EDIT, RecordAction.DELETE, RecordAction.SUBMIT] as Array<RecordAction>
+      };
     }
   );
   static readonly clearFormState = createAction(`${this.PREFIX}/clearFormState`);
