@@ -84,6 +84,7 @@ const getDefaultFormState = (subtype: ActivitySubtypes, created_by?: string): Fo
     utm_easting: 0,
     utm_northing: 0,
     linked_activities: [],
+    linking_activities: [], // Back-end supplied readonly field.
     participants: [{ name: '', pac_number: isChemical ? 0 : undefined }],
     subtype_data: subtype_data,
     type: ActivitySubtypesToType[subtype],
