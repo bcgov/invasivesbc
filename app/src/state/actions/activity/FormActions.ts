@@ -35,7 +35,8 @@ class FormActions {
       const newFormId = crypto.randomUUID();
       return {
         newFormId,
-        subtype
+        subtype,
+        available_actions: [RecordAction.DELETE, RecordAction.EDIT, RecordAction.SUBMIT]
       };
     }
   );

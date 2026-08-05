@@ -17,13 +17,15 @@ import { GeoTrackingStatus } from 'constants/geoTrackingStatus';
 import DrawToolActions from 'state/actions/drawtool/drawToolActions';
 import { FormSchema, TerrestrialChemicalTreatmentSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
+import RecordAction from 'constants/recordAction';
 
 interface ActivityState {
   [MIGRATION_VERSION_KEY]: number;
   activity: any;
   activeActivity: string | null;
-  activeActivityPermissions?: IActivityPermissions;
-  activityErrors: any[];
+  activeActivityPermissions?: IActivityPermissions; // TODO: Remove all relations to this legacy state.
+  recordActions?: Array<RecordAction>;
+  activityErrors: any[]; // TODO: Remove all relations to this legacy state
   formCodes: Record<PropertyKey, Array<FormCode>>;
   error: boolean;
   pasteCount: number;
@@ -42,8 +44,9 @@ interface ActivityState {
     utm_easting?: number;
     utm_northing?: number;
   };
-  initialized: boolean;
-  loading: boolean;
+  pristine: boolean; // TODO: Remove all relations (Legacy form)
+  initialized: boolean; // TODO: Remove
+  loading: boolean; // TODO: Remove
   suggestions: {
     jurisdictions: Array<{ label: string; full: string }>;
     recordsInArea: Array<{ label: string; full: string }>;
@@ -196,6 +199,7 @@ function createActivityReducer() {
         delete draftState.geometry_details;
         delete draftState.wellsInRecordArea;
         delete draftState.recordNotFound;
+        delete draftState.recordActions;
       } else if (Activity.paste.match(action)) {
         const shallow = draftState?.activity_copy_buffer?.form_data;
         if (!shallow) return;
@@ -226,9 +230,11 @@ function createActivityReducer() {
         delete draftState.geometry_details;
         delete draftState.wellsInRecordArea;
         delete draftState.recordNotFound;
+        delete draftState.recordActions;
 
         draftState.formId = action.payload.newFormId;
         draftState.formType = action.payload.subtype;
+        draftState.recordActions = action.payload.available_actions;
       } else if (FormActions.clearFormState.match(action) && draftState.formState) {
         delete draftState.geometry_details;
         delete draftState.wellsInRecordArea;
@@ -241,9 +247,11 @@ function createActivityReducer() {
           });
         }
       } else if (FormActions.duplicateForm.fulfilled.match(action)) {
-        draftState.formType = action.payload.subtype;
-        draftState.formId = action.payload.id;
-        draftState.formState = action.payload;
+        const { data, available_actions } = action.payload;
+        draftState.formType = data.subtype;
+        draftState.formId = data.id;
+        draftState.formState = data;
+        draftState.recordActions = available_actions;
       } else if (FormActions.updateState.match(action)) {
         draftState.formState = structuredClone(action.payload);
       } else if (FormActions.sendForm.fulfilled.match(action)) {
@@ -261,10 +269,13 @@ function createActivityReducer() {
         delete draftState.formId;
         delete draftState.formType;
         delete draftState.recordNotFound;
+        delete draftState.recordActions;
       } else if (Activity.getActivity.fulfilled.match(action)) {
-        draftState.formType = action.payload?.subtype;
-        draftState.formId = action.payload?.id;
-        draftState.formState = action.payload;
+        const { data, available_actions } = action.payload;
+        draftState.formType = data.subtype;
+        draftState.formId = data.id;
+        draftState.formState = data;
+        draftState.recordActions = available_actions;
       } else if (Activity.getActivity.rejected.match(action) && isRejectedWithValue(action) && action.payload === 404) {
         draftState.recordNotFound = true;
       } else if (Activity.getSuccess.match(action)) {
