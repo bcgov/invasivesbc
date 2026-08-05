@@ -1,6 +1,6 @@
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { Feature, GeoJSON } from 'geojson';
-import { ActivitySubtypes } from 'sharedAPI';
+import { ActivityStatus, ActivitySubtypes } from 'sharedAPI';
 import Alerts from 'state/actions/alerts/Alerts';
 
 import { RecordSetType } from 'interfaces/UserRecordSet';
@@ -15,6 +15,7 @@ import { getCurrentJWT } from 'state/sagas/auth/auth';
 import formAlerts from 'constants/alerts/formAlerts';
 import transformPydanticErrors from 'utils/transformPydanticErrors';
 import RecordAction from 'constants/recordAction';
+import createRecordId from 'utils/createRecordId';
 
 interface FormSubmission {
   data: FormSchema;
@@ -79,13 +80,16 @@ class FormActions {
       if (!formState) throw new Error('Formstate is null');
       if (!Auth.username) throw new Error('No authenticated user');
       const duplicatedForm = structuredClone(formState);
-      //Reset record specific details.
+      // Reset record specific details.
       duplicatedForm.created_by = Auth.username;
-      duplicatedForm.short_id = ''; // Gets assigned when API receives it.
+      duplicatedForm.form_status = ActivityStatus.DRAFT;
       duplicatedForm.date = new Date().toISOString().substring(0, 10);
-      duplicatedForm.id = crypto.randomUUID();
+
+      const { id, short_id } = createRecordId(subtype);
+      duplicatedForm.id = id;
+      duplicatedForm.short_id = short_id;
       if (duplicatedForm.subtype !== subtype) {
-        //For mismatched subtype, remove all the subtype_data
+        // For mismatched subtype, remove all the subtype_data
         duplicatedForm.subtype = subtype;
         duplicatedForm.subtype_data = getDefaultFormState(subtype).subtype_data;
       }

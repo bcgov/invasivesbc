@@ -1,4 +1,4 @@
-import { ActivityLetters, ActivityStatus, ActivitySubtypes, ActivitySubtypesToType } from 'sharedAPI';
+import { ActivityStatus, ActivitySubtypes, ActivitySubtypesToType } from 'sharedAPI';
 import {
   getBioControlReleaseSubtypeFields,
   getMonitoringBiocontrolReleaseSubtypeFields,
@@ -13,6 +13,7 @@ import {
   getTreatmentChemicalPlantSubtypeFields
 } from '.';
 import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces/FormSchema';
+import createRecordId from 'utils/createRecordId';
 
 /**
  * @desc Intermediate function to map subtypes to their proper empty values
@@ -58,11 +59,7 @@ const getDefaultFormState = (subtype: ActivitySubtypes, created_by?: string): Fo
     ActivitySubtypes.Treatment_Chemical_Plant_Aquatic,
     ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial
   ].some((st) => st === subtype);
-  const id = crypto.randomUUID();
-  const dateStamp = new Date().toISOString().slice(2, 4);
-  const subtypeTag = ActivityLetters[subtype] ?? '';
-  const uuidSlice = id.slice(0, 8).toUpperCase();
-  const short_id = dateStamp + subtypeTag + uuidSlice;
+  const { id, short_id } = createRecordId(subtype);
   return {
     id,
     short_id,
