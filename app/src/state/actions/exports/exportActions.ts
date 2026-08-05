@@ -3,13 +3,15 @@ import { RecordSetType } from 'interfaces/UserRecordSet';
 import { RootState } from 'state/reducers/rootReducer';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import { getRecordFilterObjectFromStateForAPI } from 'state/sagas/map/dataAccess';
+import Alerts from 'state/actions/alerts/Alerts';
+import downloadAlertMessages from 'constants/alerts/downloadAlerts';
 
 class ExportActions {
   private static readonly PREFIX = 'ExportActions';
 
   public static readonly requestActivityCSV = createAsyncThunk(
     `${this.PREFIX}/requestActivityCSV`,
-    async (spec: { setId: string; csvType: string }, { getState, rejectWithValue }) => {
+    async (spec: { setId: string; csvType: string }, { getState, rejectWithValue, dispatch }) => {
       const state = (await getState()) as RootState;
       const API_V2_BASE = state.Configuration.current.runtime.API_V2_BASE;
       const filterObject = getRecordFilterObjectFromStateForAPI(spec.setId, state.UserSettings);
@@ -48,12 +50,13 @@ class ExportActions {
       a.click();
       window.URL.revokeObjectURL('url');
       document.body.removeChild(a);
+      dispatch(Alerts.create(downloadAlertMessages.csvDownloadComplete));
     }
   );
 
   public static readonly requestExcel = createAsyncThunk(
     `${this.PREFIX}/requestExcel`,
-    async (spec: { setId: string; csvType: string }, { getState, rejectWithValue }) => {
+    async (spec: { setId: string; csvType: string }, { getState, rejectWithValue, dispatch }) => {
       const state = (await getState()) as RootState;
       const { API_BASE, API_V2_BASE } = state.Configuration.current.runtime;
       const set = state.UserSettings?.recordSets[spec.setId];
@@ -77,6 +80,7 @@ class ExportActions {
       if (!res?.ok) return rejectWithValue('HTTP Request failed to resolve');
 
       const url = await res.text();
+      dispatch(Alerts.create(downloadAlertMessages.csvDownloadReady));
       return { link: url, setId: spec.setId };
     }
   );
