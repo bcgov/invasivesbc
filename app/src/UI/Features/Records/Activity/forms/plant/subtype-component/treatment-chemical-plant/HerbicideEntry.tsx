@@ -120,7 +120,7 @@ const HerbicideEntry = ({ idx, type }: PropTypes) => {
               required: true,
               valueAsNumber: true,
               shouldUnregister: true,
-              deps: [getPath('name')],
+              deps: [getPath('name'), 'subtype_data.treatment_context.delivery_rate'],
               validate: {
                 minValue: (val) => greaterThan(val, 0),
                 verifyApplicationRate: (val) => userConfirmedApplicationRate || verifyApplicationRate(val)

@@ -108,6 +108,24 @@ class ProductApplicationRate(CleanSchema):
     delivery_rate: float = Field(..., gt=0)
     amount_mix_used_l: float = Field(..., gt=0)
 
+    @model_validator(mode="after")
+    def validate_application_delivery_rate(self):
+        """
+        Enforce that incoming delivery rate is >= than the highest 'product application rate'.
+        """
+        application_rates = []
+        for h in self.herbicide:
+            app_rate = h.application_rate if h.application_rate else 0
+            if h.type.code == "granular":
+                app_rate /= 1000
+            application_rates.append(app_rate)
+        MAX_RATE = max(application_rates, default=0)
+        if MAX_RATE > self.delivery_rate:
+            raise ValueError(
+                "Delivery rate cannot be less than the highest declared Product Application Rate"
+            )
+        return self
+
 
 class DraftProductDilutionRate(CleanSchema):
     herbicide: List[BaseHerbicide]

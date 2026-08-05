@@ -1,4 +1,4 @@
-import { get, useFormContext } from 'react-hook-form';
+import { get, useFormContext, useWatch } from 'react-hook-form';
 import { useSelector } from 'utils/use_selector';
 import { useEffect, useMemo } from 'react';
 import { ChemTreatment } from 'UI/Features/Records/Activity/forms/plant/interfaces';
@@ -22,6 +22,7 @@ import {
 } from 'UI/Features/Records/Activity/forms/common/validators';
 import TreatmentChemicalPlantCalculations from './TreatmentChemicalPlantCalculations';
 import useFieldPath from 'UI/Features/Records/Activity/forms/plant/hooks/useFieldPath';
+import { ApplicationRateHerbicide } from '../../interfaces/ChemicalTreatmentContext';
 
 const TreatmentChemicalPlantDetails = () => {
   enum CalculationType {
@@ -30,6 +31,7 @@ const TreatmentChemicalPlantDetails = () => {
   }
   const { getPath } = useFieldPath<ChemTreatment>('subtype_data.treatment_context');
   const {
+    control,
     register,
     watch,
     setValue,
@@ -45,6 +47,25 @@ const TreatmentChemicalPlantDetails = () => {
   const calculation_type = watch(getPath('calculation_type'));
   const tank_mix = watch(getPath('tank_mix'));
   const application_method = watch(getPath('application_method'));
+  const herbicides = useWatch({ control, name: 'subtype_data.treatment_context.herbicide' });
+
+  /**
+   * Business Rule: Herbicide Delivery Rate must be less than or equal the Application rate to be considered valid.
+   */
+  const validateDeliveryRate = (deliveryRate: number): boolean | string => {
+    const maxApplicationRate = Math.max(
+      ...(herbicides as Array<ApplicationRateHerbicide>).map((h: ApplicationRateHerbicide): number => {
+        const rate = h?.application_rate ?? 0;
+        if (!rate) return 0;
+        if (h.type === 'granular') return rate / 1000; // Convert all to same units (e.g.: 300g == 0.3L.
+        return rate;
+      })
+    );
+    return (
+      maxApplicationRate <= deliveryRate ||
+      'Delivery rate cannot be less than the highest declared Product Application Rate'
+    );
+  };
 
   // Filter plant codes based on if subtype is Aquatic or Terrestrial.
   const invasivePlantCodes = useMemo(() => {
@@ -239,7 +260,10 @@ const TreatmentChemicalPlantDetails = () => {
             required: true,
             valueAsNumber: true,
             shouldUnregister: true,
-            validate: (val) => greaterThan(val, 0)
+            validate: {
+              isPositive: (val) => greaterThan(val, 0),
+              isLessThanAppRate: (val) => validateDeliveryRate(val)
+            }
           })}
         />
       )}
