@@ -160,7 +160,6 @@ const ActivityForm = () => {
       <FormProvider {...methods}>
         <form autoComplete={'off'} id="activity-form" onSubmit={handleSubmit(onSubmit)}>
           <RecordMetadata formState={getValues()} />
-          <LinkingActivities />
           {/* Use conditional Rendering so RHF Doesn't unmount fields in its validation step on submit */}
           <div className={`form-section ${mode === Mode.Form ? 'active' : ''}`}>
             <Form />
@@ -170,7 +169,7 @@ const ActivityForm = () => {
           </div>
 
           <FormControl />
-
+          <LinkingActivities />
           {/* Debug Information/Options */}
           <DebugButton
             label={`${isFormDisabled ? 'Enable' : 'Disable'} Form`}

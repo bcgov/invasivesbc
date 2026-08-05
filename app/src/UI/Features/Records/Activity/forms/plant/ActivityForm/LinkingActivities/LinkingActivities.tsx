@@ -27,7 +27,7 @@ const LinkingActivities = () => {
     return null;
   }
   return (
-    <Fieldset label={'Related Records'} tooltip={TOOLTIP}>
+    <Fieldset label={'Referenced By'} tooltip={TOOLTIP}>
       <CustomPopover buttonOverrideOptions={{ anchorEl, setAnchorEl }}>
         <RecordTablePopoverContent
           recordDisplayId={displayId}
