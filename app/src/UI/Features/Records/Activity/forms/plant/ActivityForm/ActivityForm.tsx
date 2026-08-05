@@ -1,13 +1,12 @@
 import { useForm, SubmitHandler, useWatch, FormProvider } from 'react-hook-form';
 import { useDispatch, useSelector } from 'utils/use_selector';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import debounce from 'lodash.debounce';
 import FormActions from 'state/actions/activity/FormActions';
 import RecordMetadata from 'UI/Features/Records/Activity/forms/common/RecordMetadata/RecordMetadata';
 import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
 import DebugFormData from 'UI/Features/Records/Activity/forms/debug/DebugFormData';
-import DebugButton from 'UI/Features/Records/Activity/forms/debug/DebugButton';
 import { NavLink, useParams } from 'react-router';
 import ActivityActions from 'state/actions/activity/Activity';
 import Form from './Form';
@@ -16,6 +15,7 @@ import Photos from './Photos';
 import FormControl from './FormControl';
 import RecordNotFound from './RecordNotFound/RecordNotFound';
 import UserSettings from 'state/actions/userSettings/UserSettings';
+import RecordAction from 'constants/recordAction';
 import LinkingActivities from './LinkingActivities/LinkingActivities';
 
 const FORM_UPDATE_THROTTLE_DELAY = 1000; //ms
@@ -26,8 +26,7 @@ const ActivityForm = () => {
     Photo = 'photos',
     Form = 'form'
   }
-  // TODO: Replace with Permission Logic
-  const [isFormDisabled, setIsFormDisabled] = useState<boolean>(false);
+
   const { id, mode } = useParams<{ id: string; mode: Mode }>();
   const handleCreateNewRecord = () => {
     dispatch(UserSettings.openNewRecordDialogue());
@@ -75,18 +74,22 @@ const ActivityForm = () => {
   const subtype = useSelector((state) => state.ActivityPage?.formType);
   const formId = useSelector((state) => state.ActivityPage?.formId);
   const recordNotFound = useSelector((state) => state.ActivityPage?.recordNotFound);
+  const recordActions = useSelector((state) => state.ActivityPage?.recordActions);
   const currentUser = useSelector((state) => state.Auth?.username) ?? undefined;
   const MOBILE = useSelector((state) => state.Configuration.current.build.MOBILE);
-  // Assign Props to sole variable to pass into FormProvider
+
+  const userCanEdit: boolean = useMemo(() => {
+    return !!recordActions?.includes(RecordAction.EDIT);
+  }, [recordActions]);
+
   const methods = useForm<FormSchema>({
     mode: 'onChange',
-    disabled: isFormDisabled,
+    disabled: !userCanEdit,
     defaultValues: getDefaultFormState(subtype)
   });
 
   // Destructure props used at this level
   const {
-    register,
     handleSubmit,
     getValues,
     control,
@@ -170,14 +173,6 @@ const ActivityForm = () => {
 
           <FormControl />
           <LinkingActivities />
-          {/* Debug Information/Options */}
-          <DebugButton
-            label={`${isFormDisabled ? 'Enable' : 'Disable'} Form`}
-            onClick={(e) => {
-              e.preventDefault();
-              setIsFormDisabled((prev) => !prev);
-            }}
-          />
           <DebugFormData />
         </form>
       </FormProvider>
