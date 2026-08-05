@@ -116,13 +116,20 @@ class Activity {
         const serializedActivities = OfflineActivity.serializedActivities;
         const record = serializedActivities?.[id];
         if (record) {
-          return JSON.parse(record.data);
+          return {
+            data: JSON.parse(record.data),
+            available_actions: [RecordAction.DELETE, RecordAction.EDIT, RecordAction.SUBMIT]
+          };
         }
         if (!Network.connected) {
           // Attempt fetching from cache if online
           const service = await RecordCacheServiceFactory.getPlatformInstance();
           const offlineRecord = await service.loadActivity(id);
-          if (offlineRecord) return offlineRecord;
+          if (offlineRecord)
+            return {
+              data: offlineRecord,
+              available_actions: []
+            };
           return rejectWithValue(404);
         }
       }
