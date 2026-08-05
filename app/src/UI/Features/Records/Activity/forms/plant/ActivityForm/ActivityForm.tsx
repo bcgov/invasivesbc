@@ -15,6 +15,7 @@ import './activityForm.css';
 import Photos from './Photos';
 import FormControl from './FormControl';
 import RecordNotFound from './RecordNotFound/RecordNotFound';
+import UserSettings from 'state/actions/userSettings/UserSettings';
 
 const FORM_UPDATE_THROTTLE_DELAY = 1000; //ms
 const FORM_UPDATE_MAX_DELAY = 5000; //ms
@@ -27,7 +28,9 @@ const ActivityForm = () => {
   // TODO: Replace with Permission Logic
   const [isFormDisabled, setIsFormDisabled] = useState<boolean>(false);
   const { id, mode } = useParams<{ id: string; mode: Mode }>();
-
+  const handleCreateNewRecord = () => {
+    dispatch(UserSettings.openNewRecordDialogue());
+  };
   /**
    * Update Geometry related fields when Redux state of Geom changes
    */
@@ -136,6 +139,10 @@ const ActivityForm = () => {
     return (
       <div className="activity-page">
         <p>No active form found. Please create one or select an existing record to begin.</p>
+        <div className="alternate-options">
+          <button onClick={handleCreateNewRecord}>Create New Record</button>
+          <NavLink to="/Records">Go to Records</NavLink>
+        </div>
       </div>
     );
   }
