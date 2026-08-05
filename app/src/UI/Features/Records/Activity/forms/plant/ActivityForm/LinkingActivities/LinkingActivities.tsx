@@ -3,7 +3,7 @@ import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldse
 import { activityColumnsToDisplay } from 'UI/Features/Records/RecordSet/RecordTableHelpers';
 import { useSelector } from 'utils/use_selector';
 import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
-import { useState } from 'react';
+import { MouseEvent, useState } from 'react';
 import RecordTablePopoverContent from 'UI/Features/Records/RecordSet/RecordTablePopoverContent/RecordTablePopoverContent';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 
@@ -12,9 +12,9 @@ import { RecordSetType } from 'interfaces/UserRecordSet';
  */
 const LinkingActivities = () => {
   const TOOLTIP = 'This list shows other activities that have added this record as a linked activity.';
-  const handleClick = (evt, a) => {
-    setRecordId(a.activity_id ?? '');
-    setDisplayId(a.short_id ?? '');
+  const handleClick = (evt: MouseEvent<any>, a: Record<PropertyKey, unknown>) => {
+    setRecordId((a?.activity_id as string) ?? '');
+    setDisplayId((a?.short_id as string) ?? '');
     setAnchorEl(evt.currentTarget);
   };
   const linkingActivities = useSelector((state) => state.ActivityPage.formState?.linking_activities);
