@@ -13,6 +13,8 @@ import { getCurrentJWT } from 'state/sagas/auth/auth';
 import { RootState } from 'state/reducers/rootReducer';
 import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
+import RecordAction from 'constants/recordAction';
+import FormCode from 'interfaces/FormCode';
 
 interface INewActivity {
   type: string;
@@ -128,7 +130,17 @@ class Activity {
         headers: { Authorization: await getCurrentJWT() }
       });
       if (req.status === 404) return rejectWithValue(404);
-      return (await req.json()) as FormSchema;
+      // TODO: Uncomment this section, delete lower section
+      // const { data, available_actions } = (await req.json()) as {
+      //   data: FormSchema;
+      //   available_actions: Array<RecordAction>;
+      // };
+      const data = await req.json();
+      const mock_actions = [RecordAction.DELETE, RecordAction.SUBMIT];
+      return {
+        data: data as FormSchema,
+        available_actions: mock_actions as Array<RecordAction>
+      };
     }
   );
 
@@ -148,7 +160,7 @@ class Activity {
       if (arr.length === 0) continue;
       mappedCodes[arr[0]?.table] = arr.sort((a, b) => a?.sort_order - b?.sort_order);
     }
-    return mappedCodes;
+    return mappedCodes as Record<PropertyKey, Array<FormCode>>;
   });
   static readonly getRows = createAction<ActivityTableRowRequest>(`${this.PREFIX}/getRows`);
   static readonly getRowsRequest = createAction<ActivityTableRowGetRequest>(`${this.PREFIX}/getRowsRequest`);
