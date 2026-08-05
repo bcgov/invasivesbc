@@ -99,6 +99,21 @@ const initialState: ActivityState = {
   uiSchema: undefined
 };
 
+/**
+ * @desc Reusable pass-by-reference delete for states related to Activities
+ * @param draftState Current state of reducer
+ */
+const deleteFormState = (draftState: ActivityState) => {
+  delete draftState.formState;
+  delete draftState.geometry_details;
+  delete draftState.wellsInRecordArea;
+  delete draftState.recordNotFound;
+  delete draftState.recordActions;
+  delete draftState.formId;
+  delete draftState.formType;
+  return draftState;
+};
+
 function createActivityReducer() {
   return (state = initialState, action) => {
     return createNextState(state, (draftState: Draft<ActivityState>) => {
@@ -195,11 +210,7 @@ function createActivityReducer() {
           suggestedTreatmentIDs: []
         });
       } else if (FormActions.delete.fulfilled.match(action)) {
-        delete draftState.formState;
-        delete draftState.geometry_details;
-        delete draftState.wellsInRecordArea;
-        delete draftState.recordNotFound;
-        delete draftState.recordActions;
+        deleteFormState(draftState);
       } else if (Activity.paste.match(action)) {
         const shallow = draftState?.activity_copy_buffer?.form_data;
         if (!shallow) return;
@@ -226,11 +237,7 @@ function createActivityReducer() {
         draftState.formCodes = action.payload;
       } else if (FormActions.createNewForm.fulfilled.match(action)) {
         // Clear stale formstate if exists.
-        delete draftState.formState;
-        delete draftState.geometry_details;
-        delete draftState.wellsInRecordArea;
-        delete draftState.recordNotFound;
-        delete draftState.recordActions;
+        deleteFormState(draftState);
 
         draftState.formId = action.payload.newFormId;
         draftState.formType = action.payload.subtype;
@@ -263,13 +270,7 @@ function createActivityReducer() {
         draftState.loading = true;
       } else if (Activity.getActivity.pending.match(action)) {
         // Clear Form State at beginning of fetch
-        delete draftState.formState;
-        delete draftState.geometry_details;
-        delete draftState.wellsInRecordArea;
-        delete draftState.formId;
-        delete draftState.formType;
-        delete draftState.recordNotFound;
-        delete draftState.recordActions;
+        deleteFormState(draftState);
       } else if (Activity.getActivity.fulfilled.match(action)) {
         const { data, available_actions } = action.payload;
         draftState.formType = data.subtype;
@@ -297,6 +298,7 @@ function createActivityReducer() {
         delete draftState.wellsInRecordArea;
 
         draftState.activity.geometry = action.payload.geometry;
+        // Reset all fields in form.
         draftState.activity.form_data.activity_data.latitude = undefined;
         draftState.activity.form_data.activity_data.longitude = undefined;
         draftState.activity.form_data.activity_data.utm_zone = undefined;
