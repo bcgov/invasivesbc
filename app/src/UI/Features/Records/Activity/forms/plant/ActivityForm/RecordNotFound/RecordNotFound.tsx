@@ -1,9 +1,8 @@
-import { NavLink, useNavigate, useParams } from 'react-router';
+import { NavLink, useParams } from 'react-router';
 import './recordNotFound.css';
 
 const RecordNotFound = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
 
   return (
     <div id="record-not-found">
