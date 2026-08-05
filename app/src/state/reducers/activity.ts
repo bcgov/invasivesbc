@@ -176,8 +176,6 @@ function createActivityReducer() {
       } else if (Activity.saveSuccess.match(action)) {
         draftState.pristine = true;
         draftState.activity = { ...action.payload };
-      } else if (Activity.createSuccess.match(action)) {
-        draftState.activeActivity = action.payload;
       } else if (Activity.deleteSuccess.match(action)) {
         Object.assign(draftState, {
           activity: null,
@@ -222,24 +220,26 @@ function createActivityReducer() {
         };
       } else if (Activity.refreshFormCodes.fulfilled.match(action)) {
         draftState.formCodes = action.payload;
-      } else if (FormActions.createNewForm.match(action)) {
+      } else if (FormActions.createNewForm.fulfilled.match(action)) {
         // Clear stale formstate if exists.
         delete draftState.formState;
         delete draftState.geometry_details;
         delete draftState.wellsInRecordArea;
         delete draftState.recordNotFound;
 
-        draftState.formId = crypto.randomUUID();
-        draftState.formType = action.payload;
+        draftState.formId = action.payload.newFormId;
+        draftState.formType = action.payload.subtype;
       } else if (FormActions.clearFormState.match(action) && draftState.formState) {
         delete draftState.geometry_details;
         delete draftState.wellsInRecordArea;
 
-        Object.assign(draftState.formState, {
-          ...getDefaultFormState(draftState.formType),
-          id: draftState.formId,
-          subtype: draftState.formType
-        });
+        if (draftState.formType) {
+          Object.assign(draftState.formState, {
+            ...getDefaultFormState(draftState.formType),
+            id: draftState.formId,
+            subtype: draftState.formType
+          });
+        }
       } else if (FormActions.duplicateForm.fulfilled.match(action)) {
         draftState.formType = action.payload.subtype;
         draftState.formId = action.payload.id;

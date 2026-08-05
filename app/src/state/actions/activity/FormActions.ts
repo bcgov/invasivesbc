@@ -29,8 +29,16 @@ interface VerifyLinkedActivity {
 }
 class FormActions {
   private static readonly PREFIX = 'FormActions';
-
-  static readonly createNewForm = createAction<ActivitySubtypes>(`${this.PREFIX}/createNewForm`);
+  static readonly createNewForm = createAsyncThunk(
+    `${this.PREFIX}/createNewForm`,
+    async (subtype: ActivitySubtypes) => {
+      const newFormId = crypto.randomUUID();
+      return {
+        newFormId,
+        subtype
+      };
+    }
+  );
   static readonly startDuplicateForm = createAction(`${this.PREFIX}/startDuplicateForm`);
   static readonly delete = createAsyncThunk(
     `${this.PREFIX}/delete`,

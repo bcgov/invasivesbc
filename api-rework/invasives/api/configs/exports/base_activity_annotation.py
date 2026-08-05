@@ -1,12 +1,29 @@
-from django.db.models import F, Value, CharField, Case, When, Exists, OuterRef, Q, Func
+from django.db.models import (
+    F,
+    Value,
+    CharField,
+    Case,
+    When,
+    Exists,
+    OuterRef,
+    Q,
+    Func,
+    Subquery,
+)
 from django.contrib.postgres.aggregates import StringAgg
 from django.db.models.functions import Concat, Cast
-from api.models.activity import (
-    UploadedImage,
-)
+from api.models.activity import UploadedImage, ProjectCode
 
 SRC = "root_activity"
 ADR_PATH = f"{SRC}__activitydatarecord"
+
+base_project_code_subquery = (
+    ProjectCode.objects.filter(activity_data_record__activity_id=OuterRef(f"{SRC}__id"))
+    .exclude(description__isnull=True)
+    .exclude(description="")
+    .order_by("id")
+    .values("description")
+)
 
 
 def get_BASE_ANNOTATION_CONFIGURATION_LEADING(is_chemical_treatment: bool):
@@ -17,13 +34,20 @@ def get_BASE_ANNOTATION_CONFIGURATION_LEADING(is_chemical_treatment: bool):
             "annotation": F(f"{SRC}__short_id"),
         },
         {
-            "header": "Project Codes",
-            "key": "project_code_display",
-            "annotation": StringAgg(
-                f"{ADR_PATH}__projectcode__description", delimiter=", ", distinct=True
-            ),
+            "header": "Project Code - 1",
+            "key": "project_code_display_one",
+            "annotation": Subquery(base_project_code_subquery[:1]),
         },
-        {"header": "Date", "key": "date_display", "annotation": F(f"{SRC}__date")},
+        {
+            "header": "Project Code - 2",
+            "key": "project_code_display_two",
+            "annotation": Subquery(base_project_code_subquery[1:2]),
+        },
+        {
+            "header": "Date",
+            "key": "date_display",
+            "annotation": F(f"{SRC}__date"),
+        },
         {
             "header": "Area (m)",
             "key": "area_display",

@@ -63,6 +63,7 @@ import { isDrawing } from 'utils/geoTrackingHelpers';
 import AppActions from 'state/actions/appActions/appActions';
 import DrawToolActions from 'state/actions/drawtool/drawToolActions';
 import { selectConfiguration, selectRootConfiguration } from 'state/reducers/configuration';
+import { RootState } from 'state/reducers/rootReducer';
 
 function* handle_ACTIVITY_DELETE_SUCCESS() {
   yield put(UserSettings.RecordSet.setSelected(null));
@@ -79,12 +80,14 @@ function* handle_ACTIVITY_DELETE_SUCCESS() {
 function* handle_LOAD_ACTIVITY_IF_REQUIRED(action: PayloadAction<string>) {
   // this replaces an urlChange handler with more specific handling
   const id = action.payload;
-  const activityPageState = yield select(selectActivity);
-  const isValidIdMismatch =
-    id && id.length === 36 && (activityPageState?.activity?.activity_id !== id || id !== activityPageState.formId);
-  if (isValidIdMismatch) {
-    yield put(Activity.get(id));
+  const activityPageState: RootState['ActivityPage'] = yield select(selectActivity);
+  const appModeUrl: string = yield select((state: RootState) => state.AppMode.url);
+
+  if (!id || id.length !== 36) return;
+  if (appModeUrl.match(/\/Activity\//) && id !== activityPageState?.formId) {
     yield put(Activity.getActivity(id));
+  } else if (appModeUrl.match(/\/LegacyForm\//) && id !== activityPageState?.activity?.activity_id) {
+    yield put(Activity.get(id));
   }
 }
 

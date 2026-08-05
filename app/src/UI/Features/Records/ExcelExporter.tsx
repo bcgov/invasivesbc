@@ -8,6 +8,9 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import ExportActions from 'state/actions/exports/exportActions';
 import { ActivitySubtypes } from 'sharedAPI';
+import Alerts from 'state/actions/alerts/Alerts';
+import downloadAlertMessages from 'constants/alerts/downloadAlerts';
+
 const iappExportOptions = [
   { value: 'site_selection_extract', label: 'Site Selection Extract' },
   { value: 'survey_extract', label: 'Survey Extract' },
@@ -75,19 +78,26 @@ const ibcExportOptions = [
     label: 'Biocontrol – Collection'
   }
 ];
-const ExcelExporter = (props) => {
+
+type PropTypes = {
+  setName: string;
+};
+
+const ExcelExporter = ({ setName }: PropTypes) => {
   const handleRequest = () => {
     if (setType === 'IAPP') {
-      dispatch(ExportActions.requestExcel({ setId: props.setName, csvType: selection }));
+      dispatch(ExportActions.requestExcel({ setId: setName, csvType: selection }));
     } else if (setType === 'Activity') {
-      dispatch(ExportActions.requestActivityCSV({ setId: props.setName, csvType: selection }));
+      dispatch(ExportActions.requestActivityCSV({ setId: setName, csvType: selection }));
     }
+    dispatch(Alerts.create(downloadAlertMessages.csvDownloadStarted));
   };
+
   const dispatch = useDispatch();
   const linkToCSV = useSelector((state) => state.Map.linkToCSV);
   const recordSetForCSV = useSelector((state) => state.Map.recordSetForCSV);
   const CanTriggerCSV = useSelector((state) => state.Map.CanTriggerCSV);
-  const setType = useSelector((state) => state.UserSettings.recordSets[props.setName]?.recordSetType);
+  const setType = useSelector((state) => state.UserSettings.recordSets[setName]?.recordSetType);
   const [selection, setSelection] = useState(
     setType === 'IAPP' ? 'site_selection_extract' : ActivitySubtypes.Observation_Plant_Terrestrial
   );
@@ -107,7 +117,7 @@ const ExcelExporter = (props) => {
         </AccordionSummary>
         <AccordionDetails className="accordionDetails">
           <Tooltip classes={{ tooltip: 'toolTip' }} title="CSV Export">
-            {linkToCSV && props.setName === recordSetForCSV ? (
+            {linkToCSV && setName === recordSetForCSV ? (
               <a href={linkToCSV} download>
                 <Button
                   onClick={() => dispatch(ExportActions.resetCsvUrl())}
@@ -134,7 +144,7 @@ const ExcelExporter = (props) => {
                     <DownloadIcon />
                   </Button>
                 ) : (
-                  <Spinner></Spinner>
+                  <Spinner />
                 )}
               </div>
             )}
