@@ -59,7 +59,7 @@ class BaseActivityProcessor:
         activity = Activity.objects.create(**payload)
 
         if linked_ids:
-            activity.linked_activities.set(linked_ids)
+            activity.linked_activities.set(id["full"] for id in linked_ids)
         if media_data:
             # Manually create each image, due to S3 upload/processing.
             adr = ActivityDataRecord.objects.create(activity=activity)
@@ -85,7 +85,7 @@ class BaseActivityProcessor:
             setattr(instance, field, value)
         instance.save()
 
-        instance.linked_activities.set(linked_ids)
+        instance.linked_activities.set(id["full"] for id in linked_ids)
         # Erase all nested items for an activity before recreating.
         ActivityDataRecord.objects.filter(activity=instance).delete()
         if media_data:
@@ -156,7 +156,7 @@ class DraftBaseActivityProcessor:
         activity = DraftActivity.objects.create(**payload)
 
         if linked_ids:
-            activity.linked_activities.set(linked_ids)
+            activity.linked_activities.set(id["full"] for id in linked_ids)
         if media_data:
             # Manually create each image, due to S3 upload/processing.
             adr = DraftActivityDataRecord.objects.create(activity=activity)
@@ -179,7 +179,7 @@ class DraftBaseActivityProcessor:
             setattr(instance, field, value)
         instance.save()
 
-        instance.linked_activities.set(linked_ids)
+        instance.linked_activities.set(id["full"] for id in linked_ids)
         # Erase all nested items for an activity before recreating.
         DraftActivityDataRecord.objects.filter(activity=instance).delete()
         if media_data:
