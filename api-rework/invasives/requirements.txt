@@ -17,6 +17,7 @@ click-plugins==1.1.1.2
 click-repl==0.3.0
 cron-descriptor==1.4.5
 cryptography==49.0.0
+deepdiff==9.1.0
 diskcache==5.6.3
 Django==6.0.7
 django-celery-beat==2.9.0
