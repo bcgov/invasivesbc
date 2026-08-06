@@ -259,6 +259,8 @@ function createUserSettingsReducer(_configuration: AppConfig) {
         draftState.activeActivity = null;
       } else if (Activity.get.match(action)) {
         draftState.activeActivity = action.payload;
+      } else if (Activity.getActivity.fulfilled.match(action)) {
+        draftState.activeActivity = action.meta.arg;
       } else if (IappActions.getSuccess.match(action)) {
         draftState.activeIAPP = action.payload?.iapp?.site_id;
       } else if (
