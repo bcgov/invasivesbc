@@ -11,9 +11,8 @@ import IActivityPermissions from 'interfaces/IActivityPermissions';
 import UserRecord from 'interfaces/UserRecord';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import { RootState } from 'state/reducers/rootReducer';
-import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
-import RecordAction from 'constants/recordAction';
+import { SingleActivityResponse } from 'api/api-schema';
 import FormCode from 'interfaces/FormCode';
 
 interface INewActivity {
@@ -118,8 +117,8 @@ class Activity {
         if (record) {
           return {
             data: JSON.parse(record.data),
-            available_actions: [RecordAction.DELETE, RecordAction.EDIT, RecordAction.SUBMIT]
-          };
+            available_actions: ['DELETE', 'EDIT', 'SUBMIT']
+          } as SingleActivityResponse;
         }
         if (!Network.connected) {
           // Attempt fetching from cache if online
@@ -137,17 +136,8 @@ class Activity {
         headers: { Authorization: await getCurrentJWT() }
       });
       if (req.status === 404) return rejectWithValue(404);
-      // TODO: Uncomment this section, delete lower section
-      // const { data, available_actions } = (await req.json()) as {
-      //   data: FormSchema;
-      //   available_actions: Array<RecordAction>;
-      // };
-      const data = await req.json();
-      const mock_actions = [RecordAction.DELETE, RecordAction.SUBMIT];
-      return {
-        data: data as FormSchema,
-        available_actions: mock_actions as Array<RecordAction>
-      };
+      const { data, available_actions } = (await req.json()) as SingleActivityResponse;
+      return { data, available_actions };
     }
   );
 

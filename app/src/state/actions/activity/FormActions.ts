@@ -2,7 +2,7 @@ import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { Feature, GeoJSON } from 'geojson';
 import { ActivityStatus, ActivitySubtypes } from 'sharedAPI';
 import Alerts from 'state/actions/alerts/Alerts';
-
+import { RecordAction } from 'api/api-schema';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import { RootState } from 'state/reducers/rootReducer';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
@@ -14,7 +14,6 @@ import EFilterType from 'constants/EFilterType';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import formAlerts from 'constants/alerts/formAlerts';
 import transformPydanticErrors from 'utils/transformPydanticErrors';
-import RecordAction from 'constants/recordAction';
 import createRecordId from 'utils/createRecordId';
 
 interface FormSubmission {
@@ -37,7 +36,7 @@ class FormActions {
       return {
         newFormId,
         subtype,
-        available_actions: [RecordAction.DELETE, RecordAction.EDIT, RecordAction.SUBMIT]
+        available_actions: ['DELETE', 'EDIT', 'SUBMIT'] as Array<RecordAction>
       };
     }
   );
@@ -47,7 +46,7 @@ class FormActions {
     async (_, { getState, rejectWithValue, dispatch }) => {
       const { Auth, ActivityPage, Configuration } = getState() as RootState;
 
-      const hasDeletePermission = !!ActivityPage.recordActions?.includes(RecordAction.DELETE);
+      const hasDeletePermission = !!ActivityPage.recordActions?.includes('DELETE');
 
       if (!hasDeletePermission) {
         rejectWithValue('You do not have permission to perform this action.');
@@ -95,7 +94,7 @@ class FormActions {
       }
       return {
         data: duplicatedForm as FormSchema,
-        available_actions: [RecordAction.EDIT, RecordAction.DELETE, RecordAction.SUBMIT] as Array<RecordAction>
+        available_actions: ['EDIT', 'DELETE', 'SUBMIT'] as Array<RecordAction>
       };
     }
   );

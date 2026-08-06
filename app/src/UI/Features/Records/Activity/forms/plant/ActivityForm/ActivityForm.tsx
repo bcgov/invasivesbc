@@ -15,7 +15,7 @@ import Photos from './Photos';
 import FormControl from './FormControl';
 import RecordNotFound from './RecordNotFound/RecordNotFound';
 import UserSettings from 'state/actions/userSettings/UserSettings';
-import RecordAction from 'constants/recordAction';
+
 import LinkingActivities from './LinkingActivities/LinkingActivities';
 
 const FORM_UPDATE_THROTTLE_DELAY = 1000; //ms
@@ -79,7 +79,7 @@ const ActivityForm = () => {
   const MOBILE = useSelector((state) => state.Configuration.current.build.MOBILE);
 
   const userCanEdit: boolean = useMemo(() => {
-    return !!recordActions?.includes(RecordAction.EDIT);
+    return !!recordActions?.includes('EDIT');
   }, [recordActions]);
 
   const methods = useForm<FormSchema>({
@@ -135,7 +135,7 @@ const ActivityForm = () => {
 
   useEffect(() => {
     // Reset form on ID change.
-    if (!initState) reset(getDefaultFormState(subtype, currentUser));
+    if (!initState && subtype) reset(getDefaultFormState(subtype, currentUser));
   }, [formId]);
 
   if (recordNotFound) return <RecordNotFound />;

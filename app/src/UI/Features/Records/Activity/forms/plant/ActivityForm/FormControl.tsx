@@ -9,7 +9,6 @@ import Prompt from 'state/actions/prompts/Prompt';
 import getDefaultFormState from '../builders/getDefaultState';
 import { Debug } from 'UI/Reusable/Predicates/Debug';
 import Activity from 'state/actions/activity/Activity';
-import RecordAction from 'constants/recordAction';
 
 /**
  * @desc Popover menu for form controls, handle Submit/Draft/Duplication fields.
@@ -88,11 +87,11 @@ const FormControl = () => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   const canDelete: boolean = useMemo(() => {
-    return !!recordActions?.includes(RecordAction.DELETE);
+    return !!recordActions?.includes('DELETE');
   }, [recordActions]);
 
   const canSubmit: boolean = useMemo(() => {
-    return !!recordActions?.includes(RecordAction.SUBMIT);
+    return !!recordActions?.includes('SUBMIT');
   }, [recordActions]);
 
   return (

@@ -17,7 +17,7 @@ import { GeoTrackingStatus } from 'constants/geoTrackingStatus';
 import DrawToolActions from 'state/actions/drawtool/drawToolActions';
 import { FormSchema, TerrestrialChemicalTreatmentSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
-import RecordAction from 'constants/recordAction';
+import { RecordAction } from 'api/api-schema';
 
 interface ActivityState {
   [MIGRATION_VERSION_KEY]: number;
@@ -273,9 +273,9 @@ function createActivityReducer() {
         deleteFormState(draftState);
       } else if (Activity.getActivity.fulfilled.match(action)) {
         const { data, available_actions } = action.payload;
-        draftState.formType = data.subtype;
+        draftState.formType = data.subtype as ActivitySubtypes;
         draftState.formId = data.id;
-        draftState.formState = data;
+        draftState.formState = data as unknown as FormSchema;
         draftState.recordActions = available_actions;
       } else if (Activity.getActivity.rejected.match(action) && isRejectedWithValue(action) && action.payload === 404) {
         draftState.recordNotFound = true;
