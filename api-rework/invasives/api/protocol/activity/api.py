@@ -11,6 +11,10 @@ from api.ninja_authentication import NinjaKeycloakAuthentication
 from api.models.enums import FormStatus
 from api.models.activity import Activity, DraftActivity, ActivitySubtypes
 from django.db import transaction
+from api.schemas import (
+    SingleActivityResponse,
+    RecordAction,
+)
 from api.protocol.activity.activity import (
     ActivityMinimal,
     ActivitySearchParameters,
@@ -128,17 +132,33 @@ def submit_draft_record(request, data: DraftPlantActivitySchema):
         return JsonResponse(serialized_data, status=200)
 
 
-@router.api_operation(["GET"], "/{id}")
+@router.api_operation(["GET"], "/{id}", response=SingleActivityResponse)
 def get_activity_by_id(request, id: str):
     activity = Activity.objects.filter(id=id).first()
     if activity:  # Submission found
-        serialized_data = ActivitySerializer(activity).data
-        return JsonResponse(serialized_data, status=200)
+        # TODO: Replace with proper values
+        res = {
+            "data": ActivitySerializer(activity).data,
+            "available_actions": [
+                RecordAction.SUBMIT,
+                RecordAction.EDIT,
+                RecordAction.DELETE,
+            ],
+        }
+        return JsonResponse(res, status=200)
     # Check if its a users draft record.
     # TODO: Match user to Draft, to avoid pulling other users Draft records.
     activity = get_object_or_404(DraftActivity, pk=id)
-    serialized_data = DraftActivitySerializer(activity).data
-    return JsonResponse(serialized_data, status=200)
+    res = {
+        "data": DraftActivitySerializer(activity).data,
+        # TODO: Replace with proper values
+        "available_actions": [
+            RecordAction.SUBMIT,
+            RecordAction.EDIT,
+            RecordAction.DELETE,
+        ],
+    }
+    return JsonResponse(res, status=200)
 
 
 @router.api_operation(["DELETE"], "/{id}", response={204: None})

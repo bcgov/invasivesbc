@@ -17,13 +17,15 @@ import { GeoTrackingStatus } from 'constants/geoTrackingStatus';
 import DrawToolActions from 'state/actions/drawtool/drawToolActions';
 import { FormSchema, TerrestrialChemicalTreatmentSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
+import { RecordAction } from 'api/api-schema';
 
 interface ActivityState {
   [MIGRATION_VERSION_KEY]: number;
   activity: any;
   activeActivity: string | null;
-  activeActivityPermissions?: IActivityPermissions;
-  activityErrors: any[];
+  activeActivityPermissions?: IActivityPermissions; // TODO: Remove all relations to this legacy state.
+  recordActions?: Array<RecordAction>;
+  activityErrors: any[]; // TODO: Remove all relations to this legacy state
   formCodes: Record<PropertyKey, Array<FormCode>>;
   error: boolean;
   pasteCount: number;
@@ -42,8 +44,9 @@ interface ActivityState {
     utm_easting?: number;
     utm_northing?: number;
   };
-  initialized: boolean;
-  loading: boolean;
+  pristine: boolean; // TODO: Remove all relations (Legacy form)
+  initialized: boolean; // TODO: Remove
+  loading: boolean; // TODO: Remove
   suggestions: {
     jurisdictions: Array<{ label: string; full: string }>;
     recordsInArea: Array<{ label: string; full: string }>;
@@ -94,6 +97,21 @@ const initialState: ActivityState = {
   activity_copy_buffer: null,
   schema: undefined,
   uiSchema: undefined
+};
+
+/**
+ * @desc Reusable pass-by-reference delete for states related to Activities
+ * @param draftState Current state of reducer
+ */
+const deleteFormState = (draftState: ActivityState) => {
+  delete draftState.formState;
+  delete draftState.geometry_details;
+  delete draftState.wellsInRecordArea;
+  delete draftState.recordNotFound;
+  delete draftState.recordActions;
+  delete draftState.formId;
+  delete draftState.formType;
+  return draftState;
 };
 
 function createActivityReducer() {
@@ -192,10 +210,7 @@ function createActivityReducer() {
           suggestedTreatmentIDs: []
         });
       } else if (FormActions.delete.fulfilled.match(action)) {
-        delete draftState.formState;
-        delete draftState.geometry_details;
-        delete draftState.wellsInRecordArea;
-        delete draftState.recordNotFound;
+        deleteFormState(draftState);
       } else if (Activity.paste.match(action)) {
         const shallow = draftState?.activity_copy_buffer?.form_data;
         if (!shallow) return;
@@ -222,13 +237,11 @@ function createActivityReducer() {
         draftState.formCodes = action.payload;
       } else if (FormActions.createNewForm.fulfilled.match(action)) {
         // Clear stale formstate if exists.
-        delete draftState.formState;
-        delete draftState.geometry_details;
-        delete draftState.wellsInRecordArea;
-        delete draftState.recordNotFound;
+        deleteFormState(draftState);
 
         draftState.formId = action.payload.newFormId;
         draftState.formType = action.payload.subtype;
+        draftState.recordActions = action.payload.available_actions;
       } else if (FormActions.clearFormState.match(action) && draftState.formState) {
         delete draftState.geometry_details;
         delete draftState.wellsInRecordArea;
@@ -241,9 +254,11 @@ function createActivityReducer() {
           });
         }
       } else if (FormActions.duplicateForm.fulfilled.match(action)) {
-        draftState.formType = action.payload.subtype;
-        draftState.formId = action.payload.id;
-        draftState.formState = action.payload;
+        const { data, available_actions } = action.payload;
+        draftState.formType = data.subtype;
+        draftState.formId = data.id;
+        draftState.formState = data;
+        draftState.recordActions = available_actions;
       } else if (FormActions.updateState.match(action)) {
         draftState.formState = structuredClone(action.payload);
       } else if (FormActions.sendForm.fulfilled.match(action)) {
@@ -255,16 +270,13 @@ function createActivityReducer() {
         draftState.loading = true;
       } else if (Activity.getActivity.pending.match(action)) {
         // Clear Form State at beginning of fetch
-        delete draftState.formState;
-        delete draftState.geometry_details;
-        delete draftState.wellsInRecordArea;
-        delete draftState.formId;
-        delete draftState.formType;
-        delete draftState.recordNotFound;
+        deleteFormState(draftState);
       } else if (Activity.getActivity.fulfilled.match(action)) {
-        draftState.formType = action.payload?.subtype;
-        draftState.formId = action.payload?.id;
-        draftState.formState = action.payload;
+        const { data, available_actions } = action.payload;
+        draftState.formType = data.subtype as ActivitySubtypes;
+        draftState.formId = data.id;
+        draftState.formState = data as unknown as FormSchema;
+        draftState.recordActions = available_actions;
       } else if (Activity.getActivity.rejected.match(action) && isRejectedWithValue(action) && action.payload === 404) {
         draftState.recordNotFound = true;
       } else if (Activity.getSuccess.match(action)) {
@@ -286,6 +298,7 @@ function createActivityReducer() {
         delete draftState.wellsInRecordArea;
 
         draftState.activity.geometry = action.payload.geometry;
+        // Reset all fields in form.
         draftState.activity.form_data.activity_data.latitude = undefined;
         draftState.activity.form_data.activity_data.longitude = undefined;
         draftState.activity.form_data.activity_data.utm_zone = undefined;

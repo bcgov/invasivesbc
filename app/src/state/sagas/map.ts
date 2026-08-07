@@ -329,7 +329,7 @@ function* handle_WHATS_HERE_SORT_FILTER_UPDATE(record: PayloadAction<Record<Prop
 
 function* handle_SWITCH_RECORDSET(action: PayloadAction<SwitchRecordSetPayload>) {
   const { setId, type } = action.payload;
-  if (type === 'Activity') {
+  if (type === RecordSetType.Activity) {
     yield put(MapActions.setCurrentOpenSet(setId));
 
     let recordSetsState = yield select(selectUserSettings);

@@ -338,11 +338,13 @@ function createUserSettingsReducer(_configuration: AppConfig) {
       } else if (
         UserSettings.closeNewRecordDialogue.match(action) ||
         FormActions.createNewForm.pending.match(action) ||
-        FormActions.duplicateForm.fulfilled.match(action)
+        FormActions.duplicateForm.pending.match(action)
       ) {
         draftState.newRecordDialogueState.open = false;
       } else if (FormActions.createNewForm.fulfilled.match(action)) {
         draftState.activeActivity = action.payload.newFormId;
+      } else if (FormActions.duplicateForm.fulfilled.match(action)) {
+        draftState.activeActivity = action.payload.data.id;
       } else if (UserSettings.RecordSet.setSort.match(action)) {
         // if the sort column is the same as the current sort column, toggle the sort order
         // if its already desc, remove the sort column and order

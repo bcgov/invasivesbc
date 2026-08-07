@@ -11,8 +11,9 @@ import IActivityPermissions from 'interfaces/IActivityPermissions';
 import UserRecord from 'interfaces/UserRecord';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import { RootState } from 'state/reducers/rootReducer';
-import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
+import { SingleActivityResponse } from 'api/api-schema';
+import FormCode from 'interfaces/FormCode';
 
 interface INewActivity {
   type: string;
@@ -114,13 +115,20 @@ class Activity {
         const serializedActivities = OfflineActivity.serializedActivities;
         const record = serializedActivities?.[id];
         if (record) {
-          return JSON.parse(record.data);
+          return {
+            data: JSON.parse(record.data),
+            available_actions: ['DELETE', 'EDIT', 'SUBMIT']
+          } as SingleActivityResponse;
         }
         if (!Network.connected) {
           // Attempt fetching from cache if online
           const service = await RecordCacheServiceFactory.getPlatformInstance();
           const offlineRecord = await service.loadActivity(id);
-          if (offlineRecord) return offlineRecord;
+          if (offlineRecord)
+            return {
+              data: offlineRecord,
+              available_actions: []
+            };
           return rejectWithValue(404);
         }
       }
@@ -128,7 +136,8 @@ class Activity {
         headers: { Authorization: await getCurrentJWT() }
       });
       if (req.status === 404) return rejectWithValue(404);
-      return (await req.json()) as FormSchema;
+      const { data, available_actions } = (await req.json()) as SingleActivityResponse;
+      return { data, available_actions };
     }
   );
 
@@ -148,7 +157,7 @@ class Activity {
       if (arr.length === 0) continue;
       mappedCodes[arr[0]?.table] = arr.sort((a, b) => a?.sort_order - b?.sort_order);
     }
-    return mappedCodes;
+    return mappedCodes as Record<PropertyKey, Array<FormCode>>;
   });
   static readonly getRows = createAction<ActivityTableRowRequest>(`${this.PREFIX}/getRows`);
   static readonly getRowsRequest = createAction<ActivityTableRowGetRequest>(`${this.PREFIX}/getRowsRequest`);

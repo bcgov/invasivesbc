@@ -39,7 +39,7 @@ const LinkingActivities = () => {
         <thead>
           <tr>
             {activityColumnsToDisplay.map((c) => (
-              <th>{c.name}</th>
+              <th key={c.key}>{c.name}</th>
             ))}
           </tr>
         </thead>

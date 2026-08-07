@@ -1,8 +1,8 @@
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { Feature, GeoJSON } from 'geojson';
-import { ActivitySubtypes } from 'sharedAPI';
+import { ActivityStatus, ActivitySubtypes } from 'sharedAPI';
 import Alerts from 'state/actions/alerts/Alerts';
-
+import { RecordAction } from 'api/api-schema';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import { RootState } from 'state/reducers/rootReducer';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
@@ -13,8 +13,8 @@ import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import EFilterType from 'constants/EFilterType';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import formAlerts from 'constants/alerts/formAlerts';
-import { Role } from 'constants/roles';
 import transformPydanticErrors from 'utils/transformPydanticErrors';
+import createRecordId from 'utils/createRecordId';
 
 interface FormSubmission {
   data: FormSchema;
@@ -35,7 +35,8 @@ class FormActions {
       const newFormId = crypto.randomUUID();
       return {
         newFormId,
-        subtype
+        subtype,
+        available_actions: ['DELETE', 'EDIT', 'SUBMIT'] as Array<RecordAction>
       };
     }
   );
@@ -43,12 +44,13 @@ class FormActions {
   static readonly delete = createAsyncThunk(
     `${this.PREFIX}/delete`,
     async (_, { getState, rejectWithValue, dispatch }) => {
-      const {
-        Auth,
-        ActivityPage: { formState },
-        Configuration
-      } = getState() as RootState;
-      if (!formState) {
+      const { Auth, ActivityPage, Configuration } = getState() as RootState;
+
+      const hasDeletePermission = !!ActivityPage.recordActions?.includes('DELETE');
+
+      if (!hasDeletePermission) {
+        rejectWithValue('You do not have permission to perform this action.');
+      } else if (!ActivityPage?.formState) {
         dispatch(Alerts.create(formAlerts.noActiveForm));
         return rejectWithValue('No Active Form');
       } else if (!Auth.username) {
@@ -57,13 +59,7 @@ class FormActions {
       }
 
       const API_V2_BASE = Configuration.current.runtime.API_V2_BASE;
-      const isAdmin = Auth.roles.some((r) => r.role_name === Role.MASTER_ADMINISTRATOR);
-      const isCreator = Auth.username === formState.created_by;
-
-      // TODO: Refactor as Permission based checked over role specific
-      if (!isCreator && isAdmin) rejectWithValue('You do not have permission to perform this action.');
-
-      const res = await fetch(`${API_V2_BASE}/ninja/activities/${formState.id}`, {
+      const res = await fetch(`${API_V2_BASE}/ninja/activities/${ActivityPage.formState?.id}`, {
         method: 'DELETE',
         headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' }
       });
@@ -83,17 +79,23 @@ class FormActions {
       if (!formState) throw new Error('Formstate is null');
       if (!Auth.username) throw new Error('No authenticated user');
       const duplicatedForm = structuredClone(formState);
-      //Reset record specific details.
+      // Reset record specific details.
       duplicatedForm.created_by = Auth.username;
-      duplicatedForm.short_id = ''; // Gets assigned when API receives it.
+      duplicatedForm.form_status = ActivityStatus.DRAFT;
       duplicatedForm.date = new Date().toISOString().substring(0, 10);
-      duplicatedForm.id = crypto.randomUUID();
+
+      const { id, short_id } = createRecordId(subtype);
+      duplicatedForm.id = id;
+      duplicatedForm.short_id = short_id;
       if (duplicatedForm.subtype !== subtype) {
-        //For mismatched subtype, remove all the subtype_data
+        // For mismatched subtype, remove all the subtype_data
         duplicatedForm.subtype = subtype;
         duplicatedForm.subtype_data = getDefaultFormState(subtype).subtype_data;
       }
-      return duplicatedForm;
+      return {
+        data: duplicatedForm as FormSchema,
+        available_actions: ['EDIT', 'DELETE', 'SUBMIT'] as Array<RecordAction>
+      };
     }
   );
   static readonly clearFormState = createAction(`${this.PREFIX}/clearFormState`);

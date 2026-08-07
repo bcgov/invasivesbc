@@ -166,23 +166,28 @@ const Form = () => {
           })}
           width={Width.Third}
         />
-        <p>To modify or update, please draw a new shape on the Map</p>
-        <div className="control">
-          <input
-            type="button"
-            className="control-button"
-            disabled={disabled}
-            onClick={handleDrawStart}
-            value="Start Drawing"
-          />
-          <input
-            type="button"
-            className="control-button"
-            disabled={disabled}
-            onClick={handleManualUTM}
-            value="Enter UTM"
-          />
-        </div>
+
+        {!disabled && (
+          <>
+            <p>To modify or update, please draw a new shape on the Map</p>
+            <div className="control">
+              <input
+                type="button"
+                className="control-button"
+                disabled={disabled}
+                onClick={handleDrawStart}
+                value="Start Drawing"
+              />
+              <input
+                type="button"
+                className="control-button"
+                disabled={disabled}
+                onClick={handleManualUTM}
+                value="Enter UTM"
+              />
+            </div>
+          </>
+        )}
       </Fieldset>
       <LinkedActivities />
       {/* Start Basic Information Fields */}

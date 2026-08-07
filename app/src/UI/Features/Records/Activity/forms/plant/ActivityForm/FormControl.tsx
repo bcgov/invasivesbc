@@ -7,7 +7,6 @@ import FormActions from 'state/actions/activity/FormActions';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import Prompt from 'state/actions/prompts/Prompt';
 import getDefaultFormState from '../builders/getDefaultState';
-import { Role } from 'constants/roles';
 import { Debug } from 'UI/Reusable/Predicates/Debug';
 import Activity from 'state/actions/activity/Activity';
 
@@ -80,23 +79,20 @@ const FormControl = () => {
 
   const MOBILE = useSelector((state) => state.Configuration.current.build.MOBILE);
   const ONLINE = useSelector((state) => state.Network.connected);
-  const USERNAME = useSelector((state) => state.Auth.username);
-  const ROLES = useSelector((state) => state.Auth.roles);
 
-  const created_by = useSelector((state) => state.ActivityPage?.formState?.created_by);
+  const recordActions = useSelector((state) => state.ActivityPage?.recordActions);
   const subtype = useSelector((state) => state.ActivityPage.formType);
   const isFormSubmitted = useSelector((state) => state.ActivityPage.formState?.form_status === 'Submitted');
   const currId = useSelector((state) => state.ActivityPage.formId);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
-  const isRecordCreator: boolean = useMemo(() => {
-    return USERNAME === created_by;
-  }, [USERNAME, created_by]);
+  const canDelete: boolean = useMemo(() => {
+    return !!recordActions?.includes('DELETE');
+  }, [recordActions]);
 
-  const canUserDelete: boolean = useMemo(() => {
-    const isAdministrator = ROLES.some((r) => r.role_name === Role.MASTER_ADMINISTRATOR);
-    return isRecordCreator || isAdministrator;
-  }, [ROLES, isRecordCreator]);
+  const canSubmit: boolean = useMemo(() => {
+    return !!recordActions?.includes('SUBMIT');
+  }, [recordActions]);
 
   return (
     <>
@@ -114,7 +110,7 @@ const FormControl = () => {
             // Type="Submit" is tied to react-hook-form, it will handle the submission logic.
             // Errors don't need to be accounted for in disabling, since the rhf will pan to the error
             className="control-button"
-            disabled={disabled}
+            disabled={disabled || !canSubmit}
             form="activity-form"
             type="submit"
             value="Submit"
@@ -122,7 +118,7 @@ const FormControl = () => {
           {!isFormSubmitted && (
             <input
               className="control-button"
-              disabled={disabled}
+              disabled={disabled || !canSubmit}
               onClick={saveToDraft}
               type="button"
               value="Save as Draft"
@@ -135,7 +131,7 @@ const FormControl = () => {
             type="button"
             value="Clear Form"
           />
-          {canUserDelete && ONLINE && (
+          {canDelete && ONLINE && (
             <input className="control-button" disabled={disabled} onClick={handleDelete} type="button" value="Delete" />
           )}
           <input type="button" className="control-button" onClick={handleDuplicateForm} value="Duplicate Form" />
