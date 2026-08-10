@@ -151,7 +151,7 @@ class ActivitySerializer(BaseSerializer):
         for linked_id in obj.linked_activities.all():
             arr.append(
                 {
-                    "label": f"{linked_id.short_id},{linked_id.date},{linked_id.created_by}",
+                    "label": f"{linked_id.short_id} | {linked_id.date} | {linked_id.created_by}",
                     "full": linked_id.id,
                 }
             )

@@ -117,7 +117,7 @@ class FormActions {
         if (res.ok) {
           const record = await res.json();
           return {
-            label: `${record.short_id},${record.date},${record.created_by}`,
+            label: `${record.short_id} | ${record.date} | ${record.created_by}`,
             full: record.id as string
           };
         }
@@ -144,7 +144,7 @@ class FormActions {
         // Confirm the match in case of partial string matching returns
         if (data.short_id === id)
           return {
-            label: `${data.short_id},${data.activity_date},${data.created_by}`,
+            label: `${data.short_id} | ${data.activity_date} | ${data.created_by}`,
             full: data.id as string
           };
       }

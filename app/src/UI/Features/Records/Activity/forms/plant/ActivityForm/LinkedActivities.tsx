@@ -65,7 +65,7 @@ const LinkedActivities = () => {
 
   const formattedTreatmentRecords = useMemo(() => {
     return suggestedTreatmentRecords.map((o) => ({
-      label: o.label.split(',')[0],
+      label: o.label.split(' | ')[0],
       full: o.full
     }));
   }, [suggestedTreatmentRecords]);
@@ -94,7 +94,7 @@ const LinkedActivities = () => {
           <tbody>
             {activities.map((a) => (
               <tr key={a.full}>
-                {a.label.split(',').map((d) => (
+                {a.label.split(' | ').map((d) => (
                   <td key={d}>{d}</td>
                 ))}
                 {disabled ? (
