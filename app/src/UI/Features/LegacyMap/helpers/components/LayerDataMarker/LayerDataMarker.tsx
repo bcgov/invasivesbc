@@ -21,7 +21,7 @@ const LayerDataMarker = () => {
 
   // Allow for Copying records geometry
   const url = useSelector((state) => state.AppMode.url);
-  const editPermission = useSelector((state) => !!state.ActivityPage.activeActivityPermissions?.can_edit);
+  const editPermission = useSelector((state) => !!state.ActivityPage.recordActions?.includes('EDIT'));
   const userCanCopyShape = useMemo(() => editPermission && /\/Activity\//.test(url ?? ''), [url, editPermission]);
 
   const drawToolsActive = useRef<boolean>(false);
