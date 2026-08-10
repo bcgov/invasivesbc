@@ -17,7 +17,7 @@ import { GeoTrackingStatus } from 'constants/geoTrackingStatus';
 import DrawToolActions from 'state/actions/drawtool/drawToolActions';
 import { FormSchema, TerrestrialChemicalTreatmentSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
-import { RecordAction } from 'api/api-schema';
+import { RecordAction, RecordMetadata } from 'api/api-schema';
 
 interface ActivityState {
   [MIGRATION_VERSION_KEY]: number;
@@ -28,6 +28,7 @@ interface ActivityState {
   activityErrors: any[]; // TODO: Remove all relations to this legacy state
   formCodes: Record<PropertyKey, Array<FormCode>>;
   error: boolean;
+  formMetadata?: RecordMetadata;
   pasteCount: number;
   failCode: number | null;
   formType?: ActivitySubtypes;
@@ -111,6 +112,7 @@ const deleteFormState = (draftState: ActivityState) => {
   delete draftState.recordActions;
   delete draftState.formId;
   delete draftState.formType;
+  delete draftState.formMetadata;
   return draftState;
 };
 
@@ -272,11 +274,12 @@ function createActivityReducer() {
         // Clear Form State at beginning of fetch
         deleteFormState(draftState);
       } else if (Activity.getActivity.fulfilled.match(action)) {
-        const { data, available_actions } = action.payload;
+        const { data, available_actions, metadata } = action.payload;
         draftState.formType = data.subtype as ActivitySubtypes;
         draftState.formId = data.id;
         draftState.formState = data as unknown as FormSchema;
         draftState.recordActions = available_actions;
+        draftState.formMetadata = metadata as RecordMetadata;
       } else if (Activity.getActivity.rejected.match(action) && isRejectedWithValue(action) && action.payload === 404) {
         draftState.recordNotFound = true;
       } else if (Activity.getSuccess.match(action)) {

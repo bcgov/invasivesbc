@@ -68,7 +68,6 @@ class BaseSerializer(serializers.ModelSerializer):
     subtype_data = serializers.SerializerMethodField()
     participants = serializers.SerializerMethodField()
     linked_activities = serializers.SerializerMethodField()
-    linking_activities = serializers.SerializerMethodField()
 
     shape = serializers.SerializerMethodField()
     centroid = serializers.SerializerMethodField()
@@ -83,7 +82,6 @@ class BaseSerializer(serializers.ModelSerializer):
             "created_by",
             "form_status",
             "linked_activities",
-            "linking_activities",
             # Record type details
             "type",
             "subtype",
@@ -158,13 +156,6 @@ class ActivitySerializer(BaseSerializer):
                 }
             )
         return arr
-
-    def get_linking_activities(self, obj):
-        from api.serializers import ActivityRecordsetRowSerializer
-
-        return ActivityRecordsetRowSerializer(
-            obj.activity_set.all().order_by("-date"), many=True
-        ).data
 
     def get_shape(self, obj: Activity):
         geojson_py_object = json.loads(obj.shape.json)
@@ -269,9 +260,6 @@ class DraftActivitySerializer(BaseSerializer):
                 }
             )
         return arr
-
-    def get_linking_activities(self, obj):
-        return []
 
     def get_shape(self, obj: DraftActivity):
         if not obj.shape:  # Shouldn't happen outside of Draft Records.

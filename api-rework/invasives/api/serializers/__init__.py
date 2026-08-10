@@ -1,1 +1,2 @@
 from .activity_recordset_row import ActivityRecordsetRowSerializer
+from .history import HistorySerializer

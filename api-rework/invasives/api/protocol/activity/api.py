@@ -1,15 +1,20 @@
 from typing import List
 from django.http import JsonResponse
 from ninja import Router
+from deepdiff import DeepDiff
+
 from ninja.errors import HttpError
 import json
 from django.shortcuts import get_object_or_404
 from django.contrib.gis.geos import GEOSGeometry
+from api.serializers import HistorySerializer
 from api.serializers.activity import ActivitySerializer, DraftActivitySerializer
+from api.serializers.activity_recordset_row import ActivityRecordsetRowSerializer
 from api.schemas.plant_activity import ACTIVITY_PROCESSORS, DRAFT_ACTIVITY_PROCESSORS
 from api.ninja_authentication import NinjaKeycloakAuthentication
 from api.models.enums import FormStatus
 from api.models.activity import Activity, DraftActivity, ActivitySubtypes
+from api.models.audits import ActivityModificationRecord
 from django.db import transaction
 from api.schemas import (
     SingleActivityResponse,
@@ -60,8 +65,12 @@ def submit_record(request, data: PlantActivitySchema):
     Handler for Incoming records with "Submitted" status.
     Performs strict validation on payload to ensure data integrity.
     - Adds record to the 'activity' schema
+    - Adds Activity Modification Record if changes found (update)
     """
     with transaction.atomic():
+        ######
+        # Tidy Incoming Record
+        ###
         payload = data.model_dump(mode="python", exclude_unset=True)
         payload["form_status"] = FormStatus.Submitted.value
 
@@ -70,11 +79,17 @@ def submit_record(request, data: PlantActivitySchema):
             geometry_dict = shape_data.get("geometry", shape_data)
             payload["shape"] = GEOSGeometry(json.dumps(geometry_dict))
 
-        # Determine if Create or Update
+        ######
+        # Check if Updating, or creating a new record
+        ###
         activity_id = payload.get("id")
-        instance = Activity.objects.filter(id=activity_id).first()
-
-        if not instance:
+        if existing_record := Activity.objects.filter(id=activity_id).first():
+            # Protect original created_by value.
+            payload["created_by"] = existing_record.created_by
+            # Serialize old activity before updating, else the serializer will fetch the updated data and diffing won't work.
+            old_activity = ActivitySerializer(existing_record, read_only=True).data
+        else:
+            # Ensure Subtype matches current standard.
             payload["type"] = ActivitySubtypes[payload["subtype"]].typeOfActivity
 
         subtype_key = payload.get("subtype")
@@ -82,13 +97,26 @@ def submit_record(request, data: PlantActivitySchema):
         if not processor:
             raise HttpError(400, f"Unsupported activity subtype: {subtype_key}")
 
-        processed_activity = processor.process(payload=payload, instance=instance)
-        serialized_data = ActivitySerializer(processed_activity).data
+        processed_activity = processor.process(
+            payload=payload, instance=existing_record
+        )
+        new_record = ActivitySerializer(processed_activity, read_only=True).data
 
-        ## Delete Draft Version of record (if exists)
+        if existing_record:
+            diff = DeepDiff(old_activity, new_record)
+            if diff:
+                ActivityModificationRecord.objects.create(
+                    user=request.auth,
+                    diff=json.loads(diff.to_json()),
+                    activity=existing_record,
+                    platform="web",
+                )
+        ######
+        # Delete Draft Version of record (if exists)
+        ###
         DraftActivity.objects.filter(id=activity_id).delete()
 
-        return JsonResponse(serialized_data, status=200)
+        return JsonResponse(new_record, status=200)
 
 
 @router.post("/draft")
@@ -136,29 +164,43 @@ def submit_draft_record(request, data: DraftPlantActivitySchema):
 def get_activity_by_id(request, id: str):
     activity = Activity.objects.filter(id=id).first()
     if activity:  # Submission found
-        # TODO: Replace with proper values
-        res = {
-            "data": ActivitySerializer(activity).data,
+        # TODO: Replace with proper 'available_action' values
+        history_entries = ActivityModificationRecord.objects.filter(
+            activity=activity
+        ).order_by("-version")
+
+        return JsonResponse(
+            {
+                "data": ActivitySerializer(activity).data,
+                "available_actions": [
+                    RecordAction.SUBMIT,
+                    RecordAction.EDIT,
+                    RecordAction.DELETE,
+                ],
+                "metadata": {
+                    "linking_activities": ActivityRecordsetRowSerializer(
+                        activity.activity_set.all().order_by("-date"), many=True
+                    ).data,
+                    "history": HistorySerializer(history_entries, many=True).data,
+                },
+            }
+        )
+
+    # Check if its a users draft record.
+    # TODO: Match user to Draft, to avoid pulling other users Draft records.
+    activity = get_object_or_404(DraftActivity, pk=id)
+    return JsonResponse(
+        {
+            "data": DraftActivitySerializer(activity).data,
+            # TODO: Replace with proper 'available_action' values
             "available_actions": [
                 RecordAction.SUBMIT,
                 RecordAction.EDIT,
                 RecordAction.DELETE,
             ],
+            "metadata": {},
         }
-        return JsonResponse(res, status=200)
-    # Check if its a users draft record.
-    # TODO: Match user to Draft, to avoid pulling other users Draft records.
-    activity = get_object_or_404(DraftActivity, pk=id)
-    res = {
-        "data": DraftActivitySerializer(activity).data,
-        # TODO: Replace with proper values
-        "available_actions": [
-            RecordAction.SUBMIT,
-            RecordAction.EDIT,
-            RecordAction.DELETE,
-        ],
-    }
-    return JsonResponse(res, status=200)
+    )
 
 
 @router.api_operation(["DELETE"], "/{id}", response={204: None})
