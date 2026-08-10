@@ -10,6 +10,7 @@ class HistorySerializer(serializers.ModelSerializer):
         model = ActivityModificationRecord
         fields = (
             "user",
+            "date",
             "version",
             "activity",
             "platform",
