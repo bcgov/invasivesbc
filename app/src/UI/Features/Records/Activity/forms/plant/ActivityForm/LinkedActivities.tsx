@@ -69,7 +69,7 @@ const LinkedActivities = () => {
       full: o.full
     }));
   }, [suggestedTreatmentRecords]);
-  console.log(formattedTreatmentRecords);
+
   if (isObservationRecord) return; // Don't link observation activities to others
   return (
     <Fieldset label={'Related Records'}>
