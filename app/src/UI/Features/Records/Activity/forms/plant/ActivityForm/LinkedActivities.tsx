@@ -6,9 +6,14 @@ import { useDispatch, useSelector } from 'utils/use_selector';
 import Prompt from 'state/actions/prompts/Prompt';
 import Activity from 'state/actions/activity/Activity';
 import { isActivityObservation } from 'state/reducers/activity';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import FormActions from 'state/actions/activity/FormActions';
+import StyledTable from 'UI/Reusable/StyledTable/StyledTable';
 
+type LinkedOption = {
+  full: string;
+  label: string;
+};
 const LinkedActivities = () => {
   const handleCopy = (id: string | number) =>
     dispatch(
@@ -50,39 +55,53 @@ const LinkedActivities = () => {
           updatedActivities.splice(indices, 1);
           setValue('linked_activities', updatedActivities);
         } else {
-          setValue(`linked_activities.${indices}.full`, payload);
+          setValue(`linked_activities.${indices}`, payload as LinkedOption);
         }
       }
     })();
   }, [activities]);
 
+  const formattedTreatmentRecords = useMemo(() => {
+    return suggestedTreatmentRecords.map((o) => ({
+      label: o.label.split(',')[0],
+      full: o.full
+    }));
+  }, [suggestedTreatmentRecords]);
   if (isObservationRecord) return; // Don't link observation activities to others
   return (
     <Fieldset label={'Related Records'}>
-      <CreatableSelect<FormSchema, { label: string; full: string }>
+      <CreatableSelect<FormSchema, LinkedOption>
         name="linked_activities"
         label="Linked Record ID"
-        options={suggestedTreatmentRecords}
+        options={formattedTreatmentRecords}
         labelKey="label"
         valueKey="full"
       />
 
-      <ul className="linked-activity-entry">
-        {activities?.map((act) => (
-          <li key={act.full}>
-            <span>{act.label}</span>
-            {act.label !== act.full && (
-              <input
-                disabled={disabled}
-                className="control-button"
-                type="button"
-                value="Copy Geometry"
-                onClick={() => handleCopy(act.full)}
-              />
-            )}
-          </li>
-        ))}
-      </ul>
+      {activities.length > 0 && (
+        <StyledTable>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Activity Date</th>
+              <th>Created By</th>
+              <th>Copy Geometry</th>
+            </tr>
+          </thead>
+          <tbody>
+            {activities.map((a) => (
+              <tr key={a.full}>
+                {a.label.split(',').map((d) => (
+                  <td key={d}>{d}</td>
+                ))}
+                <td>
+                  <input type="button" className="control-button" value="Copy" onClick={() => handleCopy(a.full)} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </StyledTable>
+      )}
     </Fieldset>
   );
 };
