@@ -417,20 +417,20 @@ function* handle_UPDATE_CACHED_RECORDS() {
  */
 function* handle_copyGeometry(action: PayloadAction<string>) {
   const FIRST_ENTRY = 0;
-  const { API_BASE } = yield select(selectConfiguration);
+  const { API_V2_BASE } = yield select(selectConfiguration);
   const baseConfig = yield select(selectRootConfiguration);
   const connected = yield select(selectNetworkConnected);
   const MOBILE = baseConfig.current.build.MOBILE;
 
   if (connected) {
     try {
-      const res = yield fetch(`${API_BASE}/api/activity/${action.payload}`, {
+      const res = yield fetch(`${API_V2_BASE}/ninja/activities/${action.payload}`, {
         headers: { authorization: yield getCurrentJWT(), 'Content-Type': 'application/json' }
       });
       if (res?.ok) {
-        const data = yield res.json();
-        if (data.geometry?.[FIRST_ENTRY]) {
-          yield put(DrawToolActions.createShape(data.geometry[FIRST_ENTRY]));
+        const { data } = yield res.json();
+        if (data.shape) {
+          yield put(DrawToolActions.createShape(data.shape));
           return; // Shape was extracted, no need to continue
         }
       }
@@ -443,8 +443,8 @@ function* handle_copyGeometry(action: PayloadAction<string>) {
       // Try getting the shape from our local cache
       const service = yield RecordCacheServiceFactory.getPlatformInstance();
       const data = yield service.loadActivity(action.payload);
-      if (data.geometry?.[FIRST_ENTRY]) {
-        yield put(DrawToolActions.createShape(data.geometry[FIRST_ENTRY]));
+      if (data.shape) {
+        yield put(DrawToolActions.createShape(data.shape));
         return; // Shape was extracted, no need to continue
       }
     } catch (e) {
