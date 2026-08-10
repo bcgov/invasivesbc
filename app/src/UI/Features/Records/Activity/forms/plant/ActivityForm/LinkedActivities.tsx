@@ -9,12 +9,14 @@ import { isActivityObservation } from 'state/reducers/activity';
 import { useEffect, useMemo } from 'react';
 import FormActions from 'state/actions/activity/FormActions';
 import StyledTable from 'UI/Reusable/StyledTable/StyledTable';
+import { useNavigate } from 'react-router';
 
 type LinkedOption = {
   full: string;
   label: string;
 };
 const LinkedActivities = () => {
+  const navigate = useNavigate();
   const handleCopy = (id: string | number) =>
     dispatch(
       Prompt.confirmation({
@@ -67,6 +69,7 @@ const LinkedActivities = () => {
       full: o.full
     }));
   }, [suggestedTreatmentRecords]);
+  console.log(formattedTreatmentRecords);
   if (isObservationRecord) return; // Don't link observation activities to others
   return (
     <Fieldset label={'Related Records'}>
@@ -85,7 +88,7 @@ const LinkedActivities = () => {
               <th>ID</th>
               <th>Activity Date</th>
               <th>Created By</th>
-              <th>Copy Geometry</th>
+              {!disabled && <th>{disabled ? 'Go to Record' : 'Copy Geometry'}</th>}
             </tr>
           </thead>
           <tbody>
@@ -94,9 +97,21 @@ const LinkedActivities = () => {
                 {a.label.split(',').map((d) => (
                   <td key={d}>{d}</td>
                 ))}
-                <td>
-                  <input type="button" className="control-button" value="Copy" onClick={() => handleCopy(a.full)} />
-                </td>
+                {disabled ? (
+                  // Allow traversing to record when readonly, avoid when not to avoid user losing progress from accidental navigation
+                  <td>
+                    <input
+                      type="button"
+                      className="control-button"
+                      value="Open Record"
+                      onClick={() => navigate(`/Records/Activity/${a.full}`)}
+                    />
+                  </td>
+                ) : (
+                  <td>
+                    <input type="button" className="control-button" value="Copy" onClick={() => handleCopy(a.full)} />
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>

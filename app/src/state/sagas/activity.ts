@@ -416,7 +416,6 @@ function* handle_UPDATE_CACHED_RECORDS() {
  * @param {PayloadAction} action Activity ID of Record
  */
 function* handle_copyGeometry(action: PayloadAction<string>) {
-  const FIRST_ENTRY = 0;
   const { API_V2_BASE } = yield select(selectConfiguration);
   const baseConfig = yield select(selectRootConfiguration);
   const connected = yield select(selectNetworkConnected);
