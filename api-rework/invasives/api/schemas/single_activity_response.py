@@ -20,4 +20,4 @@ class RecordMetadata(Schema):
 class SingleActivityResponse(Schema):
     data: PlantActivitySchema
     available_actions: List[RecordAction]
-    record_metadata: RecordMetadata
+    metadata: RecordMetadata
