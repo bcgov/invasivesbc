@@ -7,7 +7,9 @@ from ninja.errors import HttpError
 import json
 from django.shortcuts import get_object_or_404
 from django.contrib.gis.geos import GEOSGeometry
+from api.serializers import HistorySerializer
 from api.serializers.activity import ActivitySerializer, DraftActivitySerializer
+from api.serializers.activity_recordset_row import ActivityRecordsetRowSerializer
 from api.schemas.plant_activity import ACTIVITY_PROCESSORS, DRAFT_ACTIVITY_PROCESSORS
 from api.ninja_authentication import NinjaKeycloakAuthentication
 from api.models.enums import FormStatus
@@ -162,29 +164,43 @@ def submit_draft_record(request, data: DraftPlantActivitySchema):
 def get_activity_by_id(request, id: str):
     activity = Activity.objects.filter(id=id).first()
     if activity:  # Submission found
-        # TODO: Replace with proper values
-        res = {
-            "data": ActivitySerializer(activity).data,
+        # TODO: Replace with proper 'available_action' values
+        history_entries = ActivityModificationRecord.objects.filter(
+            activity=activity
+        ).order_by("-version")
+
+        return JsonResponse(
+            {
+                "data": ActivitySerializer(activity).data,
+                "available_actions": [
+                    RecordAction.SUBMIT,
+                    RecordAction.EDIT,
+                    RecordAction.DELETE,
+                ],
+                "metadata": {
+                    "linking_activities": ActivityRecordsetRowSerializer(
+                        activity.activity_set.all().order_by("-date"), many=True
+                    ).data,
+                    "history": HistorySerializer(history_entries, many=True).data,
+                },
+            }
+        )
+
+    # Check if its a users draft record.
+    # TODO: Match user to Draft, to avoid pulling other users Draft records.
+    activity = get_object_or_404(DraftActivity, pk=id)
+    return JsonResponse(
+        {
+            "data": DraftActivitySerializer(activity).data,
+            # TODO: Replace with proper 'available_action' values
             "available_actions": [
                 RecordAction.SUBMIT,
                 RecordAction.EDIT,
                 RecordAction.DELETE,
             ],
+            "metadata": {},
         }
-        return JsonResponse(res, status=200)
-    # Check if its a users draft record.
-    # TODO: Match user to Draft, to avoid pulling other users Draft records.
-    activity = get_object_or_404(DraftActivity, pk=id)
-    res = {
-        "data": DraftActivitySerializer(activity).data,
-        # TODO: Replace with proper values
-        "available_actions": [
-            RecordAction.SUBMIT,
-            RecordAction.EDIT,
-            RecordAction.DELETE,
-        ],
-    }
-    return JsonResponse(res, status=200)
+    )
 
 
 @router.api_operation(["DELETE"], "/{id}", response={204: None})

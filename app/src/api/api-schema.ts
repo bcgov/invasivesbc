@@ -52,6 +52,7 @@ export interface paths {
          * @description Handler for Incoming records with "Submitted" status.
          *     Performs strict validation on payload to ensure data integrity.
          *     - Adds record to the 'activity' schema
+         *     - Adds Activity Modification Record if changes found (update)
          */
         post: operations["api_protocol_activity_api_submit_record"];
         delete?: never;
@@ -738,6 +739,20 @@ export interface components {
          * @enum {string}
          */
         RecordAction: "EDIT" | "DELETE" | "SUBMIT";
+        /**
+         * RecordMetadata
+         * @description Properties related to a record, but not directly affected by the record.
+         */
+        RecordMetadata: {
+            /** Linking Activities */
+            linking_activities: {
+                [key: string]: unknown;
+            }[] | null;
+            /** History */
+            history: {
+                [key: string]: unknown;
+            }[] | null;
+        };
         /** ShorelineType */
         ShorelineType: {
             /** Shoreline Type */
@@ -751,6 +766,7 @@ export interface components {
             data: components["schemas"]["ObservationTerrestrialSchema"] | components["schemas"]["ObservationAquaticSchema"] | components["schemas"]["TreatmentBiocontrolRelease"] | components["schemas"]["BiocontrolCollection"] | components["schemas"]["TreatmentChemicalTerrestrial"] | components["schemas"]["TreatmentChemicalAquatic"] | components["schemas"]["TreatmentMechanicalTerrestrial"] | components["schemas"]["TreatmentMechanicalAquatic"] | components["schemas"]["MonitoringMechanical"] | components["schemas"]["MonitoringChemical"] | components["schemas"]["MonitoringBiocontrolRelease"] | components["schemas"]["BiocontrolDispersalMonitoring"];
             /** Available Actions */
             available_actions: components["schemas"]["RecordAction"][];
+            metadata: components["schemas"]["RecordMetadata"];
         };
         /** SpecificUseType */
         SpecificUseType: {
@@ -1606,6 +1622,7 @@ export type PolygonGeometry2D = components['schemas']['PolygonGeometry2D'];
 export type Position2D = components['schemas']['Position2D'];
 export type ProjectCode = components['schemas']['ProjectCode'];
 export type RecordAction = components['schemas']['RecordAction'];
+export type RecordMetadata = components['schemas']['RecordMetadata'];
 export type ShorelineType = components['schemas']['ShorelineType'];
 export type SingleActivityResponse = components['schemas']['SingleActivityResponse'];
 export type SpecificUseType = components['schemas']['SpecificUseType'];

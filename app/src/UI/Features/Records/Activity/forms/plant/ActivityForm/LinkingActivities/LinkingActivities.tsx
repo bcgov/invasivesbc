@@ -17,7 +17,7 @@ const LinkingActivities = () => {
     setDisplayId((a?.short_id as string) ?? '');
     setAnchorEl(evt.currentTarget);
   };
-  const linkingActivities = useSelector((state) => state.ActivityPage.formState?.linking_activities);
+  const linkingActivities = useSelector((state) => state.ActivityPage.formMetadata?.linking_activities);
 
   const [recordId, setRecordId] = useState<string>('');
   const [displayId, setDisplayId] = useState<string>('');

@@ -12,7 +12,7 @@ import UserRecord from 'interfaces/UserRecord';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import { RootState } from 'state/reducers/rootReducer';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
-import { SingleActivityResponse } from 'api/api-schema';
+import { RecordAction, SingleActivityResponse } from 'api/api-schema';
 import FormCode from 'interfaces/FormCode';
 
 interface INewActivity {
@@ -117,7 +117,8 @@ class Activity {
         if (record) {
           return {
             data: JSON.parse(record.data),
-            available_actions: ['DELETE', 'EDIT', 'SUBMIT']
+            available_actions: ['DELETE', 'EDIT', 'SUBMIT'],
+            metadata: {}
           } as SingleActivityResponse;
         }
         if (!Network.connected) {
@@ -127,17 +128,19 @@ class Activity {
           if (offlineRecord)
             return {
               data: offlineRecord,
-              available_actions: []
-            };
+              available_actions: [] as Array<RecordAction>,
+              metadata: {}
+            } as SingleActivityResponse;
           return rejectWithValue(404);
         }
       }
       const req = await fetch(`${Configuration.current.runtime.API_V2_BASE}/ninja/activities/${id}`, {
         headers: { Authorization: await getCurrentJWT() }
       });
+
       if (req.status === 404) return rejectWithValue(404);
-      const { data, available_actions } = (await req.json()) as SingleActivityResponse;
-      return { data, available_actions };
+      const { data, available_actions, metadata } = (await req.json()) as SingleActivityResponse;
+      return { data, available_actions, metadata };
     }
   );
 
