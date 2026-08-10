@@ -36,6 +36,7 @@ import { get, useFormContext } from 'react-hook-form';
 import useSuggestedJurisdictionCodes from 'UI/Features/Records/Activity/forms/plant/hooks/useSuggestedJurisdictionCodes';
 import AdvisoryMessage from 'UI/Features/Records/Activity/forms/common/AdvisoryMessage/AdvisoryMessage';
 import './activityForm.css';
+import LinkingActivities from './LinkingActivities/LinkingActivities';
 
 const Form = () => {
   const {
@@ -293,6 +294,7 @@ const Form = () => {
       </Fieldset>
       <Participants />
       <SubtypeComposite />
+      <LinkingActivities />
     </>
   );
 };
