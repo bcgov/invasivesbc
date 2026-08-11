@@ -256,11 +256,12 @@ function createActivityReducer() {
           });
         }
       } else if (FormActions.duplicateForm.fulfilled.match(action)) {
-        const { data, available_actions } = action.payload;
+        const { data, available_actions, metadata } = action.payload;
         draftState.formType = data.subtype;
         draftState.formId = data.id;
         draftState.formState = data;
         draftState.recordActions = available_actions;
+        draftState.formMetadata = metadata;
       } else if (FormActions.updateState.match(action)) {
         draftState.formState = structuredClone(action.payload);
       } else if (FormActions.sendForm.fulfilled.match(action)) {
