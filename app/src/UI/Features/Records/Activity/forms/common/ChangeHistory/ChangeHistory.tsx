@@ -83,11 +83,11 @@ const _formattedValuesChanges = (vc: Record<PropertyKey, any> = {}): Array<React
         )}
         {showDiff && (
           <dd>
-            <span className="deep-red strike-through">{previous}</span>
+            <del className="deep-red">{previous}</del>
             &nbsp;
             <ArrowForward />
             &nbsp;
-            <span className="green">{current}</span>
+            <ins className="green">{current}</ins>
           </dd>
         )}
       </li>
@@ -126,7 +126,9 @@ const _formattedValuesAdded = (va: Record<PropertyKey, any> = {}): Array<ReactNo
       <li className="diff-entry">
         <dt>{formatLabel(key)}</dt>
         <dd className="italic">Value Added</dd>
-        <dd className="green">{parseObject(value)}</dd>
+        <dd className="green">
+          <ins>{parseObject(value)}</ins>
+        </dd>
       </li>
     );
   });
@@ -145,7 +147,9 @@ const _formattedValuesRemoved = (vr: Record<PropertyKey, any> = {}): Array<React
       <li className="diff-entry">
         <dt>{formatLabel(key)}</dt>
         <dd className="italic">Value Removed</dd>
-        <dd className="deep-red strike-through">{parseObject(value)}</dd>
+        <dd className="deep-red">
+          <del>{parseObject(value)}</del>
+        </dd>
       </li>
     );
   });
@@ -177,18 +181,16 @@ const ChangeHistory = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const history = useSelector((state) => state.ActivityPage.formMetadata?.history) as Array<History>;
-  const short_id = useSelector((state) => state.ActivityPage.formState?.short_id);
-  console.log(history[0]);
   return (
     <>
       <Button onClick={() => setIsModalOpen(true)} disabled={!history?.length}>
         {history?.length ?? 0} Revisions
       </Button>
       <StyledModal open={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <div className="header">Revision History For {short_id}</div>
+        <div className="header">Revision History</div>
         <div className="content">
           <div className="history-wrapper">
-            {history && history.length > 0 ? (
+            {history && history.length > 0 && (
               <ul id="activity-history">
                 {history.map((h) => (
                   <li className="entry" key={h.version}>
@@ -203,8 +205,6 @@ const ChangeHistory = () => {
                   </li>
                 ))}
               </ul>
-            ) : (
-              <p>There have been no revisions made to record {short_id}</p>
             )}
           </div>
         </div>
