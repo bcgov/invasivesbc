@@ -29,6 +29,7 @@ from api.protocol.activity.plant_subtypes.union_definition import (
     PlantActivitySchema,
     DraftPlantActivitySchema,
 )
+from api.utils.deepdiff import AtomicFieldOperator
 
 router = Router(auth=NinjaKeycloakAuthentication())
 
@@ -103,7 +104,13 @@ def submit_record(request, data: PlantActivitySchema):
         new_record = ActivitySerializer(processed_activity, read_only=True).data
 
         if existing_record:
-            diff = DeepDiff(old_activity, new_record)
+            diff = DeepDiff(
+                old_activity,
+                new_record,
+                custom_operators=[
+                    AtomicFieldOperator(regex_paths=[r"root\['shape'\]"])
+                ],
+            )
             if diff:
                 ActivityModificationRecord.objects.create(
                     user=request.auth,
