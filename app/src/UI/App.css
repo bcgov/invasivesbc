@@ -132,6 +132,11 @@ body {
   --hovered-list-item-bg-color: #d1cfcd;
   --tr-height: 40px;
   --td-padding: 5px 8px;
+
+  /* Button Styles */
+  --sm-button-text: 0.85rem;
+  --med-button-text: 1rem;
+  --lg-button-text: 1.15rem;
 }
 
 /* Color Classes */
