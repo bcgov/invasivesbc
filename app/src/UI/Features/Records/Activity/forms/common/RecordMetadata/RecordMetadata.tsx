@@ -2,6 +2,7 @@ import './recordMetadata.css';
 import Fieldset from '../Fieldset/Fieldset';
 import { FormSchema } from '../../plant/interfaces';
 import { ActivitySubtypesShortLabels } from 'sharedAPI';
+import ChangeHistory from '../ChangeHistory/ChangeHistory';
 
 type InfoProps = {
   term: string;
@@ -31,6 +32,12 @@ const RecordMetadata = ({ formState }: PropTypes) => {
           <Info term={'Activity Subtype'} definition={ActivitySubtypesShortLabels[formState?.subtype]} />
           <Info term={'Date of Activity'} definition={new Date(formState?.date)?.toLocaleDateString() ?? ''} />
           <Info term={'Created By'} definition={formState?.created_by} />
+          <div className="list-item">
+            <dt>Record History</dt>
+            <dd>
+              <ChangeHistory />
+            </dd>
+          </div>
         </dl>
       </div>
     </Fieldset>
