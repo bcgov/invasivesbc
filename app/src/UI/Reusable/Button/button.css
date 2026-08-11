@@ -1,0 +1,28 @@
+.invasives-button {
+  color: var(--blue-primary);
+  border: 1pt solid var(--blue-primary);
+  background-color: white;
+  padding: 5px 8px;
+  border-radius: 4px;
+
+  &.small {
+    font-size: var(--sm-button-text);
+  }
+
+  &.med {
+    font-size: var(--med-button-text);
+  }
+
+  &.lg {
+    font-size: var(--lg-button-text);
+  }
+
+  &:disabled {
+    color: gray;
+    border: 1pt solid gray;
+
+    &:hover {
+      cursor: not-allowed;
+    }
+  }
+}
