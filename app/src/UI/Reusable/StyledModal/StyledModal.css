@@ -13,7 +13,7 @@
   overflow: auto;
 
   .styled-modal {
-    --title-control-height: 45px;
+    --title-control-height: 55px;
 
     max-width: 100%;
     background-color: white;
@@ -41,7 +41,7 @@
       align-items: center;
       display: flex;
       padding-left: 0.5rem;
-      font-size: 1.25rem;
+      font-size: 1.35rem;
       box-sizing: border-box;
       text-transform: capitalize;
     }
