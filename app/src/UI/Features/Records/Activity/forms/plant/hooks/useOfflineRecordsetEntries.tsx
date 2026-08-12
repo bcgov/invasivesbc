@@ -52,33 +52,37 @@ const useOfflineRecordsetEntries = (options: Options) => {
    */
   const serializedEntries = useMemo(
     () =>
-      Object.values(serializedActivities).map((s) => {
-        const data = JSON.parse((s as { data: string }).data);
-        const plants = drillForPlants(data);
-        const jurisdictions = data?.jurisdictions
-          .map((e) =>
-            e.jurisdiction ? codeToFull(e.jurisdiction, codes.JurisdictionCode) + ` (${e?.percent_covered}%)` : ''
-          )
-          .join(', ');
-        const fundingAgency = data?.funding_agencies
-          .map((a) => codeToFull(a.invasive_species_agency_code, codes.FundingAgencyCode))
-          .join(', ');
+      Object.values(serializedActivities)
+        .map((s) => {
+          const data = JSON.parse((s as { data: string }).data);
+          // TODO: remove early return as part of Issue #4638 - 'Remove RJSF from frontend'
+          if (!data?.subtype_data) return null;
+          const plants = drillForPlants(data);
+          const jurisdictions = data?.jurisdictions
+            .map((e) =>
+              e.jurisdiction ? codeToFull(e.jurisdiction, codes.JurisdictionCode) + ` (${e?.percent_covered}%)` : ''
+            )
+            .join(', ');
+          const fundingAgency = data?.funding_agencies
+            .map((a) => codeToFull(a.invasive_species_agency_code, codes.FundingAgencyCode))
+            .join(', ');
 
-        return {
-          activity_id: data?.id,
-          short_id: data?.short_id,
-          type: ActivitySubtypesToType[data?.subtype],
-          subtype: ActivitySubtypesShortLabels[data?.subtype],
-          date: data?.date,
-          geom: data?.geom,
-          area_m: `${data?.area_m?.toLocaleString()}m²`,
-          jurisdictions: jurisdictions,
-          invasive_plants: plants,
-          created_by: data?.created_by,
-          funding_agencies: fundingAgency,
-          status: s?.sync_state
-        };
-      }),
+          return {
+            activity_id: data?.id,
+            short_id: data?.short_id,
+            type: ActivitySubtypesToType[data?.subtype],
+            subtype: ActivitySubtypesShortLabels[data?.subtype],
+            date: data?.date,
+            geom: data?.geom,
+            area_m: `${data?.area_m?.toLocaleString()}m²`,
+            jurisdictions: jurisdictions,
+            invasive_plants: plants,
+            created_by: data?.created_by,
+            funding_agencies: fundingAgency,
+            status: s?.sync_state
+          };
+        }) // TODO: remove null filter as part of Issue #4638 - 'Remove RJSF from frontend'.
+        .filter(Boolean),
 
     [serializedActivities, serial, options?.filterUnsynced]
   );
@@ -89,7 +93,7 @@ const useOfflineRecordsetEntries = (options: Options) => {
   const returnedEntries = useMemo(() => {
     if (options?.filterUnsynced) {
       return serializedEntries
-        .filter((r) => r.status !== OfflineActivitySyncState.SYNCHRONIZED)
+        .filter((r) => r?.status !== OfflineActivitySyncState.SYNCHRONIZED)
         .slice(options?.startIndex, options?.endIndex);
     }
     return serializedEntries.slice(options?.startIndex, options?.endIndex);
