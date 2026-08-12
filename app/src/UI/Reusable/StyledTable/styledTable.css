@@ -5,7 +5,7 @@
   font-size: 1rem;
   margin-bottom: var(--record-table-footer-height);
   max-height: 300pt;
-  overflow-x: scroll;
+  overflow-x: auto;
   width: 100%;
   text-size-adjust: 100%; /* Disables iOS Autoscaling text size */
 
