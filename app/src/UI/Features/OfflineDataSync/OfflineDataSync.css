@@ -1,111 +1,104 @@
 .offline-data-sync-dialog {
   .content {
-    .dialog-table {
-      height: auto;
-      box-sizing: border-box;
-      display: flex;
-      flex-direction: column;
-      max-height: 375px;
-      overflow: auto;
-      text-size-adjust: 100%;
+    .offline-data-sync-table {
       width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
 
-      .offline-data-sync-table {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 0;
+      th {
+        background-color: white;
+        position: sticky;
+        text-align: left;
+        top: 0;
+        z-index: 2;
+      }
 
-        th {
-          background-color: white;
-          position: sticky;
-          text-align: left;
-          top: 0;
-          z-index: 2;
+      thead th {
+        background-color: var(--th-background-color);
+        border-bottom: 1pt solid var(--th-border-bottom-color);
+      }
+
+      tbody > tr:nth-child(odd):not(:hover) {
+        background-color: var(--odd-list-item-bg-color);
+      }
+
+      tbody tr {
+        background-color: var(--even-list-item-bg-color);
+        min-height: var(--tr-height);
+      }
+
+      tbody tr.warn:not(:hover) {
+        background-color: var(--bc-yellow);
+      }
+
+      tbody tr td {
+        vertical-align: top;
+        font-size: 0.95rem;
+
+        &:first-child {
+          padding-left: 8px;
         }
 
-        thead th {
-          background-color: var(--th-background-color);
-          border-bottom: 1pt solid var(--th-border-bottom-color);
-        }
-
-        tbody > tr:nth-child(odd):not(:hover) {
-          background-color: var(--odd-list-item-bg-color);
-        }
-
-        tbody tr {
-          background-color: var(--even-list-item-bg-color);
-          min-height: var(--tr-height);
-        }
-
-        tbody tr.warn:not(:hover) {
-          background-color: var(--bc-yellow);
-        }
-
-        tbody tr td {
+        pre {
           vertical-align: top;
-          font-size: 0.95rem;
-
-          &:first-child {
-            padding-left: 8px;
-          }
-
-          pre {
-            vertical-align: top;
-            text-align: left;
-            margin: 0;
-            padding: 0.25em 0;
-            background-color: inherit;
-          }
-        }
-
-        tbody tr .modified-time {
-          font-weight: 600;
-          font-size: 0.85rem;
-        }
-
-        tbody tr .record-type {
-          font-size: 0.85rem;
-        }
-
-        tbody > tr > td:last-child {
-          text-align: right;
-        }
-
-        tbody > tr:hover {
-          background-color: var(--hovered-list-item-bg-color);
+          text-align: left;
+          margin: 0;
+          padding: 0.25em 0;
+          background-color: inherit;
         }
       }
-    }
 
-    .progress-bar {
-      margin-bottom: 10px;
-      margin-top: 10px;
-    }
+      tbody tr .modified-time {
+        font-weight: 600;
+        font-size: 0.85rem;
+      }
 
-    .popover-menu {
-      display: flex;
-      flex-direction: column;
-      color: white;
-      background-color: var(--bc-blue);
-      text-align: center;
+      tbody tr .record-type {
+        font-size: 0.85rem;
+      }
 
-      button {
-        height: 50px;
-        border-radius: 0;
-        width: 200pt;
+      tbody > tr > td:last-child {
+        text-align: right;
+      }
+
+      tbody > tr:hover {
+        background-color: var(--hovered-list-item-bg-color);
       }
     }
+  }
 
-    .status-info {
-      margin: 1rem;
+  .progress-bar {
+    margin-bottom: 10px;
+    margin-top: 10px;
+  }
 
-      p {
-        font-size: 1rem;
-        margin: 0 0 8px 0;
+  .popover-menu {
+    display: flex;
+    flex-direction: column;
+    color: white;
+    background-color: var(--bc-blue);
+    text-align: center;
 
-        span {
-          font-size: 0.9rem;
-        }
+    button {
+      height: 50px;
+      border-radius: 0;
+      width: 200pt;
+
+      &:disabled {
+        background-color: lightgray;
+      }
+    }
+  }
+
+  .status-info {
+    margin: 1rem;
+
+    p {
+      font-size: 1rem;
+      margin: 0 0 8px 0;
+
+      span {
+        font-size: 0.9rem;
       }
     }
   }
