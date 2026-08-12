@@ -1,6 +1,7 @@
 import { createNextState } from '@reduxjs/toolkit';
 import moment from 'moment';
 import { ActivityStatus } from 'sharedAPI';
+import { RootState } from './rootReducer';
 import { AppConfig } from 'state/configuration/runtime-config';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import Activity from 'state/actions/activity/Activity';
@@ -29,7 +30,7 @@ interface OfflineActivityState {
   statusDialogOpen: boolean;
   serial: number;
   serializedActivities: {
-    [id: string]: OfflineActivityRecord;
+    [id: PropertyKey]: OfflineActivityRecord;
   };
 }
 
@@ -115,7 +116,7 @@ function createOfflineActivityReducer(
   };
 }
 
-const selectOfflineActivity = (state) => state.OfflineActivity;
+const selectOfflineActivity = (state: RootState) => state.OfflineActivity;
 
 export { createOfflineActivityReducer, selectOfflineActivity };
 export { OfflineActivitySyncState };
