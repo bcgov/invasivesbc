@@ -11,30 +11,32 @@ type PropTypes = {
   type: RecordSetType;
 };
 export const CenterCurrentRecord = ({ type }: PropTypes) => {
-  const currentIapp = useSelector((state) => !!state.IAPPSitePage?.site);
-  const currentActivity = useSelector((state) => !!state.ActivityPage.formState?.shape);
+  const disableButton = useSelector((state) => {
+    if (type === RecordSetType.Activity) {
+      return !state.ActivityPage?.formState?.shape;
+    }
+    return !state.IAPPSitePage?.site;
+  });
 
   const CONFIG = {
     [RecordSetType.Activity]: {
       icon: <InvBcLogo />,
       center: MapActions.panToActivity(),
-      tooltip: 'Move to Current Activity',
-      disabled: !currentActivity
+      tooltip: 'Move to Current Activity'
     },
     [RecordSetType.IAPP]: {
       icon: <IappLogo />,
       center: MapActions.panToIAPP(),
-      tooltip: 'Move to Current IAPP Record',
-      disabled: !currentIapp
+      tooltip: 'Move to Current IAPP Record'
     }
   };
-  const { icon, center, tooltip, disabled } = CONFIG[type];
+  const { icon, center, tooltip } = CONFIG[type];
   const dispatch = useDispatch();
 
   return (
     <div className={'map-btn'}>
       <HoverTooltip tooltipText={tooltip}>
-        <IconButton className={'button'} disabled={disabled} onClick={() => dispatch(center)}>
+        <IconButton className={'button'} disabled={disableButton} onClick={() => dispatch(center)}>
           {icon}
         </IconButton>
       </HoverTooltip>
