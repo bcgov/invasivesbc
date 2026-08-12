@@ -68,13 +68,6 @@ export const OfflineDataSyncTable = ({ handleClose }: PropTypes) => {
     }
   }, [working, workingOffline, authenticated, connected, numUnsynchronizedRecords]);
 
-  if (Object.values(serializedActivities).length === 0) {
-    return (
-      <div className="content">
-        <p>There are no locally-stored activities to synchronize.</p>
-      </div>
-    );
-  }
   const handleDelete = () => {
     if (!contextRecord) return;
     if (confirmDelete) {
@@ -85,16 +78,29 @@ export const OfflineDataSyncTable = ({ handleClose }: PropTypes) => {
       setConfirmDelete(true);
     }
   };
+
   const handleLoad = () => {
     if (!contextRecord) return;
     navigate(`/Records/Activity/${contextRecord}/form`);
     dispatch(Activity.Offline.setSyncDialogueWindow({ open: false }));
   };
+
   const handleOpenMenu = (evt: MouseEvent<HTMLElement> | TouchEvent<HTMLElement>, key: string) => {
     setAnchorEl(evt.currentTarget);
     setContextRecord(key);
     setConfirmDelete(false);
   };
+
+  const getRecordType = (r: string) => {
+    if (ActivitySubtypesShortLabels?.[r]) {
+      return ActivitySubtypesShortLabels[r];
+      /* TODO: Remove chaining into legacy Subtype labels as part of issue #4638 - 'Remove RJSF from frontend'. */
+    } else if (ActivitySubtypeShortLabels?.[r]) {
+      return `Legacy - ${ActivitySubtypeShortLabels?.[r]}`;
+    }
+    return 'Unknown';
+  };
+
   const disableOpeningRecord: boolean = useMemo(() => {
     if (!(workingOffline || authenticated)) {
       return true;
@@ -104,7 +110,14 @@ export const OfflineDataSyncTable = ({ handleClose }: PropTypes) => {
     }
     return true;
   }, [contextRecord, workingOffline, authenticated]);
-  console.log(disableOpeningRecord);
+
+  if (Object.values(serializedActivities).length === 0) {
+    return (
+      <div className="content">
+        <p>There are no locally-stored activities to synchronize.</p>
+      </div>
+    );
+  }
   return (
     <>
       <div className="content">
@@ -131,19 +144,14 @@ export const OfflineDataSyncTable = ({ handleClose }: PropTypes) => {
             </tr>
           </thead>
           <tbody>
-            {Object.entries(serializedActivities).map(([key, value]) => {
+            {Object.entries(serializedActivities as Record<PropertyKey, OfflineActivityRecord>).map(([key, value]) => {
               return (
                 <Fragment key={key}>
                   <tr>
-                    <td>{`${(value as OfflineActivityRecord).short_id}`}</td>
-                    <td className="record-type">
-                      {/* TODO: Remove chaining into legacy Subtype labels as part of issue #4638 - 'Remove RJSF from frontend'. */}
-                      {`${ActivitySubtypesShortLabels[(value as OfflineActivityRecord).record_type] ?? ActivitySubtypeShortLabels[(value as OfflineActivityRecord).record_type] ?? 'Unknown'}`}
-                    </td>
-                    <td className="modified-time">
-                      {`${moment((value as OfflineActivityRecord).saved_at).fromNow()}`}
-                    </td>
-                    <td className="sync-status">{`${(value as OfflineActivityRecord).sync_state}`}</td>
+                    <td>{`${value.short_id}`}</td>
+                    <td className="record-type">{getRecordType(value.record_type)}</td>
+                    <td className="modified-time">{`${moment(value.saved_at).fromNow()}`}</td>
+                    <td className="sync-status">{value.sync_state}</td>
                     <td>
                       <IconButton onClick={(e) => handleOpenMenu(e, key)}>
                         <MoreVert />
