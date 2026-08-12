@@ -106,7 +106,7 @@ def migrate(old: LegacyActivity):
         old.activity_payload.form_data.activity_data.location_description
     )
     new.date = old.activity_payload.form_data.activity_data.activity_date_time
-    new.form_status = old.activity_payload.form_status
+    new.form_status = old.activity_payload.form_data.form_status
     new.comment = old.activity_payload.form_data.activity_data.general_comment
 
     if old.activity_payload.geometry is None:
