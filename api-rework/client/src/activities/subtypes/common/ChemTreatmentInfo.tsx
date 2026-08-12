@@ -29,7 +29,7 @@ const ChemTreatmentInfo = ({ subtypeData }: SubtypeData) => {
         />
         <Fieldset label="Invasive Plants" small>
           {treatment_context.plants_treated.map((pt) => (
-            <div className="group-wrap">
+            <div className="group-wrap" key={pt.invasive_plant}>
               <TextInput label="invasive plant" value={pt?.invasive_plant} />
               <TextInput label="Percent Covered" value={pt.percent_covered} />
             </div>
@@ -37,7 +37,7 @@ const ChemTreatmentInfo = ({ subtypeData }: SubtypeData) => {
         </Fieldset>
         <Fieldset label="Herbicides" small>
           {treatment_context.herbicide.map(({ type, name, application_rate }) => (
-            <div className="group-wrap">
+            <div className="group-wrap" key={name}>
               <TextInput label="Herbicide Type" value={type} />
               <TextInput label="Herbicide Name" value={name} />
               <TextInput label="Application Rate" value={application_rate} />
