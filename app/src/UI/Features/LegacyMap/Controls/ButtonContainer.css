@@ -85,6 +85,10 @@
     .button {
       background-color: white;
       color: var(--bc-blue);
+
+      & > img {
+        object-fit: scale-down;
+      }
     }
   }
 
