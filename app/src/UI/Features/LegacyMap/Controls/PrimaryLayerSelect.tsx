@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { IconButton, Tooltip } from '@mui/material';
+import { IconButton } from '@mui/material';
 import 'UI/Global.css';
 import { DeviceUnknown, Hd, Landscape, Map, SaveAlt, Sd, SignalCellularNodata } from '@mui/icons-material';
 import { InvasivesMapLayerDefinitionWithState } from 'UI/Features/LegacyMap/helpers/functional/layers-hook';
 import { useSelector } from 'utils/use_selector';
+import HoverTooltip from 'UI/Reusable/HoverTooltip/HoverTooltip';
 
 type PrimaryLayerSelectProps = {
   layers: InvasivesMapLayerDefinitionWithState[];
@@ -11,8 +12,6 @@ type PrimaryLayerSelectProps = {
 };
 
 const PrimaryLayerSelect = ({ layers, selectLayer }: PrimaryLayerSelectProps) => {
-  const [toolTip, setToolTip] = useState('');
-
   const DEBUG = useSelector((state) => state.Configuration.current.build.DEBUG);
 
   function renderIcon(def: InvasivesMapLayerDefinitionWithState) {
@@ -43,30 +42,15 @@ const PrimaryLayerSelect = ({ layers, selectLayer }: PrimaryLayerSelectProps) =>
     <div className={'basemap-btn-group'}>
       {layers
         .filter((l) => (DEBUG || l.mode === 'basemap') && l.selectionMode === 'primary-selector')
-        .map((l) => {
-          return (
-            <div className={l.active ? 'selected' : ''} key={l.name}>
-              <Tooltip
-                open={toolTip == l.name}
-                onMouseEnter={() => setToolTip(l.name)}
-                onMouseLeave={() => setToolTip('')}
-                classes={{ tooltip: 'toolTip' }}
-                title={l.tooltip}
-                placement="top-end"
-              >
-                <IconButton
-                  className={'basemap-btn'}
-                  onClick={() => {
-                    setToolTip(l.name);
-                    selectLayer(l.name);
-                  }}
-                >
-                  {renderIcon(l)}
-                </IconButton>
-              </Tooltip>
-            </div>
-          );
-        })}
+        .map((l) => (
+          <div className={l.active ? 'selected' : ''} key={l.name}>
+            <HoverTooltip tooltipText={l.tooltip}>
+              <IconButton className={'basemap-btn'} onClick={() => selectLayer(l.name)}>
+                {renderIcon(l)}
+              </IconButton>
+            </HoverTooltip>
+          </div>
+        ))}
     </div>
   );
 };
