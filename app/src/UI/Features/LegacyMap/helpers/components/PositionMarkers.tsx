@@ -156,17 +156,16 @@ const PositionMarkers = ({ mapReady }) => {
   // User position tracking marker
   useEffect(() => {
     if (!mapReady) return;
-    if (positionTracking) {
-      handlePositionTracking(
-        map,
-        positionMarker.current,
-        userCoords,
-        accuracyCircle,
-        accuracyToggle,
-        positionTracking,
-        panned
-      );
-    } else {
+    handlePositionTracking(
+      map,
+      positionMarker.current,
+      userCoords,
+      accuracyCircle,
+      accuracyToggle,
+      positionTracking,
+      panned
+    );
+    if (!positionTracking) {
       positionMarker?.current?.remove();
     }
   }, [userCoords, positionTracking, accuracyToggle, mapReady, panned]);
