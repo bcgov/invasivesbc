@@ -1,51 +1,45 @@
-import { IconButton, Tooltip } from '@mui/material';
-import React, { useRef } from 'react';
-import { useDispatch } from 'react-redux';
-import AssignmentIcon from '@mui/icons-material/Assignment';
+import { IconButton } from '@mui/material';
 import 'UI/Global.css';
 import MapActions from 'state/actions/map';
 import { RecordSetType } from 'interfaces/UserRecordSet';
+import { useDispatch, useSelector } from 'utils/use_selector';
+import HoverTooltip from 'UI/Reusable/HoverTooltip/HoverTooltip';
+import InvBcLogo from 'UI/Reusable/InvBcLogo/InvBcLogo';
+import IappLogo from 'UI/Reusable/IappLogo';
 
-export const CenterCurrentRecord = (props) => {
+type PropTypes = {
+  type: RecordSetType;
+};
+export const CenterCurrentRecord = ({ type }: PropTypes) => {
+  const disableButton = useSelector((state) => {
+    if (type === RecordSetType.Activity) {
+      return !state.ActivityPage?.formState?.shape;
+    }
+    return !state.IAPPSitePage?.site;
+  });
+
+  const CONFIG = {
+    [RecordSetType.Activity]: {
+      icon: <InvBcLogo />,
+      center: MapActions.panToActivity(),
+      tooltip: 'Move to Current Activity'
+    },
+    [RecordSetType.IAPP]: {
+      icon: <IappLogo />,
+      center: MapActions.panToIAPP(),
+      tooltip: 'Move to Current IAPP Record'
+    }
+  };
+  const { icon, center, tooltip } = CONFIG[type];
   const dispatch = useDispatch();
-  /**
-   * TrackMeButton
-   * @description Component to handle the functionality of the find me button
-   * @returns {void}
-   */
-  // const toolClass = toolStyles();
-  const [show, setShow] = React.useState(false);
-  const divRef = useRef<HTMLDivElement | null>(null);
 
-  // this is to stop user from clicking it again while things are happening
   return (
-    <div ref={divRef} className="map-btn">
-      <Tooltip
-        open={show}
-        classes={{ tooltip: 'toolTip' }}
-        onMouseEnter={() => setShow(true)}
-        onMouseLeave={() => setShow(false)}
-        title={props.type === 'Activity' ? 'Center Current Activity' : 'Center Current IAPP'}
-        placement="top-end"
-      >
-        <span>
-          <IconButton
-            className={'button'}
-            onClick={() => {
-              setShow(false);
-              const panAction =
-                props.type === RecordSetType.Activity ? MapActions.panToActivity() : MapActions.panToIAPP();
-              dispatch(panAction);
-            }}
-          >
-            {props.type === 'Activity' ? (
-              <AssignmentIcon />
-            ) : (
-              <img alt="iapp logo" src={'/assets/iapp_logo.gif'} style={{ maxWidth: '1rem', marginBottom: '0px' }} />
-            )}
-          </IconButton>
-        </span>
-      </Tooltip>
+    <div className={'map-btn'}>
+      <HoverTooltip tooltipText={tooltip}>
+        <IconButton className={'button'} disabled={disableButton} onClick={() => dispatch(center)}>
+          {icon}
+        </IconButton>
+      </HoverTooltip>
     </div>
   );
 };

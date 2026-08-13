@@ -85,6 +85,18 @@
     .button {
       background-color: white;
       color: var(--bc-blue);
+
+      & > img {
+        object-fit: scale-down;
+      }
+
+      &:disabled {
+        background-color: #e0e0e0;
+        color: #a0a0a0;
+        cursor: not-allowed;
+        pointer-events: none;
+        opacity: 0.6;
+      }
     }
   }
 
@@ -92,16 +104,6 @@
     .button {
       background-color: var(--bc-blue);
       color: var(--bc-yellow);
-    }
-  }
-
-  .map-btn-disabled {
-    .button {
-      background-color: #e0e0e0;
-      color: #a0a0a0;
-      cursor: not-allowed;
-      pointer-events: none;
-      opacity: 0.6;
     }
   }
 }

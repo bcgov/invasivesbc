@@ -38,10 +38,8 @@ export const ButtonContainer = ({ layers, selectLayer }: ButtonContainerProps) =
             <WhatsHereButton />
             {writePrivilege.length > 0 && <NewRecord />}
 
-            <WebOnly>
-              <CenterCurrentRecord type={RecordSetType.Activity} />
-              <CenterCurrentRecord type={RecordSetType.IAPP} />
-            </WebOnly>
+            <CenterCurrentRecord type={RecordSetType.Activity} />
+            <CenterCurrentRecord type={RecordSetType.IAPP} />
           </>
         )}
       </div>

@@ -11,7 +11,7 @@ import {
   populateSpeciesArrays
 } from 'sharedAPI';
 import { circle, kinks } from '@turf/turf';
-import { Feature, FeatureCollection } from 'geojson';
+import { Feature, FeatureCollection, GeoJSON } from 'geojson';
 
 import { PayloadAction } from '@reduxjs/toolkit';
 import cloneDeep from 'lodash.clonedeep';
@@ -45,6 +45,7 @@ import { TreatmentIdsRequestOnline } from 'state/actions/activity/Suggestions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
 import DrawToolActions, { IUpdateShapeSuccess } from 'state/actions/drawtool/drawToolActions';
+import { RootState } from 'state/reducers/rootReducer';
 
 function* handle_ACTIVITY_GET_REQUEST(action: PayloadAction<string>) {
   try {
@@ -569,23 +570,14 @@ export function* getLinkedTreatmentsFromCachedRecords(req: TreatmentIdsRequestOn
 }
 
 export function* handle_PAN_AND_ZOOM_TO_ACTIVITY() {
-  const activityState = yield select(selectActivity);
-
-  const geometry = activityState?.activity?.geometry?.[0];
-  if (geometry) {
-    const isPoint = geometry.geometry?.type === GeoShapes.Point;
-    let target;
-    if (isPoint) {
-      target = geometry.geometry;
-    } else {
-      const acentroid = pointOnFeature(geometry);
-
-      target = acentroid.geometry;
-    }
+  const activityState: RootState['ActivityPage'] = yield select(selectActivity);
+  const shape = activityState.formState?.shape as unknown as GeoJSON;
+  if (shape) {
+    const { coordinates } = pointOnFeature(shape).geometry;
     yield put(
       MapActions.centerMap({
-        lat: target.coordinates[1],
-        lng: target.coordinates[0],
+        lat: coordinates[1],
+        lng: coordinates[0],
         zoom: 16
       })
     );
