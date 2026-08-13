@@ -6,6 +6,7 @@ import { useSelector } from 'utils/use_selector';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import { selectAuth } from 'state/reducers/auth';
 import { matchPath, PathPattern, useLocation } from 'react-router';
+import IappLogo from 'UI/Reusable/IappLogo';
 
 enum LayoutMode {
   MAP_FOCUSED = 'map_focused',
@@ -149,14 +150,7 @@ function usePrimaryNavigationLinks() {
       predicate: TabPredicate.AUTHENTICATED_ANY,
       platform: PlatformPredicate.BOTH,
       layout: LayoutMode.MAP_FOCUSED,
-      icon: (
-        <img
-          alt="iapp logo"
-          className="iapp-logo"
-          src={'/assets/iapp_logo.gif'}
-          style={{ maxWidth: '1rem', marginBottom: '0px' }}
-        />
-      )
+      icon: <IappLogo />
     },
     {
       id: 'list',
