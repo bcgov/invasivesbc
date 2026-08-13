@@ -1,5 +1,4 @@
 import { IconButton } from '@mui/material';
-import 'UI/Global.css';
 import { DeviceUnknown, Hd, Landscape, Map, SaveAlt, Sd, SignalCellularNodata } from '@mui/icons-material';
 import { InvasivesMapLayerDefinitionWithState } from 'UI/Features/LegacyMap/helpers/functional/layers-hook';
 import { useSelector } from 'utils/use_selector';

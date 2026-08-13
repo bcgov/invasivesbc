@@ -1,6 +1,5 @@
 import { IconButton } from '@mui/material';
 import { useDispatch, useSelector } from 'utils/use_selector';
-import 'UI/Global.css';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import Alerts from 'state/actions/alerts/Alerts';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';

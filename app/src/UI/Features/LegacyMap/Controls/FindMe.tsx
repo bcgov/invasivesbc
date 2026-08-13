@@ -1,7 +1,6 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { IconButton } from '@mui/material';
-import 'UI/Global.css';
 import { useSelector } from 'utils/use_selector';
 import MapActions from 'state/actions/map';
 import { GpsFixed, GpsNotFixed, GpsOff } from '@mui/icons-material';
