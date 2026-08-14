@@ -1,4 +1,4 @@
-import { Button, Chip, Tooltip } from '@mui/material';
+import { Button, Chip } from '@mui/material';
 import { DataGrid, GridColDef, GridRowId, GridRowSelectionModel } from '@mui/x-data-grid';
 import React, { useState } from 'react';
 import { CustomNoRowsOverlay } from 'UI/Features/Admin/components/CustomNoRowsOverlay';
@@ -47,17 +47,15 @@ const PendingRequests: React.FC = () => {
 
   const renderRequestDetailsButton = (params) => {
     return (
-      <Tooltip title="View Details" classes={{ tooltip: 'toolTip' }}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => {
-            openRequestDetailsDialog(params.row);
-          }}
-        >
-          Details
-        </Button>
-      </Tooltip>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => {
+          openRequestDetailsDialog(params.row);
+        }}
+      >
+        Details
+      </Button>
     );
   };
 

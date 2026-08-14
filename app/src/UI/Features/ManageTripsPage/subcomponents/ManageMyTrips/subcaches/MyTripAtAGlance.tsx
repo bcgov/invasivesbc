@@ -1,10 +1,10 @@
-import { Tooltip } from '@mui/material';
 import {
   IappRecordsetIcon,
   InvasivesRecordsetIcon,
   OfflineMapIcon,
   WellIcon
 } from 'UI/Features/ManageTripsPage/iconography';
+import HoverTooltip from 'UI/Reusable/HoverTooltip/HoverTooltip';
 import { IPlanMyTripCacheStatus, IPlanMyTripCacheStatuses } from 'utils/plan-my-trip-cache';
 
 type PropTypes = {
@@ -32,18 +32,18 @@ const MyTripAtAGlance = ({ statuses }: PropTypes) => {
   const { activityRecordset, iappRecordset, mapTiles, wellData } = statuses;
   return (
     <>
-      <Tooltip classes={{ tooltip: 'toolTip' }} title={`InvasivesBC Recordest: ${activityRecordset}`}>
+      <HoverTooltip tooltipText={`InvasivesBC Recordest: ${activityRecordset}`}>
         <InvasivesRecordsetIcon color={getColor(activityRecordset)} />
-      </Tooltip>
-      <Tooltip classes={{ tooltip: 'toolTip' }} title={`IAPP Recordset: ${iappRecordset}`}>
+      </HoverTooltip>
+      <HoverTooltip tooltipText={`IAPP Recordset: ${iappRecordset}`}>
         <IappRecordsetIcon color={getColor(iappRecordset)} />
-      </Tooltip>
-      <Tooltip classes={{ tooltip: 'toolTip' }} title={`Well Data: ${wellData}`}>
+      </HoverTooltip>
+      <HoverTooltip tooltipText={`Well Data: ${wellData}`}>
         <WellIcon color={getColor(wellData)} />
-      </Tooltip>
-      <Tooltip classes={{ tooltip: 'toolTip' }} title={`Offline Map: ${mapTiles}`}>
+      </HoverTooltip>
+      <HoverTooltip tooltipText={`Offline Map: ${mapTiles}`}>
         <OfflineMapIcon color={getColor(mapTiles)} />
-      </Tooltip>
+      </HoverTooltip>
     </>
   );
 };

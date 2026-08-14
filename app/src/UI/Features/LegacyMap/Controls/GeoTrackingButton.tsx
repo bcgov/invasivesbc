@@ -1,39 +1,21 @@
-import { IconButton, Tooltip } from '@mui/material';
+import { IconButton } from '@mui/material';
 import PolylineIcon from '@mui/icons-material/Polyline';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 import GeoShapes from 'constants/geoShapes';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'utils/use_selector';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import Prompt from 'state/actions/prompts/Prompt';
 import { isTracking } from 'utils/geoTrackingHelpers';
+import HoverTooltip from 'UI/Reusable/HoverTooltip/HoverTooltip';
 
-/**
- * TrackMeButton
- * @description Component to handle the functionality of the find me button
- * @returns {void}
- */
-export const GeoTrackingButton = () => {
-  const { status } = useSelector((state) => state.Map.track_me_draw_geo);
-
-  const dispatch = useDispatch();
-  const [show, setShow] = useState(false);
-  const divRef = useRef<HTMLDivElement | null>(null);
-  const tracking = isTracking(status);
-  const activityGeo = (useSelector((state) => state.ActivityPage.activity?.geometry) ?? [])[0] ?? {};
+const GeoTrackingButton = () => {
   const promptHandler = (input: string | number) => {
     dispatch(GeoTracking.start(input as GeoShapes));
   };
 
-  useEffect(() => {
-    if (activityGeo && activityGeo?.properties?.error == 'true') {
-      dispatch(GeoTracking.pause());
-    }
-  }, [activityGeo?.properties]);
-
   const clickHandler = () => {
-    setShow(false);
     if (tracking) {
       dispatch(GeoTracking.stop());
     } else {
@@ -51,23 +33,25 @@ export const GeoTrackingButton = () => {
       );
     }
   };
-  // this is to stop user from clicking it again while things are happening
+
+  const dispatch = useDispatch();
+  const status = useSelector((state) => state.Map.track_me_draw_geo.status);
+  const tracking = isTracking(status);
+  const activityGeo = useSelector((state) => state.ActivityPage.geometry_details?.shape);
+
+  useEffect(() => {
+    if (activityGeo && activityGeo?.properties?.error == 'true') {
+      dispatch(GeoTracking.pause());
+    }
+  }, [activityGeo?.properties]);
+
   return (
-    <div ref={divRef} className={tracking ? 'map-btn-selected' : 'map-btn'}>
-      <Tooltip
-        open={show}
-        classes={{ tooltip: 'toolTip' }}
-        onMouseEnter={() => setShow(true)}
-        onMouseLeave={() => setShow(false)}
-        title="Track My Path"
-        placement="top-end"
-      >
-        <span>
-          <IconButton className="button" onClick={clickHandler}>
-            <PolylineIcon /> <DirectionsWalkIcon />
-          </IconButton>
-        </span>
-      </Tooltip>
+    <div className={tracking ? 'map-btn-selected' : 'map-btn'}>
+      <HoverTooltip tooltipText="Track My Path">
+        <IconButton className="button" onClick={clickHandler}>
+          <PolylineIcon /> <DirectionsWalkIcon />
+        </IconButton>
+      </HoverTooltip>
     </div>
   );
 };

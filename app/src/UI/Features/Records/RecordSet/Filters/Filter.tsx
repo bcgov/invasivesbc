@@ -1,4 +1,4 @@
-import { Button, Tooltip } from '@mui/material';
+import { Button } from '@mui/material';
 import { useCallback, useState } from 'react';
 import { activityColumnsToDisplay, iappColumnsToDisplay } from 'UI/Features/Records/RecordSet/RecordTableHelpers';
 import { useDispatch, useSelector } from 'utils/use_selector';
@@ -7,6 +7,7 @@ import UserSettings from 'state/actions/userSettings/UserSettings';
 import debounce from 'lodash.debounce';
 import EFilterType from 'constants/EFilterType';
 import { IFilter, IUpdateFilter } from 'state/actions/userSettings/RecordSet';
+import HoverTooltip from 'UI/Reusable/HoverTooltip/HoverTooltip';
 
 type PropTypes = {
   setID: string;
@@ -302,18 +303,16 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
       </td>
       <td>{input}</td>
       <td className="deleteButtonCell">
-        <Tooltip classes={{ tooltip: 'toolTip' }} title="Delete the filter in this row, data will be refetched.">
-          <span>
-            <Button
-              className={'deleteButton'}
-              disabled={disabled}
-              onClick={() => removeFilter(EFilterType.Table)}
-              variant="contained"
-            >
-              Delete
-            </Button>
-          </span>
-        </Tooltip>
+        <HoverTooltip tooltipText="Delete the filter in this row, data will be refetched.">
+          <Button
+            className={'deleteButton'}
+            disabled={disabled}
+            onClick={() => removeFilter(EFilterType.Table)}
+            variant="contained"
+          >
+            Delete
+          </Button>
+        </HoverTooltip>
       </td>
     </tr>
   );
