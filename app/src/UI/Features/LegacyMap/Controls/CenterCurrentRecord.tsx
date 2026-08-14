@@ -1,5 +1,4 @@
 import { IconButton } from '@mui/material';
-import 'UI/Global.css';
 import MapActions from 'state/actions/map';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import { useDispatch, useSelector } from 'utils/use_selector';

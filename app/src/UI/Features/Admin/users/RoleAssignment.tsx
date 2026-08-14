@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { Button, SelectChangeEvent, Tooltip } from '@mui/material';
+import { Button, SelectChangeEvent } from '@mui/material';
 import { DataGrid, GridColDef, GridRowId, GridRowSelectionModel } from '@mui/x-data-grid';
 import { CustomNoRowsOverlay } from 'UI/Features/Admin/components/CustomNoRowsOverlay';
 import Spinner from 'UI/Reusable/Spinner/Spinner';
@@ -44,17 +44,15 @@ const RoleAssignment: React.FC = () => {
 
   const renderDetailsButton = (params) => {
     return (
-      <Tooltip title="View Details" classes={{ tooltip: 'toolTip' }}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => {
-            openDetailsDialog(params.row);
-          }}
-        >
-          Details
-        </Button>
-      </Tooltip>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => {
+          openDetailsDialog(params.row);
+        }}
+      >
+        Details
+      </Button>
     );
   };
 

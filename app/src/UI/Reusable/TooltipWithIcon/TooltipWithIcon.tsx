@@ -1,6 +1,7 @@
 import { HelpOutline } from '@mui/icons-material';
 import { IconButton, SvgIconProps, Tooltip } from '@mui/material';
 import { ReactElement, ReactNode, useState } from 'react';
+import './tooltipWithIcon.css';
 
 type PropTypes = {
   tooltipText: string | ReactNode;
@@ -12,7 +13,7 @@ const TooltipWithIcon = ({ tooltipText, icon }: PropTypes) => {
   return (
     <Tooltip
       open={showTooltip}
-      classes={{ tooltip: 'toolTip' }}
+      classes={{ tooltip: 'tool-tip' }}
       onMouseEnter={setShowTooltip.bind(this, true)}
       onMouseLeave={setShowTooltip.bind(this, false)}
       onFocus={setShowTooltip.bind(this, true)}

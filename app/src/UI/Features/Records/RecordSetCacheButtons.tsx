@@ -1,5 +1,5 @@
 import { UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
-import { Button, Tooltip } from '@mui/material';
+import { Button } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 import { MouseEvent, useEffect, useState } from 'react';
 import RecordCache from 'state/actions/cache/RecordCache';
@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'utils/use_selector';
 import Prompt from 'state/actions/prompts/Prompt';
 import { shallowEqual } from 'react-redux';
 import ProgressControlPanel from 'UI/Features/Records/ProgressControlPanel';
+import HoverTooltip from 'UI/Reusable/HoverTooltip/HoverTooltip';
 
 interface PropTypes {
   recordSet: UserRecordSet;
@@ -140,7 +141,7 @@ const RecordSetCacheButtons = ({ recordSet, setId, onCacheStateChange }: PropTyp
   }, [recordSet.cacheMetadataStatus, connected, isLoadingRecords]);
 
   return (
-    <Tooltip classes={{ tooltip: 'toolTip' }} title="Click to save this layer and it's records">
+    <HoverTooltip tooltipText="Click to save this layer and it's records">
       <span>
         {activeDownloads ? (
           <ProgressControlPanel
@@ -161,7 +162,7 @@ const RecordSetCacheButtons = ({ recordSet, setId, onCacheStateChange }: PropTyp
           </Button>
         )}
       </span>
-    </Tooltip>
+    </HoverTooltip>
   );
 };
 

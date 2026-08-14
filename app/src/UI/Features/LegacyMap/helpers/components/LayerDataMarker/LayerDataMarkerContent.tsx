@@ -1,5 +1,5 @@
 import LaunchIcon from '@mui/icons-material/Launch';
-import { IconButton, Tooltip } from '@mui/material';
+import { IconButton } from '@mui/material';
 import './layerDataMarkerContent.css';
 import { ArrowCircleLeftOutlined, ArrowCircleRightOutlined, CopyAll } from '@mui/icons-material';
 import { useState } from 'react';
@@ -7,6 +7,7 @@ import { NavigateFunction } from 'react-router';
 import { Dispatch } from 'redux';
 import Prompt from 'state/actions/prompts/Prompt';
 import Activity from 'state/actions/activity/Activity';
+import HoverTooltip from 'UI/Reusable/HoverTooltip/HoverTooltip';
 
 type PropTypes = {
   features: Array<{
@@ -64,13 +65,11 @@ const LayerDataMarkerContent = ({ features, navigate, dispatch, canCopyShape: ca
 
                 <td className="buttons">
                   {id && canCopyRecord && (
-                    <Tooltip classes={{ tooltip: 'toolTip' }} title={'Replace your current shape with this one'}>
-                      <span>
-                        <IconButton disabled={!canCopyRecord} onClick={handleCopy.bind(this, id)}>
-                          <CopyAll />
-                        </IconButton>
-                      </span>
-                    </Tooltip>
+                    <HoverTooltip tooltipText={'Replace your current shape with this one'}>
+                      <IconButton disabled={!canCopyRecord} onClick={handleCopy.bind(this, id)}>
+                        <CopyAll />
+                      </IconButton>
+                    </HoverTooltip>
                   )}
                   <IconButton onClick={handleGoTo.bind(this, url)}>
                     <LaunchIcon />
