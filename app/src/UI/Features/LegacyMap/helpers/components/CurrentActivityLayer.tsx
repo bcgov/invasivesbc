@@ -1,29 +1,22 @@
-import { Feature } from 'geojson';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect } from 'react';
 import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
 import { LAYER_Z_FOREGROUND } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/types';
 import { useSelector } from 'utils/use_selector';
 
 const CurrentActivityLayer = ({ mapReady }) => {
   const map = useContext(MapContext);
-  const [geo, setGeo] = useState<Feature | null>(null);
-  // TODO: Remove
-  const activityGeometryArray = useSelector((state) => state.ActivityPage.activity?.geometry);
-  const formGeometry = useSelector((state) => state.ActivityPage?.geometry_details?.shape);
-  const { url } = useSelector((state) => state.AppMode);
+  const url = useSelector((state) => state.AppMode.url);
 
-  // react to changes in the geometry or current page and set our rendered geo appropriately
-  // render if a) we're on the Activity page and b) There is a geo object in the Activity
-  useEffect(() => {
-    if (url && formGeometry && RegExp(/\/Activity/).test(url)) {
-      setGeo(formGeometry);
-    } else if (activityGeometryArray && activityGeometryArray[0] && url?.includes('LegacyForm')) {
-      // TODO Remove
-      setGeo(activityGeometryArray[0]);
-    } else {
-      setGeo(null);
+  // TODO: Remove LegacyForm Check
+  const activeGeometry = useSelector((state) => {
+    if (!url) return null;
+    if (RegExp(/\/Activity/).test(url)) {
+      return state.ActivityPage?.formState?.shape;
+    } else if (RegExp(/\/LegacyForm/).test(url)) {
+      return state.ActivityPage.activity?.geometry?.[0];
     }
-  }, [activityGeometryArray, formGeometry, geo, url]);
+    return null;
+  });
 
   useEffect(() => {
     if (!map) return;
@@ -37,11 +30,11 @@ const CurrentActivityLayer = ({ mapReady }) => {
     const OUTLINE_LAYER = `${LAYER_ID}-outline`;
     const ZOOM_CIRCLE_LAYER = `${LAYER_ID}-zoomoutcircle`;
 
-    if (geo) {
+    if (activeGeometry) {
       map
         .addSource(LAYER_ID, {
           type: 'geojson',
-          data: geo
+          data: activeGeometry
         })
         .addLayer(
           {
@@ -96,7 +89,7 @@ const CurrentActivityLayer = ({ mapReady }) => {
         map.removeSource(LAYER_ID);
       };
     }
-  }, [map, mapReady, geo]);
+  }, [map, mapReady, activeGeometry]);
 
   return null;
 };

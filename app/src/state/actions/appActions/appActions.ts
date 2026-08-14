@@ -51,4 +51,4 @@ class AppActions {
 }
 
 export default AppActions;
-export type { IPrepFilter, IPreppedFilters };
+export type { IPrepFilter, IPreppedFilters, IUserCoord };

@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { useDispatch, useSelector } from 'utils/use_selector';
@@ -59,16 +59,19 @@ const DrawControls = () => {
 
   // Form Shapes
   const EMPTY_OBJECT = {}; //  a stable reference for the default value to avoid unnecessary re-renders
-  const legacyFormShape = (useSelector((state) => state.ActivityPage.activity?.geometry) ?? [])[0] ?? EMPTY_OBJECT;
-  const formShape = useSelector((state) => state.ActivityPage.geometry_details?.shape);
-
-  // Permissions Settings
-  const can_edit = useSelector((state) => !!state.ActivityPage?.activeActivityPermissions?.can_edit);
-  const created_by = useSelector((state) => state.ActivityPage?.activity?.created_by);
-  const username = useSelector((state) => state.Auth.username);
-  const userCanEdit = username === created_by || can_edit;
-
   const url = useSelector((state) => state.AppMode.url);
+
+  const activeFormShape = useSelector((state) => {
+    if (!url) return;
+    if (RegExp(/\/Activity/).test(url)) {
+      return state.ActivityPage?.formState?.shape;
+    } else if (RegExp(/\/LegacyForm/).test(url)) {
+      return state.ActivityPage.activity?.geometry?.[0] ?? EMPTY_OBJECT;
+    }
+    return null;
+  });
+  // Permissions Settings
+  const userCanEdit = useSelector((state) => state.ActivityPage.recordActions?.includes('EDIT'));
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -85,22 +88,7 @@ const DrawControls = () => {
   const [mode, setMode] = useState<TargetMode>(TargetMode.DISABLED);
   const prevMode = useRef<TargetMode>(TargetMode.DISABLED);
 
-  const isEditDisabled = ![TargetMode.LEGACY_FORM].includes(mode);
-
-  /**
-   * @TODO Remove this after LegacyForms deprecated fully.
-   * Can be converted to just formActivity
-   */
-  const activeFormShape = useMemo(() => {
-    switch (mode) {
-      case TargetMode.LEGACY_FORM:
-        return legacyFormShape;
-      case TargetMode.ACTIVITY_FORM:
-        return formShape;
-      default:
-        return undefined;
-    }
-  }, [mode, url, formShape, legacyFormShape]);
+  const isEditDisabled = ![TargetMode.ACTIVITY_FORM].includes(mode);
 
   /**
    * @desc Dispatch Custom event for when the Edit Button is used. Listened to by `LayerDataMarker.tsx`
@@ -170,8 +158,7 @@ const DrawControls = () => {
 
   // make a geometry for previously submitted shapes
   useEffect(() => {
-    if (!activeFormShape && mode === TargetMode.LEGACY_FORM) return;
-    if (!formShape && mode === TargetMode.ACTIVITY_FORM) return;
+    if (!activeFormShape) return;
     if (mode === TargetMode.ACTIVITY_GEO_TRACK) return;
 
     const drawFeature = drawInstance?.current?.getAll()?.features?.[0];
@@ -229,7 +216,7 @@ const DrawControls = () => {
     } catch (error) {
       console.error('Failed to update feature with error styling:', error);
     }
-  }, [activeFormShape?.properties?.error, activeFormShape?.geometry]);
+  }, [activeFormShape]);
 
   useEffect(() => {
     const feature = drawInstance?.current?.get(GEO_TRACKING_FEATURE);
