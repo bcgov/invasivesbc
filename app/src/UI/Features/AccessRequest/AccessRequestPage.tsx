@@ -449,7 +449,7 @@ const AccessRequestPage = () => {
             value={pacNumber ?? ''}
             onChange={(e) => {
               const userInput = e.target.value;
-              if (RegExp(/^\d+$/).test(e.target.value)) {
+              if (new RegExp(/^\d+$/).test(e.target.value)) {
                 setPacNumber(Number.parseInt(e.target.value) ?? '');
               } else if (userInput === '') {
                 setPacNumber(undefined);

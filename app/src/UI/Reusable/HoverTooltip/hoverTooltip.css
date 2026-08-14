@@ -1,5 +1,5 @@
-.toolTip {
-  background-color: #003366 !important;
+.tool-tip {
+  background-color: var(--bc-blue) !important;
   color: white !important;
   border: none;
   width: 100%;
@@ -7,6 +7,6 @@
   font-size: 1rem !important;
 }
 
-.toolTip:hover {
+.tool-tip:hover {
   display: none;
 }

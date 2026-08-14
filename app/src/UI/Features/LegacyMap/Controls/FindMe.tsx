@@ -1,7 +1,6 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { IconButton, Tooltip } from '@mui/material';
-import 'UI/Global.css';
+import { IconButton } from '@mui/material';
 import { useSelector } from 'utils/use_selector';
 import MapActions from 'state/actions/map';
 import { GpsFixed, GpsNotFixed, GpsOff } from '@mui/icons-material';
@@ -9,6 +8,7 @@ import { MapContext } from '../helpers/components/MapContext';
 import { MapLibreEvent } from 'maplibre-gl';
 import { isTracking } from 'utils/geoTrackingHelpers';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
+import HoverTooltip from 'UI/Reusable/HoverTooltip/HoverTooltip';
 
 export const FindMeToggle = () => {
   enum Mode {
@@ -16,6 +16,22 @@ export const FindMeToggle = () => {
     ON,
     FOLLOWING
   }
+
+  const CONFIG = {
+    [Mode.ON]: {
+      tooltip: 'Follow my Location',
+      icon: <GpsNotFixed />
+    },
+    [Mode.OFF]: {
+      tooltip: 'Turn on GPS Tracking',
+      icon: <GpsOff />
+    },
+    [Mode.FOLLOWING]: {
+      tooltip: 'Turn off GPS Tracking',
+      icon: <GpsFixed />
+    }
+  };
+
   const MIN_DRAG_IN_PX = 50;
 
   // Toggle Redux states on click
@@ -28,18 +44,15 @@ export const FindMeToggle = () => {
       }
       dispatch(MapActions.trackLocationToggle());
     }
-    setShow(false);
   };
 
   const map = useContext(MapContext);
   const dispatch = useDispatch();
-  const divRef = useRef<HTMLDivElement | null>(null);
 
   const positionTracking = useSelector((state) => state.Map?.positionTracking);
   const positionFollowing = useSelector((state) => state.Map?.panned);
   const userIsGeoTracking: boolean = useSelector((state) => isTracking(state.Map.track_me_draw_geo.status));
 
-  const [show, setShow] = useState<boolean>(false);
   const [mode, setMode] = useState<Mode>(Mode.OFF);
 
   const clientX = useRef<number>(0);
@@ -99,34 +112,14 @@ export const FindMeToggle = () => {
     };
   }, [map, handleDrag]);
 
+  const { tooltip, icon } = CONFIG[mode];
   return (
-    <div ref={divRef} className={positionTracking ? 'map-btn-selected' : 'map-btn'}>
-      <Tooltip
-        open={show}
-        classes={{ tooltip: 'toolTip' }}
-        onMouseEnter={() => setShow(true)}
-        onMouseLeave={() => setShow(false)}
-        title={
-          {
-            [Mode.ON]: 'Follow My Location',
-            [Mode.OFF]: 'Turn on GPS Tracking',
-            [Mode.FOLLOWING]: 'Turn off GPS Tracking'
-          }[mode]
-        }
-        placement="top-end"
-      >
-        <span>
-          <IconButton className={'button'} onClick={handleClick}>
-            {
-              {
-                [Mode.ON]: <GpsNotFixed />,
-                [Mode.OFF]: <GpsOff />,
-                [Mode.FOLLOWING]: <GpsFixed />
-              }[mode]
-            }
-          </IconButton>
-        </span>
-      </Tooltip>
+    <div className={positionTracking ? 'map-btn-selected' : 'map-btn'}>
+      <HoverTooltip tooltipText={tooltip}>
+        <IconButton className={'button'} onClick={handleClick}>
+          {icon}
+        </IconButton>
+      </HoverTooltip>
     </div>
   );
 };

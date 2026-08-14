@@ -1,19 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import { useSelector } from 'utils/use_selector';
-import { selectMap } from 'state/reducers/map';
 import 'UI/Features/LegacyMap/helpers/components/AccuracyDisplay/AccuracyDisplay.css';
 
 const AccuracyDisplay = () => {
-  const { positionTracking, userCoords } = useSelector(selectMap);
-  const [showAccuracy, setShowAccuracy] = useState<boolean>(positionTracking);
+  const accuracyToggle = useSelector((state) => state.Map.accuracyToggle);
+  const positionTracking = useSelector((state) => state.Map.positionTracking);
+  const userCoords = useSelector((state) => state.Map?.userCoords);
 
-  useEffect(() => {
-    setShowAccuracy(positionTracking);
-  }, [positionTracking]);
+  const shouldHide = useMemo(() => {
+    return !userCoords?.accuracy || !positionTracking || !accuracyToggle;
+  }, [accuracyToggle, positionTracking, userCoords]);
 
-  if (!showAccuracy || !userCoords?.accuracy) {
-    return;
-  }
+  if (shouldHide) return null;
   return <div id="accuracy-display">GPS Accuracy: {Math.floor(userCoords?.accuracy)}m</div>;
 };
 

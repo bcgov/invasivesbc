@@ -1,12 +1,13 @@
 import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
 import { RecordSetCacheButtons } from 'UI/Features/Records/RecordSetCacheButtons';
-import { IconButton, Tooltip } from '@mui/material';
+import { IconButton } from '@mui/material';
 import { UserRecordSet } from 'interfaces/UserRecordSet';
 import { ColorLens, Delete, Label, LabelOff, Layers, LayersClear } from '@mui/icons-material';
 import { useState } from 'react';
 import { useSelector } from 'utils/use_selector';
 import { useRecordSetControls } from 'utils/useRecordSetControls';
 import './recordsetControl.css';
+import HoverTooltip from 'UI/Reusable/HoverTooltip/HoverTooltip';
 
 type PropTypes = {
   isDefaultRecordset: boolean;
@@ -61,59 +62,51 @@ const RecordSetControl = ({
       )}
       <div className="record-set-buttons">
         {!hideLabel && (
-          <Tooltip classes={{ tooltip: 'toolTip' }} title={LABEL_TOGGLE_TIP}>
-            <span>
-              <IconButton
-                disabled={!recordset?.mapToggle || !hasLayerIndex}
-                onClick={toggleRecordsetLabel}
-                color="primary"
-                data-testid="label-toggle"
-              >
-                {recordset?.labelToggle && recordset?.mapToggle ? <Label /> : <LabelOff />}
-              </IconButton>
-            </span>
-          </Tooltip>
+          <HoverTooltip tooltipText={LABEL_TOGGLE_TIP}>
+            <IconButton
+              disabled={!recordset?.mapToggle || !hasLayerIndex}
+              onClick={toggleRecordsetLabel}
+              color="primary"
+              data-testid="label-toggle"
+            >
+              {recordset?.labelToggle && recordset?.mapToggle ? <Label /> : <LabelOff />}
+            </IconButton>
+          </HoverTooltip>
         )}
 
         {!hideLayer && (
-          <Tooltip classes={{ tooltip: 'toolTip' }} title={LAYER_TOGGLE_TIP}>
-            <span>
-              <IconButton
-                data-testid="layer-toggle"
-                onClick={toggleRecordsetLayer}
-                color="primary"
-                disabled={!hasLayerIndex}
-              >
-                {recordset?.mapToggle ? <Layers /> : <LayersClear />}
-              </IconButton>
-            </span>
-          </Tooltip>
+          <HoverTooltip tooltipText={LAYER_TOGGLE_TIP}>
+            <IconButton
+              data-testid="layer-toggle"
+              onClick={toggleRecordsetLayer}
+              color="primary"
+              disabled={!hasLayerIndex}
+            >
+              {recordset?.mapToggle ? <Layers /> : <LayersClear />}
+            </IconButton>
+          </HoverTooltip>
         )}
 
         {!isDefaultRecordset && (
           <>
             {!hideColour && !isDefaultRecordset && (
-              <Tooltip placement="bottom-start" classes={{ tooltip: 'toolTip' }} title={COLOUR_CYCLE_TIP}>
-                <span>
-                  <IconButton
-                    data-testid="cycle-color"
-                    onClick={cycleRecordsetColour}
-                    color="primary"
-                    disabled={!hasLayerIndex}
-                  >
-                    <ColorLens />
-                  </IconButton>
-                </span>
-              </Tooltip>
+              <HoverTooltip tooltipText={COLOUR_CYCLE_TIP}>
+                <IconButton
+                  data-testid="cycle-color"
+                  onClick={cycleRecordsetColour}
+                  color="primary"
+                  disabled={!hasLayerIndex}
+                >
+                  <ColorLens />
+                </IconButton>
+              </HoverTooltip>
             )}
             {!hideDelete && (
-              <Tooltip classes={{ tooltip: 'toolTip' }} title={DELETE_TIP}>
-                <span>
-                  <IconButton data-testid="delete-recordset" onClick={deleteRecordSet} color="primary">
-                    <Delete />
-                  </IconButton>
-                </span>
-              </Tooltip>
+              <HoverTooltip tooltipText={DELETE_TIP}>
+                <IconButton data-testid="delete-recordset" onClick={deleteRecordSet} color="primary">
+                  <Delete />
+                </IconButton>
+              </HoverTooltip>
             )}
           </>
         )}

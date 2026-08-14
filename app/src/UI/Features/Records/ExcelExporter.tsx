@@ -1,4 +1,4 @@
-import { Accordion, Button, MenuItem, Select, Tooltip } from '@mui/material';
+import { Accordion, Button, MenuItem, Select } from '@mui/material';
 import { useMemo, useState } from 'react';
 import DownloadIcon from '@mui/icons-material/Download';
 import Spinner from 'UI/Reusable/Spinner/Spinner';
@@ -10,6 +10,7 @@ import ExportActions from 'state/actions/exports/exportActions';
 import { ActivitySubtypes } from 'sharedAPI';
 import Alerts from 'state/actions/alerts/Alerts';
 import downloadAlertMessages from 'constants/alerts/downloadAlerts';
+import HoverTooltip from 'UI/Reusable/HoverTooltip/HoverTooltip';
 
 const iappExportOptions = [
   { value: 'site_selection_extract', label: 'Site Selection Extract' },
@@ -116,7 +117,7 @@ const ExcelExporter = ({ setName }: PropTypes) => {
           Click here for CSV export
         </AccordionSummary>
         <AccordionDetails className="accordionDetails">
-          <Tooltip classes={{ tooltip: 'toolTip' }} title="CSV Export">
+          <HoverTooltip tooltipText="CSV Export">
             {linkToCSV && setName === recordSetForCSV ? (
               <a href={linkToCSV} download>
                 <Button
@@ -148,30 +149,26 @@ const ExcelExporter = ({ setName }: PropTypes) => {
                 )}
               </div>
             )}
-          </Tooltip>
-          <Tooltip classes={{ tooltip: 'toolTip' }} title="Choose report type" placement="right">
-            <>
-              CSV Summary Type:
-              <Select
-                className="excel-exporter-select"
-                value={selection}
-                onChange={(e) => {
-                  setSelection(e.target.value);
+          </HoverTooltip>
+          CSV Summary Type:
+          <Select
+            className="excel-exporter-select"
+            value={selection}
+            onChange={(e) => {
+              setSelection(e.target.value);
+            }}
+          >
+            {items.map((o, i) => (
+              <MenuItem
+                sx={{
+                  backgroundColor: i % 2 === 0 ? 'var(--even-list-item-bg-color)' : 'var(--odd-list-item-bg-color)'
                 }}
+                value={o.value}
               >
-                {items.map((o, i) => (
-                  <MenuItem
-                    sx={{
-                      backgroundColor: i % 2 === 0 ? 'var(--even-list-item-bg-color)' : 'var(--odd-list-item-bg-color)'
-                    }}
-                    value={o.value}
-                  >
-                    {o.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </>
-          </Tooltip>
+                {o.label}
+              </MenuItem>
+            ))}
+          </Select>
         </AccordionDetails>
       </Accordion>
     </div>
