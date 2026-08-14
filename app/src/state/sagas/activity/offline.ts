@@ -1,5 +1,5 @@
 import { delay, put, select, takeEvery, takeLeading } from 'redux-saga/effects';
-import { ActivityStatus, ActivitySyncStatus } from 'sharedAPI';
+import { ActivityStatus, ActivitySubtypeShortLabels, ActivitySyncStatus } from 'sharedAPI';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import { OfflineActivityRecord, OfflineActivitySyncState, selectOfflineActivity } from 'state/reducers/offlineActivity';
@@ -115,81 +115,147 @@ function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
 
   for (const activity of toSync) {
     const hydrated = JSON.parse(activity.data);
-    try {
-      const sync_status = hydrated.form_status === ActivitySyncStatus.SAVE_SUCCESSFUL;
-      const path = hydrated.form_status === ActivityStatus.SUBMITTED ? 'submit' : 'draft';
+    // ActivitySubtypeShortLabels contains all legacy subtypes, so we can determine a match both from the key existing, and having a pair in this object.
+    const isLegacyActivity =
+      'activity_subtype' in hydrated && !!ActivitySubtypeShortLabels?.[hydrated.activity_subtype];
 
-      const networkReturn = yield fetch(`${config.API_V2_BASE}/ninja/activities/${path}`, {
-        method: 'POST',
-        headers: {
-          Authorization: yield getCurrentJWT(),
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(hydrated)
-      });
-      if (networkReturn?.ok) {
-        yield put(
-          Activity.Offline.updateSyncState({
-            id: hydrated.id,
-            data: {
-              ...hydrated,
-              sync_status: sync_status
-            },
-            sync_state: OfflineActivitySyncState.SYNCHRONIZED
-          })
-        );
+    // TODO: Delete this entire conditional, and keep the `else` block as the only path.
+    if (isLegacyActivity) {
+      /*
+       * This is the Legacy functionality for submitting a record from a mobile device. This functionality is entirely redacted/replaced
+       * but during the transition phase of new to old forms there may be a period where both types of forms could exist on a single device.
+       * This ensures both types of forms will submit temporarily until all forms are transitioned into the new format.
+       */
+      const sync_status =
+        hydrated.form_status === ActivityStatus.SUBMITTED
+          ? ActivitySyncStatus.SAVE_SUCCESSFUL
+          : ActivitySyncStatus.SAVE_SUCCESSFUL_PRIVATE; // saved to db but only visible to user in drafts
 
-        if (hydrated.id === formId) {
-          yield put(
-            Activity.getSuccess({
-              activity: {
+      try {
+        const networkReturn =
+          hydrated.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL_PRIVATE ||
+          hydrated.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL
+            ? yield InvasivesAPI_Call('PUT', `/api/activity/`, {
                 ...hydrated,
-                sync_status
+                sync_status: sync_status
+              })
+            : yield InvasivesAPI_Call('POST', `/api/activity/`, {
+                ...hydrated,
+                sync_status: sync_status
+              });
+        if (networkReturn?.ok) {
+          yield put(
+            Activity.Offline.updateSyncState({
+              id: hydrated.activity_id,
+              data: {
+                ...hydrated,
+                sync_status: sync_status
               },
-              permissions: activeActivityPermissions
+              sync_state: OfflineActivitySyncState.SYNCHRONIZED
+            })
+          );
+        } else {
+          yield put(
+            Activity.Offline.updateSyncState({
+              id: hydrated.activity_id,
+              data: { ...hydrated, sync_status: ActivitySyncStatus.SAVE_FAILED },
+              sync_state: OfflineActivitySyncState.ERROR,
+              error_detail: `HTTP response code ${networkReturn.status}`,
+              error_object:
+                networkReturn.status < 500
+                  ? networkReturn.data
+                  : 'There was an internal error. Please try again in a few moments.'
             })
           );
         }
-        // Refetch Draft Records now that we're synced
-        yield put(WhatsHere.getIdsForRecordset({ recordSetID: RecordSetId.Drafts, tableFiltersHash: 'init' }));
-      } else {
-        let errorDetail = networkReturn.data;
-        if (networkReturn.status === 422) {
-          const parsedError = yield networkReturn.json();
-          errorDetail = `Form contains ${parsedError?.detail?.length} error(s).`;
-          // If this record is the active record, alert the errors.
-          if (formId === hydrated['id']) {
-            const errors = transformPydanticErrors(parsedError.detail);
-            for (const e of errors) {
-              yield put(Alerts.create(e));
-            }
-          }
-        } else if (networkReturn.status === 500) {
-          errorDetail = 'There was an internal error. Please try again in a few moments.';
-        }
-        // Request failed, alert user.
-        yield put(Alerts.create(formAlerts.recordSubmittedFailure));
-
+      } catch (e) {
         yield put(
           Activity.Offline.updateSyncState({
-            id: hydrated.id,
+            id: hydrated.activity_id,
             data: { ...hydrated, sync_status: ActivitySyncStatus.SAVE_FAILED },
             sync_state: OfflineActivitySyncState.ERROR,
-            error_detail: `HTTP response code ${networkReturn.status}`,
-            error_object: errorDetail
+            error_detail: 'Caught error when synchronizing',
+            error_object: e
           })
         );
       }
-    } catch (e) {
-      yield put(
-        Activity.Offline.updateSyncState({
-          id: hydrated.activity_id,
-          data: { ...hydrated, sync_status: ActivitySyncStatus.SAVE_FAILED },
-          sync_state: OfflineActivitySyncState.ERROR,
-          error_detail: 'Caught error when synchronizing',
-          error_object: e
-        })
-      );
+    } else {
+      try {
+        const sync_status = hydrated.form_status === ActivitySyncStatus.SAVE_SUCCESSFUL;
+        const path = hydrated.form_status === ActivityStatus.SUBMITTED ? 'submit' : 'draft';
+
+        const networkReturn = yield fetch(`${config.API_V2_BASE}/ninja/activities/${path}`, {
+          method: 'POST',
+          headers: {
+            Authorization: yield getCurrentJWT(),
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(hydrated)
+        });
+        if (networkReturn?.ok) {
+          yield put(
+            Activity.Offline.updateSyncState({
+              id: hydrated.id,
+              data: {
+                ...hydrated,
+                sync_status: sync_status
+              },
+              sync_state: OfflineActivitySyncState.SYNCHRONIZED
+            })
+          );
+
+          if (hydrated.id === formId) {
+            yield put(
+              Activity.getSuccess({
+                activity: {
+                  ...hydrated,
+                  sync_status
+                },
+                permissions: activeActivityPermissions
+              })
+            );
+          }
+          // Refetch Draft Records now that we're synced
+          yield put(WhatsHere.getIdsForRecordset({ recordSetID: RecordSetId.Drafts, tableFiltersHash: 'init' }));
+        } else {
+          let errorDetail = networkReturn.data;
+          if (networkReturn.status === 422) {
+            const parsedError = yield networkReturn.json();
+            errorDetail = `Form contains ${parsedError?.detail?.length} error(s).`;
+            // If this record is the active record, alert the errors.
+            if (formId === hydrated['id']) {
+              const errors = transformPydanticErrors(parsedError.detail);
+              for (const e of errors) {
+                yield put(Alerts.create(e));
+              }
+            }
+          } else if (networkReturn.status === 500) {
+            errorDetail = 'There was an internal error. Please try again in a few moments.';
+          }
+          // Request failed, alert user.
+          yield put(Alerts.create(formAlerts.recordSubmittedFailure));
+
+          yield put(
+            Activity.Offline.updateSyncState({
+              id: hydrated.id,
+              data: { ...hydrated, sync_status: ActivitySyncStatus.SAVE_FAILED },
+              sync_state: OfflineActivitySyncState.ERROR,
+              error_detail: `HTTP response code ${networkReturn.status}`,
+              error_object: errorDetail
+            })
+          );
+        }
+      } catch (e) {
+        yield put(
+          Activity.Offline.updateSyncState({
+            id: hydrated.activity_id,
+            data: { ...hydrated, sync_status: ActivitySyncStatus.SAVE_FAILED },
+            sync_state: OfflineActivitySyncState.ERROR,
+            error_detail: 'Caught error when synchronizing',
+            error_object: e
+          })
+        );
+      }
     }
   }
   yield put(Activity.Offline.syncRunComplete());

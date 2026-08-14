@@ -16,7 +16,7 @@ import {
   getPaintBySchemeOrColor
 } from '../functional/layer-definitions/reusable-layer-specifications';
 import { LayerSpecificationWithStackingOrder } from '../functional/layers-hook';
-import { ActivitySubtypesToType } from 'sharedAPI';
+import { ActivitySubtypeShortLabels, ActivitySubtypesToType } from 'sharedAPI';
 
 type PropTypes = {
   mapReady: boolean;
@@ -45,6 +45,11 @@ const OfflineRecordsetLayer = ({ mapReady }: PropTypes) => {
     Object.values(locallyStoredActivities).forEach((item) => {
       try {
         const parsedData = JSON.parse((item as OfflineActivityRecord)?.data);
+        // TODO: Remove early return on legacy form check.
+        const isLegacyActivity =
+          'activity_subtype' in parsedData && !!ActivitySubtypeShortLabels?.[parsedData.activity_subtype];
+        if (isLegacyActivity) return;
+
         const plantCodes = (() => {
           const { entries, treatment_context } = parsedData.subtype_data;
           const plants = new Set<string | undefined>();

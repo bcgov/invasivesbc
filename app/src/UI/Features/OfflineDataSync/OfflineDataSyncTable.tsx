@@ -5,11 +5,12 @@ import { useDispatch, useSelector } from 'utils/use_selector';
 import 'UI/Features/OfflineDataSync/OfflineDataSync.css';
 import moment from 'moment';
 import { MoreVert } from '@mui/icons-material';
-import { ActivitySubtypesShortLabels } from 'sharedAPI';
+import { ActivitySubtypeShortLabels, ActivitySubtypesShortLabels } from 'sharedAPI';
 import Activity from 'state/actions/activity/Activity';
 import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
 import { useNavigate } from 'react-router';
 import Prompt from 'state/actions/prompts/Prompt';
+import StyledTable from 'UI/Reusable/StyledTable/StyledTable';
 
 type PropTypes = {
   handleClose: () => void;
@@ -67,13 +68,6 @@ export const OfflineDataSyncTable = ({ handleClose }: PropTypes) => {
     }
   }, [working, workingOffline, authenticated, connected, numUnsynchronizedRecords]);
 
-  if (Object.values(serializedActivities).length === 0) {
-    return (
-      <div className="content">
-        <p>There are no locally-stored activities to synchronize.</p>
-      </div>
-    );
-  }
   const handleDelete = () => {
     if (!contextRecord) return;
     if (confirmDelete) {
@@ -84,16 +78,46 @@ export const OfflineDataSyncTable = ({ handleClose }: PropTypes) => {
       setConfirmDelete(true);
     }
   };
+
   const handleLoad = () => {
     if (!contextRecord) return;
     navigate(`/Records/Activity/${contextRecord}/form`);
     dispatch(Activity.Offline.setSyncDialogueWindow({ open: false }));
   };
+
   const handleOpenMenu = (evt: MouseEvent<HTMLElement> | TouchEvent<HTMLElement>, key: string) => {
     setAnchorEl(evt.currentTarget);
     setContextRecord(key);
     setConfirmDelete(false);
   };
+
+  const getRecordType = (r: string) => {
+    if (ActivitySubtypesShortLabels?.[r]) {
+      return ActivitySubtypesShortLabels[r];
+      /* TODO: Remove chaining into legacy Subtype labels as part of issue #4638 - 'Remove RJSF from frontend'. */
+    } else if (ActivitySubtypeShortLabels?.[r]) {
+      return `Legacy - ${ActivitySubtypeShortLabels?.[r]}`;
+    }
+    return 'Unknown';
+  };
+
+  const disableOpeningRecord: boolean = useMemo(() => {
+    if (!(workingOffline || authenticated)) {
+      return true;
+      /* TODO: Remove legacy Subtype labels check as part of issue #4638 - 'Remove RJSF from frontend'. */
+    } else if (contextRecord && serializedActivities[contextRecord]) {
+      return !!ActivitySubtypeShortLabels?.[serializedActivities[contextRecord].record_type];
+    }
+    return true;
+  }, [contextRecord, workingOffline, authenticated]);
+
+  if (Object.values(serializedActivities).length === 0) {
+    return (
+      <div className="content">
+        <p>There are no locally-stored activities to synchronize.</p>
+      </div>
+    );
+  }
   return (
     <>
       <div className="content">
@@ -101,7 +125,7 @@ export const OfflineDataSyncTable = ({ handleClose }: PropTypes) => {
           <CustomPopover buttonOverrideOptions={{ anchorEl, setAnchorEl }} disablePortal>
             <div className="popover-menu">
               <p>Activity: {serializedActivities?.[contextRecord]?.short_id}</p>
-              <Button variant="contained" disabled={!(workingOffline || authenticated)} onClick={handleLoad}>
+              <Button variant="contained" disabled={disableOpeningRecord} onClick={handleLoad}>
                 Open
               </Button>
               <Button variant="contained" onClick={handleDelete} color={confirmDelete ? 'error' : 'primary'}>
@@ -110,56 +134,52 @@ export const OfflineDataSyncTable = ({ handleClose }: PropTypes) => {
             </div>
           </CustomPopover>
         )}
-        <div className="dialog-table">
-          <table className={'offline-data-sync-table'}>
-            <thead>
-              <tr>
-                <th>Activity</th>
-                <th>Record Type</th>
-                <th>Last Modified</th>
-                <th colSpan={2}>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Object.entries(serializedActivities).map(([key, value]) => {
-                return (
-                  <Fragment key={key}>
-                    <tr>
-                      <td>{`${(value as OfflineActivityRecord).short_id}`}</td>
-                      <td className="record-type">{`${ActivitySubtypesShortLabels[(value as OfflineActivityRecord).record_type] ?? 'Unknown'}`}</td>
-                      <td className="modified-time">
-                        {`${moment((value as OfflineActivityRecord).saved_at).fromNow()}`}
-                      </td>
-                      <td className="sync-status">{`${(value as OfflineActivityRecord).sync_state}`}</td>
+        <StyledTable className={'offline-data-sync-table'}>
+          <thead>
+            <tr>
+              <th>Activity</th>
+              <th>Record Type</th>
+              <th>Last Modified</th>
+              <th colSpan={2}>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Object.entries(serializedActivities as Record<PropertyKey, OfflineActivityRecord>).map(([key, value]) => {
+              return (
+                <Fragment key={key}>
+                  <tr>
+                    <td>{`${value.short_id}`}</td>
+                    <td className="record-type">{getRecordType(value.record_type)}</td>
+                    <td className="modified-time">{`${moment(value.saved_at).fromNow()}`}</td>
+                    <td className="sync-status">{value.sync_state}</td>
+                    <td>
+                      <IconButton onClick={(e) => handleOpenMenu(e, key)}>
+                        <MoreVert />
+                      </IconButton>
+                    </td>
+                  </tr>
+                  {(value as OfflineActivityRecord).sync_state == 'Error' && (
+                    <tr className="warn">
+                      <td />
                       <td>
-                        <IconButton onClick={(e) => handleOpenMenu(e, key)}>
-                          <MoreVert />
-                        </IconButton>
+                        {(value as OfflineActivityRecord).error_detail
+                          ? (value as OfflineActivityRecord).error_detail
+                          : 'Error'}
+                      </td>
+                      <td colSpan={4}>
+                        <pre>
+                          {(value as OfflineActivityRecord).error_object?.hasOwnProperty('message')
+                            ? JSON.stringify((value as OfflineActivityRecord).error_object?.message)
+                            : JSON.stringify((value as OfflineActivityRecord).error_object)}
+                        </pre>
                       </td>
                     </tr>
-                    {(value as OfflineActivityRecord).sync_state == 'Error' && (
-                      <tr className="warn">
-                        <td />
-                        <td>
-                          {(value as OfflineActivityRecord).error_detail
-                            ? (value as OfflineActivityRecord).error_detail
-                            : 'Error'}
-                        </td>
-                        <td colSpan={4}>
-                          <pre>
-                            {(value as OfflineActivityRecord).error_object?.hasOwnProperty('message')
-                              ? JSON.stringify((value as OfflineActivityRecord).error_object?.message)
-                              : JSON.stringify((value as OfflineActivityRecord).error_object)}
-                          </pre>
-                        </td>
-                      </tr>
-                    )}
-                  </Fragment>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+                  )}
+                </Fragment>
+              );
+            })}
+          </tbody>
+        </StyledTable>
         <div className="status-info">
           <p>
             Unsynced Records: <span>{numUnsynchronizedRecords}</span>

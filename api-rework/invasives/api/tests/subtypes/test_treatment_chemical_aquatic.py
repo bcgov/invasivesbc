@@ -155,7 +155,7 @@ class AquaticChemicalTreatmentTest(BaseActivitySubtypeTest):
             treatment_context_out["dilution_percent"],
         )
         for h_in, h_out in zip(
-            treatment_context_in["herbicide"], treatment_context_in["herbicide"]
+            treatment_context_in["herbicide"], treatment_context_out["herbicide"]
         ):
             self.assertEqual(h_in["type"], h_out["type"])
             self.assertEqual(h_in["name"], h_out["name"])
