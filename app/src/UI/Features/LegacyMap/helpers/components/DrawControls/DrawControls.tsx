@@ -63,9 +63,9 @@ const DrawControls = () => {
 
   const activeFormShape = useSelector((state) => {
     if (!url) return;
-    if (RegExp(/\/Activity/).test(url)) {
+    if (new RegExp(/\/Activity/).test(url)) {
       return state.ActivityPage?.formState?.shape;
-    } else if (RegExp(/\/LegacyForm/).test(url)) {
+    } else if (new RegExp(/\/LegacyForm/).test(url)) {
       return state.ActivityPage.activity?.geometry?.[0] ?? EMPTY_OBJECT;
     }
     return null;

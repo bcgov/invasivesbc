@@ -45,7 +45,7 @@ export function createAlertsAndPromptsReducer(): (AlertsAndPromptsState, AnyActi
         draftState.prompts = state.prompts.filter((prompt) => prompt.id !== action.payload.id);
       } else if (Prompt.closeAll.match(action)) {
         draftState.prompts = [];
-      } else if (RegExp(Prompt.NEW_PROMPT).exec(action.type)) {
+      } else if (new RegExp(Prompt.NEW_PROMPT).exec(action.type)) {
         const newPrompt: PromptAction = action.payload;
         draftState.prompts = addPrompt(state.prompts, newPrompt);
       } else if (
