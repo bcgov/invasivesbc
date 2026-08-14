@@ -28,7 +28,7 @@ const FormMenuButtons = () => {
 
   const recordIsSerializedActivity = !!serializedActivities[activity_id];
   // Users must have write permission and be online to delete, or record is users offline record
-  console.log(activityErrors);
+
   useEffect(() => {
     setSaveDisabled(!can_edit || pristine || activityErrors?.length > 0);
     setDraftDisabled(pristine || status === 'Submitted' || !can_edit);

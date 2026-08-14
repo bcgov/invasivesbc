@@ -5,6 +5,7 @@ import {
   activity_create_function,
   ActivityStatus,
   ActivitySubtype,
+  ActivitySubtypes,
   ActivitySubtypeShortLabels,
   ActivityType,
   MAX_AREA,
@@ -205,7 +206,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: PayloadAction<Featur
 
     if (
       wellsAreWithinRecordArea &&
-      activityState.activity.activity_subtype === ActivitySubtype.Treatment_ChemicalPlant
+      activityState.formState?.subtype === ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial
     ) {
       yield put(Alerts.create(mappingAlertMessages.wellsInsideTreatmentArea));
     }
@@ -214,7 +215,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: PayloadAction<Featur
       return;
     }
     const payload: IUpdateShapeSuccess = {
-      geometry: [JSON.parse(JSON.stringify(sanitizedGeo))] as Feature[],
+      geometry: [structuredClone(sanitizedGeo)],
       lat: latitude,
       long: longitude,
       reported_area,
@@ -455,22 +456,25 @@ export function* handle_ACTIVITY_DELETE_REQUEST() {
 export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS() {
   try {
     const currentState: ActivityState = yield select(selectActivity);
-    const currentActivity = currentState.activity;
-    const wipLinestring = currentActivity?.geometry?.[0]?.geometry?.type === GeoShapes.LineString;
-    const reportedAreaLessThanMaxArea =
-      currentActivity?.geometry && currentActivity?.form_data?.activity_data?.reported_area < MAX_AREA;
+    const currentActivity = currentState?.formState;
+    const currentShape = currentState?.geometry_details?.shape;
+
+    if (!currentActivity || !currentShape) return;
+
+    const wipLinestring = currentShape.geometry?.type === GeoShapes.LineString;
+    const reportedAreaLessThanMaxArea = (currentState?.geometry_details?.area_m ?? 0) < MAX_AREA;
     if (reportedAreaLessThanMaxArea && !wipLinestring) {
-      yield put(Activity.Suggestions.jurisdictions(currentActivity.geometry));
-      const isLinkableRecord = !(yield select(isActivityObservation));
-      if (isLinkableRecord && currentState.geometry_details?.shape) {
-        yield put(
-          Activity.Suggestions.getLinkedRecordIDs({
-            subtype: currentState.formType,
-            bounds: currentState.geometry_details.shape.geometry
-          })
-        );
-        // TODO: Remove this
-        yield put(Activity.Suggestions.treatmentIdsRequest(currentActivity));
+      if ('coordinates' in currentShape.geometry) {
+        yield put(Activity.Suggestions.jurisdictions(currentShape.geometry));
+        const isLinkableRecord = !(yield select(isActivityObservation));
+        if (isLinkableRecord && currentState.geometry_details?.shape) {
+          yield put(
+            Activity.Suggestions.getLinkedRecordIDs({
+              subtype: currentState.formType,
+              bounds: currentState.geometry_details.shape.geometry
+            })
+          );
+        }
       }
     }
   } catch (e) {

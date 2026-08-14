@@ -60,7 +60,7 @@ import { selectAuth } from 'state/reducers/auth';
 import { Role } from 'constants/roles';
 import { GEO_TRACKING_FEATURE } from 'UI/Features/LegacyMap/helpers/functional/constants';
 import { isDrawing } from 'utils/geoTrackingHelpers';
-import AppActions from 'state/actions/appActions/appActions';
+import AppActions, { IUserCoord } from 'state/actions/appActions/appActions';
 import DrawToolActions from 'state/actions/drawtool/drawToolActions';
 import { selectConfiguration, selectRootConfiguration } from 'state/reducers/configuration';
 import { RootState } from 'state/reducers/rootReducer';
@@ -191,14 +191,15 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP() {
   const shape = activityState.track_me_draw_geo.shapeType;
 
   // Early exit on non-existent/zero-length geometry arrays
-  if (!activityState.activity?.geometry || activityState.activity?.geometry?.length === 0) {
+  if (!activityState.geometry_details?.shape) {
     yield put(Alerts.create(mappingAlertMessages.trackMyPathStoppedEarly));
     yield put(GeoTracking.exit());
     return;
   }
 
   const validationErrors: AlertMessage[] = [];
-  const currentGeo = activityState.activity.geometry[0];
+  const currentGeo = activityState.geometry_details?.shape;
+  if (!currentGeo) return;
   let newGeo = currentGeo;
   let geometryIsMinimumLength: boolean = false;
 
@@ -334,50 +335,49 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE() {
  * @desc Handles new coordinates coming in from the TRACK_ME_GEO featureset.
  *       Evaluates distance between new and previous points to eliminate micro adjustments from GPS sway.
  */
-function* handle_MAP_SET_COORDS(action) {
+function* handle_MAP_SET_COORDS(action: PayloadAction<IUserCoord>) {
   const MINIMUM_DISTANCE_BETWEEN_POINTS_IN_METERS = 1;
   const activityState = yield select(selectActivity);
-  const {
-    track_me_draw_geo: { status }
-  } = activityState;
+  const status = activityState.track_me_draw_geo.status;
+  const { longitude, latitude } = action.payload.position.coords;
+
+  if (!isDrawing(status) || !longitude || !latitude) return;
+
   try {
-    if (isDrawing(status)) {
-      let currentGeo = activityState?.activity?.geometry?.[0];
-      if (!currentGeo) {
-        currentGeo = {
-          type: 'Feature',
-          properties: {},
-          geometry: {
-            type: GeoShapes.LineString,
-            coordinates: []
-          }
-        };
+    const currentGeo = activityState?.geometry_details?.shape ?? {
+      type: 'Feature',
+      properties: {},
+      geometry: {
+        type: GeoShapes.LineString,
+        coordinates: []
       }
-      const nextCoords = [action.payload.position.coords.longitude, action.payload.position.coords.latitude];
-      const haveCoordinatesToCompare = currentGeo.geometry.coordinates.length > 0;
+    };
 
-      if (haveCoordinatesToCompare) {
-        const distanceBetweenPoints = distance(
-          currentGeo.geometry.coordinates[currentGeo.geometry.coordinates.length - 1],
-          nextCoords,
-          { units: 'meters' }
-        );
+    const nextCoords = [longitude, latitude];
+    const haveCoordinatesToCompare = currentGeo.geometry.coordinates.length > 0;
 
-        if (distanceBetweenPoints <= MINIMUM_DISTANCE_BETWEEN_POINTS_IN_METERS) {
-          return;
-        }
+    if (haveCoordinatesToCompare) {
+      const distanceBetweenPoints = distance(
+        currentGeo.geometry.coordinates[currentGeo.geometry.coordinates.length - 1],
+        nextCoords,
+        { units: 'meters' }
+      );
+
+      if (distanceBetweenPoints <= MINIMUM_DISTANCE_BETWEEN_POINTS_IN_METERS) {
+        return;
       }
-      const newGeo: Feature = {
-        type: 'Feature',
-        properties: {},
-        geometry: {
-          type: currentGeo?.geometry?.type || GeoShapes.LineString,
-          coordinates: [...currentGeo.geometry.coordinates, nextCoords]
-        }
-      };
-      //append to linestring
-      yield put(DrawToolActions.updateGeo([newGeo]));
     }
+    const newGeo: Feature = {
+      type: 'Feature',
+      properties: {},
+      geometry: {
+        type: currentGeo?.geometry?.type || GeoShapes.LineString,
+        coordinates: [...currentGeo.geometry.coordinates, nextCoords]
+      }
+    };
+
+    // append to linestring
+    yield put(DrawToolActions.updateGeo([newGeo]));
   } catch (err) {
     console.error(err);
   }
