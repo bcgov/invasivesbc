@@ -450,28 +450,27 @@ export function* handle_ACTIVITY_DELETE_REQUEST() {
   }
 }
 
-export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS() {
+export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS(action: PayloadAction<IUpdateShapeSuccess>) {
   try {
-    const currentState: ActivityState = yield select(selectActivity);
-    const currentActivity = currentState?.formState;
-    const currentShape = currentState?.geometry_details?.shape;
+    const activityState: ActivityState = yield select(selectActivity);
+    const { geometry, reported_area } = action.payload;
+    const currentShape = geometry?.[0];
 
-    if (!currentActivity || !currentShape) return;
+    if (!currentShape || !reported_area) return;
+    const wipLinestring = currentShape.geometry.type === GeoShapes.LineString;
+    const reportedAreaLessThanMaxArea = reported_area < MAX_AREA;
 
-    const wipLinestring = currentShape.geometry?.type === GeoShapes.LineString;
-    const reportedAreaLessThanMaxArea = (currentState?.geometry_details?.area_m ?? 0) < MAX_AREA;
     if (reportedAreaLessThanMaxArea && !wipLinestring) {
-      if ('coordinates' in currentShape.geometry) {
-        yield put(Activity.Suggestions.getJurisdictions(currentShape));
-        const isLinkableRecord = !(yield select(isActivityObservation));
-        if (isLinkableRecord && currentState.geometry_details?.shape) {
-          yield put(
-            Activity.Suggestions.getLinkedRecordIDs({
-              subtype: currentState.formType,
-              bounds: currentState.geometry_details.shape.geometry
-            })
-          );
-        }
+      yield put(Activity.Suggestions.getJurisdictions(currentShape));
+
+      const isLinkableRecord = !(yield select(isActivityObservation));
+      if (isLinkableRecord) {
+        yield put(
+          Activity.Suggestions.getLinkedRecordIDs({
+            subtype: activityState?.formType,
+            bounds: currentShape.geometry
+          })
+        );
       }
     }
   } catch (e) {
@@ -480,7 +479,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS() {
 }
 
 export function* handle_PAN_AND_ZOOM_TO_ACTIVITY() {
-  const activityState: RootState['ActivityPage'] = yield select(selectActivity);
+  const activityState: ActivityState = yield select(selectActivity);
   const shape = activityState.formState?.shape as unknown as GeoJSON;
   if (shape) {
     const { coordinates } = pointOnFeature(shape).geometry;
