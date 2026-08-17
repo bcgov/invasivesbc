@@ -13,7 +13,6 @@ import {
   handle_ACTIVITY_EDIT_PHOTO_REQUEST,
   handle_ACTIVITY_GET_REQUEST,
   handle_ACTIVITY_GET_SUCCESS,
-  handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST,
   handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST,
   handle_ACTIVITY_ON_FORM_CHANGE_REQUEST,
   handle_ACTIVITY_SAVE_REQUEST,
@@ -27,7 +26,6 @@ import {
   handle_ACTIVITY_CREATE_NETWORK,
   handle_ACTIVITY_DELETE_NETWORK_REQUEST,
   handle_ACTIVITY_GET_NETWORK_REQUEST,
-  handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE,
   handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE,
   handle_ACTIVITY_SAVE_NETWORK_REQUEST
 } from './activity/online';
@@ -465,8 +463,6 @@ function* activityPageSaga() {
     takeEvery(AppActions.setUserCoords, handle_MAP_SET_COORDS),
     takeEvery(DrawToolActions.updateGeo, handle_ACTIVITY_UPDATE_GEO_REQUEST),
     takeEvery(DrawToolActions.updateGeoSuccess, handle_ACTIVITY_UPDATE_GEO_SUCCESS),
-    takeEvery(Activity.Suggestions.persons, handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST),
-    takeEvery(Activity.Suggestions.personsOnline, handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE),
     takeEvery(Activity.Suggestions.treatmentIdsRequest, handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST),
     takeEvery(
       Activity.Suggestions.treatmentIdsRequestOnline,

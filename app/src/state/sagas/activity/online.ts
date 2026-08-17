@@ -148,26 +148,6 @@ export function* handle_ACTIVITY_SAVE_NETWORK_REQUEST(action) {
   }
 }
 
-export function* handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE() {
-  try {
-    const userOnline = !(yield select(selectAuth)).workingOffline;
-    if (userOnline) {
-      const networkReturn = yield InvasivesAPI_Call('GET', `/api/application-user/`);
-      yield put(Activity.Suggestions.personsSuccess(networkReturn.data.result ?? []));
-    }
-  } catch (e) {
-    console.error(e);
-    yield put(
-      Alerts.create({
-        content: 'An error occured while fetching suggested persons. Suggestions will not be displayed',
-        severity: AlertSeverity.Error,
-        subject: AlertSubjects.Form,
-        autoClose: 8
-      })
-    );
-  }
-}
-
 export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE(action) {
   try {
     const search_feature = action.payload.search_feature;

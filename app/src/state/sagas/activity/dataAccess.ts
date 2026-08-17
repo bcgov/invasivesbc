@@ -482,18 +482,6 @@ export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS() {
   }
 }
 
-export function* handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST() {
-  const connected = yield select(selectNetworkConnected);
-
-  try {
-    if (connected) {
-      yield put(Activity.Suggestions.personsOnline());
-    }
-  } catch (e) {
-    console.error(e);
-  }
-}
-
 export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST(action) {
   const payloadActivity = action.payload;
   const [AuthState, networkState] = yield all([select(selectAuth), select(selectNetworkState)]);
@@ -597,7 +585,6 @@ export function* handle_ACTIVITY_GET_SUCCESS(action: PayloadAction<Record<string
 
     // Don't fetch suggestions if the record doesn't belong to the user
     if (createdByUser) {
-      yield put(Activity.Suggestions.persons());
       const isLinkableRecord = !(yield select(isActivityObservation));
       if (isLinkableRecord) {
         yield put(Activity.Suggestions.treatmentIdsRequest(action.payload));

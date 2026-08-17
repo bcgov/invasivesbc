@@ -54,11 +54,6 @@ class Suggestions {
     }
   );
 
-  // Persons Suggestions
-  static readonly persons = createAction(`${this.PREFIX}/persons`);
-  static readonly personsOnline = createAction(`${this.PREFIX}/personsOnline`);
-  static readonly personsSuccess = createAction<Record<string, any>[]>(`${this.PREFIX}/personsSuccess`);
-
   // Treatment ID Suggestions
   static readonly treatmentIdsRequest = createAction<Record<PropertyKey, any>>(`${this.PREFIX}/treatmentIdsRequest`);
   static readonly treatmentIdsRequestOnline = createAction<TreatmentIdsRequestOnline>(
