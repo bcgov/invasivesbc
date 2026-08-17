@@ -1,8 +1,7 @@
-import { useDispatch } from 'react-redux';
 import 'UI/Features/Records/RecordSet/RecordSet.css';
 import { Button } from '@mui/material';
 import RecordSetFooter from 'UI/Features/Records/RecordSet/RecordSetFooter';
-import { useSelector } from 'utils/use_selector';
+import { useDispatch, useSelector } from 'utils/use_selector';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import { offlineActivityColumnsToDisplay } from 'UI/Features/Records/RecordSet/RecordTableHelpers';
 import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
