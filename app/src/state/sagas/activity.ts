@@ -43,7 +43,6 @@ import geomWithinBC from 'utils/geomWithinBC';
 import mappingAlertMessages from 'constants/alerts/mappingAlerts';
 import AlertMessage from 'interfaces/AlertMessage';
 import { selectNetworkConnected, selectNetworkState } from 'state/reducers/network';
-import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import Prompt from 'state/actions/prompts/Prompt';
 import Alerts from 'state/actions/alerts/Alerts';
@@ -381,18 +380,6 @@ function* handle_MAP_SET_COORDS(action: PayloadAction<IUserCoord>) {
   }
 }
 
-function* handle_ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE() {
-  const connected = yield select(selectNetworkConnected);
-  try {
-    if (connected) {
-      const networkReturn = yield InvasivesAPI_Call('GET', '/api/biocontrol-treatments');
-      yield put(Activity.Suggestions.biocontrolOnlineSuccess(networkReturn?.data?.result ?? []));
-    }
-  } catch (ex) {
-    console.error(ex);
-  }
-}
-
 /**
  * @desc Once per day, synchronize Activity record caches.
  */
@@ -481,7 +468,6 @@ function* activityPageSaga() {
     takeEvery(Activity.Suggestions.persons, handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST),
     takeEvery(Activity.Suggestions.personsOnline, handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE),
     takeEvery(Activity.Suggestions.treatmentIdsRequest, handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST),
-    takeEvery(Activity.Suggestions.biocontrolOnline, handle_ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE),
     takeEvery(
       Activity.Suggestions.treatmentIdsRequestOnline,
       handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE

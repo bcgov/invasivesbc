@@ -168,7 +168,7 @@ function createActivityReducer() {
         draftState.activity = action.payload;
       } else if (Activity.Suggestions.getJurisdictions.fulfilled.match(action)) {
         draftState.suggestedJurisdictions = [...action.payload];
-      } else if (Activity.Suggestions.biocontrolOnlineSuccess.match(action)) {
+      } else if (Activity.Suggestions.getBiocontrolTreatments.fulfilled.match(action)) {
         draftState.biocontrol.plantToAgentMap = [...action.payload];
       } else if (Activity.Suggestions.personsSuccess.match(action)) {
         draftState.suggestedPersons = [...action.payload];

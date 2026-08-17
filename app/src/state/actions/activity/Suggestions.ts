@@ -1,5 +1,5 @@
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
-import { FeatureCollection, Geometry, GeoJSON, Feature } from 'geojson';
+import { FeatureCollection, GeoJSON, Feature } from 'geojson';
 import { ActivitySubtypeShortLabels } from 'sharedAPI';
 import SuggestedTreatmentId from 'interfaces/SuggestedTreatmentId';
 import { RootState } from 'state/reducers/rootReducer';
@@ -39,9 +39,19 @@ class Suggestions {
   );
 
   // Biocontrol Suggestions
-  static readonly biocontrolOnline = createAction(`${this.PREFIX}/biocontrolOnline`);
-  static readonly biocontrolOnlineSuccess = createAction<Record<string, any>[]>(
-    `${this.PREFIX}/biocontrolOnlineSuccess`
+  static readonly getBiocontrolTreatments = createAsyncThunk(
+    `${this.PREFIX}/getBiocontrol`,
+    async (_, { getState, rejectWithValue }) => {
+      const { Network, Configuration } = getState() as RootState;
+
+      if (!Network.connected) return rejectWithValue({ skipped: true });
+      const url = `${Configuration.current.runtime.API_BASE}/api/biocontrol-treatments`;
+      const res = await fetch(url, {
+        headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' }
+      });
+      const { data } = await res.json();
+      return data.result ?? [];
+    }
   );
 
   // Persons Suggestions
