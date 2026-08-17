@@ -1,7 +1,7 @@
 import { useFormContext } from 'react-hook-form';
 import { FormSchema } from '../interfaces';
 import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
-import { Error } from '@mui/icons-material';
+import { BugReport, Error } from '@mui/icons-material';
 import { MouseEvent, TouchEvent, useMemo, useState } from 'react';
 import FormActions from 'state/actions/activity/FormActions';
 import { useDispatch, useSelector } from 'utils/use_selector';
@@ -9,6 +9,7 @@ import Prompt from 'state/actions/prompts/Prompt';
 import getDefaultFormState from '../builders/getDefaultState';
 import { Debug } from 'UI/Reusable/Predicates/Debug';
 import Activity from 'state/actions/activity/Activity';
+import Button from 'UI/Reusable/Button/Button';
 
 /**
  * @desc Popover menu for form controls, handle Submit/Draft/Duplication fields.
@@ -84,6 +85,7 @@ const FormControl = () => {
   const subtype = useSelector((state) => state.ActivityPage.formType);
   const isFormSubmitted = useSelector((state) => state.ActivityPage.formState?.form_status === 'Submitted');
   const currId = useSelector((state) => state.ActivityPage.formId);
+  const created_by = useSelector((state) => state.ActivityPage.formState?.created_by);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   const canDelete: boolean = useMemo(() => {
@@ -96,7 +98,9 @@ const FormControl = () => {
 
   return (
     <>
-      <input type="button" className="form-popover-anchor" value="Save Menu" onClick={handleOpenMenu} />
+      <Button type="button" size="sm" className="form-popover-anchor" onClick={handleOpenMenu}>
+        Save Menu
+      </Button>
 
       <CustomPopover closeAfterPress buttonOverrideOptions={{ anchorEl, setAnchorEl }}>
         <div id="form-popover-menu">
@@ -106,37 +110,33 @@ const FormControl = () => {
               <p>Error(s) in form: ({Object.keys(errors).length})</p>
             </div>
           )}
-          <input
-            // Type="Submit" is tied to react-hook-form, it will handle the submission logic.
-            // Errors don't need to be accounted for in disabling, since the rhf will pan to the error
-            className="control-button"
-            disabled={disabled || !canSubmit}
-            form="activity-form"
-            type="submit"
-            value="Submit"
-          />
+          {/* Type="Submit" is tied to react-hook-form, it will handle the submission logic. // Errors don't need to be
+          accounted for in disabling, since the rhf will pan to the error */}
+          <Button className="control-button" type="submit" form="activity-form" disabled={disabled || !canSubmit}>
+            Submit
+          </Button>
           {!isFormSubmitted && (
-            <input
-              className="control-button"
-              disabled={disabled || !canSubmit}
-              onClick={saveToDraft}
-              type="button"
-              value="Save as Draft"
-            />
+            <>
+              <Button className="control-button" disabled={disabled || !canSubmit} onClick={saveToDraft}>
+                Save as Draft
+              </Button>
+              <Button className="control-button" disabled={disabled || !canSubmit} onClick={handleClear}>
+                Clear Form
+              </Button>
+            </>
           )}
-          <input
-            className="control-button"
-            disabled={disabled}
-            onClick={handleClear}
-            type="button"
-            value="Clear Form"
-          />
           {canDelete && ONLINE && (
-            <input className="control-button" disabled={disabled} onClick={handleDelete} type="button" value="Delete" />
+            <Button className="control-button" disabled={disabled} onClick={handleDelete}>
+              Delete
+            </Button>
           )}
-          <input type="button" className="control-button" onClick={handleDuplicateForm} value="Duplicate Form" />
+          <Button className="control-button" onClick={handleDuplicateForm}>
+            Duplicate Form
+          </Button>
           <Debug>
-            <input type="button" className="control-button" onClick={handleRefetchForm} value="[Debug] Refetch Form" />
+            <Button type="button" className="control-button" onClick={handleRefetchForm}>
+              <BugReport /> Refetch Form
+            </Button>
           </Debug>
         </div>
       </CustomPopover>

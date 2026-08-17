@@ -37,6 +37,7 @@ import useSuggestedJurisdictionCodes from 'UI/Features/Records/Activity/forms/pl
 import AdvisoryMessage from 'UI/Features/Records/Activity/forms/common/AdvisoryMessage/AdvisoryMessage';
 import './activityForm.css';
 import LinkingActivities from './LinkingActivities/LinkingActivities';
+import Button from 'UI/Reusable/Button/Button';
 
 const Form = () => {
   const {
@@ -172,20 +173,12 @@ const Form = () => {
           <>
             <p>To modify or update, please draw a new shape on the Map</p>
             <div className="control">
-              <input
-                type="button"
-                className="control-button"
-                disabled={disabled}
-                onClick={handleDrawStart}
-                value="Start Drawing"
-              />
-              <input
-                type="button"
-                className="control-button"
-                disabled={disabled}
-                onClick={handleManualUTM}
-                value="Enter UTM"
-              />
+              <Button className="control-button" disabled={disabled} onClick={handleDrawStart}>
+                Start Drawing
+              </Button>
+              <Button className="control-button" disabled={disabled} onClick={handleManualUTM}>
+                Enter UTM
+              </Button>
             </div>
           </>
         )}
