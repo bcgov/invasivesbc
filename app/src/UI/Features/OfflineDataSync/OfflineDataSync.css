@@ -14,7 +14,7 @@
       }
 
       thead th {
-        background-color: var(--th-background-color);
+        background-color: white;
         border-bottom: 1pt solid var(--th-border-bottom-color);
       }
 
