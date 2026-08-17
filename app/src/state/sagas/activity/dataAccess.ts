@@ -1,18 +1,16 @@
-import { all, call, put, select, take } from 'redux-saga/effects';
-import center from '@turf/center';
+import { call, put, select, take } from 'redux-saga/effects';
 import pointOnFeature from '@turf/point-on-feature';
 import {
   activity_create_function,
   ActivityStatus,
   ActivitySubtype,
   ActivitySubtypes,
-  ActivitySubtypeShortLabels,
   ActivityType,
   MAX_AREA,
   populateSpeciesArrays
 } from 'sharedAPI';
 import { circle, kinks } from '@turf/turf';
-import { Feature, FeatureCollection, GeoJSON } from 'geojson';
+import { Feature, GeoJSON } from 'geojson';
 
 import { PayloadAction } from '@reduxjs/toolkit';
 import cloneDeep from 'lodash.clonedeep';
@@ -29,7 +27,7 @@ import { getClosestWells } from 'utils/closestWellsHelpers';
 import { calc_utm } from 'utils/utm';
 import { calculateGeometryArea, calculateLatLng } from 'utils/geometryHelpers';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
-import { selectNetworkConnected, selectNetworkState } from 'state/reducers/network';
+import { selectNetworkState } from 'state/reducers/network';
 import GeoShapes from 'constants/geoShapes';
 import geomWithinBC from 'utils/geomWithinBC';
 import mappingAlertMessages from 'constants/alerts/mappingAlerts';
@@ -42,7 +40,6 @@ import UploadedPhoto from 'interfaces/UploadedPhoto';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import UserRecord from 'interfaces/UserRecord';
 import MapActions from 'state/actions/map';
-import { TreatmentIdsRequestOnline } from 'state/actions/activity/Suggestions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
 import DrawToolActions, { IUpdateShapeSuccess } from 'state/actions/drawtool/drawToolActions';
@@ -482,25 +479,6 @@ export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS() {
   }
 }
 
-export function* getLinkedTreatmentsFromCachedRecords(req: TreatmentIdsRequestOnline) {
-  const service = yield RecordCacheServiceFactory.getPlatformInstance();
-  const overlappingRecords = yield service.getRecordIdsOverlappingFeature(req.search_feature);
-  const treatmentRecords: UserRecord[] = (yield service.getPaginatedCachedActivityRecords(overlappingRecords)).filter(
-    (record: UserRecord) => req.activity_subtype.includes(record.activity_subtype_full)
-  );
-
-  yield put(
-    Activity.Suggestions.treatmentIdsSuccess(
-      treatmentRecords.map((record, i) => ({
-        label: record.short_id,
-        title: record.short_id,
-        value: record.activity_id,
-        'x-code_sort_order': i + 1
-      }))
-    )
-  );
-}
-
 export function* handle_PAN_AND_ZOOM_TO_ACTIVITY() {
   const activityState: RootState['ActivityPage'] = yield select(selectActivity);
   const shape = activityState.formState?.shape as unknown as GeoJSON;
@@ -517,20 +495,9 @@ export function* handle_PAN_AND_ZOOM_TO_ACTIVITY() {
 }
 
 // some form autofill on create stuff will likely need to go here
-export function* handle_ACTIVITY_GET_SUCCESS(action: PayloadAction<Record<string, any>>) {
+export function* handle_ACTIVITY_GET_SUCCESS(_: PayloadAction<Record<string, any>>) {
   try {
-    const shape = action.payload?.geometry?.[0]?.geometry;
-    if ('coordinates' in shape) {
-      yield put(UserSettings.Map.setCenter(pointOnFeature(shape).geometry.coordinates));
-    }
-    const activityState: RootState['ActivityPage'] = yield select(selectAuth);
-    const canEdit = !!activityState?.recordActions?.includes('EDIT');
-    const isLinkableRecord = !(yield select(isActivityObservation));
-    if (canEdit && isLinkableRecord) {
-      yield put(Activity.Suggestions.getLinkedRecordIDs({ bounds: shape, subtype: activityState?.formType }));
-    }
-
-    yield put(Activity.buildFormSchema(canEdit));
+    yield put(Activity.buildFormSchema(false));
   } catch (e) {
     console.error(e);
   }

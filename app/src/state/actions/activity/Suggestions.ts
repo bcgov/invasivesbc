@@ -1,7 +1,6 @@
-import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { createAsyncThunk } from '@reduxjs/toolkit';
 import { FeatureCollection, GeoJSON, Feature } from 'geojson';
 import { ActivitySubtypeShortLabels } from 'sharedAPI';
-import SuggestedTreatmentId from 'interfaces/SuggestedTreatmentId';
 import { RootState } from 'state/reducers/rootReducer';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
@@ -19,7 +18,10 @@ interface LinkedRecordIdsRequest {
 class Suggestions {
   private static readonly PREFIX = 'Activity/Suggestions';
 
-  // Jurisdiction Suggestions
+  /**
+   * @desc Fetches Jurisdictions from API that overlap with the activity shape,
+   *       highlighting suggested options in the current Form.
+   */
   static readonly getJurisdictions = createAsyncThunk(
     `${this.PREFIX}/getJurisdictions`,
     async (shape: Feature, { getState }) => {
@@ -38,7 +40,10 @@ class Suggestions {
     }
   );
 
-  // Biocontrol Suggestions
+  /**
+   * @desc Fetch up to date list of plants that a biocontrol agent will target.
+   *       Used for Biocontrol Forms
+   */
   static readonly getBiocontrolTreatments = createAsyncThunk(
     `${this.PREFIX}/getBiocontrol`,
     async (_, { getState, rejectWithValue }) => {
@@ -65,12 +70,12 @@ class Suggestions {
 
       if (Network.connected) {
         try {
-          const res = await fetch(`${Configuration.current.runtime.API_V2_BASE}/ids-within-bounds`, {
+          const url = `${Configuration.current.runtime.API_V2_BASE}/ids-within-bounds`;
+          const res = await fetch(url, {
             method: 'POST',
             headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' },
             body: JSON.stringify(spec)
           });
-
           return await res.json();
         } catch (e) {
           console.error('Error Occurred, attempting Mobile Cache', e);
@@ -88,7 +93,6 @@ class Suggestions {
       }
     }
   );
-  static readonly treatmentIdsSuccess = createAction<SuggestedTreatmentId[]>(`${this.PREFIX}/treatmentIdsSuccess`);
 }
 
 export type { TreatmentIdsRequestOnline };
