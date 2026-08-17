@@ -24,10 +24,10 @@ class Suggestions {
    */
   static readonly getJurisdictions = createAsyncThunk(
     `${this.PREFIX}/getJurisdictions`,
-    async (shape: Feature, { getState }) => {
+    async (shape: Feature, { getState, rejectWithValue }) => {
       const { Network, Configuration } = getState() as RootState;
       const connected = Network.connected;
-      if (!connected || !shape) return [];
+      if (!connected || !shape) return rejectWithValue({ skipped: true });
       const url = `${Configuration.current.runtime.API_BASE}/api/jurisdictions`;
       const res = await fetch(url, {
         method: 'POST',
