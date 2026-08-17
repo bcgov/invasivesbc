@@ -148,31 +148,6 @@ export function* handle_ACTIVITY_SAVE_NETWORK_REQUEST(action) {
   }
 }
 
-export function* handle_ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE(action) {
-  try {
-    const userOnline = !(yield select(selectAuth)).workingOffline;
-    const searchFeature = action.payload?.[0] ?? null;
-    if (searchFeature && userOnline) {
-      const networkReturn = yield InvasivesAPI_Call('POST', `/api/jurisdictions/`, {
-        search_feature: { ...searchFeature, properties: {} }
-      });
-      if (networkReturn?.ok) {
-        yield put(Activity.Suggestions.jurisdictionsSuccess(networkReturn.data.result ?? []));
-      }
-    }
-  } catch (err) {
-    console.error(err);
-    yield put(
-      Alerts.create({
-        content: 'An error occured while fetching suggested Jurisdictions. Suggestions will not be displayed',
-        severity: AlertSeverity.Error,
-        subject: AlertSubjects.Form,
-        autoClose: 8
-      })
-    );
-  }
-}
-
 export function* handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE() {
   try {
     const userOnline = !(yield select(selectAuth)).workingOffline;

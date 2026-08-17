@@ -465,7 +465,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS() {
     const reportedAreaLessThanMaxArea = (currentState?.geometry_details?.area_m ?? 0) < MAX_AREA;
     if (reportedAreaLessThanMaxArea && !wipLinestring) {
       if ('coordinates' in currentShape.geometry) {
-        yield put(Activity.Suggestions.jurisdictions(currentShape.geometry));
+        yield put(Activity.Suggestions.getJurisdictions(currentShape));
         const isLinkableRecord = !(yield select(isActivityObservation));
         if (isLinkableRecord && currentState.geometry_details?.shape) {
           yield put(
@@ -476,18 +476,6 @@ export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS() {
           );
         }
       }
-    }
-  } catch (e) {
-    console.error(e);
-  }
-}
-
-export function* handle_GET_SUGGESTED_JURISDICTIONS_REQUEST(action) {
-  const connected = yield select(selectNetworkConnected);
-
-  try {
-    if (connected) {
-      yield put(Activity.Suggestions.jurisdictionsOnline(action.payload ?? null));
     }
   } catch (e) {
     console.error(e);
@@ -591,8 +579,6 @@ export function* handle_PAN_AND_ZOOM_TO_ACTIVITY() {
 // some form autofill on create stuff will likely need to go here
 export function* handle_ACTIVITY_GET_SUCCESS(action: PayloadAction<Record<string, any>>) {
   try {
-    const activityState = yield select(selectActivity);
-
     // needs to be latlng expression
     const isGeo = !!action.payload?.geometry?.[0]?.geometry?.coordinates;
 
@@ -612,7 +598,6 @@ export function* handle_ACTIVITY_GET_SUCCESS(action: PayloadAction<Record<string
     // Don't fetch suggestions if the record doesn't belong to the user
     if (createdByUser) {
       yield put(Activity.Suggestions.persons());
-      yield put(Activity.Suggestions.jurisdictions(activityState.activity.geometry));
       const isLinkableRecord = !(yield select(isActivityObservation));
       if (isLinkableRecord) {
         yield put(Activity.Suggestions.treatmentIdsRequest(action.payload));

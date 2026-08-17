@@ -166,7 +166,7 @@ function createActivityReducer() {
         draftState.activity.media = action.payload;
       } else if (Activity.Photo.deleteSuccess.match(action)) {
         draftState.activity = action.payload;
-      } else if (Activity.Suggestions.jurisdictionsSuccess.match(action)) {
+      } else if (Activity.Suggestions.getJurisdictions.fulfilled.match(action)) {
         draftState.suggestedJurisdictions = [...action.payload];
       } else if (Activity.Suggestions.biocontrolOnlineSuccess.match(action)) {
         draftState.biocontrol.plantToAgentMap = [...action.payload];

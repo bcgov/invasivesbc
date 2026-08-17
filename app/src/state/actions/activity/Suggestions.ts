@@ -18,11 +18,25 @@ interface LinkedRecordIdsRequest {
 }
 class Suggestions {
   private static readonly PREFIX = 'Activity/Suggestions';
+
   // Jurisdiction Suggestions
-  static readonly jurisdictions = createAction<Geometry>(`${this.PREFIX}/jurisdictions`);
-  static readonly jurisdictionsOnline = createAction<Geometry>(`${this.PREFIX}/jurisdictionsOnline`);
-  static readonly jurisdictionsOffline = createAction(`${this.PREFIX}/jurisdictionsOffline`);
-  static readonly jurisdictionsSuccess = createAction<Geometry[]>(`${this.PREFIX}/jurisdictionsSuccess`);
+  static readonly getJurisdictions = createAsyncThunk(
+    `${this.PREFIX}/getJurisdictions`,
+    async (shape: Feature, { getState }) => {
+      const { Network, Configuration } = getState() as RootState;
+      const connected = Network.connected;
+      if (!connected || !shape) return [];
+      const url = `${Configuration.current.runtime.API_BASE}/api/jurisdictions`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ search_feature: { ...shape, properties: {} } })
+      });
+
+      const { result } = await res.json();
+      return result;
+    }
+  );
 
   // Biocontrol Suggestions
   static readonly biocontrolOnline = createAction(`${this.PREFIX}/biocontrolOnline`);
