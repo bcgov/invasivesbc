@@ -1,4 +1,5 @@
 import FormCode from 'interfaces/FormCode';
+import IOfflineActivityRow from 'interfaces/TableRows/IOfflineActivityRow';
 import { useMemo } from 'react';
 import { ActivitySubtypesShortLabels, ActivitySubtypesToType } from 'sharedAPI';
 import { OfflineActivityRecord, OfflineActivitySyncState } from 'state/reducers/offlineActivity';
@@ -50,7 +51,7 @@ const useOfflineRecordsetEntries = (options: Options) => {
   /**
    * @desc formatted serializedActivities for Recordset rows
    */
-  const serializedEntries = useMemo(
+  const serializedEntries: Array<IOfflineActivityRow> = useMemo(
     () =>
       Object.values(serializedActivities)
         .map((s) => {
@@ -82,7 +83,7 @@ const useOfflineRecordsetEntries = (options: Options) => {
             status: s?.sync_state
           };
         }) // TODO: remove null filter as part of Issue #4638 - 'Remove RJSF from frontend'.
-        .filter(Boolean),
+        .filter(Boolean) as Array<IOfflineActivityRow>,
 
     [serializedActivities, serial, options?.filterUnsynced]
   );

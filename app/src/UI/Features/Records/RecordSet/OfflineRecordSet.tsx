@@ -15,6 +15,7 @@ import { useNavigate } from 'react-router';
 import Activity from 'state/actions/activity/Activity';
 import useOfflineRecordsetEntries from '../Activity/forms/plant/hooks/useOfflineRecordsetEntries';
 import CheckboxUI from '../Activity/forms/common/CheckboxUI/CheckboxUI';
+import StyledTable from 'UI/Reusable/StyledTable/StyledTable';
 
 type PropTypes = { setID: string };
 
@@ -89,31 +90,26 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
             label={'Show unsynced only'}
           />
         </div>
-        <div style={{ margin: '8px', padding: '8px' }} />
-        <div className="record_table_container">
-          <table className="record_table">
-            <thead>
-              <tr className="record_table_header">
+        <StyledTable>
+          <thead>
+            <tr>
+              {offlineActivityColumnsToDisplay.map((col) => (
+                <th key={col.key}>{col.name}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {offlineRows?.map((r: IOfflineActivityRow) => (
+              <tr key={r.activity_id} onMouseEnter={() => onUserHoveredRecord(r)}>
                 {offlineActivityColumnsToDisplay.map((col) => (
-                  <th className={'record_table_header_column'} key={col.key}>
-                    {col.name}
-                  </th>
+                  <td key={col.key} onClick={(evt) => handlePopoverOpen(evt, r)}>
+                    {r[col.key]}
+                  </td>
                 ))}
               </tr>
-            </thead>
-            <tbody>
-              {offlineRows?.map((r: IOfflineActivityRow) => (
-                <tr onMouseEnter={() => onUserHoveredRecord(r)} key={r.activity_id} className={'record_table_row'}>
-                  {offlineActivityColumnsToDisplay.map((col) => (
-                    <td className="record_table_row_column" onClick={(evt) => handlePopoverOpen(evt, r)} key={col.key}>
-                      {r[col.key]}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </StyledTable>
       </div>
       <RecordSetFooter recordSet={recordSet} />
     </>
