@@ -65,7 +65,7 @@ const LinkedActivities = () => {
 
   const formattedTreatmentRecords = useMemo(() => {
     return suggestedTreatmentRecords.map((o) => ({
-      label: o.label.split(' | ')[0],
+      label: o.label,
       full: o.full
     }));
   }, [suggestedTreatmentRecords]);
