@@ -1,15 +1,8 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { FeatureCollection, GeoJSON, Feature } from 'geojson';
-import { ActivitySubtypeShortLabels } from 'sharedAPI';
+import { GeoJSON, Feature } from 'geojson';
 import { RootState } from 'state/reducers/rootReducer';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
-
-interface TreatmentIdsRequestOnline {
-  activity_subtype: ActivitySubtypeShortLabels[];
-  user_roles: Record<string, any>[];
-  search_feature: FeatureCollection | boolean;
-}
 
 interface LinkedRecordIdsRequest {
   bounds: GeoJSON;
@@ -95,5 +88,4 @@ class Suggestions {
   );
 }
 
-export type { TreatmentIdsRequestOnline };
 export default Suggestions;
