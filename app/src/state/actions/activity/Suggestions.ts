@@ -50,14 +50,8 @@ class Suggestions {
         headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' }
       });
       const { data } = await res.json();
-      return data.result ?? [];
+      return data.result;
     }
-  );
-
-  // Treatment ID Suggestions
-  static readonly treatmentIdsRequest = createAction<Record<PropertyKey, any>>(`${this.PREFIX}/treatmentIdsRequest`);
-  static readonly treatmentIdsRequestOnline = createAction<TreatmentIdsRequestOnline>(
-    `${this.PREFIX}/treatmentIdsRequestOnline`
   );
 
   /**

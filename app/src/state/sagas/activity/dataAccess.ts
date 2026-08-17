@@ -482,54 +482,6 @@ export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS() {
   }
 }
 
-export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST(action) {
-  const payloadActivity = action.payload;
-  const [AuthState, networkState] = yield all([select(selectAuth), select(selectNetworkState)]);
-
-  try {
-    // filter Treatments and/or Biocontrol
-    const linkedActivitySubtypes: ActivitySubtypeShortLabels[] = (() => {
-      switch (payloadActivity.activity_subtype) {
-        case 'Activity_Monitoring_MechanicalTerrestrialAquaticPlant':
-          return [
-            ActivitySubtypeShortLabels.Activity_Treatment_MechanicalPlantTerrestrial,
-            ActivitySubtypeShortLabels.Activity_Treatment_MechanicalPlantAquatic
-          ];
-        case 'Activity_Monitoring_ChemicalTerrestrialAquaticPlant':
-          return [
-            ActivitySubtypeShortLabels.Activity_Treatment_ChemicalPlantTerrestrial,
-            ActivitySubtypeShortLabels.Activity_Treatment_ChemicalPlantAquatic
-          ];
-        case 'Activity_Monitoring_BiocontrolRelease_TerrestrialPlant':
-          return [ActivitySubtypeShortLabels.Activity_Biocontrol_Release];
-        default:
-          return [];
-      }
-    })();
-    const search_feature = payloadActivity.geometry?.[0]
-      ? ({
-          type: 'FeatureCollection',
-          features: payloadActivity.geometry
-        } as FeatureCollection)
-      : false;
-
-    if (linkedActivitySubtypes.length > 0 && search_feature) {
-      const payload = {
-        activity_subtype: linkedActivitySubtypes,
-        user_roles: AuthState.accessRoles,
-        search_feature: search_feature
-      };
-      if (networkState.connected) {
-        yield put(Activity.Suggestions.treatmentIdsRequestOnline(payload));
-      } else {
-        yield getLinkedTreatmentsFromCachedRecords(payload);
-      }
-    }
-  } catch (e) {
-    console.error(e);
-  }
-}
-
 export function* getLinkedTreatmentsFromCachedRecords(req: TreatmentIdsRequestOnline) {
   const service = yield RecordCacheServiceFactory.getPlatformInstance();
   const overlappingRecords = yield service.getRecordIdsOverlappingFeature(req.search_feature);
@@ -567,31 +519,18 @@ export function* handle_PAN_AND_ZOOM_TO_ACTIVITY() {
 // some form autofill on create stuff will likely need to go here
 export function* handle_ACTIVITY_GET_SUCCESS(action: PayloadAction<Record<string, any>>) {
   try {
-    // needs to be latlng expression
-    const isGeo = !!action.payload?.geometry?.[0]?.geometry?.coordinates;
-
-    let centerPoint;
-    if (isGeo) {
-      centerPoint = center(action.payload?.geometry[0]?.geometry);
+    const shape = action.payload?.geometry?.[0]?.geometry;
+    if ('coordinates' in shape) {
+      yield put(UserSettings.Map.setCenter(pointOnFeature(shape).geometry.coordinates));
     }
-    if (centerPoint && isGeo) {
-      yield put(UserSettings.Map.setCenter(centerPoint.geometry.coordinates));
-    }
-
-    const authState = yield select(selectAuth);
-    const userName = authState.username;
-    const created_by = action.payload.created_by;
-    const createdByUser = userName === created_by;
-
-    // Don't fetch suggestions if the record doesn't belong to the user
-    if (createdByUser) {
-      const isLinkableRecord = !(yield select(isActivityObservation));
-      if (isLinkableRecord) {
-        yield put(Activity.Suggestions.treatmentIdsRequest(action.payload));
-      }
+    const activityState: RootState['ActivityPage'] = yield select(selectAuth);
+    const canEdit = !!activityState?.recordActions?.includes('EDIT');
+    const isLinkableRecord = !(yield select(isActivityObservation));
+    if (canEdit && isLinkableRecord) {
+      yield put(Activity.Suggestions.getLinkedRecordIDs({ bounds: shape, subtype: activityState?.formType }));
     }
 
-    yield put(Activity.buildFormSchema(createdByUser));
+    yield put(Activity.buildFormSchema(canEdit));
   } catch (e) {
     console.error(e);
   }
