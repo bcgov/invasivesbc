@@ -30,8 +30,8 @@ def distinct_entries(
             continue
 
         if composite_id in seen:
-            return error_message
+            raise ValueError(error_message)
 
         seen.add(composite_id)
 
-    return True
+    return arr
