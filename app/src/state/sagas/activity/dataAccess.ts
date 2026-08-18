@@ -1,18 +1,16 @@
-import { all, call, put, select, take } from 'redux-saga/effects';
-import center from '@turf/center';
+import { call, put, select, take } from 'redux-saga/effects';
 import pointOnFeature from '@turf/point-on-feature';
 import {
   activity_create_function,
   ActivityStatus,
   ActivitySubtype,
   ActivitySubtypes,
-  ActivitySubtypeShortLabels,
   ActivityType,
   MAX_AREA,
   populateSpeciesArrays
 } from 'sharedAPI';
 import { circle, kinks } from '@turf/turf';
-import { Feature, FeatureCollection, GeoJSON } from 'geojson';
+import { Feature, GeoJSON } from 'geojson';
 
 import { PayloadAction } from '@reduxjs/toolkit';
 import cloneDeep from 'lodash.clonedeep';
@@ -29,7 +27,7 @@ import { getClosestWells } from 'utils/closestWellsHelpers';
 import { calc_utm } from 'utils/utm';
 import { calculateGeometryArea, calculateLatLng } from 'utils/geometryHelpers';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
-import { selectNetworkConnected, selectNetworkState } from 'state/reducers/network';
+import { selectNetworkState } from 'state/reducers/network';
 import GeoShapes from 'constants/geoShapes';
 import geomWithinBC from 'utils/geomWithinBC';
 import mappingAlertMessages from 'constants/alerts/mappingAlerts';
@@ -42,7 +40,6 @@ import UploadedPhoto from 'interfaces/UploadedPhoto';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import UserRecord from 'interfaces/UserRecord';
 import MapActions from 'state/actions/map';
-import { TreatmentIdsRequestOnline } from 'state/actions/activity/Suggestions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
 import DrawToolActions, { IUpdateShapeSuccess } from 'state/actions/drawtool/drawToolActions';
@@ -453,128 +450,36 @@ export function* handle_ACTIVITY_DELETE_REQUEST() {
   }
 }
 
-export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS() {
+export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS(action: PayloadAction<IUpdateShapeSuccess>) {
   try {
-    const currentState: ActivityState = yield select(selectActivity);
-    const currentActivity = currentState?.formState;
-    const currentShape = currentState?.geometry_details?.shape;
+    const activityState: ActivityState = yield select(selectActivity);
+    const { geometry, reported_area } = action.payload;
+    const currentShape = geometry?.[0];
 
-    if (!currentActivity || !currentShape) return;
+    if (!currentShape || !reported_area) return;
+    const wipLinestring = currentShape.geometry.type === GeoShapes.LineString;
+    const reportedAreaLessThanMaxArea = reported_area < MAX_AREA;
 
-    const wipLinestring = currentShape.geometry?.type === GeoShapes.LineString;
-    const reportedAreaLessThanMaxArea = (currentState?.geometry_details?.area_m ?? 0) < MAX_AREA;
     if (reportedAreaLessThanMaxArea && !wipLinestring) {
-      if ('coordinates' in currentShape.geometry) {
-        yield put(Activity.Suggestions.jurisdictions(currentShape.geometry));
-        const isLinkableRecord = !(yield select(isActivityObservation));
-        if (isLinkableRecord && currentState.geometry_details?.shape) {
-          yield put(
-            Activity.Suggestions.getLinkedRecordIDs({
-              subtype: currentState.formType,
-              bounds: currentState.geometry_details.shape.geometry
-            })
-          );
-        }
+      yield put(Activity.Suggestions.getJurisdictions(currentShape));
+
+      const isLinkableRecord = !(yield select(isActivityObservation));
+      if (isLinkableRecord) {
+        yield put(
+          Activity.Suggestions.getLinkedRecordIDs({
+            subtype: activityState?.formType,
+            bounds: currentShape.geometry
+          })
+        );
       }
     }
   } catch (e) {
     console.error(e);
   }
-}
-
-export function* handle_GET_SUGGESTED_JURISDICTIONS_REQUEST(action) {
-  const connected = yield select(selectNetworkConnected);
-
-  try {
-    if (connected) {
-      yield put(Activity.Suggestions.jurisdictionsOnline(action.payload ?? null));
-    }
-  } catch (e) {
-    console.error(e);
-  }
-}
-
-export function* handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST() {
-  const connected = yield select(selectNetworkConnected);
-
-  try {
-    if (connected) {
-      yield put(Activity.Suggestions.personsOnline());
-    }
-  } catch (e) {
-    console.error(e);
-  }
-}
-
-export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST(action) {
-  const payloadActivity = action.payload;
-  const [AuthState, networkState] = yield all([select(selectAuth), select(selectNetworkState)]);
-
-  try {
-    // filter Treatments and/or Biocontrol
-    const linkedActivitySubtypes: ActivitySubtypeShortLabels[] = (() => {
-      switch (payloadActivity.activity_subtype) {
-        case 'Activity_Monitoring_MechanicalTerrestrialAquaticPlant':
-          return [
-            ActivitySubtypeShortLabels.Activity_Treatment_MechanicalPlantTerrestrial,
-            ActivitySubtypeShortLabels.Activity_Treatment_MechanicalPlantAquatic
-          ];
-        case 'Activity_Monitoring_ChemicalTerrestrialAquaticPlant':
-          return [
-            ActivitySubtypeShortLabels.Activity_Treatment_ChemicalPlantTerrestrial,
-            ActivitySubtypeShortLabels.Activity_Treatment_ChemicalPlantAquatic
-          ];
-        case 'Activity_Monitoring_BiocontrolRelease_TerrestrialPlant':
-          return [ActivitySubtypeShortLabels.Activity_Biocontrol_Release];
-        default:
-          return [];
-      }
-    })();
-    const search_feature = payloadActivity.geometry?.[0]
-      ? ({
-          type: 'FeatureCollection',
-          features: payloadActivity.geometry
-        } as FeatureCollection)
-      : false;
-
-    if (linkedActivitySubtypes.length > 0 && search_feature) {
-      const payload = {
-        activity_subtype: linkedActivitySubtypes,
-        user_roles: AuthState.accessRoles,
-        search_feature: search_feature
-      };
-      if (networkState.connected) {
-        yield put(Activity.Suggestions.treatmentIdsRequestOnline(payload));
-      } else {
-        yield getLinkedTreatmentsFromCachedRecords(payload);
-      }
-    }
-  } catch (e) {
-    console.error(e);
-  }
-}
-
-export function* getLinkedTreatmentsFromCachedRecords(req: TreatmentIdsRequestOnline) {
-  const service = yield RecordCacheServiceFactory.getPlatformInstance();
-  const overlappingRecords = yield service.getRecordIdsOverlappingFeature(req.search_feature);
-  const treatmentRecords: UserRecord[] = (yield service.getPaginatedCachedActivityRecords(overlappingRecords)).filter(
-    (record: UserRecord) => req.activity_subtype.includes(record.activity_subtype_full)
-  );
-
-  yield put(
-    Activity.Suggestions.treatmentIdsSuccess(
-      treatmentRecords.map((record, i) => ({
-        label: record.short_id,
-        title: record.short_id,
-        value: record.activity_id,
-        'x-code_sort_order': i + 1
-      }))
-    )
-  );
 }
 
 export function* handle_PAN_AND_ZOOM_TO_ACTIVITY() {
-  const activityState: RootState['ActivityPage'] = yield select(selectActivity);
+  const activityState: ActivityState = yield select(selectActivity);
   const shape = activityState.formState?.shape as unknown as GeoJSON;
   if (shape) {
     const { coordinates } = pointOnFeature(shape).geometry;
@@ -589,37 +494,9 @@ export function* handle_PAN_AND_ZOOM_TO_ACTIVITY() {
 }
 
 // some form autofill on create stuff will likely need to go here
-export function* handle_ACTIVITY_GET_SUCCESS(action: PayloadAction<Record<string, any>>) {
+export function* handle_ACTIVITY_GET_SUCCESS(_: PayloadAction<Record<string, any>>) {
   try {
-    const activityState = yield select(selectActivity);
-
-    // needs to be latlng expression
-    const isGeo = !!action.payload?.geometry?.[0]?.geometry?.coordinates;
-
-    let centerPoint;
-    if (isGeo) {
-      centerPoint = center(action.payload?.geometry[0]?.geometry);
-    }
-    if (centerPoint && isGeo) {
-      yield put(UserSettings.Map.setCenter(centerPoint.geometry.coordinates));
-    }
-
-    const authState = yield select(selectAuth);
-    const userName = authState.username;
-    const created_by = action.payload.created_by;
-    const createdByUser = userName === created_by;
-
-    // Don't fetch suggestions if the record doesn't belong to the user
-    if (createdByUser) {
-      yield put(Activity.Suggestions.persons());
-      yield put(Activity.Suggestions.jurisdictions(activityState.activity.geometry));
-      const isLinkableRecord = !(yield select(isActivityObservation));
-      if (isLinkableRecord) {
-        yield put(Activity.Suggestions.treatmentIdsRequest(action.payload));
-      }
-    }
-
-    yield put(Activity.buildFormSchema(createdByUser));
+    yield put(Activity.buildFormSchema(false));
   } catch (e) {
     console.error(e);
   }

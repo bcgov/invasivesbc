@@ -18,6 +18,7 @@ import UserSettings from 'state/actions/userSettings/UserSettings';
 import IActivityTableRow from 'interfaces/TableRows/IActivityTableRow';
 import IIappTableRow from 'interfaces/TableRows/IIappTableRow';
 import { Point, Polygon } from 'geojson';
+import StyledTable from 'UI/Reusable/StyledTable/StyledTable';
 import { Md5 } from 'ts-md5';
 
 type PropTypes = {
@@ -99,7 +100,6 @@ export const RecordTable = ({ setID }: PropTypes) => {
         return [];
     }
   })();
-
   const hash = Md5.hashStr(JSON.stringify(mappedRows));
   return (
     <div>
@@ -112,58 +112,44 @@ export const RecordTable = ({ setID }: PropTypes) => {
         />
       </CustomPopover>
       <RecordTableColumnSelect recordSetType={recordSetType} />
-      <div className="record_table_container">
-        <table className="record_table" key={hash}>
-          <tbody>
-            <tr className="record_table_header">
+      <StyledTable key={hash}>
+        <thead>
+          <tr>
+            {tableColumns.map((col) => (
+              <th
+                key={col.key}
+                onClick={() => {
+                  if (sortColumns.includes(col.key)) {
+                    dispatch(UserSettings.RecordSet.setSort({ setID: setID, sortColumn: col.key }));
+                  }
+                }}
+              >
+                {col.name}{' '}
+                {sortColumn === col.key && sortColumns.includes(sortColumn ?? '') && (sortOrder === 'ASC' ? '▲' : '▼')}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {mappedRows?.map((row) => (
+            <tr
+              onContextMenu={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+              }}
+              onMouseOver={() => onUserHoveredRecord(row)}
+              onFocus={() => onUserHoveredRecord(row)}
+              key={'activity_id' in row ? row?.activity_id : row?.site_id}
+            >
               {tableColumns.map((col) => (
-                <th
-                  className="record_table_header_column"
-                  key={col.key}
-                  onClick={() => {
-                    if (sortColumns.includes(col.key)) {
-                      dispatch(UserSettings.RecordSet.setSort({ setID: setID, sortColumn: col.key }));
-                    }
-                  }}
-                >
-                  {col.name}{' '}
-                  {sortColumn === col.key &&
-                    sortColumns.includes(sortColumn ?? '') &&
-                    (sortOrder === 'ASC' ? '▲' : '▼')}
-                </th>
+                <td key={col.key + col.name} onClick={(evt) => handlePopoverOpen(evt, row)}>
+                  <div className="cell">{row[col.key] ?? <span className="null-value" aria-hidden={true} />}</div>
+                </td>
               ))}
             </tr>
-            {mappedRows?.map((row) => (
-              <tr
-                onContextMenu={(event) => {
-                  event.preventDefault();
-                  event.stopPropagation();
-                }}
-                onMouseOver={() => onUserHoveredRecord(row)}
-                onFocus={() => onUserHoveredRecord(row)}
-                className="record_table_row"
-                key={'activity_id' in row ? row?.activity_id : row?.site_id}
-              >
-                {tableColumns.map((col) => (
-                  <td
-                    className="record_table_row_column"
-                    key={col.key + col.name}
-                    onClick={(evt) => handlePopoverOpen(evt, row)}
-                  >
-                    <div className="cell">
-                      {row[col.key] ?? (
-                        <span className="null-value" aria-hidden={true}>
-                          None
-                        </span>
-                      )}
-                    </div>
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          ))}
+        </tbody>
+      </StyledTable>
       {!mappedRows ||
         (mappedRows?.length === 0 && (
           <div className="no-records">

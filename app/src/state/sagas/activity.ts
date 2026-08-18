@@ -13,24 +13,18 @@ import {
   handle_ACTIVITY_EDIT_PHOTO_REQUEST,
   handle_ACTIVITY_GET_REQUEST,
   handle_ACTIVITY_GET_SUCCESS,
-  handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST,
-  handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST,
   handle_ACTIVITY_ON_FORM_CHANGE_REQUEST,
   handle_ACTIVITY_SAVE_REQUEST,
   handle_ACTIVITY_SAVE_SUCCESS,
   handle_ACTIVITY_SUBMIT_REQUEST,
   handle_ACTIVITY_UPDATE_GEO_REQUEST,
   handle_ACTIVITY_UPDATE_GEO_SUCCESS,
-  handle_GET_SUGGESTED_JURISDICTIONS_REQUEST,
   handle_PAN_AND_ZOOM_TO_ACTIVITY
 } from './activity/dataAccess';
 import {
   handle_ACTIVITY_CREATE_NETWORK,
   handle_ACTIVITY_DELETE_NETWORK_REQUEST,
   handle_ACTIVITY_GET_NETWORK_REQUEST,
-  handle_ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE,
-  handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE,
-  handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE,
   handle_ACTIVITY_SAVE_NETWORK_REQUEST
 } from './activity/online';
 import { OFFLINE_ACTIVITY_SAGA_HANDLERS } from './activity/offline';
@@ -45,7 +39,6 @@ import geomWithinBC from 'utils/geomWithinBC';
 import mappingAlertMessages from 'constants/alerts/mappingAlerts';
 import AlertMessage from 'interfaces/AlertMessage';
 import { selectNetworkConnected, selectNetworkState } from 'state/reducers/network';
-import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import Prompt from 'state/actions/prompts/Prompt';
 import Alerts from 'state/actions/alerts/Alerts';
@@ -383,18 +376,6 @@ function* handle_MAP_SET_COORDS(action: PayloadAction<IUserCoord>) {
   }
 }
 
-function* handle_ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE() {
-  const connected = yield select(selectNetworkConnected);
-  try {
-    if (connected) {
-      const networkReturn = yield InvasivesAPI_Call('GET', '/api/biocontrol-treatments');
-      yield put(Activity.Suggestions.biocontrolOnlineSuccess(networkReturn?.data?.result ?? []));
-    }
-  } catch (ex) {
-    console.error(ex);
-  }
-}
-
 /**
  * @desc Once per day, synchronize Activity record caches.
  */
@@ -480,16 +461,6 @@ function* activityPageSaga() {
     takeEvery(AppActions.setUserCoords, handle_MAP_SET_COORDS),
     takeEvery(DrawToolActions.updateGeo, handle_ACTIVITY_UPDATE_GEO_REQUEST),
     takeEvery(DrawToolActions.updateGeoSuccess, handle_ACTIVITY_UPDATE_GEO_SUCCESS),
-    takeEvery(Activity.Suggestions.jurisdictions, handle_GET_SUGGESTED_JURISDICTIONS_REQUEST),
-    takeEvery(Activity.Suggestions.jurisdictionsOnline, handle_ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE),
-    takeEvery(Activity.Suggestions.persons, handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST),
-    takeEvery(Activity.Suggestions.personsOnline, handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE),
-    takeEvery(Activity.Suggestions.treatmentIdsRequest, handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST),
-    takeEvery(Activity.Suggestions.biocontrolOnline, handle_ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE),
-    takeEvery(
-      Activity.Suggestions.treatmentIdsRequestOnline,
-      handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE
-    ),
     takeEvery(Activity.save, handle_ACTIVITY_SAVE_REQUEST),
     takeEvery(Activity.saveSuccess, handle_ACTIVITY_SAVE_SUCCESS),
     takeEvery(Activity.saveNetworkRequest, handle_ACTIVITY_SAVE_NETWORK_REQUEST),

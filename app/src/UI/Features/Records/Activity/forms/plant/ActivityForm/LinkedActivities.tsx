@@ -65,7 +65,7 @@ const LinkedActivities = () => {
 
   const formattedTreatmentRecords = useMemo(() => {
     return suggestedTreatmentRecords.map((o) => ({
-      label: o.label.split(' | ')[0],
+      label: o.label,
       full: o.full
     }));
   }, [suggestedTreatmentRecords]);
@@ -94,9 +94,11 @@ const LinkedActivities = () => {
           <tbody>
             {activities.map((a) => (
               <tr key={a.full}>
-                {a.label.split(' | ').map((d) => (
-                  <td key={d}>{d}</td>
-                ))}
+                {Array.from({ length: 3 }, (_, i) => {
+                  const parts = a.label.split(' | ');
+                  const text = parts[i] || '';
+                  return <td key={i}>{text}</td>;
+                })}
                 {disabled ? (
                   // Allow traversing to record when readonly, avoid when not to avoid user losing progress from accidental navigation
                   <td>

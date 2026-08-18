@@ -19,6 +19,7 @@ import './treatmentChemicalPlantCalculations.css';
 import Accordion from 'UI/Reusable/Accordion/Accordion';
 import { Debug } from 'UI/Reusable/Predicates/Debug';
 import getDefaultFormState from '../../builders/getDefaultState';
+import StyledTable from 'UI/Reusable/StyledTable/StyledTable';
 
 enum CalculationType {
   Dilution = 'D',
@@ -212,26 +213,24 @@ const TreatmentChemicalPlantCalculations = () => {
         {violation ? (
           <AdvisoryMessage text={violation} />
         ) : (
-          <div className="wrapper">
-            <table>
-              <thead>
-                <tr>
-                  {Object.keys(calculations[0] ?? {}).map((key) => (
-                    <th key={key}>{columnKeyToLabel(key)}</th>
+          <StyledTable>
+            <thead>
+              <tr>
+                {Object.keys(calculations[0] ?? {}).map((key) => (
+                  <th key={key}>{columnKeyToLabel(key)}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {calculations.map((c, index) => (
+                <tr key={index}>
+                  {Object.entries(c).map(([k, v]) => (
+                    <td key={k}>{formattedColumn(v, k as keyof typeof columnLabelMap)}</td>
                   ))}
                 </tr>
-              </thead>
-              <tbody>
-                {calculations.map((c, index) => (
-                  <tr key={index}>
-                    {Object.entries(c).map(([k, v]) => (
-                      <td key={k}>{formattedColumn(v, k as keyof typeof columnLabelMap)}</td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </StyledTable>
         )}
       </div>
       <Debug>

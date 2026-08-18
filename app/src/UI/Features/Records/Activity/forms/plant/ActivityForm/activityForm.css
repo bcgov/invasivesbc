@@ -132,7 +132,7 @@ input[type='button']:hover {
   align-items: center;
   display: flex;
   justify-content: center;
-  border-radius: none;
+  border-radius: 0;
   border: 1pt solid black;
   background-color: var(--bc-blue);
   color: white;

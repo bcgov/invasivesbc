@@ -166,14 +166,10 @@ function createActivityReducer() {
         draftState.activity.media = action.payload;
       } else if (Activity.Photo.deleteSuccess.match(action)) {
         draftState.activity = action.payload;
-      } else if (Activity.Suggestions.jurisdictionsSuccess.match(action)) {
+      } else if (Activity.Suggestions.getJurisdictions.fulfilled.match(action)) {
         draftState.suggestedJurisdictions = [...action.payload];
-      } else if (Activity.Suggestions.biocontrolOnlineSuccess.match(action)) {
+      } else if (Activity.Suggestions.getBiocontrolTreatments.fulfilled.match(action)) {
         draftState.biocontrol.plantToAgentMap = [...action.payload];
-      } else if (Activity.Suggestions.personsSuccess.match(action)) {
-        draftState.suggestedPersons = [...action.payload];
-      } else if (Activity.Suggestions.treatmentIdsSuccess.match(action)) {
-        draftState.suggestedTreatmentIDs = [...action.payload];
       } else if (Activity.Suggestions.getLinkedRecordIDs.fulfilled.match(action)) {
         draftState.suggestions.recordsInArea = action.payload;
       } else if (Activity.createReq.match(action)) {
