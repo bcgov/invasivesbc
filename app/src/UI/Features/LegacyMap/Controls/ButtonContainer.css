@@ -85,8 +85,12 @@
     .button {
       background-color: white;
       color: var(--bc-blue);
+      max-height: var(--map-button-bar-height);
+      max-width: var(--map-button-bar-height);
 
       & > img {
+        height: 100%;
+        width: 100%;
         object-fit: scale-down;
       }
 
