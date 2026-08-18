@@ -95,19 +95,19 @@ const TreatmentChemicalPlant = () => {
   useEffect(() => {
     // Refire Temperature validation when confirmation changes
     if (!isDirty) return;
-    trigger(getPath('temperature_c'));
+    trigger(getContextPath('temperature_c'));
   }, [userVerifiedTemperatureAccurate]);
 
   useEffect(() => {
     // Refire Temperature validation when confirmation changes
     if (!isDirty) return;
-    trigger(getPath('wind_speed_kmh'));
+    trigger(getContextPath('wind_speed_kmh'));
   }, [userVerifiedWindspeedAccurate]);
 
   // Cleanup NTZ Reduction Rationale if Reduction is changed to False
   useEffect(() => {
     if (isDirty && !ntz_bool) {
-      setValue(getPath('rationale_for_ntz_reduction'), '');
+      setValue(getContextPath('rationale_for_ntz_reduction'), '');
     }
   }, [ntz_bool]);
 
