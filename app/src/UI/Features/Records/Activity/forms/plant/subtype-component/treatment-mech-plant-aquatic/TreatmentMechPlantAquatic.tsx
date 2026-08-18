@@ -9,7 +9,8 @@ import {
   lessThanEqual,
   minArrayLength,
   noRepeatKey,
-  greaterThan
+  greaterThan,
+  distinctEntries
 } from 'UI/Features/Records/Activity/forms/common/validators';
 import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
@@ -95,7 +96,12 @@ const TreatmentMechPlantAquatic = () => {
         rules={{
           validate: {
             minLength: (val) => minArrayLength(val, 1),
-            noRepeatPlants: (val) => noRepeatKey(val, 'invasive_plant', 'Invasive Plant')
+            noRepeatMethodsOnPlants: (val) =>
+              distinctEntries(
+                val,
+                ['invasive_plant', 'mechanical_method'],
+                'Entries must contain a unique Invasive Plant / Mechanical Method combination'
+              )
           }
         }}
         renderRow={(index) => {

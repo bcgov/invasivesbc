@@ -19,7 +19,7 @@ def distinct_entries(
         # Build composite string based on unique keys
         parts: list[str] = []
         for key in unique_keys:
-            val = entry.get(key) if isinstance(entry, dict) else None
+            val = getattr(entry, key, None)
             # Normalize values to strings, handling None
             parts.append(str(val).strip() if val is not None else "")
 
@@ -28,10 +28,8 @@ def distinct_entries(
         # Skip validation on empty entries
         if composite_id.replace("-", "") == "":
             continue
-
         if composite_id in seen:
             raise ValueError(error_message)
 
         seen.add(composite_id)
-
     return arr
