@@ -55,10 +55,6 @@ const getSubtypeData = (subtype: ActivitySubtypes): FormSchema['subtype_data'] =
  */
 const getDefaultFormState = (subtype: ActivitySubtypes, created_by?: string): FormSchema => {
   const subtype_data = getSubtypeData(subtype);
-  const isChemical = [
-    ActivitySubtypes.Treatment_Chemical_Plant_Aquatic,
-    ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial
-  ].some((st) => st === subtype);
   const { id, short_id } = createRecordId(subtype);
   return {
     id,
@@ -81,8 +77,7 @@ const getDefaultFormState = (subtype: ActivitySubtypes, created_by?: string): Fo
     utm_easting: 0,
     utm_northing: 0,
     linked_activities: [],
-    linking_activities: [], // Back-end supplied readonly field.
-    participants: [{ name: '', pac_number: isChemical ? 0 : undefined }],
+    participants: [{ name: '', pac_number: undefined }],
     subtype_data: subtype_data,
     type: ActivitySubtypesToType[subtype],
     media: [],
