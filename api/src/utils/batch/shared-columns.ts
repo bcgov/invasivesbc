@@ -858,32 +858,38 @@ export const DuplicateMechanicalTreatmentPlantValidator = (row): RowValidationRe
   const rowData = row.data;
 
   const treatmentSets = [1, 2, 3];
-  const plantFields = treatmentSets.map((i) => `Treatment - Invasive Plant Code ${i}`);
 
-  const seenPlants: Record<string, string[]> = {};
+  const seenCombinations: Record<string, string[]> = {};
 
-  for (const field of plantFields) {
-    const value = rowData?.[field]?.parsedValue;
+  for (const i of treatmentSets) {
+    const plantField = `Treatment - Invasive Plant Code ${i}`;
+    const methodField = `Treatment - Mechanical Method Code ${i}`;
 
-    if (!value) continue;
+    const plant = rowData?.[plantField]?.parsedValue;
+    const method = rowData?.[methodField]?.parsedValue;
 
-    if (!seenPlants[value]) {
-      seenPlants[value] = [field];
+    if (!plant || !method) continue;
+
+    const combinationKey = `${plant}|${method}`;
+
+    if (!seenCombinations[combinationKey]) {
+      seenCombinations[combinationKey] = [plantField, methodField];
     } else {
-      seenPlants[value].push(field);
+      seenCombinations[combinationKey].push(plantField, methodField);
     }
   }
 
-  for (const plant in seenPlants) {
-    const fields = seenPlants[plant];
+  for (const combination in seenCombinations) {
+    const fields = seenCombinations[combination];
 
-    if (fields.length > 1) {
+    if (fields.length > 2) {
       valid = false;
 
       validationMessages.push({
         severity: 'error',
-        messageTitle: 'Duplicate treatment plant',
-        messageDetail: `Treatment Invasive Plant Code can only appear once per row`
+        messageTitle: 'Duplicate mechanical treatment',
+        messageDetail:
+          'The same Treatment Invasive Plant Code and Mechanical Method Code combination can only appear once per row.'
       });
 
       appliesToFields.push(...fields);
