@@ -86,6 +86,7 @@ const FormControl = () => {
   const isFormSubmitted = useSelector((state) => state.ActivityPage.formState?.form_status === 'Submitted');
   const currId = useSelector((state) => state.ActivityPage.formId);
   const created_by = useSelector((state) => state.ActivityPage.formState?.created_by);
+  const doesFormExist = useSelector((state) => !!state.ActivityPage?.formState);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   const canDelete: boolean = useMemo(() => {
@@ -112,7 +113,7 @@ const FormControl = () => {
           )}
           {/* Type="Submit" is tied to react-hook-form, it will handle the submission logic. // Errors don't need to be
           accounted for in disabling, since the rhf will pan to the error */}
-          <Button className="control-button" form="activity-form" disabled={disabled || !canSubmit}>
+          <Button type="submit" className="control-button" form="activity-form" disabled={disabled || !canSubmit}>
             Submit
           </Button>
           {!isFormSubmitted && (
@@ -120,7 +121,11 @@ const FormControl = () => {
               <Button className="control-button" disabled={disabled || !canSubmit} onClick={saveToDraft}>
                 Save as Draft
               </Button>
-              <Button className="control-button" disabled={disabled || !canSubmit} onClick={handleClear}>
+              <Button
+                className="control-button"
+                disabled={disabled || !canSubmit || !doesFormExist}
+                onClick={handleClear}
+              >
                 Clear Form
               </Button>
             </>
