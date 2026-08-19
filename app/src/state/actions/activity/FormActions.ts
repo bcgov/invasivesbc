@@ -212,8 +212,9 @@ class FormActions {
             dispatch(Alerts.create(formAlerts.recordSubmittedFailure));
             return rejectWithValue(await res.json());
           }
+        } else {
+          dispatch(Alerts.create(formAlerts.recordSubmittedSuccess));
         }
-        dispatch(Alerts.create(formAlerts.recordSubmittedSuccess));
         return await res.json();
       }
     }
