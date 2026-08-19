@@ -5,7 +5,6 @@ import UserSettings from 'state/actions/userSettings/UserSettings';
 import { GeoJSON } from 'geojson';
 import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
 import { useNavigate } from 'react-router';
-import DebugButton from '../../Activity/forms/debug/DebugButton';
 import Button from 'UI/Reusable/Button/Button';
 
 /**
@@ -24,13 +23,6 @@ const RecordTablePopoverContent = ({ recordDisplayId: id, recordLookupId, record
     const url =
       recordType === RecordSetType.Activity
         ? '/Records/Activity/' + recordLookupId + '/form'
-        : '/Records/IAPP/' + recordLookupId + '/summary';
-    navigate(url);
-  };
-  const handleOpenRecordInRJSF = () => {
-    const url =
-      recordType === RecordSetType.Activity
-        ? '/Records/LegacyForm/' + recordLookupId + '/form'
         : '/Records/IAPP/' + recordLookupId + '/summary';
     navigate(url);
   };
@@ -66,10 +58,6 @@ const RecordTablePopoverContent = ({ recordDisplayId: id, recordLookupId, record
       <Button onClick={handleOpenRecordInRHF} variant="contained">
         Open
       </Button>
-      {/* // TODO: Remove RJSF Option */}
-      <DebugButton onClick={handleOpenRecordInRJSF} variant="contained">
-        Open - RJSF Form
-      </DebugButton>
       {!!geom && (
         <Button onClick={handleMarkGeometryOnMap.bind(this, true)} variant="contained">
           Pan to record
