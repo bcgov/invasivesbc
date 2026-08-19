@@ -56,7 +56,7 @@ export const RecordTable = ({ setID }: PropTypes) => {
    * @desc Set anchor point and display information for opening the Popover
    */
   const handlePopoverOpen = (evt: MouseEvent<any> | TouchEvent<any>, row: UserRecord | IappRecord) => {
-    setGeom(row?.geom);
+    setGeom(row?.geom ?? row?.geometry);
     setRecordDisplayId(row.short_id ?? row.site_id ?? '');
     setRecordLookupId(row.activity_id ?? row.site_id ?? '');
     setAnchorEl(evt.currentTarget);
