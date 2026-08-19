@@ -27,7 +27,7 @@ const autofillBatch = async (batchId: string | number): Promise<void> => {
       AND iscurrent
     `);
 
-    db.query(SQL`BEGIN`);
+    await db.query(SQL`BEGIN`);
 
     // Rotate through entry updates in controlled amounts by STEP,
     for (let i = 0; i < rowCount; i += STEP) {

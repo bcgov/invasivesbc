@@ -1,25 +1,12 @@
-import { Pool, PoolClient, PoolConfig, Result } from 'pg';
+import { PoolClient, Result } from 'pg';
 import { SQLStatement } from 'sql-template-strings';
-import { DB_DATABASE, DB_HOST, DB_PASSWORD, DB_PORT, DB_SCHEMA, DB_USERNAME } from 'database/db';
-
-const defaultPool: PoolConfig = {
-  database: DB_DATABASE,
-  connectionTimeoutMillis: 0, // default
-  host: DB_HOST,
-  idleTimeoutMillis: 10000, // default
-  max: 20,
-  password: DB_PASSWORD,
-  port: DB_PORT,
-  user: DB_USERNAME
-};
+import { DB_SCHEMA, pool } from 'database/db';
 
 interface Options {
-  poolConfig?: PoolConfig;
   maintain?: boolean;
 }
 
 class QueryHandler {
-  private static pool: Pool;
   private connection: PoolClient;
   maintain: boolean;
 
@@ -35,10 +22,7 @@ class QueryHandler {
   }
 
   private getPool() {
-    if (!QueryHandler.pool) {
-      QueryHandler.pool = new Pool(defaultPool);
-    }
-    return QueryHandler.pool;
+    return pool; // use the global pool definition instead of recreating one here
   }
   private readonly getDBConnection = async (): Promise<PoolClient> => {
     const client = await this.getPool().connect();

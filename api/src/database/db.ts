@@ -51,4 +51,4 @@ export const getDBConnection = async function (): Promise<PoolClient> {
   }
 };
 
-export { DB_HOST, DB_PORT, DB_USERNAME, DB_PASSWORD, DB_DATABASE, DB_SCHEMA };
+export { DB_SCHEMA, pool };
