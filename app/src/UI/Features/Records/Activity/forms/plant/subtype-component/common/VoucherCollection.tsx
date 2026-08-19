@@ -11,6 +11,7 @@ import FormSpacer from 'UI/Features/Records/Activity/forms/common/FormSpacer/For
 import DateInput from 'UI/Features/Records/Activity/forms/common/DateInput/DateInput';
 import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
 import useFieldPath from 'UI/Features/Records/Activity/forms/plant/hooks/useFieldPath';
+import { noFutureDate } from 'UI/Features/Records/Activity/forms/common/validators';
 
 type Observation = TerrestrialPlantObservationSchema | AquaticPlantObservationSchema;
 
@@ -55,7 +56,8 @@ const VoucherCollection = ({ index }) => {
         required
         width={Width.Half}
         {...register(getPath('date_collected'), {
-          required: true
+          required: true,
+          validate: (val) => noFutureDate(val)
         })}
       />
 
@@ -63,7 +65,9 @@ const VoucherCollection = ({ index }) => {
         error={get(errors, getPath('date_verified'))}
         label="Date Voucher Verified"
         width={Width.Half}
-        {...register(getPath('date_verified'))}
+        {...register(getPath('date_verified'), {
+          validate: (val) => noFutureDate(val)
+        })}
       />
       <Fieldset label={'Voucher Verification Completed By'}>
         <TextInput
