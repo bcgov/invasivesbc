@@ -3,7 +3,7 @@ import ArrayField from 'UI/Features/Records/Activity/forms/common/ArrayField/Arr
 import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
 import { EntryBasePath, TerrestrialMechTreatment } from 'UI/Features/Records/Activity/forms/plant/interfaces';
-import { minArrayLength, noRepeatKey } from 'UI/Features/Records/Activity/forms/common/validators';
+import { distinctEntries, minArrayLength } from 'UI/Features/Records/Activity/forms/common/validators';
 import { useSelector } from 'utils/use_selector';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
@@ -30,7 +30,12 @@ const TreatmentMechPlantTerrestrial = () => {
       rules={{
         validate: {
           minLength: (val) => minArrayLength(val, 1),
-          noRepeatPlants: (val) => noRepeatKey(val, 'invasive_plant', 'Invasive Plant')
+          noRepeatMethodsOnPlants: (val) =>
+            distinctEntries(
+              val,
+              ['invasive_plant', 'mechanical_method'],
+              'Entries must contain a unique Invasive Plant / Mechanical Method combination'
+            )
         }
       }}
       renderRow={(index) => {

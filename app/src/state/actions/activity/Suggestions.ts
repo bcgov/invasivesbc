@@ -47,8 +47,8 @@ class Suggestions {
       const res = await fetch(url, {
         headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' }
       });
-      const { data } = await res.json();
-      return data.result;
+      const { result } = await res.json();
+      return result;
     }
   );
 

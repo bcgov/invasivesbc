@@ -16,7 +16,7 @@
   align-items: center;
   margin: 2pt;
   opacity: 0.85;
-  animation: slide-in 0.35s ease-out forwards;
+  animation: slide-in 0.35s linear forwards;
 }
 
 @keyframes slide-in {

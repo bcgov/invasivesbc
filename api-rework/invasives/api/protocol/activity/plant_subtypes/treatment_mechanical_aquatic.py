@@ -1,5 +1,6 @@
 from typing import List, Literal, Optional
 from pydantic import Field, model_validator, field_validator
+from api.protocol.activity.validators.distinct_entries import distinct_entries
 from api.protocol.activity.validators.no_repeat_key import no_repeat_key
 from api.protocol.activity.validators.check_sum import check_sum
 from api.protocol.activity.plant_subtypes.base_form_schema import (
@@ -67,8 +68,12 @@ class SubtypeData(DraftSubtypeData):
 
     @field_validator("entries")
     @classmethod
-    def unique_plants(cls, v):
-        return no_repeat_key(v, key="invasive_plant", key_label="Invasive Plant")
+    def unique_entries(cls, v):
+        return distinct_entries(
+            v,
+            unique_keys=["invasive_plant", "mechanical_method"],
+            error_message="Entries must contain a unique Invasive Plant / Mechanical Method combination",
+        )
 
     @field_validator("shoreline_types")
     @classmethod
