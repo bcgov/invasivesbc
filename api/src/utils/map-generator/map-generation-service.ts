@@ -1,7 +1,7 @@
 import SQL from 'sql-template-strings';
-import {escapeIdentifier, escapeLiteral} from 'pg';
-import {getDBConnection} from 'database/db';
-import {getLogger} from 'utils/logger';
+import { escapeIdentifier, escapeLiteral } from 'pg';
+import { getDBConnection } from 'database/db';
+import { getLogger } from 'utils/logger';
 
 const defaultLog = getLogger('map-generation-service');
 
@@ -79,7 +79,7 @@ class MapGenerationService {
   public static async createRequest(request: MapGenerationRequestCreationRequest): Promise<string> {
     const db = await getDBConnection();
 
-    db.query('BEGIN TRANSACTION');
+    await db.query('BEGIN TRANSACTION');
     let rollback = false;
 
     try {
@@ -98,7 +98,6 @@ class MapGenerationService {
         const geomSql = `ST_SetSRID(ST_MakeEnvelope(${request.bbox.minX}, ${request.bbox.minY}, ${request.bbox.maxX}, ${request.bbox.maxY}), 4326)`;
         insertParams['bbox'] = geomSql;
       }
-
 
       if (request.minZoom) {
         insertParams['minimum_zoom'] = request.minZoom;
@@ -166,7 +165,7 @@ class MapGenerationService {
 
       return id;
     } catch (e) {
-      defaultLog.error({message: 'Error creating map generation request', error: e});
+      defaultLog.error({ message: 'Error creating map generation request', error: e });
       rollback = true;
       throw e;
     } finally {
@@ -241,7 +240,7 @@ class MapGenerationService {
   ): Promise<void> {
     const db = await getDBConnection();
     let rollback = false;
-    db.query('BEGIN TRANSACTION');
+    await db.query('BEGIN TRANSACTION');
     try {
       for (const id of activityIncomingDataIds) {
         const idBindingSQL = SQL`with sq as (select mgr.id         as mgr_id,
@@ -262,7 +261,7 @@ class MapGenerationService {
         await db.query(idBindingSQL.text, idBindingSQL.values);
       }
     } catch (e) {
-      defaultLog.error({message: 'Error binding IDs to map request', error: e});
+      defaultLog.error({ message: 'Error binding IDs to map request', error: e });
       rollback = true;
       throw e;
     } finally {
@@ -321,5 +320,5 @@ class MapGenerationService {
   }
 }
 
-export {MapGenerationService, MapGenerationValueLiterals};
-export type {MapGenerationRequest, MapGenerationRequestCreationRequest};
+export { MapGenerationService, MapGenerationValueLiterals };
+export type { MapGenerationRequest, MapGenerationRequestCreationRequest };
