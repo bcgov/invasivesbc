@@ -17,7 +17,7 @@ const ManageTripsPage = () => {
     <div id="manage-trips">
       {mode !== Mode.MAIN && (
         <div className="trip-header">
-          <Button onClick={setMode.bind(this, Mode.MAIN)} variant="none">
+          <Button onClick={setMode.bind(this, Mode.MAIN)}>
             <ArrowBackIos /> Back
           </Button>
         </div>

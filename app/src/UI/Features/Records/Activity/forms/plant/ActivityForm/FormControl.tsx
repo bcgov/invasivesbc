@@ -112,7 +112,7 @@ const FormControl = () => {
           )}
           {/* Type="Submit" is tied to react-hook-form, it will handle the submission logic. // Errors don't need to be
           accounted for in disabling, since the rhf will pan to the error */}
-          <Button className="control-button" type="submit" form="activity-form" disabled={disabled || !canSubmit}>
+          <Button className="control-button" form="activity-form" disabled={disabled || !canSubmit}>
             Submit
           </Button>
           {!isFormSubmitted && (
