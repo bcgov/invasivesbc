@@ -16,6 +16,7 @@ import Button from 'UI/Reusable/Button/Button';
  */
 const FormControl = () => {
   const handleOpenMenu = (evt: MouseEvent<HTMLElement> | TouchEvent<HTMLElement>) => {
+    trigger();
     setAnchorEl(evt.currentTarget);
   };
 
@@ -78,6 +79,7 @@ const FormControl = () => {
     getValues,
     setValue,
     reset,
+    trigger,
     formState: { disabled, errors }
   } = useFormContext<FormSchema>();
 
