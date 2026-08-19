@@ -1,4 +1,5 @@
 import { BugReport } from '@mui/icons-material';
+import Button from 'UI/Reusable/Button/Button';
 import { Debug } from 'UI/Reusable/Predicates/Debug';
 
 const DebugButton = ({ onClick, label }) => {
@@ -14,9 +15,9 @@ const DebugButton = ({ onClick, label }) => {
   };
   return (
     <Debug>
-      <button onClick={onClick} style={buttonStyle}>
+      <Button onClick={onClick} style={buttonStyle}>
         <BugReport /> {label}
-      </button>
+      </Button>
     </Debug>
   );
 };
