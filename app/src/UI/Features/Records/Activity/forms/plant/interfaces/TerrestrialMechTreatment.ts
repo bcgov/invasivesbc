@@ -10,7 +10,7 @@ interface TerrestrialMechTreatment extends BaseForm {
       disposal_method: string;
       invasive_plant: string;
       mechanical_method: string;
-      treated_area_msq: number;
+      treated_area_msq?: number;
     }>;
   };
 }

@@ -17,11 +17,11 @@ interface BiocontrolCollectionSchema extends BaseForm {
       end_time_collecting: string;
       comment: string;
       actual_biological_agents: Array<{
-        quantity: number;
+        quantity?: number;
         stage: string;
       }>;
       estimated_biological_agents: Array<{
-        quantity: number;
+        quantity?: number;
         stage: string;
       }>;
     }>;
@@ -34,7 +34,7 @@ interface BiocontrolCollectionSchema extends BaseForm {
       seeds_forming: number;
       senescent: number;
       target_plant_heights: Array<{
-        height_cm: number;
+        height_cm?: number;
       }>;
     };
     // Microsite Condition
@@ -47,9 +47,9 @@ interface BiocontrolCollectionSchema extends BaseForm {
       comments: string;
       cloud_cover: string;
       precipitation: string;
-      temperature: number;
+      temperature?: number;
       wind_direction: string;
-      wind_speed_kmh: number;
+      wind_speed_kmh?: number;
     };
   };
 }

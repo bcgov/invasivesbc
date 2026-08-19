@@ -18,7 +18,7 @@ const getBiocontrolDispersalMonitoringSubtypeFields = (): BiocontrolDispersalMon
       suitable_for_collection: '',
       actual_biological_agents: [
         {
-          quantity: 0,
+          quantity: undefined,
           stage: '',
           plant_position: '',
           agent_location: ''
@@ -26,7 +26,7 @@ const getBiocontrolDispersalMonitoringSubtypeFields = (): BiocontrolDispersalMon
       ],
       estimated_biological_agents: [
         {
-          quantity: 0,
+          quantity: undefined,
           stage: '',
           plant_position: '',
           agent_location: ''
@@ -42,7 +42,7 @@ const getBiocontrolDispersalMonitoringSubtypeFields = (): BiocontrolDispersalMon
     flowering: 0,
     seeds_forming: 0,
     senescent: 0,
-    target_plant_heights: [{ height_cm: 0 }]
+    target_plant_heights: [{ height_cm: undefined }]
   },
   // Microsite Condition
   microsite_conditions: {
@@ -54,9 +54,9 @@ const getBiocontrolDispersalMonitoringSubtypeFields = (): BiocontrolDispersalMon
     comments: '',
     cloud_cover: '',
     precipitation: '',
-    temperature: 0,
+    temperature: undefined,
     wind_direction: '',
-    wind_speed_kmh: 0
+    wind_speed_kmh: undefined
   }
 });
 

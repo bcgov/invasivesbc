@@ -8,7 +8,7 @@ const getTreatmentMechanicalTerrestrialPlantSubtypeFields = (): TerrestrialMechT
       disposal_method: '',
       invasive_plant: '',
       mechanical_method: '',
-      treated_area_msq: 0
+      treated_area_msq: undefined
     }
   ]
 });

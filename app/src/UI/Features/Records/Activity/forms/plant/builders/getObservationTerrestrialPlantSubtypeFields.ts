@@ -17,13 +17,13 @@ const getObservationPlantTerrestrialSubtypeFields = (): TerrestrialPlantObservat
   ],
   pretreatment_observation: '',
   context: {
-    research_observation: '',
-    visible_well_nearby: '',
+    research_observation: 'No',
+    visible_well_nearby: 'No',
     aspect: '',
     slope_percent: '',
     soil_texture: '',
     specific_uses: [],
-    suitable_for_biocontrol_agent: ''
+    suitable_for_biocontrol_agent: 'Unknown'
   }
 });
 

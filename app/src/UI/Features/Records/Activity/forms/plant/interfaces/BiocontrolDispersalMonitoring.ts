@@ -20,13 +20,13 @@ interface BiocontrolDispersalMonitoringSchema extends BaseForm {
       stop_time?: string;
       suitable_for_collection: string;
       actual_biological_agents: Array<{
-        quantity: number;
+        quantity?: number;
         stage: string;
         plant_position: string;
         agent_location: string;
       }>;
       estimated_biological_agents: Array<{
-        quantity: number;
+        quantity?: number;
         stage: string;
         plant_position: string;
         agent_location: string;
@@ -41,7 +41,7 @@ interface BiocontrolDispersalMonitoringSchema extends BaseForm {
       seeds_forming: number;
       senescent: number;
       target_plant_heights: Array<{
-        height_cm: number;
+        height_cm?: number;
       }>;
     };
     // Microsites
@@ -54,9 +54,9 @@ interface BiocontrolDispersalMonitoringSchema extends BaseForm {
       comments: string;
       cloud_cover: string;
       precipitation: string;
-      temperature: number;
+      temperature?: number;
       wind_direction: string;
-      wind_speed_kmh: number;
+      wind_speed_kmh?: number;
     };
   };
 }

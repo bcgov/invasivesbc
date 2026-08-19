@@ -34,7 +34,7 @@ interface AquaticPlantObservationSchema extends BaseForm {
     waterlevel_management: string[];
     shoreline_types: Array<{
       shoreline_type: string;
-      percent_covered: number;
+      percent_covered?: number;
     }>;
     context: {
       suitable_for_biocontrol: string;
@@ -47,10 +47,10 @@ interface AquaticPlantObservationSchema extends BaseForm {
       access: string;
       colour: string;
       comment: string;
-      max_depth_m: number;
+      max_depth_m?: number;
       name_gazetted: string;
       name_local: string;
-      secchi_depth: number;
+      secchi_depth?: number;
       tidal_influence: string;
       type: string;
     };

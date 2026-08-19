@@ -10,12 +10,12 @@ interface AquaticMechTreatment extends BaseForm {
       disposal_method: string;
       invasive_plant: string;
       mechanical_method: string;
-      treated_area_msq: number;
+      treated_area_msq?: number;
     }>;
     authorization_information: string;
     shoreline_types: Array<{
       shoreline_type: string;
-      percent_covered: number;
+      percent_covered?: number;
     }>;
   };
 }
