@@ -247,6 +247,7 @@ function createActivityReducer() {
           Object.assign(draftState.formState, {
             ...getDefaultFormState(draftState.formType, draftState.formState.created_by),
             id: draftState.formId,
+            short_id: draftState.formState?.short_id,
             subtype: draftState.formType
           });
         }

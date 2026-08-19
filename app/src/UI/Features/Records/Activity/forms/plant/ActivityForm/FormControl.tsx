@@ -46,7 +46,12 @@ const FormControl = () => {
         callback: (confirmation: boolean) => {
           if (confirmation) {
             dispatch(FormActions.clearFormState());
-            reset(getDefaultFormState(subtype, created_by));
+            const newState = {
+              ...getDefaultFormState(subtype, created_by),
+              id: formState?.id,
+              short_id: formState?.short_id
+            };
+            reset(newState);
           }
         }
       })
@@ -86,8 +91,10 @@ const FormControl = () => {
   const isFormSubmitted = useSelector((state) => state.ActivityPage.formState?.form_status === 'Submitted');
   const currId = useSelector((state) => state.ActivityPage.formId);
   const created_by = useSelector((state) => state.ActivityPage.formState?.created_by);
-  const doesFormExist = useSelector((state) => !!state.ActivityPage?.formState);
+  const formState = useSelector((state) => state.ActivityPage?.formState);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+
+  const doesFormExist = !!formState;
 
   const canDelete: boolean = useMemo(() => {
     return !!recordActions?.includes('DELETE');
