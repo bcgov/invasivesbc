@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import './manageTripsPage.css';
-import { Button } from '@mui/material';
 import { ArrowBackIos } from '@mui/icons-material';
 import PlanMyTripForm from './subcomponents/PlanMyTripForm/PlanMyTripForm';
 import ManageMyTrips from './subcomponents/ManageMyTrips/ManageMyTrips';
+import Button from 'UI/Reusable/Button/Button';
 
 const ManageTripsPage = () => {
   enum Mode {
@@ -17,7 +17,7 @@ const ManageTripsPage = () => {
     <div id="manage-trips">
       {mode !== Mode.MAIN && (
         <div className="trip-header">
-          <Button onClick={setMode.bind(this, Mode.MAIN)}>
+          <Button onClick={setMode.bind(this, Mode.MAIN)} variant="none">
             <ArrowBackIos /> Back
           </Button>
         </div>
@@ -28,10 +28,10 @@ const ManageTripsPage = () => {
             [Mode.MAIN]: (
               <div className="main">
                 <p>I'm Looking To...</p>
-                <Button variant="contained" size="large" onClick={setMode.bind(this, Mode.CREATE)}>
+                <Button variant="contained" size="lg" onClick={setMode.bind(this, Mode.CREATE)}>
                   Plan a New Trip
                 </Button>
-                <Button variant="contained" size="large" onClick={setMode.bind(this, Mode.MANAGE)}>
+                <Button variant="contained" size="lg" onClick={setMode.bind(this, Mode.MANAGE)}>
                   Manage My Trips
                 </Button>
               </div>
@@ -50,7 +50,7 @@ const ManageTripsPage = () => {
                 <ManageMyTrips />
                 <div className="redirect">
                   <p>Not seeing what you're looking for?</p>
-                  <Button size="small" onClick={setMode.bind(this, Mode.CREATE)}>
+                  <Button size="sm" onClick={setMode.bind(this, Mode.CREATE)}>
                     Plan a New Trip
                   </Button>
                 </div>

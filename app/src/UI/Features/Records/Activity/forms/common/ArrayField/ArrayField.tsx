@@ -13,6 +13,8 @@ import { Width } from '../utils';
 import { useCallback, useEffect } from 'react';
 import debounce from 'lodash.debounce';
 import DeleteControl from '../DeleteControl/DeleteControl';
+import Button from 'UI/Reusable/Button/Button';
+import { Add } from '@mui/icons-material';
 
 // FieldArrayPath ensures the name provided is specifically a valid array path
 interface PropTypes<T extends FieldValues, Name extends FieldArrayPath<T>> {
@@ -76,9 +78,9 @@ export function ArrayField<T extends FieldValues, Name extends FieldArrayPath<T>
         </div>
         <div className="control">
           {rootError && <ErrorMessage error={rootError} label={label} />}
-          <button disabled={disabled} type="button" className="add-entry" onClick={() => append(emptyValue)}>
-            + Add {label}
-          </button>
+          <Button disabled={disabled} variant="none" className="add-entry" onClick={() => append(emptyValue)}>
+            <Add /> Add {label}
+          </Button>
         </div>
       </div>
     </Fieldset>

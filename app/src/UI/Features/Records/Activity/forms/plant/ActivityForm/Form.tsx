@@ -173,10 +173,10 @@ const Form = () => {
           <>
             <p>To modify or update, please draw a new shape on the Map</p>
             <div className="control">
-              <Button className="control-button" disabled={disabled} onClick={handleDrawStart}>
+              <Button className="control-button" variant="none" disabled={disabled} onClick={handleDrawStart}>
                 Start Drawing
               </Button>
-              <Button className="control-button" disabled={disabled} onClick={handleManualUTM}>
+              <Button className="control-button" variant="none" disabled={disabled} onClick={handleManualUTM}>
                 Enter UTM
               </Button>
             </div>

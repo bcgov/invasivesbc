@@ -1,5 +1,4 @@
 import 'UI/Features/Records/RecordSet/RecordSet.css';
-import { Button } from '@mui/material';
 import RecordSetFooter from 'UI/Features/Records/RecordSet/RecordSetFooter';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import { RecordSetType } from 'interfaces/UserRecordSet';
@@ -15,6 +14,8 @@ import Activity from 'state/actions/activity/Activity';
 import useOfflineRecordsetEntries from '../Activity/forms/plant/hooks/useOfflineRecordsetEntries';
 import CheckboxUI from '../Activity/forms/common/CheckboxUI/CheckboxUI';
 import StyledTable from 'UI/Reusable/StyledTable/StyledTable';
+import { ArrowBackIos } from '@mui/icons-material';
+import Button from 'UI/Reusable/Button/Button';
 
 type PropTypes = { setID: string };
 
@@ -74,7 +75,7 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
         <div className="recordSet_header" style={{ backgroundColor: recordSet?.color + `50` }}>
           <div className="recordSet_back_button">
             <Button onClick={onClickBackButton} variant="contained">
-              {'< Back'}
+              <ArrowBackIos /> Back
             </Button>
           </div>
           <div className="recordSet_header_name">{recordSet?.recordSetName}</div>
