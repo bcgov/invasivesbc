@@ -243,11 +243,11 @@ function createActivityReducer() {
       } else if (FormActions.clearFormState.match(action) && draftState.formState) {
         delete draftState.geometry_details;
         delete draftState.wellsInRecordArea;
-
         if (draftState.formType) {
           Object.assign(draftState.formState, {
-            ...getDefaultFormState(draftState.formType),
+            ...getDefaultFormState(draftState.formType, draftState.formState.created_by),
             id: draftState.formId,
+            short_id: draftState.formState?.short_id,
             subtype: draftState.formType
           });
         }

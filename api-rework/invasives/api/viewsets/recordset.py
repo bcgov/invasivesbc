@@ -2,6 +2,7 @@ import logging
 
 from rest_framework.decorators import action
 from django.db.models import Q
+from asgiref.sync import sync_to_async
 
 from rest_framework import viewsets, status
 from rest_framework.response import Response
@@ -144,19 +145,25 @@ class RecordsetRowsViewSet(viewsets.GenericViewSet):
             combined_query = querysets[0]
             for other_qs in querysets[1:]:
                 combined_query = combined_query.union(other_qs)
-            data_stream = combined_query.iterator(chunk_size=3000)
+            data_stream = combined_query.iterator(chunk_size=1500)
         else:
             data_stream = iter([])
 
-        def rows():
+        async def async_rows():
             echo = Echo()
             writer = csv.writer(echo)
             yield writer.writerow(headers)
 
-            for record in data_stream:
+            get_next_record = sync_to_async(
+                lambda: next(data_stream, None), thread_sensitive=True
+            )
+            while True:
+                record = await get_next_record()
+                if record is None:
+                    break
                 yield writer.writerow([record.get(key, "") for key in value_keys])
 
-        response = StreamingHttpResponse(rows(), content_type="text/csv")
+        response = StreamingHttpResponse(async_rows(), content_type="text/csv")
         response["Content-Disposition"] = (
             f'attachment; filename="{csv_type}_export.csv"'
         )

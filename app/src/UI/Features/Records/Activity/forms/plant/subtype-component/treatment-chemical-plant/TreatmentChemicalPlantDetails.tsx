@@ -17,8 +17,8 @@ import {
   greaterThan,
   lessThanEqual,
   minArrayLength,
-  greaterThanEqual,
-  noRepeatKey
+  noRepeatKey,
+  maxArrayLength
 } from 'UI/Features/Records/Activity/forms/common/validators';
 import TreatmentChemicalPlantCalculations from './TreatmentChemicalPlantCalculations';
 import useFieldPath from 'UI/Features/Records/Activity/forms/plant/hooks/useFieldPath';
@@ -194,8 +194,9 @@ const TreatmentChemicalPlantDetails = () => {
         rules={{
           required: true,
           validate: {
-            min: (val) => greaterThanEqual(val.length, 1),
-            max: (val) => tank_mix || lessThanEqual(val.length, 1), // Only limit on non-tank mixes
+            min: (val) => minArrayLength(val, 1),
+            max: (val) =>
+              tank_mix || maxArrayLength(val, 1, 'Only one herbicide can be entered on a non-tank mix record'), // Only limit on non-tank mixes
             noDuplicateHerbicide: (val) => noRepeatKey(val, 'name', 'name')
           }
         }}

@@ -10,15 +10,15 @@ interface BiocontrolReleaseSchema extends BaseForm {
       collection_date: string;
       linear_segment: string;
       invasive_plant: string;
-      mortality: number;
+      mortality?: number;
       plant_collected_from: string;
       plant_collected_from_manual: string;
       estimated_biological_agents: Array<{
-        quantity: number;
+        quantity?: number;
         stage: string;
       }>;
       actual_biological_agents: Array<{
-        quantity: number;
+        quantity?: number;
         stage: string;
       }>;
     }>;
@@ -31,7 +31,7 @@ interface BiocontrolReleaseSchema extends BaseForm {
       seeds_forming: number;
       senescent: number;
       target_plant_heights: Array<{
-        height_cm: number;
+        height_cm?: number;
       }>;
     };
     // Microsites
@@ -44,9 +44,9 @@ interface BiocontrolReleaseSchema extends BaseForm {
       comments: string;
       cloud_cover: string;
       precipitation: string;
-      temperature: number;
+      temperature?: number;
       wind_direction: string;
-      wind_speed_kmh: number;
+      wind_speed_kmh?: number;
     };
   };
 }

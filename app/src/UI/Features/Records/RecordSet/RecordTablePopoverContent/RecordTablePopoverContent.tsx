@@ -1,4 +1,3 @@
-import { Button } from '@mui/material';
 import './RecordTablePopoverContent.css';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import { useDispatch } from 'utils/use_selector';
@@ -6,8 +5,7 @@ import UserSettings from 'state/actions/userSettings/UserSettings';
 import { GeoJSON } from 'geojson';
 import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
 import { useNavigate } from 'react-router';
-import { Debug } from 'UI/Reusable/Predicates/Debug';
-import { BugReport } from '@mui/icons-material';
+import Button from 'UI/Reusable/Button/Button';
 
 /**
  * @property { string } recordDisplayId Short ID / Site ID for a Record, displayed in the Popover
@@ -25,13 +23,6 @@ const RecordTablePopoverContent = ({ recordDisplayId: id, recordLookupId, record
     const url =
       recordType === RecordSetType.Activity
         ? '/Records/Activity/' + recordLookupId + '/form'
-        : '/Records/IAPP/' + recordLookupId + '/summary';
-    navigate(url);
-  };
-  const handleOpenRecordInRJSF = () => {
-    const url =
-      recordType === RecordSetType.Activity
-        ? '/Records/LegacyForm/' + recordLookupId + '/form'
         : '/Records/IAPP/' + recordLookupId + '/summary';
     navigate(url);
   };
@@ -67,12 +58,6 @@ const RecordTablePopoverContent = ({ recordDisplayId: id, recordLookupId, record
       <Button onClick={handleOpenRecordInRHF} variant="contained">
         Open
       </Button>
-      {/* // TODO: Remove RJSF Option */}
-      <Debug>
-        <Button onClick={handleOpenRecordInRJSF} variant="contained">
-          <BugReport /> Open <Debug>- RJSF Form</Debug>
-        </Button>
-      </Debug>
       {!!geom && (
         <Button onClick={handleMarkGeometryOnMap.bind(this, true)} variant="contained">
           Pan to record

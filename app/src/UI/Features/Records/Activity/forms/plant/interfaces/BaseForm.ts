@@ -12,7 +12,6 @@ interface BaseForm {
     label: string;
     full: string;
   }>;
-  linking_activities: Record<PropertyKey, unknown>[];
   shape?: Feature;
   date: string;
   area_m: number;

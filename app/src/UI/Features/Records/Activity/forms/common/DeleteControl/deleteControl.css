@@ -12,6 +12,9 @@
     align-items: center;
     justify-content: center;
     border: 1px solid black;
+
+    /* Explicit to block iOS styling override */
+    color: black;
     border-radius: 3px;
     background-color: #fff;
     padding: 5px 8px;

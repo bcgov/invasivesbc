@@ -145,7 +145,7 @@ const DisposedMaterialFormat = [
   },
   {
     full_name: 'Weight (kg)',
-    code: 'Kg',
+    code: 'kg',
     table: 'PlantDisposalFormat'
   }
 ];

@@ -23,11 +23,11 @@ const getObservationAquaticPlantSubtypeFields = (): AquaticPlantObservationSchem
   shoreline_types: [
     {
       shoreline_type: '',
-      percent_covered: 0
+      percent_covered: undefined
     }
   ],
   context: {
-    suitable_for_biocontrol: ''
+    suitable_for_biocontrol: 'Unknown'
   },
 
   waterbody_context: {
@@ -38,10 +38,10 @@ const getObservationAquaticPlantSubtypeFields = (): AquaticPlantObservationSchem
     access: '',
     colour: '',
     comment: '',
-    max_depth_m: 0,
+    max_depth_m: undefined,
     name_gazetted: '',
     name_local: '',
-    secchi_depth: 0,
+    secchi_depth: undefined,
     tidal_influence: '',
     type: ''
   }

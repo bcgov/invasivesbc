@@ -1,6 +1,5 @@
 import { useDispatch } from 'react-redux';
 import './RecordSet.css';
-import Button from '@mui/material/Button';
 import { RecordTable } from './RecordTable';
 import ExcelExporter from '../ExcelExporter';
 import RecordSetFooter from './RecordSetFooter';
@@ -14,6 +13,8 @@ import Filters from './Filters/Filters';
 import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
 import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
 import GlobalFilterWarning from './GlobalFilterWarning/GlobalFilterWarning';
+import { ArrowBackIos } from '@mui/icons-material';
+import { Button } from '@mui/material';
 
 type PropTypes = { setID: string };
 
@@ -43,7 +44,7 @@ export const RecordSet = ({ setID }: PropTypes) => {
         <div className="recordSet_header" style={{ backgroundColor: recordSet?.color + `50` }}>
           <div className="recordSet_back_button">
             <Button onClick={onClickBackButton} variant="contained">
-              {'< Back'}
+              <ArrowBackIos /> Back
             </Button>
           </div>
           <div className="recordSet_header_name">

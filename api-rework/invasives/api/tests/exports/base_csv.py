@@ -1,6 +1,7 @@
 from django.test.client import Client
 from api.tests.base_test_case import BaseTestCase
 from api.models.activity import ActivitySubtypes
+from asgiref.sync import async_to_sync
 from io import StringIO
 import csv
 from api.configs.exports import CSV_SUBTYPE_CONFIG, build_csv_annotation_object
@@ -93,7 +94,18 @@ class BaseCSVTest(BaseTestCase):
         self.assertEqual(response["Content-Type"], "text/csv")
         self.assertIn("attachment", response["Content-Disposition"])
 
-        content = b"".join(response.streaming_content).decode("utf-8")
+        # Helper function to consume the async stream
+        async def get_stream_content():
+            chunks = []
+            async for chunk in response.streaming_content:
+                if isinstance(chunk, bytes):
+                    chunks.append(chunk.decode("utf-8"))
+                else:
+                    chunks.append(chunk)
+            return "".join(chunks)
+
+        # Consume the async generator synchronously
+        content = async_to_sync(get_stream_content)()
         csv_file = StringIO(content)
         reader = csv.reader(csv_file)
         rows = list(reader)

@@ -17,7 +17,7 @@ const getMonitoringBiocontrolReleaseSubtypeFields = (): BiocontrolReleaseMonitor
       suitable_for_collection: '',
       actual_biological_agents: [
         {
-          quantity: 0,
+          quantity: undefined,
           stage: '',
           plant_position: '',
           agent_location: ''
@@ -25,7 +25,7 @@ const getMonitoringBiocontrolReleaseSubtypeFields = (): BiocontrolReleaseMonitor
       ],
       estimated_biological_agents: [
         {
-          quantity: 0,
+          quantity: undefined,
           stage: '',
           plant_position: '',
           agent_location: ''
@@ -41,7 +41,7 @@ const getMonitoringBiocontrolReleaseSubtypeFields = (): BiocontrolReleaseMonitor
     flowering: 0,
     seeds_forming: 0,
     senescent: 0,
-    target_plant_heights: [{ height_cm: 0 }]
+    target_plant_heights: [{ height_cm: undefined }]
   },
   // Microsite Condition
   microsite_conditions: {
@@ -50,19 +50,19 @@ const getMonitoringBiocontrolReleaseSubtypeFields = (): BiocontrolReleaseMonitor
   },
   // Spread Results
   spread_results: {
-    agent_density: 0,
-    plant_attack: 0,
-    max_spread_distance_m: 0,
-    max_spread_aspect_deg: 0
+    agent_density: undefined,
+    plant_attack: undefined,
+    max_spread_distance_m: undefined,
+    max_spread_aspect_deg: undefined
   },
   // Weather
   weather_conditions: {
     comments: '',
     cloud_cover: '',
     precipitation: '',
-    temperature: 0,
+    temperature: undefined,
     wind_direction: '',
-    wind_speed_kmh: 0
+    wind_speed_kmh: undefined
   }
 });
 

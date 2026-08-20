@@ -150,7 +150,7 @@ const ActivityForm = () => {
   }
 
   return (
-    <div className="activity-page">
+    <div className="activity-page" key={formId}>
       <nav>
         {Object.values(Mode ?? {}).map((m) => (
           <NavLink className={'form-nav'} to={`/Records/Activity/${id}/${m}`} key={m} end={true}>

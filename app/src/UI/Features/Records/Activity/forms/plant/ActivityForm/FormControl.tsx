@@ -16,6 +16,7 @@ import Button from 'UI/Reusable/Button/Button';
  */
 const FormControl = () => {
   const handleOpenMenu = (evt: MouseEvent<HTMLElement> | TouchEvent<HTMLElement>) => {
+    trigger();
     setAnchorEl(evt.currentTarget);
   };
 
@@ -46,7 +47,12 @@ const FormControl = () => {
         callback: (confirmation: boolean) => {
           if (confirmation) {
             dispatch(FormActions.clearFormState());
-            reset(getDefaultFormState(subtype, created_by));
+            const newState = {
+              ...getDefaultFormState(subtype, created_by),
+              id: formState?.id,
+              short_id: formState?.short_id
+            };
+            reset(newState);
           }
         }
       })
@@ -73,6 +79,7 @@ const FormControl = () => {
     getValues,
     setValue,
     reset,
+    trigger,
     formState: { disabled, errors }
   } = useFormContext<FormSchema>();
 
@@ -86,7 +93,10 @@ const FormControl = () => {
   const isFormSubmitted = useSelector((state) => state.ActivityPage.formState?.form_status === 'Submitted');
   const currId = useSelector((state) => state.ActivityPage.formId);
   const created_by = useSelector((state) => state.ActivityPage.formState?.created_by);
+  const formState = useSelector((state) => state.ActivityPage?.formState);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+
+  const doesFormExist = !!formState;
 
   const canDelete: boolean = useMemo(() => {
     return !!recordActions?.includes('DELETE');
@@ -112,7 +122,7 @@ const FormControl = () => {
           )}
           {/* Type="Submit" is tied to react-hook-form, it will handle the submission logic. // Errors don't need to be
           accounted for in disabling, since the rhf will pan to the error */}
-          <Button className="control-button" type="submit" form="activity-form" disabled={disabled || !canSubmit}>
+          <Button type="submit" className="control-button" form="activity-form" disabled={disabled || !canSubmit}>
             Submit
           </Button>
           {!isFormSubmitted && (
@@ -120,7 +130,11 @@ const FormControl = () => {
               <Button className="control-button" disabled={disabled || !canSubmit} onClick={saveToDraft}>
                 Save as Draft
               </Button>
-              <Button className="control-button" disabled={disabled || !canSubmit} onClick={handleClear}>
+              <Button
+                className="control-button"
+                disabled={disabled || !canSubmit || !doesFormExist}
+                onClick={handleClear}
+              >
                 Clear Form
               </Button>
             </>

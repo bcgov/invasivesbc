@@ -9,6 +9,7 @@ import { Photos } from 'UI/Features/IAPP/Photos';
 import IappActions from 'state/actions/activity/Iapp';
 import { useSelector } from 'utils/use_selector';
 import MapActions from 'state/actions/map';
+import { ArrowBackIos } from '@mui/icons-material';
 
 const RenderIAPPPhotos = () => {
   const IAPPState = useSelector((state) => state.IAPPSitePage);
@@ -80,7 +81,7 @@ export const IAPPRecord = () => {
       </div>
       <div className="control">
         <Button variant="contained" color="primary" onClick={() => navigate(-1)}>
-          {'< Back'}
+          <ArrowBackIos /> Back
         </Button>
       </div>
 

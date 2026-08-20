@@ -1,24 +1,13 @@
 import { BugReport } from '@mui/icons-material';
+import Button, { InputButtonProps } from 'UI/Reusable/Button/Button';
 import { Debug } from 'UI/Reusable/Predicates/Debug';
 
-const DebugButton = ({ onClick, label }) => {
-  const buttonStyle: React.CSSProperties = {
-    width: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'var(--bc-blue)',
-    color: 'white',
-    height: '3rem',
-    fontSize: '1rem'
-  };
-  return (
-    <Debug>
-      <button onClick={onClick} style={buttonStyle}>
-        <BugReport /> {label}
-      </button>
-    </Debug>
-  );
-};
+const DebugButton = ({ children, ...props }: InputButtonProps) => (
+  <Debug>
+    <Button {...props}>
+      <BugReport /> {children}
+    </Button>
+  </Debug>
+);
 
 export default DebugButton;
