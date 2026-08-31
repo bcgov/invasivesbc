@@ -178,6 +178,7 @@ const TreatmentChemicalPlant = () => {
           {...register(getContextPath('wind_speed_kmh'), {
             required: true,
             valueAsNumber: true,
+            deps: [getContextPath('wind_direction')],
             // If user verifies weather accurate, check for clearly accidental values (extra digits)
             validate: {
               minSpeed: (val) => greaterThanEqual(val, 0),
@@ -197,8 +198,8 @@ const TreatmentChemicalPlant = () => {
             required: true,
             deps: [getContextPath('wind_speed_kmh')],
             validate: (direction, formValues) => {
-              const windSpeed = formValues.subtype_data?.wind_speed_kmh;
-              if (direction === 'NA' && windSpeed > 0) {
+              const windSpeed = formValues.subtype_data?.context?.wind_speed_kmh;
+              if (direction === 'No Wind' && windSpeed > 0) {
                 return 'Must specify a wind direction when wind speed > 0';
               }
               return true;
