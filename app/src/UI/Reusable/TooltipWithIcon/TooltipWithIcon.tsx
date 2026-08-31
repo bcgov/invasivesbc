@@ -13,6 +13,7 @@ const TooltipWithIcon = ({ tooltipText, icon }: PropTypes) => {
   return (
     <Tooltip
       open={showTooltip}
+      tabIndex={-1}
       classes={{ tooltip: 'tool-tip' }}
       onMouseEnter={setShowTooltip.bind(this, true)}
       onMouseLeave={setShowTooltip.bind(this, false)}
@@ -20,7 +21,7 @@ const TooltipWithIcon = ({ tooltipText, icon }: PropTypes) => {
       onBlur={setShowTooltip.bind(this, false)}
       title={tooltipText}
     >
-      <IconButton sx={{ padding: 0, margin: 0, pointerEvents: 'auto' }}>
+      <IconButton tabIndex={-1} sx={{ padding: 0, margin: 0, pointerEvents: 'auto' }}>
         {icon ? icon : <HelpOutline color="info" />}
       </IconButton>
     </Tooltip>
