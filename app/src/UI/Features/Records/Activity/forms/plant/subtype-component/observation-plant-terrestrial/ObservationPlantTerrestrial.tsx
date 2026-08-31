@@ -92,7 +92,7 @@ const ObservationPlantTerrestrial = () => {
           width={Width.Half}
         />
         <SingleSelect
-          label={'Suitable For Biocontrol Agent'}
+          label={'Suitable For Biocontrol Agent(s)'}
           options={YesNoUnknown}
           name={getPath('suitable_for_biocontrol_agent')}
           required
