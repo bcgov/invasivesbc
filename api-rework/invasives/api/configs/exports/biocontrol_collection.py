@@ -46,6 +46,11 @@ BIOCONTROL_COLLECTION_ANNOTATIONS = [
         "annotation": F("plant_count_collection"),
     },
     {
+        "header": "Count Duration (minutes)",
+        "key": "count_duration_display",
+        "annotation": F("time_collection_duration_minutes"),
+    },
+    {
         "header": "Collection Method",
         "key": "collection_method_display",
         "annotation": F("collection_method__full"),
