@@ -69,11 +69,6 @@ MONITORING_BIOCONTROL_DISPERSAL_RELEASE_ANNOTATIONS = [
         "annotation": F(f"monitoring_method__full"),
     },
     {
-        "header": "Linear Segment",
-        "key": "linear_segment_display",
-        "annotation": F(f"linear_segment"),
-    },
-    {
         "header": "Monitoring Start Time",
         "key": "start_time_display",
         "annotation": Func(
