@@ -13,6 +13,7 @@ import DateInput from 'UI/Features/Records/Activity/forms/common/DateInput/DateI
 import RadioInput from 'UI/Features/Records/Activity/forms/common/RadioInput/RadioInput';
 import FormSpacer from 'UI/Features/Records/Activity/forms/common/FormSpacer/FormSpacer';
 import CheckboxInput from 'UI/Features/Records/Activity/forms/common/CheckboxInput/CheckboxInput';
+import TextArea from 'UI/Features/Records/Activity/forms/common/TextArea/TextArea';
 import {
   lessThanEqual,
   lessThan,
@@ -332,7 +333,7 @@ const TreatmentChemicalPlant = () => {
           ]}
         />
         {ntz_bool ? (
-          <TextInput
+          <TextArea
             advisoryText="Only the PMP or permit holder may approve an NTZ reduction on public lands."
             error={get(errors, getContextPath('rationale_for_ntz_reduction'))}
             label={'Rationale for NTZ Reduction'}

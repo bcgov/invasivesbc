@@ -5,6 +5,7 @@ import { getInputWidth, Width } from 'UI/Features/Records/Activity/forms/common/
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
 import OptionalField from 'UI/Features/Records/Activity/forms/common/OptionalField/OptionalField';
 import './textArea.css';
+import AdvisoryMessage from '../AdvisoryMessage/AdvisoryMessage';
 
 interface PropTypes extends InputHTMLAttributes<HTMLTextAreaElement> {
   error?: FieldError;
@@ -12,11 +13,12 @@ interface PropTypes extends InputHTMLAttributes<HTMLTextAreaElement> {
   required?: boolean;
   tooltip?: string;
   width?: Width;
+  advisoryText?: string;
 }
 
 // Use forwardRef so Hook Form can manage the input focus
 export const TextArea = forwardRef<HTMLTextAreaElement, PropTypes>(
-  ({ error, label, required = false, tooltip, width, ...props }, ref) => {
+  ({ advisoryText, error, label, required = false, tooltip, width, ...props }, ref) => {
     return (
       <div className={`form-textarea-input ${getInputWidth(width)}`}>
         {label && (
@@ -29,6 +31,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, PropTypes>(
           </div>
         )}
         <textarea aria-invalid={!!error} rows={6} ref={ref} {...props} />
+        {advisoryText && <AdvisoryMessage text={advisoryText} />}
         <ErrorMessage error={error} label={label} />
       </div>
     );
