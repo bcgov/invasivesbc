@@ -256,7 +256,7 @@ class Context(ChemicalWeatherInformation):
     pest_management_plan: Optional[PestManagementPlanType] = None
     pest_management_plan_manual: Optional[str] = None
     treatment_notice_signs: YesNoUnknown
-    precautionary_statement: ChemicalPrecautionaryStatementType
+    precautionary_statement: Optional[ChemicalPrecautionaryStatementType] = None
     application_start_time: NaiveDatetime
     ntz_reduction: bool
     rationale_for_ntz_reduction: Optional[str] = None

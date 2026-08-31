@@ -301,8 +301,7 @@ const TreatmentChemicalPlant = () => {
           label={'Precautionary Statement'}
           name={getContextPath('precautionary_statement')}
           options={codes?.ChemicalPrecautionaryStatement}
-          required
-          rules={{ required: true }}
+          rules={{ required: false }}
           tooltip={tooltips.plant.chemical.required_under_license}
           width={Width.Half}
         />
