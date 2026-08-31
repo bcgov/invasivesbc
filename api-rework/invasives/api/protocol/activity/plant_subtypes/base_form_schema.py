@@ -1,7 +1,7 @@
-from typing import List, Literal, Optional
+from typing import List, Literal, Optional, Union
 from datetime import date
 from ninja import Schema
-from pydantic import Field, model_validator, field_validator, RootModel, ConfigDict
+from pydantic import Field, model_validator, field_validator, ConfigDict
 from api.models.activity import FormStatus
 from api.protocol.activity.validators.no_repeat_key import no_repeat_key
 from api.protocol.activity.validators.check_sum import check_sum
@@ -13,6 +13,72 @@ from api.protocol.activity.validators.code_validation import (
 )
 
 MAX_AREA_FOR_RECORD = 500000
+from typing import Annotated, Dict, List, Optional, Union
+from pydantic import Field
+from geojson_pydantic import Feature, FeatureCollection
+from geojson_pydantic.geometries import (
+    Point,
+    MultiPoint,
+    LineString,
+    MultiLineString,
+    Polygon,
+    MultiPolygon,
+    GeometryCollection as _GeometryCollection,
+)
+from geojson_pydantic.types import Position2D
+
+
+# Override base classes to use a 2D Coordinate system as we don't use z-indexes in app.
+class Point2D(Point):
+    coordinates: Position2D
+
+
+class MultiPoint2D(MultiPoint):
+    coordinates: List[Position2D]
+
+
+class LineString2D(LineString):
+    coordinates: List[Position2D]
+
+
+class MultiLineString2D(MultiLineString):
+    coordinates: List[List[Position2D]]
+
+
+class Polygon2D(Polygon):
+    coordinates: List[List[Position2D]]
+
+
+class MultiPolygon2D(MultiPolygon):
+    coordinates: List[List[List[Position2D]]]
+
+
+class GeometryCollection2D(_GeometryCollection):
+    geometries: List["Geometry2D"]
+
+
+Geometry2D = Annotated[
+    Union[
+        Point2D,
+        MultiPoint2D,
+        LineString2D,
+        MultiLineString2D,
+        Polygon2D,
+        MultiPolygon2D,
+        GeometryCollection2D,
+    ],
+    Field(discriminator="type"),
+]
+
+GeometryCollection2D.model_rebuild()
+Feature2D = Feature[Geometry2D, Optional[Dict]]
+FeatureCollection2D = FeatureCollection[Feature2D]
+
+
+AnyGeoJSON2D = Annotated[
+    Union[Feature2D, FeatureCollection2D, Geometry2D],
+    Field(discriminator="type"),
+]
 
 
 class CleanSchema(Schema):
@@ -90,33 +156,6 @@ class ProjectCode(CleanSchema):
     description: str
 
 
-class Position2D(RootModel[tuple[float, float]]):
-    """Loosely defined coordinate type for incoming Geometry"""
-
-    pass
-
-
-class PolygonGeometry2D(CleanSchema):
-    """
-    Custom Polygon GeoJSON Type.
-    Pydantics build in Geometry types add 0-value Z-indexes that error out when casting to GeosGeometry.
-    """
-
-    type: Literal["Polygon"]
-    coordinates: list[list[Position2D]]
-
-
-class Feature2D(CleanSchema):
-    """
-    Custom 2D GeoJSON Feature type.
-    Pydantics build in Geometry types add 0-value Z-indexes that error out when casting to GeosGeometry.
-    """
-
-    type: Literal["Feature"]
-    geometry: PolygonGeometry2D
-    properties: dict | None = None
-
-
 class DraftBaseFormSchema(CleanSchema):
     """Loosely Typed BaseSchema for Plant Activity Forms"""
 
@@ -136,7 +175,7 @@ class DraftBaseFormSchema(CleanSchema):
 
     # Geometry Values
     area_m: Optional[int]
-    shape: Optional[Feature2D] = None
+    shape: Optional[AnyGeoJSON2D] = None
     latitude: Optional[float]
     longitude: Optional[float]
     utm_easting: Optional[int]
@@ -162,7 +201,7 @@ class BaseFormSchema(DraftBaseFormSchema):
     jurisdictions: List[JurisdictionSchema] = Field(..., min_length=1)
     participants: List[Participant] = Field(..., min_length=1)
     area_m: int = Field(..., gt=0, le=MAX_AREA_FOR_RECORD)
-    shape: Feature2D
+    shape: AnyGeoJSON2D
     latitude: float
     longitude: float
     utm_easting: int
