@@ -66,7 +66,7 @@ MONITORING_BIOCONTROL_DISPERSAL_RELEASE_ANNOTATIONS = [
     {
         "header": "Count Duration (minutes)",
         "key": "count_duration_display",
-        "annotation": F("time_collection_duration_minutes"),
+        "annotation": F("count_duration_minutes"),
     },
     {
         "header": "Monitoring Method",
