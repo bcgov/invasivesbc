@@ -3,12 +3,12 @@ import { TerrestrialMechTreatment } from 'UI/Features/Records/Activity/forms/pla
 const getTreatmentMechanicalTerrestrialPlantSubtypeFields = (): TerrestrialMechTreatment['subtype_data'] => ({
   entries: [
     {
-      disposed_material_amount: undefined,
+      disposed_material_amount: NaN,
       disposed_material_format: '',
       disposal_method: '',
       invasive_plant: '',
       mechanical_method: '',
-      treated_area_msq: undefined
+      treated_area_msq: NaN
     }
   ]
 });

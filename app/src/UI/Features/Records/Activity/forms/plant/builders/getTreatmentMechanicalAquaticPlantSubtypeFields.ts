@@ -3,18 +3,18 @@ import { AquaticMechTreatment } from 'UI/Features/Records/Activity/forms/plant/i
 const getTreatmentMechanicalAquaticPlantSubtypeFields = (): AquaticMechTreatment['subtype_data'] => ({
   entries: [
     {
-      disposed_material_amount: undefined,
+      disposed_material_amount: NaN,
       disposed_material_format: '',
       disposal_method: '',
       invasive_plant: '',
       mechanical_method: '',
-      treated_area_msq: undefined
+      treated_area_msq: NaN
     }
   ],
   shoreline_types: [
     {
       shoreline_type: '',
-      percent_covered: undefined
+      percent_covered: NaN
     }
   ],
   authorization_information: ''

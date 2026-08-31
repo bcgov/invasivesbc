@@ -65,10 +65,7 @@ const TargetPlantPhenology = () => {
             label={'Target Plant Heights'}
             width={Width.Full}
             rules={{ validate: (arr) => minArrayLength(arr, 1) }}
-            emptyValue={
-              (getDefaultFormState(ActivitySubtypes.Biocontrol_Release) as BiocontrolReleaseSchema).subtype_data
-                .target_plant_phenology?.target_plant_heights[0]
-            }
+            emptyValue={{ height_cm: NaN }}
             renderRow={(index) => (
               <NumberInput
                 label="Height (cm)"

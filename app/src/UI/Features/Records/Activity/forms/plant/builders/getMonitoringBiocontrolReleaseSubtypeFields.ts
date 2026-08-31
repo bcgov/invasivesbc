@@ -8,8 +8,8 @@ const getMonitoringBiocontrolReleaseSubtypeFields = (): BiocontrolReleaseMonitor
       invasive_plant: '',
       monitoring_type: '',
       monitoring_method: '',
-      count_duration_minutes: undefined,
-      plant_count: undefined,
+      count_duration_minutes: NaN,
+      plant_count: NaN,
       location_agent_found: [],
       sign_of_biocontrol_presence: [],
       start_time: '',
@@ -17,7 +17,7 @@ const getMonitoringBiocontrolReleaseSubtypeFields = (): BiocontrolReleaseMonitor
       suitable_for_collection: '',
       actual_biological_agents: [
         {
-          quantity: undefined,
+          quantity: NaN,
           stage: '',
           plant_position: '',
           agent_location: ''
@@ -25,7 +25,7 @@ const getMonitoringBiocontrolReleaseSubtypeFields = (): BiocontrolReleaseMonitor
       ],
       estimated_biological_agents: [
         {
-          quantity: undefined,
+          quantity: NaN,
           stage: '',
           plant_position: '',
           agent_location: ''
@@ -41,7 +41,7 @@ const getMonitoringBiocontrolReleaseSubtypeFields = (): BiocontrolReleaseMonitor
     flowering: 0,
     seeds_forming: 0,
     senescent: 0,
-    target_plant_heights: [{ height_cm: undefined }]
+    target_plant_heights: []
   },
   // Microsite Condition
   microsite_conditions: {
@@ -50,19 +50,19 @@ const getMonitoringBiocontrolReleaseSubtypeFields = (): BiocontrolReleaseMonitor
   },
   // Spread Results
   spread_results: {
-    agent_density: undefined,
-    plant_attack: undefined,
-    max_spread_distance_m: undefined,
-    max_spread_aspect_deg: undefined
+    agent_density: NaN,
+    plant_attack: NaN,
+    max_spread_distance_m: NaN,
+    max_spread_aspect_deg: NaN
   },
   // Weather
   weather_conditions: {
     comments: '',
     cloud_cover: '',
     precipitation: '',
-    temperature: undefined,
+    temperature: NaN,
     wind_direction: '',
-    wind_speed_kmh: undefined
+    wind_speed_kmh: NaN
   }
 });
 

@@ -12,13 +12,13 @@ const getBiocontrolCollectionSubtypeFields = (): BiocontrolCollectionSchema['sub
       comment: '',
       actual_biological_agents: [
         {
-          quantity: undefined,
+          quantity: NaN,
           stage: ''
         }
       ],
       estimated_biological_agents: [
         {
-          quantity: undefined,
+          quantity: NaN,
           stage: ''
         }
       ]
@@ -32,11 +32,7 @@ const getBiocontrolCollectionSubtypeFields = (): BiocontrolCollectionSchema['sub
     flowering: 0,
     seeds_forming: 0,
     senescent: 0,
-    target_plant_heights: [
-      {
-        height_cm: undefined
-      }
-    ]
+    target_plant_heights: []
   },
   microsite_conditions: {
     mesoslope_position: '',
@@ -46,9 +42,9 @@ const getBiocontrolCollectionSubtypeFields = (): BiocontrolCollectionSchema['sub
     comments: '',
     cloud_cover: '',
     precipitation: '',
-    temperature: undefined,
+    temperature: NaN,
     wind_direction: '',
-    wind_speed_kmh: undefined
+    wind_speed_kmh: NaN
   }
 });
 

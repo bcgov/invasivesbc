@@ -9,6 +9,10 @@ import { minArrayLength } from 'UI/Features/Records/Activity/forms/common/valida
 import TargetPlantPhenology from 'UI/Features/Records/Activity/forms/plant/subtype-component/common/TargetPlantPhenology';
 
 const BiocontrolRelease = () => {
+  const getEmptyEntry = (): BiocontrolReleaseSchema['subtype_data']['entries'][0] => {
+    return (getDefaultFormState(ActivitySubtypes.Biocontrol_Release) as BiocontrolReleaseSchema).subtype_data
+      .entries[0];
+  };
   return (
     <>
       <BiocontrolWeatherConditions />
@@ -16,7 +20,7 @@ const BiocontrolRelease = () => {
       <ArrayField<BiocontrolReleaseSchema, 'subtype_data.entries'>
         name={'subtype_data.entries'}
         label={'Biocontrol Treatments'}
-        emptyValue={getDefaultFormState(ActivitySubtypes.Biocontrol_Release).subtype_data.entries[0]}
+        emptyValue={() => getEmptyEntry()}
         rules={{
           validate: {
             minLength: (val) => minArrayLength(val, 1)
