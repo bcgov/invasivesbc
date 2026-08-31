@@ -20,8 +20,10 @@ class ComputedLocationFields(models.Model):
         max_length=128,
         null=True,
     )
-    computed_elevation_m = models.SmallIntegerField(
-        blank=True, db_comment="Estimated elevation of an area in meters", null=True
+    computed_elevation_m: models.SmallIntegerField[int | None, int | None] = (
+        models.SmallIntegerField(
+            blank=True, db_comment="Estimated elevation of an area in meters", null=True
+        )
     )
     computed_flrno_districts = models.CharField(blank=True, max_length=128, null=True)
     computed_invasive_plant_management_areas = models.CharField(

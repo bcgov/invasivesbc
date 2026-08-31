@@ -25,7 +25,9 @@ class BaseModel(models.Model):
     disposed_material_format = models.CharField(
         choices=PlantDisposalFormat, blank=True, null=True
     )
-    disposed_material_amount = models.PositiveIntegerField(blank=True, null=True)
+    disposed_material_amount = models.FloatField(
+        validators=[MinValueValidator(0)], blank=True, null=True
+    )
 
     class Meta:
         abstract = True

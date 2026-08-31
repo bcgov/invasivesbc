@@ -7,6 +7,7 @@ boto3==1.43.56
 boto3-stubs==1.43.56
 botocore==1.43.56
 botocore-stubs==1.43.14
+cachebox==5.2.3
 celery==5.6.3
 certifi==2026.7.22
 cffi==2.1.0
@@ -26,6 +27,7 @@ django-ninja==1.6.2
 django-stubs==6.0.7
 django-stubs-ext==6.0.7
 django-timezone-field==7.2.2
+django_celery_results==2.6.0
 djangorestframework==3.17.1
 djangorestframework-stubs==3.17.0
 geojson==3.3.0
@@ -37,6 +39,7 @@ mdurl==0.1.2
 mercantile==1.2.1
 mypy_extensions==1.1.0
 numpy==2.5.1
+orderly-set==5.5.0
 packaging==26.2
 pathspec==1.1.1
 pillow==12.3.0

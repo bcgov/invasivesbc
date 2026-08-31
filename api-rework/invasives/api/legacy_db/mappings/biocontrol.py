@@ -6,7 +6,11 @@ from api.legacy_db.mappings.participants import add_persons
 from api.legacy_db.mappings.plants import add_target_plant_phenology
 from api.legacy_db.mappings.spread import add_spread_details
 from api.legacy_db.mappings.wells import add_well_information
-from api.legacy_db.model_serializer import LegacyActivity
+from api.legacy_db.model_serializer import (
+    LegacyActivity,
+    LegacyBiocontrolDispersionMonitoring,
+    LegacyBiocontrolReleaseInformation,
+)
 from api.models.activity import (
     Activity,
     TerrestrialBiocontrolReleaseEntry,
@@ -29,6 +33,32 @@ from api.models.codes import (
     BiocontrolPresenceCode,
     AgentLocationFoundTerrainCode,
 )
+
+import logging
+
+
+def add_agent_location_and_presence(
+    adr: ActivityDataRecord,
+    ri: (
+        LegacyBiocontrolDispersionMonitoring | LegacyBiocontrolReleaseInformation | None
+    ),
+) -> None:
+    if ri is None:
+        return
+
+    if ri.bio_agent_location_code is not None:
+        for p in ri.bio_agent_location_code.split(","):
+            LocationBiocontrolAgentsFoundTerrestrial.objects.create(
+                activity_data_record=adr,
+                location_agent_found=AgentLocationFoundTerrainCode.objects.get(code=p),
+            )
+
+    if ri.biological_agent_presence_code is not None:
+        for p in ri.biological_agent_presence_code.split(","):
+            SignOfBiocontrolPresenceTerrestrial.objects.create(
+                activity_data_record=adr,
+                sign_of_presence=BiocontrolPresenceCode.objects.get(code=p),
+            )
 
 
 def add_subtype_payload_for_biocontrol_release(new: Activity, old: LegacyActivity):
@@ -196,6 +226,9 @@ def add_subtype_payload_for_biocontrol_dispersal_monitoring_terrestrial_plant(
             stop_time=ri.stop_time,
             suitable_for_collection=ri.suitable_collection_site,
         )
+
+        add_agent_location_and_presence(adr, ri)
+
         if ri.estimated_biological_agents is not None:
             for ba in ri.estimated_biological_agents:
                 TerrestrialBiocontrolAgentCountExtended.objects.create(
@@ -274,20 +307,9 @@ def add_subtype_payload_for_biocontrol_release_monitoring_terrestrial_plant(
             stop_time=ri.stop_time,
             suitable_for_collection=ri.suitable_collection_site,
         )
-        if ri.bio_agent_location_code is not None:
-            for p in ri.bio_agent_location_code.split(","):
-                LocationBiocontrolAgentsFoundTerrestrial.objects.create(
-                    activity_data_record=adr,
-                    location_agent_found=AgentLocationFoundTerrainCode.objects.get(
-                        code=p
-                    ),
-                )
-        if ri.biological_agent_presence_code is not None:
-            for p in ri.biological_agent_presence_code.split(","):
-                SignOfBiocontrolPresenceTerrestrial.objects.create(
-                    activity_data_record=adr,
-                    sign_of_presence=BiocontrolPresenceCode.objects.get(code=p),
-                )
+
+        add_agent_location_and_presence(adr, ri)
+
         if ri.actual_biological_agents is not None:
             for ba in ri.actual_biological_agents:
                 TerrestrialBiocontrolAgentCountExtended.objects.create(

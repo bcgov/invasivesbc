@@ -12,6 +12,7 @@ from api.models.codes import (
     MesoslopePositionCode,
     SiteSurfaceShapeCode,
 )
+import logging
 
 
 def add_microsite_conditions(
@@ -36,6 +37,7 @@ def add_microsite_conditions(
         site_surface_shape=(
             SiteSurfaceShapeCode.objects.get(code=ms.site_surface_shape_code)
             if ms.site_surface_shape_code is not None
+            and ms.site_surface_shape_code != ""
             else None
         ),
     )

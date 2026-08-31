@@ -106,7 +106,7 @@ def migrate(old: LegacyActivity):
         old.activity_payload.form_data.activity_data.location_description
     )
     new.date = old.activity_payload.form_data.activity_data.activity_date_time
-    new.form_status = old.activity_payload.form_data.form_status
+    new.form_status = old.form_status
     new.comment = old.activity_payload.form_data.activity_data.general_comment
 
     if old.activity_payload.geometry is None:
@@ -189,7 +189,12 @@ def migrate(old: LegacyActivity):
     new.creating_platform = src_map.get(
         old.activity_payload.platform_src, PlatformSource.Unknown.value
     )
-    new.batch_id = old.activity_payload.batch_id
+    new.batch_id = (
+        old.activity_payload.batch_id
+        if old.activity_payload.batch_id is not None
+        and old.activity_payload.batch_id != "null"
+        else None
+    )
 
     new.area_m = old.activity_payload.form_data.activity_data.reported_area
 

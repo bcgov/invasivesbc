@@ -1,11 +1,11 @@
-import requests
-from celery import shared_task
-from celery.utils.log import get_task_logger
 from api.models.activity import Activity, ActivityDataRecord, RisoArea
+from celery.utils.log import get_task_logger
 from django.db import transaction
+from invasivesbc import celery_app
 from invasivesbc.settings import LEGACY_DB_CONNECTION_STRING
 import psycopg
 from psycopg.rows import dict_row
+import requests
 
 logger = get_task_logger(__name__)
 
@@ -137,8 +137,13 @@ def fetch_computed_regional_districts(a: Activity):
 
 
 def fetch_computed_elevation_m(a: Activity):
-    if a.latitude == None or a.longitude == None or a.computed_elevation_m != None:
-        return
+    if a.computed_elevation_m is not None:
+        return a.computed_elevation_m
+
+    if a.latitude is None or a.longitude is None:
+        logger.error("Cannot compute ")
+        raise Exception("latitude or longitude is missing, cannot compute elevation")
+
     url = f"https://geogratis.gc.ca/services/elevation/cdem/altitude?lat={a.latitude}&lon={a.longitude}"
     response = requests.get(url, timeout=5)
     response.raise_for_status()
@@ -146,7 +151,7 @@ def fetch_computed_elevation_m(a: Activity):
     return data["altitude"]
 
 
-@shared_task(bind=True, max_retries=3)
+@celery_app.task(bind=True, max_retries=3)
 def generate_computed_activity_fields(self, record_id):
     try:
         a = Activity.objects.get(id=record_id)

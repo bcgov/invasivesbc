@@ -55,6 +55,17 @@ class LegacyActivityJurisdiction(BaseModel):
 
 
 class LegacyActivityData(BaseModel):
+    @field_validator("project_code", mode="before")
+    @classmethod
+    def clean_project_codes(cls, v: Any) -> Any:
+        if v == {} or v == []:
+            return None
+
+        if isinstance(v, list):
+            return [a for a in v if a is not None]
+
+        return v
+
     # linked_id: Optional[str] = Field(default=None) # this can appear one level up in the JSON too!?
     latitude: Latitude
     longitude: Longitude
@@ -261,7 +272,7 @@ class LegacyChemTreatmentHerbicideD(LegacyChemTreatmentBase):
         if isinstance(data, dict):
             for f in extra_fields:
                 if f in data:
-                    logging.info(f"removing extra field {f} on {cls}")
+                    logging.debug(f"removing extra field {f} on {cls}")
                     data.pop(f)
         return data
 
@@ -279,7 +290,7 @@ class LegacyChemTreatmentHerbicidePAR(LegacyChemTreatmentBase):
         if isinstance(data, dict):
             for f in extra_fields:
                 if f in data:
-                    logging.info(f"removing extra field {f} on {cls}")
+                    logging.debug(f"removing extra field {f} on {cls}")
                     data.pop(f)
         return data
 
@@ -310,7 +321,7 @@ class LegacyChemicalTreatmentTankMixObjectNone(BaseModel):
         if isinstance(data, dict):
             for f in extra_fields:
                 if f in data:
-                    logging.info(f"removing extra field {f} on {cls}")
+                    logging.debug(f"removing extra field {f} on {cls}")
                     data.pop(f)
         return data
 
@@ -325,7 +336,7 @@ class LegacyChemicalTreatmentTankMixPARHerbicide(BaseModel):
         if isinstance(data, dict):
             for f in extra_fields:
                 if f in data:
-                    logging.info(f"removing extra field {f} on {cls}")
+                    logging.debug(f"removing extra field {f} on {cls}")
                     data.pop(f)
         return data
 
@@ -412,7 +423,7 @@ class LegacyChemicalTreatmentTankMixObjectIndexed(BaseModel):
         if isinstance(data, dict):
             for f in extra_fields:
                 if f in data:
-                    logging.info(f"removing extra field {f} on {cls}")
+                    logging.debug(f"removing extra field {f} on {cls}")
                     data.pop(f)
         return data
 
@@ -469,7 +480,7 @@ class LegacyChemicalCalculationResults(BaseModel):
         if isinstance(data, dict):
             for f in extra_fields:
                 if f in data:
-                    logging.info(f"removing extra field {f} on {cls}")
+                    logging.debug(f"removing extra field {f} on {cls}")
                     data.pop(f)
         return data
 
@@ -583,7 +594,112 @@ class LegacyBiologicalAgentMonitoringInformation(BaseModel):
     agent_location: Optional[str] = Field(default=None)
 
 
-class LegacyBiocontrolCollectionInformation(BaseModel):
+class HasLegacyBiocontrolAgentCounts(BaseModel):
+    @classmethod
+    def _looks_like_a_complete_agent_count(cls, a: dict) -> bool:
+        if a == {}:
+            return False
+
+        return True
+
+    @field_validator("actual_biological_agents", mode="before")
+    @classmethod
+    def clean_actual_biological_agents(cls, v: Any) -> Any:
+        if v == {} or v == []:
+            return None
+
+        if isinstance(v, list):
+            return [
+                a
+                for a in v
+                if HasLegacyBiocontrolAgentCounts._looks_like_a_complete_agent_count(a)
+            ]
+
+        return v
+
+    @field_validator("estimated_biological_agents", mode="before")
+    @classmethod
+    def clean_estimated_biological_agents(cls, v: Any) -> Any:
+        if v == {}:
+            return None
+
+        if isinstance(v, list):
+            return [
+                a
+                for a in v
+                if HasLegacyBiocontrolAgentCounts._looks_like_a_complete_agent_count(a)
+            ]
+
+        return v
+
+    actual_biological_agents: Optional[list[LegacyBiologicalAgentInformation]] = Field(
+        default=None
+    )
+    estimated_biological_agents: Optional[list[LegacyBiologicalAgentInformation]] = (
+        Field(default=None)
+    )
+
+
+class HasLegacyBiocontrolAgentMonitoringCounts(BaseModel):
+    @classmethod
+    def _looks_like_a_complete_agent_count(cls, a: dict) -> bool:
+        if a == {}:
+            return False
+
+        if a.get("release_quantity") is not None and a.get("release_quantity") == 0:
+            if (
+                not ("plant_position" in a)
+                or ("agent_location" in a)
+                or ("biological_agent_stage_code" in a)
+            ):
+                logging.info(f"removing incomplete monitoring count record {a}")
+                return False
+
+        return True
+
+    @field_validator("actual_biological_agents", mode="before")
+    @classmethod
+    def clean_actual_biological_agents(cls, v: Any) -> Any:
+        if v == {} or v == []:
+            return None
+
+        if isinstance(v, list):
+            return [
+                a
+                for a in v
+                if HasLegacyBiocontrolAgentMonitoringCounts._looks_like_a_complete_agent_count(
+                    a
+                )
+            ]
+
+        return v
+
+    @field_validator("estimated_biological_agents", mode="before")
+    @classmethod
+    def clean_estimated_biological_agents(cls, v: Any) -> Any:
+        if v == {}:
+            return None
+
+        if isinstance(v, list):
+            return [
+                a
+                for a in v
+                if HasLegacyBiocontrolAgentMonitoringCounts._looks_like_a_complete_agent_count(
+                    a
+                )
+            ]
+
+        return v
+
+    actual_biological_agents: Optional[
+        list[LegacyBiologicalAgentMonitoringInformation]
+    ] = Field(default=None)
+    estimated_biological_agents: Optional[
+        list[LegacyBiologicalAgentMonitoringInformation]
+    ] = Field(default=None)
+
+
+class LegacyBiocontrolCollectionInformation(HasLegacyBiocontrolAgentCounts, BaseModel):
     start_time: Optional[AwareDatetime] = Field(default=None)
     stop_time: Optional[AwareDatetime] = Field(default=None)
     comment: Optional[str] = Field(default=None)
@@ -597,16 +713,12 @@ class LegacyBiocontrolCollectionInformation(BaseModel):
     )  # Is this related to legacy_iapp_id?
     total_bio_agent_quantity_actual: Optional[int] = Field(default=None)
     total_bio_agent_quantity_estimated: Optional[int] = Field(default=None)
-    actual_biological_agents: Optional[list[LegacyBiologicalAgentInformation]] = Field(
-        default=None
-    )
-    estimated_biological_agents: Optional[list[LegacyBiologicalAgentInformation]] = (
-        Field(default=None)
-    )
     num_of_sweeps: Optional[int] = Field(default=None)
 
 
-class LegacyBiocontrolDispersionMonitoring(BaseModel):
+class LegacyBiocontrolDispersionMonitoring(
+    HasLegacyBiocontrolAgentMonitoringCounts, BaseModel
+):
     start_time: Optional[AwareDatetime] = Field(default=None)
     stop_time: Optional[AwareDatetime] = Field(default=None)
     monitoring_type: Optional[str] = Field(default=None)
@@ -622,17 +734,13 @@ class LegacyBiocontrolDispersionMonitoring(BaseModel):
     total_bio_agent_quantity_actual: Optional[int] = Field(default=None)
     total_bio_agent_quantity_estimated: Optional[int] = Field(default=None)
     biocontrol_monitoring_methods_code: Optional[str] = Field(default=None)
-    estimated_biological_agents: Optional[
-        list[LegacyBiologicalAgentMonitoringInformation]
-    ] = Field(default=None)
-    actual_biological_agents: Optional[
-        list[LegacyBiologicalAgentMonitoringInformation]
-    ] = Field(default=None)
     num_of_sweeps: Optional[int] = Field(default=None)
     plant_count: Optional[int] = Field(default=None)
 
 
-class LegacyBiocontrolReleaseInformation(BaseModel):
+class LegacyBiocontrolReleaseInformation(
+    HasLegacyBiocontrolAgentMonitoringCounts, BaseModel
+):
     mortality: Optional[int] = Field(default=None)
     agent_source: Optional[str] = Field(default=None)
     invasive_plant_code: Optional[str] = Field(default=None)
@@ -643,12 +751,6 @@ class LegacyBiocontrolReleaseInformation(BaseModel):
     total_bio_agent_quantity_actual: Optional[int] = Field(default=None)
     total_bio_agent_quantity_estimated: Optional[int] = Field(default=None)
     collection_date: Optional[AwareDatetime] = Field(default=None)
-    actual_biological_agents: Optional[
-        list[LegacyBiologicalAgentMonitoringInformation]
-    ] = Field(default=None)
-    estimated_biological_agents: Optional[
-        list[LegacyBiologicalAgentMonitoringInformation]
-    ] = Field(default=None)
 
 
 class LegacySpreadResults(BaseModel):
@@ -659,15 +761,11 @@ class LegacySpreadResults(BaseModel):
     plant_attack: Optional[int] = Field(default=None)
 
 
-class LegacyBiocontrolReleaseTerrestrialPlantInformation(BaseModel):
+class LegacyBiocontrolReleaseTerrestrialPlantInformation(
+    HasLegacyBiocontrolAgentMonitoringCounts, BaseModel
+):
     start_time: Optional[AwareDatetime] = Field(default=None)
     stop_time: Optional[AwareDatetime] = Field(default=None)
-    actual_biological_agents: Optional[
-        list[LegacyBiologicalAgentMonitoringInformation]
-    ] = Field(default=None)
-    estimated_biological_agents: Optional[
-        list[LegacyBiologicalAgentMonitoringInformation]
-    ] = Field(default=None)
     plant_count: Optional[int] = Field(default=None)
     invasive_plant_code: Optional[str] = Field(default=None)
     biological_agent_code: Optional[str] = Field(default=None)
@@ -894,5 +992,8 @@ class LegacyActivityPayload(BaseModel):
 class LegacyActivity(BaseModel):
     activity_id: UUID4
     activity_type: ActivityType
+    form_status: (
+        str  # directly from the activity_incoming_data table, not the json payload
+    )
     activity_subtype: AnnotatedActivitySubtypes
     activity_payload: LegacyActivityPayload

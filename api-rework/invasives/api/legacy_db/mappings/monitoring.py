@@ -1,5 +1,3 @@
-from rich.pretty import pprint
-
 from api.legacy_db.mappings.participants import add_persons
 from api.legacy_db.mappings.wells import add_well_information
 from api.legacy_db.model_serializer import (

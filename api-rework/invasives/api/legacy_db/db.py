@@ -467,11 +467,11 @@ class LegacyDB:
 
         match source:
             case "all":
-                sourcing_query = f"select activity_id, activity_type, activity_subtype, activity_payload from invasivesbc.activity_incoming_data where iscurrent=true and form_status like 'Submitted'"
+                sourcing_query = f"select activity_id, activity_type, activity_subtype, activity_payload, form_status from invasivesbc.activity_incoming_data where iscurrent=true and form_status like 'Submitted'"
             case "random-sample":
-                sourcing_query = f"select activity_id, activity_type, activity_subtype, activity_payload from invasivesbc.activity_incoming_data where iscurrent=true and form_status like 'Submitted' and random() >= 0.98"
+                sourcing_query = f"select activity_id, activity_type, activity_subtype, activity_payload, form_status from invasivesbc.activity_incoming_data where iscurrent=true and form_status like 'Submitted' and random() >= 0.98"
             case "single":
-                sourcing_query = f"select activity_id, activity_type, activity_subtype, activity_payload from invasivesbc.activity_incoming_data where iscurrent=true and form_status like 'Submitted' and activity_id = '{pk}'"
+                sourcing_query = f"select activity_id, activity_type, activity_subtype, activity_payload, form_status from invasivesbc.activity_incoming_data where iscurrent=true and form_status like 'Submitted' and activity_id = '{pk}'"
 
         if restrict_to_subtype is not None:
             sourcing_query = (

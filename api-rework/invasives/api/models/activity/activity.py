@@ -122,7 +122,7 @@ class Activity(
 
             # Start populating generated fields, send task to celery worker for pickup
             transaction.on_commit(
-                lambda: generate_computed_activity_fields.delay(self.id)
+                lambda: generate_computed_activity_fields.apply_async((self.id,))
             )
 
 
