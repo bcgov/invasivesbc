@@ -95,11 +95,9 @@ const BiocontrolCollectionEntry = ({ index }: PropTypes) => {
         <NumberInput
           error={get(errors, getPath('time_collection_duration_minutes'))}
           label={'Count duration (Minutes)'}
-          required
           tooltip={tooltips.plant.biocontrol.monitoring.count}
           width={Width.Half}
           {...register(getPath('time_collection_duration_minutes'), {
-            required: true,
             valueAsNumber: true,
             shouldUnregister: true,
             validate: (val) => greaterThanEqual(val, 1)
@@ -110,10 +108,8 @@ const BiocontrolCollectionEntry = ({ index }: PropTypes) => {
         <NumberInput
           error={get(errors, getPath('plant_count_collection'))}
           label={'Plant Count'}
-          required
           width={Width.Half}
           {...register(getPath('plant_count_collection'), {
-            required: true,
             valueAsNumber: true,
             shouldUnregister: true,
             validate: (val) => greaterThanEqual(val, 1)

@@ -143,7 +143,6 @@ const BiocontrolDispersalMonitoringEntry = ({ index }: PropTypes) => {
           label={'Plant Count'}
           width={Width.Half}
           {...register(getPath('plant_count'), {
-            required: true,
             shouldUnregister: true,
             validate: (val) => greaterThanEqual(val, 1)
           })}
