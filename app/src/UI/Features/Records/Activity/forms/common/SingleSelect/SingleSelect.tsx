@@ -61,7 +61,7 @@ export function SingleSelect<T extends FieldValues>({
               noOptionsMessage={() => noOptionsMessage ?? 'No options available'}
               onChange={(opt) => onChange(opt?.value ?? '')}
               options={mappedOptions}
-              placeholder={'Select...'}
+              placeholder={disabled ? '' : 'Select...'}
               ref={ref}
               isClearable
               aria-invalid={!!error}
