@@ -135,17 +135,17 @@ const WaterLevelManagement = [
 const DisposedMaterialFormat = [
   {
     full_name: 'Number of Plants',
-    code: 'plants',
+    code: 'number of plants',
     table: 'PlantDisposalFormat'
   },
   {
     full_name: 'Volume (Cubic Meters)',
-    code: 'm^3',
+    code: 'volume (m3)',
     table: 'PlantDisposalFormat'
   },
   {
     full_name: 'Weight (kg)',
-    code: 'kg',
+    code: 'weight',
     table: 'PlantDisposalFormat'
   }
 ];
