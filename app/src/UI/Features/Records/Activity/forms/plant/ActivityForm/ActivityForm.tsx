@@ -1,6 +1,6 @@
 import { useForm, SubmitHandler, useWatch, FormProvider } from 'react-hook-form';
 import { useDispatch, useSelector } from 'utils/use_selector';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import debounce from 'lodash.debounce';
 import FormActions from 'state/actions/activity/FormActions';
 import RecordMetadata from 'UI/Features/Records/Activity/forms/common/RecordMetadata/RecordMetadata';
@@ -15,6 +15,8 @@ import Photos from './Photos';
 import FormControl from './FormControl';
 import RecordNotFound from './RecordNotFound/RecordNotFound';
 import UserSettings from 'state/actions/userSettings/UserSettings';
+import Button from 'UI/Reusable/Button/Button';
+import { EditDocument } from '@mui/icons-material';
 
 const FORM_UPDATE_THROTTLE_DELAY = 1000; //ms
 const FORM_UPDATE_MAX_DELAY = 5000; //ms
@@ -75,6 +77,9 @@ const ActivityForm = () => {
   const recordActions = useSelector((state) => state.ActivityPage?.recordActions);
   const currentUser = useSelector((state) => state.Auth?.username) ?? undefined;
   const MOBILE = useSelector((state) => state.Configuration.current.build.MOBILE);
+  const metadata = useSelector((state) => state.ActivityPage?.formMetadata);
+
+  const [isEditing, setIsEditing] = useState<boolean>(false);
 
   const userCanEdit: boolean = useMemo(() => {
     return !!recordActions?.includes('EDIT');
@@ -82,7 +87,7 @@ const ActivityForm = () => {
 
   const methods = useForm<FormSchema>({
     mode: 'onChange',
-    disabled: !userCanEdit,
+    disabled: !isEditing,
     defaultValues: getDefaultFormState(subtype)
   });
 
@@ -104,6 +109,14 @@ const ActivityForm = () => {
   };
 
   const allFormValues = useWatch({ control });
+
+  useEffect(() => {
+    /**
+     * Records by default will come in disabled if metadata exists.
+     * Metadata always exists unless the record is created locally and never submitted.
+     */
+    setIsEditing(!metadata || Object.keys(metadata).length === 0);
+  }, [metadata]);
 
   useEffect(() => {
     if (!id || id.length !== 36) return;
@@ -161,6 +174,13 @@ const ActivityForm = () => {
       <FormProvider {...methods}>
         <form autoComplete={'off'} id="activity-form" onSubmit={handleSubmit(onSubmit)}>
           <RecordMetadata formState={getValues()} />
+
+          {userCanEdit && (
+            <Button className="form-edit-button" onClick={() => setIsEditing((prev) => !prev)}>
+              <EditDocument /> {isEditing ? 'Disable' : 'Enable'} Editing
+            </Button>
+          )}
+
           {/* Use conditional Rendering so RHF Doesn't unmount fields in its validation step on submit */}
           <div className={`form-section ${mode === Mode.Form ? 'active' : ''}`}>
             <Form />
