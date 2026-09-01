@@ -90,6 +90,7 @@ const TreatmentMechPlantTerrestrial = () => {
                 error={get(errors, `${basePath}.disposed_material_amount`)}
                 label={'Disposed Material Amount'}
                 width={Width.Half}
+                acceptFloats
                 {...register(`${basePath}.disposed_material_amount`, { valueAsNumber: true })}
               />
             </Fieldset>

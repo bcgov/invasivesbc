@@ -19,7 +19,7 @@ from api.protocol.activity.validators.code_validation import (
 
 
 class DraftEntry(CleanSchema):
-    disposed_material_amount: Optional[int]
+    disposed_material_amount: Optional[float]
     disposed_material_format: Optional[PlantDisposalFormat]
     disposal_method: Optional[DisposalMethodCodeType]
     invasive_plant: Optional[AquaticPlantCodeType]
