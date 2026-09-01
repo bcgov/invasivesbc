@@ -225,6 +225,7 @@ const TreatmentChemicalPlant = () => {
               'The temperature recorded at the time of treatment is an accurate representation of site conditions.'
             }
             required
+            disabled={disabled}
             state={userVerifiedTemperatureAccurate}
             warningConfirmation
             onChange={() =>
@@ -239,6 +240,7 @@ const TreatmentChemicalPlant = () => {
           <CheckboxUI
             label={'The wind speed recorded at the time of treatment is an accurate representation of site conditions.'}
             required
+            disabled={disabled}
             state={userVerifiedWindspeedAccurate}
             warningConfirmation
             onChange={() =>
