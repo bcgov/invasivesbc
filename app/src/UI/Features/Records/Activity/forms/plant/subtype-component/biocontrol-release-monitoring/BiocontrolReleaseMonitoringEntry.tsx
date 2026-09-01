@@ -36,7 +36,7 @@ const BiocontrolReleaseMonitoringEntry = ({ index }: PropTypes) => {
     return 'Start time must be before stop time.';
   };
 
-  const SWEEP_COUNT_CODE = 'Cs';
+  const SWEEP_COUNT_CODES = ['Cs', 'S'];
   const codes = useSelector((state) => state.ActivityPage.formCodes);
 
   const selectedPlant = watch(getPath('invasive_plant'));
@@ -73,7 +73,7 @@ const BiocontrolReleaseMonitoringEntry = ({ index }: PropTypes) => {
 
   useEffect(() => {
     // Delete number_of_sweeps if no longer needed
-    if (isDirty && monitoringMethod !== SWEEP_COUNT_CODE) {
+    if (isDirty && !SWEEP_COUNT_CODES.includes(monitoringMethod)) {
       setValue(getPath('number_of_sweeps'), undefined);
     }
   }, [monitoringMethod]);
@@ -168,7 +168,7 @@ const BiocontrolReleaseMonitoringEntry = ({ index }: PropTypes) => {
         rules={{ required: true }}
         width={Width.Half}
       />
-      {monitoringMethod === SWEEP_COUNT_CODE ? (
+      {SWEEP_COUNT_CODES.includes(monitoringMethod) ? (
         <NumberInput
           error={get(errors, getPath('number_of_sweeps'))}
           label={'Number of Sweeps'}

@@ -53,7 +53,7 @@ class Entry(DraftEntry):
     mortality: int = Field(..., ge=0)
     agent_source: str
     collection_date: NaiveDatetime
-    plant_collected_from: PlantsWithBiocontrolType = None
+    plant_collected_from: Optional[PlantsWithBiocontrolType] = None
     plant_collected_from_manual: Optional[str] = None
 
     actual_biological_agents: List[BiocontrolCountSimple]
