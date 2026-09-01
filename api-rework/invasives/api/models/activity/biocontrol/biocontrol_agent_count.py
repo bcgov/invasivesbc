@@ -98,6 +98,10 @@ class DraftBiocontrolAgentCountSimple(BaseSimpleModel, DraftRepeatedFormData):
 class DraftBiocontrolAgentCountComplex(
     BaseComplexModel, DraftBiocontrolAgentCountSimple
 ):
+    quantity = models.PositiveIntegerField(
+        blank=True,
+        null=True,
+    )
     stage = models.ForeignKey(
         BioAgentLifeStageCode,
         on_delete=models.PROTECT,
