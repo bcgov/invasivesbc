@@ -128,11 +128,9 @@ const BiocontrolDispersalMonitoringEntry = ({ index }: PropTypes) => {
         <NumberInput
           error={get(errors, getPath('count_duration_minutes'))}
           label={'Count duration (Minutes)'}
-          required
           tooltip={tooltips.plant.biocontrol.monitoring.count}
           width={Width.Half}
           {...register(getPath('count_duration_minutes'), {
-            required: true,
             valueAsNumber: true,
             shouldUnregister: true,
             validate: (val) => greaterThanEqual(val, 1)
@@ -143,11 +141,9 @@ const BiocontrolDispersalMonitoringEntry = ({ index }: PropTypes) => {
         <NumberInput
           error={get(errors, getPath('plant_count'))}
           label={'Plant Count'}
-          required
           width={Width.Half}
           {...register(getPath('plant_count'), {
             required: true,
-            valueAsNumber: true,
             shouldUnregister: true,
             validate: (val) => greaterThanEqual(val, 1)
           })}

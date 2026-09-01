@@ -82,14 +82,6 @@ class Entry(DraftEntry):
         return self
 
     @model_validator(mode="after")
-    def validate_monitoring_type(self) -> "Entry":
-        if self.monitoring_type == "Timed" and self.count_duration_minutes is None:
-            raise ValueError("Count duration minutes is a required field")
-        elif self.monitoring_type == "Count" and self.plant_count is None:
-            raise ValueError("Plant Count is a required field")
-        return self
-
-    @model_validator(mode="after")
     def validate_monitoring_method(self) -> "Entry":
         if self.monitoring_method == "Cs" and self.number_of_sweeps is None:
             raise ValueError("Number of sweeps is a required field")
