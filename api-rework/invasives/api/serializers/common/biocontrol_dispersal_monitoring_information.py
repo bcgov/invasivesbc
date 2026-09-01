@@ -22,7 +22,7 @@ from api.models.activity import (
 class BaseSerializer(serializers.ModelSerializer):
     """Serializer for Biocontrol Dispersal/Release Monitoring records"""
 
-    biocontrol_present = serializers.SerializerMethodField()
+    biocontrol_present = serializers.BooleanField()
     sign_of_biocontrol_presence = serializers.SerializerMethodField()
     location_agent_found = serializers.SerializerMethodField()
     actual_biological_agents = serializers.SerializerMethodField()
@@ -82,12 +82,6 @@ class TerrestrialBiologicalMonitoringEntriesSerializer(BaseSerializer):
         )
         return LocationBiocontrolAgentsFoundTerrestrialSerializer(lbaft, many=True).data
 
-    def get_biocontrol_present(self, obj):
-        # Inferred by sign of biocontrol presence records existing.
-        return SignOfBiocontrolPresenceTerrestrial.objects.filter(
-            activity_data_record=obj.activity_data_record,
-        ).exists()
-
 
 class DraftTerrestrialBiologicalMonitoringEntriesSerializer(BaseSerializer):
     class Meta(BaseSerializer.Meta):
@@ -124,9 +118,3 @@ class DraftTerrestrialBiologicalMonitoringEntriesSerializer(BaseSerializer):
         return DraftLocationBiocontrolAgentsFoundTerrestrialSerializer(
             lbaft, many=True
         ).data
-
-    def get_biocontrol_present(self, obj):
-        # Inferred by sign of biocontrol presence records existing.
-        return DraftSignOfBiocontrolPresenceTerrestrial.objects.filter(
-            activity_data_record=obj.activity_data_record,
-        ).exists()
