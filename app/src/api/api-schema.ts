@@ -189,7 +189,7 @@ export interface components {
             projects: components["schemas"]["ProjectCode"][];
             /** Area M */
             area_m: number;
-            shape: components["schemas"]["Feature2D"];
+            shape: components["schemas"]["FeatureModel"];
             /** Latitude */
             latitude: number;
             /** Longitude */
@@ -269,7 +269,7 @@ export interface components {
             projects: components["schemas"]["ProjectCode"][];
             /** Area M */
             area_m: number;
-            shape: components["schemas"]["Feature2D"];
+            shape: components["schemas"]["FeatureModel"];
             /** Latitude */
             latitude: number;
             /** Longitude */
@@ -352,27 +352,69 @@ export interface components {
          * @enum {string}
          */
         CollectionType: "Timed" | "Count";
+        Coordinates: [
+            number,
+            number,
+            (number) | null
+        ];
         /** Employer */
         Employer: {
             /** Employer */
             employer: string;
         };
         /**
-         * Feature2D
-         * @description Custom 2D GeoJSON Feature type.
-         *     Pydantics build in Geometry types add 0-value Z-indexes that error out when casting to GeosGeometry.
+         * FeatureModel
+         * @description Represents a Feature object in GeoJSON format.
+         *
+         *     A Feature object represents a spatially bounded thing. According to RFC 7946
+         *     Section 3.2, a Feature object has a "geometry" property and a "properties"
+         *     property. The value of the geometry property is a geometry object as defined
+         *     above or a JSON null value. The value of the properties property is a JSON
+         *     object or a JSON null value.
+         *
+         *     A Feature object may have a member named "id". If present, the value of the
+         *     id member is either a JSON string or number.
+         *
+         *     Attributes:
+         *         type: The object type, must be "Feature".
+         *         properties: Optional dictionary containing feature properties. Can be
+         *             any JSON-serializable dictionary or None.
+         *         geometry: Optional geometry object. Can be any valid GeoJSON geometry
+         *             type (Point, MultiPoint, LineString, MultiLineString, Polygon,
+         *             MultiPolygon, GeometryCollection) or None.
+         *         id: Optional feature identifier. Can be a string or integer, or None.
+         *         bbox: Optional bounding box array.
          */
-        Feature2D: {
+        FeatureModel: {
             /**
-             * Type
+             * Feature
              * @constant
              */
             type: "Feature";
-            geometry: components["schemas"]["PolygonGeometry2D"];
-            /** Properties */
+            /**
+             * Bounding Box
+             * @description Coordinate range for a GeoJSON Object. Must be array of length 2*n where n is the number of dimensions (2, 4, or 6 elements). For 2D: [west, south, east, north]. For 3D: [west, south, depth, east, north, height].
+             */
+            bbox?: number[] | null;
+            /**
+             * Properties
+             * @description A JSON object or JSON null value containing feature properties.
+             */
             properties?: {
                 [key: string]: unknown;
             } | null;
+            /**
+             * Geometry
+             * @description A geometry object as defined above or a JSON null value.
+             */
+            geometry?: components["schemas"]["PointModel"] | components["schemas"]["MultiPointModel"] | components["schemas"]["LineStringModel"] | components["schemas"]["MultiLineStringModel"] | components["schemas"]["PolygonModel"] | components["schemas"]["MultiPolygonModel"] | components["schemas"]["GeometryCollectionModel"] | null;
+            /**
+             * Id
+             * @description A unique identifier for the feature. If present, must be a JSON string or number.
+             */
+            id?: string | number | null;
+        } & {
+            [key: string]: unknown;
         };
         /**
          * FormStatus
@@ -387,6 +429,42 @@ export interface components {
             /** Agency */
             agency: string;
         };
+        /**
+         * GeometryCollectionModel
+         * @description Represents a GeometryCollection in GeoJSON format.
+         *
+         *     A GeometryCollection is a collection of geometry objects of any type. According
+         *     to RFC 7946 Section 3.1.8, a GeometryCollection has a "geometries" property
+         *     containing an array of geometry objects.
+         *
+         *     A GeometryCollection may contain other GeometryCollection objects, allowing
+         *     for nested collections.
+         *
+         *     Attributes:
+         *         type: The geometry type, must be "GeometryCollection".
+         *         geometries: An array of geometry objects. Each geometry can be any valid
+         *             GeoJSON geometry type, including another GeometryCollection.
+         *         bbox: Optional bounding box array.
+         */
+        GeometryCollectionModel: {
+            /**
+             * Geometry Collection
+             * @constant
+             */
+            type: "GeometryCollection";
+            /**
+             * Bounding Box
+             * @description Coordinate range for a GeoJSON Object. Must be array of length 2*n where n is the number of dimensions (2, 4, or 6 elements). For 2D: [west, south, east, north]. For 3D: [west, south, depth, east, north, height].
+             */
+            bbox?: number[] | null;
+            /**
+             * Geometries
+             * @description An array of geometry objects. Each geometry can be any valid GeoJSON geometry type, including another GeometryCollection.
+             */
+            geometries: (components["schemas"]["PointModel"] | components["schemas"]["MultiPointModel"] | components["schemas"]["LineStringModel"] | components["schemas"]["MultiLineStringModel"] | components["schemas"]["PolygonModel"] | components["schemas"]["MultiPolygonModel"] | components["schemas"]["GeometryCollectionModel"])[];
+        } & {
+            [key: string]: unknown;
+        };
         /** InvasivePlantOnSite */
         InvasivePlantOnSite: {
             /** Invasive Plants On Site */
@@ -398,6 +476,38 @@ export interface components {
             jurisdiction: string;
             /** Percent Covered */
             percent_covered: number;
+        };
+        /**
+         * LineStringModel
+         * @description Represents a LineString geometry in GeoJSON format.
+         *
+         *     A LineString is a curve with linear interpolation between points. According to
+         *     RFC 7946 Section 3.1.4, a LineString geometry object has coordinates that
+         *     are an array of two or more positions.
+         *
+         *     Attributes:
+         *         type: The geometry type, must be "LineString".
+         *         coordinates: An array of two or more coordinate positions that form a line.
+         *         bbox: Optional bounding box array.
+         */
+        LineStringModel: {
+            /**
+             * Line String
+             * @constant
+             */
+            type: "LineString";
+            /**
+             * Bounding Box
+             * @description Coordinate range for a GeoJSON Object. Must be array of length 2*n where n is the number of dimensions (2, 4, or 6 elements). For 2D: [west, south, east, north]. For 3D: [west, south, depth, east, north, height].
+             */
+            bbox?: number[] | null;
+            /**
+             * Coordinates
+             * @description An array of two or more positions. Each position is [longitude, latitude] or [longitude, latitude, altitude].
+             */
+            coordinates: components["schemas"]["Coordinates"][];
+        } & {
+            [key: string]: unknown;
         };
         /** LinkedActivity */
         LinkedActivity: {
@@ -453,7 +563,7 @@ export interface components {
             projects: components["schemas"]["ProjectCode"][];
             /** Area M */
             area_m: number;
-            shape: components["schemas"]["Feature2D"];
+            shape: components["schemas"]["FeatureModel"];
             /** Latitude */
             latitude: number;
             /** Longitude */
@@ -505,7 +615,7 @@ export interface components {
             projects: components["schemas"]["ProjectCode"][];
             /** Area M */
             area_m: number;
-            shape: components["schemas"]["Feature2D"];
+            shape: components["schemas"]["FeatureModel"];
             /** Latitude */
             latitude: number;
             /** Longitude */
@@ -557,7 +667,7 @@ export interface components {
             projects: components["schemas"]["ProjectCode"][];
             /** Area M */
             area_m: number;
-            shape: components["schemas"]["Feature2D"];
+            shape: components["schemas"]["FeatureModel"];
             /** Latitude */
             latitude: number;
             /** Longitude */
@@ -580,6 +690,105 @@ export interface components {
              */
             subtype: "Monitoring_Mechanical_Plant_Terrestrial_Aquatic";
             subtype_data: components["schemas"]["api__protocol__activity__plant_subtypes__monitoring_mechanical__SubtypeData"];
+        };
+        /**
+         * MultiLineStringModel
+         * @description Represents a MultiLineString geometry in GeoJSON format.
+         *
+         *     A MultiLineString is a collection of LineString geometries. According to
+         *     RFC 7946 Section 3.1.5, a MultiLineString geometry object has coordinates
+         *     that are an array of LineString coordinate arrays.
+         *
+         *     Attributes:
+         *         type: The geometry type, must be "MultiLineString".
+         *         coordinates: An array of LineString coordinate arrays, where each inner
+         *             array contains two or more positions.
+         *         bbox: Optional bounding box array.
+         */
+        MultiLineStringModel: {
+            /**
+             * Multi Line String
+             * @constant
+             */
+            type: "MultiLineString";
+            /**
+             * Bounding Box
+             * @description Coordinate range for a GeoJSON Object. Must be array of length 2*n where n is the number of dimensions (2, 4, or 6 elements). For 2D: [west, south, east, north]. For 3D: [west, south, depth, east, north, height].
+             */
+            bbox?: number[] | null;
+            /**
+             * Coordinates
+             * @description An array of LineString coordinate arrays. Each inner array must contain at least 2 positions.
+             */
+            coordinates: components["schemas"]["Coordinates"][][];
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * MultiPointModel
+         * @description Represents a MultiPoint geometry in GeoJSON format.
+         *
+         *     A MultiPoint is a collection of Point geometries. According to RFC 7946
+         *     Section 3.1.3, a MultiPoint geometry object has coordinates that are an
+         *     array of positions.
+         *
+         *     Attributes:
+         *         type: The geometry type, must be "MultiPoint".
+         *         coordinates: An array of coordinate positions, each representing a point.
+         *         bbox: Optional bounding box array.
+         */
+        MultiPointModel: {
+            /**
+             * Multi Point
+             * @constant
+             */
+            type: "MultiPoint";
+            /**
+             * Bounding Box
+             * @description Coordinate range for a GeoJSON Object. Must be array of length 2*n where n is the number of dimensions (2, 4, or 6 elements). For 2D: [west, south, east, north]. For 3D: [west, south, depth, east, north, height].
+             */
+            bbox?: number[] | null;
+            /**
+             * Coordinates
+             * @description An array of positions. Each position is [longitude, latitude] or [longitude, latitude, altitude].
+             */
+            coordinates: components["schemas"]["Coordinates"][];
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * MultiPolygonModel
+         * @description Represents a MultiPolygon geometry in GeoJSON format.
+         *
+         *     A MultiPolygon is a collection of Polygon geometries. According to RFC 7946
+         *     Section 3.1.7, a MultiPolygon geometry object has coordinates that are an
+         *     array of Polygon coordinate arrays.
+         *
+         *     Attributes:
+         *         type: The geometry type, must be "MultiPolygon".
+         *         coordinates: An array of Polygon coordinate arrays, where each Polygon
+         *             is represented by an array of linear rings. Each Polygon must have
+         *             at least one ring (the exterior ring).
+         *         bbox: Optional bounding box array.
+         */
+        MultiPolygonModel: {
+            /**
+             * Multi Polygon
+             * @constant
+             */
+            type: "MultiPolygon";
+            /**
+             * Bounding Box
+             * @description Coordinate range for a GeoJSON Object. Must be array of length 2*n where n is the number of dimensions (2, 4, or 6 elements). For 2D: [west, south, east, north]. For 3D: [west, south, depth, east, north, height].
+             */
+            bbox?: number[] | null;
+            /**
+             * Coordinates
+             * @description An array of Polygon coordinate arrays. Each Polygon is represented by an array of linear rings, with at least one ring (the exterior ring).
+             */
+            coordinates: components["schemas"]["Coordinates"][][][];
+        } & {
+            [key: string]: unknown;
         };
         /** ObservationAquaticSchema */
         ObservationAquaticSchema: {
@@ -609,7 +818,7 @@ export interface components {
             projects: components["schemas"]["ProjectCode"][];
             /** Area M */
             area_m: number;
-            shape: components["schemas"]["Feature2D"];
+            shape: components["schemas"]["FeatureModel"];
             /** Latitude */
             latitude: number;
             /** Longitude */
@@ -661,7 +870,7 @@ export interface components {
             projects: components["schemas"]["ProjectCode"][];
             /** Area M */
             area_m: number;
-            shape: components["schemas"]["Feature2D"];
+            shape: components["schemas"]["FeatureModel"];
             /** Latitude */
             latitude: number;
             /** Longitude */
@@ -708,27 +917,70 @@ export interface components {
             height_cm: number;
         };
         /**
-         * PolygonGeometry2D
-         * @description Custom Polygon GeoJSON Type.
-         *     Pydantics build in Geometry types add 0-value Z-indexes that error out when casting to GeosGeometry.
+         * PointModel
+         * @description Represents a Point geometry in GeoJSON format.
+         *
+         *     A Point is a single position specified by its coordinates. According to
+         *     RFC 7946 Section 3.1.2, a Point geometry object has coordinates that are
+         *     a single position.
+         *
+         *     Attributes:
+         *         type: The geometry type, must be "Point".
+         *         coordinates: A single coordinate position (longitude, latitude, optional altitude).
+         *         bbox: Optional bounding box array.
          */
-        PolygonGeometry2D: {
+        PointModel: {
             /**
-             * Type
+             * Point
+             * @constant
+             */
+            type: "Point";
+            /**
+             * Bounding Box
+             * @description Coordinate range for a GeoJSON Object. Must be array of length 2*n where n is the number of dimensions (2, 4, or 6 elements). For 2D: [west, south, east, north]. For 3D: [west, south, depth, east, north, height].
+             */
+            bbox?: number[] | null;
+            /** @description A single coordinate position. Must be [longitude, latitude] or [longitude, latitude, altitude]. */
+            coordinates: components["schemas"]["Coordinates"];
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * PolygonModel
+         * @description Represents a Polygon geometry in GeoJSON format.
+         *
+         *     A Polygon is a planar surface defined by one exterior boundary and zero or
+         *     more interior boundaries. According to RFC 7946 Section 3.1.6, a Polygon
+         *     geometry object has coordinates that are an array of linear ring coordinate arrays.
+         *
+         *     The first element of the coordinates array represents the exterior ring.
+         *     Any subsequent elements represent interior rings (holes).
+         *
+         *     Attributes:
+         *         type: The geometry type, must be "Polygon".
+         *         coordinates: An array of linear rings. The first ring is the exterior
+         *             boundary, subsequent rings are interior boundaries (holes).
+         *         bbox: Optional bounding box array.
+         */
+        PolygonModel: {
+            /**
+             * Polygon
              * @constant
              */
             type: "Polygon";
-            /** Coordinates */
-            coordinates: components["schemas"]["Position2D"][][];
+            /**
+             * Bounding Box
+             * @description Coordinate range for a GeoJSON Object. Must be array of length 2*n where n is the number of dimensions (2, 4, or 6 elements). For 2D: [west, south, east, north]. For 3D: [west, south, depth, east, north, height].
+             */
+            bbox?: number[] | null;
+            /**
+             * Coordinates
+             * @description An array of linear ring coordinate arrays. The first ring is the exterior boundary, subsequent rings are interior boundaries (holes). Each linear ring must have at least 4 positions and be closed.
+             */
+            coordinates: components["schemas"]["Coordinates"][][];
+        } & {
+            [key: string]: unknown;
         };
-        /**
-         * Position2D
-         * @description Loosely defined coordinate type for incoming Geometry
-         */
-        Position2D: [
-            number,
-            number
-        ];
         /** ProjectCode */
         ProjectCode: {
             /** Description */
@@ -744,14 +996,20 @@ export interface components {
          * @description Properties related to a record, but not directly affected by the record.
          */
         RecordMetadata: {
-            /** Linking Activities */
-            linking_activities: {
-                [key: string]: unknown;
-            }[] | null;
+            /** Batch Id */
+            batch_id: number;
+            /** Created Date */
+            created_date: string | null;
             /** History */
             history: {
                 [key: string]: unknown;
             }[] | null;
+            /** Linking Activities */
+            linking_activities: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Plants */
+            plants: string;
         };
         /** ShorelineType */
         ShorelineType: {
@@ -864,7 +1122,7 @@ export interface components {
             projects: components["schemas"]["ProjectCode"][];
             /** Area M */
             area_m: number;
-            shape: components["schemas"]["Feature2D"];
+            shape: components["schemas"]["FeatureModel"];
             /** Latitude */
             latitude: number;
             /** Longitude */
@@ -916,7 +1174,7 @@ export interface components {
             projects: components["schemas"]["ProjectCode"][];
             /** Area M */
             area_m: number;
-            shape: components["schemas"]["Feature2D"];
+            shape: components["schemas"]["FeatureModel"];
             /** Latitude */
             latitude: number;
             /** Longitude */
@@ -968,7 +1226,7 @@ export interface components {
             projects: components["schemas"]["ProjectCode"][];
             /** Area M */
             area_m: number;
-            shape: components["schemas"]["Feature2D"];
+            shape: components["schemas"]["FeatureModel"];
             /** Latitude */
             latitude: number;
             /** Longitude */
@@ -1020,7 +1278,7 @@ export interface components {
             projects: components["schemas"]["ProjectCode"][];
             /** Area M */
             area_m: number;
-            shape: components["schemas"]["Feature2D"];
+            shape: components["schemas"]["FeatureModel"];
             /** Latitude */
             latitude: number;
             /** Longitude */
@@ -1072,7 +1330,7 @@ export interface components {
             projects: components["schemas"]["ProjectCode"][];
             /** Area M */
             area_m: number;
-            shape: components["schemas"]["Feature2D"];
+            shape: components["schemas"]["FeatureModel"];
             /** Latitude */
             latitude: number;
             /** Longitude */
@@ -1524,7 +1782,7 @@ export interface components {
             pest_management_plan_manual?: string | null;
             treatment_notice_signs: components["schemas"]["YesNoUnknown"];
             /** Precautionary Statement */
-            precautionary_statement: string;
+            precautionary_statement?: string | null;
             /**
              * Application Start Time
              * Format: date-time
@@ -1600,26 +1858,32 @@ export type BiocontrolDispersalMonitoring = components['schemas']['BiocontrolDis
 export type ChemicalContextApplicationRate = components['schemas']['ChemicalContextApplicationRate'];
 export type ChemicalContextDilution = components['schemas']['ChemicalContextDilution'];
 export type CollectionType = components['schemas']['CollectionType'];
+export type Coordinates = components['schemas']['Coordinates'];
 export type Employer = components['schemas']['Employer'];
-export type Feature2D = components['schemas']['Feature2D'];
+export type FeatureModel = components['schemas']['FeatureModel'];
 export type FormStatus = components['schemas']['FormStatus'];
 export type FundingAgency = components['schemas']['FundingAgency'];
+export type GeometryCollectionModel = components['schemas']['GeometryCollectionModel'];
 export type InvasivePlantOnSite = components['schemas']['InvasivePlantOnSite'];
 export type JurisdictionSchema = components['schemas']['JurisdictionSchema'];
+export type LineStringModel = components['schemas']['LineStringModel'];
 export type LinkedActivity = components['schemas']['LinkedActivity'];
 export type Media = components['schemas']['Media'];
 export type MicrositeCondition = components['schemas']['MicrositeCondition'];
 export type MonitoringBiocontrolRelease = components['schemas']['MonitoringBiocontrolRelease'];
 export type MonitoringChemical = components['schemas']['MonitoringChemical'];
 export type MonitoringMechanical = components['schemas']['MonitoringMechanical'];
+export type MultiLineStringModel = components['schemas']['MultiLineStringModel'];
+export type MultiPointModel = components['schemas']['MultiPointModel'];
+export type MultiPolygonModel = components['schemas']['MultiPolygonModel'];
 export type ObservationAquaticSchema = components['schemas']['ObservationAquaticSchema'];
 export type ObservationTerrestrialSchema = components['schemas']['ObservationTerrestrialSchema'];
 export type ObservationType = components['schemas']['ObservationType'];
 export type Participant = components['schemas']['Participant'];
 export type PlantDisposalFormat = components['schemas']['PlantDisposalFormat'];
 export type PlantHeight = components['schemas']['PlantHeight'];
-export type PolygonGeometry2D = components['schemas']['PolygonGeometry2D'];
-export type Position2D = components['schemas']['Position2D'];
+export type PointModel = components['schemas']['PointModel'];
+export type PolygonModel = components['schemas']['PolygonModel'];
 export type ProjectCode = components['schemas']['ProjectCode'];
 export type RecordAction = components['schemas']['RecordAction'];
 export type RecordMetadata = components['schemas']['RecordMetadata'];

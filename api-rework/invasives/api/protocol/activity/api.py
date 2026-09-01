@@ -10,6 +10,7 @@ from django.contrib.gis.geos import GEOSGeometry
 from api.serializers import HistorySerializer
 from api.serializers.activity import ActivitySerializer, DraftActivitySerializer
 from api.serializers.activity_recordset_row import ActivityRecordsetRowSerializer
+from api.serializers import ActivityAllPlantSerializer
 from api.schemas.plant_activity import ACTIVITY_PROCESSORS, DRAFT_ACTIVITY_PROCESSORS
 from api.ninja_authentication import NinjaKeycloakAuthentication
 from api.models.enums import FormStatus
@@ -175,7 +176,7 @@ def get_activity_by_id(request, id: str):
         history_entries = ActivityModificationRecord.objects.filter(
             activity=activity
         ).order_by("-version")
-
+        serialized_plants = ActivityAllPlantSerializer(activity).data
         return JsonResponse(
             {
                 "data": ActivitySerializer(activity).data,
@@ -189,6 +190,9 @@ def get_activity_by_id(request, id: str):
                         activity.activity_set.all().order_by("-date"), many=True
                     ).data,
                     "history": HistorySerializer(history_entries, many=True).data,
+                    "plants": serialized_plants["invasive_plant"],
+                    "batch_id": activity.batch_id,
+                    "created_date": activity.created_timestamp,
                 },
             }
         )

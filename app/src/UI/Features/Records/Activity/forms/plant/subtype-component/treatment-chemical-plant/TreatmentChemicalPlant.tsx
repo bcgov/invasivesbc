@@ -13,6 +13,7 @@ import DateInput from 'UI/Features/Records/Activity/forms/common/DateInput/DateI
 import RadioInput from 'UI/Features/Records/Activity/forms/common/RadioInput/RadioInput';
 import FormSpacer from 'UI/Features/Records/Activity/forms/common/FormSpacer/FormSpacer';
 import CheckboxInput from 'UI/Features/Records/Activity/forms/common/CheckboxInput/CheckboxInput';
+import TextArea from 'UI/Features/Records/Activity/forms/common/TextArea/TextArea';
 import {
   lessThanEqual,
   lessThan,
@@ -177,6 +178,7 @@ const TreatmentChemicalPlant = () => {
           {...register(getContextPath('wind_speed_kmh'), {
             required: true,
             valueAsNumber: true,
+            deps: [getContextPath('wind_direction')],
             // If user verifies weather accurate, check for clearly accidental values (extra digits)
             validate: {
               minSpeed: (val) => greaterThanEqual(val, 0),
@@ -196,8 +198,8 @@ const TreatmentChemicalPlant = () => {
             required: true,
             deps: [getContextPath('wind_speed_kmh')],
             validate: (direction, formValues) => {
-              const windSpeed = formValues.subtype_data?.wind_speed_kmh;
-              if (direction === 'NA' && windSpeed > 0) {
+              const windSpeed = formValues.subtype_data?.context?.wind_speed_kmh;
+              if (direction === 'No Wind' && windSpeed > 0) {
                 return 'Must specify a wind direction when wind speed > 0';
               }
               return true;
@@ -301,8 +303,7 @@ const TreatmentChemicalPlant = () => {
           label={'Precautionary Statement'}
           name={getContextPath('precautionary_statement')}
           options={codes?.ChemicalPrecautionaryStatement}
-          required
-          rules={{ required: true }}
+          rules={{ required: false }}
           tooltip={tooltips.plant.chemical.required_under_license}
           width={Width.Half}
         />
@@ -333,7 +334,7 @@ const TreatmentChemicalPlant = () => {
           ]}
         />
         {ntz_bool ? (
-          <TextInput
+          <TextArea
             advisoryText="Only the PMP or permit holder may approve an NTZ reduction on public lands."
             error={get(errors, getContextPath('rationale_for_ntz_reduction'))}
             label={'Rationale for NTZ Reduction'}

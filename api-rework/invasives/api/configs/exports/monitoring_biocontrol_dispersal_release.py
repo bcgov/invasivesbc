@@ -64,14 +64,14 @@ MONITORING_BIOCONTROL_DISPERSAL_RELEASE_ANNOTATIONS = [
         "annotation": Cast(F(f"plant_count"), CharField()),
     },
     {
+        "header": "Count Duration (minutes)",
+        "key": "count_duration_display",
+        "annotation": F("count_duration_minutes"),
+    },
+    {
         "header": "Monitoring Method",
         "key": "monitoring_method_display",
         "annotation": F(f"monitoring_method__full"),
-    },
-    {
-        "header": "Linear Segment",
-        "key": "linear_segment_display",
-        "annotation": F(f"linear_segment"),
     },
     {
         "header": "Monitoring Start Time",

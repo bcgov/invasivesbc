@@ -13,8 +13,11 @@ class RecordAction(str, Enum):
 class RecordMetadata(Schema):
     """Properties related to a record, but not directly affected by the record."""
 
-    linking_activities: Optional[List[dict]]
+    batch_id: int
+    created_date: Optional[str]
     history: Optional[List[dict]]
+    linking_activities: Optional[List[dict]]
+    plants: str
 
 
 class SingleActivityResponse(Schema):
