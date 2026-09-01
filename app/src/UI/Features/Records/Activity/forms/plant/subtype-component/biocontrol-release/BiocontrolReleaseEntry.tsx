@@ -104,8 +104,6 @@ const BiocontrolReleaseEntry = ({ index }: PropTypes) => {
         label={'Plant Collected From'}
         name={getPath('plant_collected_from')}
         options={terrestrialPlantOptionsWithAgents}
-        required
-        rules={{ required: true }}
         tooltip={tooltips.plant.biocontrol.plant_collected_from}
         width={Width.Half}
       />
