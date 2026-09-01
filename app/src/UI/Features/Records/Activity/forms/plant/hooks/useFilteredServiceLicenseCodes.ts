@@ -1,12 +1,16 @@
 import { useMemo } from 'react';
+import { Role } from 'constants/roles';
 import { useSelector } from 'utils/use_selector';
 
 const useFilteredServiceLicenseCodes = (disabled: boolean) => {
   const NOT_REQUIRED = 'NRQ';
   const codes = useSelector((state) => state.ActivityPage.formCodes?.ServiceLicenseNumberAndCompany);
   const user = useSelector((state) => state.Auth?.extendedInfo);
-  const userCanEdit = useSelector((state) => state.ActivityPage.recordActions?.includes('EDIT'));
-
+  const userName = useSelector((state) => state.Auth.username);
+  const createdBy = useSelector((state) => state.ActivityPage.formState?.created_by);
+  const isUserMasterAdmin = useSelector((state) =>
+    state.Auth?.roles.some((r) => r.role_name === Role.MASTER_ADMINISTRATOR)
+  );
   // Extract Service License numbers from user info
   const userServiceLicenses = useMemo(() => {
     const licenses: Array<string> = [];
@@ -17,9 +21,11 @@ const useFilteredServiceLicenseCodes = (disabled: boolean) => {
 
   // If a non-administrator is creating a form. limit options to only fields they have assigned to their profile.
   const filteredCodes = useMemo(() => {
-    if (disabled || !userCanEdit) return codes;
-    return codes.filter(({ code }) => userServiceLicenses.includes(code as string) || code === NOT_REQUIRED);
-  }, [disabled, codes, userCanEdit, userServiceLicenses]);
+    if (createdBy === userName && !isUserMasterAdmin && !disabled) {
+      return codes.filter(({ code }) => userServiceLicenses.includes(code as string) || code === NOT_REQUIRED);
+    }
+    return codes;
+  }, [codes, userServiceLicenses, createdBy, isUserMasterAdmin, userName, disabled]);
 
   return { serviceLicenseCodes: filteredCodes };
 };
