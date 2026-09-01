@@ -119,8 +119,6 @@ const BiocontrolReleaseMonitoringEntry = ({ index }: PropTypes) => {
           label={'Sign of Biocontrol Presence'}
           name={getPath('sign_of_biocontrol_presence')}
           options={codes?.BiocontrolPresenceCode}
-          required={biocontrolPresent}
-          rules={{ required: biocontrolPresent }}
           tooltip={tooltips.plant.biocontrol.sign_of_presence}
           width={Width.Half}
         />
@@ -226,8 +224,6 @@ const BiocontrolReleaseMonitoringEntry = ({ index }: PropTypes) => {
             label={'Location Agents Found'}
             name={getPath('location_agent_found')}
             options={codes?.AgentLocationFoundTerrainCode}
-            required
-            rules={{ required: true }}
             tooltip={tooltips.plant.biocontrol.monitoring.location_found}
             width={Width.Half}
           />

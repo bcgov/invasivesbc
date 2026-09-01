@@ -96,15 +96,6 @@ class Entry(DraftEntry):
         return self
 
     @model_validator(mode="after")
-    def validate_biocontrol_present(self) -> "Entry":
-        if self.biocontrol_present and (
-            self.sign_of_biocontrol_presence is None
-            or len(self.sign_of_biocontrol_presence) == 0
-        ):
-            raise ValueError("Sign of Biocontrol Presence is a required field")
-        return self
-
-    @model_validator(mode="after")
     def validate_sequential_date(self):
         start = self.start_time
         stop = self.stop_time
