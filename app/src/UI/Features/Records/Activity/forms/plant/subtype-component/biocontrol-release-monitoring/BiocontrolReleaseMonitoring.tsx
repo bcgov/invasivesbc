@@ -20,7 +20,7 @@ const BiocontrolReleaseMonitoring = () => {
     register,
     setValue,
     control,
-    formState: { errors }
+    formState: { errors, disabled }
   } = useFormContext<BiocontrolReleaseMonitoringSchema>();
 
   const { getPath, basePath } = useFieldPath<BiocontrolReleaseMonitoringSchema>('subtype_data.spread_results');
@@ -70,7 +70,12 @@ const BiocontrolReleaseMonitoring = () => {
 
       <TargetPlantPhenology />
       <Fieldset label={'Spread Results'} tooltip={tooltips.plant.spread_results.recorded}>
-        <CheckboxUI label={'Spread Details Recorded'} state={isSpreadResultsPresent} onChange={handleCheckboxChange} />
+        <CheckboxUI
+          label={'Spread Details Recorded'}
+          state={isSpreadResultsPresent}
+          onChange={handleCheckboxChange}
+          disabled={disabled}
+        />
         {isSpreadResultsPresent && (
           <>
             <NumberInput

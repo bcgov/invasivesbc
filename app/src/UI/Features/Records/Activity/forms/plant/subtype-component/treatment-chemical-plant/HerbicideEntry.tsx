@@ -131,6 +131,7 @@ const HerbicideEntry = ({ idx, type }: PropTypes) => {
             <CheckboxUI
               label={`I verify that this application rate was intentionally applied and accurately recorded.`}
               required
+              disabled={disabled}
               state={userConfirmedApplicationRate}
               warningConfirmation
               onChange={() => {

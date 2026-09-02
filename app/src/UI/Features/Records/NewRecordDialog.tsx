@@ -27,7 +27,7 @@ const NewRecordDialog = () => {
   const methods = useForm<NewRecordForm>({
     mode: 'onChange',
     defaultValues: {
-      category: undefined,
+      category: 'Plant',
       type: undefined,
       subtype: undefined
     }
@@ -45,7 +45,7 @@ const NewRecordDialog = () => {
 
   const typeOptions: Array<FormCode> = useMemo(() => {
     if (!category) return [];
-    return Object.keys(ActivitySubtypesRelations?.[category])?.map((key) => ({
+    return Object.keys(ActivitySubtypesRelations?.[category] ?? [])?.map((key) => ({
       code: key,
       full_name: key
     }));
@@ -53,7 +53,7 @@ const NewRecordDialog = () => {
 
   const subtypeOptions: Array<FormCode> = useMemo(() => {
     if (!type) return [];
-    return ActivitySubtypesRelations[category][type].map((code: string) => ({
+    return (ActivitySubtypesRelations?.[category]?.[type] ?? []).map((code: string) => ({
       code: code,
       full_name: ActivitySubtypesShortLabels[code] ?? code
     }));

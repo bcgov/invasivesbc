@@ -4,7 +4,7 @@ EMPTY_MECH_TREATMENT_TERRESTRIAL = {
     "employer": [],
     "subtype": "Treatment_Mechanical_Plant_Terrestrial",
     "funding_agencies": [],
-    "jurisdictions": [{"jurisdiction": "", "percent_covered": 0}],
+    "jurisdictions": [{"jurisdiction": "", "percent_covered": None}],
     "projects": [],
     "location_description": "",
     "access_description": "",
@@ -27,7 +27,7 @@ EMPTY_MECH_TREATMENT_TERRESTRIAL = {
                 "disposal_method": "",
                 "invasive_plant": "",
                 "mechanical_method": "",
-                "treated_area_msq": 0,
+                "treated_area_msq": None,
             }
         ]
     },

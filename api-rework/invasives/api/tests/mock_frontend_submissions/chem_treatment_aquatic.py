@@ -4,7 +4,7 @@ EMPTY_CHEM_TREATMENT_AQUATIC = {
     "employer": [],
     "subtype": "Treatment_Chemical_Plant_Aquatic",
     "funding_agencies": [],
-    "jurisdictions": [{"jurisdiction": "", "percent_covered": 0}],
+    "jurisdictions": [{"jurisdiction": "", "percent_covered": None}],
     "projects": [],
     "location_description": "",
     "access_description": "",
@@ -18,7 +18,7 @@ EMPTY_CHEM_TREATMENT_AQUATIC = {
     "utm_easting": 0,
     "utm_northing": 0,
     "linked_activities": [],
-    "participants": [{"name": "", "pac_number": 0}],
+    "participants": [{"name": "", "pac_number": None}],
     "subtype_data": {
         "well_entries": [],
         "context": {
@@ -43,7 +43,7 @@ EMPTY_CHEM_TREATMENT_AQUATIC = {
             "application_method": "",
             "calculation_type": "",
             "herbicide": [],
-            "plants_treated": [{"invasive_plant": "", "percent_covered": 100}],
+            "plants_treated": [{"invasive_plant": "", "percent_covered": None}],
             "amount_mix_used_l": None,
         },
     },

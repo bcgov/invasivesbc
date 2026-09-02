@@ -4,7 +4,7 @@ EMPTY_CHEM_TREATMENT_TERRESTRIAL = {
     "employer": [],
     "subtype": "Treatment_Chemical_Plant_Terrestrial",
     "funding_agencies": [],
-    "jurisdictions": [{"jurisdiction": "", "percent_covered": 0}],
+    "jurisdictions": [{"jurisdiction": "", "percent_covered": None}],
     "projects": [],
     "location_description": "",
     "access_description": "",
@@ -18,7 +18,7 @@ EMPTY_CHEM_TREATMENT_TERRESTRIAL = {
     "utm_easting": 0,
     "utm_northing": 0,
     "linked_activities": [],
-    "participants": [{"name": "", "pac_number": 0}],
+    "participants": [{"name": "", "pac_number": None}],
     "subtype_data": {
         "well_entries": [],
         "context": {

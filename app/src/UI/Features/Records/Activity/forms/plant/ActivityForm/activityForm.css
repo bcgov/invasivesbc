@@ -25,6 +25,21 @@ input[type='button']:hover {
     }
   }
 
+  .form-edit-button {
+    background-color: var(--bc-yellow);
+    color: black;
+    padding: 0.7rem;
+    margin-bottom: 5px;
+
+    svg {
+      color: var(--bc-blue);
+    }
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
   .alternate-options {
     a,
     button {

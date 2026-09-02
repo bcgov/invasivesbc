@@ -36,7 +36,7 @@ const BiocontrolReleaseMonitoringEntry = ({ index }: PropTypes) => {
     return 'Start time must be before stop time.';
   };
 
-  const SWEEP_COUNT_CODE = 'Cs';
+  const SWEEP_COUNT_CODES = ['Cs', 'S'];
   const codes = useSelector((state) => state.ActivityPage.formCodes);
 
   const selectedPlant = watch(getPath('invasive_plant'));
@@ -73,7 +73,7 @@ const BiocontrolReleaseMonitoringEntry = ({ index }: PropTypes) => {
 
   useEffect(() => {
     // Delete number_of_sweeps if no longer needed
-    if (isDirty && monitoringMethod !== SWEEP_COUNT_CODE) {
+    if (isDirty && !SWEEP_COUNT_CODES.includes(monitoringMethod)) {
       setValue(getPath('number_of_sweeps'), undefined);
     }
   }, [monitoringMethod]);
@@ -119,8 +119,6 @@ const BiocontrolReleaseMonitoringEntry = ({ index }: PropTypes) => {
           label={'Sign of Biocontrol Presence'}
           name={getPath('sign_of_biocontrol_presence')}
           options={codes?.BiocontrolPresenceCode}
-          required={biocontrolPresent}
-          rules={{ required: biocontrolPresent }}
           tooltip={tooltips.plant.biocontrol.sign_of_presence}
           width={Width.Half}
         />
@@ -141,11 +139,9 @@ const BiocontrolReleaseMonitoringEntry = ({ index }: PropTypes) => {
         <NumberInput
           error={get(errors, getPath('count_duration_minutes'))}
           label={'Count duration (Minutes)'}
-          required
           tooltip={tooltips.plant.biocontrol.monitoring.count}
           width={Width.Half}
           {...register(getPath('count_duration_minutes'), {
-            required: true,
             valueAsNumber: true,
             validate: (val) => greaterThanEqual(val, 1)
           })}
@@ -155,10 +151,8 @@ const BiocontrolReleaseMonitoringEntry = ({ index }: PropTypes) => {
         <NumberInput
           error={get(errors, getPath('plant_count'))}
           label={'Plant Count'}
-          required
           width={Width.Half}
           {...register(getPath('plant_count'), {
-            required: true,
             valueAsNumber: true,
             validate: (val) => greaterThanEqual(val, 1)
           })}
@@ -174,7 +168,7 @@ const BiocontrolReleaseMonitoringEntry = ({ index }: PropTypes) => {
         rules={{ required: true }}
         width={Width.Half}
       />
-      {monitoringMethod === SWEEP_COUNT_CODE ? (
+      {SWEEP_COUNT_CODES.includes(monitoringMethod) ? (
         <NumberInput
           error={get(errors, getPath('number_of_sweeps'))}
           label={'Number of Sweeps'}
@@ -226,8 +220,6 @@ const BiocontrolReleaseMonitoringEntry = ({ index }: PropTypes) => {
             label={'Location Agents Found'}
             name={getPath('location_agent_found')}
             options={codes?.AgentLocationFoundTerrainCode}
-            required
-            rules={{ required: true }}
             tooltip={tooltips.plant.biocontrol.monitoring.location_found}
             width={Width.Half}
           />

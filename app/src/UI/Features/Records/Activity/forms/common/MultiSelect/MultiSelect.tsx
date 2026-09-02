@@ -50,7 +50,7 @@ export function MultiSelect<T extends FieldValues>({
             isMulti
             isDisabled={disabled}
             aria-invalid={!!error}
-            placeholder={'Select one or more...'}
+            placeholder={disabled ? '' : 'Select one or more...'}
             isSearchable={options?.length >= MIN_OPTIONS_TO_ENABLE_SEARCH}
             options={options?.map((o) => ({ label: o.full_name, value: o.code })) ?? []}
             value={options

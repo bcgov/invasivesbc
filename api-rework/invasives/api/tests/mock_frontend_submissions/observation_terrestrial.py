@@ -4,7 +4,7 @@ EMPTY_TERRESTRIAL_OBSERVATION = {
     "employer": [],
     "subtype": "Observation_Plant_Terrestrial",
     "funding_agencies": [],
-    "jurisdictions": [{"jurisdiction": "", "percent_covered": 0}],
+    "jurisdictions": [{"jurisdiction": "", "percent_covered": None}],
     "projects": [],
     "location_description": "",
     "access_description": "",

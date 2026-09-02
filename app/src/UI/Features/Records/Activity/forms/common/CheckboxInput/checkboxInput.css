@@ -29,6 +29,13 @@
     box-sizing: border-box;
     padding: 0.25rem 0.5rem;
     font-size: var(--form-input-font-size);
+
+    &:disabled {
+      appearance: none;
+      border-radius: 4px;
+      background-color: #efefef;
+      border: 1pt solid lightgray;
+    }
   }
 
   label {
