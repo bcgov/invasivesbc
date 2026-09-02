@@ -290,7 +290,7 @@ const mSpecie_mLGHerb_spray_usingProdAppRate = (
         herbicide_name: name,
         product_application_rate: application_rate,
         dilution: trunc(dilution),
-        area_treated_sqm: trunc(area_treated_sqm),
+        area_treated_sqm: trunc(area_treated_sqm) / herbicide.length,
         undiluted_herbicide_used_l: trunc(undiluted_herbicide_used_l),
         percentage_area_covered: trunc(area_covered_pct)
       } as CalculationResponseValues;
