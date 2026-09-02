@@ -37,11 +37,11 @@ class BaseSerializer(serializers.ModelSerializer):
         return getattr(obj, self.record_set_attr).all()
 
     def get_invasive_plant(self, obj):
-        plants = [
+        plants = {
             e.invasive_plant.full
             for e in self._get_plant_entries(obj)
             if e.invasive_plant
-        ]
+        }
         return ", ".join(filter(None, plants)) or None
 
 
