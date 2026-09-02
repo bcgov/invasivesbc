@@ -278,7 +278,9 @@ const mSpecie_mLGHerb_spray_usingProdAppRate = (
     const area_covered_pct = (area_treated_sqm / area_m) * 100;
     return herbicide.map(({ application_rate, type, name }) => {
       const dilution = (() => {
-        if (type === 'granular') return (application_rate / 1000 / delivery_rate) * 100;
+        if (type === 'G') {
+          return (application_rate / 1000 / delivery_rate) * 100;
+        }
         return (application_rate / delivery_rate) * 100;
       })();
       const undiluted_herbicide_used_l = ((dilution / 100) * amount_mix_used_l * percent_covered) / 100;

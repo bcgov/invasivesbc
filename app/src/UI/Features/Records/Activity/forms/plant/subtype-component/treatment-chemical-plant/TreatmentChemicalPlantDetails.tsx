@@ -57,7 +57,7 @@ const TreatmentChemicalPlantDetails = () => {
       ...(herbicides as Array<ApplicationRateHerbicide>).map((h: ApplicationRateHerbicide): number => {
         const rate = h?.application_rate ?? 0;
         if (!rate) return 0;
-        if (h.type === 'granular') return rate / 1000; // Convert all to same units (e.g.: 300g == 0.3L.
+        if (h.type === 'G') return rate / 1000; // Convert all to same units (e.g.: 300g == 0.3L.
         return rate;
       })
     );
