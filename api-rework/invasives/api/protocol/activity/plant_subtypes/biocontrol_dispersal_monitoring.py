@@ -75,6 +75,14 @@ class Entry(DraftEntry):
     estimated_biological_agents: List[BiocontrolCountExtended] = []
 
     @model_validator(mode="after")
+    def collection_type_cleanup(self) -> "Entry":
+        if self.monitoring_type == "Timed":
+            self.plant_count = None
+        elif self.monitoring_type == "Count":
+            self.count_duration_minutes = None
+        return self
+
+    @model_validator(mode="after")
     def validate_number_of_sweeps(self) -> "Entry":
         if self.monitoring_method == "Cs" and self.number_of_sweeps is None:
             raise ValueError(
