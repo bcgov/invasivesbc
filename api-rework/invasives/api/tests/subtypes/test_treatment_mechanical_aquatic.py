@@ -33,7 +33,7 @@ class AquaticMechanicalTreatmentTest(BaseActivitySubtypeTest):
         mt = sd["entries"][0]
 
         self.assertEqual(mt["disposed_material_amount"], 544)
-        self.assertEqual(mt["disposed_material_format"], "kg")
+        self.assertEqual(mt["disposed_material_format"], "weight")
         self.assertEqual(mt["disposal_method"], "II")
         self.assertEqual(mt["invasive_plant"], "CT")
         self.assertEqual(mt["mechanical_method"], "DIG")
@@ -64,7 +64,7 @@ class AquaticMechanicalTreatmentTest(BaseActivitySubtypeTest):
         expected = [
             {
                 "disposed_material_amount": 544,
-                "disposed_material_format": "m^3",
+                "disposed_material_format": "volume (m3)",
                 "disposal_method": "II",
                 "invasive_plant": "JK",
                 "mechanical_method": "DIG",
@@ -73,7 +73,7 @@ class AquaticMechanicalTreatmentTest(BaseActivitySubtypeTest):
             {
                 "invasive_plant": "JK",
                 "disposed_material_amount": 544,
-                "disposed_material_format": "plants",
+                "disposed_material_format": "number of plants",
                 "disposal_method": "LDB",
                 "mechanical_method": "CNV",
                 "treated_area_msq": 512,

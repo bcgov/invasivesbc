@@ -123,7 +123,7 @@ UPDATED_MECH_TREATMENT_AQUATIC = {
         "entries": [
             {
                 "disposed_material_amount": 22,
-                "disposed_material_format": "plants",
+                "disposed_material_format": "number of plants",
                 "disposal_method": "II",
                 "invasive_plant": "JK",
                 "mechanical_method": "BRY",

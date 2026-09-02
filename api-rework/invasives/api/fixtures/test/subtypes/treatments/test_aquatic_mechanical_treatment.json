@@ -64,7 +64,7 @@
     "fields": {
       "activity_data_record_id": 1000,
       "disposed_material_amount": 544,
-      "disposed_material_format": "kg",
+      "disposed_material_format": "weight",
       "disposal_method": "II",
       "invasive_plant": "CT",
       "mechanical_method": "DIG",
@@ -77,7 +77,7 @@
     "fields": {
       "activity_data_record_id": 1001,
       "disposed_material_amount": 544,
-      "disposed_material_format": "m^3",
+      "disposed_material_format": "volume (m3)",
       "disposal_method": "II",
       "invasive_plant": "JK",
       "mechanical_method": "DIG",
@@ -91,7 +91,7 @@
       "activity_data_record_id": 1001,
       "invasive_plant": "JK",
       "disposed_material_amount": 544,
-      "disposed_material_format": "plants",
+      "disposed_material_format": "number of plants",
       "disposal_method": "LDB",
       "mechanical_method": "CNV",
       "treated_area_msq": 512
