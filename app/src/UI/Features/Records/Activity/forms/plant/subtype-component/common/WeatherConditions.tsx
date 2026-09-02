@@ -11,11 +11,19 @@ import useFieldPath from 'UI/Features/Records/Activity/forms/plant/hooks/useFiel
 import { greaterThanEqual } from 'UI/Features/Records/Activity/forms/common/validators';
 
 const BiocontrolWeatherConditions = () => {
-  const validateWindDirectionAndSpeed = (wind_direction: string, formValues) => {
+  const validateWindDirectionAndSpeedPositive = (wind_direction: string, formValues) => {
     const wind_speed = formValues.subtype_data.weather_conditions?.wind_speed_kmh;
     if (wind_speed === undefined || wind_direction === undefined) return true;
     if (wind_speed > 0 && wind_direction === 'No Wind') {
       return 'Must specify a wind direction when wind speed is > 0';
+    }
+    return true;
+  };
+  const validateWindDirectionAndSpeedNegative = (wind_direction: string, formValues) => {
+    const wind_speed = formValues.subtype_data.weather_conditions?.wind_speed_kmh;
+    if (wind_speed === undefined || wind_direction === undefined) return true;
+    if (wind_speed === 0 && wind_direction !== 'No Wind') {
+      return 'Cannot specify a wind direction when wind speed is 0';
     }
     return true;
   };
@@ -79,7 +87,8 @@ const BiocontrolWeatherConditions = () => {
         rules={{
           required: true,
           validate: {
-            checkSpeedAndDirection: (v, formValues) => validateWindDirectionAndSpeed(v, formValues)
+            checkSpeedAndDirectionPos: (v, formValues) => validateWindDirectionAndSpeedPositive(v, formValues),
+            checkSpeedAndDirectionNeg: (v, formValues) => validateWindDirectionAndSpeedNegative(v, formValues)
           }
         }}
         tooltip={tooltips.plant.biocontrol.weather.wind_direction}

@@ -32,6 +32,22 @@ const TreatmentChemicalPlant = () => {
   const MIN_ALLOWED_TEMP = 10;
   const MAX_WIND_SPEED = 9;
 
+  const validateWindDirectionAndSpeedPositive = (wind_direction: string, formValues) => {
+    const wind_speed = formValues.subtype_data.context?.wind_speed_kmh;
+    if (wind_speed === undefined || wind_direction === undefined) return true;
+    if (wind_speed > 0 && wind_direction === 'No Wind') {
+      return 'Must specify a wind direction when wind speed is > 0';
+    }
+    return true;
+  };
+  const validateWindDirectionAndSpeedNegative = (wind_direction: string, formValues) => {
+    const wind_speed = formValues.subtype_data.context?.wind_speed_kmh;
+    if (wind_speed === undefined || wind_direction === undefined) return true;
+    if (wind_speed === 0 && wind_direction !== 'No Wind') {
+      return 'Cannot specify a wind direction when wind speed is 0';
+    }
+    return true;
+  };
   /**
    * @desc Validate only PMP or Manual PMP are filled in, not both.
    */
@@ -197,12 +213,9 @@ const TreatmentChemicalPlant = () => {
           rules={{
             required: true,
             deps: [getContextPath('wind_speed_kmh')],
-            validate: (direction, formValues) => {
-              const windSpeed = formValues.subtype_data?.context?.wind_speed_kmh;
-              if (direction === 'No Wind' && windSpeed > 0) {
-                return 'Must specify a wind direction when wind speed > 0';
-              }
-              return true;
+            validate: {
+              checkSpeedAndDirectionPos: (v, formValues) => validateWindDirectionAndSpeedPositive(v, formValues),
+              checkSpeedAndDirectionNeg: (v, formValues) => validateWindDirectionAndSpeedNegative(v, formValues)
             }
           }}
         />
