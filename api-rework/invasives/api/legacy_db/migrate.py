@@ -1,53 +1,43 @@
+from decimal import Decimal, ROUND_DOWN
 import json
 import logging
-import re
-from decimal import Decimal, ROUND_DOWN
 from pprint import pformat
+from zoneinfo import ZoneInfo
 
-import geojson
-import pyproj
-import shapely
-from django.contrib.gis.gdal.geometries import GeometryCollection
-from django.db import DatabaseError
-from geojson import FeatureCollection, geometry, Feature
 from pydantic_core._pydantic_core import ValidationError
-from pyproj.aoi import AreaOfInterest
-from pyproj.database import query_utm_crs_info
-from shapely import point_on_surface, from_wkb, from_wkt, Point, transform, intersects
-from shapely.geometry import mapping
 
 from api.legacy_db.mappings.biocontrol import (
-    add_subtype_payload_for_biocontrol_release,
     add_subtype_payload_for_biocontrol_collection,
     add_subtype_payload_for_biocontrol_dispersal_monitoring_terrestrial_plant,
+    add_subtype_payload_for_biocontrol_release,
     add_subtype_payload_for_biocontrol_release_monitoring_terrestrial_plant,
 )
 from api.legacy_db.mappings.chemical import (
-    add_subtype_payload_for_plant_terrestrial_chemical_treatment,
     add_subtype_payload_for_plant_aquatic_chemical_treatment,
+    add_subtype_payload_for_plant_terrestrial_chemical_treatment,
 )
 from api.legacy_db.mappings.mechanical_treatment import (
-    add_subtype_payload_for_plant_terrestrial_treatment,
     add_subtype_payload_for_plant_aquatic_treatment,
+    add_subtype_payload_for_plant_terrestrial_treatment,
 )
 from api.legacy_db.mappings.monitoring import (
-    add_subtype_payload_for_plant_mechanical_monitoring,
     add_subtype_payload_for_plant_chemical_monitoring,
+    add_subtype_payload_for_plant_mechanical_monitoring,
 )
 from api.legacy_db.mappings.plants import (
-    add_subtype_payload_for_plant_terrestrial_observation,
     add_subtype_payload_for_plant_aquatic_observation,
+    add_subtype_payload_for_plant_terrestrial_observation,
 )
+from api.legacy_db.migration_errors import MigrationErrors
 from api.legacy_db.model_serializer import LegacyActivity
-from api.models import activity
 from api.models.activity import (
     Activity,
-    ActivitySubtypes,
-    FundingAgency,
-    ProjectCode,
     ActivityDataRecord,
-    Jurisdiction,
+    ActivitySubtypes,
     Employer,
+    FundingAgency,
+    Jurisdiction,
+    ProjectCode,
 )
 from api.models.codes import (
     EmployerCode,
@@ -55,7 +45,29 @@ from api.models.codes import (
     JurisdictionCode,
 )
 from api.models.enums import PlatformSource
+from api.models.migrator import (
+    ActivityMigrationStatus,
+    ActivityPendingLink,
+    MigrationError,
+)
 from api.utils.utm_coordinates import point_to_utm
+from django.core.exceptions import ValidationError as DjangoValidationError
+from django.db import DatabaseError, transaction
+from django.utils import timezone
+import geojson
+from geojson import Feature, FeatureCollection
+from invasivesbc.settings import LEGACY_DB_CONNECTION_STRING
+import psycopg
+from psycopg.rows import dict_row
+import pyproj
+import shapely
+from shapely import Point, from_wkt, point_on_surface
+from shapely.geometry import mapping
+
+logging.basicConfig(level=logging.DEBUG)
+logging.getLogger("psycopg").setLevel(logging.DEBUG)
+
+log = logging.getLogger("legacy-import")
 
 
 def add_subtype_payload(new: Activity, old: LegacyActivity) -> None:
@@ -93,7 +105,7 @@ def add_subtype_payload(new: Activity, old: LegacyActivity) -> None:
             pass
 
 
-def migrate(old: LegacyActivity):
+def map_pydantic_model_to_django_model(old: LegacyActivity) -> Activity:
     new = Activity()
     new.id = old.activity_id
     new.short_id = old.activity_payload.short_id
@@ -189,12 +201,24 @@ def migrate(old: LegacyActivity):
     new.creating_platform = src_map.get(
         old.activity_payload.platform_src, PlatformSource.Unknown.value
     )
-    new.batch_id = (
-        old.activity_payload.batch_id
-        if old.activity_payload.batch_id is not None
-        and old.activity_payload.batch_id != "null"
-        else None
-    )
+    new.batch_id = old.batch_id
+    new.batch_row_id = old.row_number
+
+    if old.created_timestamp is not None:
+        new.created_timestamp = timezone.make_aware(
+            old.created_timestamp, ZoneInfo("America/Vancouver")
+        )
+        log.debug(f"importing with creation time {new.created_timestamp}")
+
+    if old.received_timestamp is not None:
+        new.received_timestamp = timezone.make_aware(
+            old.received_timestamp, ZoneInfo("America/Vancouver")
+        )
+
+    if old.deleted_timestamp is not None:
+        new.deleted_timestamp = timezone.make_aware(
+            old.deleted_timestamp, ZoneInfo("America/Vancouver")
+        )
 
     new.area_m = old.activity_payload.form_data.activity_data.reported_area
 
@@ -371,3 +395,144 @@ def migrate(old: LegacyActivity):
         raise
 
     return new
+
+
+def parse_and_migrate_single_activity(
+    activity_id: str, clobber=True, dry_run=False
+) -> dict[str, bool]:
+    status = {
+        "pre_existing": False,
+        "clobbered": False,
+        "parse_ok": False,
+        "save_skipped": False,
+        "save_ok": False,
+        "pending_links_created": False,
+        "django_validation_failed": False,
+        "unspecified_failure": False,
+    }
+
+    with psycopg.connect(LEGACY_DB_CONNECTION_STRING, row_factory=dict_row) as conn:
+        with conn.cursor() as cursor:
+
+            q = """
+          select activity_id,
+                 activity_type,
+                 activity_subtype,
+                 activity_payload,
+                 form_status,
+                 batch_id,
+                 row_number,
+
+                 subject,
+
+                 created_timestamp,
+                 received_timestamp,
+                 deleted_timestamp,
+
+                 created_by,
+                 created_by_with_guid,
+
+                 updated_by,
+                 updated_by_with_guid
+
+          from invasivesbc.activity_incoming_data
+          where iscurrent = true
+            and form_status like 'Submitted'
+            and activity_id = %s
+          """
+
+            result = cursor.execute(query=q, params=(activity_id,))
+
+            row = result.fetchone()
+
+            errors = MigrationErrors(errors=[])
+            migration_status = ActivityMigrationStatus.objects.filter(
+                activity_id=activity_id
+            ).first()
+            pre_existing = False
+            if migration_status is not None:
+                pre_existing = True
+                status["pre_existing"] = pre_existing
+
+                if clobber:
+                    log.debug(f"Clobbering old records for {activity_id}")
+                    migration_status.delete()
+                    migration_status = ActivityMigrationStatus(activity_id=activity_id)
+                    Activity.objects.filter(id=activity_id).delete()
+                    status["clobbered"] = True
+            else:
+                migration_status = ActivityMigrationStatus(activity_id=activity_id)
+
+            try:
+                parsed_activity = LegacyActivity.model_validate(row, extra="forbid")
+                log.debug(parsed_activity)
+                status["parse_ok"] = True
+                if not dry_run and (not pre_existing or clobber):
+                    try:
+                        with transaction.atomic():
+                            new_activity = map_pydantic_model_to_django_model(
+                                parsed_activity
+                            )
+                            status["save_ok"] = True
+                            migration_status.success = True
+
+                            if (
+                                parsed_activity.activity_payload.form_data.activity_type_data.linked_id
+                                is not None
+                                and parsed_activity.activity_payload.form_data.activity_type_data.linked_id
+                                != ""
+                            ):
+                                ActivityPendingLink.objects.create(
+                                    from_activity_id=new_activity.id,
+                                    to_activity_id=parsed_activity.activity_payload.form_data.activity_type_data.linked_id,
+                                )
+                                status["pending_links_created"] = True
+
+                    except DjangoValidationError as e:
+                        log.warning(
+                            f"validation for {activity_id} failed",
+                            exc_info=True,
+                        )
+                        errors.errors.append(("validation", e.__str__()))
+                        status["django_validation_failed"] = True
+                    except DatabaseError as e:
+                        log.warning(
+                            f"database exception while saving new activity {activity_id}",
+                            exc_info=True,
+                        )
+                        errors.errors.append(("database error", e.__str__()))
+                        status["save_ok"] = False
+                    except Exception as e:
+                        log.warning(
+                            f"{activity_id} failed to migrate",
+                            exc_info=True,
+                        )
+                        errors.errors.append(("general failure", e.__str__()))
+                        status["unspecified_failure"] = True
+
+            except ValidationError as e:
+                log.warning(
+                    f"initial parse for {row['activity_id']} failed",
+                    exc_info=True,
+                )
+                errors.errors.append(
+                    ("parse failed", e.__str__()),
+                )
+                status["parse_ok"] = False
+            finally:
+                conn.close()
+                if dry_run or (pre_existing and not clobber):
+                    status["save_skipped"] = True
+                else:
+                    status["save_skipped"] = False
+                    migration_status.save()
+                    if len(errors.errors) > 0:
+                        for error in errors.errors:
+                            logging.warning("error")
+                            MigrationError.objects.create(
+                                migration_status=migration_status,
+                                reason=error[0],
+                                extended_status=error[1],
+                            )
+
+        return status

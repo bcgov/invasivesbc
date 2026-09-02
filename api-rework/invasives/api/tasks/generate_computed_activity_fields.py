@@ -4,6 +4,7 @@ from django.db import transaction
 from invasivesbc import celery_app
 from invasivesbc.settings import LEGACY_DB_CONNECTION_STRING
 import psycopg
+import logging
 from psycopg.rows import dict_row
 import requests
 
@@ -28,6 +29,8 @@ BCGW_CONFIG = {
     },
 }
 
+# https://openmaps.gov.bc.ca/geo/pub/wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=pub:WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY&outputFormat=json&maxFeatures=1&srsName=epsg:4326&bbox=-123.3194441,48.8160246,-123.3194441,48.8160246&epsg:4326
+
 
 def query_bcgw(config_name, activity: Activity):
     WFS_URL = "https://openmaps.gov.bc.ca/geo/pub/wfs"
@@ -41,6 +44,7 @@ def query_bcgw(config_name, activity: Activity):
 
     bbox = f"{long},{lat},{long},{lat}"
     url = WFS_URL + WFS_PARAMS.format(layer=config["table_name"], bbox=bbox)
+    logging.debug(url)
     response = requests.get(url, timeout=5)
     response.raise_for_status()
     data = response.json()

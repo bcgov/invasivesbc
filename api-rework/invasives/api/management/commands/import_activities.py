@@ -47,7 +47,7 @@ class Command(BaseCommand):
         if options["clobber"] and options["dry_run"]:
             raise Exception("--clobber cannot be used with --dry-run")
 
-        stats = LegacyDB.migrate_activities(
+        LegacyDB.migrate_activities(
             dry_run=options["dry_run"],
             source=options["source"],
             pk=options["pk"],
@@ -55,9 +55,6 @@ class Command(BaseCommand):
             restrict_to_subtype=options["restrict_to_subtype"],
         )
 
-        logging.info(pformat(stats))
-
-        if stats.pending_links_created > 0:
-            logging.info(
-                "Pending links were created. Run `import_activity_links` to import them"
-            )
+        logging.info(
+            "Run complete. Run `import_activity_links` to import pending links"
+        )

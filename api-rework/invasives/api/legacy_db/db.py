@@ -1,18 +1,7 @@
-import logging
 from dataclasses import dataclass
+import logging
 from typing import Literal
 
-import django.db.transaction as transaction
-import psycopg
-from django.core.exceptions import ValidationError as DjangoValidationError
-from django.db import DatabaseError
-from django.db.models import Q
-from psycopg.rows import dict_row
-from pydantic_core._pydantic_core import ValidationError
-
-from api.legacy_db.migrate import migrate
-from api.legacy_db.migration_errors import MigrationErrors
-from api.legacy_db.model_serializer import LegacyActivity
 from api.models.activity import Activity
 from api.models.codes import (
     AdjacentLandUseCode,
@@ -23,6 +12,7 @@ from api.models.codes import (
     BaseCode,
     BioAgentCollectionMethodCode,
     BioAgentLifeStageCode,
+    BioAgentMonitoringMethodCode,
     BiocontrolAgentCode,
     BiocontrolPresenceCode,
     ChemicalApplicationMethodDirectCode,
@@ -36,13 +26,15 @@ from api.models.codes import (
     EmployerCode,
     FundingAgencyCode,
     GranularHerbicideCode,
+    HerbicideApplicationMethodCode,
     HerbicideCode,
+    HerbicideTypeCode,
     InvasivePlantsOnSiteCode,
     JurisdictionCode,
     LiquidHerbicideCode,
     MesoslopePositionCode,
-    PlantCode,
     PestManagementPlan,
+    PlantCode,
     PlantLifeStageCode,
     PlantMechanicalTreatmentMethodCode,
     PlantPositionCode,
@@ -57,20 +49,19 @@ from api.models.codes import (
     SubstrateCode,
     TerrestrialPlantCode,
     TreatmentEfficacyRatingCode,
+    WaterLevelManagement,
     WaterbodyFlowCode,
     WaterbodyFlowSeasonalCode,
+    WaterbodySubstrateCode,
+    WaterbodyTypeCode,
     WaterbodyUseCode,
     WindDirectionCode,
-    WaterLevelManagement,
-    WaterbodyTypeCode,
-    WaterbodySubstrateCode,
-    BioAgentMonitoringMethodCode,
-    HerbicideTypeCode,
-    HerbicideApplicationMethodCode,
 )
-from api.models.migrator import ActivityPendingLink, MigrationError
-from api.models.migrator.activity_migration_status import ActivityMigrationStatus
+from api.models.migrator import ActivityPendingLink
+from django.db.models import Q
 from invasivesbc.settings import LEGACY_DB_CONNECTION_STRING
+import psycopg
+from psycopg.rows import dict_row
 
 logging.basicConfig(level=logging.DEBUG)
 logging.getLogger("psycopg").setLevel(logging.DEBUG)
@@ -461,119 +452,43 @@ class LegacyDB:
         restrict_to_subtype: str | None = None,
         pk=None,
     ):
-        stats = ActivityMigrationStatistics(source=source)
+
+        from api.tasks import import_single_activity
 
         sourcing_query = ""
+        sourcing_query_parameters = {}
 
         match source:
             case "all":
-                sourcing_query = f"select activity_id, activity_type, activity_subtype, activity_payload, form_status from invasivesbc.activity_incoming_data where iscurrent=true and form_status like 'Submitted'"
+                sourcing_query = "select activity_id from invasivesbc.activity_incoming_data where iscurrent=true and form_status like 'Submitted' and deleted_timestamp is NULL"
             case "random-sample":
-                sourcing_query = f"select activity_id, activity_type, activity_subtype, activity_payload, form_status from invasivesbc.activity_incoming_data where iscurrent=true and form_status like 'Submitted' and random() >= 0.98"
+                sourcing_query = "select activity_id from invasivesbc.activity_incoming_data where iscurrent=true and form_status like 'Submitted' and deleted_timestamp is NULL and random() >= 0.98"
             case "single":
-                sourcing_query = f"select activity_id, activity_type, activity_subtype, activity_payload, form_status from invasivesbc.activity_incoming_data where iscurrent=true and form_status like 'Submitted' and activity_id = '{pk}'"
+                sourcing_query = "select activity_id from invasivesbc.activity_incoming_data where iscurrent=true and form_status like 'Submitted' and deleted_timestamp is NULL and activity_id = %(pk)s"
+                sourcing_query_parameters["pk"] = pk
 
         if restrict_to_subtype is not None:
             sourcing_query = (
-                f"{sourcing_query} and activity_subtype = '{restrict_to_subtype}'"
+                f"{sourcing_query} and activity_subtype = %(activity_subtype)s"
             )
+            sourcing_query_parameters["activity_subtype"] = restrict_to_subtype
+
+        count = 0
 
         with psycopg.connect(LEGACY_DB_CONNECTION_STRING, row_factory=dict_row) as conn:
             with conn.cursor() as cursor:
-                result = cursor.execute(sourcing_query)
+                result = cursor.execute(sourcing_query, sourcing_query_parameters)
                 for row in result.fetchall():
-                    errors = MigrationErrors(errors=[])
-                    migration_status = ActivityMigrationStatus.objects.filter(
-                        activity_id=row["activity_id"]
-                    ).first()
-                    pre_existing = False
-                    if migration_status is not None:
-                        stats.pre_existing += 1
-                        pre_existing = True
-                        if clobber:
-                            log.debug(
-                                f"Clobbering old records for {row['activity_id']}"
-                            )
-                            migration_status.delete()
-                            migration_status = ActivityMigrationStatus(
-                                activity_id=row["activity_id"]
-                            )
-                            Activity.objects.filter(id=row["activity_id"]).delete()
-                            stats.clobbered += 1
-                    else:
-                        migration_status = ActivityMigrationStatus(
-                            activity_id=row["activity_id"]
+                    activity_id = row["activity_id"]
+                    count = count + 1
+                    logging.info(
+                        import_single_activity.apply(
+                            args=(activity_id,),
+                            kwargs={"dry_run": dry_run, "clobber": clobber},
                         )
+                    )  # not an async call
 
-                    stats.attempted += 1
-                    try:
-                        parsed_activity = LegacyActivity.model_validate(
-                            row, extra="forbid"
-                        )
-                        if not dry_run and (not pre_existing or clobber):
-                            try:
-                                with transaction.atomic():
-                                    new_activity = migrate(parsed_activity)
-                                    stats.succeeded += 1
-                                    migration_status.success = True
-
-                                    if (
-                                        parsed_activity.activity_payload.form_data.activity_type_data.linked_id
-                                        is not None
-                                        and parsed_activity.activity_payload.form_data.activity_type_data.linked_id
-                                        != ""
-                                    ):
-                                        ActivityPendingLink.objects.create(
-                                            from_activity_id=new_activity.id,
-                                            to_activity_id=parsed_activity.activity_payload.form_data.activity_type_data.linked_id,
-                                        )
-                                        stats.pending_links_created += 1
-
-                            except DjangoValidationError as e:
-                                log.warning(
-                                    f"validation for {row['activity_id']} failed",
-                                    exc_info=True,
-                                )
-                                errors.errors.append(("validation", e.__str__()))
-                                stats.failed_validate += 1
-                            except DatabaseError as e:
-                                log.warning(
-                                    f"database exception while saving new activity {row['activity_id']}",
-                                    exc_info=True,
-                                )
-                                errors.errors.append(("database error", e.__str__()))
-                                stats.failed_validate += 1
-                            except Exception as e:
-                                log.warning(
-                                    f"{row['activity_id']} failed to migrate",
-                                    exc_info=True,
-                                )
-                                errors.errors.append(("general failure", e.__str__()))
-                                stats.failed_for_any_reason += 1
-
-                    except ValidationError as e:
-                        log.warning(
-                            f"initial parse for {row['activity_id']} failed",
-                            exc_info=True,
-                        )
-                        errors.errors.append(
-                            ("parse failed", e.__str__()),
-                        )
-                        stats.failed_for_any_reason += 1
-                        stats.failed_parse += 1
-                    finally:
-                        if not dry_run:
-                            migration_status.save()
-                            if len(errors.errors) > 0:
-                                for error in errors.errors:
-                                    logging.warning("error")
-                                    MigrationError.objects.create(
-                                        migration_status=migration_status,
-                                        reason=error[0],
-                                        extended_status=error[1],
-                                    )
-
-                return stats
+        logging.info("run complete")
 
     @staticmethod
     def migrate_links():

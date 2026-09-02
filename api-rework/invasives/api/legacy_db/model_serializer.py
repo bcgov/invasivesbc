@@ -1,6 +1,6 @@
 import logging
 
-from datetime import date
+from datetime import date, datetime
 from enum import Enum
 from typing import Annotated, Any, Literal, Optional, Union
 
@@ -10,6 +10,7 @@ from pydantic import (
     BeforeValidator,
     Field,
     JsonValue,
+    NaiveDatetime,
     UUID4,
     model_validator,
     field_validator,
@@ -992,8 +993,23 @@ class LegacyActivityPayload(BaseModel):
 class LegacyActivity(BaseModel):
     activity_id: UUID4
     activity_type: ActivityType
-    form_status: (
-        str  # directly from the activity_incoming_data table, not the json payload
-    )
     activity_subtype: AnnotatedActivitySubtypes
     activity_payload: LegacyActivityPayload
+
+    """ These values exist in the payload, too, but we consider the values on the db row to be the source of truth"""
+    form_status: str
+
+    batch_id: Optional[int]
+    row_number: Optional[int]
+
+    subject: Optional[str]
+
+    created_timestamp: Optional[NaiveDatetime]
+    received_timestamp: Optional[NaiveDatetime]
+    deleted_timestamp: Optional[NaiveDatetime]
+
+    created_by: Optional[str]
+    created_by_with_guid: Optional[str]
+
+    updated_by: Optional[str]
+    updated_by_with_guid: Optional[str]

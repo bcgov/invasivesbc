@@ -11,6 +11,7 @@ from api.models.mixins.batch import BatchInformation
 from api.models.mixins.geometry import Geometry, DraftGeometry
 from api.models.mixins.platform import Platform
 from api.models.mixins.regional_detail import ComputedLocationFields
+from django.utils import timezone
 
 UUID_SUBSTRING_LENGTH = 8
 
@@ -49,8 +50,8 @@ class BaseModel(Platform, ComputedLocationFields, BatchInformation, models.Model
         null=True,
     )
     comment = models.TextField(max_length=16384, blank=True, null=True)
-    created_timestamp = models.DateTimeField(auto_now_add=True)
-    received_timestamp = models.DateTimeField(auto_now_add=True, editable=False)
+    created_timestamp = models.DateTimeField(default=timezone.now)
+    received_timestamp = models.DateTimeField(default=timezone.now)
 
     linked_activities = models.ManyToManyField(
         "api.Activity", db_table='"activity"."linked_activities"'

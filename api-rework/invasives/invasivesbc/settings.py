@@ -89,9 +89,9 @@ CELERY_ACCEPT_CONTENT = ["pickle", "json"]
 CELERY_TASK_SERIALIZER = "pickle"  # by default - more efficient than json, less compatible with other platforms though
 CELERY_RESULT_SERIALIZER = "pickle"
 CELERY_TASK_ACKS_LATE = True  # enable re-queuing on worker loss
-CELERY_RESULT_EXPIRES = 86400 # 1 day
-CELERY_RESULT_BACKEND = 'django-db'
-CELERY_RESULT_EXTENDED = True # include task name and other metadata in results
+CELERY_RESULT_EXPIRES = 86400  # 1 day
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_RESULT_EXTENDED = True  # include task name and other metadata in results
 
 """
 Settings related to map generation and tile caching
