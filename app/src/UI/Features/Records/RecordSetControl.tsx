@@ -8,6 +8,7 @@ import { useSelector } from 'utils/use_selector';
 import { useRecordSetControls } from 'utils/useRecordSetControls';
 import './recordsetControl.css';
 import HoverTooltip from 'UI/Reusable/HoverTooltip/HoverTooltip';
+import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
 
 type PropTypes = {
   isDefaultRecordset: boolean;
@@ -51,13 +52,15 @@ const RecordSetControl = ({
     <div className={isProgressBar ? 'record-set-control record-set-progressbar' : 'record-set-control '}>
       {!isDefaultRecordset && !hideCache && (
         <MobileOnly>
-          <div>
-            <RecordSetCacheButtons
-              recordSet={recordset}
-              setId={RECORD_ID}
-              onCacheStateChange={handleProgressStateChange}
-            />
-          </div>
+          <FeatureGated requires="CACHE_RECORDSETS">
+            <div>
+              <RecordSetCacheButtons
+                recordSet={recordset}
+                setId={RECORD_ID}
+                onCacheStateChange={handleProgressStateChange}
+              />
+            </div>
+          </FeatureGated>
         </MobileOnly>
       )}
       <div className="record-set-buttons">
