@@ -23,6 +23,7 @@ interface FormSubmission {
 
 interface DuplicateForm {
   subtype: ActivitySubtypes;
+  extraFields?: Partial<FormSchema>;
 }
 interface VerifyLinkedActivity {
   id: string;
@@ -71,7 +72,7 @@ class FormActions {
 
   static readonly duplicateForm = createAsyncThunk(
     `${this.PREFIX}/duplicateForm`,
-    async ({ subtype }: DuplicateForm, { getState }) => {
+    async ({ subtype, extraFields }: DuplicateForm, { getState }) => {
       const {
         Auth,
         ActivityPage: { formState }
@@ -92,6 +93,7 @@ class FormActions {
         duplicatedForm.subtype = subtype;
         duplicatedForm.subtype_data = getDefaultFormState(subtype).subtype_data;
       }
+      if (extraFields) Object.assign(duplicatedForm, extraFields);
       return {
         data: duplicatedForm as FormSchema,
         available_actions: ['EDIT', 'DELETE', 'SUBMIT'] as Array<RecordAction>,
