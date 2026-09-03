@@ -41,7 +41,7 @@ export const RecordSet = ({ setID }: PropTypes) => {
     <>
       <div className="stickyHeader">
         <div className="recordSet_header" style={{ backgroundColor: recordSet?.color + `50` }}>
-          <div className="recordSet_back_button">
+          <div>
             <Button onClick={onClickBackButton} variant="contained">
               <ArrowBackIos /> Back
             </Button>
