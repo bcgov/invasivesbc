@@ -60,7 +60,7 @@ const LayerDataMarker = () => {
   const queryFeaturesAtTarget = useCallback(
     (e: MapMouseEvent | MapTouchEvent) => {
       const isUserUtilizingDraw = drawToolsActive.current || whatsHereEnabled || editModeActive.current;
-      if (!map || !connected || isUserUtilizingDraw || map.getZoom() < MINIMUM_ZOOM) return;
+      if (!map || isUserUtilizingDraw || map.getZoom() < MINIMUM_ZOOM) return;
       // Buffer target to avoid needing pinpoint accuracy
       const bbox: [PointLike, PointLike] = [
         new Point(e.point.x - BUFFER_IN_PX, e.point.y - BUFFER_IN_PX),
