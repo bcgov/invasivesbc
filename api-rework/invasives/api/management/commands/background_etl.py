@@ -8,7 +8,13 @@ class Command(BaseCommand):
     help = "Queue the full ETL process to run in the background (via Celery)"
 
     def add_arguments(self, parser):
-        pass
+        parser.add_argument(
+            "--clobber",
+            help="Overwrite previously-migrated activities (use with caution!)",
+            action="store_true",
+        )
 
     def handle(self, *args, **options):
-        logging.info(f"Task started -- ID {run_full_etl.delay()}")
+        logging.info(
+            f"Task started -- ID {run_full_etl.delay(clobber=options["clobber"])}"
+        )
