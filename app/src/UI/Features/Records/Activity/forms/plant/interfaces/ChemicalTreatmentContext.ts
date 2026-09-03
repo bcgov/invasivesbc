@@ -9,7 +9,7 @@ interface BaseChemicalContext {
 }
 
 interface BaseHerbicide {
-  type: 'granular' | 'liquid' | '';
+  type: 'L' | 'G' | '';
   name: string;
 }
 interface ApplicationRateHerbicide extends BaseHerbicide {
@@ -38,10 +38,7 @@ interface ChemicalContextApplicationRate extends BaseChemicalContext, ProductApp
 }
 
 type ChemicalTreatmentContext =
-  | BaseChemicalContext
-  | TankMixChemicalContext
-  | ChemicalContextDilution
-  | ChemicalContextApplicationRate;
+  BaseChemicalContext | TankMixChemicalContext | ChemicalContextDilution | ChemicalContextApplicationRate;
 
 export type {
   BaseChemicalContext,
