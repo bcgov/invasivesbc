@@ -88,7 +88,7 @@ const LinkedActivities = () => {
               <th>ID</th>
               <th>Activity Date</th>
               <th>Created By</th>
-              {!disabled && <th>{disabled ? 'Go to Record' : 'Copy Geometry'}</th>}
+              <th>{disabled ? 'Go to Record' : 'Copy Geometry'}</th>
             </tr>
           </thead>
           <tbody>
