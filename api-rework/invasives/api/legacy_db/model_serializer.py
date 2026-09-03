@@ -1,9 +1,9 @@
-import logging
-
-from datetime import date, datetime
+from datetime import date
 from enum import Enum
+import logging
 from typing import Annotated, Any, Literal, Optional, Union
 
+from api.models.activity import ActivitySubtypes
 from pydantic import (
     AwareDatetime,
     BaseModel,
@@ -12,12 +12,10 @@ from pydantic import (
     JsonValue,
     NaiveDatetime,
     UUID4,
-    model_validator,
     field_validator,
+    model_validator,
 )
 from pydantic_extra_types.coordinate import Latitude, Longitude
-
-from api.models.activity import ActivitySubtypes
 
 
 class ActivityType(Enum):
@@ -502,6 +500,10 @@ class LegacyChemicalTreatmentDetails(BaseModel):
     def empty_dict_to_none(cls, v: Any) -> Any:
         if v == {}:
             return None
+
+        if v == {"herbicides": []}:
+            return None
+
         return v
 
     errors: Optional[bool] = Field(default=None)

@@ -29,8 +29,8 @@ def import_single_activity(self, activity_id: str, dry_run=False, clobber=False)
     )
 
 
-@celery_app.task(bind=True, max_retries=0, time_limit=3600 * 12)
-def import_all_activities(self):
+@celery_app.task(bind=True, max_retries=0, time_limit=3600 * 24)
+def import_all_activities(self, clobber=True):
     logging.info("Importing all activities")
 
     with psycopg.connect(LEGACY_DB_CONNECTION_STRING, row_factory=dict_row) as conn:
@@ -41,7 +41,7 @@ def import_all_activities(self):
             for row in result.fetchall():
                 activity_id = row["activity_id"]
                 import_single_activity.apply(
-                    args=(activity_id,), kwargs={"dry_run": False, "clobber": True}
+                    args=(activity_id,), kwargs={"dry_run": False, "clobber": clobber}
                 )  # run it locally rather than as a background tasks. simplifies chaining/link creation.
 
     logging.info("run complete")
@@ -56,6 +56,10 @@ def import_activity_links(self):
 
 
 @celery_app.task(bind=True, max_retries=0, time_limit=3600 * 12)
-def run_full_etl(self):
-    c = chain(import_codes.si(), import_all_activities.si(), import_all_activities.si())
+def run_full_etl(self, clobber=True):
+    c = chain(
+        import_codes.si(),
+        import_all_activities.si(clobber=clobber),
+        import_all_activities.si(),
+    )
     c.apply_async()
