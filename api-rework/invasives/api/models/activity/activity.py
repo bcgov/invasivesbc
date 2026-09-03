@@ -116,6 +116,9 @@ class Activity(
             year = datetime.datetime.now().strftime("%y")
             self.short_id = f"{year}{subtype}{uuid_substr}"
 
+        plant_codes = super().get_invasive_plant_codes()
+        self.computed_map_symbol = ", ".join(plant_codes)
+
         super().save(*args, **kwargs)
 
         if self.form_status == "Submitted" and not self.computed_fields_generated:
@@ -233,6 +236,9 @@ class DraftActivity(DraftGeometry, BaseModel, models.Model):
             uuid_substr = str(self.id)[:UUID_SUBSTRING_LENGTH].upper()
             year = datetime.datetime.now().strftime("%y")
             self.short_id = f"{year}{subtype}{uuid_substr}"
+
+        plant_codes = super().get_invasive_plant_codes()
+        self.computed_map_symbol = ", ".join(plant_codes)
 
         super().save(*args, **kwargs)
 
