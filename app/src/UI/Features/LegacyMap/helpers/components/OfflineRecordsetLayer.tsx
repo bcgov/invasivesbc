@@ -62,9 +62,9 @@ const OfflineRecordsetLayer = ({ mapReady }: PropTypes) => {
           return Array.from(plants).filter(Boolean).join(', ');
         })();
 
-        if (parsedData?.geom) {
+        if (parsedData?.shape) {
           geometryList.push({
-            ...parsedData.geom,
+            ...parsedData.shape,
             properties: {
               short_id: parsedData.short_id,
               map_symbol: plantCodes,

@@ -74,7 +74,7 @@ const useOfflineRecordsetEntries = (options: Options) => {
             type: ActivitySubtypesToType[data?.subtype],
             subtype: ActivitySubtypesShortLabels[data?.subtype],
             date: data?.date,
-            geom: data?.geom,
+            geom: data?.shape,
             area_m: `${data?.area_m?.toLocaleString()}m²`,
             jurisdictions: jurisdictions,
             invasive_plants: plants,
@@ -83,7 +83,8 @@ const useOfflineRecordsetEntries = (options: Options) => {
             status: s?.sync_state
           };
         }) // TODO: remove null filter as part of Issue #4638 - 'Remove RJSF from frontend'.
-        .filter(Boolean) as Array<IOfflineActivityRow>,
+        .filter(Boolean)
+        .sort((a, b) => b?.date.localeCompare(a?.date)) as Array<IOfflineActivityRow>,
 
     [serializedActivities, serial, options?.filterUnsynced]
   );
