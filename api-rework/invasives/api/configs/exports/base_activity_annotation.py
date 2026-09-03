@@ -174,6 +174,11 @@ photo_exists_subquery = Exists(
 
 BASE_ANNOTATION_CONFIGURATION_TRAILING = [
     {
+        "header": "Batch ID",
+        "key": "batch_id_display",
+        "annotation": F(f"{SRC}__batch_id"),
+    },
+    {
         "header": "BEC Zone(s)",
         "key": "biogeoclimatic_zones",
         "annotation": F(f"{SRC}__computed_biogeoclimatic_zone"),
