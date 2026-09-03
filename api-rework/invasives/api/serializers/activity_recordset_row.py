@@ -160,11 +160,11 @@ class BaseSerializer(serializers.ModelSerializer):
                     yield from getattr(record, destination).all()
 
     def get_invasive_plant(self, obj):
-        plants = [
+        plants = {
             e.invasive_plant.full
             for e in self._get_plant_entries(obj)
             if e.invasive_plant
-        ]
+        }
         return self.build_response_value(plants)
 
     def _get_species_observation(self, obj, observation_type):
@@ -173,12 +173,12 @@ class BaseSerializer(serializers.ModelSerializer):
         if not is_observation:
             return None
 
-        plants = [
+        plants = {
             e.invasive_plant.full
             for e in self._get_plant_entries(obj)
             if getattr(e, "observation_type", None) == observation_type
             and e.invasive_plant
-        ]
+        }
         return self.build_response_value(plants)
 
     def get_species_positive_full(self, obj):
@@ -192,11 +192,11 @@ class BaseSerializer(serializers.ModelSerializer):
         if activity_type not in ["Treatment", "Biocontrol", "Monitoring"]:
             return None
 
-        plants = [
+        plants = {
             e.invasive_plant.full
             for e in self._get_plant_entries(obj)
             if e.invasive_plant
-        ]
+        }
         return self.build_response_value(plants)
 
     def get_species_biocontrol_full(self, obj):

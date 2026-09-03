@@ -119,7 +119,7 @@ UPDATED_MECH_TREATMENT_TERRESTRIAL = {
         "entries": [
             {
                 "disposed_material_amount": 42,
-                "disposed_material_format": "m^3",
+                "disposed_material_format": "volume (m3)",
                 "disposal_method": "II",
                 "invasive_plant": "JK",
                 "mechanical_method": "BUR",

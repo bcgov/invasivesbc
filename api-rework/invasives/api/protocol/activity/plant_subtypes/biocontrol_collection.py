@@ -66,17 +66,10 @@ class Entry(DraftEntry):
 
     @model_validator(mode="after")
     def validate_collection_type_followup(self) -> "Entry":
-        if (
-            self.collection_type == "Timed"
-            and self.time_collection_duration_minutes is None
-        ):
-            raise ValueError(
-                '"Count duration (Minutes)" is required when Collection type is "Timed"'
-            )
-        elif self.collection_type == "Count" and self.plant_count_collection is None:
-            raise ValueError(
-                '"Plant Count" is required when Collection type is "Count"'
-            )
+        if self.collection_type == "Timed":
+            self.plant_count_collection = None
+        elif self.collection_type == "Count":
+            self.time_collection_duration_minutes = None
         return self
 
     @model_validator(mode="after")
