@@ -104,6 +104,7 @@ export const iappColumnsToDisplay = [
 export const offlineActivityColumnsToDisplay = [
   { key: 'short_id', name: 'Activity ID', displayWidget: 'div', hide: false },
   { key: 'type', name: 'Activity Type', hide: false },
+  { key: 'saved_at', name: 'Last Modified', hide: false },
   { key: 'subtype', name: 'Activity Sub Type', hide: false },
   { key: 'date', name: 'Activity Date', hide: false },
   { key: 'area_m', name: 'Area (m²)', hide: false },

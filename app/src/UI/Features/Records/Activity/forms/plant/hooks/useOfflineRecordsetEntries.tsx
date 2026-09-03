@@ -1,5 +1,6 @@
 import FormCode from 'interfaces/FormCode';
 import IOfflineActivityRow from 'interfaces/TableRows/IOfflineActivityRow';
+import moment from 'moment';
 import { useMemo } from 'react';
 import { ActivitySubtypesShortLabels, ActivitySubtypesToType } from 'sharedAPI';
 import { OfflineActivityRecord, OfflineActivitySyncState } from 'state/reducers/offlineActivity';
@@ -72,6 +73,8 @@ const useOfflineRecordsetEntries = (options: Options) => {
             activity_id: data?.id,
             short_id: data?.short_id,
             type: ActivitySubtypesToType[data?.subtype],
+            saved_at: moment(s.saved_at).fromNow(),
+            saved_stamp: s.saved_at,
             subtype: ActivitySubtypesShortLabels[data?.subtype],
             date: data?.date,
             geom: data?.shape,
@@ -84,7 +87,7 @@ const useOfflineRecordsetEntries = (options: Options) => {
           };
         }) // TODO: remove null filter as part of Issue #4638 - 'Remove RJSF from frontend'.
         .filter(Boolean)
-        .sort((a, b) => b?.date.localeCompare(a?.date)) as Array<IOfflineActivityRow>,
+        .sort((a, b) => b!.saved_stamp - a!.saved_stamp) as Array<IOfflineActivityRow>,
 
     [serializedActivities, serial, options?.filterUnsynced]
   );
