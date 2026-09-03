@@ -1,8 +1,11 @@
-from typing import List, Literal, Optional, Union
+import json
 from datetime import date
 from ninja import Schema
+from typing import Annotated, Dict, List, Literal, Optional, Union
+from django.contrib.gis.geos import GEOSGeometry
 from pydantic import Field, model_validator, field_validator, ConfigDict
-from api.models.activity import FormStatus
+from api.models.activity import FormStatus, Activity
+from api.models.activity.activity_subtypes import ActivitySubtypes, SubtypePrimary
 from api.protocol.activity.validators.no_repeat_key import no_repeat_key
 from api.protocol.activity.validators.check_sum import check_sum
 from api.protocol.activity.validators.no_future_date import no_future_date
@@ -11,10 +14,6 @@ from api.protocol.activity.validators.code_validation import (
     JurisdictionCodeType,
     FundingAgencyCodeType,
 )
-
-MAX_AREA_FOR_RECORD = 500000
-from typing import Annotated, Dict, List, Optional, Union
-from pydantic import Field
 from geojson_pydantic import Feature, FeatureCollection
 from geojson_pydantic.geometries import (
     Point,
@@ -26,6 +25,8 @@ from geojson_pydantic.geometries import (
     GeometryCollection as _GeometryCollection,
 )
 from geojson_pydantic.types import Position2D
+
+MAX_AREA_FOR_RECORD = 500000
 
 
 # Override base classes to use a 2D Coordinate system as we don't use z-indexes in app.
@@ -211,6 +212,44 @@ class BaseFormSchema(DraftBaseFormSchema):
 
     class Meta:
         abstract = True
+
+    @model_validator(mode="before")
+    def linked_activities_overlap(self):
+        """
+        For incoming records with Linked activities, check that the records match what is expected
+        - Shapes overlap in any way (intersecting, touching, fully contained within)
+        - ID is an appropriate type (A treatment is linked to an Observation)
+        """
+        # Early Return, no Linked Activities in Record
+        if self.linked_activities == None or len(self.linked_activities) == 0:
+            return self
+
+        def _map_incoming_subtype_to_linkable_type(subtype):
+            modelled_type: SubtypePrimary = ActivitySubtypes[subtype].typeOfActivity
+            match modelled_type:
+                case SubtypePrimary.Treatment:
+                    return SubtypePrimary.Observation
+                case SubtypePrimary.Monitoring:
+                    return SubtypePrimary.Treatment
+                case SubtypePrimary.Biocontrol:
+                    return SubtypePrimary.Observation
+                case _:
+                    pass
+
+        # Create small queryset of expected record
+        queryset = Activity.objects.filter(
+            type=_map_incoming_subtype_to_linkable_type(self.subtype),
+            id__in=[activity["full"] for activity in self.linked_activities],
+            shape__intersects=GEOSGeometry(json.dumps(self.shape["geometry"])),
+        ).values_list("id")
+
+        # Iterate Queryset to check id exists. Alert user if record not in shape
+        for activity in self.linked_activities:
+            if not queryset.filter(id=activity["full"]).exists():
+                short = activity["label"].split(" | ")[0]
+                error = f"Could not process Request. {short} does not sufficiently overlap with incoming record"
+                raise ValueError(error)
+        return self
 
     @field_validator("date")
     @classmethod
