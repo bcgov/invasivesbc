@@ -56,13 +56,13 @@ class FilteredActivityQueryset:
         meta = self.filter_objects[0]
 
         # Determine draft status up front
-        self.should_filter_drafts = any(
+        self.should_filter_drafts = draft_override or any(
             f.get("field") == "form_status" for f in meta.get("tableFilters", [])
         )
         self.prefix = "draft" if self.should_filter_drafts else ""
         self.root = self.prefix + "activitydatarecord"
 
-        if self.should_filter_drafts or draft_override:
+        if self.should_filter_drafts:
             # TODO: Pre-filter Draft Activities to only be by requesting user.
             self.model = DraftActivity
             self.queryset = DraftActivity.objects.all()
