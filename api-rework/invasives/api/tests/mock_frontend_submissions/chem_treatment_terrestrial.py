@@ -186,14 +186,14 @@ UPDATED_CHEM_TREATMENT_TERRESTRIAL = {
             "calculation_type": "PAR",
             "herbicide": [
                 {"type": "L", "name": "27634", "application_rate": 3.321},
-                {"type": "G", "name": "33128", "application_rate": 1.6544},
+                {"type": "G", "name": "33128", "application_rate": 31.6544},
             ],
             "plants_treated": [
                 {"invasive_plant": "AR", "percent_covered": 78},
                 {"invasive_plant": "JK", "percent_covered": 22},
             ],
             "amount_mix_used_l": 3.234,
-            "delivery_rate": 8085,
+            "delivery_rate": 4,
         },
     },
     "type": "Treatment",
