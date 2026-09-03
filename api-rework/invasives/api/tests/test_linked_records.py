@@ -7,7 +7,7 @@ from api.tests.mock_frontend_submissions import (
 )
 
 
-class TerrestrialObservationTest(BaseActivitySubtypeTest):
+class LinkedActivityTests(BaseActivitySubtypeTest):
 
     fixtures = [
         "test/common/test_employer_codes",
