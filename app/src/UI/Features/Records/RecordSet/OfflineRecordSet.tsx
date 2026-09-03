@@ -16,6 +16,8 @@ import CheckboxUI from '../Activity/forms/common/CheckboxUI/CheckboxUI';
 import StyledTable from 'UI/Reusable/StyledTable/StyledTable';
 import { ArrowBackIos } from '@mui/icons-material';
 import Button from 'UI/Reusable/Button/Button';
+import RecordSetControl from '../RecordSetControl';
+import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
 
 type PropTypes = { setID: string };
 
@@ -50,6 +52,7 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
     navigate('/Records');
   };
 
+  const isCellPhoneWidth = useSelector((state) => state.AppMode.constraints.tinyScreen);
   const recordSet = useSelector((state) => state.UserSettings?.recordSets?.[setID]);
   const recordTable = useSelector((state) => state.Map.recordTables?.[setID]);
   const startIndex = recordTable?.page * recordTable?.limit;
@@ -79,6 +82,13 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
             </Button>
           </div>
           <div className="recordSet_header_name">{recordSet?.recordSetName}</div>
+          {!isCellPhoneWidth && (
+            <MobileOnly>
+              <div className="recordset-control">
+                <RecordSetControl isDefaultRecordset={true} recordset={recordSet} hideCache hideColour />
+              </div>
+            </MobileOnly>
+          )}
         </div>
       </div>
       <div className="recordSet_container">
