@@ -1,4 +1,4 @@
-import copy
+from copy import copy
 from .subtypes.base import BaseActivitySubtypeTest
 from api.tests.mock_frontend_submissions import (
     UPDATED_TERRESTRIAL_OBSERVATION,
@@ -54,7 +54,7 @@ class LinkedActivityTests(BaseActivitySubtypeTest):
         """
         init_record = UPDATED_TERRESTRIAL_OBSERVATION
         self.submit_record(init_record)
-        linking_record = UPDATED_MECH_TREATMENT_TERRESTRIAL
+        linking_record = copy(UPDATED_MECH_TREATMENT_TERRESTRIAL)
         linking_record["linked_activities"] = [
             {"label": init_record["short_id"], "full": init_record["id"]}
         ]
@@ -70,7 +70,7 @@ class LinkedActivityTests(BaseActivitySubtypeTest):
         """
         init_record = UPDATED_TERRESTRIAL_OBSERVATION
         self.submit_record(init_record)
-        linking_record = UPDATED_MECH_TREATMENT_TERRESTRIAL
+        linking_record = copy(UPDATED_MECH_TREATMENT_TERRESTRIAL)
         linking_record["linked_activities"] = [
             {"label": init_record["short_id"], "full": init_record["id"]}
         ]
@@ -85,7 +85,7 @@ class LinkedActivityTests(BaseActivitySubtypeTest):
         """
         init_record = UPDATED_TERRESTRIAL_OBSERVATION
         self.submit_record(init_record)
-        linking_record = UPDATED_MONITORING_MECH_TREATMENT
+        linking_record = copy(UPDATED_MONITORING_MECH_TREATMENT)
         linking_record["linked_activities"] = [
             {"label": init_record["short_id"], "full": init_record["id"]}
         ]
