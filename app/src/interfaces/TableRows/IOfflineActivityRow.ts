@@ -4,6 +4,8 @@ import { ActivitySubtypes, ActivityType } from 'sharedAPI';
 interface IOfflineActivityRow {
   activity_id: string;
   short_id: string;
+  saved_at: string;
+  saved_stamp: number;
   geom: GeoJSON;
   type: ActivityType;
   subtype: ActivitySubtypes;

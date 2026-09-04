@@ -101,6 +101,13 @@ export const OfflineDataSyncTable = ({ handleClose }: PropTypes) => {
     return 'Unknown';
   };
 
+  // Present offline records in order of more recently saved.
+  const offlineRecords = useMemo(() => {
+    return Object.entries(serializedActivities as Record<PropertyKey, OfflineActivityRecord>).sort(
+      ([, a], [, b]) => b.saved_at - a.saved_at
+    );
+  }, [serializedActivities]);
+
   const disableOpeningRecord: boolean = useMemo(() => {
     if (!(workingOffline || authenticated)) {
       return true;
@@ -144,7 +151,7 @@ export const OfflineDataSyncTable = ({ handleClose }: PropTypes) => {
             </tr>
           </thead>
           <tbody>
-            {Object.entries(serializedActivities as Record<PropertyKey, OfflineActivityRecord>).map(([key, value]) => {
+            {offlineRecords.map(([key, value]) => {
               return (
                 <Fragment key={key}>
                   <tr>

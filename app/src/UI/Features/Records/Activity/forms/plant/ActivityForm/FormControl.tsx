@@ -10,6 +10,7 @@ import getDefaultFormState from '../builders/getDefaultState';
 import { Debug } from 'UI/Reusable/Predicates/Debug';
 import Activity from 'state/actions/activity/Activity';
 import Button from 'UI/Reusable/Button/Button';
+import CreateLinkedActivityButton from './CreateLinkedActivityButton';
 
 /**
  * @desc Popover menu for form controls, handle Submit/Draft/Duplication fields.
@@ -147,6 +148,7 @@ const FormControl = () => {
           <Button className="control-button" onClick={handleDuplicateForm}>
             Duplicate Form
           </Button>
+          <CreateLinkedActivityButton />
           <Debug>
             <Button type="button" className="control-button" onClick={handleRefetchForm}>
               <BugReport /> Refetch Form

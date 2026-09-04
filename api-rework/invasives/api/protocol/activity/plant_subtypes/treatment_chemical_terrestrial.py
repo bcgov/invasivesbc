@@ -116,7 +116,7 @@ class ProductApplicationRate(CleanSchema):
         application_rates = []
         for h in self.herbicide:
             app_rate = h.application_rate if h.application_rate else 0
-            if h.type.code == "granular":
+            if h.type.code == "G":
                 app_rate /= 1000
             application_rates.append(app_rate)
         MAX_RATE = max(application_rates, default=0)

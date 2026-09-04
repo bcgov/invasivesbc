@@ -3,6 +3,7 @@
   display: flex;
   flex-direction: column;
   padding-bottom: var(--record-table-footer-height);
+
   .content-container {
     padding: 0 5pt;
     margin-top: var(--overlay-grip-height);
@@ -23,7 +24,7 @@
   justify-content: flex-start;
   border-bottom: 1px solid black;
 
-  .recordset-cache-control {
+  .recordset-control {
     margin-left: auto;
     margin-right: 5pt;
   }
