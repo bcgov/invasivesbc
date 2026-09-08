@@ -1,6 +1,6 @@
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import IParsedAddress from 'sharedAPI/src/interfaces/IParsedAddress';
-import './AddressLookup.css';
+import './searchUtil.css';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import debounce from 'lodash.debounce';

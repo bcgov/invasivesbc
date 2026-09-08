@@ -1,5 +1,5 @@
 import AccuracyDisplay from 'UI/Features/LegacyMap/helpers/components/AccuracyDisplay/AccuracyDisplay';
-import AddressLookup from 'UI/Features/LegacyMap/helpers/components/AddressLookup/AddressLookup';
+import SearchUtil from 'UI/Features/LegacyMap/helpers/components/SearchUtil/SearchUtil';
 import Coordinates from 'UI/Features/LegacyMap/helpers/components/Coordinates/Coordinates';
 import 'UI/Features/LegacyMap/helpers/components/DisplayComposite/DisplayComposite.css';
 
@@ -10,7 +10,7 @@ const DisplayComposite = () => {
   return (
     <div id="map-display-composite">
       <div className="composite-box">
-        <AddressLookup />
+        <SearchUtil />
         <Coordinates />
         <AccuracyDisplay />
       </div>
