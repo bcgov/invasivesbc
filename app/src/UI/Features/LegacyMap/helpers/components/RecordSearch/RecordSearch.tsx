@@ -1,9 +1,9 @@
 import { ChangeEvent, KeyboardEvent, useCallback, useState } from 'react';
-import './recordSearch.css';
 import debounce from 'lodash.debounce';
 import { useSelector } from 'utils/use_selector';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import { useNavigate } from 'react-router';
+import './recordSearch.css';
 
 type ActivitySuggestion = {
   short_id: string;
