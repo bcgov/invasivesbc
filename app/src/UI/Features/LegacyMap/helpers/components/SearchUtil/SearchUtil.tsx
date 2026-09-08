@@ -1,6 +1,5 @@
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import IParsedAddress from 'sharedAPI/src/interfaces/IParsedAddress';
-import './searchUtil.css';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import debounce from 'lodash.debounce';
@@ -14,6 +13,7 @@ import { calc_lat_long_from_utm } from 'utils/utm';
 import RecordSearch from '../RecordSearch/RecordSearch';
 import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
 import Button from 'UI/Reusable/Button/Button';
+import './searchUtil.css';
 
 const SearchUtil = () => {
   const DELAY_IN_MS = 750;
@@ -131,7 +131,7 @@ const SearchUtil = () => {
   const [utmResults, setUtmResults] = useState<number[]>([]);
 
   // Mode
-  const [mode, setMode] = useState<Mode>(Mode.ADDRESS);
+  const [mode, setMode] = useState<Mode>(Mode.RECORD_ID);
 
   /**
    * Calculate lat long from UTM.
