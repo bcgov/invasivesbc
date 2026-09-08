@@ -86,22 +86,34 @@ const TankMix: FC = () => {
             value={currentTankMix?.amount_of_mix ?? ''}
             variant="outlined"
             key={amountOfMixUsedKey}
+            onBlur={() => {
+              if (!currentTankMix.amount_of_mix) {
+                setAmountOfMixUsedKey(Math.random().toString());
+              } else {
+                setCurrentTankMix((prev) => ({ ...prev, amount_of_mix: Number(prev.amount_of_mix) }));
+              }
+            }}
             onChange={(event) => {
+              const positiveIntegerRegex = /^(?:\d+\.?\d*|\.\d+)$/;
               const input = event.target.value;
+              const isPositiveInteger = positiveIntegerRegex.test(input);
               if (input === '') {
                 setCurrentTankMix((prevFields) => ({
                   ...prevFields,
                   amount_of_mix: undefined
                 }));
+              } else if (input === '.') {
+                setCurrentTankMix((prev) => ({
+                  ...prev,
+                  amount_of_mix: '0.'
+                }));
+              } else if (isPositiveInteger) {
+                setCurrentTankMix((prevFields) => ({
+                  ...prevFields,
+                  amount_of_mix: input
+                }));
+              } else {
               }
-              if (!isNumber(input)) {
-                setAmountOfMixUsedKey(Math.random().toString());
-                return;
-              }
-              setCurrentTankMix((prevFields) => ({
-                ...prevFields,
-                amount_of_mix: Number(input)
-              }));
             }}
             defaultValue={undefined}
           />

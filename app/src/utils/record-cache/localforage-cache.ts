@@ -169,7 +169,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
    */
   public async getRecordIdsOverlappingFeature(geom: Feature): Promise<string[]> {
     const reposInBoundingBox = ((await this.listRepositories(['set_id', 'status', 'bbox'])) ?? [])?.filter(
-      (r) => r?.status === UserRecordCacheStatus.CACHED && booleanIntersects(bboxToPolygon(r.bbox!), geom)
+      (r) => r?.status === UserRecordCacheStatus.CACHED && booleanIntersects(bboxPolygon(r.bbox!), geom)
     );
 
     const featureMap: Record<PropertyKey, Feature> = {};

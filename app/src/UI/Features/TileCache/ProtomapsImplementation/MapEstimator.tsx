@@ -1,0 +1,140 @@
+import { useEffect, useMemo, useState } from 'react';
+import { Slider } from '@mui/material';
+
+import bbox from '@turf/bbox';
+import { bboxPolygon } from '@turf/turf';
+import { getCurrentJWT } from 'state/sagas/auth/auth';
+import { MapGenerationEstimateRequest, MapGenerationEstimateResponse, MapRecord } from './definitions';
+import MapEstimateRenderer from 'UI/Features/TileCache/ProtomapsImplementation/MapEstimateRenderer';
+import { useSelector } from 'utils/use_selector';
+import debounce from 'lodash.debounce';
+
+import './ProtomapsImplementation.css';
+
+type PropTypes = {
+  drawnShape: GeoJSON.Polygon;
+  tripName: string;
+  zoom: number;
+  setZoom: (newVal: number) => void;
+  valid: boolean;
+  setValid: (valid: boolean) => void;
+};
+
+const MapEstimator = ({ drawnShape, tripName, setZoom, zoom, valid, setValid }: PropTypes) => {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const NORMALIZED_API_BASE = useSelector((state) => state.Configuration.current.runtime.NORMALIZED_API_BASE);
+
+  const debouncedEstimate = useMemo(() => {
+    return debounce(
+      (req: MapGenerationEstimateRequest) => {
+        if (!req.bounds) return;
+
+        setLoading(true);
+        setError(false);
+
+        (async () => {
+          fetch(`${NORMALIZED_API_BASE}/maps/requests/estimate`, {
+            headers: {
+              Authorization: await getCurrentJWT(),
+              'Content-Type': 'application/json'
+            },
+            method: 'POST',
+            body: JSON.stringify(req)
+          })
+            .then(async (res) => {
+              setLoading(false);
+              if (res.status === 200) {
+                const serverResult: MapRecord[] = await res.json();
+                const newEstimate = serverResult as unknown as MapGenerationEstimateResponse;
+                setEstimateResponse(newEstimate);
+                setValid(newEstimate.is_size_valid && newEstimate.is_trip_name_valid);
+              } else {
+                setEstimateResponse(undefined);
+                setError(true);
+              }
+            })
+            .catch((reason) => {
+              setLoading(false);
+              setError(true);
+              setErrorMessage(`${reason}`);
+            });
+        })();
+      },
+      250,
+      { leading: true }
+    );
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      debouncedEstimate.cancel();
+    };
+  }, []);
+
+  const [estimateResponse, setEstimateResponse] = useState<MapGenerationEstimateResponse | undefined>(undefined);
+
+  const [estimateRequest, setEstimateRequest] = useState<MapGenerationEstimateRequest>({
+    trip_name: tripName,
+    minimum_zoom: 0,
+    maximum_zoom: 10,
+    bounds: undefined
+  });
+
+  useEffect(() => {
+    setEstimateRequest({
+      ...estimateRequest,
+      trip_name: tripName,
+      maximum_zoom: zoom,
+      bounds: bboxPolygon(bbox(drawnShape)).geometry
+    });
+  }, [drawnShape, zoom, tripName]);
+
+  useEffect(() => {
+    debouncedEstimate(estimateRequest);
+  }, [estimateRequest]);
+
+  return (
+    <div>
+      <p>Select Zoom Level:</p>
+      <Slider
+        value={zoom}
+        step={1}
+        aria-label={'Zoom Level'}
+        marks={[
+          { label: 'Min', value: 12 },
+          { label: '1:70k', value: 13 },
+          { label: '1:36k', value: 14 },
+          { label: '1:18k', value: 15 },
+          { label: '1:9k', value: 16 },
+          { label: '1:4k', value: 17 },
+          { label: '1:2k', value: 18 },
+          { label: '1:1k', value: 19 },
+          { label: 'Max', value: 20 }
+        ]}
+        sx={{ width: '80%' }}
+        color={valid ? 'primary' : 'error'}
+        min={12}
+        max={20}
+        onChange={(_e, value) => {
+          setZoom(value);
+        }}
+      />
+      <div className={`${loading ? 'loading' : ''} estimateDetails`}>
+        <>
+          {!valid && (
+            <p className={'red'}>
+              Invalid request. Please reduce the drawn area or the zoom level and verify the trip name has not been
+              previously-used.
+            </p>
+          )}
+        </>
+        <>{error && <p className={'red'}>An error occurred: {errorMessage}</p>}</>
+        <>{valid && estimateResponse && <MapEstimateRenderer estimate={estimateResponse} />}</>
+      </div>
+    </div>
+  );
+};
+
+export default MapEstimator;

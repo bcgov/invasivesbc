@@ -4,15 +4,18 @@
   left: 60px;
   display: flex;
   flex-direction: row;
+
   .composite-box {
     display: flex;
     flex-direction: column;
     width: 194px;
     box-sizing: border-box;
+
     & > *:not(:last-child) {
       margin-bottom: 5px;
     }
   }
+
   .composite-box:not(:last-child) {
     margin-right: 5px;
   }

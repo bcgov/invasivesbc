@@ -1,19 +1,16 @@
 import 'maplibre-gl/dist/maplibre-gl.css';
-import React, { Suspense, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import './map.css';
 
-import { useSelector } from 'utils/use_selector';
+import { useDispatch, useSelector } from 'utils/use_selector';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
 import { InvasivesMap } from 'UI/Features/LegacyMap/InvasivesMap';
-import { PositionMarkers } from 'UI/Features/LegacyMap/helpers/components/PositionMarkers';
-import maplibregl from 'maplibre-gl';
+import * as maplibregl from 'maplibre-gl/dist/maplibre-gl-dev';
 import { PMTiles, Protocol } from 'pmtiles';
-import { TileCacheService } from 'utils/tile-cache';
 import { CurrentActivityLayer } from 'UI/Features/LegacyMap/helpers/components/CurrentActivityLayer';
 import { DrawControls } from 'UI/Features/LegacyMap/helpers/components/DrawControls/DrawControls';
 import DisplayComposite from './helpers/components/DisplayComposite/DisplayComposite';
-import { StartupContext } from 'UI/StartupCoordinator/StartupCoordinator';
 import {
   addClientBoundariesIfNotExists,
   addServerBoundariesIfNotExists,
@@ -25,26 +22,21 @@ import {
 import { ButtonContainer } from 'UI/Features/LegacyMap/Controls/ButtonContainer';
 import { LayerPicker } from 'UI/Features/LegacyMap/LayerPicker/LayerPicker';
 import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
-import CachedMapLayer from './helpers/components/CachedMapLayer';
 import { SourceComponent } from 'UI/Features/LegacyMap/helpers/components/SourceComponent';
 import { LayerComponent } from 'UI/Features/LegacyMap/helpers/components/LayerComponent';
 import { SourceCleanupComponent } from 'UI/Features/LegacyMap/helpers/components/SourceCleanupComponent';
 import { POSITIONING_LAYERS } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/positioning-layers';
 import { useInvasivesMapLayers } from 'UI/Features/LegacyMap/helpers/functional/layers-hook';
-import Spinner from 'UI/Reusable/Spinner/Spinner';
-import { OfflineMapsPluginPMTilesSource } from 'utils/offline-protomaps/capacitor';
-import { DEMO_DOWNLOADED_FILENAME } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/demo-offline-vector';
 import LayerDataMarker from './helpers/components/LayerDataMarker/LayerDataMarker';
 import { useRecordSetControls } from 'utils/useRecordSetControls';
 import OfflineRecordsetLayer from './helpers/components/OfflineRecordsetLayer';
-
-const OfflineProtoMapsDebugModal = React.lazy(
-  () => import('UI/Features/LegacyMap/helpers/components/OfflineProtomaps/Debug')
-);
+import { useOfflineRecordSetLayers } from 'utils/useOfflineRecordSetLayers';
+import { OfflineMapsPluginPMTilesSource } from 'utils/offline-protomaps/capacitor';
+import OfflineProtomaps from 'state/actions/cache/OfflineProtomaps';
+import { DrawControls } from 'UI/Features/LegacyMap/helpers/components/DrawControls';
+import { PositionMarkers } from 'UI/Features/LegacyMap/helpers/components/PositionMarkers';
 
 export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const { tileService: tileCache } = useContext(StartupContext);
-
   const mapContainer: React.MutableRefObject<HTMLDivElement | null> = useRef<HTMLDivElement>(null);
 
   // Auth + Network
@@ -60,8 +52,9 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
   // Map position jump
   const map_center = useSelector((state) => state.Map.map_center);
   const map_zoom = useSelector((state) => state.Map.map_zoom);
+  const { recordsetLayers: offlineLayers, recordsetSources: offlineSources } = useOfflineRecordSetLayers();
 
-  const [map, setMap] = useState<InvasivesMap>();
+  const map = useRef<InvasivesMap | null>(null);
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
   const [mapReady, setMapReady] = useState<boolean>(false);
 
@@ -70,10 +63,41 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
 
   const { sources, layers, availableLayerDefinitions, setActiveBaseMap, setOverlayState } = useInvasivesMapLayers();
   const { recordsetLayers, recordsetSources } = useRecordSetControls();
+
+  const pmtilesProtocol = useRef<Protocol>(new Protocol());
+
+  const [alreadyAddedProtomapsSources, setAlreadyAddedProtomapsSources] = useState<string[]>([]);
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(OfflineProtomaps.refreshList());
+  }, []);
+
+  useEffect(() => {
+    const addedSources: string[] = [];
+    Object.entries(sources).forEach(([key, value]) => {
+      if (value === undefined) return;
+
+      if (Object.hasOwn(value, 'url') && !addedSources.includes(key) && !alreadyAddedProtomapsSources.includes(key)) {
+        addedSources.push(key);
+        if (value.url.startsWith('pmtiles://https://')) {
+          // for pmtiles files which are always served live from the server, not cached locally
+          pmtilesProtocol.current.add(new PMTiles(value.url.replace('pmtiles://', '')));
+        } else if (value.url.startsWith('pmtiles://')) {
+          pmtilesProtocol.current.add(
+            new PMTiles(new OfflineMapsPluginPMTilesSource(value.url.replace('pmtiles://', '')))
+          );
+        }
+      }
+    });
+    if (addedSources.length > 0) {
+      setAlreadyAddedProtomapsSources([...alreadyAddedProtomapsSources, ...addedSources]);
+    }
+  }, [sources, alreadyAddedProtomapsSources]);
+
   useEffect(() => {
     if (!mapContainer.current) {
-      console.error('Mapinit invoked with invalid reference');
-      throw new Error('Mapinit invoked with invalid reference');
+      return;
     }
 
     maplibregl.addProtocol('api', async (request) => {
@@ -176,8 +200,6 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
       }
     });
 
-    const pmtilesProtocol = new Protocol();
-
     maplibregl.addProtocol('pmtiles', (request) => {
       return new Promise((resolve, reject) => {
         const callback = (err, data) => {
@@ -187,40 +209,11 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
             resolve({ data });
           }
         };
-        pmtilesProtocol.tile(request, callback);
+        pmtilesProtocol.current.tile(request, callback);
       });
     });
 
-    const PMTILES_URL =
-      configuration.runtime.PUBLIC_MAP_URL || `https://nrs.objectstore.gov.bc.ca/uphjps/invasives-local.pmtiles`;
-    const p = new PMTiles(PMTILES_URL);
-
-    // this is so we share one instance across the JS code and the map renderer
-    pmtilesProtocol.add(p);
-
-    // eg:
-    pmtilesProtocol.add(new PMTiles(new OfflineMapsPluginPMTilesSource(DEMO_DOWNLOADED_FILENAME)));
-
-    if (configuration.features.CACHE_TILES.enabled) {
-      if (!tileCache) {
-        console.error('tile cache unexpectedly not available');
-        maplibregl.addProtocol('baked', async () => {
-          // this is a blank 256x256 image
-          return TileCacheService.generateFallbackTile();
-        });
-      } else {
-        maplibregl.addProtocol('baked', async (request) => {
-          try {
-            const [repository, z, x, y] = request.url.replace('baked://', '').split('/');
-
-            return await tileCache.getTile(repository, Number(z), Number(x), Number(y));
-          } catch {
-            // this is a blank 256x256 image
-            return TileCacheService.generateFallbackTile();
-          }
-        });
-      }
-    }
+    maplibregl.addProtocol('livepmtiles', pmtilesProtocol.current.tile);
 
     const tileCacheSettings = (() => {
       if (configuration.features.MAP_RESTRICT_TILE_CACHE_SIZE.enabled) {
@@ -230,87 +223,96 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
       return {};
     })();
 
-    setMap(
-      new InvasivesMap({
-        container: mapContainer.current,
-        maxZoom: 24,
-        ...tileCacheSettings,
-        zoom: 3,
-        minZoom: 0,
-        center: [map_center[0], map_center[1]],
-        style: {
-          glyphs: configuration.build.MOBILE
-            ? '/assets/basemaps/fonts/{fontstack}/{range}.pbf'
-            : 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
-          version: 8,
-          sources: {},
-          layers: POSITIONING_LAYERS
-        }
-      })
-    );
-  }, []);
-
-  useEffect(() => {
-    if (!map || mapReady) return;
-
-    map.once('idle', function () {
-      if (map !== null) {
-        map.resize();
+    map.current = new InvasivesMap({
+      container: mapContainer.current,
+      maxZoom: 24,
+      ...tileCacheSettings,
+      zoom: 3,
+      minZoom: 0,
+      center: [map_center[0], map_center[1]],
+      style: {
+        glyphs: configuration.build.MOBILE
+          ? '/assets/basemaps/fonts/{fontstack}/{range}.pbf'
+          : 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
+        version: 8,
+        sources: {},
+        layers: POSITIONING_LAYERS
       }
     });
 
-    if (map.isStyleLoaded()) {
-      setMapReady(true);
-    }
-  }, [map?.isStyleLoaded()]);
+    map.current.once('idle', function () {
+      if (map.current !== null) {
+        map.current.resize();
+      }
+      if (map.current.isStyleLoaded()) {
+        setMapReady(true);
+      }
+    });
+
+    return () => {
+      if (map.current !== null) {
+        map.current.remove();
+      }
+    };
+  }, [mapContainer.current]);
 
   useEffect(() => {
-    if (!mapReady || !map) return;
+    if (!mapReady) return;
+    if (map.current == null) return;
+
     if (loggedInOrWorkingOffline) {
-      addServerBoundariesIfNotExists(serverBoundaries, map);
-      refreshServerBoundariesOnToggle(serverBoundaries, map);
+      addServerBoundariesIfNotExists(serverBoundaries, map.current);
+      refreshServerBoundariesOnToggle(serverBoundaries, map.current);
     }
-  }, [serverBoundaries, loggedInOrWorkingOffline, map, mapReady]);
+  }, [serverBoundaries, loggedInOrWorkingOffline, map.current, mapReady]);
 
   // Custom Layers:
   useEffect(() => {
-    if (!mapReady || !map) return;
+    if (!mapReady) return;
+    if (map.current == null) return;
 
     if (!loggedInOrWorkingOffline) {
-      removeClientBoundaries(clientBoundaries, map);
+      removeClientBoundaries(clientBoundaries, map.current);
       return;
     }
 
-    addClientBoundariesIfNotExists(clientBoundaries, map);
-    refreshClientBoundariesOnToggle(clientBoundaries, map);
-    removeOrphanClientBoundaries(clientBoundaries, map);
-  }, [clientBoundaries, map, mapReady, loggedInOrWorkingOffline]);
+    addClientBoundariesIfNotExists(clientBoundaries, map.current);
+    refreshClientBoundariesOnToggle(clientBoundaries, map.current);
+    removeOrphanClientBoundaries(clientBoundaries, map.current);
+  }, [clientBoundaries, map.current, mapReady, loggedInOrWorkingOffline]);
 
   // Jump Nav
   useEffect(() => {
     if (!mapReady) return;
-    if (!map) return;
+    if (map.current == null) return;
 
     try {
       if (map_center && map_zoom) {
-        map.easeTo({
+        map.current.easeTo({
           center: map_center,
           zoom: map_zoom,
-          offset: [0, map.getContainer().clientHeight * -0.2]
+          offset: [0, map.current.getContainer().clientHeight * -0.2]
         });
       }
     } catch (e) {
       console.error(e);
     }
-  }, [map, mapReady, map_center, map_zoom]);
+  }, [map.current, mapReady, map_center, map_zoom]);
 
   useEffect(() => {
-    setInterval(() => {
-      if (map) {
-        setMapLoaded(map.areTilesLoaded());
+    if (map.current == null) {
+      return;
+    }
+
+    const intervalID = setInterval(() => {
+      if (map.current !== null) {
+        setMapLoaded(map.current.areTilesLoaded());
       }
     }, 1000);
-  }, [map]);
+    return () => {
+      clearInterval(intervalID);
+    };
+  }, [map.current]);
 
   const buttonContainerLayerSelect = useCallback(
     (name: string) => {
@@ -333,40 +335,43 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
         <div id="LoadingMap" className={!mapLoaded ? 'loadingMap' : 'loadedMap'}>
           Loading tiles...
         </div>
+        <MapContext.Provider value={map.current}>
+          {map.current !== null && (
+            <>
+              <DisplayComposite />
+              <DrawControls mapReady={mapReady} />
 
-        <MapContext.Provider value={map}>
-          <DisplayComposite />
-          <DrawControls />
+              <ButtonContainer selectLayer={buttonContainerLayerSelect} layers={availableLayerDefinitions} />
 
-          <Suspense fallback={<Spinner />}>
-            <OfflineProtoMapsDebugModal />
-          </Suspense>
+              {[...Object.entries(recordsetSources), ...Object.entries(sources), ...Object.entries(offlineSources)].map(
+                ([key, source]) => (
+                  <SourceComponent mapReady={mapReady} key={key} id={key} source={source} />
+                )
+              )}
 
-          <ButtonContainer selectLayer={buttonContainerLayerSelect} layers={availableLayerDefinitions} />
+              {[...layers, ...recordsetLayers, ...offlineLayers].map((layer) => (
+                <LayerComponent mapReady={mapReady} key={layer.id} id={layer.id} layer={layer} />
+              ))}
 
-          {[...Object.entries(recordsetSources), ...Object.entries(sources)].map(([key, source]) => (
-            <SourceComponent mapReady={mapReady} key={key} id={key} source={source} />
-          ))}
+              {[...Object.keys(sources), ...Object.keys(recordsetSources), ...Object.keys(offlineSources)].map(
+                (key) => (
+                  <SourceCleanupComponent mapReady={mapReady} key={key} id={key} />
+                )
+              )}
 
-          {[...layers, ...recordsetLayers].map((layer) => (
-            <LayerComponent mapReady={mapReady} key={layer.id} id={layer.id} layer={layer} />
-          ))}
-
-          {[...Object.keys(sources), ...Object.keys(recordsetSources)].map((key) => (
-            <SourceCleanupComponent mapReady={mapReady} key={key} id={key} />
-          ))}
-
-          <PositionMarkers mapReady={mapReady} />
-          <LayerDataMarker />
-          <CurrentActivityLayer mapReady={mapReady} />
-          {loggedInOrWorkingOffline && (
-            <LayerPicker layers={availableLayerDefinitions} setOverlayState={setOverlayState} />
+              <PositionMarkers mapReady={mapReady} />
+              <LayerDataMarker />
+              <CurrentActivityLayer mapReady={mapReady} />
+              {loggedInOrWorkingOffline && (
+                <LayerPicker layers={availableLayerDefinitions} setOverlayState={setOverlayState} />
+              )}
+              <MobileOnly>
+                <OfflineRecordsetLayer mapReady={mapReady} />
+              </MobileOnly>
+            </>
           )}
-          <MobileOnly>
-            <CachedMapLayer mapReady={mapReady} />
-            <OfflineRecordsetLayer mapReady={mapReady} />
-          </MobileOnly>
         </MapContext.Provider>
+
         {children}
       </div>
     </div>

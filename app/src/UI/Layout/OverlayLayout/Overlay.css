@@ -2,11 +2,10 @@
   --overlay-top: var(--header-bar-height);
   --overlay-grip-height: 25px; /* grab handle */
 
-
   #app.overlay-layout {
     position: relative;
 
-    .overlayMenuResizeButtons {
+    .overlaymenuresizebuttons {
       display: flex;
       flex-direction: row;
     }
@@ -30,6 +29,10 @@
       &.shown {
         top: var(--overlay-top);
         padding-bottom: 1rem;
+
+        .overlay-content {
+          padding-bottom: calc(var(--footer-bar-height) + 5px);
+        }
       }
 
       &.fullscreen {
@@ -47,10 +50,7 @@
 
     .map-containing-block {
       position: absolute;
-      left: 0;
-      right: 0;
-      top: var(--header-bar-height);
-      bottom: var(--footer-bar-height);
+      inset: var(--header-bar-height) 0 var(--footer-bar-height) 0;
     }
 
     .MapWrapper {
@@ -102,5 +102,4 @@
       }
     }
   }
-
 }

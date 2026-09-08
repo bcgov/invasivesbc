@@ -162,8 +162,10 @@ function createActivityReducer() {
           draftState.activity.media = [];
         }
         draftState.activity.media.push(action.payload);
+        draftState.pristine = false;
       } else if (Activity.Photo.editSuccess.match(action)) {
         draftState.activity.media = action.payload;
+        draftState.pristine = false;
       } else if (Activity.Photo.deleteSuccess.match(action)) {
         draftState.activity = action.payload;
       } else if (Activity.Suggestions.getJurisdictions.fulfilled.match(action)) {

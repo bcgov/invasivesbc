@@ -59,7 +59,7 @@ ObservationAquaticPlant.columns = [
     'codeReference',
     'form_data.activity_subtype_data.AquaticPlants[0].observation_type'
   )
-    .hardcodedCodes(OBSERVATION_TYPE_CODES)
+    .referencesCode('observation_type')
     .isRequired()
     .build(),
   new TemplateColumnBuilder(
@@ -88,7 +88,7 @@ ObservationAquaticPlant.columns = [
     'codeReference',
     'form_data.activity_subtype_data.AquaticPlants[0].voucher_specimen_collected'
   )
-    .hardcodedCodes(YES_NO_CODES)
+    .referencesCode('yes_no')
     .build(),
   new TemplateColumnBuilder(
     'Observation - Sample Point ID 2',
@@ -107,7 +107,7 @@ ObservationAquaticPlant.columns = [
     'codeReference',
     'form_data.activity_subtype_data.AquaticPlants[1].observation_type'
   )
-    .hardcodedCodes(OBSERVATION_TYPE_CODES)
+    .referencesCode('observation_type')
     .build(),
   new TemplateColumnBuilder(
     'Observation - Density 2',
@@ -135,7 +135,7 @@ ObservationAquaticPlant.columns = [
     'codeReference',
     'form_data.activity_subtype_data.AquaticPlants[1].voucher_specimen_collected'
   )
-    .hardcodedCodes(YES_NO_CODES)
+    .referencesCode('yes_no')
     .build(),
   new TemplateColumnBuilder(
     'Observation - Sample Point ID 3',
@@ -154,7 +154,7 @@ ObservationAquaticPlant.columns = [
     'codeReference',
     'form_data.activity_subtype_data.AquaticPlants[2].observation_type'
   )
-    .hardcodedCodes(OBSERVATION_TYPE_CODES)
+    .referencesCode('observation_type')
     .build(),
   new TemplateColumnBuilder(
     'Observation - Density 3',
@@ -182,7 +182,7 @@ ObservationAquaticPlant.columns = [
     'codeReference',
     'form_data.activity_subtype_data.AquaticPlants[2].voucher_specimen_collected'
   )
-    .hardcodedCodes(YES_NO_CODES)
+    .referencesCode('yes_no')
     .build()
 ];
 

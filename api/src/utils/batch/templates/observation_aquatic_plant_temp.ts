@@ -50,7 +50,7 @@ ObservationAquaticPlantTemp.columns = [
     'codeReference',
     'form_data.activity_subtype_data.AquaticPlants[0].observation_type'
   )
-    .hardcodedCodes(OBSERVATION_TYPE_CODES)
+    .referencesCode('observation_type')
     .isRequired()
     .build(),
   new TemplateColumnBuilder(
@@ -98,7 +98,7 @@ ObservationAquaticPlantTemp.columns = [
     'codeReference',
     'form_data.activity_subtype_data.AquaticPlants[0].voucher_specimen_collected'
   )
-    .hardcodedCodes(YES_NO_CODES)
+    .referencesCode('yes_no')
     .isRequired()
     .build(),
   new TemplateColumnBuilder(

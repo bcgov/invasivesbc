@@ -1,0 +1,73 @@
+div.protomaps-list {
+  min-height: 8rem;
+  display: flex;
+  flex-direction: column;
+
+  .status {
+    display: grid;
+    text-align: end;
+    grid-template: 'icon status' auto 'progress progress' auto / auto 1fr;
+
+    .progress {
+      grid-area: progress;
+      align-self: center;
+      height: 1rem;
+    }
+  }
+
+  .table-wrapper {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    overflow-x: auto;
+    width: 100%;
+    text-size-adjust: 100%; /* Disables iOS Autoscaling text size */
+    margin: 8px 0;
+  }
+
+  table {
+    white-space: nowrap;
+    width: 100%;
+    border-collapse: collapse;
+
+    thead {
+      border-bottom: 2px solid black;
+    }
+
+    tr {
+      th {
+        text-align: center;
+        font-weight: bold;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+      }
+    }
+
+    td:not(:last-child),
+    th:not(:last-child) {
+      border-right: 1px solid var(--bc-blue);
+    }
+
+    tbody {
+      tr {
+        height: 40px;
+
+        td {
+          padding: 5px 8px;
+        }
+      }
+
+      tr:nth-child(even) {
+        background-color: var(--even-list-item-bg-color);
+      }
+
+      tr:nth-child(odd) {
+        background-color: var(--odd-list-item-bg-color);
+      }
+
+      tr:hover {
+        background-color: var(--hovered-list-item-bg-color);
+      }
+    }
+  }
+}

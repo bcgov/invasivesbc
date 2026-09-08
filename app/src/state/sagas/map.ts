@@ -27,7 +27,6 @@ import { RecordSetId, RecordSetType, UserRecordSet } from 'interfaces/UserRecord
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import Activity, { SwitchRecordSetPayload } from 'state/actions/activity/Activity';
 import { RootState } from 'state/reducers/rootReducer';
-import TileCache from 'state/actions/cache/TileCache';
 import { RECORD_COLOURS } from 'constants/colors';
 import EFilterType from 'constants/EFilterType';
 import {
@@ -552,7 +551,7 @@ function* handle_MAP_ON_SHAPE_CREATE(action: PayloadAction<Feature>) {
 function* handle_MAP_ON_SHAPE_UPDATE(action: PayloadAction<Feature>) {
   try {
     const { url } = yield select((state) => state.AppMode);
-    const { drawingCustomLayer, whatsHere, tileCacheMode } = yield select((state: RootState) => state.Map);
+    const { drawingCustomLayer, whatsHere } = yield select((state: RootState) => state.Map);
     const { status, shapeType } = yield select((state) => state.Map.track_me_draw_geo);
     const { id, geometry } = action.payload;
 
@@ -592,10 +591,6 @@ function* handle_MAP_ON_SHAPE_UPDATE(action: PayloadAction<Feature>) {
       }
       yield put(DrawToolActions.updateGeo([action.payload]));
       return;
-    }
-
-    if (tileCacheMode) {
-      yield put(TileCache.setTileCacheShape({ geometry }));
     }
   } catch (error) {
     console.error('Error in handle_MAP_ON_SHAPE_UPDATE:', error);
