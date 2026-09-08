@@ -34,6 +34,7 @@
 
       &:hover {
         cursor: pointer;
+        background-color: var(--hovered-list-item-bg-color);
       }
     }
   }
