@@ -40,8 +40,8 @@ enum UrlStub {
   Activity = 'Activity',
   Legacy = 'LegacyForm'
 }
-const DrawControls = () => {
-  const map = useContext(MapContext);
+const DrawControls = ({ mapReady }) => {
+  const map = useContext(MapContext) as maplibregl.Map;
 
   // Draw Feature Bools
   const whatsHereToggle = useSelector((state) => state.Map.whatsHere.toggle);

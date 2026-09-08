@@ -11,7 +11,6 @@ type PrimaryLayerSelectProps = {
 
 const PrimaryLayerSelect = ({ layers, selectLayer }: PrimaryLayerSelectProps) => {
   const DEBUG = useSelector((state) => state.Configuration.current.build.DEBUG);
-  const IOS = useSelector((state) => state.Configuration.current.build.PLATFORM === Platform.IOS);
 
   function renderIcon(def: InvasivesMapLayerDefinitionWithState) {
     switch (def.icon) {

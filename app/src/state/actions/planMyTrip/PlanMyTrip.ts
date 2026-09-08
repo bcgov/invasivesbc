@@ -1,7 +1,6 @@
 import { createAction, createAsyncThunk, nanoid } from '@reduxjs/toolkit';
 import { Feature, GeoJSON } from 'geojson';
 import { bbox, bboxPolygon } from '@turf/turf';
-import { EFilterType } from 'state/actions/userSettings/RecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import RecordCache from 'state/actions/cache/RecordCache';
 import WellCache from 'state/actions/cache/WellCache';

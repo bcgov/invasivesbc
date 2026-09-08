@@ -9,7 +9,6 @@ import { InvasivesMap } from 'UI/Features/LegacyMap/InvasivesMap';
 import * as maplibregl from 'maplibre-gl/dist/maplibre-gl-dev';
 import { PMTiles, Protocol } from 'pmtiles';
 import { CurrentActivityLayer } from 'UI/Features/LegacyMap/helpers/components/CurrentActivityLayer';
-import { DrawControls } from 'UI/Features/LegacyMap/helpers/components/DrawControls/DrawControls';
 import DisplayComposite from './helpers/components/DisplayComposite/DisplayComposite';
 import {
   addClientBoundariesIfNotExists,
@@ -27,13 +26,13 @@ import { LayerComponent } from 'UI/Features/LegacyMap/helpers/components/LayerCo
 import { SourceCleanupComponent } from 'UI/Features/LegacyMap/helpers/components/SourceCleanupComponent';
 import { POSITIONING_LAYERS } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/positioning-layers';
 import { useInvasivesMapLayers } from 'UI/Features/LegacyMap/helpers/functional/layers-hook';
-import LayerDataMarker from './helpers/components/LayerDataMarker/LayerDataMarker';
+import LayerDataMarker from 'UI/Features/LegacyMap/helpers/components/LayerDataMarker/LayerDataMarker';
 import { useRecordSetControls } from 'utils/useRecordSetControls';
 import OfflineRecordsetLayer from './helpers/components/OfflineRecordsetLayer';
 import { useOfflineRecordSetLayers } from 'utils/useOfflineRecordSetLayers';
 import { OfflineMapsPluginPMTilesSource } from 'utils/offline-protomaps/capacitor';
 import OfflineProtomaps from 'state/actions/cache/OfflineProtomaps';
-import { DrawControls } from 'UI/Features/LegacyMap/helpers/components/DrawControls';
+import { DrawControls } from 'UI/Features/LegacyMap/helpers/components/DrawControls/DrawControls';
 import { PositionMarkers } from 'UI/Features/LegacyMap/helpers/components/PositionMarkers';
 
 export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {

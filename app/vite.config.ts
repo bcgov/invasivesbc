@@ -1,7 +1,6 @@
 import { execSync } from 'child_process';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import { visualizer } from 'rollup-plugin-visualizer';
 
 // sets up constants in the code, based on the build environment
 function buildSpecificDefines() {
@@ -61,27 +60,13 @@ export default defineConfig({
     outDir: '../dist',
     minify: 'oxc',
     sourcemap: true,
-    cssCodeSplit: false,
+    // cssCodeSplit: false,
+
     target: process.env['VITE_TARGET_PLATFORM'] === 'ios' ? 'ios26.4' : 'baseline-widely-available',
 
     rolldownOptions: {
-      plugins: [...statsPlugin()],
+      plugins: [],
       output: {
-        codeSplitting: {
-          groups: [
-            {
-              test: /node_modules/,
-              name: 'vendor'
-            },
-            {
-              test: /state\/configuration\/runtime-config/,
-              name: 'configuration'
-            },
-            {
-              test: /state\/configuration\/injected-features/,
-              name: 'injected-features'
-            }
-          ]
         codeSplitting: {
           groups: [
             {
