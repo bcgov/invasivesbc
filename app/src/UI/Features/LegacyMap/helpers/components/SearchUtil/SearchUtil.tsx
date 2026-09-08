@@ -162,14 +162,14 @@ const SearchUtil = () => {
           <Button className="popover-button" onClick={() => setMode(Mode.ADDRESS)}>
             Address
           </Button>
-          <Button className="popover-button" onClick={() => setMode(Mode.UTM)}>
-            UTM
+          <Button className="popover-button" onClick={() => setMode(Mode.COORDINATES)}>
+            Coordinates
           </Button>
           <Button className="popover-button" onClick={() => setMode(Mode.RECORD_ID)}>
             Record ID
           </Button>
-          <Button className="popover-button" onClick={() => setMode(Mode.COORDINATES)}>
-            Lat/Long
+          <Button className="popover-button" onClick={() => setMode(Mode.UTM)}>
+            UTM
           </Button>
         </div>
       </CustomPopover>
