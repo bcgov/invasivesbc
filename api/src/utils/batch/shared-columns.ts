@@ -686,7 +686,7 @@ export const ObservationCompleteSetValidator = (row): RowValidationResult => {
 
   const observationSets = [1, 2, 3];
 
-  const baseFields = [
+  const positiveRequiredFields = [
     'Observation - Type',
     'Observation - Invasive Plant',
     'Observation - Density',
@@ -695,106 +695,53 @@ export const ObservationCompleteSetValidator = (row): RowValidationResult => {
     'Voucher - Sample Collected?'
   ];
 
+  const negativeRequiredFields = ['Observation - Type', 'Observation - Invasive Plant', 'Voucher - Sample Collected?'];
+
   for (const i of observationSets) {
     const typeField = `Observation - Type ${i}`;
-    const plantField = `Observation - Invasive Plant ${i}`;
-    const fields = baseFields.map((f) => `${f} ${i}`);
-
-    const values = fields.map((field) => rowData?.[field]?.parsedValue);
-
-    const anyFilled = values.some((v) => !!v);
-    const allFilled = values.every((v) => !!v);
 
     const observationType = rowData?.[typeField]?.parsedValue;
-    const invasivePlant = rowData?.[plantField]?.parsedValue;
 
-    const isValidNegativeCase = invasivePlant && observationType === 'Negative Observation';
+    const allSetFields = positiveRequiredFields.map((field) => `${field} ${i}`);
 
-    if (anyFilled && !allFilled && !isValidNegativeCase) {
+    const anyFilled = allSetFields.some((field) => rowData?.[field]?.parsedValue);
+
+    if (!anyFilled) {
+      continue;
+    }
+
+    const requiredFields = observationType === 'Negative Observation' ? negativeRequiredFields : positiveRequiredFields;
+
+    const requiredFieldsForSet = requiredFields.map((field) => `${field} ${i}`);
+
+    const missingFields = requiredFieldsForSet.filter((field) => {
+      const value = rowData?.[field]?.parsedValue;
+
+      return value === undefined || value === null || value === '';
+    });
+
+    if (missingFields.length > 0) {
       valid = false;
 
       validationMessages.push({
         severity: 'error',
-        messageTitle: 'Incomplete observation set',
-        messageDetail: `Please provide complete information for each invasive plant`
+        messageTitle: `Incomplete observation set ${i}`,
+        messageDetail: `Observation set ${i} is missing required information.`,
+        observationSet: i,
+        fields: missingFields
       });
 
-      appliesToFields.push(...fields);
-    }
-  }
-
-  return {
-    valid,
-    validationMessages,
-    appliesToFields: [...new Set(appliesToFields)]
-  };
-};
-
-export const PositiveObservationPlantValidator = (row): RowValidationResult => {
-  let valid = true;
-  const validationMessages = [];
-  const appliesToFields = [];
-  const rowData = row.data;
-
-  const observationSets = [1, 2, 3];
-
-  const baseFields = [
-    'Observation - Density',
-    'Observation - Distribution',
-    'Observation - Life Stage',
-    'Voucher - Sample Collected?'
-  ];
-
-  for (const i of observationSets) {
-    const typeField = `Observation - Type ${i}`;
-    const invasivePlantField = `Observation - Invasive Plant ${i}`;
-    const requiredFields = baseFields.map((f) => `${f} ${i}`);
-
-    const observationType = rowData?.[typeField]?.parsedValue;
-    const invasivePlant = rowData?.[invasivePlantField]?.parsedValue;
-
-    if (invasivePlant && !observationType) {
-      valid = false;
-
-      validationMessages.push({
-        severity: 'error',
-        messageTitle: 'Required value',
-        messageDetail: `${typeField} is required when ${invasivePlantField} is provided`
-      });
-
-      appliesToFields.push(typeField, invasivePlantField);
-    }
-
-    if (observationType === 'Positive Observation') {
-      for (const field of requiredFields) {
-        if (!rowData?.[field]?.parsedValue) {
-          valid = false;
-
-          validationMessages.push({
-            severity: 'error',
-            messageTitle: 'Required value',
-            messageDetail: `${field} is required when ${typeField} is Positive Observation`
-          });
-
-          appliesToFields.push(typeField, field);
-        }
+      for (const field of missingFields) {
+        validationMessages.push({
+          severity: 'error',
+          messageTitle: 'Required field',
+          messageDetail: `${field.replace(` ${i}`, '')} is required.`,
+          observationSet: i,
+          field
+        });
       }
-    }
 
-    if (observationType === 'Negative Observation') {
-      for (const field of requiredFields) {
-        if (rowData?.[field]?.parsedValue) {
-          valid = false;
-
-          validationMessages.push({
-            severity: 'error',
-            messageTitle: 'Invalid value',
-            messageDetail: `${field} must be blank when ${typeField} is Negative Observation`
-          });
-
-          appliesToFields.push(typeField, field);
-        }
-      }
+      appliesToFields.push(...missingFields);
     }
   }
 

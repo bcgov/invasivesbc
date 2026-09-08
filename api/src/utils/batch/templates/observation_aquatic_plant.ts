@@ -1,12 +1,10 @@
 import { Template, TemplateColumnBuilder } from 'utils/batch/definitions';
-import { OBSERVATION_TYPE_CODES, YES_NO_CODES } from 'utils/batch/hard-coded-codes';
 import {
   ActivityPersons,
   BasicInformation,
   BasicInformationRowValidators,
   DuplicateInvasivePlantValidator,
   ObservationCompleteSetValidator,
-  PositiveObservationPlantValidator,
   ProjectInformation,
   SampleCollectedNotAllowedValidator,
   SamplePointIDValidator,
@@ -189,7 +187,6 @@ ObservationAquaticPlant.columns = [
 ObservationAquaticPlant.rowValidators = [
   ...BasicInformationRowValidators,
   ShorelineSumValidator,
-  PositiveObservationPlantValidator,
   DuplicateInvasivePlantValidator,
   SampleCollectedNotAllowedValidator,
   SamplePointIDValidator,

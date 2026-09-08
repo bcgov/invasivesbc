@@ -1,12 +1,10 @@
 import { Template, TemplateColumnBuilder } from 'utils/batch/definitions';
-import { OBSERVATION_TYPE_CODES, YES_NO_CODES } from 'utils/batch/hard-coded-codes';
 import {
   ActivityPersons,
   BasicInformation,
   BasicInformationRowValidators,
   DuplicateInvasivePlantValidator,
   ObservationCompleteSetValidator,
-  PositiveObservationPlantValidator,
   ProjectInformation,
   SampleCollectedNotAllowedValidator,
   SlopeAspectValidator
@@ -123,7 +121,7 @@ ObservationTerrestrialPlant.columns = [
     'codeReference',
     'form_data.activity_subtype_data.TerrestrialPlants[0].voucher_specimen_collected'
   )
-    .hardcodedCodes(YES_NO_CODES)
+    .referencesCode('yes_no')
     .build(),
   new TemplateColumnBuilder(
     'Observation - Invasive Plant 2',
@@ -137,7 +135,7 @@ ObservationTerrestrialPlant.columns = [
     'codeReference',
     'form_data.activity_subtype_data.TerrestrialPlants[1].observation_type'
   )
-    .hardcodedCodes(OBSERVATION_TYPE_CODES)
+    .referencesCode('observation_type')
     .build(),
   new TemplateColumnBuilder(
     'Observation - Density 2',
@@ -166,7 +164,7 @@ ObservationTerrestrialPlant.columns = [
     'codeReference',
     'form_data.activity_subtype_data.TerrestrialPlants[1].voucher_specimen_collected'
   )
-    .hardcodedCodes(YES_NO_CODES)
+    .referencesCode('yes_no')
     .build(),
   new TemplateColumnBuilder(
     'Observation - Invasive Plant 3',
@@ -180,7 +178,7 @@ ObservationTerrestrialPlant.columns = [
     'codeReference',
     'form_data.activity_subtype_data.TerrestrialPlants[2].observation_type'
   )
-    .hardcodedCodes(OBSERVATION_TYPE_CODES)
+    .referencesCode('observation_type')
     .build(),
   new TemplateColumnBuilder(
     'Observation - Density 3',
@@ -209,13 +207,12 @@ ObservationTerrestrialPlant.columns = [
     'codeReference',
     'form_data.activity_subtype_data.TerrestrialPlants[2].voucher_specimen_collected'
   )
-    .hardcodedCodes(YES_NO_CODES)
+    .referencesCode('yes_no')
     .build()
 ];
 
 ObservationTerrestrialPlant.rowValidators = [
   ...BasicInformationRowValidators,
-  PositiveObservationPlantValidator,
   SlopeAspectValidator,
   DuplicateInvasivePlantValidator,
   SampleCollectedNotAllowedValidator,
