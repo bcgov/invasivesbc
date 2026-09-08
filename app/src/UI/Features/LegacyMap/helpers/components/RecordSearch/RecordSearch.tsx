@@ -123,7 +123,7 @@ const RecordSearch = () => {
     <div id="record-search">
       <input
         type="text"
-        placeholder="Search for record"
+        placeholder="Search for a record"
         value={value}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
