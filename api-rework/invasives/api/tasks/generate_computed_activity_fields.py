@@ -4,70 +4,165 @@ from django.db import transaction
 from invasivesbc import celery_app
 from invasivesbc.settings import LEGACY_DB_CONNECTION_STRING
 import psycopg
-import logging
 from psycopg.rows import dict_row
 import requests
 
 logger = get_task_logger(__name__)
 
 BCGW_CONFIG = {
-    "ownership": {
-        "table_name": "WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW",  # BCGW table
-        "target_attribute": "OWNER_TYPE",  # The attribute to collect
+    "WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW": {
+        "related_key": "computed_ownership",  # DB Column
+        "layer_name": "WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW",  # BCGW table
+        "layer_property": "OWNER_TYPE",  # The attribute to collect
+        "layer_geom": "SHAPE",  # Feature to match against in BCGW
     },
-    "computed_biogeoclimatic_zone": {
-        "table_name": "WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY",
-        "target_attribute": "BGC_LABEL",
+    "WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY": {
+        "related_key": "computed_biogeoclimatic_zone",
+        "layer_name": "WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY",
+        "layer_property": "BGC_LABEL",
+        "layer_geom": "GEOMETRY",
     },
-    "flrno_districts": {
-        "table_name": "WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG",
-        "target_attribute": "DISTRICT_NAME",
+    "WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG": {
+        "related_key": "computed_flrno_districts",
+        "layer_name": "WHSE_ADMIN_BOUNDARIES.ADM_NR_DISTRICTS_SPG",
+        "layer_property": "DISTRICT_NAME",
+        "layer_geom": "SHAPE",
     },
-    "moti_districts": {
-        "table_name": "WHSE_ADMIN_BOUNDARIES.TADM_MOT_DISTRICT_BNDRY_POLY",
-        "target_attribute": "DISTRICT_NAME",
+    "WHSE_ADMIN_BOUNDARIES.TADM_MOT_DISTRICT_BNDRY_POLY": {
+        "related_key": "computed_moti_districts",
+        "layer_name": "WHSE_ADMIN_BOUNDARIES.TADM_MOT_DISTRICT_BNDRY_POLY",
+        "layer_property": "DISTRICT_NAME",
+        "layer_geom": "GEOMETRY",
     },
 }
 
-# https://openmaps.gov.bc.ca/geo/pub/wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=pub:WHSE_FOREST_VEGETATION.BEC_BIOGEOCLIMATIC_POLY&outputFormat=json&maxFeatures=1&srsName=epsg:4326&bbox=-123.3194441,48.8160246,-123.3194441,48.8160246&epsg:4326
+
+def build_xml_query(activity: Activity):
+    """Build BCGW Query"""
+
+    def node(layer_name: str, layer_property: str, layer_geom: str, activity: Activity):
+        """
+        Build out a subquery for our XML Request
+        """
+        return f"""
+            <wfs:Query typeNames="pub:{layer_name}">
+                <wfs:PropertyName>{layer_property}</wfs:PropertyName>
+                <fes:Filter>
+                <fes:Intersects>
+                    <fes:ValueReference>{layer_geom}</fes:ValueReference>
+                    <gml:Point srsName="urn:ogc:def:crs:EPSG::4326">
+                    <gml:pos>{activity.latitude} {activity.longitude}</gml:pos>
+                    </gml:Point>
+                </fes:Intersects>
+                </fes:Filter>
+            </wfs:Query>
+        """
+
+    HEAD = """
+        <wfs:GetFeature service="WFS" version="2.0.0" outputFormat="application/json"
+        xmlns:wfs="http://www.opengis.net/wfs/2.0"
+        xmlns:fes="http://www.opengis.net/fes/2.0"
+        xmlns:gml="http://www.opengis.net/gml/3.2"
+        xmlns:pub="http://openmaps.gov.bc.ca/">
+    """
+    TAIL = "</wfs:GetFeature>"
+
+    query_nodes = "".join(
+        node(
+            layer_name=entry["layer_name"],
+            layer_property=entry["layer_property"],
+            layer_geom=entry["layer_geom"],
+            activity=activity,
+        )
+        for entry in BCGW_CONFIG.values()
+    )
+
+    return f"{HEAD} {query_nodes} {TAIL}".encode("utf-8")
 
 
-def query_bcgw(config_name, activity: Activity):
-    WFS_URL = "https://openmaps.gov.bc.ca/geo/pub/wfs"
-    WFS_PARAMS = "?service=WFS&version=1.1.0&request=GetFeature&typeName=pub:{layer}&outputFormat=json&maxFeatures=1&srsName=epsg:4326&bbox={bbox},epsg:4326"
-    lat = activity.latitude
-    long = activity.longitude
-
-    config = BCGW_CONFIG.get(config_name, None)
-    if config is None or lat is None or long is None:
+def query_bcgw(activity: Activity):
+    """
+    Query the BCGW with an Activities Shape to populat the following:
+        - computed_ownership
+        - computed_biogeoclimatic_zone
+        - computed_flrno_districts
+        - computed_moti_districts
+    """
+    if activity.shape is None:
         raise Exception("Insufficient data provided")
 
-    bbox = f"{long},{lat},{long},{lat}"
-    url = WFS_URL + WFS_PARAMS.format(layer=config["table_name"], bbox=bbox)
-    logging.debug(url)
+    xml = build_xml_query(activity=activity)
+    headers = {"Content-Type": "text/xml"}
+    WFS_URL = "https://openmaps.gov.bc.ca/geo/pub/wfs"
+    response = requests.post(WFS_URL, data=xml, headers=headers, timeout=15)
+
+    response.raise_for_status()
+    data = response.json()
+    for feature in data["features"]:
+        """
+        Convert Layer ID to base e.g.:
+        WHSE_ADMIN_BOUNDARIES.TADM_MOT_DISTRICT_BNDRY_POLY.9 => WHSE_ADMIN_BOUNDARIES.TADM_MOT_DISTRICT_BNDRY_POLY
+        """
+        bcgw_layer_id = ".".join(str(feature["id"]).split(".")[:2])
+        config = BCGW_CONFIG.get(bcgw_layer_id, None)
+        if config != None:
+            val = feature["properties"].get(config["layer_property"], None)
+            setattr(activity, config["related_key"], val)
+
+
+def fetch_computed_elevation_m(a: Activity):
+    if a.latitude is None or a.longitude is None:
+        raise Exception("latitude or longitude is missing, cannot compute elevation")
+
+    url = f"https://geogratis.gc.ca/services/elevation/cdem/altitude?lat={a.latitude}&lon={a.longitude}"
     response = requests.get(url, timeout=5)
     response.raise_for_status()
     data = response.json()
+    a.computed_elevation_m = data.get("altitude", None)
+
+
+def query_singleton_spatial_tables(a: Activity):
+    """
+    Assign Singleton computed values for Activity using a connection for multiple fields.
+    Populates the computed values for:
+        - computed_invasive_plant_management_areas
+        - computed_regional_districts
+    """
+    wkt_shape = a.shape.wkt
+    srid = a.shape.srid
     try:
-        return data["features"][0]["properties"][config["target_attribute"]]
-    except:
-        return None
+        with psycopg.connect(LEGACY_DB_CONNECTION_STRING, row_factory=dict_row) as conn:
+            with conn.cursor() as cursor:
+                response = cursor.execute(
+                    """
+                    SELECT (
+                        SELECT imp.ipma
+                        FROM public.invasive_plant_management_areas imp
+                        WHERE ST_INTERSECTS2(imp.geog, ST_GeomFromText(%s, %s)::geography)
+                        LIMIT 1
+                    ) as ipma,
+                    (
+                        SELECT rd.agency
+                        FROM public.regional_districts rd
+                        WHERE ST_INTERSECTS2(rd.geog, ST_GeomFromText(%s, %s)::geography)
+                        LIMIT 1
+                    ) as district
+                    """,
+                    (wkt_shape, srid, wkt_shape, srid),
+                )
+                if cursor.rowcount == 0:
+                    return
 
+                row = response.fetchone()
 
-def fetch_computed_biogeoclimatic_zones(a: Activity):
-    return query_bcgw("computed_biogeoclimatic_zone", a)
+                ipma = row["ipma"] if row["ipma"] else None
+                a.computed_invasive_plant_management_areas = ipma
 
-
-def fetch_computed_flrno_districts(a: Activity):
-    return query_bcgw("flrno_districts", a)
-
-
-def fetch_computed_ownership(a: Activity):
-    return query_bcgw("ownership", a)
-
-
-def fetch_computed_moti_districts(a: Activity):
-    return query_bcgw("moti_districts", a)
+                regional_districts = row["district"] if row["district"] else None
+                a.computed_regional_districts = regional_districts
+    except psycopg.Error as e:
+        logger.error(e)
+        raise e
 
 
 def fetch_computed_riso_areas(a: Activity):
@@ -88,86 +183,16 @@ def fetch_computed_riso_areas(a: Activity):
                 return [row["agency"] for row in response.fetchall()]
     except psycopg.Error as e:
         logger.error(f"fetch_computed_riso_areas failed: {e}")
-        raise
-
-
-def fetch_computed_invasive_plant_management_areas(a: Activity):
-    # TODO: Port tables over and create unmanaged models
-    wkt_shape = a.shape.wkt
-    srid = a.shape.srid
-    try:
-        with psycopg.connect(LEGACY_DB_CONNECTION_STRING, row_factory=dict_row) as conn:
-            with conn.cursor() as cursor:
-                response = cursor.execute(
-                    """
-                    SELECT imp.ipma
-                    FROM public.invasive_plant_management_areas imp
-                    WHERE ST_INTERSECTS2(imp.geog, ST_GeomFromText(%s, %s)::geography)
-                    LIMIT 1
-                    """,
-                    (wkt_shape, srid),
-                )
-                if cursor.rowcount == 0:
-                    return None
-                row = response.fetchone()
-                return row["ipma"]
-    except psycopg.Error as e:
-        logger.error(e)
-        raise
-
-
-def fetch_computed_regional_districts(a: Activity):
-    # TODO: Port tables over and create unmanaged models
-    wkt_shape = a.shape.wkt
-    srid = a.shape.srid
-    try:
-        with psycopg.connect(LEGACY_DB_CONNECTION_STRING, row_factory=dict_row) as conn:
-            with conn.cursor() as cursor:
-                response = cursor.execute(
-                    """
-                    SELECT rd.agency
-                    FROM public.regional_districts rd
-                    WHERE ST_INTERSECTS2(rd.geog, ST_GeomFromText(%s, %s)::geography)
-                    LIMIT 1
-                    """,
-                    (wkt_shape, srid),
-                )
-                if cursor.rowcount == 0:
-                    return None
-                row = response.fetchone()
-                return row["agency"]
-    except psycopg.Error as e:
-        logger.error(e)
-
-
-def fetch_computed_elevation_m(a: Activity):
-    if a.computed_elevation_m is not None:
-        return a.computed_elevation_m
-
-    if a.latitude is None or a.longitude is None:
-        logger.error("Cannot compute ")
-        raise Exception("latitude or longitude is missing, cannot compute elevation")
-
-    url = f"https://geogratis.gc.ca/services/elevation/cdem/altitude?lat={a.latitude}&lon={a.longitude}"
-    response = requests.get(url, timeout=5)
-    response.raise_for_status()
-    data = response.json()
-    return data["altitude"]
+        raise e
 
 
 @celery_app.task(bind=True, max_retries=3)
 def generate_computed_activity_fields(self, record_id):
     try:
         a = Activity.objects.get(id=record_id)
-        a.computed_elevation_m = fetch_computed_elevation_m(a)
-        a.computed_biogeoclimatic_zone = fetch_computed_biogeoclimatic_zones(a)
-        a.computed_flrno_districts = fetch_computed_flrno_districts(a)
-        a.computed_invasive_plant_management_areas = (
-            fetch_computed_invasive_plant_management_areas(a)
-        )
-        a.computed_moti_districts = fetch_computed_moti_districts(a)
-        a.computed_ownership = fetch_computed_ownership(a)
-        a.computed_regional_districts = fetch_computed_regional_districts(a)
+        fetch_computed_elevation_m(a)
+        query_bcgw(a)
+        query_singleton_spatial_tables(a)
         risos = fetch_computed_riso_areas(a)
         with transaction.atomic():
             for agency in risos:
