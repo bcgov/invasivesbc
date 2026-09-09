@@ -1,12 +1,5 @@
 import { TemplateColumnBuilder } from './definitions';
 import { RowValidationResult } from './validation/validation';
-import {
-  WATER_LEVEL_MANAGEMENT_CODES,
-  WIND_DIRECTION_CODES,
-  WATERBODY_TYPE_CODES,
-  SUBSTRATE_TYPE_CODES,
-  YES_NO_CODES
-} from './hard-coded-codes';
 
 export const BasicInformation = [
   new TemplateColumnBuilder('WKT', 'WKT', {
@@ -732,10 +725,11 @@ export const ObservationCompleteSetValidator = (row): RowValidationResult => {
       });
 
       for (const field of missingFields) {
+        const fieldName = field.replace(` ${i}`, '');
         validationMessages.push({
           severity: 'error',
           messageTitle: 'Required field',
-          messageDetail: `${field.replace(` ${i}`, '')} is required.`,
+          messageDetail: `${fieldName} is required.`,
           observationSet: i,
           field
         });
