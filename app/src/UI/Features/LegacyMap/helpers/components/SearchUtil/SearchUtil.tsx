@@ -1,24 +1,28 @@
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import IParsedAddress from 'sharedAPI/src/interfaces/IParsedAddress';
-import './AddressLookup.css';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import debounce from 'lodash.debounce';
 import { Feature } from 'geojson';
 import MapIcon from '@mui/icons-material/Map';
-import { Home, Place } from '@mui/icons-material';
+import { FindInPage, Home, Place } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { point } from '@turf/helpers';
 import { calc_lat_long_from_utm } from 'utils/utm';
+import RecordSearch from '../RecordSearch/RecordSearch';
+import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
+import Button from 'UI/Reusable/Button/Button';
+import './searchUtil.css';
 
-const AddressLookup = () => {
+const SearchUtil = () => {
   const DELAY_IN_MS = 750;
   const MINIMUM_LOOKUP_LENGTH = 5;
   enum Mode {
     ADDRESS,
-    COORDINATE,
-    UTM
+    COORDINATES,
+    UTM,
+    RECORD_ID
   }
   /**
    * @desc Fire API Request to get locations, prevent spamming API with debounce + minimum search length
@@ -40,14 +44,6 @@ const AddressLookup = () => {
     }, DELAY_IN_MS),
     []
   );
-
-  /**
-   * @desc Cycle between all available modes
-   */
-  const handleModeChange = () => {
-    const totalModes = Object.keys(Mode).length / 2;
-    setMode((prevMode) => (prevMode + 1) % totalModes);
-  };
 
   /**
    * @desc Query API for Related Addresses
@@ -117,6 +113,7 @@ const AddressLookup = () => {
   const connected = useSelector((state) => state.Network.connected);
   const authorizedUser = useSelector((state) => state.Auth.loggedInOrWorkingOffline);
 
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   // Address Mode states
   const [address, setAddress] = useState<string>('');
   const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
@@ -134,7 +131,7 @@ const AddressLookup = () => {
   const [utmResults, setUtmResults] = useState<number[]>([]);
 
   // Mode
-  const [mode, setMode] = useState<Mode>(Mode.ADDRESS);
+  const [mode, setMode] = useState<Mode>(Mode.RECORD_ID);
 
   /**
    * Calculate lat long from UTM.
@@ -159,6 +156,23 @@ const AddressLookup = () => {
   if (!connected || !authorizedUser) return;
   return (
     <div id="address-lookup">
+      <CustomPopover buttonOverrideOptions={{ anchorEl, setAnchorEl }} closeAfterPress disablePortal>
+        <div className="popover-menu">
+          <p>Search By:</p>
+          <Button className="popover-button" onClick={() => setMode(Mode.ADDRESS)}>
+            Address
+          </Button>
+          <Button className="popover-button" onClick={() => setMode(Mode.COORDINATES)}>
+            Coordinates
+          </Button>
+          <Button className="popover-button" onClick={() => setMode(Mode.RECORD_ID)}>
+            Record ID
+          </Button>
+          <Button className="popover-button" onClick={() => setMode(Mode.UTM)}>
+            UTM
+          </Button>
+        </div>
+      </CustomPopover>
       {
         {
           [Mode.ADDRESS]: (
@@ -176,7 +190,7 @@ const AddressLookup = () => {
                   onFocus={() => setShowSuggestions(true)}
                   onChange={handleAddressChange}
                 />
-                <IconButton onClick={handleModeChange}>
+                <IconButton tabIndex={-1} onClick={(e) => setAnchorEl(e.currentTarget)}>
                   <Home />
                 </IconButton>
               </div>
@@ -194,7 +208,7 @@ const AddressLookup = () => {
               )}
             </>
           ),
-          [Mode.COORDINATE]: (
+          [Mode.COORDINATES]: (
             <>
               <div className="flex-row">
                 <div>
@@ -223,7 +237,7 @@ const AddressLookup = () => {
                     placeholder="Long, e.g. -123.21"
                   />
                 </div>
-                <IconButton onClick={handleModeChange} disabled={!connected}>
+                <IconButton tabIndex={-1} onClick={(e) => setAnchorEl(e.currentTarget)} disabled={!connected}>
                   <Place />
                 </IconButton>
               </div>
@@ -275,7 +289,7 @@ const AddressLookup = () => {
                     placeholder="Northing"
                   />
                 </div>
-                <IconButton onClick={handleModeChange}>
+                <IconButton tabIndex={-1} onClick={(e) => setAnchorEl(e.currentTarget)}>
                   <MapIcon />
                 </IconButton>
               </div>
@@ -288,6 +302,14 @@ const AddressLookup = () => {
                 Go to location
               </button>
             </>
+          ),
+          [Mode.RECORD_ID]: (
+            <div className="flex-row">
+              <RecordSearch />
+              <IconButton tabIndex={-1} onClick={(e) => setAnchorEl(e.currentTarget)}>
+                <FindInPage />
+              </IconButton>
+            </div>
           )
         }[mode]
       }
@@ -295,4 +317,4 @@ const AddressLookup = () => {
   );
 };
 
-export default AddressLookup;
+export default SearchUtil;
