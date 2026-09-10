@@ -423,6 +423,9 @@ class FilteredActivityQueryset:
     def exists(self):
         return self.queryset.exists()
 
+    def aexists(self):
+        return self.queryset.aexists()
+
     def filter(self, *args, **kwargs):
         self.queryset = self.queryset.filter(*args, **kwargs)
         return self
@@ -433,6 +436,9 @@ class FilteredActivityQueryset:
 
     def aggregate(self, *args, **kwargs):
         return self.queryset.aggregate(*args, **kwargs)
+
+    def aaggregate(self, *args, **kwargs):
+        return self.queryset.aaggregate(*args, **kwargs)
 
     def get(self, *args, **kwargs):
         return self.queryset.get(*args, **kwargs)
