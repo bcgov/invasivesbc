@@ -24,9 +24,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    "api.middleware.dynamic_atomic_endpoints.DynamicAtomicEndpointsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "corsheaders.middleware.CorsMiddleware",
+    "api.middleware.dynamic_atomic_endpoints.DynamicAtomicEndpointsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
