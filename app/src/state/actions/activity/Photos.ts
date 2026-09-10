@@ -14,7 +14,7 @@ class Photos {
   static readonly addSuccess = createAction(`${this.PREFIX}/addSuccess`);
   static readonly addFailure = createAction(`${this.PREFIX}/addFailure`);
 
-  static readonly edit = createAction(`${this.PREFIX}/edit`);
+  static readonly edit = createAction<UploadedPhoto>(`${this.PREFIX}/edit`);
   static readonly editSuccess = createAction<UploadedPhoto[]>(`${this.PREFIX}/editSuccess`);
 
   static readonly delete = createAction<UploadedPhoto>(`${this.PREFIX}/delete`);

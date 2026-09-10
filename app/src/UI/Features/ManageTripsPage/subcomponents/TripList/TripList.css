@@ -1,0 +1,8 @@
+/* Top Level Trips Container */
+#manage-my-trips {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  max-width: 675px;
+  width: 100vw;
+}

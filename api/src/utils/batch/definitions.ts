@@ -5,6 +5,7 @@ import { RowValidationResult } from 'utils/batch/validation/validation';
 type templateDataType =
   | 'text'
   | 'numeric'
+  | 'integer'
   | 'date'
   | 'datetime'
   | 'linked_id'
@@ -24,6 +25,7 @@ export class TemplateColumn {
   helpText: string | null;
   required = false;
   overwritesPrevious = false;
+  intentionallyUnmapped: boolean = false; // suppress object mapper warnings for columns with no mapping (eg Point Area)
 
   validations: {
     minLength: number | null;
@@ -95,6 +97,7 @@ export class TemplateColumnBuilder {
     tc.required = this.required;
     tc.overwritesPrevious = this.overwritesPrevious;
     tc.helpText = this.helpText;
+    tc.intentionallyUnmapped = this.intentionallyUnmapped;
     tc.validations = {
       ...this.validations
     };
@@ -105,6 +108,13 @@ export class TemplateColumnBuilder {
 
   isRequired(required = true): this {
     this.required = required;
+    return this;
+  }
+
+  intentionallyUnmapped = false;
+
+  isIntentionallyUnmapped(unmapped = true): this {
+    this.intentionallyUnmapped = unmapped;
     return this;
   }
 

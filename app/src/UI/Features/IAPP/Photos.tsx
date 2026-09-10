@@ -1,7 +1,7 @@
-import { Accordion, AccordionSummary, Paper } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import Spinner from 'UI/Reusable/Spinner/Spinner';
+import './Photos.css';
 
 type MediaDescriptor = {
   media_key: string;
@@ -14,7 +14,6 @@ type MediaDescriptor = {
 };
 
 export const Photos: React.FC<{ media: MediaDescriptor[] }> = ({ media }) => {
-  const [expanded, setExpanded] = React.useState(true);
   const [mediaURLs, setMediaURLs] = useState<MediaDescriptor[]>([]);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -43,14 +42,13 @@ export const Photos: React.FC<{ media: MediaDescriptor[] }> = ({ media }) => {
     }
   }, [media]);
 
+  const MISSING_CONTENT = 'Not Provided.';
   function renderContent() {
     if (loading) {
       return <Spinner />;
-    }
-    if (error) {
+    } else if (error) {
       return <span>Error loading images</span>;
-    }
-    if (media.length === 0) {
+    } else if (media.length === 0) {
       return <span>This record has no photos associated with it.</span>;
     }
     return mediaURLs?.map((m) => {
@@ -63,24 +61,29 @@ export const Photos: React.FC<{ media: MediaDescriptor[] }> = ({ media }) => {
       return (
         <div className={'iapp-photo'} key={m.media_key}>
           <img alt="IAPP Photo" src={m.encoded_file} />
-          <dl>
-            <dt>Comments</dt>
-            <dd>{mediaData.comments}</dd>
-
-            <dt>Image Date</dt>
-            <dd>{mediaData.image_date}</dd>
-
-            <dt>Perspective Code</dt>
-            <dd>{mediaData.perspective_code || 'None'}</dd>
-
-            <dt>Reference Number</dt>
-            <dd>{mediaData.reference_no}</dd>
+          <dl className="image-details">
+            <div>
+              <dt>Comments</dt>
+              <dd>{mediaData.comments ?? MISSING_CONTENT}</dd>
+            </div>
+            <div>
+              <dt>Image Date</dt>
+              <dd>{mediaData.image_date ?? MISSING_CONTENT}</dd>
+            </div>
+            <div>
+              <dt>Perspective Code</dt>
+              <dd>{mediaData.perspective_code ?? MISSING_CONTENT}</dd>
+            </div>
+            <div>
+              <dt>Reference Number</dt>
+              <dd>{mediaData.reference_no ?? MISSING_CONTENT}</dd>
+            </div>
 
             {mediaData.treatment_id !== null && (
-              <>
+              <div>
                 <dt>Treatment ID</dt>
-                <dd>{mediaData.treatment_id}</dd>
-              </>
+                <dd>{mediaData.treatment_id ?? MISSING_CONTENT}</dd>
+              </div>
             )}
           </dl>
         </div>
@@ -89,17 +92,11 @@ export const Photos: React.FC<{ media: MediaDescriptor[] }> = ({ media }) => {
   }
 
   return (
-    <Accordion expanded={expanded} style={{ marginTop: 15, alignItems: 'center' }}>
-      <AccordionSummary
-        onClick={() => setExpanded(!expanded)}
-        style={{ fontSize: '1.125rem', marginLeft: 10, marginRight: 10 }}
-      >
-        Media
-      </AccordionSummary>
-
-      <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-        <div className={'iapp-photo-container'}>{renderContent()}</div>
-      </Paper>
-    </Accordion>
+    <div className="main-photo-cont">
+      <div className={'iapp-photo-container'}>
+        <h2>Media</h2>
+        {renderContent()}
+      </div>
+    </div>
   );
 };

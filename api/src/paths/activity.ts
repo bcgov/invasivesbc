@@ -363,7 +363,8 @@ function createActivity(): RequestHandler {
         const context = {
           longitude: req.body.form_data.activity_data.longitude,
           latitude: req.body.form_data.activity_data.latitude,
-          activity_id: result.activity_id
+          activity_id: result.activity_id,
+          subject: req.authContext.subject
         };
         await commitContext(context);
       }
@@ -445,8 +446,8 @@ async function updateActivityHandler(req: InvasivesRequest, res: Response): Prom
       const chemicalDetails = (sanitizedActivityData.activity_subtype_data as Record<PropertyKey, any>)
         ?.chemical_treatment_details;
       const herbicides = chemicalDetails.tank_mix
-        ? chemicalDetails?.tank_mix_object?.herbicides ?? []
-        : chemicalDetails?.herbicides ?? [];
+        ? (chemicalDetails?.tank_mix_object?.herbicides ?? [])
+        : (chemicalDetails?.herbicides ?? []);
       herbicides.forEach((_, i) => {
         herbicides[i].index = i;
         delete herbicides[i]?.uuid;
@@ -518,7 +519,8 @@ async function updateActivityHandler(req: InvasivesRequest, res: Response): Prom
       const context = {
         longitude: req.body.form_data.activity_data.longitude,
         latitude: req.body.form_data.activity_data.latitude,
-        activity_id: result.activity_id
+        activity_id: result.activity_id,
+        subject: req.authContext.subject
       };
       await commitContext(context);
     }

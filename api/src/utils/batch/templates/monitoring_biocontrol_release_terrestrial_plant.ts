@@ -169,7 +169,7 @@ MonitoringBiocontrolReleaseTerrestrialPlant.columns = [
     'codeReference',
     'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information[0].monitoring_type'
   )
-    .hardcodedCodes(BIOCONTROL_MONITORING_TYPE_CODES)
+    .referencesCode('monitoring_type')
     .isRequired()
     .build(),
 

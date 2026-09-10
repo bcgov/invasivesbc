@@ -1,6 +1,13 @@
 #manage-trips {
   box-sizing: border-box;
   margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .intro {
+    padding: 5px;
+  }
 
   .trip-header {
     z-index: 1;
@@ -15,33 +22,109 @@
   }
 
   .content {
+    margin-top: 0.5rem;
+    padding: 8px;
     align-items: center;
+    box-sizing: border-box;
+    max-width: 100%;
     display: flex;
     justify-content: center;
   }
-  .redirect {
-    display: flex;
-    margin-top: 1rem;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    button {
-      text-decoration: underline;
-    }
-  }
-  .main {
-    display: flex;
-    flex-direction: column;
-    p {
-      font-size: 24px;
-    }
-    & > * {
-      margin-bottom: 1.5rem;
-    }
-    button:not(.redirect) {
+
+  .nav-wrapper {
+    &.collapsed {
+      display: flex;
+      justify-content: flex-start;
+      width: 100%;
+      overflow-x: auto;
+      box-sizing: border-box;
       background-color: var(--bc-blue);
-      height: 60pt;
-      width: 165pt;
+      border-bottom: 1pt solid var(--bc-blue);
+    }
+
+    .navigation {
+      display: flex;
+      width: 100%;
+
+      &.expanded {
+        align-items: center;
+        flex-direction: column;
+        padding-top: 2rem;
+
+        a {
+          padding: 16px;
+          margin: 16px;
+          background-color: var(--bc-blue);
+          color: white;
+          border-radius: 4px;
+          height: 3rem;
+          width: 15rem;
+        }
+      }
+
+      &.collapsed {
+        display: flex;
+        align-items: flex-start;
+        flex-direction: row;
+        gap: 16px;
+        padding: 8px 10px;
+        box-sizing: border-box;
+        width: 100%;
+        overflow-x: auto;
+
+        a {
+          color: white;
+          border: 1px solid white;
+          padding: 4px 8px;
+          border-radius: 4px;
+          white-space: nowrap;
+
+          &.active:not(.back) {
+            color: var(--bc-yellow);
+            border: 1px solid var(--bc-yellow);
+          }
+        }
+      }
+
+      a {
+        display: grid;
+        grid-template-columns: 32px 1fr;
+        gap: 4px;
+        align-items: center;
+        text-decoration: none;
+        text-transform: uppercase;
+      }
+    }
+
+    .redirect {
+      display: flex;
+      margin-top: 1rem;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+
+      button {
+        text-decoration: underline;
+      }
+    }
+
+    .main {
+      display: flex;
+      flex-direction: column;
+
+      p {
+        font-size: 24px;
+      }
+
+      & > * {
+        margin-bottom: 1.5rem;
+      }
+
+      button:not(.redirect) {
+        background-color: var(--bc-blue);
+        height: 60pt;
+        width: 165pt;
+      }
     }
   }
 }

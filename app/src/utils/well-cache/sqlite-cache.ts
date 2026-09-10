@@ -9,7 +9,6 @@ import {
   WellRepositoryStatus
 } from '.';
 import WellData from 'interfaces/WellData';
-import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
 import { sqlite } from 'utils/sharedSQLiteInstance';
 
 class SQLiteWellCacheService extends WellCacheService {

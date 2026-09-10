@@ -1,4 +1,4 @@
-import { SourceSpecification } from 'maplibre-gl';
+import { SourceSpecification } from 'maplibre-gl/dist/maplibre-gl-dev';
 import {
   InvasivesMapLayerDefinition,
   MapDefinitionEligibilityPredicatesBuilder

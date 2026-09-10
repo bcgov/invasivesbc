@@ -1,7 +1,6 @@
 import { createNextState, Draft } from '@reduxjs/toolkit';
 import { RootState } from './rootReducer';
 import DownloadActions from 'state/actions/downloads/DownloadActions';
-import TileCache from 'state/actions/cache/TileCache';
 import RecordCache from 'state/actions/cache/RecordCache';
 import WellCache from 'state/actions/cache/WellCache';
 
@@ -29,8 +28,6 @@ function createDownloadStateReducer(state = initialState, action) {
       draftState.semaphores--;
       draftState.queue = draftState.queue.slice(1);
     } else if (
-      TileCache.requestCaching.fulfilled.match(action) ||
-      TileCache.requestCaching.rejected.match(action) ||
       RecordCache.requestCaching.fulfilled.match(action) ||
       RecordCache.requestCaching.rejected.match(action) ||
       WellCache.requestCaching.fulfilled.match(action) ||

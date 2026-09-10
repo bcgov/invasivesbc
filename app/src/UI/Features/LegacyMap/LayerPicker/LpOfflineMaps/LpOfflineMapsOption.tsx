@@ -1,4 +1,4 @@
-import { Visibility, VisibilityOff } from '@mui/icons-material';
+import LayerIcon from '../LayerIcon';
 
 type PropTypes = {
   id: string;
@@ -11,7 +11,7 @@ const LpOfflineMapsOptions = ({ description, id, layerVisible, onClick }: PropTy
   return (
     <>
       <li className="lp-offline-map-option">
-        <button onClick={onClick.bind(this, id)}>{layerVisible ? <Visibility /> : <VisibilityOff />}</button>
+        <button onClick={onClick.bind(this, id)}>{<LayerIcon active={layerVisible} />}</button>
         <p>{description || id}</p>
       </li>
     </>

@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import maplibregl, { IControl } from 'maplibre-gl';
+import * as maplibregl from 'maplibre-gl/dist/maplibre-gl-dev';
+import { IControl } from 'maplibre-gl/dist/maplibre-gl-dev';
 import { createRoot, Root } from 'react-dom/client';
 import editButton from '/assets/icon/edit.png';
 import saveButton from '/assets/icon/save.png';

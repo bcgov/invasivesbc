@@ -20,6 +20,7 @@ import NetworkActions from './actions/network/NetworkActions';
 import { AuthActions } from 'state/actions/auth/Auth';
 import EventActions from 'state/actions/events/EventActions';
 import { UnifiedConfig } from 'state/configuration/unified-config';
+import OfflineProtomaps from 'state/actions/cache/OfflineProtomaps';
 
 export function setupStore(configuration: UnifiedConfig) {
   const storeRef: { store: Store | null } = {

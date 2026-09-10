@@ -1,7 +1,6 @@
-import { ColorSpecification, ExpressionSpecification, FilterSpecification } from 'maplibre-gl';
-import { FALLBACK_COLOR } from '../constants';
-import { LayerSpecificationWithStackingOrder } from '../layers-hook';
-import { LAYER_Z_FOREGROUND } from './types';
+import { ColorSpecification, ExpressionSpecification, FilterSpecification } from 'maplibre-gl/dist/maplibre-gl-dev';
+import { LAYER_Z_FOREGROUND, LayerSpecificationWithStackingOrder } from './types';
+import { FALLBACK_COLOR } from 'UI/Features/LegacyMap/helpers/functional/constants';
 import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
 import recordsetColourScheme from 'constants/recordsetColourScheme';
 import { white } from 'constants/colors';
@@ -87,10 +86,9 @@ const createLabelLayer = (options: LabelOptions): LayerSpecificationWithStacking
   layout: {
     'text-field': [
       'format',
-      ['get', options.get_tag ?? 'short_id'],
-      { 'font-scale': 0.9 },
-      ['get', options.get_tag ?? 'site_id'],
-      { 'font-scale': 0.9 },
+      ...(options.get_tag
+        ? [['get', options.get_tag], { 'font-scale': 0.9 }]
+        : [['get', 'short_id'], { 'font-scale': 0.9 }, ['get', 'site_id'], { 'font-scale': 0.9 }]),
       '\n',
       {},
       ['get', 'map_symbol'],

@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'utils/use_selector';
-import { Layers, Settings, Visibility, VisibilityOff } from '@mui/icons-material';
+import { Layers, Settings } from '@mui/icons-material';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
 import LpLayersOption from './LpLayersOption';
 import { nanoid } from '@reduxjs/toolkit';
@@ -9,6 +9,7 @@ import './LpLayers.css';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import EmptyCollection from '../EmptyCollection/EmptyCollection';
 import AppActions from 'state/actions/appActions/appActions';
+import LayerIcon from '../LayerIcon';
 
 type PropTypes = {
   layers: InvasivesMapLayerDefinitionWithState[];
@@ -53,7 +54,7 @@ const LpLayers = ({ layers, setOverlayState }: PropTypes) => {
                       setOverlayState(layer.name);
                     }}
                   >
-                    {layer.active ? <Visibility /> : <VisibilityOff />}
+                    {<LayerIcon active={layer.active} />}
                   </button>
                   <p>{layer.displayName}</p>
                 </li>

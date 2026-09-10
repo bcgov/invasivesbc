@@ -1,5 +1,5 @@
 import { MouseEvent, useEffect, useState } from 'react';
-import { SourceSpecification } from 'maplibre-gl';
+import { SourceSpecification } from 'maplibre-gl/dist/maplibre-gl-dev';
 import { shallowEqual } from 'react-redux';
 import { useDispatch, useSelector } from './use_selector';
 import UserSettings from 'state/actions/userSettings/UserSettings';

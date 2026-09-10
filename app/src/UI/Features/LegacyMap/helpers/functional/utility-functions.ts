@@ -1,4 +1,4 @@
-import maplibregl from 'maplibre-gl';
+import * as maplibregl from 'maplibre-gl/dist/maplibre-gl-dev';
 
 export const toggleLayerOnBool = (map: maplibregl.Map, layer: string, boolToggle: boolean) => {
   if (!map) return;
