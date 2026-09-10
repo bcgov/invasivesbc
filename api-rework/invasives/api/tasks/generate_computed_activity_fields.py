@@ -98,6 +98,7 @@ def query_bcgw(activity: Activity):
 
     response.raise_for_status()
     data = response.json()
+    bcgw_dict = {}
     for feature in data["features"]:
         """
         Convert Layer ID to base e.g.:
@@ -107,7 +108,8 @@ def query_bcgw(activity: Activity):
         config = BCGW_CONFIG.get(bcgw_layer_id, None)
         if config != None:
             val = feature["properties"].get(config["layer_property"], None)
-            setattr(activity, config["related_key"], val)
+            bcgw_dict[config["related_key"]] = val
+    return bcgw_dict
 
 
 def fetch_computed_elevation_m(a: Activity):
@@ -118,7 +120,7 @@ def fetch_computed_elevation_m(a: Activity):
     response = requests.get(url, timeout=5)
     response.raise_for_status()
     data = response.json()
-    a.computed_elevation_m = data.get("altitude", None)
+    return data.get("altitude")
 
 
 def query_singleton_spatial_tables(a: Activity):
@@ -154,12 +156,10 @@ def query_singleton_spatial_tables(a: Activity):
                     return
 
                 row = response.fetchone()
-
-                ipma = row["ipma"] if row["ipma"] else None
-                a.computed_invasive_plant_management_areas = ipma
-
-                regional_districts = row["district"] if row["district"] else None
-                a.computed_regional_districts = regional_districts
+                return {
+                    "computed_invasive_plant_management_areas": row.get("ipma"),
+                    "computed_regional_districts": row.get("district"),
+                }
     except psycopg.Error as e:
         logger.error(e)
         raise e
@@ -190,9 +190,14 @@ def fetch_computed_riso_areas(a: Activity):
 def generate_computed_activity_fields(self, record_id):
     try:
         a = Activity.objects.get(id=record_id)
-        fetch_computed_elevation_m(a)
-        query_bcgw(a)
-        query_singleton_spatial_tables(a)
+        a.computed_elevation_m = fetch_computed_elevation_m(a)
+
+        for key, value in query_bcgw(a).items():
+            setattr(a, key, value)
+
+        for key, value in query_singleton_spatial_tables(a).items():
+            setattr(a, key, value)
+
         risos = fetch_computed_riso_areas(a)
         with transaction.atomic():
             for agency in risos:
