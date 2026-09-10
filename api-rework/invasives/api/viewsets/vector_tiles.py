@@ -2,9 +2,10 @@ from django.db.models import Aggregate, F, Func
 from django.contrib.gis.db.models import GeometryField, BinaryField
 from django.contrib.gis.db.models.functions import PointOnSurface
 from django.http import HttpResponse
-import json
-from rest_framework import viewsets
-from rest_framework.decorators import action
+from django.utils.decorators import method_decorator
+from django.db.transaction import non_atomic_requests
+from django.views import View
+import json, asyncio
 
 from api.utils.filtered_activity_queryset import FilteredActivityQueryset
 
@@ -33,84 +34,77 @@ class AsColumn(Func):
         self.template = f'%(expressions)s AS "{alias}"'
 
 
-class VectorTileViewset(viewsets.GenericViewSet):
-    @action(
-        detail=False,
-        methods=["get"],
-        url_path=r"(?P<zoom>\d+)/(?P<tile_x>\d+)/(?P<tile_y>\d+)",
-    )
-    def vector_tiles(self, request, zoom=None, tile_x=None, tile_y=None):
-        z, x, y = int(zoom), int(tile_x), int(tile_y)
+@method_decorator(non_atomic_requests, name="dispatch")
+class VectorTileViewset(View):
+    async def get(self, request, zoom, tile_x, tile_y):
+        try:
+            z, x, y = int(zoom), int(tile_x), int(tile_y)
 
-        raw_filters = request.GET.get("filterObjects", "")
-        if not raw_filters:
-            return HttpResponse(content="Bad Request", status=400)
+            raw_filters = request.GET.get("filterObjects", "")
+            if not raw_filters:
+                return HttpResponse(content="Bad Request", status=400)
 
-        max_tile = 2**z
-        if z < 0 or z > 24:
-            return HttpResponse(
-                {"error": "Zoom level out of bounds (0-24)."},
-                content_type=CONTENT_TYPE,
-                status=400,
+            max_tile = 2**z
+            if z < 0 or z > 24:
+                return HttpResponse(
+                    {"error": "Zoom level out of bounds (0-24)."},
+                    content_type=CONTENT_TYPE,
+                    status=400,
+                )
+
+            if x < 0 or x >= max_tile or y < 0 or y >= max_tile:
+                return HttpResponse(
+                    {"error": f"Tile X/Y coordinates out of bounds for zoom {z}."},
+                    content_type=CONTENT_TYPE,
+                    status=400,
+                )
+
+            filter_objects = [json.loads(raw_filters)]
+            activity_queryset = FilteredActivityQueryset(filter_objects).apply_filters()
+
+            if not await activity_queryset.aexists():
+                return HttpResponse(status=204, content_type=CONTENT_TYPE)
+
+            tile_geom = ST_TileEnvelope(z, x, y)
+
+            if z < CENTROID_ZOOM_LIMIT:
+                target_geometry = PointOnSurface(
+                    F("computed_tile_shape"), output_field=GeometryField(srid=3857)
+                )
+            else:
+                target_geometry = F("computed_tile_shape")
+
+            mvt_features = (
+                activity_queryset.filter(computed_tile_shape__intersects=tile_geom)
+                .values("id", "short_id", "type", "subtype")
+                .annotate(
+                    mvt_geom=ST_AsMVTGeom(
+                        target_geometry,
+                        tile_geom,
+                        4096,
+                        64,
+                        True,
+                        output_field=BinaryField(),
+                    ),
+                    map_symbol=F("computed_map_symbol"),
+                )
             )
 
-        if x < 0 or x >= max_tile or y < 0 or y >= max_tile:
-            return HttpResponse(
-                {"error": f"Tile X/Y coordinates out of bounds for zoom {z}."},
-                content_type=CONTENT_TYPE,
-                status=400,
+            mvt_query = await mvt_features.aaggregate(
+                tile_bytes=ST_AsMVT(
+                    AsColumn("id", "id"),
+                    AsColumn("short_id", "short_id"),
+                    AsColumn("type", "type"),
+                    AsColumn("subtype", "subtype"),
+                    AsColumn("mvt_geom", "mvt_geom"),
+                    AsColumn("map_symbol", "map_symbol"),
+                )
             )
+            tile_bytes = mvt_query.get("tile_bytes")
 
-        filter_objects = [json.loads(raw_filters)]
+            if not tile_bytes:
+                return HttpResponse(status=204, content_type=CONTENT_TYPE)
+            return HttpResponse(bytes(tile_bytes), content_type=CONTENT_TYPE)
 
-        activity_queryset = FilteredActivityQueryset(filter_objects).apply_filters()
-
-        if not activity_queryset.exists():
-            # Early Return, No results to share.
-            return HttpResponse(status=204, content_type=CONTENT_TYPE)
-
-        tile_geom = ST_TileEnvelope(z, x, y)
-
-        if z < CENTROID_ZOOM_LIMIT:
-            target_geometry = PointOnSurface(
-                F("computed_tile_shape"), output_field=GeometryField(srid=3857)
-            )
-        else:
-            target_geometry = F("computed_tile_shape")
-
-        mvt_features = (
-            activity_queryset.filter(computed_tile_shape__intersects=tile_geom)
-            .values(
-                "id",
-                "short_id",
-                "type",
-                "subtype",
-            )
-            .annotate(
-                mvt_geom=ST_AsMVTGeom(
-                    target_geometry,
-                    tile_geom,
-                    4096,
-                    64,
-                    True,
-                    output_field=BinaryField(),
-                ),
-                map_symbol=F("computed_map_symbol"),
-            )
-        )
-
-        mvt_query = mvt_features.aggregate(
-            tile_bytes=ST_AsMVT(
-                AsColumn("id", "id"),
-                AsColumn("short_id", "short_id"),
-                AsColumn("type", "type"),
-                AsColumn("subtype", "subtype"),
-                AsColumn("mvt_geom", "mvt_geom"),
-                AsColumn("map_symbol", "map_symbol"),
-            )
-        )
-        tile_bytes = mvt_query.get("tile_bytes")
-
-        if not tile_bytes:
-            return HttpResponse(status=204, content_type=CONTENT_TYPE)
-        return HttpResponse(bytes(tile_bytes), content_type=CONTENT_TYPE)
+        except asyncio.CancelledError:
+            raise
