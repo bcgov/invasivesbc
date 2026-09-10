@@ -27,6 +27,13 @@ const InvasivePlantTable = () => {
             <td>AME</td>
           </tr>
           <tr>
+            <td>AE</td>
+            <td>American elm</td>
+            <td>Ulmus americana</td>
+            <td>ULMU</td>
+            <td>AME</td>
+          </tr>
+          <tr>
             <td>YC</td>
             <td>Amphibious yellow cress</td>
             <td>Rorippa amphibian</td>
@@ -102,6 +109,13 @@ const InvasivePlantTable = () => {
             <td>Robinia pseudoacacia</td>
             <td>ROBI</td>
             <td>PSE</td>
+          </tr>
+          <tr>
+            <td>VN</td>
+            <td>Black swallow-wort/dog strangling vine</td>
+            <td>Vincetoxicum nigrum</td>
+            <td>VINC</td>
+            <td>NIG</td>
           </tr>
           <tr>
             <td>BC</td>
@@ -270,6 +284,13 @@ const InvasivePlantTable = () => {
             <td>Tussilago farfara</td>
             <td>TUSS</td>
             <td>FAR</td>
+          </tr>
+          <tr>
+            <td>PY</td>
+            <td>Common / purple butterbur</td>
+            <td>Petasites hybridus</td>
+            <td>PETA</td>
+            <td>HYB</td>
           </tr>
           <tr>
             <td>AO</td>
@@ -665,13 +686,6 @@ const InvasivePlantTable = () => {
           </tr>
           <tr>
             <td>SW</td>
-            <td>Giant mannagrass</td>
-            <td>Glyceria maxima</td>
-            <td>GLYC</td>
-            <td>MAX</td>
-          </tr>
-          <tr>
-            <td>SW</td>
             <td>Giant mannagrass / reed sweetgrass</td>
             <td>Glyceria maxima</td>
             <td>GLYC</td>
@@ -767,6 +781,13 @@ const InvasivePlantTable = () => {
             <td>Halogeton glomeratus</td>
             <td>HALO</td>
             <td>GLO</td>
+          </tr>
+          <tr>
+            <td>IC</td>
+            <td>Hardy cyclamen/ivy-leaved cyclamen</td>
+            <td>Cyclamen hederifolium</td>
+            <td>CYCL</td>
+            <td>HED</td>
           </tr>
           <tr>
             <td>HC</td>
@@ -1028,6 +1049,13 @@ const InvasivePlantTable = () => {
             <td>AET</td>
           </tr>
           <tr>
+            <td>MD</td>
+            <td>Mediterranean spurge</td>
+            <td>Euphorbia characias</td>
+            <td>EUPH</td>
+            <td>CHA</td>
+          </tr>
+          <tr>
             <td>TM</td>
             <td>Medusahead</td>
             <td>Taeniatherum caput-medusae</td>
@@ -1261,13 +1289,6 @@ const InvasivePlantTable = () => {
           <tr>
             <td>RE</td>
             <td>Reed canary grass</td>
-            <td>Phalaris arundinacea</td>
-            <td>PHAL</td>
-            <td>ARU</td>
-          </tr>
-          <tr>
-            <td>RE</td>
-            <td>Reed canarygrass</td>
             <td>Phalaris arundinacea</td>
             <td>PHAL</td>
             <td>ARU</td>
@@ -1623,6 +1644,13 @@ const InvasivePlantTable = () => {
             <td>MUL</td>
           </tr>
           <tr>
+            <td>VH</td>
+            <td>White swallow-wort/dog strangling vine</td>
+            <td>Vincetoxicum hirundinaria</td>
+            <td>VINC</td>
+            <td>HIR</td>
+          </tr>
+          <tr>
             <td>PW</td>
             <td>Wild / common parsnip</td>
             <td>Pastinaca sativa</td>
@@ -1663,13 +1691,6 @@ const InvasivePlantTable = () => {
             <td>Avena fatua</td>
             <td>AVEN</td>
             <td>FAT</td>
-          </tr>
-          <tr>
-            <td>JW</td>
-            <td>Wireweed</td>
-            <td>Sargassum muticum</td>
-            <td>SARG</td>
-            <td>MUT</td>
           </tr>
           <tr>
             <td>WS</td>
