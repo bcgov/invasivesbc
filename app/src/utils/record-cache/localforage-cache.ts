@@ -2,6 +2,7 @@ import localForage from 'localforage';
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
 import booleanIntersects from '@turf/boolean-intersects';
 import { Feature, GeoJSON } from 'geojson';
+import { bboxPolygon } from '@turf/turf';
 import {
   IappRecordMode,
   RepositoryMetadata,
@@ -14,7 +15,6 @@ import UserRecord from 'interfaces/UserRecord';
 import IappRecord from 'interfaces/IappRecord';
 import IappTableRow from 'interfaces/IappTableRecord';
 import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
-import bboxToPolygon from 'utils/bboxToPolygon';
 import EFilterType from 'constants/EFilterType';
 
 class LocalForageRecordCacheService extends RecordCacheService {
@@ -169,7 +169,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
    */
   public async getRecordIdsOverlappingFeature(geom: Feature): Promise<string[]> {
     const reposInBoundingBox = ((await this.listRepositories(['set_id', 'status', 'bbox'])) ?? [])?.filter(
-      (r) => r?.status === UserRecordCacheStatus.CACHED && booleanIntersects(bboxToPolygon(r.bbox!), geom)
+      (r) => r?.status === UserRecordCacheStatus.CACHED && booleanIntersects(bboxPolygon(r.bbox!), geom)
     );
 
     const featureMap: Record<PropertyKey, Feature> = {};

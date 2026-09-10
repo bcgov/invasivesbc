@@ -1,6 +1,7 @@
 import { MutableRefObject } from 'react';
 import { RecordSetType } from 'interfaces/UserRecordSet';
-import maplibregl, { Popup } from 'maplibre-gl';
+import * as maplibregl from 'maplibre-gl/dist/maplibre-gl-dev';
+import { Popup } from 'maplibre-gl/dist/maplibre-gl-dev';
 
 /**
  * @desc Created Marker Element to use on the Map.

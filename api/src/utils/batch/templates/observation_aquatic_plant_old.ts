@@ -46,7 +46,7 @@ ObservationAquaticPlantOld.columns = [
     'codeReference',
     'form_data.activity_subtype_data.AquaticPlants[0].observation_type'
   )
-    .hardcodedCodes(OBSERVATION_TYPE_CODES)
+    .referencesCode('observation_type')
     .isRequired()
     .build(),
   new TemplateColumnBuilder(

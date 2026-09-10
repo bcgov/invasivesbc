@@ -1,12 +1,5 @@
 import { TemplateColumnBuilder } from './definitions';
 import { RowValidationResult } from './validation/validation';
-import {
-  WATER_LEVEL_MANAGEMENT_CODES,
-  WIND_DIRECTION_CODES,
-  WATERBODY_TYPE_CODES,
-  SUBSTRATE_TYPE_CODES,
-  YES_NO_CODES
-} from './hard-coded-codes';
 
 export const BasicInformation = [
   new TemplateColumnBuilder('WKT', 'WKT', {
@@ -20,6 +13,10 @@ export const BasicInformation = [
     utm_easting: 'form_data.activity_data.utm_easting'
   })
     .isRequired()
+    .build(),
+  new TemplateColumnBuilder('Point Area', 'integer', null)
+    .withHelpText('Area in square meters. Required when the geometry supplied in WKT is of type POINT.')
+    .isIntentionallyUnmapped()
     .build(),
   new TemplateColumnBuilder('Basic - Date', 'datetime', 'form_data.activity_data.activity_date_time')
     .isRequired()
@@ -338,7 +335,7 @@ export const WeatherInformation = [
     'form_data.activity_subtype_data.Weather_Conditions.wind_direction_code'
   )
     .isRequired()
-    .hardcodedCodes(WIND_DIRECTION_CODES)
+    .referencesCode('wind_direction')
     .build(),
   new TemplateColumnBuilder(
     'Weather - Cloud Cover',
@@ -432,7 +429,7 @@ export const WaterbodyInformation = [
     'form_data.activity_subtype_data.WaterbodyData.waterbody_type'
   )
     .isRequired()
-    .hardcodedCodes(WATERBODY_TYPE_CODES)
+    .referencesCode('waterbody_type_code')
     .build(),
   new TemplateColumnBuilder(
     'Waterbody - Tidal?',
@@ -452,45 +449,45 @@ export const WaterbodyInformation = [
 
   new TemplateColumnBuilder(
     'Waterbody - Water Level Management',
-    'codeReference',
+    'codeReferenceMulti',
     'form_data.activity_subtype_data.WaterbodyData.water_level_management'
   )
-    .hardcodedCodes(WATER_LEVEL_MANAGEMENT_CODES)
+    .referencesCode('water_level_management')
     .build(),
 
   new TemplateColumnBuilder(
     'Waterbody - Use',
-    'codeReference',
+    'codeReferenceMulti',
     'form_data.activity_subtype_data.WaterbodyData.waterbody_use'
   )
     .referencesCode('waterbody_use_code')
     .build(),
   new TemplateColumnBuilder(
     'Waterbody - Adjacent Land Usage',
-    'codeReference',
+    'codeReferenceMulti',
     'form_data.activity_subtype_data.WaterbodyData.adjacent_land_use'
   )
     .referencesCode('adjacent_land_use_code')
     .build(),
   new TemplateColumnBuilder(
     'Waterbody - Substrate',
-    'codeReference',
+    'codeReferenceMulti',
     'form_data.activity_subtype_data.WaterbodyData.substrate_type'
   )
     .isRequired()
-    .hardcodedCodes(SUBSTRATE_TYPE_CODES)
+    .referencesCode('substrate_type_code')
     .build(),
 
   new TemplateColumnBuilder(
     'Waterbody - Inflow - Permanent',
-    'codeReference',
+    'codeReferenceMulti',
     'form_data.activity_subtype_data.WaterbodyData.inflow_permanent'
   )
     .referencesCode('inflow_permanent_code')
     .build(),
   new TemplateColumnBuilder(
     'Waterbody - Inflow - Other',
-    'codeReference',
+    'codeReferenceMulti',
     'form_data.activity_subtype_data.WaterbodyData.inflow_other'
   )
     .referencesCode('inflow_temporary_code')
@@ -498,14 +495,14 @@ export const WaterbodyInformation = [
 
   new TemplateColumnBuilder(
     'Waterbody - Outflow - Permanent',
-    'codeReference',
+    'codeReferenceMulti',
     'form_data.activity_subtype_data.WaterbodyData.outflow'
   )
     .referencesCode('outflow_code')
     .build(),
   new TemplateColumnBuilder(
     'Waterbody - Outflow - Seasonal',
-    'codeReference',
+    'codeReferenceMulti',
     'form_data.activity_subtype_data.WaterbodyData.outflow_other'
   )
     .referencesCode('outflow_code')
@@ -552,7 +549,7 @@ export const PhenologyInformation = [
     'form_data.activity_subtype_data.Target_Plant_Phenology.phenology_details_recorded'
   )
     .isRequired()
-    .hardcodedCodes(YES_NO_CODES)
+    .referencesCode('yes_no')
     .build(),
   new TemplateColumnBuilder(
     'Phenology - Target Height',
@@ -682,7 +679,7 @@ export const ObservationCompleteSetValidator = (row): RowValidationResult => {
 
   const observationSets = [1, 2, 3];
 
-  const baseFields = [
+  const positiveRequiredFields = [
     'Observation - Type',
     'Observation - Invasive Plant',
     'Observation - Density',
@@ -691,106 +688,54 @@ export const ObservationCompleteSetValidator = (row): RowValidationResult => {
     'Voucher - Sample Collected?'
   ];
 
+  const negativeRequiredFields = ['Observation - Type', 'Observation - Invasive Plant', 'Voucher - Sample Collected?'];
+
   for (const i of observationSets) {
     const typeField = `Observation - Type ${i}`;
-    const plantField = `Observation - Invasive Plant ${i}`;
-    const fields = baseFields.map((f) => `${f} ${i}`);
-
-    const values = fields.map((field) => rowData?.[field]?.parsedValue);
-
-    const anyFilled = values.some((v) => !!v);
-    const allFilled = values.every((v) => !!v);
 
     const observationType = rowData?.[typeField]?.parsedValue;
-    const invasivePlant = rowData?.[plantField]?.parsedValue;
 
-    const isValidNegativeCase = invasivePlant && observationType === 'Negative Observation';
+    const allSetFields = positiveRequiredFields.map((field) => `${field} ${i}`);
 
-    if (anyFilled && !allFilled && !isValidNegativeCase) {
+    const anyFilled = allSetFields.some((field) => rowData?.[field]?.parsedValue);
+
+    if (!anyFilled) {
+      continue;
+    }
+
+    const requiredFields = observationType === 'Negative Observation' ? negativeRequiredFields : positiveRequiredFields;
+
+    const requiredFieldsForSet = requiredFields.map((field) => `${field} ${i}`);
+
+    const missingFields = requiredFieldsForSet.filter((field) => {
+      const value = rowData?.[field]?.parsedValue;
+
+      return value === undefined || value === null || value === '';
+    });
+
+    if (missingFields.length > 0) {
       valid = false;
 
       validationMessages.push({
         severity: 'error',
-        messageTitle: 'Incomplete observation set',
-        messageDetail: `Please provide complete information for each invasive plant`
+        messageTitle: `Incomplete observation set ${i}`,
+        messageDetail: `Observation set ${i} is missing required information.`,
+        observationSet: i,
+        fields: missingFields
       });
 
-      appliesToFields.push(...fields);
-    }
-  }
-
-  return {
-    valid,
-    validationMessages,
-    appliesToFields: [...new Set(appliesToFields)]
-  };
-};
-
-export const PositiveObservationPlantValidator = (row): RowValidationResult => {
-  let valid = true;
-  const validationMessages = [];
-  const appliesToFields = [];
-  const rowData = row.data;
-
-  const observationSets = [1, 2, 3];
-
-  const baseFields = [
-    'Observation - Density',
-    'Observation - Distribution',
-    'Observation - Life Stage',
-    'Voucher - Sample Collected?'
-  ];
-
-  for (const i of observationSets) {
-    const typeField = `Observation - Type ${i}`;
-    const invasivePlantField = `Observation - Invasive Plant ${i}`;
-    const requiredFields = baseFields.map((f) => `${f} ${i}`);
-
-    const observationType = rowData?.[typeField]?.parsedValue;
-    const invasivePlant = rowData?.[invasivePlantField]?.parsedValue;
-
-    if (invasivePlant && !observationType) {
-      valid = false;
-
-      validationMessages.push({
-        severity: 'error',
-        messageTitle: 'Required value',
-        messageDetail: `${typeField} is required when ${invasivePlantField} is provided`
-      });
-
-      appliesToFields.push(typeField, invasivePlantField);
-    }
-
-    if (observationType === 'Positive Observation') {
-      for (const field of requiredFields) {
-        if (!rowData?.[field]?.parsedValue) {
-          valid = false;
-
-          validationMessages.push({
-            severity: 'error',
-            messageTitle: 'Required value',
-            messageDetail: `${field} is required when ${typeField} is Positive Observation`
-          });
-
-          appliesToFields.push(typeField, field);
-        }
+      for (const field of missingFields) {
+        const fieldName = field.replace(` ${i}`, '');
+        validationMessages.push({
+          severity: 'error',
+          messageTitle: 'Required field',
+          messageDetail: `${fieldName} is required.`,
+          observationSet: i,
+          field
+        });
       }
-    }
 
-    if (observationType === 'Negative Observation') {
-      for (const field of requiredFields) {
-        if (rowData?.[field]?.parsedValue) {
-          valid = false;
-
-          validationMessages.push({
-            severity: 'error',
-            messageTitle: 'Invalid value',
-            messageDetail: `${field} must be blank when ${typeField} is Negative Observation`
-          });
-
-          appliesToFields.push(typeField, field);
-        }
-      }
+      appliesToFields.push(...missingFields);
     }
   }
 
@@ -854,32 +799,38 @@ export const DuplicateMechanicalTreatmentPlantValidator = (row): RowValidationRe
   const rowData = row.data;
 
   const treatmentSets = [1, 2, 3];
-  const plantFields = treatmentSets.map((i) => `Treatment - Invasive Plant Code ${i}`);
 
-  const seenPlants: Record<string, string[]> = {};
+  const seenCombinations: Record<string, string[]> = {};
 
-  for (const field of plantFields) {
-    const value = rowData?.[field]?.parsedValue;
+  for (const i of treatmentSets) {
+    const plantField = `Treatment - Invasive Plant Code ${i}`;
+    const methodField = `Treatment - Mechanical Method Code ${i}`;
 
-    if (!value) continue;
+    const plant = rowData?.[plantField]?.parsedValue;
+    const method = rowData?.[methodField]?.parsedValue;
 
-    if (!seenPlants[value]) {
-      seenPlants[value] = [field];
+    if (!plant || !method) continue;
+
+    const combinationKey = `${plant}|${method}`;
+
+    if (!seenCombinations[combinationKey]) {
+      seenCombinations[combinationKey] = [plantField, methodField];
     } else {
-      seenPlants[value].push(field);
+      seenCombinations[combinationKey].push(plantField, methodField);
     }
   }
 
-  for (const plant in seenPlants) {
-    const fields = seenPlants[plant];
+  for (const combination in seenCombinations) {
+    const fields = seenCombinations[combination];
 
-    if (fields.length > 1) {
+    if (fields.length > 2) {
       valid = false;
 
       validationMessages.push({
         severity: 'error',
-        messageTitle: 'Duplicate treatment plant',
-        messageDetail: `Treatment Invasive Plant Code can only appear once per row`
+        messageTitle: 'Duplicate mechanical treatment',
+        messageDetail:
+          'The same Treatment Invasive Plant Code and Mechanical Method Code combination can only appear once per row.'
       });
 
       appliesToFields.push(...fields);
@@ -1374,7 +1325,7 @@ export const CalculationType = (row): RowValidationResult => {
   let valid = true;
   const rowData = row.data;
   const validationMessages = [];
-  let appliesToFields = [];
+  const appliesToFields = [];
 
   const calculationType = rowData[`Chemical Treatment - Calculation Type`]?.parsedValue;
   const dilutionFields = ['Herbicide - 1 - Dilution - Dilution %', 'Herbicide - 1 - Area Treated (Dilution)'];
@@ -1455,6 +1406,48 @@ export const GranularHerbicideRate = (row): RowValidationResult => {
   };
 };
 
+export const DeliveryRateGreaterThanApplicationRate = (row): RowValidationResult => {
+  let valid = true;
+  const fields = ['Herbicide - Delivery Rate of Mix'];
+  const rowData = row.data;
+  const validationMessages = [];
+
+  const calculationType = rowData['Chemical Treatment - Calculation Type']?.parsedValue;
+  const deliveryRate = Number(rowData['Herbicide - Delivery Rate of Mix']?.parsedValue);
+
+  if (calculationType === 'PAR' && !isNaN(deliveryRate)) {
+    for (let i = 1; i <= 3; i++) {
+      const applicationRateValue = rowData[`Herbicide - ${i} - PAR - Production Application Rate`]?.parsedValue;
+      const herbicideType = rowData[`Herbicide - ${i} - Type`]?.parsedValue;
+
+      if (applicationRateValue != null && applicationRateValue !== '') {
+        let applicationRate = Number(applicationRateValue);
+
+        if (herbicideType === 'G') {
+          applicationRate /= 1000;
+        }
+
+        if (deliveryRate <= applicationRate) {
+          valid = false;
+          validationMessages.push({
+            severity: 'error',
+            messageTitle: 'Invalid value',
+            messageDetail: 'Delivery rate must be greater than application rate.'
+          });
+
+          break;
+        }
+      }
+    }
+  }
+
+  return {
+    valid,
+    validationMessages,
+    appliesToFields: fields
+  };
+};
+
 export const ApplicationMethodType = (row): RowValidationResult => {
   let valid = true;
   const fields = ['Chemical Treatment (No Tank Mix) - Application Method', 'Chemical Treatment - Calculation Type'];
@@ -1497,7 +1490,7 @@ export const BioAgentValidator = (row): RowValidationResult => {
   const rowData = row.data;
   const biocontrolPresent = rowData['Monitoring - Biocontrol Present']?.parsedValue;
   const validationMessages = [];
-  let appliesToFields = [];
+  const appliesToFields = [];
   let actualFields = [];
   let estimatedFields = [];
 
@@ -1624,7 +1617,7 @@ export const SpreadResultsValidator = (row): RowValidationResult => {
   ];
   const spreadDetailsRecorded = rowData['Monitoring - Results - Spread - Recorded?']?.parsedValue;
   const validationMessages = [];
-  let appliesToFields = [];
+  const appliesToFields = [];
 
   const allFieldsHaveData = (fields) => fields.every((field) => rowData[field]?.parsedValue);
 
@@ -1775,7 +1768,7 @@ export const ChemicalPlantTreatmentInformation = [
     'codeReference',
     'form_data.activity_subtype_data.Treatment_ChemicalPlant_Information.wind_direction_code'
   )
-    .hardcodedCodes(WIND_DIRECTION_CODES)
+    .referencesCode('wind_direction')
     .isRequired()
     .build(),
   new TemplateColumnBuilder(

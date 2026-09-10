@@ -36,6 +36,7 @@ interface KeycloakToken {
   given_name: string;
   family_name: string;
   email: string;
+  sub: string;
   [key: PropertyKey]: unknown;
 }
 
@@ -73,6 +74,7 @@ interface AuthContext {
   roles: Array<Role>;
   filterForSelectable: boolean;
   v2beta: boolean;
+  subject: string;
 }
 
 interface InvasivesRequest extends Request {
@@ -120,7 +122,8 @@ export const authenticate = async (req: InvasivesRequest): Promise<void> => {
       user: null,
       roles: [],
       filterForSelectable: filterForSelectable,
-      v2beta: false
+      v2beta: false,
+      subject: null
     };
     return;
   }
@@ -159,10 +162,11 @@ export const authenticate = async (req: InvasivesRequest): Promise<void> => {
     if (parsedToken?.bceid_username) return parsedToken.bceid_username.toLowerCase() + '@bceid-business';
   })();
   req.authContext = {
+    subject: parsedToken?.sub,
     preferredUsername: user.preferred_username,
     friendlyUsername: friendlyUsername,
     user: user,
-    roles: !!user?.activation_status ? roles : [...roles, { role_name: RoleConstants.NOT_ACTIVATED }],
+    roles: user?.activation_status ? roles : [...roles, { role_name: RoleConstants.NOT_ACTIVATED }],
     filterForSelectable
   };
   MDC.request.user = req.authContext.preferredUsername || 'unresolved';

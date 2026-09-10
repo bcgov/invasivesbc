@@ -1,4 +1,4 @@
-import { LayerSpecification } from 'maplibre-gl';
+import { LayerSpecification } from 'maplibre-gl/dist/maplibre-gl-dev';
 import {
   LAYER_Z_BACKGROUND,
   LAYER_Z_FOREGROUND,

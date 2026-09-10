@@ -42,6 +42,7 @@
     "celery-node": "^0.5.9",
     "compression": "^1.8.1",
     "csv-parser": "^3.2.0",
+    "csv-stringify": "^6.8.0",
     "date-fns": "^4.1.0",
     "express": "^5.1.0",
     "express-openapi": "^12.1.3",

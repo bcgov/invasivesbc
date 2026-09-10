@@ -1,4 +1,4 @@
-import { Visibility, VisibilityOff } from '@mui/icons-material';
+import LayerIcon from '../LayerIcon';
 
 type Layer = {
   id: string;
@@ -14,7 +14,7 @@ const LpLayersOption = ({ onClick, layer }: PropTypes) => {
     <>
       <li className="lp-layers-item">
         <button data-testid="lp-layers-option-button" onClick={() => onClick(layer)}>
-          {layer?.toggle ? <Visibility /> : <VisibilityOff />}
+          {<LayerIcon active={layer.toggle} />}
         </button>
         <p>{layer.title ?? 'Layer name is null'}</p>
       </li>

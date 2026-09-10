@@ -8,6 +8,7 @@ const cors = (_: any, res: any, next) => {
   );
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE, HEAD');
   res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Max-Age', '86400');
 
   // create a context if there isn't one
   let mdc = MDCAsyncLocal.getStore();

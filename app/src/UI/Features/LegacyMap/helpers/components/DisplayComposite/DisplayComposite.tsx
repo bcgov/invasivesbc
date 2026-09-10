@@ -2,6 +2,7 @@ import AccuracyDisplay from 'UI/Features/LegacyMap/helpers/components/AccuracyDi
 import SearchUtil from 'UI/Features/LegacyMap/helpers/components/SearchUtil/SearchUtil';
 import Coordinates from 'UI/Features/LegacyMap/helpers/components/Coordinates/Coordinates';
 import 'UI/Features/LegacyMap/helpers/components/DisplayComposite/DisplayComposite.css';
+import RulerControls from '../RulerControls/RulerControls';
 
 /**
  * @desc Lets the info components auto-position instead of relying on absolute positioning.
@@ -13,6 +14,7 @@ const DisplayComposite = () => {
         <SearchUtil />
         <Coordinates />
         <AccuracyDisplay />
+        <RulerControls />
       </div>
     </div>
   );

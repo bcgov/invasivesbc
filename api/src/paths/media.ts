@@ -44,7 +44,7 @@ function getMedia(): RequestHandler {
     return res.status(200).json({
       message: 'Successfully got media',
       request: req.query,
-      result: getMediaItemsList(response, keys),
+      result: await getMediaItemsList(response, keys),
       namespace: 'media',
       code: 200
     });

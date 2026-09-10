@@ -1,22 +1,21 @@
 import booleanIntersects from '@turf/boolean-intersects';
-import { Feature, FeatureCollection } from 'geojson';
+import { Feature, FeatureCollection, GeoJSON } from 'geojson';
+import { bboxPolygon } from '@turf/turf';
 import WellData from 'interfaces/WellData';
 import BaseCacheService from 'utils/base-classes/BaseCacheService';
-import bboxToPolygon from 'utils/bboxToPolygon';
-import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
 import { buildURLForDataBC } from 'utils/WFSConsumer';
 
 interface IWellRepositoryMetadata {
   id: string;
   status: WellRepositoryStatus;
-  bounds: RepositoryBoundingBoxSpec;
+  bounds: GeoJSON.BBox;
   wellTagNumbers: number[];
   cachedGeoJson?: FeatureCollection;
 }
 
 interface IWellRepositoryDownloadRequestSpec {
   API_BASE: string;
-  bounds: RepositoryBoundingBoxSpec;
+  bounds: GeoJSON.BBox;
   id: string;
 }
 
@@ -59,15 +58,13 @@ abstract class WellCacheService extends BaseCacheService<
    */
   protected abstract deleteWellsFromIds(wellTagNumbers: number[]): Promise<void>;
 
-  public abstract getRepository(repository: string | RepositoryBoundingBoxSpec): Promise<IWellRepositoryMetadata>;
+  public abstract getRepository(repository: string | GeoJSON.BBox): Promise<IWellRepositoryMetadata>;
 
   /**
    * @desc Create GeoJson Data for a a repository used in quick lookups
    * @param { string | RepositoryBoundingBoxSpec } repository Target Repo
    */
-  protected abstract createFeatureCollectionFromMetadata(
-    repository: string | RepositoryBoundingBoxSpec
-  ): Promise<FeatureCollection>;
+  protected abstract createFeatureCollectionFromMetadata(repository: string | GeoJSON.BBox): Promise<FeatureCollection>;
 
   /**
    * @desc Save array of wells to local database
@@ -95,7 +92,7 @@ abstract class WellCacheService extends BaseCacheService<
     progressCallback?: ((currentProgress: IWellCacheProgressCallbackParameters) => void) | undefined
   ): Promise<void> {
     const WELL_WFS_LAYER = 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW';
-    const url = encodeURIComponent(buildURLForDataBC(WELL_WFS_LAYER, bboxToPolygon(spec.bounds), true));
+    const url = encodeURIComponent(buildURLForDataBC(WELL_WFS_LAYER, bboxPolygon(spec.bounds), true));
     const response = await (await fetch(`${spec.API_BASE}/api/map-shaper?url=${url}&percentage=0.02`)).json();
     const wellTagNumbers: number[] =
       response?.result?.features?.map((well: WellData) => well.properties.WELL_TAG_NUMBER) ?? [];
@@ -135,11 +132,8 @@ abstract class WellCacheService extends BaseCacheService<
    * @param bounds Bounding box of new repository.
    * @returns { number[] } List of WellTagNumbers not contained by other repositories
    */
-  private async removeDuplicateWellsFromIdList(
-    wellTagNumbers: number[],
-    bounds: RepositoryBoundingBoxSpec
-  ): Promise<number[]> {
-    const boundsShape = bboxToPolygon(bounds);
+  private async removeDuplicateWellsFromIdList(wellTagNumbers: number[], bounds: GeoJSON.BBox): Promise<number[]> {
+    const boundsShape = bboxPolygon(bounds);
     const containedRepos = await this.getOverlappingRepositories(boundsShape);
     const frequencyMap: Record<number, number> = {};
     containedRepos
@@ -158,7 +152,7 @@ abstract class WellCacheService extends BaseCacheService<
    */
   public async getOverlappingRepositories(geom: Feature): Promise<IWellRepositoryMetadata[]> {
     const repositories = await this.listRepositories();
-    return repositories.filter((r) => r.cachedGeoJson && booleanIntersects(bboxToPolygon(r.bounds), geom));
+    return repositories.filter((r) => r.cachedGeoJson && booleanIntersects(bboxPolygon(r.bounds), geom));
   }
 }
 

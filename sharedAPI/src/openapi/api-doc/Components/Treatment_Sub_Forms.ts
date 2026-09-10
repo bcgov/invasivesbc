@@ -252,7 +252,7 @@ export const Treatment_ChemicalPlant_Information = {
 export const Treatment_MechanicalPlant_Information = {
   type: 'array',
   title: 'Mechanical Treatments',
-  default: [{}],
+  default: [{ disposed_material: {} }],
   minItems: 1,
   items: {
     type: 'object',
@@ -362,7 +362,7 @@ export const Treatment_MechanicalPlant_Information = {
 export const Treatment_MechanicalPlant_Information_Aquiatic = {
   type: 'array',
   title: 'Mechanical Treatments',
-  default: [{}],
+  default: [{ disposed_material: {} }],
   minItems: 1,
   items: {
     type: 'object',

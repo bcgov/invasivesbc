@@ -1,6 +1,5 @@
 import { createAsyncThunk, nanoid } from '@reduxjs/toolkit';
 import { RootState } from 'state/reducers/rootReducer';
-import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
 import { WellCacheServiceFactory } from 'utils/well-cache/context';
 import DownloadActions from 'state/actions/downloads/DownloadActions';
 
@@ -13,7 +12,7 @@ class WellCache {
 
   static readonly requestCaching = createAsyncThunk(
     `${this.PREFIX}/requestCaching`,
-    async (spec: { bounds: RepositoryBoundingBoxSpec; id?: string }, { getState, dispatch }) => {
+    async (spec: { bounds: GeoJSON.BBox; id?: string }, { getState, dispatch }) => {
       await dispatch(DownloadActions.request());
       const id = spec.id ?? `well-records-${nanoid()}`;
       const state: RootState = getState() as RootState;
