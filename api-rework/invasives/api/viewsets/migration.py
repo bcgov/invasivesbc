@@ -1,3 +1,4 @@
+from api.viewsets.mixins.atomic import AtomicViewSetMixin
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK
@@ -8,7 +9,7 @@ from api.permissions import HasAdminRole
 from api.serializers.activity_migration_status import ActivityMigrationStatusSerializer
 
 
-class MigrationStatusViewSet(ReadOnlyModelViewSet):
+class MigrationStatusViewSet(AtomicViewSetMixin, ReadOnlyModelViewSet):
     queryset = ActivityMigrationStatus.objects.all()
     permission_classes = [HasAdminRole]
     serializer_class = ActivityMigrationStatusSerializer

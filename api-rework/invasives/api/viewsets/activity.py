@@ -1,6 +1,7 @@
 import json
 import logging
 
+from api.viewsets.mixins.atomic import AtomicViewSetMixin
 import psycopg
 from django.contrib.gis.db.models.functions import PointOnSurface, AsGeoJSON
 from django.db.models import Q
@@ -23,7 +24,7 @@ from api.serializers.activity_migration_status import ActivityMigrationStatusSer
 from invasivesbc.settings import LEGACY_DB_CONNECTION_STRING
 
 
-class ActivityViewSet(ReadOnlyModelViewSet):
+class ActivityViewSet(AtomicViewSetMixin, ReadOnlyModelViewSet):
     querysets = {
         "list": Activity.objects.annotate(
             has_migration_remarks=Q(migration_remarks__isnull=False)

@@ -1,16 +1,18 @@
 import json
 
+from api.viewsets.mixins.atomic import AtomicViewSetMixin
 from django.contrib.gis.geos import GEOSGeometry
-from rest_framework import viewsets, status
 from rest_framework.response import Response
 
 from api.models.activity import Activity
 from api.models.activity.activity_subtypes import ActivitySubtypes, SubtypePrimary
 from api.permissions import HasAdminRole
 from api.serializers.linked_record_query import LinkedRecordQuerySerializer
+from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
+from rest_framework.viewsets import GenericViewSet
 
 
-class IdsWithinBoundsViewSet(viewsets.GenericViewSet):
+class IdsWithinBoundsViewSet(AtomicViewSetMixin, GenericViewSet):
     queryset = Activity.objects.all()
     serializer_class = LinkedRecordQuerySerializer
     permission_classes = [HasAdminRole]
@@ -34,7 +36,7 @@ class IdsWithinBoundsViewSet(viewsets.GenericViewSet):
         if not bounds:
             return Response(
                 {"error": "The 'bounds' GeoJSON field is required."},
-                status=status.HTTP_400_BAD_REQUEST,
+                status=HTTP_400_BAD_REQUEST,
             )
 
         try:
@@ -46,10 +48,10 @@ class IdsWithinBoundsViewSet(viewsets.GenericViewSet):
 
             serializer = LinkedRecordQuerySerializer(queryset, many=True)
 
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
+            return Response(data=serializer.data, status=HTTP_200_OK)
 
         except Exception as e:
             return Response(
                 {"error": f"Invalid Geometry or Query Error: {str(e)}"},
-                status=status.HTTP_400_BAD_REQUEST,
+                status=HTTP_400_BAD_REQUEST,
             )

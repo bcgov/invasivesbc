@@ -1,5 +1,6 @@
 from itertools import chain
 
+from api.viewsets.mixins.atomic import AtomicViewSetMixin
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK
 from rest_framework.viewsets import ViewSet
@@ -9,7 +10,7 @@ from api.permissions import HasAdminRole
 from api.serializers.code import CodeSerializer
 
 
-class CodeViewSet(ViewSet):
+class CodeViewSet(AtomicViewSetMixin, ViewSet):
     permission_classes = [HasAdminRole]
     http_method_names = ["get"]
 

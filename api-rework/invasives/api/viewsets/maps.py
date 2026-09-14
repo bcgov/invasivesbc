@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from api.viewsets.mixins.atomic import AtomicViewSetMixin
 from django.db import transaction
 from django.db.models import Q
 from rest_framework import viewsets
@@ -26,7 +27,7 @@ from api.services.map_tile_generator.definitions import ProtomapGenerationParame
 from api.tasks import dispatch_map_generation_request
 
 
-class MapGenerationRequestViewSet(viewsets.ViewSet):
+class MapGenerationRequestViewSet(AtomicViewSetMixin, viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
     http_method_names = ["get", "post", "put"]
 
