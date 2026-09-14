@@ -3,6 +3,7 @@ import uuid
 
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
+from celery import chain
 
 from api.models.activity.activity_subtypes import ActivitySubtypes
 from api.models.enums.activity_type import ActivityType
@@ -121,13 +122,20 @@ class Activity(
 
         super().save(*args, **kwargs)
 
-        if self.form_status == "Submitted" and not self.computed_fields_generated:
-            from api.tasks import generate_computed_activity_fields
+        if self.form_status == "Submitted":
+            from api.tasks import build_csv_rows
 
-            # Start populating generated fields, send task to celery worker for pickup
-            transaction.on_commit(
-                lambda: generate_computed_activity_fields.apply_async((self.id,))
-            )
+            if not self.computed_fields_generated:
+                from api.tasks import generate_computed_activity_fields
+
+                sequential = chain(
+                    generate_computed_activity_fields.si(self.id),
+                    build_csv_rows.si(self.id),
+                )
+                # Start populating generated fields, send task to celery worker for pickup
+                transaction.on_commit(lambda: sequential.apply_async())
+            else:
+                transaction.on_commit(lambda: build_csv_rows.apply_async((self.id,)))
 
 
 class ActivityDataRecord(models.Model):
