@@ -5,4 +5,3 @@ from .ids_within_bounds import IdsWithinBoundsViewSet
 from .maps import MapGenerationRecordViewset, MapGenerationRequestViewSet
 from .migration import MigrationStatusViewSet
 from .recordset import RecordsetRowsViewSet
-from .vector_tiles import VectorTileViewset

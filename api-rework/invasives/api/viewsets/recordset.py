@@ -1,11 +1,8 @@
+import csv
 import logging
 
-from rest_framework.decorators import action
-from django.db.models import Q
-from asgiref.sync import sync_to_async
-
-from rest_framework import viewsets, status
-from rest_framework.response import Response
+from api.configs.exports import CSV_SUBTYPE_CONFIG, build_csv_annotation_object
+from api.constants import short_id_regex, uuid_regex
 from api.models.activity import Activity, ActivitySubtypes
 from api.permissions import HasAdminRole
 from api.serializers.activity_recordset_row import (
@@ -13,19 +10,21 @@ from api.serializers.activity_recordset_row import (
     CachedActivityRecordsetRowSerializer,
 )
 from api.utils.filtered_activity_queryset import FilteredActivityQueryset
-from api.constants import uuid_regex, short_id_regex
-import logging, csv
-from django.db.models import FilteredRelation
-
+from api.viewsets.mixins.atomic import AtomicViewSetMixin
+from asgiref.sync import sync_to_async
+from django.db.models import FilteredRelation, Q
 from django.http import StreamingHttpResponse
-from api.configs.exports import build_csv_annotation_object, CSV_SUBTYPE_CONFIG
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
+from rest_framework.viewsets import GenericViewSet
 
 log = logging.getLogger("invasives")
 
 CENTROID_ZOOM_LIMIT = 12
 
 
-class RecordsetRowsViewSet(viewsets.GenericViewSet):
+class RecordsetRowsViewSet(AtomicViewSetMixin, GenericViewSet):
     serializer_class = ActivityRecordsetRowSerializer
     permission_classes = [HasAdminRole]
 
@@ -37,7 +36,7 @@ class RecordsetRowsViewSet(viewsets.GenericViewSet):
         """
         id_list = request.GET.get("idList", []).split(",")
         if len(id_list) == 0:
-            return Response("No IDs provided", status=status.HTTP_400_BAD_REQUEST)
+            return Response("No IDs provided", status=HTTP_400_BAD_REQUEST)
 
         uuids = []
         short_ids = []
@@ -47,12 +46,12 @@ class RecordsetRowsViewSet(viewsets.GenericViewSet):
             elif short_id_regex.match(id):
                 short_ids.append(id)
             else:
-                return Response(f"Invalid ID: {id}", status=status.HTTP_400_BAD_REQUEST)
+                return Response(f"Invalid ID: {id}", status=HTTP_400_BAD_REQUEST)
 
         results = Activity.objects.filter(Q(id__in=uuids) | Q(short_id__in=short_ids))
         serializer = CachedActivityRecordsetRowSerializer(results, many=True)
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=HTTP_200_OK)
 
     @action(detail=False, methods=["POST"])
     def rows(self, request, *args, **kwargs):
@@ -63,13 +62,13 @@ class RecordsetRowsViewSet(viewsets.GenericViewSet):
 
         if ids_only:  # Early Return, just ship IDs
             id_list = builder.select_output_format(fields=["id"])
-            return Response(list(id_list), status=status.HTTP_200_OK)
+            return Response(list(id_list), status=HTTP_200_OK)
 
         builder.apply_sorting().select_output_format().paginate()
 
         # Access the dynamic (Draft/)Activity serializer set during initialization
         serializer = builder.serializer_class(builder.query, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=HTTP_200_OK)
 
     @action(detail=False, methods=["post"], url_path="csv")
     def csv(self, request, *args, **kwargs):

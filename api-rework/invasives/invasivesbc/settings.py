@@ -60,7 +60,7 @@ DATABASES = {
             "NAME": os.getenv("TEST_DB_NAME"),
         },
         "CONN_MAX_AGE": 0,
-        "ATOMIC_REQUESTS": True,  # sensible default - caution that it only applies to Views
+        "ATOMIC_REQUESTS": False,  # throws async errors in vector tile requests when True
         "OPTIONS": {
             "pool": {
                 "min_size": 2,

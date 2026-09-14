@@ -18,7 +18,7 @@ class VectorTileTestCase(BaseTestCase):
         }
     )
 
-    url_pattern = "/tiles/{}/{}/{}?filterObjects={}"
+    url_pattern = "/ninja/tiles/{}/{}/{}?filterObjects={}"
 
     fixtures = ["test/common/test_activities.json"]
 
@@ -142,16 +142,16 @@ class VectorTileTestCase(BaseTestCase):
 
     def test_invalid_coordinates(self):
         """Invalid Coordinates"""
-        self.get_tile(-10, 200, 32, 404)
-        self.get_tile(10, -200, 32, 404)
-        self.get_tile(-10, 200, -32, 404)
+        self.get_tile(-10, 200, 32, 400)
+        self.get_tile(10, -200, 32, 400)
+        self.get_tile(-10, 200, -32, 400)
         self.get_tile(9999, 9999, 9999, 400)
 
     def test_unauthorized_access(self):
         z = 12
         x = 657
         y = 1350
-        test_status = 403
+        test_status = 401
         return self.get_tile(z, x, y, test_status, auth=False)
 
     def test_filtered_tile_request(self):

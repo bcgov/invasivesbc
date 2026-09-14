@@ -2,14 +2,17 @@ from django.db.models import Aggregate, F, Func
 from django.contrib.gis.db.models import GeometryField, BinaryField
 from django.contrib.gis.db.models.functions import PointOnSurface
 from django.http import HttpResponse
-import json
-from rest_framework import viewsets
-from rest_framework.decorators import action
+from ninja import Router
+from api.ninja_authentication import NinjaKeycloakAuthentication
+import json, asyncio
+
 
 from api.utils.filtered_activity_queryset import FilteredActivityQueryset
 
 CENTROID_ZOOM_LIMIT = 12
 CONTENT_TYPE = "application/vnd.mapbox-vector-tile"
+
+router = Router(auth=NinjaKeycloakAuthentication())
 
 
 class ST_TileEnvelope(Func):
@@ -33,15 +36,9 @@ class AsColumn(Func):
         self.template = f'%(expressions)s AS "{alias}"'
 
 
-class VectorTileViewset(viewsets.GenericViewSet):
-    @action(
-        detail=False,
-        methods=["get"],
-        url_path=r"(?P<zoom>\d+)/(?P<tile_x>\d+)/(?P<tile_y>\d+)",
-    )
-    def vector_tiles(self, request, zoom=None, tile_x=None, tile_y=None):
-        z, x, y = int(zoom), int(tile_x), int(tile_y)
-
+@router.get("/{z}/{x}/{y}")
+async def req_vector_tile(request, z: int, x: int, y: int):
+    try:
         raw_filters = request.GET.get("filterObjects", "")
         if not raw_filters:
             return HttpResponse(content="Bad Request", status=400)
@@ -62,11 +59,9 @@ class VectorTileViewset(viewsets.GenericViewSet):
             )
 
         filter_objects = [json.loads(raw_filters)]
-
         activity_queryset = FilteredActivityQueryset(filter_objects).apply_filters()
 
-        if not activity_queryset.exists():
-            # Early Return, No results to share.
+        if not await activity_queryset.aexists():
             return HttpResponse(status=204, content_type=CONTENT_TYPE)
 
         tile_geom = ST_TileEnvelope(z, x, y)
@@ -80,12 +75,7 @@ class VectorTileViewset(viewsets.GenericViewSet):
 
         mvt_features = (
             activity_queryset.filter(computed_tile_shape__intersects=tile_geom)
-            .values(
-                "id",
-                "short_id",
-                "type",
-                "subtype",
-            )
+            .values("id", "short_id", "type", "subtype")
             .annotate(
                 mvt_geom=ST_AsMVTGeom(
                     target_geometry,
@@ -99,7 +89,7 @@ class VectorTileViewset(viewsets.GenericViewSet):
             )
         )
 
-        mvt_query = mvt_features.aggregate(
+        mvt_query = await mvt_features.aaggregate(
             tile_bytes=ST_AsMVT(
                 AsColumn("id", "id"),
                 AsColumn("short_id", "short_id"),
@@ -114,3 +104,6 @@ class VectorTileViewset(viewsets.GenericViewSet):
         if not tile_bytes:
             return HttpResponse(status=204, content_type=CONTENT_TYPE)
         return HttpResponse(bytes(tile_bytes), content_type=CONTENT_TYPE)
+
+    except asyncio.CancelledError:
+        raise
