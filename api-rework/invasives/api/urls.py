@@ -13,7 +13,7 @@ from .viewsets import (
 )
 
 from api.protocol.activity.api import router as activity_router
-from api.viewsets.vector_tiles import router as tile_router
+from api.protocol.map_tiles.vector_tiles import router as tile_router
 
 from ninja import NinjaAPI
 
