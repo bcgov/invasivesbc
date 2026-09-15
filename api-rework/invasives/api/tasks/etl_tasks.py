@@ -1,13 +1,18 @@
 import logging
 from pprint import pformat
 
-from api.legacy_db.db import LegacyDB
-from api.legacy_db.migrate import parse_and_migrate_single_activity
+import psycopg
 from celery import chain
+from psycopg.rows import dict_row
+
+from api.legacy_db.db import LegacyDB
+from api.legacy_db.migrate import (
+    parse_and_migrate_single_activity,
+    ActivityMigrationTaskResult,
+    ActivityMigrationCumulativeTaskResult,
+)
 from invasivesbc import celery_app
 from invasivesbc.settings import LEGACY_DB_CONNECTION_STRING
-import psycopg
-from psycopg.rows import dict_row
 
 
 @celery_app.task(bind=True, max_retries=0, time_limit=3600 * 12)
@@ -23,15 +28,19 @@ def import_codes(self):
 
 
 @celery_app.task(bind=True, max_retries=3, time_limit=300)
-def import_single_activity(self, activity_id: str, dry_run=False, clobber=False):
+def import_single_activity(
+    self, activity_id: str, dry_run=False, clobber=False
+) -> ActivityMigrationTaskResult:
     return parse_and_migrate_single_activity(
         activity_id, dry_run=dry_run, clobber=clobber
     )
 
 
 @celery_app.task(bind=True, max_retries=0, time_limit=3600 * 24)
-def import_all_activities(self, clobber=True):
+def import_all_activities(self, clobber=True) -> ActivityMigrationCumulativeTaskResult:
     logging.info("Importing all activities")
+
+    cumulative_result = ActivityMigrationCumulativeTaskResult()
 
     with psycopg.connect(LEGACY_DB_CONNECTION_STRING, row_factory=dict_row) as conn:
         with conn.cursor() as cursor:
@@ -40,11 +49,15 @@ def import_all_activities(self, clobber=True):
             )
             for row in result.fetchall():
                 activity_id = row["activity_id"]
-                import_single_activity.apply(
+                task = import_single_activity.apply(
                     args=(activity_id,), kwargs={"dry_run": False, "clobber": clobber}
                 )  # run it locally rather than as a background tasks. simplifies chaining/link creation.
+                result: ActivityMigrationTaskResult = task.get()
+                cumulative_result.add(result)
 
     logging.info("run complete")
+    logging.info(cumulative_result)
+    return cumulative_result
 
 
 @celery_app.task(bind=True, max_retries=0, time_limit=3600 * 12)

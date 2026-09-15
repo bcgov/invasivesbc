@@ -1,8 +1,6 @@
-import logging
 import os
-from pathlib import Path
-import sys
 import shutil
+from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -211,9 +209,7 @@ LOGGING = {
     },
     "handlers": {
         "timestamped": {
-            "class": "logging.StreamHandler",
-            "stream": sys.stdout,
-            "formatter": "simple",
+            "class": "rich.logging.RichHandler",
             "level": LOG_LEVEL,
         },
     },

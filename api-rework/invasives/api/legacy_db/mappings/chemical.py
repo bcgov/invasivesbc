@@ -1,20 +1,11 @@
 import logging
 from typing import List
+
 from pydantic import TypeAdapter
+
 from api.legacy_db.mappings.participants import add_persons
 from api.legacy_db.mappings.wells import add_well_information
 from api.legacy_db.model_serializer import LegacyActivity
-from api.protocol.activity.plant_subtypes.base_form_schema import JurisdictionSchema
-from api.protocol.activity.plant_subtypes.treatment_chemical_terrestrial import (
-    DraftBaseChemicalDetails as TerrestrialBase,
-)
-from api.protocol.activity.plant_subtypes.treatment_chemical_aquatic import (
-    DraftBaseChemicalDetails as AquaticBase,
-)
-from api.protocol.activity.plant_subtypes.common.chem_calculations import (
-    get_chem_calculation_results,
-)
-from api.serializers.activity import ActivitySerializer
 from api.models.activity import (
     Activity,
     ActivityDataRecord,
@@ -41,6 +32,17 @@ from api.models.codes import (
     PlantCode,
     HerbicideCode,
 )
+from api.protocol.activity.plant_subtypes.base_form_schema import JurisdictionSchema
+from api.protocol.activity.plant_subtypes.common.chem_calculations import (
+    get_chem_calculation_results,
+)
+from api.protocol.activity.plant_subtypes.treatment_chemical_aquatic import (
+    DraftBaseChemicalDetails as AquaticBase,
+)
+from api.protocol.activity.plant_subtypes.treatment_chemical_terrestrial import (
+    DraftBaseChemicalDetails as TerrestrialBase,
+)
+from api.serializers.activity import ActivitySerializer
 
 log = logging.getLogger(__name__)
 
@@ -55,7 +57,7 @@ def add_chemical_treatment_details(new: Activity, old: LegacyActivity):
 
     is_tank_mix = d.tank_mix is not None and d.tank_mix
     plant_list = d.invasive_plants
-    if is_tank_mix:
+    if is_tank_mix and d.tank_mix_object is not None:
         herbicide_list = d.tank_mix_object.herbicides
         calculation_type = d.tank_mix_object.calculation_type
         amount_of_mix_used_l = d.tank_mix_object.amount_of_mix

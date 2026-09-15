@@ -1,7 +1,12 @@
-from dataclasses import dataclass
 import logging
+from dataclasses import dataclass
 from typing import Literal
 
+import psycopg
+from django.db.models import Q
+from psycopg.rows import dict_row
+
+from api.legacy_db.migrate import ActivityMigrationCumulativeTaskResult
 from api.models.activity import Activity
 from api.models.codes import (
     AdjacentLandUseCode,
@@ -58,10 +63,7 @@ from api.models.codes import (
     WindDirectionCode,
 )
 from api.models.migrator import ActivityPendingLink
-from django.db.models import Q
 from invasivesbc.settings import LEGACY_DB_CONNECTION_STRING
-import psycopg
-from psycopg.rows import dict_row
 
 logging.basicConfig(level=logging.DEBUG)
 logging.getLogger("psycopg").setLevel(logging.DEBUG)
@@ -451,7 +453,7 @@ class LegacyDB:
         source: Literal["all", "previously-failed", "random-sample", "single"] = "all",
         restrict_to_subtype: str | None = None,
         pk=None,
-    ):
+    ) -> ActivityMigrationCumulativeTaskResult:
 
         from api.tasks import import_single_activity
 
@@ -473,22 +475,23 @@ class LegacyDB:
             )
             sourcing_query_parameters["activity_subtype"] = restrict_to_subtype
 
-        count = 0
+        cumulative_result = ActivityMigrationCumulativeTaskResult()
 
         with psycopg.connect(LEGACY_DB_CONNECTION_STRING, row_factory=dict_row) as conn:
             with conn.cursor() as cursor:
                 result = cursor.execute(sourcing_query, sourcing_query_parameters)
                 for row in result.fetchall():
                     activity_id = row["activity_id"]
-                    count = count + 1
-                    logging.info(
-                        import_single_activity.apply(
-                            args=(activity_id,),
-                            kwargs={"dry_run": dry_run, "clobber": clobber},
-                        )
+                    task = import_single_activity.apply(
+                        args=(activity_id,),
+                        kwargs={"dry_run": dry_run, "clobber": clobber},
                     )  # not an async call
+                    result = task.get()
+                    cumulative_result.add(result)
 
         logging.info("run complete")
+        logging.info(cumulative_result)
+        return cumulative_result
 
     @staticmethod
     def migrate_links():
