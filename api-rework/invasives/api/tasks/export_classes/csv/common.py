@@ -11,11 +11,13 @@ from api.models.activity import (
 from abc import ABC, abstractmethod
 from typing import Type
 from django.db import models
+from celery.utils.log import get_task_logger
 
 
 class CsvTransformerBase[T: models.Model, U: models.Model](ABC):
     csv_model: Type[T]
     entry_model: Type[U]
+    logger = get_task_logger(__name__)
 
     def __init__(self, id: str):
         self.base_record = Activity.objects.get(id=id)
