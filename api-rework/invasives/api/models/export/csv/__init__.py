@@ -8,3 +8,4 @@ from .treatment_chem_pt import TreatmentChemicalPlantTerrestrial
 from .treatment_biocontrol_release import TreatmentBiocontrolReleasePlant
 from .monitoring_chemical_p import MonitoringChemicalPlant
 from .monitoring_mechanical_p import MonitoringMechanicalPlant
+from .monitoring_biocontrol_release import MonitoringBiocontrolReleasePlant
