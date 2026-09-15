@@ -5,3 +5,4 @@ from .treatment_mech_pa import TreatmentMechanicalPlantAquatic
 from .treatment_mech_pt import TreatmentMechanicalPlantTerrestrial
 from .treatment_chem_pa import TreatmentChemicalPlantAquatic
 from .treatment_chem_pt import TreatmentChemicalPlantTerrestrial
+from .treatment_biocontrol_release import TreatmentBiocontrolReleasePlant
