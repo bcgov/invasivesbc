@@ -43,9 +43,17 @@ class TreatmentChemicalPlantTerrestrialCsvRow(
             jurisdictions = f"{self.safe_attr(entry, "jurisdiction", "full")} ({self.safe_attr(entry, "jurisdiction_percent")}%)"
             rows.append(
                 self.csv_model(
+                    # Common Fields
                     **common_fields,
                     jurisdictions=jurisdictions,
+                    # Wells
                     well_proximity_m=nearest_well,
+                    # Weather Info
+                    temperature_c=self.safe_attr(ctx, "temperature_c"),
+                    wind_speed_kmh=self.safe_attr(ctx, "wind_speed_kmh"),
+                    wind_direction=self.safe_attr(ctx, "wind_direction", "full"),
+                    humidity=self.safe_attr(ctx, "humidity"),
+                    # Context
                     service_license=self.safe_attr(
                         ctx, "pesticide_employer_code", "full"
                     ),
@@ -55,10 +63,6 @@ class TreatmentChemicalPlantTerrestrialCsvRow(
                     pmp_not_in_dropdown=self.safe_attr(
                         ctx, "pest_management_plan_manual"
                     ),
-                    temperature_c=self.safe_attr(ctx, "temperature_c"),
-                    wind_speed_kmh=self.safe_attr(ctx, "wind_speed_kmh"),
-                    wind_direction=self.safe_attr(ctx, "wind_direction", "full"),
-                    humidity=self.safe_attr(ctx, "humidity"),
                     treatment_notice_signs=self.safe_attr(
                         ctx, "treatment_notice_signs"
                     ),
@@ -68,17 +72,21 @@ class TreatmentChemicalPlantTerrestrialCsvRow(
                     pest_injury_threshold=self.safe_attr(
                         ctx, "pest_injury_threshold_determination"
                     ),
+                    # Treated Plants
                     invasive_plant=self.safe_attr(entry, "invasive_plant", "full"),
                     invasive_plant_percent_covered=self.safe_attr(
                         entry, "invasive_plant_percent"
                     ),
+                    # Herbicides
+                    herbicide_type=self.safe_attr(entry, "herbicide_type", "full"),
+                    herbicide_name=self.safe_attr(entry, "herbicide_name", "full"),
+                    # Treatment Context
                     tank_mix_used=has_tank_mix,
+                    calculation_type=self.safe_attr(chem_ctx, "calculation_type"),
                     chemical_application_method=self.safe_attr(
                         chem_ctx, "application_method", "full"
                     ),
-                    herbicide_type=self.safe_attr(entry, "herbicide_type", "full"),
-                    herbicide_name=self.safe_attr(entry, "herbicide_name", "full"),
-                    calculation_type=self.safe_attr(chem_ctx, "calculation_type"),
+                    # Calculated Fields
                     delivery_rate_of_mix=self.safe_attr(chem_ctx, "delivery_rate"),
                     product_application_rate=self.safe_attr(
                         entry, "product_application_rate"

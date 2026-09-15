@@ -21,12 +21,14 @@ class TreatmentBiocontrolReleasePlantCsvRow(
             rows.append(
                 self.csv_model(
                     **common_fields,
+                    # Microsite
                     mesoslope_position=self.safe_attr(
                         microsite_conditions, "mesoslope_position", "full"
                     ),
                     site_surface_shape=self.safe_attr(
                         microsite_conditions, "site_surface_shape", "full"
                     ),
+                    # Entry
                     invasive_plant=self.safe_attr(entry, "invasive_plant", "full"),
                     biological_agent=self.safe_attr(entry, "biocontrol_agent", "full"),
                     linear_segment=self.safe_attr(entry, "linear_segment"),

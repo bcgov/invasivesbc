@@ -19,6 +19,7 @@ class TreatmentMechanicalPlantTerrestrialCsvRow(
             rows.append(
                 self.csv_model(
                     **common_fields,
+                    # Entry
                     invasive_plant=self.safe_attr(entry, "invasive_plant", "full"),
                     treated_area_sqm=self.safe_attr(entry, "treated_area_msq"),
                     mechanical_method=self.safe_attr(entry, "mechanical_method"),

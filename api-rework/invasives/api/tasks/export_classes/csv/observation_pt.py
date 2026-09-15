@@ -17,33 +17,44 @@ class ObservationPlantTerrestrialCsvRow(
     entry_model = TerrestrialPlantObservationEntries
 
     def build_rows(self, common_fields):
-        ctx = TerrestrialPlantObservationContext.objects.get(
+        ctx = TerrestrialPlantObservationContext.objects.filter(
             activity_data_record__activity_id=self.id
-        )
-        pto = PretreatmentObservation.objects.get(
+        ).first()
+
+        pto = PretreatmentObservation.objects.filter(
             activity_data_record__activity_id=self.id
+        ).first()
+
+        specific_uses = (
+            ", ".join(
+                SpecificUse.objects.filter(
+                    activity_data_record__activity_id=self.id
+                ).values_list("specific_use__full", flat=True)
+            )
+            or None
         )
-        voucher_specimen = TerrestrialVoucherSpecimen.objects.filter(
-            activity_data_record__activity_id=self.id
-        ).exists()
-        specific_uses = ", ".join(
-            SpecificUse.objects.filter(
-                activity_data_record__activity_id=self.id
-            ).values_list("specific_use__full", flat=True)
-        )
-        has_voucher_specimen = YesNo.Yes.value if voucher_specimen else YesNo.No.value
+
         rows = []
         for entry in self.entries:
+            voucher_specimen = TerrestrialVoucherSpecimen.objects.filter(
+                activity_data_record_id=entry.activity_data_record_id
+            ).exists()
+            has_voucher_specimen = (
+                YesNo.Yes.value if voucher_specimen else YesNo.No.value
+            )
+
             rows.append(
                 self.csv_model(
                     **common_fields,
-                    aspect=self.safe_attr(ctx, "aspect", "full"),
+                    # Entry
                     density=self.safe_attr(entry, "density", "full"),
                     distribution=self.safe_attr(entry, "distribution", "full"),
-                    has_voucher_specimen=has_voucher_specimen,
                     invasive_plant=self.safe_attr(entry, "invasive_plant", "full"),
                     life_stage=self.safe_attr(entry, "life_stage", "full"),
                     observation_type=entry.observation_type,
+                    has_voucher_specimen=has_voucher_specimen,
+                    # Context
+                    aspect=self.safe_attr(ctx, "aspect", "full"),
                     pretreatment_observation=pto.pre_treatment_observation,
                     research_observation=ctx.research_observation,
                     slope_percent=self.safe_attr(ctx, "slope_percent", "full"),

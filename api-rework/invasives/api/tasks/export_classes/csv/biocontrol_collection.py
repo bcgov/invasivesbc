@@ -22,9 +22,11 @@ class BiocontrolCollectionPlantCsvRow(
         weather = WeatherConditions.objects.filter(
             activity_data_record__activity_id=self.id
         ).first()
+
         phenology = TargetPlantPhenology.objects.filter(
             activity_data_record__activity_id=self.id
         ).first()
+
         target_plant_heights = (
             ", ".join(
                 map(  # Convert ints to strings
@@ -56,18 +58,21 @@ class BiocontrolCollectionPlantCsvRow(
             rows.append(
                 self.csv_model(
                     **common_fields,
+                    # Weather
                     temperature_c=self.safe_attr(weather, "temperature"),
                     cloud_cover=self.safe_attr(weather, "cloud_cover", "full"),
                     precipitation=self.safe_attr(weather, "precipitation", "full"),
                     wind_speed_kmh=self.safe_attr(weather, "wind_speed_kmh"),
                     wind_direction=self.safe_attr(weather, "wind_direction", "full"),
                     weather_comments=self.safe_attr(weather, "comments"),
+                    # Microsite
                     mesoslope_position=self.safe_attr(
                         microsite, "mesoslope_position", "full"
                     ),
                     site_surface_shape=self.safe_attr(
                         microsite, "site_surface_shape", "full"
                     ),
+                    # Entry
                     invasive_plant=self.safe_attr(entry, "invasive_plant", "full"),
                     biological_agent=self.safe_attr(entry, "biological_agent", "full"),
                     historical_iapp_site=self.safe_attr(entry, "historical_iapp_site"),
@@ -87,6 +92,7 @@ class BiocontrolCollectionPlantCsvRow(
                     ),
                     end_time_collecting=self.safe_attr(entry, "end_time_collecting"),
                     comment=self.safe_attr(entry, "comment"),
+                    # Entry - Counts
                     actual_biological_agent_stage=", ".join(
                         act_agents.values_list("stage__full", flat=True)
                     )
@@ -111,6 +117,7 @@ class BiocontrolCollectionPlantCsvRow(
                         total=Sum("quantity")
                     )["total"]
                     or 0,
+                    # Plant Phenology
                     phenology_details_recorded=has_phenology,
                     target_plant_heights=target_plant_heights,
                     winter_dormant=self.safe_attr(phenology, "winter_dormant"),

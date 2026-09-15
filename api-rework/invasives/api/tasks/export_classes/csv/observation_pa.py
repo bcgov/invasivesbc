@@ -32,72 +32,109 @@ class ObservationPlantAquaticCsvRow(
         pto = PretreatmentObservation.objects.get(
             activity_data_record__activity_id=self.id
         )
-        voucher_specimen = AquaticVoucherSpecimen.objects.filter(
-            activity_data_record__activity_id=self.id
-        ).exists()
+
         wb_ctx = WaterbodyContext.objects.get(activity_data_record__activity_id=self.id)
-        adjacent_land_use = ", ".join(
-            WaterbodyAdjacentLandUse.objects.filter(
-                activity_data_record__activity_id=self.id
-            ).values_list("waterbody_adjacent_land_use__full", flat=True)
+
+        adjacent_land_use = (
+            ", ".join(
+                WaterbodyAdjacentLandUse.objects.filter(
+                    activity_data_record__activity_id=self.id
+                ).values_list("waterbody_adjacent_land_use__full", flat=True)
+            )
+            or None
         )
-        inflow_p = ", ".join(
-            WaterbodyInflowPermanent.objects.filter(
-                activity_data_record__activity_id=self.id
-            ).values_list("flow_code__full", flat=True)
+        inflow_p = (
+            ", ".join(
+                WaterbodyInflowPermanent.objects.filter(
+                    activity_data_record__activity_id=self.id
+                ).values_list("flow_code__full", flat=True)
+            )
+            or None
         )
-        inflow_s = ", ".join(
-            WaterbodyInflowSeasonal.objects.filter(
-                activity_data_record__activity_id=self.id
-            ).values_list("flow_code__full", flat=True)
+        inflow_s = (
+            ", ".join(
+                WaterbodyInflowSeasonal.objects.filter(
+                    activity_data_record__activity_id=self.id
+                ).values_list("flow_code__full", flat=True)
+            )
+            or None
         )
-        waterlevel_management = ", ".join(
-            WaterbodyLevelManagement.objects.filter(
-                activity_data_record__activity_id=self.id
-            ).values_list("waterlevel_management__full", flat=True)
+        waterlevel_management = (
+            ", ".join(
+                WaterbodyLevelManagement.objects.filter(
+                    activity_data_record__activity_id=self.id
+                ).values_list("waterlevel_management__full", flat=True)
+            )
+            or None
         )
-        outflow_p = ", ".join(
-            WaterbodyOutflowPermanent.objects.filter(
-                activity_data_record__activity_id=self.id
-            ).values_list("flow_code__full", flat=True)
+        outflow_p = (
+            ", ".join(
+                WaterbodyOutflowPermanent.objects.filter(
+                    activity_data_record__activity_id=self.id
+                ).values_list("flow_code__full", flat=True)
+            )
+            or None
         )
-        outflow_s = ", ".join(
-            WaterbodyOutflowSeasonal.objects.filter(
-                activity_data_record__activity_id=self.id
-            ).values_list("flow_code__full", flat=True)
+        outflow_s = (
+            ", ".join(
+                WaterbodyOutflowSeasonal.objects.filter(
+                    activity_data_record__activity_id=self.id
+                ).values_list("flow_code__full", flat=True)
+            )
+            or None
         )
-        waterbody_use = ", ".join(
-            WaterbodyUse.objects.filter(
-                activity_data_record__activity_id=self.id
-            ).values_list("waterbody_use__full", flat=True)
+        waterbody_use = (
+            ", ".join(
+                WaterbodyUse.objects.filter(
+                    activity_data_record__activity_id=self.id
+                ).values_list("waterbody_use__full", flat=True)
+            )
+            or None
         )
         shorelines = ShorelineTypes.objects.filter(
             activity_data_record__activity_id=self.id
         ).values_list("shoreline_type__full", "percent_covered")
-        shoreline_type = ", ".join(
-            f"{shore_type} ({percent_covered}%)"
-            for shore_type, percent_covered in shorelines
+
+        shoreline_type = (
+            ", ".join(
+                f"{shore_type} ({percent_covered}%)"
+                for shore_type, percent_covered in shorelines
+            )
+            or None
         )
-        substrate = ", ".join(
-            WaterbodySubstrateType.objects.filter(
-                activity_data_record__activity_id=self.id
-            ).values_list("substrate_type__full", flat=True)
+        substrate = (
+            ", ".join(
+                WaterbodySubstrateType.objects.filter(
+                    activity_data_record__activity_id=self.id
+                ).values_list("substrate_type__full", flat=True)
+            )
+            or None
         )
-        has_voucher_specimen = YesNo.Yes.value if voucher_specimen else YesNo.No.value
         rows = []
 
         for entry in self.entries:
+            voucher_specimen = AquaticVoucherSpecimen.objects.filter(
+                activity_data_record=entry.activity_data_record_id
+            ).exists()
+
+            has_voucher_specimen = (
+                YesNo.Yes.value if voucher_specimen else YesNo.No.value
+            )
             rows.append(
                 self.csv_model(
                     **common_fields,
+                    # Entry
                     observation_type=entry.observation_type,
                     sample_point_id=entry.sample_point_id,
                     invasive_plant=self.safe_attr(entry, "invasive_plant", "full"),
                     life_stage=self.safe_attr(entry, "life_stage", "full"),
                     density=self.safe_attr(entry, "density", "full"),
                     distribution=self.safe_attr(entry, "distribution", "full"),
+                    # Context
                     suitable_for_biocontrol=ctx.suitable_for_biocontrol,
+                    # Shoreline Info
                     shorelines=shoreline_type,
+                    # Waterbody Context
                     waterbody_type=wb_ctx.type,
                     name_gazetted=wb_ctx.name_gazetted,
                     name_local=wb_ctx.name_local,

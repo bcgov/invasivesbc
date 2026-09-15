@@ -70,20 +70,21 @@ class CsvTransformerBase[T: models.Model, U: models.Model](ABC):
         project_codes = ProjectCode.objects.filter(
             activity_data_record__activity_id=activity.id
         ).values_list("description", flat=True)
+
         base["project_code_one"] = project_codes[0] if len(project_codes) >= 1 else None
         base["project_code_two"] = project_codes[1] if len(project_codes) >= 2 else None
 
         employers = Employer.objects.filter(
             activity_data_record__activity_id=activity.id
         ).values_list("employer__full", flat=True)
-        base["employers"] = ", ".join(employers)
+        base["employers"] = ", ".join(employers) or None
 
         jurisdictions = Jurisdiction.objects.filter(
             activity_data_record__activity_id=activity.id
         ).values_list("jurisdiction__full", "percent_covered")
 
-        base["jurisdictions"] = ", ".join(
-            f"{name} ({percent}%)" for name, percent in jurisdictions
+        base["jurisdictions"] = (
+            ", ".join(f"{name} ({percent}%)" for name, percent in jurisdictions) or None
         )
 
         is_chemical_treatment = activity.subtype in [
@@ -93,15 +94,19 @@ class CsvTransformerBase[T: models.Model, U: models.Model](ABC):
         participants = Participant.objects.filter(
             activity_data_record__activity_id=activity.id
         ).values_list("name", "pac_number")
-        base["participants"] = ", ".join(
-            f"{name} (PAC: {pac})" if is_chemical_treatment else name
-            for name, pac in participants
+        base["participants"] = (
+            ", ".join(
+                f"{name} (PAC: {pac})" if is_chemical_treatment else name
+                for name, pac in participants
+            )
+            or None
         )
 
         risos = RisoArea.objects.filter(
             activity_data_record__activity_id=activity.id
         ).values_list("organization", flat=True)
-        base["computed_regional_districts"] = ", ".join(risos)
+        base["computed_regional_districts"] = ", ".join(risos) or None
+
         return base
 
     def start_conversion(self):

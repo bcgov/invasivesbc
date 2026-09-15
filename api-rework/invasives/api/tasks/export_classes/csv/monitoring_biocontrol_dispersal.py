@@ -26,9 +26,12 @@ class MonitoringBiocontrolDispersalCsvRow(
         weather = WeatherConditions.objects.filter(
             activity_data_record__activity_id=self.id
         ).first()
+
         phenology = TargetPlantPhenology.objects.filter(
             activity_data_record__activity_id=self.id
         ).first()
+        has_phenology = YesNo.Yes.value if phenology else YesNo.No.value
+
         target_plant_heights = (
             ", ".join(
                 map(  # Convert ints to strings
@@ -45,7 +48,6 @@ class MonitoringBiocontrolDispersalCsvRow(
         microsite = MicrositeCondition.objects.filter(
             activity_data_record__activity_id=self.id
         ).first()
-        has_phenology = YesNo.Yes.value if phenology else YesNo.No.value
 
         rows = []
         for entry in self.entries:
@@ -79,18 +81,21 @@ class MonitoringBiocontrolDispersalCsvRow(
             rows.append(
                 self.csv_model(
                     **common_fields,
+                    # Weather
                     temperature_c=self.safe_attr(weather, "temperature"),
                     cloud_cover=self.safe_attr(weather, "cloud_cover", "full"),
                     precipitation=self.safe_attr(weather, "precipitation", "full"),
                     wind_speed_kmh=self.safe_attr(weather, "wind_speed_kmh"),
                     wind_direction=self.safe_attr(weather, "wind_direction", "full"),
                     weather_comments=self.safe_attr(weather, "comments"),
+                    # Microsite
                     mesoslope_position=self.safe_attr(
                         microsite, "mesoslope_position", "full"
                     ),
                     site_surface_shape=self.safe_attr(
                         microsite, "site_surface_shape", "full"
                     ),
+                    # Entry
                     invasive_plant=self.safe_attr(entry, "invasive_plant", "full"),
                     biological_agent=self.safe_attr(entry, "biocontrol_agent", "full"),
                     biocontrol_present=biocontrol_present,
@@ -105,6 +110,7 @@ class MonitoringBiocontrolDispersalCsvRow(
                     monitoring_start_time=self.safe_attr(entry, "start_time"),
                     monitoring_stop_time=self.safe_attr(entry, "stop_time"),
                     location_agents_found=agent_location,
+                    # Entry - Counts
                     actual_biological_agent_stage=", ".join(
                         act_agents.values_list("stage__full", flat=True)
                     )
@@ -145,6 +151,7 @@ class MonitoringBiocontrolDispersalCsvRow(
                         total=Sum("quantity")
                     )["total"]
                     or 0,
+                    # Phenology
                     phenology_details_recorded=has_phenology,
                     target_plant_heights=target_plant_heights,
                     winter_dormant=self.safe_attr(phenology, "winter_dormant"),

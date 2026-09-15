@@ -27,25 +27,33 @@ class MonitoringBiocontrolReleasePlantCsvRow(
         weather = WeatherConditions.objects.filter(
             activity_data_record__activity_id=self.id
         ).first()
+
         spread = SpreadResults.objects.filter(
             activity_data_record__activity_id=self.id
         ).first()
+
         phenology = TargetPlantPhenology.objects.filter(
             activity_data_record__activity_id=self.id
         ).first()
-        target_plant_heights = ", ".join(
-            map(  # Convert ints to strings
-                str,
-                TargetPlantHeights.objects.filter(
-                    activity_data_record__activity_id=self.id
+
+        target_plant_heights = (
+            ", ".join(
+                map(  # Convert ints to strings
+                    str,
+                    TargetPlantHeights.objects.filter(
+                        activity_data_record__activity_id=self.id
+                    )
+                    .order_by("height_cm")
+                    .values_list("height_cm", flat=True),
                 )
-                .order_by("height_cm")
-                .values_list("height_cm", flat=True),
             )
+            or None
         )
+
         microsite = MicrositeCondition.objects.filter(
             activity_data_record__activity_id=self.id
         ).first()
+
         has_phenology = YesNo.Yes.value if phenology else YesNo.No.value
         has_spread = YesNo.Yes.value if spread else YesNo.No.value
 
@@ -59,34 +67,45 @@ class MonitoringBiocontrolReleasePlantCsvRow(
                 activity_data_record_id=entry.activity_data_record_id, is_estimate=False
             )
 
-            agent_location = ", ".join(
-                LocationBiocontrolAgentsFoundTerrestrial.objects.filter(
-                    activity_data_record_id=entry.activity_data_record_id
-                ).values_list("location_agent_found__full", flat=True)
+            agent_location = (
+                ", ".join(
+                    LocationBiocontrolAgentsFoundTerrestrial.objects.filter(
+                        activity_data_record_id=entry.activity_data_record_id
+                    ).values_list("location_agent_found__full", flat=True)
+                )
+                or None
             )
+
             biocontrol_present = (
                 YesNo.Yes.value if entry.biocontrol_present else YesNo.No.value
             )
-            biocontrol_presence = ", ".join(
-                SignOfBiocontrolPresenceTerrestrial.objects.filter(
-                    activity_data_record_id=entry.activity_data_record_id
-                ).values_list("sign_of_presence__full", flat=True)
+            biocontrol_presence = (
+                ", ".join(
+                    SignOfBiocontrolPresenceTerrestrial.objects.filter(
+                        activity_data_record_id=entry.activity_data_record_id
+                    ).values_list("sign_of_presence__full", flat=True)
+                )
+                or None
             )
+
             rows.append(
                 self.csv_model(
                     **common_fields,
+                    # Weather
                     temperature_c=self.safe_attr(weather, "temperature"),
                     cloud_cover=self.safe_attr(weather, "cloud_cover", "full"),
                     precipitation=self.safe_attr(weather, "precipitation", "full"),
                     wind_speed_kmh=self.safe_attr(weather, "wind_speed_kmh"),
                     wind_direction=self.safe_attr(weather, "wind_direction", "full"),
                     weather_comments=self.safe_attr(weather, "comments"),
+                    # Microsite
                     mesoslope_position=self.safe_attr(
                         microsite, "mesoslope_position", "full"
                     ),
                     site_surface_shape=self.safe_attr(
                         microsite, "site_surface_shape", "full"
                     ),
+                    # Entry
                     invasive_plant=self.safe_attr(entry, "invasive_plant", "full"),
                     biological_agent=self.safe_attr(entry, "biocontrol_agent", "full"),
                     biocontrol_present=biocontrol_present,
@@ -100,30 +119,39 @@ class MonitoringBiocontrolReleasePlantCsvRow(
                     monitoring_start_time=self.safe_attr(entry, "start_time"),
                     monitoring_stop_time=self.safe_attr(entry, "stop_time"),
                     location_agents_found=agent_location,
+                    # Entry - Counts
                     actual_biological_agent_stage=", ".join(
                         act_agents.values_list("stage__full", flat=True)
-                    ),
+                    )
+                    or None,
                     actual_agent_count=", ".join(
                         map(str, act_agents.values_list("quantity", flat=True))
-                    ),
+                    )
+                    or None,
                     actual_plant_position=", ".join(
                         act_agents.values_list("plant_position__full", flat=True)
-                    ),
+                    )
+                    or None,
                     actual_agent_location=", ".join(
                         act_agents.values_list("agent_location__full", flat=True)
-                    ),
+                    )
+                    or None,
                     estimated_biological_agent_stage=", ".join(
                         est_agents.values_list("stage__full", flat=True)
-                    ),
+                    )
+                    or None,
                     estimated_agent_count=", ".join(
                         map(str, est_agents.values_list("quantity", flat=True))
-                    ),
+                    )
+                    or None,
                     estimated_plant_position=", ".join(
                         est_agents.values_list("plant_position__full", flat=True)
-                    ),
+                    )
+                    or None,
                     estimated_agent_location=", ".join(
                         est_agents.values_list("agent_location__full", flat=True)
-                    ),
+                    )
+                    or None,
                     actual_total_agent_quantity=act_agents.aggregate(
                         total=Sum("quantity")
                     )["total"]
@@ -132,6 +160,7 @@ class MonitoringBiocontrolReleasePlantCsvRow(
                         total=Sum("quantity")
                     )["total"]
                     or 0,
+                    # Phenology
                     phenology_details_recorded=has_phenology,
                     target_plant_heights=target_plant_heights,
                     winter_dormant=self.safe_attr(phenology, "winter_dormant"),
@@ -141,6 +170,7 @@ class MonitoringBiocontrolReleasePlantCsvRow(
                     flowering=self.safe_attr(phenology, "flowering"),
                     seeds_forming=self.safe_attr(phenology, "seeds_forming"),
                     senescent=self.safe_attr(phenology, "senescent"),
+                    # Spread
                     spread_results_recorded=has_spread,
                     agent_density=self.safe_attr(spread, "agent_density"),
                     plant_attack_percent=self.safe_attr(spread, "plant_attack"),

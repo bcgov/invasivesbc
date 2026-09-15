@@ -20,14 +20,18 @@ class MonitoringChemicalTreatmentPlantCsvRow(
         )
         rows = []
         for entry in chain(self.entries, aquatic_entries):
-            plants_on_site = ", ".join(
-                InvasivePlantsOnSite.objects.filter(
-                    activity_data_record_id=entry.activity_data_record_id
-                ).values_list("invasive_plants_on_site__full", flat=True)
+            plants_on_site = (
+                ", ".join(
+                    InvasivePlantsOnSite.objects.filter(
+                        activity_data_record_id=entry.activity_data_record_id
+                    ).values_list("invasive_plants_on_site__full", flat=True)
+                )
+                or None
             )
             rows.append(
                 self.csv_model(
                     **common_fields,
+                    # Entry
                     invasive_plant=self.safe_attr(entry, "invasive_plant", "full"),
                     treatment_efficacy=self.safe_attr(
                         entry, "treatment_efficacy_rating"
