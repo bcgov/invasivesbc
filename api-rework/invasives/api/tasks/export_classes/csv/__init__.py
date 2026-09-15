@@ -8,6 +8,8 @@ from .treatment_chem_pa import TreatmentChemicalPlantAquaticCsvRow
 from .treatment_mech_pt import TreatmentMechanicalPlantTerrestrialCsvRow
 from .treatment_mech_pa import TreatmentMechanicalPlantAquaticCsvRow
 from .treatment_biocontrol_release import TreatmentBiocontrolReleasePlantCsvRow
+from .monitoring_chem_p import MonitoringChemicalTreatmentPlantCsvRow
+from .monitoring_mech_p import MonitoringMechanicalTreatmentPlantCsvRow
 
 CSV_ROW_MAP: dict[str, Type[CsvTransformerBase]] = {
     ActivitySubtypes.Observation_Plant_Terrestrial.name: ObservationPlantTerrestrialCsvRow,
@@ -17,4 +19,6 @@ CSV_ROW_MAP: dict[str, Type[CsvTransformerBase]] = {
     ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic.name: TreatmentMechanicalPlantAquaticCsvRow,
     ActivitySubtypes.Treatment_Mechanical_Plant_Terrestrial.name: TreatmentMechanicalPlantTerrestrialCsvRow,
     ActivitySubtypes.Biocontrol_Release.name: TreatmentBiocontrolReleasePlantCsvRow,
+    ActivitySubtypes.Monitoring_Mechanical_Plant_Terrestrial_Aquatic.name: MonitoringMechanicalTreatmentPlantCsvRow,
+    ActivitySubtypes.Monitoring_Chemical_Plant_Terrestrial_Aquatic.name: MonitoringChemicalTreatmentPlantCsvRow,
 }
