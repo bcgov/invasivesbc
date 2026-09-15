@@ -127,20 +127,6 @@ class Entry(DraftEntry):
             raise ValueError("Start time cannot occur after stop time.")
         return self
 
-    @model_validator(mode="after")
-    def validate_sign_of_presence_found(self):
-        sign_of_biocontrol_presence = len(self.sign_of_biocontrol_presence)
-        if self.biocontrol_present and sign_of_biocontrol_presence == 0:
-            raise ValueError("Must include one sign of biocontrol presence")
-        return self
-
-    @model_validator(mode="after")
-    def validate_location_found(self):
-        location_agent_found = len(self.location_agent_found)
-        if self.biocontrol_present and location_agent_found == 0:
-            raise ValueError("Must include one location agent was found.")
-        return self
-
 
 class DraftSubtypeData(CleanSchema):
     entries: List[DraftEntry]
