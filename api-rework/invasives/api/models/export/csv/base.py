@@ -1,10 +1,12 @@
 from django.db import models
 from django.contrib.gis.db import models as geomodels
 from api.models.activity import Activity
+from django.utils import timezone
 
 
 class BaseCsvExportModel(models.Model):
-    id = models.AutoField(primary_key=True)
+    id = models.BigAutoField(primary_key=True)
+    last_exported = models.DateTimeField(default=timezone.now)
     activity_id = models.ForeignKey(Activity, on_delete=models.CASCADE)
     short_id = models.CharField()
     project_code_one = models.CharField(null=True, blank=True)

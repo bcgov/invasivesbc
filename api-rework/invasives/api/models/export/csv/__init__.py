@@ -1,3 +1,7 @@
 from .base import BaseCsvExportModel
 from .observation_pa import ObservationPlantAquatic
 from .observation_pt import ObservationPlantTerrestrial
+from .treatment_mech_pa import TreatmentMechanicalPlantAquatic
+from .treatment_mech_pt import TreatmentMechanicalPlantTerrestrial
+from .treatment_chem_pa import TreatmentChemicalPlantAquatic
+from .treatment_chem_pt import TreatmentChemicalPlantTerrestrial
