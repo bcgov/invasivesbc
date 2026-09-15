@@ -36,7 +36,7 @@ def import_single_activity(
     )
 
 
-@celery_app.task(bind=True, max_retries=0, time_limit=3600 * 24)
+@celery_app.task(bind=True, max_retries=0, time_limit=3600 * 72)
 def import_all_activities(self, clobber=True) -> ActivityMigrationCumulativeTaskResult:
     logging.info("Importing all activities")
 
@@ -49,10 +49,9 @@ def import_all_activities(self, clobber=True) -> ActivityMigrationCumulativeTask
             )
             for row in result.fetchall():
                 activity_id = row["activity_id"]
-                task = import_single_activity.apply(
-                    args=(activity_id,), kwargs={"dry_run": False, "clobber": clobber}
-                )  # run it locally rather than as a background tasks. simplifies chaining/link creation.
-                result: ActivityMigrationTaskResult = task.get()
+                result = parse_and_migrate_single_activity(
+                    activity_id, dry_run=False, clobber=clobber
+                )
                 cumulative_result.add(result)
 
     logging.info("run complete")
@@ -73,6 +72,5 @@ def run_full_etl(self, clobber=True):
     c = chain(
         import_codes.si(),
         import_all_activities.si(clobber=clobber),
-        import_all_activities.si(),
     )
     c.apply_async()
