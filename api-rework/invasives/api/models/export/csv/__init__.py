@@ -9,3 +9,5 @@ from .treatment_biocontrol_release import TreatmentBiocontrolReleasePlant
 from .monitoring_chemical_p import MonitoringChemicalPlant
 from .monitoring_mechanical_p import MonitoringMechanicalPlant
 from .monitoring_biocontrol_release import MonitoringBiocontrolReleasePlant
+from .biocontrol_dispersal_monitoring import MonitoringBiocontrolDispersal
+from .biocontrol_collection import BiocontrolCollectionPlant
