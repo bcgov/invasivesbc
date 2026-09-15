@@ -1,10 +1,22 @@
-from decimal import Decimal, ROUND_DOWN
 import json
 import logging
+from dataclasses import dataclass
+from decimal import Decimal, ROUND_DOWN
 from pprint import pformat
 from zoneinfo import ZoneInfo
 
+import geojson
+import psycopg
+import pyproj
+import shapely
+from django.core.exceptions import ValidationError as DjangoValidationError
+from django.db import DatabaseError, transaction
+from django.utils import timezone
+from geojson import Feature, FeatureCollection
+from psycopg.rows import dict_row
 from pydantic_core._pydantic_core import ValidationError
+from shapely import Point, from_wkt, point_on_surface
+from shapely.geometry import mapping
 
 from api.legacy_db.mappings.biocontrol import (
     add_subtype_payload_for_biocontrol_collection,
@@ -51,18 +63,7 @@ from api.models.migrator import (
     MigrationError,
 )
 from api.utils.utm_coordinates import point_to_utm
-from django.core.exceptions import ValidationError as DjangoValidationError
-from django.db import DatabaseError, transaction
-from django.utils import timezone
-import geojson
-from geojson import Feature, FeatureCollection
 from invasivesbc.settings import LEGACY_DB_CONNECTION_STRING
-import psycopg
-from psycopg.rows import dict_row
-import pyproj
-import shapely
-from shapely import Point, from_wkt, point_on_surface
-from shapely.geometry import mapping
 
 logging.basicConfig(level=logging.DEBUG)
 logging.getLogger("psycopg").setLevel(logging.DEBUG)
@@ -397,19 +398,99 @@ def map_pydantic_model_to_django_model(old: LegacyActivity) -> Activity:
     return new
 
 
+@dataclass
+class ActivityMigrationTaskResult:
+    activity_id: str
+    pre_existing: bool = False
+    clobbered: bool = False
+    parse_ok: bool = False
+    save_skipped: bool = False
+    save_ok: bool = False
+    pending_links_created: bool = False
+    django_validation_failed: bool = False
+    unspecified_failure: bool = False
+
+
+class ActivityMigrationCumulativeTaskResult:
+    """Used to accumulate and log in runs (such as the ETL process) when multiple activities are migrated"""
+
+    total: int = 0
+
+    pre_existing: int = 0
+    clobbered: int = 0
+    parse_ok: int = 0
+    save_skipped: int = 0
+    save_ok: int = 0
+    pending_links_created: int = 0
+    django_validation_failed: int = 0
+    unspecified_failure: int = 0
+
+    failed_parse: list[str] = []
+    failed_save: list[str] = []
+    failed_validation: list[str] = []
+    failed_unspecified: list[str] = []
+
+    def add(self, result: ActivityMigrationTaskResult):
+        self.total = self.total + 1
+
+        if result.pre_existing:
+            self.pre_existing = self.pre_existing + 1
+        if result.clobbered:
+            self.clobbered = self.clobbered + 1
+        if result.parse_ok:
+            self.parse_ok = self.parse_ok + 1
+        if result.save_skipped:
+            self.save_skipped = self.save_skipped + 1
+        if result.save_ok:
+            self.save_ok = self.save_ok + 1
+        if result.pending_links_created:
+            self.pending_links_created = self.pending_links_created + 1
+        if result.django_validation_failed:
+            self.django_validation_failed = self.django_validation_failed + 1
+            self.failed_validation.append(result.activity_id)
+        if result.unspecified_failure:
+            self.unspecified_failure = self.unspecified_failure + 1
+            self.failed_unspecified.append(result.activity_id)
+
+        if not result.save_ok:
+            self.failed_save.append(result.activity_id)
+
+        if not result.parse_ok:
+            self.failed_parse.append(result.activity_id)
+
+    def __repr__(self) -> str:
+        return (
+            f"ActivityMigrationCumulativeTaskResult(\n"
+            f"    total={self.total},\n"
+            f"    pre_existing={self.pre_existing},\n"
+            f"    clobbered={self.clobbered},\n"
+            f"    parse_ok={self.parse_ok},\n"
+            f"    save_skipped={self.save_skipped},\n"
+            f"    save_ok={self.save_ok},\n"
+            f"    pending_links_created={self.pending_links_created},\n"
+            f"    django_validation_failed={self.django_validation_failed},\n"
+            f"    unspecified_failure={self.unspecified_failure},\n"
+            f"    failed_parse=[\n"
+            f"        {',\n        '.join(repr(x) for x in self.failed_parse)}\n"
+            f"    ],\n"
+            f"    failed_save=[\n"
+            f"        {',\n        '.join(repr(x) for x in self.failed_save)}\n"
+            f"    ],\n"
+            f"    failed_validation=[\n"
+            f"        {',\n        '.join(repr(x) for x in self.failed_validation)}\n"
+            f"    ],\n"
+            f"    failed_unspecified=[\n"
+            f"        {',\n        '.join(repr(x) for x in self.failed_unspecified)}\n"
+            f"    ],\n"
+            f")"
+        )
+
+
 def parse_and_migrate_single_activity(
     activity_id: str, clobber=True, dry_run=False
-) -> dict[str, bool]:
-    status = {
-        "pre_existing": False,
-        "clobbered": False,
-        "parse_ok": False,
-        "save_skipped": False,
-        "save_ok": False,
-        "pending_links_created": False,
-        "django_validation_failed": False,
-        "unspecified_failure": False,
-    }
+) -> ActivityMigrationTaskResult:
+
+    status = ActivityMigrationTaskResult(activity_id=activity_id)
 
     with psycopg.connect(LEGACY_DB_CONNECTION_STRING, row_factory=dict_row) as conn:
         with conn.cursor() as cursor:
@@ -452,28 +533,28 @@ def parse_and_migrate_single_activity(
             pre_existing = False
             if migration_status is not None:
                 pre_existing = True
-                status["pre_existing"] = pre_existing
+                status.pre_existing = pre_existing
 
                 if clobber:
                     log.debug(f"Clobbering old records for {activity_id}")
                     migration_status.delete()
                     migration_status = ActivityMigrationStatus(activity_id=activity_id)
                     Activity.objects.filter(id=activity_id).delete()
-                    status["clobbered"] = True
+                    status.clobbered = True
             else:
                 migration_status = ActivityMigrationStatus(activity_id=activity_id)
 
             try:
                 parsed_activity = LegacyActivity.model_validate(row, extra="forbid")
                 log.debug(parsed_activity)
-                status["parse_ok"] = True
+                status.parse_ok = True
                 if not dry_run and (not pre_existing or clobber):
                     try:
                         with transaction.atomic():
                             new_activity = map_pydantic_model_to_django_model(
                                 parsed_activity
                             )
-                            status["save_ok"] = True
+                            status.save_ok = True
                             migration_status.success = True
 
                             if (
@@ -486,7 +567,7 @@ def parse_and_migrate_single_activity(
                                     from_activity_id=new_activity.id,
                                     to_activity_id=parsed_activity.activity_payload.form_data.activity_type_data.linked_id,
                                 )
-                                status["pending_links_created"] = True
+                                status.pending_links_created = True
 
                     except DjangoValidationError as e:
                         log.warning(
@@ -494,21 +575,21 @@ def parse_and_migrate_single_activity(
                             exc_info=True,
                         )
                         errors.errors.append(("validation", e.__str__()))
-                        status["django_validation_failed"] = True
+                        status.django_validation_failed = True
                     except DatabaseError as e:
                         log.warning(
                             f"database exception while saving new activity {activity_id}",
                             exc_info=True,
                         )
                         errors.errors.append(("database error", e.__str__()))
-                        status["save_ok"] = False
+                        status.save_ok = False
                     except Exception as e:
                         log.warning(
                             f"{activity_id} failed to migrate",
                             exc_info=True,
                         )
                         errors.errors.append(("general failure", e.__str__()))
-                        status["unspecified_failure"] = True
+                        status.unspecified_failure = True
 
             except ValidationError as e:
                 log.warning(
@@ -518,13 +599,13 @@ def parse_and_migrate_single_activity(
                 errors.errors.append(
                     ("parse failed", e.__str__()),
                 )
-                status["parse_ok"] = False
+                status.parse_ok = False
             finally:
                 conn.close()
                 if dry_run or (pre_existing and not clobber):
-                    status["save_skipped"] = True
+                    status.save_skipped = True
                 else:
-                    status["save_skipped"] = False
+                    status.save_skipped = False
                     migration_status.save()
                     if len(errors.errors) > 0:
                         for error in errors.errors:
