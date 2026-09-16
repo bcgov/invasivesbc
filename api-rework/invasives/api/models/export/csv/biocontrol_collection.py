@@ -106,7 +106,7 @@ class BiocontrolCollectionPlant(BaseCsvExportModel):
             "label": "Plant Count",
         },
         {
-            "key": "time_duration_count_minutes",
+            "key": "time_collection_duration_minutes",
             "label": "Count Duration (minutes)",
         },
         {
@@ -146,7 +146,7 @@ class BiocontrolCollectionPlant(BaseCsvExportModel):
             "label": "Agent Count (Estimated)",
         },
         {
-            "key": "total_agent_quantity_actual",
+            "key": "actual_total_agent_quantity",
             "label": "Total Agent Quantity (Actual)",
         },
         {

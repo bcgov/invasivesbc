@@ -216,7 +216,7 @@ class MonitoringBiocontrolReleasePlant(BaseCsvExportModel):
             "label": "Agent Density %",
         },
         {
-            "key": "plant_attac_percent",
+            "key": "plant_attack_percent",
             "label": "Plant Attack %",
         },
         {
