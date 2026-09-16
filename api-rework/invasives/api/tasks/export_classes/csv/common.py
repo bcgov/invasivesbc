@@ -7,6 +7,7 @@ from api.models.activity import (
     Employer,
     Jurisdiction,
     ProjectCode,
+    FundingAgency,
 )
 from abc import ABC, abstractmethod
 from typing import Type
@@ -61,7 +62,6 @@ class CsvTransformerBase[T: models.Model, U: models.Model](ABC):
             "created_timestamp": activity.created_timestamp,
             "shape": activity.shape,
         }
-
         has_photo = UploadedImage.objects.filter(
             activity_data_record__activity_id=activity.id
         ).exists()
@@ -78,6 +78,11 @@ class CsvTransformerBase[T: models.Model, U: models.Model](ABC):
             activity_data_record__activity_id=activity.id
         ).values_list("employer__full", flat=True)
         base["employers"] = ", ".join(employers) or None
+
+        agencies = FundingAgency.objects.filter(
+            activity_data_record__activity_id=activity.id
+        ).values_list("agency__full", flat=True)
+        base["agencies"] = ", ".join(agencies) or None
 
         jurisdictions = Jurisdiction.objects.filter(
             activity_data_record__activity_id=activity.id
@@ -105,7 +110,7 @@ class CsvTransformerBase[T: models.Model, U: models.Model](ABC):
         risos = RisoArea.objects.filter(
             activity_data_record__activity_id=activity.id
         ).values_list("organization", flat=True)
-        base["computed_regional_districts"] = ", ".join(risos) or None
+        base["computed_riso_areas"] = ", ".join(risos) or None
 
         return base
 
