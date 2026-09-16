@@ -18,7 +18,6 @@ class TreatmentChemicalPlantTerrestrialCsvRow(
     entry_model = ChemicalApplicationCalculationEntry
 
     def build_rows(self, common_fields):
-        self.logger.info(f"{len(self.entries)}, {__name__}")
         ctx = ChemicalTreatmentContext.objects.get(
             activity_data_record__activity_id=self.id
         )
@@ -71,6 +70,9 @@ class TreatmentChemicalPlantTerrestrialCsvRow(
                     ),
                     pest_injury_threshold=self.safe_attr(
                         ctx, "pest_injury_threshold_determination"
+                    ),
+                    pesticide_use_permit=self.safe_attr(
+                        chem_ctx, "pesticide_use_permit"
                     ),
                     # Treated Plants
                     invasive_plant=self.safe_attr(entry, "invasive_plant", "full"),

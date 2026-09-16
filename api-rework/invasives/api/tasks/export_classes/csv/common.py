@@ -58,6 +58,7 @@ class CsvTransformerBase[T: models.Model, U: models.Model](ABC):
             "computed_regional_districts": activity.computed_regional_districts,
             "computed_flrno_districts": activity.computed_flrno_districts,
             "computed_moti_districts": activity.computed_moti_districts,
+            "computed_biogeoclimatic_zones": activity.computed_biogeoclimatic_zone,
             "computed_elevation_m": activity.computed_elevation_m,
             "created_timestamp": activity.created_timestamp,
             "shape": activity.shape,

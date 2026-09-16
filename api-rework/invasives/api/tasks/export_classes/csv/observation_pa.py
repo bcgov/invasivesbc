@@ -26,14 +26,16 @@ class ObservationPlantAquaticCsvRow(
     entry_model = AquaticPlantObservationEntry
 
     def build_rows(self, common_fields):
-        ctx = AquaticPlantObservationContext.objects.get(
+        ctx = AquaticPlantObservationContext.objects.filter(
             activity_data_record__activity_id=self.id
-        )
-        pto = PretreatmentObservation.objects.get(
+        ).first()
+        pto = PretreatmentObservation.objects.filter(
             activity_data_record__activity_id=self.id
-        )
+        ).first()
 
-        wb_ctx = WaterbodyContext.objects.get(activity_data_record__activity_id=self.id)
+        wb_ctx = WaterbodyContext.objects.filter(
+            activity_data_record__activity_id=self.id
+        ).first()
 
         adjacent_land_use = (
             ", ".join(
@@ -135,25 +137,27 @@ class ObservationPlantAquaticCsvRow(
                     # Shoreline Info
                     shorelines=shoreline_type,
                     # Waterbody Context
-                    waterbody_type=wb_ctx.type,
-                    name_gazetted=wb_ctx.name_gazetted,
-                    name_local=wb_ctx.name_local,
-                    waterbody_access=wb_ctx.access,
+                    waterbody_type=self.safe_attr(wb_ctx, "type", "full"),
+                    name_gazetted=self.safe_attr(wb_ctx, "name_gazetted"),
+                    name_local=self.safe_attr(wb_ctx, "name_local"),
+                    waterbody_access=self.safe_attr(wb_ctx, "access"),
                     water_use=waterbody_use,
                     water_level_management=waterlevel_management,
                     outflow_seasonal=outflow_s,
                     outflow_permanent=outflow_p,
                     inflow_seasonal=inflow_s,
                     inflow_permanent=inflow_p,
-                    waterbody_comment=wb_ctx.comment,
-                    sample_water_depth_m=wb_ctx.max_depth_m,
-                    secchi_depth_m=wb_ctx.secchi_depth,
-                    water_colour=wb_ctx.colour,
-                    tidal_influence=wb_ctx.tidal_influence,
+                    waterbody_comment=self.safe_attr(wb_ctx, "comment"),
+                    sample_water_depth_m=self.safe_attr(wb_ctx, "max_depth_m"),
+                    secchi_depth_m=self.safe_attr(wb_ctx, "secchi_depth"),
+                    water_colour=self.safe_attr(wb_ctx, "colour"),
+                    tidal_influence=self.safe_attr(wb_ctx, "tidal_influence"),
                     has_voucher_specimen=has_voucher_specimen,
-                    pretreatment_observation=pto.pre_treatment_observation,
+                    pretreatment_observation=self.safe_attr(
+                        pto, "pre_treatment_observation"
+                    ),
                     substrate_type=substrate,
                     adjacent_land_use=adjacent_land_use,
                 )
             )
-            self.csv_model.objects.bulk_create(rows)
+        self.csv_model.objects.bulk_create(rows)

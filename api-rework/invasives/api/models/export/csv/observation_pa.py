@@ -37,3 +37,114 @@ class ObservationPlantAquatic(BaseCsvExportModel):
     class Meta:
         db_table = '"exports"."observation_pa"'
         db_table_comment = "CSV Export for Aquatic Plant Observations"
+
+    SUBTYPE_CSV_COLUMNS = [
+        {
+            "key": "observation_type",
+            "label": "Observation Type",
+        },
+        {
+            "key": "sample_point_id",
+            "label": "Sample Point ID",
+        },
+        {
+            "key": "invasive_plant",
+            "label": "Invasive Plant",
+        },
+        {
+            "key": "life_stage",
+            "label": "Life Stage",
+        },
+        {
+            "key": "density",
+            "label": "Density",
+        },
+        {
+            "key": "distribution",
+            "label": "Distribution",
+        },
+        {
+            "key": "suitable_for_biocontrol",
+            "label": "Suitable for Biocontrol",
+        },
+        {
+            "key": "shorelines",
+            "label": "Shorelines",
+        },
+        {
+            "key": "waterbody_type",
+            "label": "Waterbody Type",
+        },
+        {
+            "key": "name_gazetted",
+            "label": "Name (Gazetted)",
+        },
+        {
+            "key": "name_local",
+            "label": "Name (Local)",
+        },
+        {
+            "key": "waterbody_access",
+            "label": "Waterbody Access",
+        },
+        {
+            "key": "water_use",
+            "label": "Water Use",
+        },
+        {
+            "key": "water_level_management",
+            "label": "Water Level Management",
+        },
+        {
+            "key": "outflow_seasonal",
+            "label": "Outflow (Seasonal)",
+        },
+        {
+            "key": "outflow_permanent",
+            "label": "Outflow (Permanent)",
+        },
+        {
+            "key": "inflow_seasonal",
+            "label": "Inflow (Seasonal)",
+        },
+        {
+            "key": "inflow_permanent",
+            "label": "Inflow (Permanent)",
+        },
+        {
+            "key": "waterbody_comment",
+            "label": "Waterbody Comment",
+        },
+        {
+            "key": "sample_water_depth_m",
+            "label": "Sample Water Depth (m)",
+        },
+        {
+            "key": "secchi_depth_m",
+            "label": "Secchi Depth (m)",
+        },
+        {
+            "key": "water_colour",
+            "label": "Water Colour",
+        },
+        {
+            "key": "tidal_influence",
+            "label": "Tidal Influence",
+        },
+        {
+            "key": "has_voucher_specimen",
+            "label": "Voucher Specimen",
+        },
+        {
+            "key": "pretreatment_observation",
+            "label": "Pre-treatment Observation",
+        },
+        {
+            "key": "substrate_type",
+            "label": "Substrate Type",
+        },
+        {
+            "key": "adjacent_land_use",
+            "label": "Adjacent Land Use",
+        },
+    ]

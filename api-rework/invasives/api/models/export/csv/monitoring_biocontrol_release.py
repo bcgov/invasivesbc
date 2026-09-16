@@ -53,3 +53,178 @@ class MonitoringBiocontrolReleasePlant(BaseCsvExportModel):
     class Meta:
         db_table = '"exports"."monitoring_biocontrol_release_p"'
         db_table_comment = "CSV Export for Monitoring Biocontrol Releases"
+
+    SUBTYPE_CSV_COLUMNS = [
+        {
+            "key": "temperature_c",
+            "label": "Temperature (C)",
+        },
+        {
+            "key": "cloud_cover",
+            "label": "Cloud Cover",
+        },
+        {
+            "key": "precipitation",
+            "label": "Precipitation",
+        },
+        {
+            "key": "wind_speed_kmh",
+            "label": "Wind Speed (Km)",
+        },
+        {
+            "key": "wind_direction",
+            "label": "Wind Direction",
+        },
+        {
+            "key": "weather_comments",
+            "label": "Weather Comments",
+        },
+        {
+            "key": "mesoslope_position",
+            "label": "Mesoslope Position",
+        },
+        {
+            "key": "site_surface_shape",
+            "label": "Site Surface Shape",
+        },
+        {
+            "key": "invasive_plant",
+            "label": "Invasive Plant",
+        },
+        {
+            "key": "biological_agent",
+            "label": "Biological Agent",
+        },
+        {
+            "key": "biocontrol_present",
+            "label": "Biocontrol Present",
+        },
+        {
+            "key": "biological_agent_presence",
+            "label": "Biological Agent Presence",
+        },
+        {
+            "key": "monitoring_type",
+            "label": "Type of Monitoring",
+        },
+        {
+            "key": "plant_count",
+            "label": "Plant Count",
+        },
+        {
+            "key": "count_duration",
+            "label": "Count Duration (minutes)",
+        },
+        {
+            "key": "monitoring_method",
+            "label": "Monitoring Method",
+        },
+        {
+            "key": "monitoring_start_time",
+            "label": "Monitoring Start Time",
+        },
+        {
+            "key": "monitoring_stop_time",
+            "label": "Monitoring End Time",
+        },
+        {
+            "key": "location_agents_found",
+            "label": "Location Agents Found",
+        },
+        {
+            "key": "actual_biological_agent_stage",
+            "label": "Agent Lifestage (Actual)",
+        },
+        {
+            "key": "actual_agent_count",
+            "label": "Agent Count (Actual)",
+        },
+        {
+            "key": "actual_plant_position",
+            "label": "Plant Position (Actual)",
+        },
+        {
+            "key": "actual_agent_location",
+            "label": "Agent Location (Actual)",
+        },
+        {
+            "key": "estimated_biological_agent_stage",
+            "label": "Agent Lifestage (Estimated)",
+        },
+        {
+            "key": "estimated_agent_count",
+            "label": "Agent Count (Estimated)",
+        },
+        {
+            "key": "estimated_plant_position",
+            "label": "Plant Position (Estimated)",
+        },
+        {
+            "key": "estimated_agent_location",
+            "label": "Agent Location (Estimated)",
+        },
+        {
+            "key": "actual_total_agent_quantity",
+            "label": "Total Agent Quantity (Actual)",
+        },
+        {
+            "key": "estimated_total_agent_quantity",
+            "label": "Total Agent Quantity (Estimated)",
+        },
+        {
+            "key": "phenology_details_recorded",
+            "label": "Phenology Details Recorded",
+        },
+        {
+            "key": "target_plant_heights",
+            "label": "Target Plant Heights",
+        },
+        {
+            "key": "winter_dormant",
+            "label": "Winter Dormant",
+        },
+        {
+            "key": "seedlings",
+            "label": "Seedlings",
+        },
+        {
+            "key": "rosettes",
+            "label": "Rosettes",
+        },
+        {
+            "key": "bolts",
+            "label": "Bolts",
+        },
+        {
+            "key": "flowering",
+            "label": "Flowering",
+        },
+        {
+            "key": "seeds_forming",
+            "label": "Seeds Forming",
+        },
+        {
+            "key": "senescent",
+            "label": "Senescent",
+        },
+        {
+            "key": "spread_results_recorded",
+            "label": "Spread Details Recorded",
+        },
+        {
+            "key": "agent_density",
+            "label": "Agent Density %",
+        },
+        {
+            "key": "plant_attac_percent",
+            "label": "Plant Attack %",
+        },
+        {
+            "key": "max_spread_distance_m",
+            "label": "Max Spread Distance (M)",
+        },
+        {
+            "key": "max_spread_aspect_deg",
+            "label": "Max Spread Aspect (deg)",
+        },
+    ]

@@ -51,3 +51,154 @@ class BiocontrolCollectionPlant(BaseCsvExportModel):
     class Meta:
         db_table = '"exports"."biocontrol_collection_p"'
         db_table_comment = "CSV Export for Monitoring Biocontrol Releases"
+
+    SUBTYPE_CSV_COLUMNS = [
+        {
+            "key": "temperature_c",
+            "label": "Temperature (C)",
+        },
+        {
+            "key": "cloud_cover",
+            "label": "Cloud Cover",
+        },
+        {
+            "key": "precipitation",
+            "label": "Precipitation",
+        },
+        {
+            "key": "wind_speed_kmh",
+            "label": "Wind Speed (Km)",
+        },
+        {
+            "key": "wind_direction",
+            "label": "Wind Direction",
+        },
+        {
+            "key": "weather_comments",
+            "label": "Weather Comments",
+        },
+        {
+            "key": "mesoslope_position",
+            "label": "Mesoslope Position",
+        },
+        {
+            "key": "site_surface_shape",
+            "label": "Site Surface Shape",
+        },
+        {
+            "key": "invasive_plant",
+            "label": "Invasive Plant",
+        },
+        {
+            "key": "biological_agent",
+            "label": "Biological Agent",
+        },
+        {
+            "key": "historical_iapp_site",
+            "label": "Historical IAPP ID",
+        },
+        {
+            "key": "collection_type",
+            "label": "Collection Type",
+        },
+        {
+            "key": "plant_count_collection",
+            "label": "Plant Count",
+        },
+        {
+            "key": "time_duration_count_minutes",
+            "label": "Count Duration (minutes)",
+        },
+        {
+            "key": "collection_method",
+            "label": "Collection Method",
+        },
+        {
+            "key": "number_of_sweeps",
+            "label": "Number of Sweeps",
+        },
+        {
+            "key": "start_time_collecting",
+            "label": "Start Time Collecting",
+        },
+        {
+            "key": "end_time_collecting",
+            "label": "Stop Time Collecting",
+        },
+        {
+            "key": "comment",
+            "label": "Collection Comment",
+        },
+        {
+            "key": "actual_biological_agent_stage",
+            "label": "Agent Lifestage (Actual)",
+        },
+        {
+            "key": "actual_agent_count",
+            "label": "Agent Count (Actual)",
+        },
+        {
+            "key": "estimated_biological_agent_stage",
+            "label": "Agent Lifestage (Estimated)",
+        },
+        {
+            "key": "estimated_agent_count",
+            "label": "Agent Count (Estimated)",
+        },
+        {
+            "key": "total_agent_quantity_actual",
+            "label": "Total Agent Quantity (Actual)",
+        },
+        {
+            "key": "estimated_total_agent_quantity",
+            "label": "Total Agent Quantity (Estimated)",
+        },
+        {
+            "key": "actual_biological_agent_stage",
+            "label": "Agent Lifestage (Actual)",
+        },
+        {
+            "key": "actual_agent_count",
+            "label": "Agent Count (Actual)",
+        },
+        {
+            "key": "estimated_biological_agent_stage",
+            "label": "Agent Lifestage (Estimated)",
+        },
+        {
+            "key": "phenology_details_recorded",
+            "label": "Phenology Details Recorded",
+        },
+        {
+            "key": "target_plant_heights",
+            "label": "Target Plant Heights",
+        },
+        {
+            "key": "winter_dormant",
+            "label": "Winter Dormant",
+        },
+        {
+            "key": "seedlings",
+            "label": "Seedlings",
+        },
+        {
+            "key": "rosettes",
+            "label": "Rosettes",
+        },
+        {
+            "key": "bolts",
+            "label": "Bolts",
+        },
+        {
+            "key": "flowering",
+            "label": "Flowering",
+        },
+        {
+            "key": "seeds_forming",
+            "label": "Seeds Forming",
+        },
+        {
+            "key": "senescent",
+            "label": "Senescent",
+        },
+    ]

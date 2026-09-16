@@ -22,3 +22,62 @@ class ObservationPlantTerrestrial(BaseCsvExportModel):
     class Meta:
         db_table = '"exports"."observation_pt"'
         db_table_comment = "CSV Export for Terrestrial Plant Observations"
+
+    SUBTYPE_CSV_COLUMNS = [
+        {
+            "key": "pretreatment_observation",
+            "label": "Pre-treatment Observation",
+        },
+        {
+            "key": "soil_texture",
+            "label": "Soil Texture",
+        },
+        {
+            "key": "specific_use",
+            "label": "Specific Use(s)",
+        },
+        {
+            "key": "slope_percent",
+            "label": "Slope Percent",
+        },
+        {
+            "key": "aspect",
+            "label": "Aspect",
+        },
+        {
+            "key": "research_observation",
+            "label": "Research Observation",
+        },
+        {
+            "key": "visible_well_nearby",
+            "label": "Visible Well Nearby",
+        },
+        {
+            "key": "suitable_for_biocontrol_agent",
+            "label": "Suitable for Biocontrol Agent",
+        },
+        {
+            "key": "invasive_plant",
+            "label": "Invasive Plant",
+        },
+        {
+            "key": "observation_type",
+            "label": "Observation Type",
+        },
+        {
+            "key": "density",
+            "label": "Density",
+        },
+        {
+            "key": "distribution",
+            "label": "Distribution",
+        },
+        {
+            "key": "life_stage",
+            "label": "Life Stage",
+        },
+        {
+            "key": "has_voucher_specimen",
+            "label": "Voucher Sample",
+        },
+    ]
