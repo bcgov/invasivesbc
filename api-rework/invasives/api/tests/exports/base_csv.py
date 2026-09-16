@@ -94,18 +94,13 @@ class BaseCSVTest(BaseTestCase):
         self.assertEqual(response["Content-Type"], "text/csv")
         self.assertIn("attachment", response["Content-Disposition"])
 
-        # Helper function to consume the async stream
-        async def get_stream_content():
-            chunks = []
-            async for chunk in response.streaming_content:
-                if isinstance(chunk, bytes):
-                    chunks.append(chunk.decode("utf-8"))
-                else:
-                    chunks.append(chunk)
-            return "".join(chunks)
+        # Consume the synchronous stream directly
+        chunks = [
+            chunk.decode("utf-8") if isinstance(chunk, bytes) else chunk
+            for chunk in response.streaming_content
+        ]
+        content = "".join(chunks)
 
-        # Consume the async generator synchronously
-        content = async_to_sync(get_stream_content)()
         csv_file = StringIO(content)
         reader = csv.reader(csv_file)
         rows = list(reader)
