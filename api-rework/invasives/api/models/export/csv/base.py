@@ -9,7 +9,7 @@ class BaseCsvExportModel(models.Model):
     id = models.BigAutoField(primary_key=True)
     last_exported = models.DateTimeField(default=timezone.now)
     activity_id = models.ForeignKey(Activity, on_delete=models.CASCADE)
-    agencies = models.CharField(null=True, blank=True)
+    agencies = models.CharField()
     short_id = models.CharField()
     project_code_one = models.CharField(null=True, blank=True)
     project_code_two = models.CharField(null=True, blank=True)
@@ -25,7 +25,7 @@ class BaseCsvExportModel(models.Model):
     location_description = models.CharField()
     access_description = models.CharField(null=True, blank=True)
     general_comment = models.CharField(null=True, blank=True)
-    participants = models.CharField(null=True, blank=True)
+    participants = models.CharField()
     batch_id = models.PositiveIntegerField(null=True, blank=True)
     computed_biogeoclimatic_zones = models.CharField(null=True, blank=True)
     computed_invasive_plant_management_area = models.CharField(null=True, blank=True)
@@ -35,7 +35,7 @@ class BaseCsvExportModel(models.Model):
     computed_flrno_districts = models.CharField(null=True, blank=True)
     computed_moti_districts = models.CharField(null=True, blank=True)
     computed_elevation_m = models.IntegerField(null=True, blank=True)
-    has_photo = models.CharField(null=True, blank=True)
+    has_photo = models.CharField()
     created_timestamp = models.DateTimeField()
     shape = geomodels.GeometryField(srid=4326, geography=False)
 
@@ -77,6 +77,11 @@ class BaseCsvExportModel(models.Model):
         {"key": "created_timestamp", "label": "Creation Date (UTC)"},
         {"key": "shape", "label": "Geography"},
     ]
+
+    @classproperty
+    def subtype_columns(self):
+        """Used for CSV Testing"""
+        return self.SUBTYPE_CSV_COLUMNS
 
     @classproperty
     def csv_export_config(self):
