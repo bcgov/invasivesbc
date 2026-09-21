@@ -17,6 +17,7 @@ import RecordNotFound from './RecordNotFound/RecordNotFound';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import Button from 'UI/Reusable/Button/Button';
 import { EditDocument } from '@mui/icons-material';
+import BackButton from 'UI/Reusable/BackButton/BackButton';
 
 const FORM_UPDATE_THROTTLE_DELAY = 1000; //ms
 const FORM_UPDATE_MAX_DELAY = 5000; //ms
@@ -102,11 +103,10 @@ const ActivityForm = () => {
     formState: { isDirty }
   } = methods;
 
-  const onSubmit: SubmitHandler<FormSchema> = (data) => {
+  const onSubmit: SubmitHandler<FormSchema> = (data) =>
     MOBILE
       ? dispatch(FormActions.saveMobileForm({ data, type: 'submit' }))
       : dispatch(FormActions.sendForm({ data, type: 'submit' }));
-  };
 
   const allFormValues = useWatch({ control });
 
@@ -171,6 +171,9 @@ const ActivityForm = () => {
           </NavLink>
         ))}
       </nav>
+      <div className="back-button">
+        <BackButton />
+      </div>
       <FormProvider {...methods}>
         <form autoComplete={'off'} id="activity-form" onSubmit={handleSubmit(onSubmit)}>
           <RecordMetadata formState={getValues()} />
@@ -180,7 +183,6 @@ const ActivityForm = () => {
               <EditDocument /> {isEditing ? 'Disable' : 'Enable'} Editing
             </Button>
           )}
-
           {/* Use conditional Rendering so RHF Doesn't unmount fields in its validation step on submit */}
           <div className={`form-section ${mode === Mode.Form ? 'active' : ''}`}>
             <Form />

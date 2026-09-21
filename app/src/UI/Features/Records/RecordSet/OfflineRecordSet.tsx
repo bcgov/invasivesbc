@@ -9,15 +9,13 @@ import { MouseEvent, TouchEvent, useEffect, useState } from 'react';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import IOfflineActivityRow from 'interfaces/TableRows/IOfflineActivityRow';
 import { GeoJSON } from 'geojson';
-import { useNavigate } from 'react-router';
 import Activity from 'state/actions/activity/Activity';
 import useOfflineRecordsetEntries from '../Activity/forms/plant/hooks/useOfflineRecordsetEntries';
 import CheckboxUI from '../Activity/forms/common/CheckboxUI/CheckboxUI';
 import StyledTable from 'UI/Reusable/StyledTable/StyledTable';
-import { ArrowBackIos } from '@mui/icons-material';
-import Button from 'UI/Reusable/Button/Button';
 import RecordSetControl from '../RecordSetControl';
 import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
+import BackButton from 'UI/Reusable/BackButton/BackButton';
 
 type PropTypes = { setID: string };
 
@@ -45,12 +43,7 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
     setAnchorEl(evt.currentTarget);
   };
 
-  const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  const onClickBackButton = () => {
-    navigate('/Records');
-  };
 
   const isCellPhoneWidth = useSelector((state) => state.AppMode.constraints.tinyScreen);
   const recordSet = useSelector((state) => state.UserSettings?.recordSets?.[setID]);
@@ -77,9 +70,7 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
       <div className="stickyHeader">
         <div className="recordSet_header" style={{ backgroundColor: recordSet?.color + `50` }}>
           <div>
-            <Button onClick={onClickBackButton} variant="contained">
-              <ArrowBackIos /> Back
-            </Button>
+            <BackButton destination={'/Records'} />
           </div>
           <div className="recordSet_header_name">{recordSet?.recordSetName}</div>
           {!isCellPhoneWidth && (
