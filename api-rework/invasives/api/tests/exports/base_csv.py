@@ -1,16 +1,30 @@
 from django.test.client import Client
 from api.tests.base_test_case import BaseTestCase
 from api.models.activity import ActivitySubtypes
-from asgiref.sync import async_to_sync
+from django.core.management import call_command
+from django.test import override_settings
 from io import StringIO
 import csv
-from api.configs.exports import CSV_SUBTYPE_CONFIG, build_csv_annotation_object
+from api.models.export.csv import CSV_EXPORT_ROW_MAP
 
 
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True, CELERY_TASK_EAGER_PROPOGATES=True)
 class BaseCSVTest(BaseTestCase):
     target_row = "ID"
     HEADERS = 0
     FIRST = 1
+
+    fixtures = [
+        "test/common/test_employer_codes",
+        "test/common/test_jurisdictions_codes",
+        "test/common/test_funding_agency_codes",
+        "test/common/test_invasive_plant_codes",
+        "test/common/test_wind_codes",
+        "test/common/test_jurisdictions",
+        "test/common/test_funding_agency",
+        "test/common/test_employer",
+        "test/common/test_participants",
+    ]
 
     def setUp(
         self, subtype: ActivitySubtypes, filter_id: str, number_expected_entries: int
@@ -26,18 +40,17 @@ class BaseCSVTest(BaseTestCase):
         self.number_expected_entries = number_expected_entries
         self.set_annotations(subtype)
         self.set_filters(subtype, filter_id)
+        call_command("refresh_export_tables")
         self.client = Client()
 
     def set_annotations(self, subtype: ActivitySubtypes):
         """
         Iterate the chosen subtype for the Annotations belonging to an export.
         """
-        config = CSV_SUBTYPE_CONFIG.get(subtype)
-        self.subtype_annotations = config["annotations"]
-        self.assertIsNotNone(self.subtype_annotations)
-        full_annotation = build_csv_annotation_object(self.subtype_annotations)
+        config = CSV_EXPORT_ROW_MAP.get(subtype)
 
-        self.CSV_HEADERS = [a["header"] for a in full_annotation]
+        self.CSV_HEADERS = [a["label"] for a in config.csv_export_config]
+        self.SUBTYPE_HEADERS = [a["label"] for a in config.subtype_columns]
         self.assertIsNotNone(self.CSV_HEADERS)
 
     def set_filters(self, subtype, filter_id):
@@ -117,15 +130,14 @@ class BaseCSVTest(BaseTestCase):
         Pass Requirements:
          - For every annotation, at least one row has an entry.
         """
-        sub_headers = [anno["header"] for anno in self.subtype_annotations]
         rows = self.get_csv()
         populated_headers = set()
         for row in rows[1:]:
-            for header in sub_headers:
+            for header in self.SUBTYPE_HEADERS:
                 idx = rows[self.HEADERS].index(header)
                 if row[idx] != None:
                     populated_headers.add(header)
-        missing_fields = set(sub_headers) - populated_headers
+        missing_fields = set(self.SUBTYPE_HEADERS) - populated_headers
         self.assertEqual(
             len(missing_fields),
             0,
