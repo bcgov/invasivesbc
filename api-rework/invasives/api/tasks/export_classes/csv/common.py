@@ -75,19 +75,25 @@ class CsvTransformerBase[T: models.Model, U: models.Model](ABC):
         base["project_code_one"] = project_codes[0] if len(project_codes) >= 1 else None
         base["project_code_two"] = project_codes[1] if len(project_codes) >= 2 else None
 
-        employers = Employer.objects.filter(
-            activity_data_record__activity_id=activity.id
-        ).values_list("employer__full", flat=True)
+        employers = (
+            Employer.objects.filter(activity_data_record__activity_id=activity.id)
+            .order_by("employer__full")
+            .values_list("employer__full", flat=True)
+        )
         base["employers"] = ", ".join(employers) or None
 
-        agencies = FundingAgency.objects.filter(
-            activity_data_record__activity_id=activity.id
-        ).values_list("agency__full", flat=True)
+        agencies = (
+            FundingAgency.objects.filter(activity_data_record__activity_id=activity.id)
+            .order_by("agency__full")
+            .values_list("agency__full", flat=True)
+        )
         base["agencies"] = ", ".join(agencies) or None
 
-        jurisdictions = Jurisdiction.objects.filter(
-            activity_data_record__activity_id=activity.id
-        ).values_list("jurisdiction__full", "percent_covered")
+        jurisdictions = (
+            Jurisdiction.objects.filter(activity_data_record__activity_id=activity.id)
+            .order_by("jurisdiction__full")
+            .values_list("jurisdiction__full", "percent_covered")
+        )
 
         base["jurisdictions"] = (
             ", ".join(f"{name} ({percent}%)" for name, percent in jurisdictions) or None
@@ -97,9 +103,11 @@ class CsvTransformerBase[T: models.Model, U: models.Model](ABC):
             ActivitySubtypes.Treatment_Chemical_Plant_Aquatic,
             ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial,
         ]
-        participants = Participant.objects.filter(
-            activity_data_record__activity_id=activity.id
-        ).values_list("name", "pac_number")
+        participants = (
+            Participant.objects.filter(activity_data_record__activity_id=activity.id)
+            .order_by("name")
+            .values_list("name", "pac_number")
+        )
         base["participants"] = (
             ", ".join(
                 f"{name} (PAC: {pac})" if is_chemical_treatment else name
@@ -108,9 +116,11 @@ class CsvTransformerBase[T: models.Model, U: models.Model](ABC):
             or None
         )
 
-        risos = RisoArea.objects.filter(
-            activity_data_record__activity_id=activity.id
-        ).values_list("organization", flat=True)
+        risos = (
+            RisoArea.objects.filter(activity_data_record__activity_id=activity.id)
+            .order_by("organization")
+            .values_list("organization", flat=True)
+        )
         base["computed_riso_areas"] = ", ".join(risos) or None
 
         return base
