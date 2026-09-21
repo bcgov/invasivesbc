@@ -12,7 +12,7 @@ class ObservationPlantAquatic(BaseCsvExportModel):
     distribution = models.CharField(null=True, blank=True)
     suitable_for_biocontrol = models.CharField(choices=YesNoUnknown)
     shorelines = models.CharField(null=True, blank=True)
-    waterbody_type = models.CharField(null=True, blank=True)
+    waterbody_type = models.CharField()
     name_gazetted = models.CharField(null=True, blank=True)
     name_local = models.CharField(null=True, blank=True)
     waterbody_access = models.CharField(null=True, blank=True)
@@ -25,13 +25,11 @@ class ObservationPlantAquatic(BaseCsvExportModel):
     waterbody_comment = models.CharField(null=True, blank=True)
     sample_water_depth_m = models.CharField(null=True, blank=True)
     secchi_depth_m = models.FloatField(null=True, blank=True)
-    water_colour = models.CharField(null=True, blank=True)
+    water_colour = models.CharField()
     tidal_influence = models.CharField(choices=YesNoUnknown, null=True, blank=True)
     has_voucher_specimen = models.CharField(choices=YesNo)
-    pretreatment_observation = models.CharField(
-        choices=YesNoUnknown, null=True, blank=True
-    )
-    substrate_type = models.CharField(null=True, blank=True)
+    pretreatment_observation = models.CharField(choices=YesNoUnknown)
+    substrate_type = models.CharField()
     adjacent_land_use = models.CharField(null=True, blank=True)
 
     class Meta:

@@ -3,10 +3,10 @@ from django.db import models
 
 
 class TreatmentMechanicalPlantTerrestrial(BaseCsvExportModel):
-    invasive_plant = models.CharField(null=True, blank=True)
-    treated_area_sqm = models.CharField(null=True, blank=True)
-    mechanical_method = models.CharField(null=True, blank=True)
-    disposal_method = models.CharField(null=True, blank=True)
+    invasive_plant = models.CharField()
+    treated_area_sqm = models.CharField()
+    mechanical_method = models.CharField()
+    disposal_method = models.CharField()
     disposed_material_format = models.CharField(null=True, blank=True)
     disposed_material_amount = models.FloatField(null=True, blank=True)
 

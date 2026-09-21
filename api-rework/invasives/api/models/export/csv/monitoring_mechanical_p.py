@@ -3,11 +3,11 @@ from django.db import models
 
 
 class MonitoringMechanicalPlant(BaseCsvExportModel):
-    invasive_plant = models.CharField(null=True, blank=True)
+    invasive_plant = models.CharField()
     treatment_efficacy = models.CharField(null=True, blank=True)
-    management_efficacy = models.CharField(null=True, blank=True)
-    treatment_evidence = models.CharField(null=True, blank=True)
-    invasive_plants_on_site = models.CharField(null=True, blank=True)
+    management_efficacy = models.CharField()
+    treatment_evidence = models.CharField()
+    invasive_plants_on_site = models.CharField()
     treatment_pass = models.CharField(null=True, blank=True)
     monitoring_comment = models.CharField(null=True, blank=True)
 

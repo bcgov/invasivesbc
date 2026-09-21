@@ -5,28 +5,28 @@ from api.models.enums import YesNo
 
 class BiocontrolCollectionPlant(BaseCsvExportModel):
     # Weather
-    temperature_c = models.PositiveIntegerField(blank=True, null=True)
-    cloud_cover = models.CharField(blank=True, null=True)
-    precipitation = models.CharField(blank=True, null=True)
-    wind_speed_kmh = models.PositiveIntegerField(blank=True, null=True)
-    wind_direction = models.CharField(blank=True, null=True)
+    temperature_c = models.PositiveIntegerField()
+    cloud_cover = models.CharField()
+    precipitation = models.CharField()
+    wind_speed_kmh = models.PositiveIntegerField()
+    wind_direction = models.CharField()
     weather_comments = models.CharField(blank=True, null=True)
     # Microsite
     mesoslope_position = models.CharField(blank=True, null=True)
     site_surface_shape = models.CharField(blank=True, null=True)
     # Entry
-    invasive_plant = models.CharField(blank=True, null=True)
-    biological_agent = models.CharField(blank=True, null=True)
+    invasive_plant = models.CharField()
+    biological_agent = models.CharField()
     historical_iapp_site = models.PositiveIntegerField(blank=True, null=True)
-    collection_type = models.CharField(blank=True, null=True)
+    collection_type = models.CharField()
     plant_count_collection = models.PositiveIntegerField(blank=True, null=True)
     time_collection_duration_minutes = models.PositiveIntegerField(
         blank=True, null=True
     )
-    collection_method = models.CharField(blank=True, null=True)
+    collection_method = models.CharField()
     number_of_sweeps = models.PositiveIntegerField(blank=True, null=True)
-    start_time_collecting = models.DateTimeField(blank=True, null=True)
-    end_time_collecting = models.DateTimeField(blank=True, null=True)
+    start_time_collecting = models.DateTimeField()
+    end_time_collecting = models.DateTimeField()
     comment = models.CharField(blank=True, null=True)
     # Agent Count
     actual_biological_agent_stage = models.CharField(blank=True, null=True)
@@ -152,18 +152,6 @@ class BiocontrolCollectionPlant(BaseCsvExportModel):
         {
             "key": "estimated_total_agent_quantity",
             "label": "Total Agent Quantity (Estimated)",
-        },
-        {
-            "key": "actual_biological_agent_stage",
-            "label": "Agent Lifestage (Actual)",
-        },
-        {
-            "key": "actual_agent_count",
-            "label": "Agent Count (Actual)",
-        },
-        {
-            "key": "estimated_biological_agent_stage",
-            "label": "Agent Lifestage (Estimated)",
         },
         {
             "key": "phenology_details_recorded",
