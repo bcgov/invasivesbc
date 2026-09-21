@@ -16,6 +16,11 @@ input[type='button']:hover {
     margin-bottom: 15px;
   }
 
+  .back-button {
+    margin-right: auto;
+    margin-top: 4px;
+  }
+
   .form-section {
     width: 100%;
     display: none;

@@ -6,21 +6,17 @@ import RecordSetFooter from './RecordSetFooter';
 import { useSelector } from 'utils/use_selector';
 import { useEffect } from 'react';
 import { RecordSetId } from 'interfaces/UserRecordSet';
-import { useNavigate } from 'react-router';
 import Activity from 'state/actions/activity/Activity';
 import Filters from './Filters/Filters';
 import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
 import GlobalFilterWarning from './GlobalFilterWarning/GlobalFilterWarning';
-import { ArrowBackIos } from '@mui/icons-material';
-import { Button } from '@mui/material';
 import RecordSetControl from '../RecordSetControl';
+import BackButton from 'UI/Reusable/BackButton/BackButton';
 
 type PropTypes = { setID: string };
 
 export const RecordSet = ({ setID }: PropTypes) => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const onClickBackButton = () => navigate('/Records');
 
   const MOBILE = useSelector((state) => state.Configuration.current.build.MOBILE);
   const CACHE_RECORDSETS = useSelector((state) => state.Configuration.current.features.CACHE_RECORDSETS.enabled);
@@ -42,9 +38,7 @@ export const RecordSet = ({ setID }: PropTypes) => {
       <div className="stickyHeader">
         <div className="recordSet_header" style={{ backgroundColor: recordSet?.color + `50` }}>
           <div>
-            <Button onClick={onClickBackButton} variant="contained">
-              <ArrowBackIos /> Back
-            </Button>
+            <BackButton destination={'/Records'} />
           </div>
           <div className="recordSet_header_name">
             {recordSet?.recordSetName || `New Recordset - ${recordSet?.recordSetType}`}
