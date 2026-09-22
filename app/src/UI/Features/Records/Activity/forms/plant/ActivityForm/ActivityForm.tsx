@@ -172,7 +172,7 @@ const ActivityForm = () => {
         ))}
       </nav>
       <div className="back-button">
-        <BackButton />
+        <BackButton destination={'/Records'} />
       </div>
       <FormProvider {...methods}>
         <form autoComplete={'off'} id="activity-form" onSubmit={handleSubmit(onSubmit)}>

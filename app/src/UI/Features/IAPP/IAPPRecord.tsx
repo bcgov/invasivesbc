@@ -80,7 +80,7 @@ export const IAPPRecord = () => {
         </div>
       </div>
       <div className="control">
-        <BackButton />
+        <BackButton destination={'/Records'} />
       </div>
 
       {mode === 'photos' && <RenderIAPPPhotos />}
