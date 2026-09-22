@@ -1,9 +1,9 @@
 import csv
 import logging
 
-from api.configs.exports import CSV_SUBTYPE_CONFIG, build_csv_annotation_object
+from api.models.export.csv import CSV_EXPORT_ROW_MAP
 from api.constants import short_id_regex, uuid_regex
-from api.models.activity import Activity, ActivitySubtypes
+from api.models.activity import Activity
 from api.permissions import HasAdminRole
 from api.serializers.activity_recordset_row import (
     ActivityRecordsetRowSerializer,
@@ -11,8 +11,7 @@ from api.serializers.activity_recordset_row import (
 )
 from api.utils.filtered_activity_queryset import FilteredActivityQueryset
 from api.viewsets.mixins.atomic import AtomicViewSetMixin
-from asgiref.sync import sync_to_async
-from django.db.models import FilteredRelation, Q
+from django.db.models import Q
 from django.http import StreamingHttpResponse
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -79,7 +78,7 @@ class RecordsetRowsViewSet(AtomicViewSetMixin, GenericViewSet):
         applied to the user's recordset. whether or not specified by the user, there is a subtype filter applied to all requests.
         This ensures common model entries don't get crossed. e.g.: Biocontrol Dispersal v Biocontrol Collections
 
-        To change CSV Headers/Values/Formats, update :data:`CSV_SUBTYPE_CONFIG`
+        To change CSV Headers/Values/Formats, update :data:`CSV_EXPORT_ROW_MAP` classes
         """
 
         class Echo:
@@ -90,79 +89,35 @@ class RecordsetRowsViewSet(AtomicViewSetMixin, GenericViewSet):
                 return value
 
         filter_objects = request.data.get("filterObjects", [])
+        if not filter_objects:
+            return Response("Missing filterObjects in payload", status=400)
+
         csv_type = filter_objects[0].get("CSVType")
 
-        # Fetch Configuration for a specific 'Subtype'
-        config = CSV_SUBTYPE_CONFIG.get(csv_type)
-
-        if not config:
+        config_model = CSV_EXPORT_ROW_MAP.get(csv_type)
+        if not config_model:
             return Response("Unsupported Activity Type", status=400)
 
-        entry_model = config.get("entry_models")
-
-        """
-        Since CSV's are based on a Specific Subtype, ensure we are filtering for one. This eliminates
-        Shared models like for Chemical/Mechanical Monitoring Records.
-        """
-        # Build up the base filtered/sorted query
         builder = FilteredActivityQueryset(filter_objects)
-
         builder.apply_filters().apply_sorting()
         activity_queryset = builder.query.filter(subtype=csv_type)
 
         valid_activity_ids = activity_queryset.values_list("id", flat=True).distinct()
-        is_chemical_treatment = csv_type in [
-            ActivitySubtypes.Treatment_Chemical_Plant_Aquatic.name,
-            ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial.name,
-        ]
-        ANNOTATIONS = build_csv_annotation_object(
-            config.get("annotations", []), is_chemical_treatment=is_chemical_treatment
+        data_stream = (
+            config_model.objects.filter(activity_id__id__in=valid_activity_ids)
+            .values_list(*[entry["key"] for entry in config_model.csv_export_config])
+            .iterator(chunk_size=2000)
         )
 
-        # Decompile the annotations Array into their respective sections
-        annotations = {item["key"]: item["annotation"] for item in ANNOTATIONS}
-        value_keys = [item["key"] for item in ANNOTATIONS]
-        headers = [item["header"] for item in ANNOTATIONS]
-
-        querysets = []
-
-        for model in entry_model:
-            qs = (
-                model.objects.filter(
-                    activity_data_record__activity_id__in=valid_activity_ids
-                )
-                .annotate(
-                    root_activity=FilteredRelation("activity_data_record__activity")
-                )
-                .annotate(**annotations)
-                .values(*value_keys)
-                .distinct()
+        def stream_rows():
+            writer = csv.writer(Echo())
+            yield writer.writerow(
+                [entry["label"] for entry in config_model.csv_export_config]
             )
-            querysets.append(qs)
+            for row in data_stream:
+                yield writer.writerow(row)
 
-        if querysets:
-            combined_query = querysets[0]
-            for other_qs in querysets[1:]:
-                combined_query = combined_query.union(other_qs)
-            data_stream = combined_query.iterator(chunk_size=1500)
-        else:
-            data_stream = iter([])
-
-        async def async_rows():
-            echo = Echo()
-            writer = csv.writer(echo)
-            yield writer.writerow(headers)
-
-            get_next_record = sync_to_async(
-                lambda: next(data_stream, None), thread_sensitive=True
-            )
-            while True:
-                record = await get_next_record()
-                if record is None:
-                    break
-                yield writer.writerow([record.get(key, "") for key in value_keys])
-
-        response = StreamingHttpResponse(async_rows(), content_type="text/csv")
+        response = StreamingHttpResponse(stream_rows(), content_type="text/csv")
         response["Content-Disposition"] = (
             f'attachment; filename="{csv_type}_export.csv"'
         )
