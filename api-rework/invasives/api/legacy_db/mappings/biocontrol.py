@@ -200,13 +200,14 @@ def add_subtype_payload_for_biocontrol_dispersal_monitoring_terrestrial_plant(
     add_microsite_conditions(new, old)
     add_weather_conditions(new, old)
     add_target_plant_phenology(new, old)
-    adr = ActivityDataRecord.objects.create(activity=new)
 
     for (
         ri
     ) in (
         old.activity_payload.form_data.activity_subtype_data.Monitoring_BiocontrolDispersal_Information
     ):
+        adr = ActivityDataRecord.objects.create(activity=new)
+
         TerrestrialBiocontrolDispersalMonitoringEntry.objects.create(
             activity_data_record=adr,
             invasive_plant=PlantsWithBiocontrol.objects.get(
@@ -281,13 +282,13 @@ def add_subtype_payload_for_biocontrol_release_monitoring_terrestrial_plant(
     add_target_plant_phenology(new, old)
     add_spread_details(new, old)
 
-    adr = ActivityDataRecord.objects.create(activity=new)
-
     for (
         ri
     ) in (
         old.activity_payload.form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information
     ):
+        adr = ActivityDataRecord.objects.create(activity=new)
+
         TerrestrialBiocontrolDispersalMonitoringEntry.objects.create(
             activity_data_record=adr,
             invasive_plant=PlantsWithBiocontrol.objects.get(
