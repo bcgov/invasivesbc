@@ -165,7 +165,7 @@ class BaseSerializer(serializers.ModelSerializer):
             for e in self._get_plant_entries(obj)
             if e.invasive_plant
         }
-        return self.build_response_value(plants)
+        return self.build_response_value(sorted(plants))
 
     def _get_species_observation(self, obj, observation_type):
         """Fetch plants from observation records based on negative/positive sighting"""
@@ -179,7 +179,7 @@ class BaseSerializer(serializers.ModelSerializer):
             if getattr(e, "observation_type", None) == observation_type
             and e.invasive_plant
         }
-        return self.build_response_value(plants)
+        return self.build_response_value(sorted(plants))
 
     def get_species_positive_full(self, obj):
         return self._get_species_observation(obj, "Positive")
@@ -197,7 +197,7 @@ class BaseSerializer(serializers.ModelSerializer):
             for e in self._get_plant_entries(obj)
             if e.invasive_plant
         }
-        return self.build_response_value(plants)
+        return self.build_response_value(sorted(plants))
 
     def get_species_biocontrol_full(self, obj):
         config = self.PATH_TO_AGENT_MAP.get(obj.subtype)
@@ -212,7 +212,7 @@ class BaseSerializer(serializers.ModelSerializer):
                     if agent_obj and hasattr(agent_obj, "full"):
                         agents.append(agent_obj.full)
 
-        return self.build_response_value(agents)
+        return self.build_response_value(sorted(agents))
 
 
 class ActivityRecordsetRowSerializer(BaseSerializer):
