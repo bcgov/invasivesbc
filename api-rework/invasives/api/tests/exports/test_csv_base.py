@@ -1,5 +1,4 @@
 from api.models.activity import ActivitySubtypes
-from api.configs.exports import build_csv_annotation_object
 
 from .base_csv import BaseCSVTest
 
@@ -31,9 +30,3 @@ class TestTerrestrialObservationCSV(BaseCSVTest):
     def test_unauthenticated(self):
         """Will fail with 403"""
         self.get_csv(auth=False)
-
-    def test_columns_populate(self):
-        """Override to Default annotations for the test columns populate test"""
-
-        self.subtype_annotations = build_csv_annotation_object([])
-        self.verify_subtype_columns_populate()
