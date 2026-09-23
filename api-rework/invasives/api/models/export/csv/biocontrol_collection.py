@@ -18,15 +18,15 @@ class BiocontrolCollectionPlant(BaseCsvExportModel):
     invasive_plant = models.CharField()
     biological_agent = models.CharField()
     historical_iapp_site = models.PositiveIntegerField(blank=True, null=True)
-    collection_type = models.CharField()
+    collection_type = models.CharField(null=True, blank=True)
     plant_count_collection = models.PositiveIntegerField(blank=True, null=True)
     time_collection_duration_minutes = models.PositiveIntegerField(
         blank=True, null=True
     )
-    collection_method = models.CharField()
+    collection_method = models.CharField(null=True, blank=True)
     number_of_sweeps = models.PositiveIntegerField(blank=True, null=True)
-    start_time_collecting = models.DateTimeField()
-    end_time_collecting = models.DateTimeField()
+    start_time_collecting = models.DateTimeField(null=True, blank=True)
+    end_time_collecting = models.DateTimeField(null=True, blank=True)
     comment = models.CharField(blank=True, null=True)
     # Agent Count
     actual_biological_agent_stage = models.CharField(blank=True, null=True)
