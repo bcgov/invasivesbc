@@ -9,7 +9,7 @@ class TeamInvitation(models.Model):
     recipient = models.ForeignKey(User, on_delete=models.PROTECT)
     team = models.ForeignKey(Team, on_delete=models.PROTECT)
     date_stamp = models.DateTimeField(default=timezone.now)
-    status = models.CharField(choices=InviteStatus)
+    status = models.CharField(choices=InviteStatus, default=InviteStatus.Pending.value)
 
     class Meta:
         db_table = '"teams"."invitations"'
