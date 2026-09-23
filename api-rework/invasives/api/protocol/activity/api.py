@@ -191,6 +191,8 @@ def get_activity_by_id(request, id: str):
                     ).data,
                     "history": HistorySerializer(history_entries, many=True).data,
                     "plants": serialized_plants["invasive_plant"],
+                    "positive_plants": serialized_plants["species_positive_full"],
+                    "negative_plants": serialized_plants["species_negative_full"],
                     "batch_id": activity.batch_id,
                     "created_date": activity.created_timestamp,
                 },

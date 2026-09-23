@@ -4,11 +4,11 @@ from api.models.enums import YesNo, YesNoUnknown
 
 
 class MonitoringBiocontrolDispersal(BaseCsvExportModel):
-    temperature_c = models.PositiveIntegerField()
-    cloud_cover = models.CharField()
-    precipitation = models.CharField()
-    wind_speed_kmh = models.PositiveIntegerField()
-    wind_direction = models.CharField()
+    temperature_c = models.PositiveIntegerField(blank=True, null=True)
+    cloud_cover = models.CharField(blank=True, null=True)
+    precipitation = models.CharField(blank=True, null=True)
+    wind_speed_kmh = models.PositiveIntegerField(blank=True, null=True)
+    wind_direction = models.CharField(blank=True, null=True)
     weather_comments = models.CharField(blank=True, null=True)
     mesoslope_position = models.CharField(blank=True, null=True)
     site_surface_shape = models.CharField(blank=True, null=True)

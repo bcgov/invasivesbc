@@ -3,6 +3,12 @@ from django.db import models
 
 
 class TreatmentBiocontrolReleasePlant(BaseCsvExportModel):
+    temperature_c = models.PositiveIntegerField(null=True, blank=True)
+    cloud_cover = models.CharField(null=True, blank=True)
+    precipitation = models.CharField(null=True, blank=True)
+    wind_speed_kmh = models.PositiveIntegerField(null=True, blank=True)
+    wind_direction = models.CharField(null=True, blank=True)
+    weather_comments = models.CharField(blank=True, null=True)
     mesoslope_position = models.CharField(blank=True, null=True)
     site_surface_shape = models.CharField(blank=True, null=True)
     invasive_plant = models.CharField()
@@ -10,7 +16,7 @@ class TreatmentBiocontrolReleasePlant(BaseCsvExportModel):
     linear_segment = models.CharField()
     agent_mortality = models.PositiveIntegerField()
     agent_source = models.CharField()
-    collection_date = models.DateTimeField()
+    collection_date = models.DateTimeField(blank=True, null=True)
     plant_collected_from = models.CharField(blank=True, null=True)
     plant_collected_from_unlisted = models.CharField(blank=True, null=True)
     actual_biological_agent_stage = models.CharField(blank=True, null=True)

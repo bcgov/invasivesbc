@@ -166,7 +166,7 @@ const ActivityForm = () => {
     <div className="activity-page" key={formId}>
       <nav>
         {Object.values(Mode ?? {}).map((m) => (
-          <NavLink className={'form-nav'} to={`/Records/Activity/${id}/${m}`} key={m} end={true}>
+          <NavLink className={'form-nav'} replace to={`/Records/Activity/${id}/${m}`} key={m} end={true}>
             {m}
           </NavLink>
         ))}

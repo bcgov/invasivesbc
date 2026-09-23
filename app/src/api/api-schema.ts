@@ -968,6 +968,10 @@ export interface components {
             }[] | null;
             /** Plants */
             plants: string;
+            /** Positive Plants */
+            positive_plants: string;
+            /** Negative Plants */
+            negative_plants: string;
         };
         /** ShorelineType */
         ShorelineType: {
