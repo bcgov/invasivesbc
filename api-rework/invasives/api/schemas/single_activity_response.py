@@ -18,6 +18,8 @@ class RecordMetadata(Schema):
     history: Optional[List[dict]]
     linking_activities: Optional[List[dict]]
     plants: str
+    positive_plants: str
+    negative_plants: str
 
 
 class SingleActivityResponse(Schema):

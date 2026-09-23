@@ -8,11 +8,13 @@ from api.models.activity import (
 class BaseSerializer(serializers.ModelSerializer):
     PATH_TO_PLANT_MAP = {}
     invasive_plant = serializers.SerializerMethodField()
+    species_positive_full = serializers.SerializerMethodField()
+    species_negative_full = serializers.SerializerMethodField()
     record_set_attr = None
 
     class Meta:
         abstract = True
-        fields = ("invasive_plant",)
+        fields = ("invasive_plant", "species_positive_full", "species_negative_full")
 
     def get_entry_destination(self, subtype):
         """
@@ -36,13 +38,37 @@ class BaseSerializer(serializers.ModelSerializer):
             return []
         return getattr(obj, self.record_set_attr).all()
 
+    def build_response_value(self, values):
+        """Join response values to return to client"""
+        return ", ".join(filter(None, values)) or None
+
     def get_invasive_plant(self, obj):
         plants = {
             e.invasive_plant.full
             for e in self._get_plant_entries(obj)
             if e.invasive_plant
         }
-        return ", ".join(filter(None, plants)) or None
+        return self.build_response_value(sorted(plants)) or None
+
+    def _get_species_observation(self, obj, observation_type):
+        """Fetch plants from observation records based on negative/positive sighting"""
+        is_observation = ActivitySubtypes[obj.subtype].typeOfActivity == "Observation"
+        if not is_observation:
+            return None
+
+        plants = {
+            e.invasive_plant.full
+            for e in self._get_plant_entries(obj)
+            if getattr(e, "observation_type", None) == observation_type
+            and e.invasive_plant
+        }
+        return self.build_response_value(sorted(plants))
+
+    def get_species_positive_full(self, obj):
+        return self._get_species_observation(obj, "Positive")
+
+    def get_species_negative_full(self, obj):
+        return self._get_species_observation(obj, "Negative")
 
 
 class ActivityAllPlantSerializer(BaseSerializer):
