@@ -10,3 +10,4 @@ short_id_regex = re.compile(r"^[0-9]{2}[A-Za-z]{2,3}[0-9A-F]{8}$")
 
 class WellKnownRoles(Enum):
     ADMINISTRATOR = "ADMINISTRATOR"
+    DATA_MANAGER = "DATA_MANAGER"
