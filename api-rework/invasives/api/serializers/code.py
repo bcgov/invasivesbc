@@ -13,7 +13,7 @@ class CodeSerializer(serializers.BaseSerializer):
                 "code": instance.code,
                 "full_name": instance.full,
                 "sort_order": instance.code_sort_order,
-                "valid_to": instance.valid_to
+                "valid_to": instance.valid_to,
             },
             items,
         )
