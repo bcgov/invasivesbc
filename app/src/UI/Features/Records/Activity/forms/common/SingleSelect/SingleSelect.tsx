@@ -62,7 +62,7 @@ export function SingleSelect<T extends FieldValues>({
               validToDate.setHours(0, 0, 0, 0);
 
               if (validToDate < created) {
-                return 'Code is expired passed the activity date';
+                return 'Code is expired past the activity date';
               }
             }
             return true;

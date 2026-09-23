@@ -73,7 +73,7 @@ export function MultiSelect<T extends FieldValues>({
             }
 
             if (expiredCodes.length !== 0) {
-              return `The following codes expired passed the activity date: ${expiredCodes.slice(0, -2)}`;
+              return `The following codes expired past the activity date: ${expiredCodes.slice(0, -2)}`;
             }
 
             return true;
