@@ -34,7 +34,7 @@ class ElevatedSingleTeamSerializer(SingleTeamSerializer):
     invitations = serializers.SerializerMethodField()
 
     class Meta(SingleTeamSerializer.Meta):
-        fields = SingleTeamSerializer.Meta.fields + ("invitations")
+        fields = SingleTeamSerializer.Meta.fields + ("invitations",)
 
     def get_invitations(self, obj):
         invites = TeamInvitation.objects.filter(team=obj.id).order_by("date_stamp")
