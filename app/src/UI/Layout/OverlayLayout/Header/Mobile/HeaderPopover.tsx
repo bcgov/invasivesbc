@@ -1,4 +1,4 @@
-import { HelpCenter, Luggage, Menu, Newspaper } from '@mui/icons-material';
+import { Group, HelpCenter, Luggage, Menu, Newspaper } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
 import AssignmentIcon from '@mui/icons-material/Assignment';
@@ -104,12 +104,22 @@ const HeaderPopover = () => {
           </section>
           <ul>
             {activated && (
-              <li>
-                <button onClick={activated ? navToUpdateRequest : requestAccess}>
-                  <AssignmentIcon />
-                  Update My Info
-                </button>
-              </li>
+              <>
+                <li>
+                  <button onClick={activated ? navToUpdateRequest : requestAccess}>
+                    <AssignmentIcon />
+                    Update My Info
+                  </button>
+                </li>
+                <FeatureGated requires="TEAMS">
+                  <li>
+                    <button onClick={() => navigate('/teams')}>
+                      <Group />
+                      My Teams
+                    </button>
+                  </li>
+                </FeatureGated>
+              </>
             )}
             {loggedInOrWorkingOffline && (
               <>

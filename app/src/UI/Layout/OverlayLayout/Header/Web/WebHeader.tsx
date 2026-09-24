@@ -16,6 +16,8 @@ import NavTab from 'UI/Layout/OverlayLayout/Header/NavTab';
 import { usePrimaryNavigationLinks } from 'UI/Layout/Routes/PrimaryNavigation';
 import DebugMenu from 'UI/Layout/DebugMenu/DebugMenu';
 import { useNavigate } from 'react-router';
+import { Group } from '@mui/icons-material';
+import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
 
 const ButtonWrapper = ({ children }) => {
   return (
@@ -148,7 +150,16 @@ const LoginOrOutMemo = React.memo(() => {
             Request Access
           </MenuItem>
         )}
-
+        {activated && (
+          <FeatureGated requires="TEAMS">
+            <MenuItem onClick={() => navigate('/teams')}>
+              <ListItemIcon>
+                <Group />
+              </ListItemIcon>
+              My Teams
+            </MenuItem>
+          </FeatureGated>
+        )}
         {authenticated ? (
           <LogoutButton />
         ) : (

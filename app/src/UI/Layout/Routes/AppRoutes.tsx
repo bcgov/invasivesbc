@@ -33,7 +33,7 @@ const BatchGeometryTool = React.lazy(() => import('UI/Features/Batch/BatchGeomet
 const LegendsPopup = React.lazy(() => import('UI/Features/Legend/LegendsPopup'));
 const ManageTripsPage = React.lazy(() => import('UI/Features/ManageTripsPage/ManageTripsPage'));
 const UserGuide = React.lazy(() => import('UI/Features/UserGuide/UserGuide'));
-
+const MyTeamsPage = React.lazy(() => import('UI/Features/MyTeamsPage/MyTeamsPage'));
 const ActivityForm = React.lazy(() => import('UI/Features/Records/Activity/forms/plant/ActivityForm/ActivityForm'));
 
 const AppRoutes = () => {
@@ -79,7 +79,14 @@ const AppRoutes = () => {
           </Suspense>
         )}
       />
-
+      <Route
+        path="/teams"
+        Component={() => (
+          <Suspense fallback={<Spinner />}>
+            <MyTeamsPage />
+          </Suspense>
+        )}
+      />
       <Route
         path="/News"
         Component={() => (
