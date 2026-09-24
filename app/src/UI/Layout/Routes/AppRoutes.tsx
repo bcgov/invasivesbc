@@ -12,6 +12,7 @@ import { WhatsHereTable } from 'UI/Features/WhatsHere/WhatsHereTable';
 import { useSelector } from 'utils/use_selector';
 import AdminLayout from 'UI/Features/Admin/AdminLayout';
 import BatchLayout from 'UI/Features/Batch/BatchLayout';
+import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
 
 const EmailSettings = React.lazy(() => import('UI/Features/Admin/email-setup/EmailSettings'));
 const EmailTemplates = React.lazy(() => import('UI/Features/Admin/email-setup/EmailTemplates'));
@@ -34,6 +35,7 @@ const LegendsPopup = React.lazy(() => import('UI/Features/Legend/LegendsPopup'))
 const ManageTripsPage = React.lazy(() => import('UI/Features/ManageTripsPage/ManageTripsPage'));
 const UserGuide = React.lazy(() => import('UI/Features/UserGuide/UserGuide'));
 const MyTeamsPage = React.lazy(() => import('UI/Features/MyTeamsPage/MyTeamsPage'));
+const TeamViewer = React.lazy(() => import('UI/Features/MyTeamsPage/TeamViewer/TeamViewer'));
 const ActivityForm = React.lazy(() => import('UI/Features/Records/Activity/forms/plant/ActivityForm/ActivityForm'));
 
 const AppRoutes = () => {
@@ -84,6 +86,17 @@ const AppRoutes = () => {
         Component={() => (
           <Suspense fallback={<Spinner />}>
             <MyTeamsPage />
+          </Suspense>
+        )}
+      />
+
+      <Route
+        path="/teams/:id"
+        Component={() => (
+          <Suspense fallback={<Spinner />}>
+            <FeatureGated requires="TEAMS">
+              <TeamViewer />
+            </FeatureGated>
           </Suspense>
         )}
       />
