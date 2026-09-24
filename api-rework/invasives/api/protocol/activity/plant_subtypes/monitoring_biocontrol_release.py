@@ -45,6 +45,7 @@ class DraftEntry(CleanSchema):
     number_of_sweeps: Optional[int] = None
     actual_biological_agents: List[DraftBiocontrolCountExtended]
     estimated_biological_agents: List[DraftBiocontrolCountExtended]
+    historical_iapp_site: Optional[int] = None
 
     @model_validator(mode="after")
     def set_estimate_flags(self) -> "Entry":

@@ -113,6 +113,7 @@ class MonitoringBiocontrolReleasePlantCsvRow(
                     monitoring_type=self.safe_attr(entry, "monitoring_type"),
                     plant_count=self.safe_attr(entry, "plant_count"),
                     count_duration=self.safe_attr(entry, "count_duration_minutes"),
+                    historical_iapp_site=self.safe_attr(entry, "historical_iapp_site"),
                     monitoring_method=self.safe_attr(
                         entry, "monitoring_method", "full"
                     ),
