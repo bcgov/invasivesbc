@@ -3231,9 +3231,13 @@ export interface components {
         InvitationResponseSchema: {
             /** Invitation Id */
             invitation_id: number;
-            /** Response */
-            response: "Accepted" | "Declined";
+            response: components["schemas"]["InviteStatus"];
         };
+        /**
+         * InviteStatus
+         * @enum {string}
+         */
+        InviteStatus: "Pending" | "Accepted" | "Declined" | "Cancelled";
     };
     responses: never;
     parameters: never;
@@ -3384,6 +3388,7 @@ export type CreateTeamSchema = components['schemas']['CreateTeamSchema'];
 export type UpdateTeamSchema = components['schemas']['UpdateTeamSchema'];
 export type InviteUserToTeamSchema = components['schemas']['InviteUserToTeamSchema'];
 export type InvitationResponseSchema = components['schemas']['InvitationResponseSchema'];
+export type InviteStatus = components['schemas']['InviteStatus'];
 export type $defs = Record<string, never>;
 export interface operations {
     api_protocol_activity_api_list_activities: {
