@@ -13,6 +13,7 @@
     white-space: nowrap;
     border-collapse: separate; /* Change from collapse to separate */
     border-spacing: 0; /* Removes the gaps between cells */
+    border-bottom: 1pt solid lightgray;
 
     thead {
       top: 0;
