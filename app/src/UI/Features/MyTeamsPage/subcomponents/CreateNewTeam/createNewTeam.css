@@ -1,0 +1,22 @@
+#create-new-team {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  min-height: 100svh;
+  box-sizing: border-box;
+  background-color: #f1f1f1;
+}
+
+#create-new-team form {
+  display: flex;
+  flex-flow: row wrap;
+  background-color: white;
+  padding: 1em;
+  width: var(--form-container-width);
+  max-width: 100%;
+  margin: 5vh 0;
+  box-sizing: border-box;
+  justify-content: space-around;
+}

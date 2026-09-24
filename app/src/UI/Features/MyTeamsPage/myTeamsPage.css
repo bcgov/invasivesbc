@@ -1,3 +1,16 @@
 #my-teams-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
   background-color: red;
+}
+
+#my-teams-page .content {
+  display: flex;
+  background-color: green;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 1100px;
 }

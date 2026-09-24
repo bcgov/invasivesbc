@@ -10,4 +10,4 @@ class InviteUserToTeamSchema(Schema):
 
 class InvitationResponseSchema(Schema):
     invitation_id: PositiveInt
-    response: Literal[InviteStatus.Accepted] | Literal[InviteStatus.Declined]
+    response: InviteStatus

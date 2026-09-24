@@ -1,0 +1,49 @@
+#team-viewer {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: var(--whitespace-background-color);
+}
+
+#team-viewer .content {
+  padding: 2rem 1rem;
+  background-color: white;
+  margin: 2rem 0;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  align-items: center;
+  width: 100%;
+  max-width: var(--form-container-width);
+}
+
+#team-viewer .content .overview {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 1fr 1fr 1fr;
+  box-sizing: border-box;
+
+  .list-item {
+    background-color: #fff;
+    padding: 5px 10px;
+    text-align: left;
+    margin: 1px;
+
+    dt {
+      font-size: 1.15rem;
+      font-weight: bold;
+
+      &::after {
+        content: ':';
+      }
+    }
+
+    dd {
+      margin: 0;
+      overflow-wrap: break-word;
+      font-size: var(--form-input-font-size);
+    }
+  }
+}

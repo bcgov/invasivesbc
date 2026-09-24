@@ -1,10 +1,11 @@
 from ninja import Router
 from django.db import transaction
+from django.db.models import Q
 from typing import List, Dict
 from pydantic import PositiveInt
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from api.ninja_authentication import NinjaKeycloakAuthentication
 from api.models.teams import TeamMember, Team, InviteStatus, TeamInvitation
 from api.models.auth import User
@@ -65,27 +66,32 @@ def create_team(request, data: CreateTeamSchema):
     with transaction.atomic():
         # TODO: Limit to DataManager/Administrator role access
         if Team.objects.filter(founder=request.auth, name=data.name).exists():
-            return HttpResponse(status.HTTP_404_NOT_FOUND)
+            return HttpResponse(
+                status=status.HTTP_409_CONFLICT,
+                content="You already have a team by this name",
+            )
 
         """Create team, then set user as member"""
         team = Team.objects.create(founder=request.auth, name=data.name)
-        team.agencies.set([a.agency for a in data.agencies])
+        team.agencies.set(data.agencies)
         TeamMember.objects.create(team=team, user=request.auth)
-        return HttpResponse(status.HTTP_200_OK)
+        return JsonResponse(status=status.HTTP_201_CREATED, data={"id": team.id})
 
 
 @router.get("/team/{team_id}")
-def get_team_info(request, id: PositiveInt):
+def get_team_info(request, team_id: PositiveInt):
     """
     :Access: All Users on designated team.
 
     Returns all info for specified team
     """
-    user_in_team = TeamMember.objects.filter(user=request.auth, team__id=id).exists()
+    user_in_team = TeamMember.objects.filter(
+        user=request.auth, team__id=team_id
+    ).exists()
     if not user_in_team:
-        return HttpResponse(status.HTTP_401_UNAUTHORIZED)
+        return HttpResponse(status=status.HTTP_401_UNAUTHORIZED)
 
-    team = get_object_or_404(Team, id=id, disbanded_date=None)
+    team = get_object_or_404(Team, id=team_id, disbanded_date=None)
 
     if request.auth == team.founder:
         return ElevatedSingleTeamSerializer(team).data
@@ -93,13 +99,15 @@ def get_team_info(request, id: PositiveInt):
 
 
 @router.delete("/team/{team_id}")
-def disband_team(request, id: PositiveInt):
+def disband_team(request, team_id: PositiveInt):
     """
     :Access: Founders of a team
 
     Marks teams as deleted (soft) removing them from searches
     """
-    team = get_object_or_404(Team, pk=id, founder=request.auth, disbanded_date=None)
+    team = get_object_or_404(
+        Team, pk=team_id, founder=request.auth, disbanded_date=None
+    )
     member = get_object_or_404(TeamMember, user=request.auth, leave_date=None)
     with transaction.atomic():
         now = timezone.now().date()
@@ -145,7 +153,7 @@ def invite_user_to_team(request, team_id: PositiveInt, data: InviteUserToTeamSch
                 content="User already member of team.",
             )
         TeamInvitation.objects.update_or_create(recipient=recipient, team=team)
-        return HttpResponse(status.HTTP_201_CREATED)
+        return HttpResponse(status=status.HTTP_201_CREATED)
 
 
 ##############
@@ -178,10 +186,27 @@ def user_response_to_invitation(request, data: InvitationResponseSchema):
     with transaction.atomic():
         invite = get_object_or_404(
             TeamInvitation,
-            recipient=request.auth,
+            (Q(recipient=request.auth) | Q(team__founder=request.auth)),
             id=data.invitation_id,
             status=InviteStatus.Pending.value,
         )
+        is_recipient = invite.recipient == request.auth
+        is_founder = invite.team.founder == request.auth
+
+        recipient_allowed = [InviteStatus.Accepted.value, InviteStatus.Declined.value]
+        founder_allowed = [InviteStatus.Pending.value]
+
+        invalid_recipient_action = is_recipient and (
+            data.response not in recipient_allowed
+        )
+        invalid_founder_action = is_founder and (data.response not in founder_allowed)
+
+        if invalid_recipient_action or invalid_founder_action:
+            return HttpResponse(
+                f"Not authorized to use status '{data.response}' for this invitation.",
+                status=status.HTTP_400_BAD_REQUEST,  # 400 for bad action payload
+            )
+
         invite.status = data.response
         invite.save()
         if data.response == InviteStatus.Accepted.value:
