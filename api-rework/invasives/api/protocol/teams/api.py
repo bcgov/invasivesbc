@@ -9,6 +9,7 @@ from api.ninja_authentication import NinjaKeycloakAuthentication
 from api.models.teams import TeamMember, Team, InviteStatus, TeamInvitation
 from api.models.auth import User
 from api.serializers.teams import (
+    ElevatedSingleTeamSerializer,
     UserTeamsRowSerializer,
     SingleTeamSerializer,
     UserTeamInvitationSerializer,
@@ -21,8 +22,16 @@ from . import (
     InvitationResponseSchema,
 )
 
-ROOT_PATH = "/teams"
+"""
+Routes:
+    /teams/team               GET/POST
+    /teams/team/{id}          GET/PATCH/DELETE
+    /teams/team/{id}/invite   POST
+    /teams/invite             GET/PATCH
+"""
 
+
+ROOT_PATH = "/teams"
 router = Router(auth=NinjaKeycloakAuthentication())
 
 
@@ -77,6 +86,9 @@ def get_team_info(request, id: PositiveInt):
         return HttpResponse(status.HTTP_401_UNAUTHORIZED)
 
     team = get_object_or_404(Team, id=id, disbanded_date=None)
+
+    if request.auth == team.founder:
+        return ElevatedSingleTeamSerializer(team).data
     return SingleTeamSerializer(team).data
 
 
