@@ -48,7 +48,8 @@ html {
   flex-flow: column wrap;
   position: relative;
   box-sizing: border-box;
-  padding: max(env(safe-area-inset-top, 0), var(--extra-top-padding)) env(safe-area-inset-right, 0) max(env(safe-area-inset-bottom, 0), var(--extra-bottom-padding)) env(safe-area-inset-left, 0);
+  padding: max(env(safe-area-inset-top, 0), var(--extra-top-padding)) env(safe-area-inset-right, 0)
+    max(env(safe-area-inset-bottom, 0), var(--extra-bottom-padding)) env(safe-area-inset-left, 0);
   overflow: hidden;
   height: 100svh;
 
@@ -112,6 +113,8 @@ html {
     Documentation for BC Style System Colors:
     https://www2.gov.bc.ca/gov/content/digital/design-system/foundations/colour
   */
+
+  --whitespace-background-color: #f1f1f1;
 
   /* UI Input Colours */
   --ui-border-light: #d8d8d8;
