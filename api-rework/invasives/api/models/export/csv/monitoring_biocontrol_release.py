@@ -49,6 +49,7 @@ class MonitoringBiocontrolReleasePlant(BaseCsvExportModel):
     plant_attack_percent = models.FloatField(blank=True, null=True)
     max_spread_distance_m = models.FloatField(blank=True, null=True)
     max_spread_aspect_deg = models.FloatField(blank=True, null=True)
+    historical_iapp_site = models.IntegerField(blank=True, null=True)
 
     class Meta:
         db_table = '"exports"."monitoring_biocontrol_release_p"'
@@ -86,6 +87,10 @@ class MonitoringBiocontrolReleasePlant(BaseCsvExportModel):
         {
             "key": "site_surface_shape",
             "label": "Site Surface Shape",
+        },
+        {
+            "key": "historical_iapp_site",
+            "label": "Historical IAPP Site ID",
         },
         {
             "key": "invasive_plant",

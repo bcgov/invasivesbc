@@ -64,7 +64,6 @@ def add_target_plant_phenology(new: Activity, old: LegacyActivity):
 
     if phenology.target_plant_heights is not None:
         for height in phenology.target_plant_heights:
-            adr = ActivityDataRecord.objects.create(activity=new)
             TargetPlantHeights.objects.create(
                 activity_data_record=adr, height_cm=height
             )
