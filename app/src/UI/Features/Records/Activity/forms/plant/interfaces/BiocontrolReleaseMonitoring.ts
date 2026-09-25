@@ -7,6 +7,7 @@ interface BiocontrolReleaseMonitoringSchema extends BaseForm {
     entries: Array<{
       biocontrol_agent: string;
       biocontrol_present?: boolean;
+      historical_iapp_site?: number;
       invasive_plant: string;
       monitoring_type: string;
       plant_count?: number;

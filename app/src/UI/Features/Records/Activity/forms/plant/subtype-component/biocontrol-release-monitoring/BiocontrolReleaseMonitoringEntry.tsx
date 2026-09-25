@@ -106,6 +106,16 @@ const BiocontrolReleaseMonitoringEntry = ({ index }: PropTypes) => {
         rules={{ required: true }}
         width={Width.Half}
       />
+      <NumberInput
+        label={'Historical IAPP Site ID'}
+        width={Width.Half}
+        tooltip={tooltips.basic.historical_iapp}
+        error={get(errors, getPath('historical_iapp_site'))}
+        {...register(getPath('historical_iapp_site'), {
+          valueAsNumber: true
+        })}
+      />
+      <FormSpacer width={Width.Half} />
       <SingleSelect
         label={'Biocontrol Present'}
         name={getPath('biocontrol_present')}
