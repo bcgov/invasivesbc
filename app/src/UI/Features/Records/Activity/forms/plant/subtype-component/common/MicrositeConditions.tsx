@@ -12,18 +12,14 @@ const MicrositeConditions = () => {
         label={'Mesoslope Position'}
         name={'subtype_data.microsite_conditions.mesoslope_position'}
         options={codes?.MesoslopePositionCode}
-        required
         width={Width.Half}
-        rules={{ required: true }}
         tooltip={tooltips.plant.biocontrol.microsite.mesoslope_position}
       />
       <SingleSelect
         label={'Site Surface Shape'}
         name={'subtype_data.microsite_conditions.site_surface_shape'}
         options={codes?.SiteSurfaceShapeCode}
-        required
         width={Width.Half}
-        rules={{ required: true }}
         tooltip={tooltips.plant.biocontrol.microsite.site_surface_shape}
       />
     </Fieldset>
