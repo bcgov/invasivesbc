@@ -34,9 +34,11 @@ const BatchGeometryTool = React.lazy(() => import('UI/Features/Batch/BatchGeomet
 const LegendsPopup = React.lazy(() => import('UI/Features/Legend/LegendsPopup'));
 const ManageTripsPage = React.lazy(() => import('UI/Features/ManageTripsPage/ManageTripsPage'));
 const UserGuide = React.lazy(() => import('UI/Features/UserGuide/UserGuide'));
+const ActivityForm = React.lazy(() => import('UI/Features/Records/Activity/forms/plant/ActivityForm/ActivityForm'));
+
 const MyTeamsPage = React.lazy(() => import('UI/Features/MyTeamsPage/MyTeamsPage'));
 const TeamViewer = React.lazy(() => import('UI/Features/MyTeamsPage/TeamViewer/TeamViewer'));
-const ActivityForm = React.lazy(() => import('UI/Features/Records/Activity/forms/plant/ActivityForm/ActivityForm'));
+const CreateTeam = React.lazy(() => import('UI/Features/MyTeamsPage/subcomponents/CreateNewTeam/CreateNewTeam'));
 
 const AppRoutes = () => {
   const navigate = useNavigate();
@@ -91,11 +93,21 @@ const AppRoutes = () => {
       />
 
       <Route
-        path="/teams/:id"
+        path="/teams/team/:id"
         Component={() => (
           <Suspense fallback={<Spinner />}>
             <FeatureGated requires="TEAMS">
               <TeamViewer />
+            </FeatureGated>
+          </Suspense>
+        )}
+      />
+      <Route
+        path="/teams/create"
+        Component={() => (
+          <Suspense fallback={<Spinner />}>
+            <FeatureGated requires="TEAMS">
+              <CreateTeam />
             </FeatureGated>
           </Suspense>
         )}
