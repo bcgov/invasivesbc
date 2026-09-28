@@ -7,6 +7,7 @@ export enum AlertSubjects {
   Authentication = 'authentication',
   Cache = 'cache',
   PlanMyTrip = 'plan my trip',
+  Team = 'team',
   Download = 'download'
 }
 
