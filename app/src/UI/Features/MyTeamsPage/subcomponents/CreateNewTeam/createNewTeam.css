@@ -1,11 +1,3 @@
-.fixed-back-button {
-  position: absolute;
-  top: var(--overlay-grip-height);
-  margin: 8px;
-  left: 0;
-  display: flex;
-}
-
 #create-new-team {
   display: flex;
   flex-direction: column;
@@ -15,6 +7,14 @@
   min-height: 100svh;
   box-sizing: border-box;
   background-color: #f1f1f1;
+
+  .fixed-back-button {
+    position: absolute;
+    top: var(--overlay-grip-height);
+    margin: 8px;
+    left: 0;
+    display: flex;
+  }
 }
 
 #create-new-team .content {

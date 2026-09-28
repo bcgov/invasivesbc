@@ -69,65 +69,63 @@ const CreateNewTeam = () => {
   } = methods;
 
   return (
-    <>
+    <div id="create-new-team">
       <div className="fixed-back-button">
         <BackButton />
       </div>
-      <div id="create-new-team">
-        <div className="content">
-          <FormProvider {...methods}>
-            <form autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
-              <hgroup>
-                <h1>Register a Team</h1>
-                <p>
-                  Enter your team's details below. This information is private and only visible to current and invited
-                  members.
-                </p>
-                <p>As team leader, you can edit members' records that share your team's funding agency.</p>
-              </hgroup>
-              <Fieldset label={'Team Information'} nested>
-                <TextInput
-                  label={'Team Name'}
-                  error={get(errors, 'name')}
-                  required
-                  width={Width.Half}
-                  {...register('name', {
-                    required: true,
-                    validate: {
-                      maxLength: (val) => lessThanEqual(val, 64),
-                      minLength: (val) => greaterThanEqual(val, 5)
-                    }
-                  })}
-                />
-                <MultiSelect
-                  label="Funding Agencies"
-                  name={'agencies'}
-                  options={optionsAvailableToUser}
-                  required
-                  tooltip={AGENCY_TOOLTIP}
-                  width={Width.Half}
-                  rules={{ validate: (v) => minArrayLength(v, 1), required: true }}
-                />
-                <TextInput
-                  error={get(errors, 'description')}
-                  label={'Team Description'}
-                  tooltip={DESCRIPTION_TOOLTIP}
-                  width={Width.Half}
-                  {...register('description', {
-                    validate: (v) => lessThanEqual(v, 256),
-                    required: true
-                  })}
-                />
-              </Fieldset>
-              {submissionError && <p className="deep-red">{submissionError}</p>}
-              <Button type="submit" variant="contained" className="create-team-btn">
-                Register New Team
-              </Button>
-            </form>
-          </FormProvider>
-        </div>
+      <div className="content">
+        <FormProvider {...methods}>
+          <form autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
+            <hgroup>
+              <h1>Register a Team</h1>
+              <p>
+                Enter your team's details below. This information is private and only visible to current and invited
+                members.
+              </p>
+              <p>As team leader, you can edit members' records that share your team's funding agency.</p>
+            </hgroup>
+            <Fieldset label={'Team Information'} nested>
+              <TextInput
+                label={'Team Name'}
+                error={get(errors, 'name')}
+                required
+                width={Width.Half}
+                {...register('name', {
+                  required: true,
+                  validate: {
+                    maxLength: (val) => lessThanEqual(val, 64),
+                    minLength: (val) => greaterThanEqual(val, 5)
+                  }
+                })}
+              />
+              <MultiSelect
+                label="Funding Agencies"
+                name={'agencies'}
+                options={optionsAvailableToUser}
+                required
+                tooltip={AGENCY_TOOLTIP}
+                width={Width.Half}
+                rules={{ validate: (v) => minArrayLength(v, 1), required: true }}
+              />
+              <TextInput
+                error={get(errors, 'description')}
+                label={'Team Description'}
+                tooltip={DESCRIPTION_TOOLTIP}
+                width={Width.Half}
+                {...register('description', {
+                  validate: (v) => lessThanEqual(v, 256),
+                  required: true
+                })}
+              />
+            </Fieldset>
+            {submissionError && <p className="deep-red">{submissionError}</p>}
+            <Button type="submit" variant="contained" className="create-team-btn">
+              Register New Team
+            </Button>
+          </form>
+        </FormProvider>
       </div>
-    </>
+    </div>
   );
 };
 export default CreateNewTeam;
