@@ -19,7 +19,6 @@ import IActivityTableRow from 'interfaces/TableRows/IActivityTableRow';
 import IIappTableRow from 'interfaces/TableRows/IIappTableRow';
 import { Point, Polygon } from 'geojson';
 import StyledTable from 'UI/Reusable/StyledTable/StyledTable';
-import { Md5 } from 'ts-md5';
 
 type PropTypes = {
   setID: string;
@@ -100,7 +99,6 @@ export const RecordTable = ({ setID }: PropTypes) => {
         return [];
     }
   })();
-  const hash = Md5.hashStr(JSON.stringify(mappedRows));
   return (
     <div>
       <CustomPopover buttonOverrideOptions={{ anchorEl, setAnchorEl }}>
@@ -112,7 +110,7 @@ export const RecordTable = ({ setID }: PropTypes) => {
         />
       </CustomPopover>
       <RecordTableColumnSelect recordSetType={recordSetType} />
-      <StyledTable key={hash}>
+      <StyledTable>
         <thead>
           <tr>
             {tableColumns.map((col) => (
