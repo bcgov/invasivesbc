@@ -5,7 +5,6 @@ import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import { TreatmentPass, YesNo } from 'UI/Features/Records/Activity/forms/enums';
 import MultiSelect from 'UI/Features/Records/Activity/forms/common/MultiSelect/MultiSelect';
 import { minArrayLength } from 'UI/Features/Records/Activity/forms/common/validators';
-import TextInput from 'UI/Features/Records/Activity/forms/common/TextInput/TextInput';
 import {
   MonitoringChemPlantSchema,
   MonitoringMechPlantSchema
@@ -14,6 +13,7 @@ import { get, useFormContext } from 'react-hook-form';
 import { useEffect } from 'react';
 import FormSpacer from 'UI/Features/Records/Activity/forms/common/FormSpacer/FormSpacer';
 import useFieldPath from 'UI/Features/Records/Activity/forms/plant/hooks/useFieldPath';
+import TextArea from 'UI/Features/Records/Activity/forms/common/TextArea/TextArea';
 
 type PropTypes = {
   index: number;
@@ -123,7 +123,7 @@ const MonitoringChemMechPlantEntry = ({ index }: PropTypes) => {
         tooltip={tooltips.plant.treatment_pass}
         width={Width.Half}
       />
-      <TextInput
+      <TextArea
         label={'Comment'}
         error={errors.subtype_data?.entries?.[index]?.comment}
         tooltip={tooltips.plant.monitoring_comment}

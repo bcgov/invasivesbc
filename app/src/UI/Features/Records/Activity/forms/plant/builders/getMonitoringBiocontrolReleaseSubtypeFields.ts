@@ -5,6 +5,7 @@ const getMonitoringBiocontrolReleaseSubtypeFields = (): BiocontrolReleaseMonitor
     {
       biocontrol_agent: '',
       biocontrol_present: undefined,
+      historical_iapp_site: NaN,
       invasive_plant: '',
       monitoring_type: '',
       monitoring_method: '',

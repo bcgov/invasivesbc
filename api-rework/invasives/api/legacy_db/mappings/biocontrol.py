@@ -282,6 +282,10 @@ def add_subtype_payload_for_biocontrol_release_monitoring_terrestrial_plant(
     add_target_plant_phenology(new, old)
     add_spread_details(new, old)
 
+    # historical iapp was a root object, but is added to the entries as row basis. So fetch once to put in
+    historical_iapp_site = (
+        old.activity_payload.form_data.activity_type_data.legacy_iapp_id
+    )
     for (
         ri
     ) in (
@@ -298,6 +302,7 @@ def add_subtype_payload_for_biocontrol_release_monitoring_terrestrial_plant(
                 code=ri.biological_agent_code
             ),
             biocontrol_present=ri.biocontrol_present,
+            historical_iapp_site=historical_iapp_site,
             monitoring_type=ri.monitoring_type,
             monitoring_method=BioAgentMonitoringMethodCode.objects.get(
                 code=ri.biocontrol_monitoring_methods_code

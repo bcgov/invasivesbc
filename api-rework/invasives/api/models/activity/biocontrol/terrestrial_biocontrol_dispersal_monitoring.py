@@ -39,6 +39,7 @@ class BaseModel(models.Model):
     suitable_for_collection = models.CharField(
         choices=YesNoUnknown, blank=True, null=True
     )
+    historical_iapp_site = models.PositiveIntegerField(null=True, blank=True)
 
     class Meta:
         abstract = True

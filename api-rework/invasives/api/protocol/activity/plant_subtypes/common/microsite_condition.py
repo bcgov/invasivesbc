@@ -12,5 +12,4 @@ class DraftMicrositeCondition(CleanSchema):
 
 
 class MicrositeCondition(DraftMicrositeCondition):
-    mesoslope_position: MesoslopePositionCodeType
-    site_surface_shape: SiteSurfaceShapeCodeType
+    pass
