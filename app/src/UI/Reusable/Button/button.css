@@ -1,5 +1,5 @@
 .invasives-button {
-  padding: 5px 8px;
+  padding: 6px 8px;
   border-radius: 4px;
   display: flex;
   justify-content: center;
@@ -36,6 +36,16 @@
       border: 1pt solid var(--blue-primary-dark);
       background-color: var(--blue-primary-dark);
     }
+  }
+
+  &.destructive {
+    background-color: var(--deep-red);
+    border: 1pt solid var(--deep-red);
+    color: white;
+  }
+
+  &:hover {
+    cursor: pointer;
   }
 
   &:disabled {
