@@ -30,7 +30,7 @@ class SingleTeamSerializer(serializers.ModelSerializer):
         )
 
     def get_members(self, obj):
-        members = TeamMember.objects.filter(team=obj)
+        members = TeamMember.objects.filter(team=obj, leave_date=None)
         return TeamMembersSerializer(members, many=True).data
 
     def get_can_edit(self, obj):
@@ -42,6 +42,10 @@ class ElevatedSingleTeamSerializer(SingleTeamSerializer):
 
     class Meta(SingleTeamSerializer.Meta):
         fields = SingleTeamSerializer.Meta.fields + ("invitations",)
+
+    def get_members(self, obj):
+        members = TeamMember.objects.filter(team=obj)
+        return TeamMembersSerializer(members, many=True).data
 
     def get_invitations(self, obj):
         invites = TeamInvitation.objects.filter(team=obj.id).order_by("-date_stamp")
