@@ -22,6 +22,7 @@ class Team(models.Model):
         "api.FundingAgencyCode",
         db_table='"teams"."team_agencies"',
     )
+    description = models.CharField(max_length=256, null=True, blank=True)
 
     class Meta:
         db_table = '"teams"."teams"'

@@ -3212,6 +3212,8 @@ export interface components {
             name: string;
             /** Agencies */
             agencies: string[];
+            /** Description */
+            description: string | null;
         };
         /**
          * UpdateTeamSchema
