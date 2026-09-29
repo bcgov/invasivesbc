@@ -182,7 +182,13 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /**
+         * Get Suggested Users
+         * @description :Access: Team Founders
+         *
+         *     Get List of Suggestions based on the Agency list of a team.
+         */
+        get: operations["api_protocol_teams_api_get_suggested_users"];
         put?: never;
         /**
          * Invite User To Team
@@ -223,6 +229,40 @@ export interface paths {
          *     Update invitation to reflect users Response. Adds user to team if accepted.
          */
         patch: operations["api_protocol_teams_api_user_response_to_invitation"];
+        trace?: never;
+    };
+    "/ninja/teams/team/{team_id}/leave": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Leave Team */
+        delete: operations["api_protocol_teams_api_leave_team"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ninja/teams/team/{team_id}/members/{subject}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Kick Member */
+        delete: operations["api_protocol_teams_api_kick_member"];
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
 }
@@ -3222,7 +3262,9 @@ export interface components {
          */
         UpdateTeamSchema: {
             /** Name */
-            name: string;
+            name: string | null;
+            /** Description */
+            description: string | null;
         };
         /** InviteUserToTeamSchema */
         InviteUserToTeamSchema: {
@@ -3657,6 +3699,26 @@ export interface operations {
             };
         };
     };
+    api_protocol_teams_api_get_suggested_users: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                team_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     api_protocol_teams_api_invite_user_to_team: {
         parameters: {
             query?: never;
@@ -3715,6 +3777,47 @@ export interface operations {
                 "application/json": components["schemas"]["InvitationResponseSchema"];
             };
         };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    api_protocol_teams_api_leave_team: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                team_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    api_protocol_teams_api_kick_member: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                team_id: number;
+                subject: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description OK */
             200: {
