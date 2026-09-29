@@ -16,11 +16,13 @@ class SingleTeamSerializer(serializers.ModelSerializer):
     founder = serializers.CharField(source="founder.display_name")
     members = serializers.SerializerMethodField()
     can_edit = serializers.SerializerMethodField()
+    agencies = serializers.SerializerMethodField()
 
     class Meta:
         model = Team
         fields = (
             "can_edit",
+            "agencies",
             "founder",
             "name",
             "founding_date",
@@ -33,8 +35,11 @@ class SingleTeamSerializer(serializers.ModelSerializer):
         members = TeamMember.objects.filter(team=obj, leave_date=None)
         return TeamMembersSerializer(members, many=True).data
 
-    def get_can_edit(self, obj):
+    def get_can_edit(self, _):
         return False
+
+    def get_agencies(self, obj):
+        return ", ".join([agency.full for agency in obj.agencies.all()])
 
 
 class ElevatedSingleTeamSerializer(SingleTeamSerializer):
