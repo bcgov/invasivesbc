@@ -118,9 +118,12 @@ const useTeamsManagement = () => {
   };
 
   /**
-   * @desc Update a Invitation
+   * @desc Update an Invitation
    */
-  const patchInvite = async (invitation_id: number, response: InviteStatus | `${InviteStatus}`): Promise<Response> => {
+  const updateInvitation = async (
+    invitation_id: number,
+    response: InviteStatus | `${InviteStatus}`
+  ): Promise<Response> => {
     const res = await fetch(`${BASE}/invite`, {
       method: 'PATCH',
       headers: await getHeaders(),
@@ -175,7 +178,7 @@ const useTeamsManagement = () => {
     inviteMember,
     kickUserFromTeam,
     leaveTeam,
-    patchInvite,
+    updateInvitation,
     updateTeam,
     suggestMembers
   };
