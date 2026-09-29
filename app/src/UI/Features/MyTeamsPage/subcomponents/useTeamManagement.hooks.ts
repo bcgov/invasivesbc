@@ -1,6 +1,12 @@
 import teamAlertMessages from 'constants/alerts/teamAlerts';
 import { useNavigate } from 'react-router';
-import { InvitationResponseSchema, InviteStatus, InviteUserToTeamSchema, UpdateTeamSchema } from 'api/api-schema';
+import {
+  CreateTeamSchema,
+  InvitationResponseSchema,
+  InviteStatus,
+  InviteUserToTeamSchema,
+  UpdateTeamSchema
+} from 'api/api-schema';
 import Alerts from 'state/actions/alerts/Alerts';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import { useDispatch, useSelector } from 'utils/use_selector';
@@ -25,6 +31,15 @@ const useTeamsManagement = () => {
   });
 
   // TEAMS
+
+  const createTeam = async (data: CreateTeamSchema): Promise<Response> =>
+    await fetch(`${BASE}/team`, {
+      method: 'POST',
+      headers: {
+        Authorization: await getCurrentJWT()
+      },
+      body: JSON.stringify(data)
+    });
 
   /**
    * @desc Disband a team, hiding it from view for all users, redirect user to main team page.
@@ -56,7 +71,6 @@ const useTeamsManagement = () => {
    */
   const getTeams = async (): Promise<Response> => {
     const res = await fetch(`${BASE}/team`, {
-      method: 'GET',
       headers: await getHeaders()
     });
     if (!res?.ok) alert(teamAlertMessages.getTeamsFailed);
@@ -122,7 +136,6 @@ const useTeamsManagement = () => {
    */
   const suggestMembers = async (teamId: string | number): Promise<FormCode[]> => {
     const res = await fetch(`${BASE}/team/${teamId}/invite`, {
-      method: 'GET',
       headers: await getHeaders()
     });
     if (!res?.ok) {
@@ -154,6 +167,7 @@ const useTeamsManagement = () => {
   };
 
   return {
+    createTeam,
     disbandTeam,
     getInvitations,
     getTeam,

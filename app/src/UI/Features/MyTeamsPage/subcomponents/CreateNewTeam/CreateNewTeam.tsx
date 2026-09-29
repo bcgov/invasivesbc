@@ -8,23 +8,37 @@ import { FormProvider, get, SubmitHandler, useForm } from 'react-hook-form';
 import { useSelector } from 'utils/use_selector';
 import './createNewTeam.css';
 import Button from 'UI/Reusable/Button/Button';
-import { getCurrentJWT } from 'state/sagas/auth/auth';
 import { useNavigate } from 'react-router';
 import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import BackButton from 'UI/Reusable/BackButton/BackButton';
+import useTeamsManagement from '../useTeamManagement.hooks';
 
 const CreateNewTeam = () => {
   const DESCRIPTION_TOOLTIP =
     'Enter a short description for a team. This will be viewable by all members and invitees.';
-  const AGENCY_TOOLTIP =
-    'These are the agencies you will gain edit access for. This cannot be changed later without admin approval.';
-  const API_BASE = useSelector((state) => state.Configuration.current.runtime.API_V2_BASE);
+  const AGENCY_TOOLTIP = 'These are the agencies you will gain edit access for. This cannot be changed later.';
+
+  const onSubmit: SubmitHandler<CreateTeamSchema> = async (data) => {
+    setSubmissionError(undefined);
+    const res = await createTeam(data);
+    if (res?.ok) {
+      const data = await res.json();
+      // Redirect to Team page.
+      navigate(`/teams/team/${data.id}`);
+    } else if (res.status === 409) {
+      setError('name', { type: 'manual', message: await res.text() });
+    } else {
+      setSubmissionError('An error occured while attempting to register your team. Please try again.');
+    }
+  };
+
   const agencyCodes = useSelector((state) => state.ActivityPage.formCodes?.FundingAgencyCode) ?? [];
   const userAgencies = useSelector((state) => state.Auth?.extendedInfo?.funding_agencies)?.split?.(',');
   const username = useSelector((state) => state.Auth?.username);
   const userIsAdmin = useSelector((state) => state.Auth?.roles.some((r) => r.role_name === Role.MASTER_ADMINISTRATOR));
   const navigate = useNavigate();
+  const { createTeam } = useTeamsManagement();
   const [submissionError, setSubmissionError] = useState<string | undefined>();
 
   const optionsAvailableToUser = useMemo(() => {
@@ -40,26 +54,6 @@ const CreateNewTeam = () => {
       agencies: []
     }
   });
-
-  const onSubmit: SubmitHandler<CreateTeamSchema> = async (data) => {
-    setSubmissionError(undefined);
-    const res = await fetch(`${API_BASE}/ninja/teams/team`, {
-      method: 'POST',
-      headers: {
-        Authorization: await getCurrentJWT()
-      },
-      body: JSON.stringify(data)
-    });
-    if (res?.ok) {
-      const data = await res.json();
-      // Redirect to Team page.
-      navigate(`/teams/team/${data.id}`);
-    } else if (res.status === 409) {
-      setError('name', { type: 'manual', message: await res.text() });
-    } else {
-      setSubmissionError('An error occured while attempting to register your team. Please try again.');
-    }
-  };
 
   const {
     register,
@@ -114,7 +108,7 @@ const CreateNewTeam = () => {
                 width={Width.Half}
                 {...register('description', {
                   validate: (v) => lessThanEqual(v, 256),
-                  required: true
+                  required: false
                 })}
               />
             </Fieldset>
