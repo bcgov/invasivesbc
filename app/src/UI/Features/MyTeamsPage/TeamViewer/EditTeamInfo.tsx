@@ -23,6 +23,8 @@ const EditTeamInfo = ({ details, refresh }: PropTypes) => {
     if (res?.ok) {
       await refresh();
       setActive(false);
+    } else if (res.status === 409) {
+      setError('name', { type: 'manual', message: await res.text() });
     }
   };
   const [active, setActive] = useState<boolean>(false);
@@ -38,6 +40,7 @@ const EditTeamInfo = ({ details, refresh }: PropTypes) => {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors }
   } = methods;
 
