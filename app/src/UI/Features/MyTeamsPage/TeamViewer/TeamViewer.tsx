@@ -11,6 +11,7 @@ import Button from 'UI/Reusable/Button/Button';
 import { Cancel, GroupRemove, PersonRemove } from '@mui/icons-material';
 import useTeamsManagement from '../subcomponents/useTeamManagement.hooks';
 import EditTeamInfo from './EditTeamInfo';
+import Spinner from 'UI/Reusable/Spinner/Spinner';
 
 type InfoProps = {
   term: string;
@@ -28,61 +29,78 @@ const Info = ({ term, definition }: InfoProps) => {
 };
 
 const TeamViewer = () => {
-  const hooks = useTeamsManagement();
+  const MEMBER_TOOLTIP = `These are the InvasivesBC users who are registered as members of the team.`;
+  const INVITATION_TOOLTIP = "View sent team invitations and check whether they've been accepted, pending, or expired.";
 
   const handleLeaveTeam = async () => {
     if (!id) return;
     await (canEdit ? hooks.disbandTeam : hooks.leaveTeam)(id);
   };
-  const fetchTeamInfo = async () => {
+
+  const refreshTeamInformation = async () => {
     if (!id) return;
     const res = await hooks.getTeam(id);
-    if (res?.ok) setDetails(await res.json());
+    if (res?.ok) {
+      setDetails(await res.json());
+      setLoading(false);
+    }
   };
 
   const handleEditInvitation = async (invitation_id: number, response: InviteStatus | `${InviteStatus}`) => {
-    const res = await hooks.patchInvite(invitation_id, response);
-    if (res?.ok) await fetchTeamInfo();
+    const res = await hooks.updateInvitation(invitation_id, response);
+    if (res?.ok) await refreshTeamInformation();
   };
 
   const handleRemoveUser = async (subject: string) => {
     if (!id) return;
     const res = await hooks.kickUserFromTeam(id, subject);
-    if (res?.ok) await fetchTeamInfo();
+    if (res?.ok) await refreshTeamInformation();
   };
 
   const { id } = useParams<{ id: string }>();
 
+  const hooks = useTeamsManagement();
   const [details, setDetails] = useState<Record<PropertyKey, unknown>>({});
-
-  const MEMBER_TOOLTIP = `These are the InvasivesBC users who are a member of ${details?.name}`;
-  const INVITATION_TOOLTIP = "View sent team invitations and check whether they've been accepted, pending, or expired.";
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     (async () => {
       if (id == null) return;
-      await fetchTeamInfo();
+      await refreshTeamInformation();
     })();
   }, [id]);
 
   const canEdit: boolean = details?.can_edit;
 
-  if (!details || id == undefined) return null;
+  if (loading)
+    return (
+      <div id="team-viewer">
+        <div className="fixed-back-button">
+          <BackButton />
+        </div>
+        <div className="content">
+          <Spinner />
+          <p>Gathering information...</p>
+        </div>
+      </div>
+    );
   return (
     <div id="team-viewer">
       <div className="fixed-back-button">
         <BackButton />
       </div>
       <div className="content">
-        <EditTeamInfo />
         <Fieldset label="Overview">
           <dl className="overview">
             <Info term={'Name'} definition={details?.name as string} />
+            <Info term={'Agencies'} definition={details?.agencies as string} />
             <Info term={'Founder'} definition={details?.founder as string} />
             <Info term={'Founding Date'} definition={details?.founding_date as string} />
             <Info term={'Description'} definition={details?.description as string} />
           </dl>
+          {canEdit && <EditTeamInfo details={details} refresh={refreshTeamInformation} />}
         </Fieldset>
+
         <Fieldset label={'Team Members'} tooltip={MEMBER_TOOLTIP}>
           <StyledTable>
             <thead>
@@ -124,7 +142,7 @@ const TeamViewer = () => {
 
         {canEdit && (
           <Fieldset label={'Invitation Statuses'} tooltip={INVITATION_TOOLTIP}>
-            <InviteMember teamId={id} refreshTeam={fetchTeamInfo} />
+            <InviteMember teamId={id} refreshTeam={refreshTeamInformation} />
             <StyledTable>
               <thead>
                 <tr>
