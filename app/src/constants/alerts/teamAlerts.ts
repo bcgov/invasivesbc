@@ -73,6 +73,24 @@ const teamAlertMessages: Record<string, AlertMessage> = {
     severity: AlertSeverity.Success,
     subject: AlertSubjects.Team,
     autoClose: 6
+  },
+  getInvitationsFailed: {
+    content: 'Unable to fetch team invitations at this time',
+    severity: AlertSeverity.Error,
+    subject: AlertSubjects.Team,
+    autoClose: 6
+  },
+  getTeamsFailed: {
+    content: 'Unable to fetch your enrolled teams at this time',
+    severity: AlertSeverity.Error,
+    subject: AlertSubjects.Team,
+    autoClose: 6
+  },
+  updateTeamFailed: {
+    content: 'Failed to update team information.',
+    severity: AlertSeverity.Error,
+    subject: AlertSubjects.Team,
+    autoClose: 6
   }
 };
 
