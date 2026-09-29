@@ -1,5 +1,6 @@
 from ninja import Schema
 from pydantic import Field
+from typing import Optional
 
 
 class UpdateTeamSchema(Schema):
@@ -8,4 +9,5 @@ class UpdateTeamSchema(Schema):
     Agencies are locked to creation of Team.
     """
 
-    name: str = Field(max_length=128)
+    name: Optional[str] = Field(max_length=128)
+    description: Optional[str] = Field(max_length=256)
