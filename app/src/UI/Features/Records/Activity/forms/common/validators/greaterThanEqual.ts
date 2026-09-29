@@ -1,4 +1,4 @@
-const greaterThanEqual = (val: number | string | undefined, min: number) => {
+const greaterThanEqual = (val: number | string | undefined | null, min: number) => {
   if (val == undefined || Number.isNaN(val)) return true;
   if (typeof val === 'string') {
     return val.length >= min || `Enter at least ${min} characters.`;
