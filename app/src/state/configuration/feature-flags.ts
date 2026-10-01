@@ -49,7 +49,7 @@ const BASELINE_FEATURES = {
   SIMPLIFIED_LAYOUT: new FeatureFlag('SIMPLIFIED_LAYOUT', false),
 
   TRAINING_PAGE: new FeatureFlag('TRAINING_PAGE', true),
-  TEAMS: new FeatureFlag('TEAMS', true),
+  TEAMS: new FeatureFlag('TEAMS', false),
 
   USER_GUIDE: new FeatureFlag('USER_GUIDE', false) /* set to true when there are entries to display */,
   USER_SITE_LIST: new FeatureFlag('USER_SITE_LIST', true)
