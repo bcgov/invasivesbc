@@ -32,8 +32,8 @@
     background-color: var(--blue-primary);
     text-transform: uppercase;
 
-    &:hover {
-      border: 1pt solid var(--blue-primary-dark);
+    &:not(.destructive):hover {
+      border-color: var(--blue-primary-dark);
       background-color: var(--blue-primary-dark);
     }
   }
@@ -42,6 +42,11 @@
     background-color: var(--deep-red);
     border: 1pt solid var(--deep-red);
     color: white;
+
+    &:hover {
+      background-color: var(--deep-red-hover);
+      border-color: var(--deep-red-hover);
+    }
   }
 
   &.icon {
