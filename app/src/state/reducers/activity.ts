@@ -47,7 +47,7 @@ interface ActivityState {
   };
   pristine: boolean; // TODO: Remove all relations (Legacy form)
   initialized: boolean; // TODO: Remove
-  loading: boolean; // TODO: Remove
+  loading: boolean;
   suggestions: {
     jurisdictions: Array<{ label: string; full: string }>;
     recordsInArea: Array<{ label: string; full: string }>;
@@ -272,6 +272,7 @@ function createActivityReducer() {
       } else if (Activity.getActivity.pending.match(action)) {
         // Clear Form State at beginning of fetch
         deleteFormState(draftState);
+        draftState.loading = true;
       } else if (Activity.getActivity.fulfilled.match(action)) {
         const { data, available_actions, metadata } = action.payload;
         draftState.formType = data.subtype as ActivitySubtypes;
@@ -279,8 +280,10 @@ function createActivityReducer() {
         draftState.formState = data as unknown as FormSchema;
         draftState.recordActions = available_actions;
         draftState.formMetadata = metadata as RecordMetadata;
+        draftState.loading = false;
       } else if (Activity.getActivity.rejected.match(action) && isRejectedWithValue(action) && action.payload === 404) {
         draftState.recordNotFound = true;
+        draftState.loading = false;
       } else if (Activity.getSuccess.match(action)) {
         const { activity, permissions } = action.payload;
         draftState.activity = { ...activity };
