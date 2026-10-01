@@ -1,7 +1,7 @@
 from ninja import Router
 from django.db import transaction
 from django.db.models import Q
-from typing import List, Dict
+from typing import List
 from pydantic import PositiveInt
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -9,12 +9,11 @@ from django.http import HttpResponse, JsonResponse
 from api.ninja_authentication import NinjaKeycloakAuthentication
 from api.models.teams import TeamMember, Team, InviteStatus, TeamInvitation
 from api.models.auth import User
-from api.serializers.teams import (
-    ElevatedSingleTeamSerializer,
-    UserTeamsRowSerializer,
-    SingleTeamSerializer,
-    UserTeamInvitationSerializer,
-    SuggestedUserSerializer,
+from api.schemas.teams import (
+    InvitationOut,
+    SingleTeamOut,
+    TeamMembershipOut,
+    TeamSuggestedUserOut,
 )
 from rest_framework import status
 from . import (
@@ -33,7 +32,7 @@ router = Router(auth=NinjaKeycloakAuthentication())
 ###
 
 
-@router.get("/team", response={200: List[Dict]})
+@router.get("/team", response={200: TeamMembershipOut})
 def get_list_of_teams(request):
     """
     :Access: All users
@@ -45,10 +44,10 @@ def get_list_of_teams(request):
         leave_date=None,
         team__disbanded_date=None,
     )
-    return UserTeamsRowSerializer(user_teams, many=True).data
+    return {"teams": user_teams}
 
 
-@router.post("/team")
+@router.post("/team", response={201: dict})
 def create_team(request, data: CreateTeamSchema):
     """
     :Access: DataManagers
@@ -58,9 +57,9 @@ def create_team(request, data: CreateTeamSchema):
     with transaction.atomic():
         # TODO: Limit to DataManager/Administrator role access
         if Team.objects.filter(founder=request.auth, name=data.name).exists():
-            return HttpResponse(
+            return JsonResponse(
                 status=status.HTTP_409_CONFLICT,
-                content="You already have a team by this name",
+                data={"details": "You already have a team by this name"},
             )
 
         """Create team, then set user as member"""
@@ -72,7 +71,7 @@ def create_team(request, data: CreateTeamSchema):
         return JsonResponse(status=status.HTTP_201_CREATED, data={"id": team.id})
 
 
-@router.get("/team/{team_id}")
+@router.get("/team/{team_id}", response={200: SingleTeamOut, 403: dict})
 def get_team_info(request, team_id: PositiveInt):
     """
     :Access: All Users on designated team.
@@ -83,16 +82,15 @@ def get_team_info(request, team_id: PositiveInt):
         user=request.auth, team__id=team_id
     ).exists()
     if not user_in_team:
-        return HttpResponse(status=status.HTTP_401_UNAUTHORIZED)
+        return JsonResponse(
+            status=status.HTTP_403_FORBIDDEN,
+            data={"detail": "Not a member of this team"},
+        )
 
-    team = get_object_or_404(Team, id=team_id, disbanded_date=None)
-
-    if request.auth == team.founder:
-        return ElevatedSingleTeamSerializer(team).data
-    return SingleTeamSerializer(team).data
+    return get_object_or_404(Team, id=team_id, disbanded_date=None)
 
 
-@router.delete("/team/{team_id}")
+@router.delete("/team/{team_id}", response={200: None})
 def disband_team(request, team_id: PositiveInt):
     """
     :Access: Founders of a team
@@ -114,7 +112,7 @@ def disband_team(request, team_id: PositiveInt):
         return HttpResponse(status=status.HTTP_200_OK)
 
 
-@router.patch("/team/{team_id}")
+@router.patch("/team/{team_id}", response={200: SingleTeamOut, 409: dict})
 def update_team_metadata(request, team_id: PositiveInt, data: UpdateTeamSchema):
     """
     :Access: Data Managers
@@ -129,9 +127,9 @@ def update_team_metadata(request, team_id: PositiveInt, data: UpdateTeamSchema):
         .exclude(id=team_id)
         .exists()
     ):
-        return HttpResponse(
+        return JsonResponse(
             status=status.HTTP_409_CONFLICT,
-            content="You already have a team by this name",
+            data={"details": "You already have a team by this name"},
         )
     update_data = {
         k: v
@@ -142,10 +140,10 @@ def update_team_metadata(request, team_id: PositiveInt, data: UpdateTeamSchema):
         setattr(team, key, value)
     team.save(update_fields=list(update_data.keys()))
 
-    return SingleTeamSerializer(team, read_only=True).data
+    return team
 
 
-@router.post("/team/{team_id}/invite")
+@router.post("/team/{team_id}/invite", response={201: dict, 409: dict})
 def invite_user_to_team(request, team_id: PositiveInt, data: InviteUserToTeamSchema):
     """
     :Access: DataManagers
@@ -180,7 +178,7 @@ def invite_user_to_team(request, team_id: PositiveInt, data: InviteUserToTeamSch
 ###
 
 
-@router.get("/team/{team_id}/invite")
+@router.get("/team/{team_id}/invite", response={200: List[TeamSuggestedUserOut]})
 def get_suggested_users(request, team_id):
     """
     :Access: Team Founders
@@ -202,10 +200,10 @@ def get_suggested_users(request, team_id):
         .exclude(subject__in=members)  # Remove existing team members
         .order_by("display_name")
     )
-    return SuggestedUserSerializer(suggestions, many=True).data
+    return suggestions
 
 
-@router.get("/invite", response={200: List[Dict]})
+@router.get("/invite", response={200: List[InvitationOut]})
 def get_active_invitations(request):
     """
     :Access: All users
@@ -217,10 +215,10 @@ def get_active_invitations(request):
         status=InviteStatus.Pending.value,
         team__disbanded_date=None,
     )
-    return UserTeamInvitationSerializer(active_invites, many=True).data
+    return active_invites
 
 
-@router.patch("/invite")
+@router.patch("/invite", response={201: None, 403: dict})
 def user_response_to_invitation(request, data: InvitationResponseSchema):
     """
     :Access: Recipient of invite.
@@ -246,8 +244,10 @@ def user_response_to_invitation(request, data: InvitationResponseSchema):
         invalid_founder_action = is_founder and (data.response not in founder_allowed)
 
         if invalid_recipient_action or invalid_founder_action:
-            return HttpResponse(
-                f"Not authorized to use status '{data.response}' for this invitation.",
+            return JsonResponse(
+                data={
+                    "details": f"Not authorized to use status '{data.response}' for this invitation."
+                },
                 status=status.HTTP_400_BAD_REQUEST,  # 400 for bad action payload
             )
 
@@ -259,7 +259,7 @@ def user_response_to_invitation(request, data: InvitationResponseSchema):
         return HttpResponse(status.HTTP_201_CREATED)
 
 
-@router.delete("/team/{team_id}/leave")
+@router.delete("/team/{team_id}/leave", response={204: None})
 def leave_team(request, team_id: int):
     """
     :Access: All users
@@ -276,7 +276,7 @@ def leave_team(request, team_id: int):
     return HttpResponse(status=status.HTTP_204_NO_CONTENT)
 
 
-@router.delete("/team/{team_id}/members/{subject}")
+@router.delete("/team/{team_id}/members/{subject}", response={204: None})
 def kick_member(request, team_id: int, subject: str):
     """
     :Access: Data Managers
