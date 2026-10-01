@@ -4,6 +4,7 @@ import { createLogger } from 'redux-logger';
 import { persistStore } from 'redux-persist';
 import { Store } from 'redux';
 import debounce from 'lodash.debounce';
+import { App as CapacitorApp } from '@capacitor/app';
 import { createRootReducer } from './reducers/rootReducer';
 import activityPageSaga from './sagas/activity';
 import planMyTripSaga from './sagas/planMyTrip';
@@ -20,7 +21,7 @@ import NetworkActions from './actions/network/NetworkActions';
 import { AuthActions } from 'state/actions/auth/Auth';
 import EventActions from 'state/actions/events/EventActions';
 import { UnifiedConfig } from 'state/configuration/unified-config';
-import OfflineProtomaps from 'state/actions/cache/OfflineProtomaps';
+import { Platform } from 'state/configuration/build-time-config';
 
 export function setupStore(configuration: UnifiedConfig) {
   const storeRef: { store: Store | null } = {
@@ -88,6 +89,12 @@ export function setupStore(configuration: UnifiedConfig) {
   document.addEventListener('focus', () => {
     store.dispatch(EventActions.wakeup());
   });
+
+  if ([Platform.IOS, Platform.ANDROID].includes(configuration.build.PLATFORM)) {
+    CapacitorApp.addListener('resume', () => {
+      store.dispatch(EventActions.wakeup());
+    });
+  }
 
   // throttled updates. used to control some layouts (eg alternative button text on very tiny screens)
   const debouncedResize = debounce(
