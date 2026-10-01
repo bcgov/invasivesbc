@@ -9,10 +9,10 @@ import Button from 'UI/Reusable/Button/Button';
 import './editTeamInfo.css';
 import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
 import useTeamsManagement from '../subcomponents/useTeamManagement.hooks';
-import { UpdateTeamSchema } from 'api/api-schema';
+import { SingleTeamOut, UpdateTeamSchema } from 'api/api-schema';
 
 type PropTypes = {
-  details: Record<PropertyKey, any>;
+  details: SingleTeamOut;
   refresh: Function;
 };
 

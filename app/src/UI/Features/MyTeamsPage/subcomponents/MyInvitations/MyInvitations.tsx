@@ -4,14 +4,14 @@ import Button from 'UI/Reusable/Button/Button';
 import { Cancel, CheckCircle } from '@mui/icons-material';
 import moment from 'moment';
 import './myInvitations.css';
-import { InviteStatus } from 'api/api-schema';
+import { InvitationOut, InviteStatus } from 'api/api-schema';
 
 type PropTypes = {
   refresh: () => void;
-  invitations: Record<PropertyKey, any>[];
+  invitations: Array<InvitationOut>;
 };
 const MyInvitations = ({ refresh, invitations }: PropTypes) => {
-  const handleInvitationResponse = async (inviteId: number, response: InviteStatus) => {
+  const handleInvitationResponse = async (inviteId: InvitationOut['id'], response: InviteStatus) => {
     const res = await updateInvitation(inviteId, response);
     if (res?.ok) refresh();
   };
@@ -40,14 +40,14 @@ const MyInvitations = ({ refresh, invitations }: PropTypes) => {
           </tr>
         </thead>
         <tbody>
-          {invitations.map((i) => (
-            <tr>
-              <td>{i?.name}</td>
-              <td>{i?.founder}</td>
-              <td>{i?.description}</td>
-              <td>{i?.agencies}</td>
-              <td>{moment(i?.date_stamp).format('YYYY-MM-DD')}</td>
-              <td>{i?.status}</td>
+          {invitations?.map((i) => (
+            <tr key={i.id}>
+              <td>{i.name}</td>
+              <td>{i.founder}</td>
+              <td>{i.description}</td>
+              <td>{i.agencies}</td>
+              <td>{moment(i.date_stamp).format('YYYY-MM-DD')}</td>
+              <td>{i.status}</td>
               <td>
                 <div className="action-cnt">
                   <Button
@@ -70,7 +70,7 @@ const MyInvitations = ({ refresh, invitations }: PropTypes) => {
           ))}
           {invitations.length === 0 && (
             <tr>
-              <td colSpan={6}>You currently have no invitations to join a team.</td>
+              <td colSpan={7}>You currently have no invitations to join a team.</td>
             </tr>
           )}
         </tbody>

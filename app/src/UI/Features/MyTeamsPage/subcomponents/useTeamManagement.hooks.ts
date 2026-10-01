@@ -1,17 +1,18 @@
-import teamAlertMessages from 'constants/alerts/teamAlerts';
 import { useNavigate } from 'react-router';
+import teamAlertMessages from 'constants/alerts/teamAlerts';
 import {
   CreateTeamSchema,
   InvitationResponseSchema,
   InviteStatus,
   InviteUserToTeamSchema,
+  SingleTeamOut,
+  TeamSuggestedUserOut,
   UpdateTeamSchema
 } from 'api/api-schema';
 import Alerts from 'state/actions/alerts/Alerts';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import AlertMessage from 'interfaces/AlertMessage';
-import FormCode from 'interfaces/FormCode';
 
 /**
  * @desc Bundle of API Calls for Team Functionality. Preset to include failure notifications for users.
@@ -44,7 +45,7 @@ const useTeamsManagement = () => {
   /**
    * @desc Disband a team, hiding it from view for all users, redirect user to main team page.
    */
-  const disbandTeam = async (teamId: string | number): Promise<void> => {
+  const disbandTeam = async (teamId: SingleTeamOut['id']): Promise<void> => {
     const res = await fetch(`${BASE}/team/${teamId}`, {
       method: 'DELETE',
       headers: await getHeaders()
@@ -56,7 +57,7 @@ const useTeamsManagement = () => {
    * @desc Fetch information related to a single team
    * @param teamId Team ID
    */
-  const getTeam = async (teamId: string | number): Promise<Response> => {
+  const getTeam = async (teamId: SingleTeamOut['id']): Promise<Response> => {
     const res = await fetch(`${BASE}/team/${teamId}`, {
       headers: await getHeaders()
     });
@@ -81,7 +82,7 @@ const useTeamsManagement = () => {
    * @desc Update the Team name/description of a single team.
    * @param formData Form Data,
    */
-  const updateTeam = async (teamId: string | number, formData: UpdateTeamSchema): Promise<Response> => {
+  const updateTeam = async (teamId: SingleTeamOut['id'], formData: UpdateTeamSchema): Promise<Response> => {
     const res = await fetch(`${BASE}/team/${teamId}`, {
       method: 'PATCH',
       headers: await getHeaders(),
@@ -107,7 +108,7 @@ const useTeamsManagement = () => {
   /**
    * @desc Invite a user to become a member of a team.
    */
-  const inviteMember = async (teamId: string | number, formData: InviteUserToTeamSchema): Promise<Response> => {
+  const inviteMember = async (teamId: SingleTeamOut['id'], formData: InviteUserToTeamSchema): Promise<Response> => {
     const res = await fetch(`${BASE}/team/${teamId}/invite`, {
       method: 'POST',
       headers: await getHeaders(),
@@ -137,7 +138,7 @@ const useTeamsManagement = () => {
    * @desc Fetch a list of users with matching agencies to the team.
    * @param teamId
    */
-  const suggestMembers = async (teamId: string | number): Promise<FormCode[]> => {
+  const suggestMembers = async (teamId: SingleTeamOut['id']): Promise<TeamSuggestedUserOut[]> => {
     const res = await fetch(`${BASE}/team/${teamId}/invite`, {
       headers: await getHeaders()
     });
@@ -150,7 +151,7 @@ const useTeamsManagement = () => {
 
   // USER MANAGEMENT
 
-  const kickUserFromTeam = async (id: string | number, subject: string): Promise<Response> => {
+  const kickUserFromTeam = async (id: SingleTeamOut['id'], subject: string): Promise<Response> => {
     const res = await fetch(`${BASE}/team/${id}/members/${subject}`, {
       method: 'DELETE',
       headers: await getHeaders()
@@ -159,7 +160,7 @@ const useTeamsManagement = () => {
     return res;
   };
 
-  const leaveTeam = async (id: string | number): Promise<Response> => {
+  const leaveTeam = async (id: SingleTeamOut['id']): Promise<Response> => {
     const res = await fetch(`${BASE}/team/${id}/leave`, {
       method: 'DELETE',
       headers: await getHeaders()

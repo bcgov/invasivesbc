@@ -1,6 +1,5 @@
 import { GroupAdd, PersonAdd } from '@mui/icons-material';
-import { InviteUserToTeamSchema } from 'api/api-schema';
-import FormCode from 'interfaces/FormCode';
+import { InviteUserToTeamSchema, SingleTeamOut, TeamSuggestedUserOut } from 'api/api-schema';
 import { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
@@ -9,7 +8,7 @@ import Button from 'UI/Reusable/Button/Button';
 import useTeamsManagement from '../subcomponents/useTeamManagement.hooks';
 
 type PropTypes = {
-  teamId?: number | string;
+  teamId?: SingleTeamOut['id'];
   refreshTeam: Function;
 };
 
@@ -31,7 +30,7 @@ const InviteMember = ({ teamId, refreshTeam }: PropTypes) => {
     }
   };
 
-  const [options, setOptions] = useState<Array<FormCode>>([]);
+  const [options, setOptions] = useState<TeamSuggestedUserOut[]>([]);
   const [active, setActive] = useState<boolean>(false);
   const methods = useForm<InviteUserToTeamSchema>({
     mode: 'all',

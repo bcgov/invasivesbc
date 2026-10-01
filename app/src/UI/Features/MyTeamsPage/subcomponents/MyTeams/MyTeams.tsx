@@ -1,11 +1,12 @@
 import { NavLink } from 'react-router';
 import StyledTable from 'UI/Reusable/StyledTable/StyledTable';
+import { TeamMembershipOut } from 'api/api-schema';
 import './myTeams.css';
 
 type PropTypes = {
-  teams: Record<PropertyKey, any>[];
+  membershipDetails: TeamMembershipOut;
 };
-const MyTeams = ({ teams }: PropTypes) => {
+const MyTeams = ({ membershipDetails }: PropTypes) => {
   return (
     <section className="my-teams">
       <h2>My Teams</h2>
@@ -21,8 +22,8 @@ const MyTeams = ({ teams }: PropTypes) => {
           </tr>
         </thead>
         <tbody>
-          {teams.map((t) => (
-            <tr>
+          {membershipDetails.teams.map((t) => (
+            <tr key={t.team_id}>
               <td>{t.team_name}</td>
               <td>{t.team_founder}</td>
               <td>{t.description}</td>
@@ -34,15 +35,18 @@ const MyTeams = ({ teams }: PropTypes) => {
               </td>
             </tr>
           ))}
-          {teams.length === 0 && (
+          {membershipDetails.teams.length === 0 && (
             <tr>
               <td colSpan={4}>You are not a member of any teams</td>
             </tr>
           )}
         </tbody>
       </StyledTable>
-      {/* TODO: Lock to Data Managers/Admin only.  */}
-      <NavLink to="/teams/create">Create New Team</NavLink>
+      {membershipDetails.can_create_team && (
+        <div>
+          <NavLink to="/teams/create">Create New Team</NavLink>
+        </div>
+      )}
     </section>
   );
 };
