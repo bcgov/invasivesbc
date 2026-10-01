@@ -254,7 +254,9 @@ def user_response_to_invitation(request, data: InvitationResponseSchema):
         invite.status = data.response
         invite.save()
         if data.response == InviteStatus.Accepted.value:
-            TeamMember.objects.update_or_create(team=invite.team, user=invite.recipient)
+            TeamMember.objects.update_or_create(
+                team=invite.team, user=invite.recipient, defaults={"leave_date": None}
+            )
 
         return HttpResponse(status.HTTP_201_CREATED)
 
