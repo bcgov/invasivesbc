@@ -24,7 +24,7 @@ const EditTeamInfo = ({ details, refresh }: PropTypes) => {
       await refresh();
       setActive(false);
     } else if (res.status === 409) {
-      setError('name', { type: 'manual', message: await res.text() });
+      setError('name', { type: 'manual', message: (await res.json())?.details });
     }
   };
   const [active, setActive] = useState<boolean>(false);

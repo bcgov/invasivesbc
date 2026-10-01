@@ -27,7 +27,7 @@ const CreateNewTeam = () => {
       // Redirect to Team page.
       navigate(`/teams/team/${data.id}`);
     } else if (res.status === 409) {
-      setError('name', { type: 'manual', message: await res.text() });
+      setError('name', { type: 'manual', message: (await res.json())?.details });
     } else {
       setSubmissionError('An error occured while attempting to register your team. Please try again.');
     }
