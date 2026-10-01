@@ -15,10 +15,10 @@ const MyTeams = ({ membershipDetails }: PropTypes) => {
         <thead>
           <tr>
             <th>Team</th>
-            <th>Team Lead</th>
+            <th>Lead</th>
             <th>Description</th>
-            <th>Join Date</th>
-            <th>View Team</th>
+            <th>Date Joined</th>
+            <th>View</th>
           </tr>
         </thead>
         <tbody>

@@ -132,16 +132,16 @@ const TeamViewer = () => {
           {canEdit && <EditTeamInfo details={details} refresh={refreshTeamInformation} />}
         </Fieldset>
 
-        <Fieldset label={'Team Members'} tooltip={MEMBER_TOOLTIP}>
+        <Fieldset label={'Members'} tooltip={MEMBER_TOOLTIP}>
           <StyledTable>
             <thead>
               <tr>
                 <th>Member</th>
-                <th>Join Date</th>
+                <th>Date Joined</th>
                 {canEdit && (
                   <>
-                    <th>Leave Date</th>
-                    <th>Edit Member</th>
+                    <th>Date of Departure</th>
+                    <th>Action</th>
                   </>
                 )}
               </tr>
@@ -172,13 +172,13 @@ const TeamViewer = () => {
         </Fieldset>
 
         {canEdit && details?.invitations && (
-          <Fieldset label={'Invitation Statuses'} tooltip={INVITATION_TOOLTIP}>
+          <Fieldset label={'Invitations'} tooltip={INVITATION_TOOLTIP}>
             <InviteMember teamId={teamId} refreshTeam={refreshTeamInformation} />
             <StyledTable>
               <thead>
                 <tr>
-                  <th>Username</th>
-                  <th>Request Date</th>
+                  <th>Member</th>
+                  <th>Date Requested</th>
                   <th>Status</th>
                   <th>Action</th>
                 </tr>

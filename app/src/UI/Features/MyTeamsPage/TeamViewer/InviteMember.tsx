@@ -47,7 +47,7 @@ const InviteMember = ({ teamId, refreshTeam }: PropTypes) => {
   return (
     <>
       <Button size="sm" variant="contained" onClick={() => setActive((prev) => !prev)}>
-        <GroupAdd /> &nbsp; Add Members
+        <GroupAdd /> &nbsp; Invite
       </Button>
       <div className="invite-user">
         {active && (
