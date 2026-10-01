@@ -3,7 +3,7 @@ import './button.css';
 
 interface InputButtonProps extends ComponentPropsWithoutRef<'button'> {
   size?: 'sm' | 'med' | 'lg';
-  variant?: 'contained' | 'outlined' | 'none';
+  variant?: 'contained' | 'outlined' | 'destructive' | 'icon' | 'none';
 }
 
 const Button = ({ size = 'med', className = '', variant, ...props }: InputButtonProps) => (

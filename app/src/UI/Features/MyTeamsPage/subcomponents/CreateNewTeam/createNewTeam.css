@@ -1,0 +1,42 @@
+#create-new-team {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  min-height: 100svh;
+  box-sizing: border-box;
+  background-color: #f1f1f1;
+
+  .fixed-back-button {
+    position: absolute;
+    top: var(--overlay-grip-height);
+    margin: 8px;
+    left: 0;
+    display: flex;
+  }
+}
+
+#create-new-team .content {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 3rem;
+  margin-top: 5vh;
+  background-color: white;
+}
+
+#create-new-team .content form {
+  display: flex;
+  flex-flow: column wrap;
+  background-color: white;
+  padding: 1rem;
+  width: var(--form-container-width);
+  max-width: 100%;
+  box-sizing: border-box;
+  justify-content: space-around;
+
+  .create-team-btn {
+    background-color: var(--bc-blue);
+    height: 3rem;
+  }
+}

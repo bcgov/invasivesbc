@@ -12,6 +12,7 @@ import { WhatsHereTable } from 'UI/Features/WhatsHere/WhatsHereTable';
 import { useSelector } from 'utils/use_selector';
 import AdminLayout from 'UI/Features/Admin/AdminLayout';
 import BatchLayout from 'UI/Features/Batch/BatchLayout';
+import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
 
 const EmailSettings = React.lazy(() => import('UI/Features/Admin/email-setup/EmailSettings'));
 const EmailTemplates = React.lazy(() => import('UI/Features/Admin/email-setup/EmailTemplates'));
@@ -33,8 +34,11 @@ const BatchGeometryTool = React.lazy(() => import('UI/Features/Batch/BatchGeomet
 const LegendsPopup = React.lazy(() => import('UI/Features/Legend/LegendsPopup'));
 const ManageTripsPage = React.lazy(() => import('UI/Features/ManageTripsPage/ManageTripsPage'));
 const UserGuide = React.lazy(() => import('UI/Features/UserGuide/UserGuide'));
-
 const ActivityForm = React.lazy(() => import('UI/Features/Records/Activity/forms/plant/ActivityForm/ActivityForm'));
+
+const MyTeamsPage = React.lazy(() => import('UI/Features/MyTeamsPage/MyTeamsPage'));
+const TeamViewer = React.lazy(() => import('UI/Features/MyTeamsPage/TeamViewer/TeamViewer'));
+const CreateTeam = React.lazy(() => import('UI/Features/MyTeamsPage/subcomponents/CreateNewTeam/CreateNewTeam'));
 
 const AppRoutes = () => {
   const navigate = useNavigate();
@@ -79,7 +83,35 @@ const AppRoutes = () => {
           </Suspense>
         )}
       />
+      <Route
+        path="/teams"
+        Component={() => (
+          <Suspense fallback={<Spinner />}>
+            <MyTeamsPage />
+          </Suspense>
+        )}
+      />
 
+      <Route
+        path="/teams/team/:id"
+        Component={() => (
+          <Suspense fallback={<Spinner />}>
+            <FeatureGated requires="TEAMS">
+              <TeamViewer />
+            </FeatureGated>
+          </Suspense>
+        )}
+      />
+      <Route
+        path="/teams/create"
+        Component={() => (
+          <Suspense fallback={<Spinner />}>
+            <FeatureGated requires="TEAMS">
+              <CreateTeam />
+            </FeatureGated>
+          </Suspense>
+        )}
+      />
       <Route
         path="/News"
         Component={() => (
