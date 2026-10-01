@@ -157,10 +157,10 @@ const TeamViewer = () => {
                       <td>
                         {/* User is not team owner and user is active member of team */}
                         {details.founder !== m.name && !m?.leave_date && (
-                          <Button className="destructive" onClick={() => handleRemoveUser(m.subject)}>
+                          <ConfirmationButton className="destructive" onClick={() => handleRemoveUser(m.subject)}>
                             <PersonRemove />
                             &nbsp; Remove
-                          </Button>
+                          </ConfirmationButton>
                         )}
                       </td>
                     </>
