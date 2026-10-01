@@ -171,8 +171,13 @@ export interface paths {
         delete: operations["api_protocol_teams_api_disband_team"];
         options?: never;
         head?: never;
-        /** Update Team Name */
-        patch: operations["api_protocol_teams_api_update_team_name"];
+        /**
+         * Update Team Metadata
+         * @description :Access: Data Managers
+         *
+         *     Update Description/Name of a team.
+         */
+        patch: operations["api_protocol_teams_api_update_team_metadata"];
         trace?: never;
     };
     "/ninja/teams/team/{team_id}/invite": {
@@ -241,7 +246,11 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        /** Leave Team */
+        /**
+         * Leave Team
+         * @description :Access: All users
+         *     Requesting user is removed from the team
+         */
         delete: operations["api_protocol_teams_api_leave_team"];
         options?: never;
         head?: never;
@@ -258,7 +267,12 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        /** Kick Member */
+        /**
+         * Kick Member
+         * @description :Access: Data Managers
+         *
+         *     Data manager selects user to remove from the team.
+         */
         delete: operations["api_protocol_teams_api_kick_member"];
         options?: never;
         head?: never;
@@ -672,9 +686,9 @@ export interface components {
         /** MicrositeCondition */
         MicrositeCondition: {
             /** Mesoslope Position */
-            mesoslope_position: string;
+            mesoslope_position: string | null;
             /** Site Surface Shape */
-            site_surface_shape: string;
+            site_surface_shape: string | null;
         };
         /** MonitoringBiocontrolRelease */
         MonitoringBiocontrolRelease: {
@@ -1652,6 +1666,8 @@ export interface components {
             actual_biological_agents: components["schemas"]["BiocontrolCountExtended"][];
             /** Estimated Biological Agents */
             estimated_biological_agents: components["schemas"]["BiocontrolCountExtended"][];
+            /** Historical Iapp Site */
+            historical_iapp_site?: number | null;
         };
         /** SubtypeData */
         api__protocol__activity__plant_subtypes__monitoring_biocontrol_release__SubtypeData: {
@@ -2954,6 +2970,8 @@ export interface components {
             actual_biological_agents: components["schemas"]["DraftBiocontrolCountExtended"][];
             /** Estimated Biological Agents */
             estimated_biological_agents: components["schemas"]["DraftBiocontrolCountExtended"][];
+            /** Historical Iapp Site */
+            historical_iapp_site?: number | null;
         };
         /** DraftSubtypeData */
         api__protocol__activity__plant_subtypes__monitoring_biocontrol_release__DraftSubtypeData: {
@@ -3246,6 +3264,29 @@ export interface components {
             available_actions: components["schemas"]["RecordAction"][];
             metadata: components["schemas"]["RecordMetadata"];
         };
+        /** TeamMembershipOut */
+        TeamMembershipOut: {
+            /** Can Create Team */
+            can_create_team: boolean;
+            /** Teams */
+            teams: components["schemas"]["TeamMembershipRowOut"][];
+        };
+        /** TeamMembershipRowOut */
+        TeamMembershipRowOut: {
+            /** Team Founder */
+            team_founder: string;
+            /** Team Name */
+            team_name: string;
+            /** Team Id */
+            team_id: number;
+            /** Description */
+            description: string;
+            /**
+             * Join Date
+             * Format: date
+             */
+            join_date: string;
+        };
         /** CreateTeamSchema */
         CreateTeamSchema: {
             /** Name */
@@ -3254,6 +3295,75 @@ export interface components {
             agencies: string[];
             /** Description */
             description: string | null;
+        };
+        /** InvitationOut */
+        InvitationOut: {
+            /** Id */
+            id: number;
+            /**
+             * Date Stamp
+             * Format: date-time
+             */
+            date_stamp: string;
+            status: components["schemas"]["InviteStatus"];
+            /** Founder */
+            founder: string;
+            /** Name */
+            name: string;
+            /** Invitee */
+            invitee: string;
+            /** Agencies */
+            agencies: string;
+            /**
+             * Founding Date
+             * Format: date
+             */
+            founding_date: string;
+            /** Description */
+            description: string;
+        };
+        /**
+         * InviteStatus
+         * @enum {string}
+         */
+        InviteStatus: "Pending" | "Accepted" | "Declined" | "Cancelled";
+        /** SingleTeamOut */
+        SingleTeamOut: {
+            /** Agencies */
+            agencies: string;
+            /** Members */
+            members: components["schemas"]["TeamMemberOut"][];
+            /** Can Edit */
+            can_edit: boolean;
+            /** Founder */
+            founder: string;
+            /** Invitations */
+            invitations?: components["schemas"]["InvitationOut"][] | null;
+            /** Name */
+            name: string;
+            /**
+             * Founding Date
+             * Format: date
+             */
+            founding_date: string;
+            /** Id */
+            id?: number | null;
+            /** Description */
+            description?: string | null;
+        };
+        /** TeamMemberOut */
+        TeamMemberOut: {
+            /** Subject */
+            subject: string;
+            /** Name */
+            name: string;
+            /** Leave Date */
+            leave_date?: string | null;
+            /**
+             * Join Date
+             * Format: date
+             */
+            join_date: string;
         };
         /**
          * UpdateTeamSchema
@@ -3271,17 +3381,19 @@ export interface components {
             /** Subject */
             subject: string;
         };
+        /** TeamSuggestedUserOut */
+        TeamSuggestedUserOut: {
+            /** Code */
+            code: string;
+            /** Full Name */
+            full_name: string;
+        };
         /** InvitationResponseSchema */
         InvitationResponseSchema: {
             /** Invitation Id */
             invitation_id: number;
             response: components["schemas"]["InviteStatus"];
         };
-        /**
-         * InviteStatus
-         * @enum {string}
-         */
-        InviteStatus: "Pending" | "Accepted" | "Declined" | "Cancelled";
     };
     responses: never;
     parameters: never;
@@ -3428,11 +3540,17 @@ export type ApiProtocolActivityPlantSubtypesTreatmentMechanicalTerrestrialDraftS
 export type RecordAction = components['schemas']['RecordAction'];
 export type RecordMetadata = components['schemas']['RecordMetadata'];
 export type SingleActivityResponse = components['schemas']['SingleActivityResponse'];
+export type TeamMembershipOut = components['schemas']['TeamMembershipOut'];
+export type TeamMembershipRowOut = components['schemas']['TeamMembershipRowOut'];
 export type CreateTeamSchema = components['schemas']['CreateTeamSchema'];
+export type InvitationOut = components['schemas']['InvitationOut'];
+export type InviteStatus = components['schemas']['InviteStatus'];
+export type SingleTeamOut = components['schemas']['SingleTeamOut'];
+export type TeamMemberOut = components['schemas']['TeamMemberOut'];
 export type UpdateTeamSchema = components['schemas']['UpdateTeamSchema'];
 export type InviteUserToTeamSchema = components['schemas']['InviteUserToTeamSchema'];
+export type TeamSuggestedUserOut = components['schemas']['TeamSuggestedUserOut'];
 export type InvitationResponseSchema = components['schemas']['InvitationResponseSchema'];
-export type InviteStatus = components['schemas']['InviteStatus'];
 export type $defs = Record<string, never>;
 export interface operations {
     api_protocol_activity_api_list_activities: {
@@ -3606,9 +3724,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    }[];
+                    "application/json": components["schemas"]["TeamMembershipOut"];
                 };
             };
         };
@@ -3626,12 +3742,16 @@ export interface operations {
             };
         };
         responses: {
-            /** @description OK */
-            200: {
+            /** @description Created */
+            201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
             };
         };
     };
@@ -3651,7 +3771,20 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["SingleTeamOut"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
             };
         };
     };
@@ -3675,7 +3808,7 @@ export interface operations {
             };
         };
     };
-    api_protocol_teams_api_update_team_name: {
+    api_protocol_teams_api_update_team_metadata: {
         parameters: {
             query?: never;
             header?: never;
@@ -3695,7 +3828,20 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["SingleTeamOut"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
             };
         };
     };
@@ -3715,7 +3861,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["TeamSuggestedUserOut"][];
+                };
             };
         };
     };
@@ -3734,12 +3882,27 @@ export interface operations {
             };
         };
         responses: {
-            /** @description OK */
-            200: {
+            /** @description Created */
+            201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
             };
         };
     };
@@ -3758,9 +3921,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    }[];
+                    "application/json": components["schemas"]["InvitationOut"][];
                 };
             };
         };
@@ -3778,12 +3939,23 @@ export interface operations {
             };
         };
         responses: {
-            /** @description OK */
-            200: {
+            /** @description Created */
+            201: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
             };
         };
     };
@@ -3798,8 +3970,8 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description OK */
-            200: {
+            /** @description No Content */
+            204: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3819,8 +3991,8 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description OK */
-            200: {
+            /** @description No Content */
+            204: {
                 headers: {
                     [name: string]: unknown;
                 };
