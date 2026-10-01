@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router';
 import StyledTable from 'UI/Reusable/StyledTable/StyledTable';
+import './myTeams.css';
 
 type PropTypes = {
   teams: Record<PropertyKey, any>[];
@@ -14,6 +15,7 @@ const MyTeams = ({ teams }: PropTypes) => {
           <tr>
             <th>Team</th>
             <th>Team Lead</th>
+            <th>Description</th>
             <th>Join Date</th>
             <th>View Team</th>
           </tr>
@@ -23,6 +25,7 @@ const MyTeams = ({ teams }: PropTypes) => {
             <tr>
               <td>{t.team_name}</td>
               <td>{t.team_founder}</td>
+              <td>{t.description}</td>
               <td>{t.join_date}</td>
               <td>
                 <NavLink className="navlink-as-btn" to={`/teams/team/${t.team_id}`}>
@@ -31,6 +34,11 @@ const MyTeams = ({ teams }: PropTypes) => {
               </td>
             </tr>
           ))}
+          {teams.length === 0 && (
+            <tr>
+              <td colSpan={4}>You are not a member of any teams</td>
+            </tr>
+          )}
         </tbody>
       </StyledTable>
       {/* TODO: Lock to Data Managers/Admin only.  */}
