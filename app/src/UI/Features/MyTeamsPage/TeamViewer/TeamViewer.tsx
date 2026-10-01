@@ -3,15 +3,16 @@ import { ReactNode, useEffect, useState } from 'react';
 import StyledTable from 'UI/Reusable/StyledTable/StyledTable';
 import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
 import moment from 'moment';
-import './teamViewer.css';
-import { InviteStatus } from 'api/api-schema';
+import { InviteStatus, SingleTeamOut } from 'api/api-schema';
 import InviteMember from './InviteMember';
 import BackButton from 'UI/Reusable/BackButton/BackButton';
 import Button from 'UI/Reusable/Button/Button';
-import { Cancel, GroupRemove, PersonRemove } from '@mui/icons-material';
+import { Cancel, GroupRemove, PersonRemove, Refresh } from '@mui/icons-material';
 import useTeamsManagement from '../subcomponents/useTeamManagement.hooks';
 import EditTeamInfo from './EditTeamInfo';
 import Spinner from 'UI/Reusable/Spinner/Spinner';
+import ConfirmationButton from 'UI/Reusable/ConfirmationButton/ConfirmationButton';
+import './teamViewer.css';
 
 type InfoProps = {
   term: string;
@@ -33,17 +34,28 @@ const TeamViewer = () => {
   const INVITATION_TOOLTIP = "View sent team invitations and check whether they've been accepted, pending, or expired.";
 
   const handleLeaveTeam = async () => {
-    if (!id) return;
-    await (canEdit ? hooks.disbandTeam : hooks.leaveTeam)(id);
+    if (!teamId) return;
+    await (canEdit ? hooks.disbandTeam : hooks.leaveTeam)(teamId);
+  };
+
+  /**
+   * @desc Handle the initial team load, render Error/Loading State as needed
+   */
+  const initTeamLoad = async () => {
+    try {
+      setLoading(true);
+      setLoadFailed(false);
+      await refreshTeamInformation();
+      setLoading(false);
+    } catch {
+      setLoadFailed(true);
+    }
   };
 
   const refreshTeamInformation = async () => {
-    if (!id) return;
-    const res = await hooks.getTeam(id);
-    if (res?.ok) {
-      setDetails(await res.json());
-      setLoading(false);
-    }
+    if (!teamId) return;
+    const res = await hooks.getTeam(teamId);
+    setDetails(await res.json());
   };
 
   const handleEditInvitation = async (invitation_id: number, response: InviteStatus | `${InviteStatus}`) => {
@@ -52,27 +64,46 @@ const TeamViewer = () => {
   };
 
   const handleRemoveUser = async (subject: string) => {
-    if (!id) return;
-    const res = await hooks.kickUserFromTeam(id, subject);
+    if (!teamId) return;
+    const res = await hooks.kickUserFromTeam(teamId, subject);
     if (res?.ok) await refreshTeamInformation();
   };
 
   const { id } = useParams<{ id: string }>();
+  const teamId: SingleTeamOut['id'] = parseInt(id ?? '');
 
   const hooks = useTeamsManagement();
-  const [details, setDetails] = useState<Record<PropertyKey, unknown>>({});
+  const [details, setDetails] = useState<SingleTeamOut>();
+  const [loadFailed, setLoadFailed] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     (async () => {
-      if (id == null) return;
-      await refreshTeamInformation();
+      if (teamId == null) return;
+      await initTeamLoad();
     })();
-  }, [id]);
+  }, [teamId]);
 
-  const canEdit: boolean = details?.can_edit;
+  const canEdit: boolean = !!details?.can_edit;
 
-  if (loading)
+  if (loadFailed) {
+    return (
+      <div id="team-viewer">
+        <div className="fixed-back-button">
+          <BackButton />
+        </div>
+        <div className="content">
+          <p>Something went wrong while attempting to access this team</p>
+          <div className="refresh">
+            <Button variant="outlined" onClick={refreshTeamInformation}>
+              <Refresh color="primary" /> Try again
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  if (loading || !details)
     return (
       <div id="team-viewer">
         <div className="fixed-back-button">
@@ -92,11 +123,11 @@ const TeamViewer = () => {
       <div className="content">
         <Fieldset label="Overview">
           <dl className="overview">
-            <Info term={'Name'} definition={details?.name as string} />
-            <Info term={'Agencies'} definition={details?.agencies as string} />
-            <Info term={'Founder'} definition={details?.founder as string} />
-            <Info term={'Founding Date'} definition={details?.founding_date as string} />
-            <Info term={'Description'} definition={details?.description as string} />
+            <Info term={'Name'} definition={details.name} />
+            <Info term={'Agencies'} definition={details.agencies} />
+            <Info term={'Founder'} definition={details.founder} />
+            <Info term={'Founding Date'} definition={details.founding_date} />
+            <Info term={'Description'} definition={details.description} />
           </dl>
           {canEdit && <EditTeamInfo details={details} refresh={refreshTeamInformation} />}
         </Fieldset>
@@ -116,7 +147,7 @@ const TeamViewer = () => {
               </tr>
             </thead>
             <tbody>
-              {details?.members?.map((m) => (
+              {details.members.map((m) => (
                 <tr>
                   <td>{m.name}</td>
                   <td>{m?.join_date}</td>
@@ -140,9 +171,9 @@ const TeamViewer = () => {
           </StyledTable>
         </Fieldset>
 
-        {canEdit && (
+        {canEdit && details?.invitations && (
           <Fieldset label={'Invitation Statuses'} tooltip={INVITATION_TOOLTIP}>
-            <InviteMember teamId={id} refreshTeam={refreshTeamInformation} />
+            <InviteMember teamId={teamId} refreshTeam={refreshTeamInformation} />
             <StyledTable>
               <thead>
                 <tr>
@@ -153,33 +184,35 @@ const TeamViewer = () => {
                 </tr>
               </thead>
               <tbody>
-                {(details?.invitations as Record<PropertyKey, any>[])?.map((t) => (
+                {details.invitations.map((t) => (
                   <tr>
                     <td>{t.invitee}</td>
                     <td>{moment(t?.date_stamp).format('YYYY-MM-DD')}</td>
-                    <td>{t?.status}</td>
+                    <td>{t.status}</td>
                     <td>
                       {t.status === 'Pending' && (
-                        <Button className="destructive" onClick={() => handleEditInvitation(t.id, 'Cancelled')}>
+                        <ConfirmationButton
+                          variant="destructive"
+                          onClick={() => handleEditInvitation(t.id, 'Cancelled')}
+                        >
                           <Cancel /> &nbsp; Cancel
-                        </Button>
+                        </ConfirmationButton>
                       )}
                     </td>
                   </tr>
                 ))}
-                {(details?.invitations as Record<PropertyKey, any>[]) &&
-                  (details?.invitations as Record<PropertyKey, any>[]).length == 0 && (
-                    <tr className="empty-row">
-                      <td colSpan={4}>There are no invitations for this team</td>
-                    </tr>
-                  )}
+                {details?.invitations.length === 0 && (
+                  <tr className="empty-row">
+                    <td colSpan={4}>There are no invitations for this team</td>
+                  </tr>
+                )}
               </tbody>
             </StyledTable>
           </Fieldset>
         )}
-        <Button variant="destructive" onClick={handleLeaveTeam}>
+        <ConfirmationButton variant="contained" onClick={handleLeaveTeam}>
           <GroupRemove /> &nbsp; {canEdit ? 'Disband Team' : 'Leave Team'}
-        </Button>
+        </ConfirmationButton>
       </div>
     </div>
   );
