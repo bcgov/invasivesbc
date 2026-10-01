@@ -70,7 +70,7 @@ const teamAlertMessages: Record<string, AlertMessage> = {
   },
   getTeamFailed: {
     content: 'Unable to get Team details',
-    severity: AlertSeverity.Success,
+    severity: AlertSeverity.Error,
     subject: AlertSubjects.Team,
     autoClose: 6
   },
