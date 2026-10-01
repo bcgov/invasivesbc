@@ -32,6 +32,7 @@ const MyInvitations = ({ refresh, invitations }: PropTypes) => {
           <tr>
             <th>Team Name</th>
             <th>Team Founder</th>
+            <th>Description</th>
             <th>Agencies</th>
             <th>Date of Invitation</th>
             <th>Status</th>
@@ -43,6 +44,7 @@ const MyInvitations = ({ refresh, invitations }: PropTypes) => {
             <tr>
               <td>{i?.name}</td>
               <td>{i?.founder}</td>
+              <td>{i?.description}</td>
               <td>{i?.agencies}</td>
               <td>{moment(i?.date_stamp).format('YYYY-MM-DD')}</td>
               <td>{i?.status}</td>
