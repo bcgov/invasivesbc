@@ -78,6 +78,7 @@ def get_team_info(request, team_id: PositiveInt):
 
     Returns all info for specified team
     """
+    team = get_object_or_404(Team, id=team_id, disbanded_date=None)
     user_in_team = TeamMember.objects.filter(
         user=request.auth, team__id=team_id
     ).exists()
@@ -86,8 +87,7 @@ def get_team_info(request, team_id: PositiveInt):
             status=status.HTTP_403_FORBIDDEN,
             data={"detail": "Not a member of this team"},
         )
-
-    return get_object_or_404(Team, id=team_id, disbanded_date=None)
+    return team
 
 
 @router.delete("/team/{team_id}", response={200: None})
