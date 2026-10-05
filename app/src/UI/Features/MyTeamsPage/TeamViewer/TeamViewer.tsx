@@ -70,7 +70,7 @@ const TeamViewer = () => {
   };
 
   const { id } = useParams<{ id: string }>();
-  const teamId: SingleTeamOut['id'] = parseInt(id ?? '');
+  const teamId: SingleTeamOut['id'] = Number.parseInt(id ?? '');
 
   const hooks = useTeamsManagement();
   const [details, setDetails] = useState<SingleTeamOut>();
@@ -148,7 +148,7 @@ const TeamViewer = () => {
             </thead>
             <tbody>
               {details.members.map((m) => (
-                <tr>
+                <tr key={m.subject}>
                   <td>{m.name}</td>
                   <td>{m?.join_date}</td>
                   {canEdit && (
@@ -185,7 +185,7 @@ const TeamViewer = () => {
               </thead>
               <tbody>
                 {details.invitations.map((t) => (
-                  <tr>
+                  <tr key={t.id}>
                     <td>{t.invitee}</td>
                     <td>{moment(t?.date_stamp).format('YYYY-MM-DD')}</td>
                     <td>{t.status}</td>
