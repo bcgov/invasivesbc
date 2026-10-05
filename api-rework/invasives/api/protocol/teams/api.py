@@ -2,11 +2,13 @@ from ninja import Router
 from django.db import transaction
 from django.db.models import Q
 from typing import List
+import logging
+from api.constants import WellKnownRoles
 from pydantic import PositiveInt
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.http import HttpResponse, JsonResponse
-from api.ninja_authentication import NinjaKeycloakAuthentication
+from api.ninja_authentication import NinjaKeycloakAuthentication, NinjaRoleRequired
 from api.models.teams import TeamMember, Team, InviteStatus, TeamInvitation
 from api.models.auth import User
 from api.schemas.teams import (
@@ -25,7 +27,7 @@ from . import (
 
 ROOT_PATH = "/teams"
 router = Router(auth=NinjaKeycloakAuthentication())
-
+log = logging.getLogger(__name__)
 
 ##############
 # Team Creation Handling
@@ -47,15 +49,18 @@ def get_list_of_teams(request):
     return {"teams": user_teams}
 
 
-@router.post("/team", response={201: dict})
+@router.post(
+    "/team",
+    response={201: dict, 403: dict},
+    auth=NinjaRoleRequired(WellKnownRoles.ADMINISTRATOR, WellKnownRoles.DATA_MANAGER),
+)
 def create_team(request, data: CreateTeamSchema):
     """
-    :Access: DataManagers
+    :Access: DataManagers | Admins
 
-    Endpoint for Data Managers to create a new team. Requesting user is auto-enlisted into team.
+    Endpoint to create a new team. Requesting user is auto-enlisted into team.
     """
     with transaction.atomic():
-        # TODO: Limit to DataManager/Administrator role access
         if Team.objects.filter(founder=request.auth, name=data.name).exists():
             return JsonResponse(
                 status=status.HTTP_409_CONFLICT,
@@ -68,10 +73,16 @@ def create_team(request, data: CreateTeamSchema):
         )
         team.agencies.set(data.agencies)
         TeamMember.objects.create(team=team, user=request.auth)
+
+        log.info("Team %s created. Created By %s", team.id, request.auth.display_name)
         return JsonResponse(status=status.HTTP_201_CREATED, data={"id": team.id})
 
 
-@router.get("/team/{team_id}", response={200: SingleTeamOut, 403: dict})
+@router.get(
+    "/team/{team_id}",
+    response={200: SingleTeamOut, 403: dict},
+    auth=NinjaRoleRequired(WellKnownRoles.ADMINISTRATOR, WellKnownRoles.DATA_MANAGER),
+)
 def get_team_info(request, team_id: PositiveInt):
     """
     :Access: All Users on designated team.
@@ -90,35 +101,52 @@ def get_team_info(request, team_id: PositiveInt):
     return team
 
 
-@router.delete("/team/{team_id}", response={200: None})
+@router.delete(
+    "/team/{team_id}",
+    response={200: None},
+    auth=NinjaRoleRequired(WellKnownRoles.ADMINISTRATOR, WellKnownRoles.DATA_MANAGER),
+)
 def disband_team(request, team_id: PositiveInt):
     """
     :Access: Founders of a team
 
     Marks teams as deleted (soft) removing them from searches
     """
-    team = get_object_or_404(
-        Team, pk=team_id, founder=request.auth, disbanded_date=None
-    )
-    member = get_object_or_404(
-        TeamMember, user=request.auth, leave_date=None, team=team
-    )
     with transaction.atomic():
+        team = get_object_or_404(
+            Team, pk=team_id, founder=request.auth, disbanded_date=None
+        )
+        member = get_object_or_404(
+            TeamMember, user=request.auth, leave_date=None, team=team
+        )
         now = timezone.now().date()
         team.disbanded_date = now
         team.save(update_fields=["disbanded_date"])
         member.leave_date = now
         member.save(update_fields=["leave_date"])
+
+        log.info("Team %s deleted. By: %s", team.id, request.auth.subject)
         return HttpResponse(status=status.HTTP_200_OK)
 
 
-@router.patch("/team/{team_id}", response={200: SingleTeamOut, 409: dict})
+@router.patch(
+    "/team/{team_id}",
+    response={200: SingleTeamOut, 409: dict},
+    auth=NinjaRoleRequired(WellKnownRoles.ADMINISTRATOR, WellKnownRoles.DATA_MANAGER),
+)
 def update_team_metadata(request, team_id: PositiveInt, data: UpdateTeamSchema):
     """
-    :Access: Data Managers
+    :Access: Data Managers | Admins
 
     Update Description/Name of a team.
     """
+    if not request.auth.has_any_role(
+        [WellKnownRoles.DATA_MANAGER.value, WellKnownRoles.ADMINISTRATOR.value]
+    ):
+        return JsonResponse(
+            status=status.HTTP_403_FORBIDDEN,
+            data={"details": "You do not have permission to edit a team"},
+        )
     team = get_object_or_404(
         Team, pk=team_id, founder=request.auth, disbanded_date=None
     )
@@ -143,17 +171,24 @@ def update_team_metadata(request, team_id: PositiveInt, data: UpdateTeamSchema):
     return team
 
 
-@router.post("/team/{team_id}/invite", response={201: dict, 409: dict})
+@router.post(
+    "/team/{team_id}/invite",
+    response={201: dict, 409: dict},
+    auth=NinjaRoleRequired(WellKnownRoles.ADMINISTRATOR, WellKnownRoles.DATA_MANAGER),
+)
 def invite_user_to_team(request, team_id: PositiveInt, data: InviteUserToTeamSchema):
     """
     :Access: DataManagers
 
     Endpoint for Data Managers to Invite a user to their team.
     """
-    # TODO: Limit to DataManager/Administrator role access
-    # TODO: Prevent User from adding Self
     # TODO: Ensure User being added has one matching Agency to Team.
     with transaction.atomic():
+        if request.auth.subject == data.subject:
+            return JsonResponse(
+                status=status.HTTP_400_BAD_REQUEST,
+                data={"details": "Cannot invite self to team"},
+            )
         recipient = get_object_or_404(User, subject=data.subject)
         team = get_object_or_404(
             Team, founder=request.auth, id=team_id, disbanded_date=None
@@ -178,7 +213,11 @@ def invite_user_to_team(request, team_id: PositiveInt, data: InviteUserToTeamSch
 ###
 
 
-@router.get("/team/{team_id}/invite", response={200: List[TeamSuggestedUserOut]})
+@router.get(
+    "/team/{team_id}/invite",
+    response={200: List[TeamSuggestedUserOut]},
+    auth=NinjaRoleRequired(WellKnownRoles.ADMINISTRATOR, WellKnownRoles.DATA_MANAGER),
+)
 def get_suggested_users(request, team_id):
     """
     :Access: Team Founders
@@ -219,9 +258,9 @@ def get_active_invitations(request):
 
 
 @router.patch("/invite", response={201: None, 403: dict})
-def user_response_to_invitation(request, data: InvitationResponseSchema):
+def update_invitation_status(request, data: InvitationResponseSchema):
     """
-    :Access: Recipient of invite.
+    :Access: Recipient of invite. or Data Manager
 
     Update invitation to reflect users Response. Adds user to team if accepted.
     """
@@ -248,7 +287,7 @@ def user_response_to_invitation(request, data: InvitationResponseSchema):
                 data={
                     "details": f"Not authorized to use status '{data.response}' for this invitation."
                 },
-                status=status.HTTP_400_BAD_REQUEST,  # 400 for bad action payload
+                status=status.HTTP_403_FORBIDDEN,
             )
 
         invite.status = data.response
@@ -261,7 +300,11 @@ def user_response_to_invitation(request, data: InvitationResponseSchema):
         return HttpResponse(status.HTTP_201_CREATED)
 
 
-@router.delete("/team/{team_id}/leave", response={204: None})
+@router.delete(
+    "/team/{team_id}/leave",
+    response={204: None},
+    auth=NinjaRoleRequired(WellKnownRoles.ADMINISTRATOR, WellKnownRoles.DATA_MANAGER),
+)
 def leave_team(request, team_id: int):
     """
     :Access: All users
@@ -275,10 +318,16 @@ def leave_team(request, team_id: int):
     )
     team.leave_date = timezone.now()
     team.save(update_fields=["leave_date"])
+
+    log.info("%s left team %s", request.auth.subject, team.id)
     return HttpResponse(status=status.HTTP_204_NO_CONTENT)
 
 
-@router.delete("/team/{team_id}/members/{subject}", response={204: None})
+@router.delete(
+    "/team/{team_id}/members/{subject}",
+    response={204: None},
+    auth=NinjaRoleRequired(WellKnownRoles.ADMINISTRATOR, WellKnownRoles.DATA_MANAGER),
+)
 def kick_member(request, team_id: int, subject: str):
     """
     :Access: Data Managers
@@ -294,4 +343,5 @@ def kick_member(request, team_id: int, subject: str):
     )
     team.leave_date = timezone.now()
     team.save(update_fields=["leave_date"])
+    log.info("%s removed from team %s by %s", subject, team.id, request.auth.subject)
     return HttpResponse(status=status.HTTP_204_NO_CONTENT)
