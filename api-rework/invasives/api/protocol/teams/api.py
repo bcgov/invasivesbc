@@ -103,7 +103,7 @@ def get_team_info(request, team_id: PositiveInt):
 
 @router.delete(
     "/team/{team_id}",
-    response={200: None},
+    response={200: None, 403: None},
     auth=NinjaRoleRequired(WellKnownRoles.ADMINISTRATOR, WellKnownRoles.DATA_MANAGER),
 )
 def disband_team(request, team_id: PositiveInt):
@@ -113,9 +113,15 @@ def disband_team(request, team_id: PositiveInt):
     Marks teams as deleted (soft) removing them from searches
     """
     with transaction.atomic():
-        team = get_object_or_404(
-            Team, pk=team_id, founder=request.auth, disbanded_date=None
-        )
+        team = get_object_or_404(Team, pk=team_id, disbanded_date=None)
+        if team.founder != request.auth:
+            log.warning(
+                "Failed attempt to delete team %s. By: %s",
+                team.id,
+                request.auth.subject,
+            )
+            return HttpResponse(status=status.HTTP_403_FORBIDDEN)
+
         member = get_object_or_404(
             TeamMember, user=request.auth, leave_date=None, team=team
         )
@@ -140,16 +146,13 @@ def update_team_metadata(request, team_id: PositiveInt, data: UpdateTeamSchema):
 
     Update Description/Name of a team.
     """
-    if not request.auth.has_any_role(
-        [WellKnownRoles.DATA_MANAGER.value, WellKnownRoles.ADMINISTRATOR.value]
-    ):
+    team = get_object_or_404(Team, pk=team_id, disbanded_date=None)
+
+    if team.founder != request.auth:
         return JsonResponse(
             status=status.HTTP_403_FORBIDDEN,
-            data={"details": "You do not have permission to edit a team"},
+            data={"details": "You are not authorized to modify this team"},
         )
-    team = get_object_or_404(
-        Team, pk=team_id, founder=request.auth, disbanded_date=None
-    )
     if (
         Team.objects.filter(founder=request.auth, name=data.name)
         .exclude(id=team_id)
@@ -173,12 +176,12 @@ def update_team_metadata(request, team_id: PositiveInt, data: UpdateTeamSchema):
 
 @router.post(
     "/team/{team_id}/invite",
-    response={201: dict, 409: dict},
+    response={201: dict, 403: None, 409: dict},
     auth=NinjaRoleRequired(WellKnownRoles.ADMINISTRATOR, WellKnownRoles.DATA_MANAGER),
 )
 def invite_user_to_team(request, team_id: PositiveInt, data: InviteUserToTeamSchema):
     """
-    :Access: DataManagers
+    :Access: Team Owners
 
     Endpoint for Data Managers to Invite a user to their team.
     """
@@ -190,9 +193,10 @@ def invite_user_to_team(request, team_id: PositiveInt, data: InviteUserToTeamSch
                 data={"details": "Cannot invite self to team"},
             )
         recipient = get_object_or_404(User, subject=data.subject)
-        team = get_object_or_404(
-            Team, founder=request.auth, id=team_id, disbanded_date=None
-        )
+        team = get_object_or_404(Team, id=team_id, disbanded_date=None)
+        if team.founder != request.auth:
+            return HttpResponse(status=status.HTTP_403_FORBIDDEN)
+
         active_member = TeamMember.objects.filter(
             team=team, user=recipient, leave_date=None
         ).exists()
@@ -215,7 +219,7 @@ def invite_user_to_team(request, team_id: PositiveInt, data: InviteUserToTeamSch
 
 @router.get(
     "/team/{team_id}/invite",
-    response={200: List[TeamSuggestedUserOut]},
+    response={200: List[TeamSuggestedUserOut], 403: None},
     auth=NinjaRoleRequired(WellKnownRoles.ADMINISTRATOR, WellKnownRoles.DATA_MANAGER),
 )
 def get_suggested_users(request, team_id):
@@ -227,7 +231,7 @@ def get_suggested_users(request, team_id):
     # TODO: Implement Agency Filter when old auth ported over.
     team = get_object_or_404(Team, id=team_id)
     if team.founder != request.auth:
-        return HttpResponse(status=status.HTTP_401_UNAUTHORIZED)
+        return HttpResponse(status=status.HTTP_403_FORBIDDEN)
 
     members = TeamMember.objects.filter(team=team, leave_date=None).values_list(
         "user__subject", flat=True
@@ -260,19 +264,22 @@ def get_active_invitations(request):
 @router.patch("/invite", response={201: None, 403: dict})
 def update_invitation_status(request, data: InvitationResponseSchema):
     """
-    :Access: Recipient of invite. or Data Manager
+    :Access: Invitation Recipient or Sender
 
     Update invitation to reflect users Response. Adds user to team if accepted.
     """
     with transaction.atomic():
         invite = get_object_or_404(
             TeamInvitation,
-            (Q(recipient=request.auth) | Q(team__founder=request.auth)),
             id=data.invitation_id,
             status=InviteStatus.Pending.value,
         )
+
         is_recipient = invite.recipient == request.auth
         is_founder = invite.team.founder == request.auth
+
+        if not is_recipient and not is_founder:
+            return HttpResponse(status=status.HTTP_403_FORBIDDEN)
 
         recipient_allowed = [InviteStatus.Accepted.value, InviteStatus.Declined.value]
         founder_allowed = [InviteStatus.Pending.value, InviteStatus.Cancelled.value]
