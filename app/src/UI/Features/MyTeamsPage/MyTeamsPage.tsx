@@ -7,10 +7,14 @@ import { InvitationOut, TeamMembershipOut } from 'api/api-schema';
 import './myTeamsPage.css';
 
 const MyTeamsPage = () => {
-  const loadInfo = async () => {
-    const [teamsRes, invitationsRes] = await Promise.all([getTeams(), getInvitations()]);
-    if (teamsRes?.ok) setMembershipDetails(await teamsRes.json());
-    if (invitationsRes?.ok) setInvitations(await invitationsRes.json());
+  const loadInfo = async (): Promise<void> => {
+    try {
+      const [teamsRes, invitationsRes] = await Promise.all([getTeams(), getInvitations()]);
+      if (teamsRes?.ok) setMembershipDetails(await teamsRes.json());
+      if (invitationsRes?.ok) setInvitations(await invitationsRes.json());
+    } catch (e) {
+      console.error('Failed to load teams:', e);
+    }
   };
 
   const { getInvitations, getTeams } = useTeamsManagement();
@@ -20,7 +24,7 @@ const MyTeamsPage = () => {
   const [membershipDetails, setMembershipDetails] = useState<TeamMembershipOut>();
 
   useEffect(() => {
-    (async () => {
+    void (async () => {
       if (!online) return;
       await loadInfo();
     })();
