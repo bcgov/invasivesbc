@@ -21,15 +21,19 @@ const CreateNewTeam = () => {
 
   const onSubmit: SubmitHandler<CreateTeamSchema> = async (data) => {
     setSubmissionError(undefined);
-    const res = await createTeam(data);
-    if (res?.ok) {
-      const data = await res.json();
-      // Redirect to Team page.
-      navigate(`/teams/team/${data.id}`);
-    } else if (res.status === 409) {
-      setError('name', { type: 'manual', message: (await res.json())?.details });
-    } else {
-      setSubmissionError('An error occured while attempting to register your team. Please try again.');
+    try {
+      const res = await createTeam(data);
+      if (res?.ok) {
+        const data = await res.json();
+        // Redirect to Team page.
+        navigate(`/teams/team/${data.id}`);
+      } else if (res.status === 409) {
+        setError('name', { type: 'manual', message: (await res.json())?.details });
+      } else {
+        setSubmissionError('An error occured while attempting to register your team. Please try again.');
+      }
+    } catch (e) {
+      console.error('[onSubmit]', e);
     }
   };
 

@@ -41,32 +41,48 @@ const TeamViewer = () => {
   /**
    * @desc Handle the initial team load, render Error/Loading State as needed
    */
-  const initTeamLoad = async () => {
+  const initTeamLoad = async (): Promise<void> => {
     try {
       setLoading(true);
       setLoadFailed(false);
       await refreshTeamInformation();
       setLoading(false);
-    } catch {
+    } catch (e) {
+      console.error('[initTeamLoad]', e);
       setLoadFailed(true);
     }
   };
 
-  const refreshTeamInformation = async () => {
+  const refreshTeamInformation = async (): Promise<void> => {
     if (!teamId) return;
-    const res = await hooks.getTeam(teamId);
-    setDetails(await res.json());
+    try {
+      const res = await hooks.getTeam(teamId);
+      setDetails(await res.json());
+    } catch (e) {
+      console.error('[refreshTeamInformation]', e);
+    }
   };
 
-  const handleEditInvitation = async (invitation_id: number, response: InviteStatus | `${InviteStatus}`) => {
-    const res = await hooks.updateInvitation(invitation_id, response);
-    if (res?.ok) await refreshTeamInformation();
+  const handleEditInvitation = async (
+    invitation_id: number,
+    response: InviteStatus | `${InviteStatus}`
+  ): Promise<void> => {
+    try {
+      const res = await hooks.updateInvitation(invitation_id, response);
+      if (res?.ok) await refreshTeamInformation();
+    } catch (e) {
+      console.error('[handleEditInvitation]', e);
+    }
   };
 
-  const handleRemoveUser = async (subject: string) => {
+  const handleRemoveUser = async (subject: string): Promise<void> => {
     if (!teamId) return;
-    const res = await hooks.kickUserFromTeam(teamId, subject);
-    if (res?.ok) await refreshTeamInformation();
+    try {
+      const res = await hooks.kickUserFromTeam(teamId, subject);
+      if (res?.ok) await refreshTeamInformation();
+    } catch (e) {
+      console.error('[handleRemoveUser]', e);
+    }
   };
 
   const { id } = useParams<{ id: string }>();
@@ -78,7 +94,7 @@ const TeamViewer = () => {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    (async () => {
+    void (async () => {
       if (teamId == null) return;
       await initTeamLoad();
     })();

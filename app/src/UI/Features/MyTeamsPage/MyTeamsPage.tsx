@@ -13,7 +13,7 @@ const MyTeamsPage = () => {
       if (teamsRes?.ok) setMembershipDetails(await teamsRes.json());
       if (invitationsRes?.ok) setInvitations(await invitationsRes.json());
     } catch (e) {
-      console.error('Failed to load teams:', e);
+      console.error('[loadInfo]', e);
     }
   };
 
