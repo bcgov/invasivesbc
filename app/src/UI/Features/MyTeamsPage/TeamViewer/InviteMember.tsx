@@ -8,25 +8,33 @@ import Button from 'UI/Reusable/Button/Button';
 import useTeamsManagement from '../subcomponents/useTeamManagement.hooks';
 
 type PropTypes = {
-  teamId?: SingleTeamOut['id'];
+  teamId: SingleTeamOut['id'];
   refreshTeam: Function;
 };
 
 const InviteMember = ({ teamId, refreshTeam }: PropTypes) => {
   const { suggestMembers, inviteMember } = useTeamsManagement();
 
-  const getSuggestedUsers = async () => {
+  const getSuggestedUsers = async (): Promise<void> => {
     if (!teamId) return;
-    const suggestions = await suggestMembers(teamId);
-    setOptions(suggestions);
+    try {
+      const suggestions = await suggestMembers(teamId);
+      setOptions(suggestions);
+    } catch (e) {
+      console.error('Failed to get suggested members:', e);
+    }
   };
 
   const onSubmit = async (data: InviteUserToTeamSchema) => {
     if (!teamId) return;
-    const res = await inviteMember(teamId, data);
-    if (res?.ok) {
-      await refreshTeam();
-      reset();
+    try {
+      const res = await inviteMember(teamId, data);
+      if (res?.ok) {
+        await refreshTeam();
+        reset();
+      }
+    } catch (e) {
+      console.error('Failed to invite member', e);
     }
   };
 
@@ -38,7 +46,7 @@ const InviteMember = ({ teamId, refreshTeam }: PropTypes) => {
   });
 
   useEffect(() => {
-    (async () => {
+    void (async () => {
       await getSuggestedUsers();
     })();
   }, []);
