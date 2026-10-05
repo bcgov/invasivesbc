@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractBaseUser
 from django.db import models
-
+from api.constants import WellKnownRoles
+from typing import List
 from api.models.auth.role import Role
 
 
@@ -32,8 +33,16 @@ class User(AbstractBaseUser):
         db_comment="Date (not including time information, to reduce database updates) the user last authenticated.",
     )
 
+    class Meta:
+        db_table = '"authentication"."user"'
+
     def natural_key(self):
         return (self.subject,)
 
-    class Meta:
-        db_table = '"authentication"."user"'
+    def has_role(self, role: WellKnownRoles) -> bool:
+        return self.roles.filter(name=role).exists()
+
+    def has_any_role(self, roles: List[WellKnownRoles]) -> bool:
+        """Check if the user has AT LEAST ONE of the specified roles."""
+        role_names = [r.value if hasattr(r, "value") else r for r in roles]
+        return self.roles.filter(name__in=role_names).exists()
