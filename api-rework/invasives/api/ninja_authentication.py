@@ -6,7 +6,9 @@ import requests
 from django.conf import settings
 from ninja.security import HttpBearer
 from rest_framework import exceptions
-
+from typing import Optional
+from ninja.errors import HttpError
+from api.constants import WellKnownRoles
 from api.keycloak_authentication import update_user_attributes_if_needed
 from api.models.auth import User
 
@@ -25,7 +27,7 @@ class NinjaKeycloakAuthentication(HttpBearer):
         jwks = json.loads(certs_response.text)
         self.jwks = jwks
 
-    def authenticate(self, request, token):
+    def authenticate(self, request, token) -> Optional[User]:
         """Verify the JWT and do user lookup"""
 
         if settings.UNIT_TESTING_ENABLED:
@@ -72,4 +74,18 @@ class NinjaKeycloakAuthentication(HttpBearer):
 
         user, _ = User.objects.get_or_create(subject=user_token["sub"])
         update_user_attributes_if_needed(user, user_token)
+        return user
+
+
+class NinjaRoleRequired(NinjaKeycloakAuthentication):
+    def __init__(self, *roles: WellKnownRoles):
+        super().__init__()
+        self.roles = frozenset(r.value if hasattr(r, "value") else r for r in roles)
+
+    def authenticate(self, request, token):
+        user = super().authenticate(request, token)
+        if not user:
+            return None
+        if user.has_any_role(self.roles) == False:
+            raise HttpError(403, "Insufficient Permissions to access resource")
         return user
