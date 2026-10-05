@@ -31,7 +31,9 @@ class NinjaKeycloakAuthentication(HttpBearer):
         """Verify the JWT and do user lookup"""
 
         if settings.UNIT_TESTING_ENABLED:
-            user, _ = User.objects.get_or_create(subject="test-user")
+            header = request.META.get("HTTP_AUTHORIZATION")
+            subject = header.split("act_as_user=")[1]
+            user = User.objects.filter(subject=subject).first()
             return user
 
         if not token:
