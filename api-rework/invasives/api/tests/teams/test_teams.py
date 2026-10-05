@@ -1,7 +1,6 @@
 from django.test.client import Client
 from api.tests.base_test_case import BaseTestCase
-from api.models.teams import TeamMember, Team, TeamInvitation
-from api.models.auth import User
+from api.models.teams import Team, TeamInvitation
 from api.schemas.teams import SingleTeamOut
 
 
