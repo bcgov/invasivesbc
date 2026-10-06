@@ -34,32 +34,26 @@ const TeamViewer = () => {
 
   const handleLeaveTeam = async () => {
     if (!teamId) return;
-    await (canEdit ? hooks.disbandTeam : hooks.leaveTeam)(teamId);
-  };
-
-  /**
-   * @desc Handle the initial team load, render Error/Loading State as needed
-   */
-  const initTeamLoad = async (): Promise<void> => {
-    try {
-      setLoading(true);
-      setLoadFailed(false);
-      await refreshTeamInformation();
-      setLoading(false);
-    } catch (e) {
-      console.error('[initTeamLoad]', e);
-      setLoadFailed(true);
-    }
+    await (canEdit ? hooks.disbandTeam : hooks.leaveTeam)(teamId).catch((e) => console.error('[handleLeaveTeam]', e));
   };
 
   const refreshTeamInformation = async (): Promise<void> => {
     if (!teamId) return;
-    try {
-      const res = await hooks.getTeam(teamId);
-      setDetails(await res.json());
-    } catch (e) {
-      console.error('[refreshTeamInformation]', e);
-    }
+    // don't reset 'initLoading' to True, as it will cause entire team page to rerender.
+    setLoadFailed(false);
+    await hooks
+      .getTeam(teamId)
+      .then(async (r) => {
+        const data = await r.json();
+        if (r?.ok) {
+          setDetails(data);
+        } else {
+          setError(data?.detail);
+          setLoadFailed(true);
+        }
+      })
+      .catch((e) => console.error('[refreshTeamInformation]', e))
+      .finally(() => setInitLoading(false));
   };
 
   const handleEditInvitation = async (
@@ -90,17 +84,17 @@ const TeamViewer = () => {
   const hooks = useTeamsManagement();
   const [details, setDetails] = useState<SingleTeamOut>();
   const [loadFailed, setLoadFailed] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>();
+  const [initLoading, setInitLoading] = useState<boolean>(true);
 
   useEffect(() => {
     void (async () => {
       if (teamId == null) return;
-      await initTeamLoad();
+      await refreshTeamInformation();
     })();
   }, [teamId]);
 
   const canEdit: boolean = !!details?.can_edit;
-
   if (loadFailed) {
     return (
       <div id="team-viewer">
@@ -109,6 +103,7 @@ const TeamViewer = () => {
         </div>
         <div className="content">
           <p>Something went wrong while attempting to access this team</p>
+          {error && <p>{error}</p>}
           <div className="refresh">
             <Button variant="outlined" onClick={refreshTeamInformation}>
               <Refresh color="primary" /> Try again
@@ -118,7 +113,7 @@ const TeamViewer = () => {
       </div>
     );
   }
-  if (loading || !details)
+  if (initLoading || !details)
     return (
       <div id="team-viewer">
         <div className="fixed-back-button">
