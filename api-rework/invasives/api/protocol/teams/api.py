@@ -82,7 +82,6 @@ def create_team(request, data: CreateTeamSchema):
 @router.get(
     "/team/{team_id}",
     response={200: SingleTeamOut, 403: dict},
-    auth=NinjaRoleRequired(WellKnownRoles.ADMINISTRATOR, WellKnownRoles.DATA_MANAGER),
 )
 def get_team_info(request, team_id: PositiveInt):
     """
@@ -92,7 +91,7 @@ def get_team_info(request, team_id: PositiveInt):
     """
     team = get_object_or_404(Team, id=team_id, disbanded_date=None)
     user_in_team = TeamMember.objects.filter(
-        user=request.auth, team__id=team_id
+        user=request.auth, team__id=team_id, leave_date=None
     ).exists()
     if not user_in_team:
         return JsonResponse(
@@ -104,7 +103,7 @@ def get_team_info(request, team_id: PositiveInt):
 
 @router.delete(
     "/team/{team_id}",
-    response={200: None, 403: None},
+    response={204: None, 403: None},
     auth=NinjaRoleRequired(WellKnownRoles.ADMINISTRATOR, WellKnownRoles.DATA_MANAGER),
 )
 def disband_team(request, team_id: PositiveInt):
@@ -133,7 +132,7 @@ def disband_team(request, team_id: PositiveInt):
         member.save(update_fields=["leave_date"])
 
         log.info("Team %s deleted. By: %s", team.id, request.auth.subject)
-        return HttpResponse(status=status.HTTP_200_OK)
+        return HttpResponse(status=status.HTTP_204_NO_CONTENT)
 
 
 @router.patch(
@@ -308,28 +307,31 @@ def update_invitation_status(request, data: InvitationResponseSchema):
         return HttpResponse(status.HTTP_201_CREATED)
 
 
-@router.delete("/team/{team_id}/leave", response={204: None})
+@router.delete("/team/{team_id}/leave", response={204: None, 400: None})
 def leave_team(request, team_id: int):
     """
     :Access: All users
     Requesting user is removed from the team
     """
-    team = get_object_or_404(
-        TeamMember,
+    membership = TeamMember.objects.filter(
         user=request.auth,
         leave_date=None,
         team__id=team_id,
-    )
-    team.leave_date = timezone.now()
-    team.save(update_fields=["leave_date"])
+    ).first()
 
-    log.info("%s left team %s", request.auth.subject, team.id)
+    if membership == None:
+        return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
+
+    membership.leave_date = timezone.now()
+    membership.save(update_fields=["leave_date"])
+
+    log.info("%s left team %s", request.auth.subject, membership.id)
     return HttpResponse(status=status.HTTP_204_NO_CONTENT)
 
 
 @router.delete(
     "/team/{team_id}/members/{subject}",
-    response={204: None},
+    response={204: None, 400: None},
     auth=NinjaRoleRequired(WellKnownRoles.ADMINISTRATOR, WellKnownRoles.DATA_MANAGER),
 )
 def kick_member(request, team_id: int, subject: str):
@@ -338,22 +340,27 @@ def kick_member(request, team_id: int, subject: str):
 
     Data manager selects user to remove from the team.
     """
-    team = get_object_or_404(
-        TeamMember,
+    membership = TeamMember.objects.filter(
         user__subject=subject,
         leave_date=None,
         team__id=team_id,
-    )
-    if team.founder != request.auth:
+    ).first()
+
+    if membership == None:
+        return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
+
+    if membership.team.founder != request.auth:
         log.warning(
             "Unauthorized attempt to remove '%s' from team '%s' by '%s'",
             subject,
-            team.id,
+            membership.id,
             request.auth.subject,
         )
         return HttpResponse(status=status.HTTP_403_FORBIDDEN)
 
-    team.leave_date = timezone.now()
-    team.save(update_fields=["leave_date"])
-    log.info("%s removed from team %s by %s", subject, team.id, request.auth.subject)
+    membership.leave_date = timezone.now()
+    membership.save(update_fields=["leave_date"])
+    log.info(
+        "%s removed from team %s by %s", subject, membership.id, request.auth.subject
+    )
     return HttpResponse(status=status.HTTP_204_NO_CONTENT)
