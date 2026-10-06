@@ -22,6 +22,10 @@ class Team(models.Model):
         "api.FundingAgencyCode",
         db_table='"teams"."team_agencies"',
     )
+    employers = models.ManyToManyField(
+        "api.EmployerCode",
+        db_table='"teams"."team_employers"',
+    )
     description = models.CharField(max_length=256, null=True, blank=True)
 
     class Meta:
