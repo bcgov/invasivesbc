@@ -289,6 +289,12 @@ class TeamsTest(BaseTestCase):
         )
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
+        ## Invite User Failure -- Founder (Cannot invite self)
+        res = self.post(
+            url=f"/team/{TEAM_ID}/invite",
+            payload={"subject": "bc_datamanager"},
+        )
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
         ## Get Invitations  -- Success (1 Active Invite)
         res = self.get("/invite", user=self.NO_ROLE_USER)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -401,6 +407,12 @@ class TeamsTest(BaseTestCase):
         self.assertEqual(
             len(data["members"]), 2, "Team has incorrect number of members"
         )
+        ## Invite User Failure -- Founder (Invited User already on Team)
+        res = self.post(
+            url=f"/team/{TEAM_ID}/invite",
+            payload={"subject": self.NO_ROLE_USER},
+        )
+        self.assertEqual(res.status_code, status.HTTP_409_CONFLICT)
 
         ## Get Suggested Users for Team -- Member (Non-Founder)
         res = self.get(url=f"/team/{TEAM_ID}/invite", user=self.NO_ROLE_USER)
