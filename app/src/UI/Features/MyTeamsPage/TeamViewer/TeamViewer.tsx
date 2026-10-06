@@ -23,7 +23,7 @@ const Info = ({ term, definition }: InfoProps) => {
   return (
     <div className="list-item">
       <dt>{term}</dt>
-      <dd>{definition || 'None'}</dd>
+      <dd>{definition ?? 'None'}</dd>
     </div>
   );
 };

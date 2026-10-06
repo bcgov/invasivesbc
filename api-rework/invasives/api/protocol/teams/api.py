@@ -1,23 +1,22 @@
+import logging
+from rest_framework import status
 from ninja import Router
 from django.db import transaction
-from django.db.models import Q
 from typing import List
-import logging
 from api.constants import WellKnownRoles
 from pydantic import PositiveInt
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.http import HttpResponse, JsonResponse
 from api.ninja_authentication import NinjaKeycloakAuthentication, NinjaRoleRequired
-from api.models.teams import TeamMember, Team, InviteStatus, TeamInvitation
 from api.models.auth import User
+from api.models.teams import TeamMember, Team, InviteStatus, TeamInvitation
 from api.schemas.teams import (
     InvitationOut,
     SingleTeamOut,
     TeamMembershipOut,
     TeamSuggestedUserOut,
 )
-from rest_framework import status
 from . import (
     CreateTeamSchema,
     UpdateTeamSchema,
@@ -72,6 +71,8 @@ def create_team(request, data: CreateTeamSchema):
             founder=request.auth, name=data.name, description=data.description
         )
         team.agencies.set(data.agencies)
+        # team.employers.set(request.auth.employers) # TODO: Implement when Employers added to user profile.
+
         TeamMember.objects.create(team=team, user=request.auth)
 
         log.info("Team %s created. Created By %s", team.id, request.auth.display_name)
@@ -185,7 +186,7 @@ def invite_user_to_team(request, team_id: PositiveInt, data: InviteUserToTeamSch
 
     Endpoint for Data Managers to Invite a user to their team.
     """
-    # TODO: Ensure User being added has one matching Agency to Team.
+    # TODO: Ensure User being added has one matching Agency/Employer to Team.
     with transaction.atomic():
         if request.auth.subject == data.subject:
             return JsonResponse(
@@ -256,7 +257,7 @@ def get_active_invitations(request):
     active_invites = TeamInvitation.objects.filter(
         recipient=request.auth,
         status=InviteStatus.Pending.value,
-        team__disbanded_date=None,
+        team__disbanded_date=None,  # Hides if team is disbanded.
     )
     return active_invites
 
@@ -307,11 +308,7 @@ def update_invitation_status(request, data: InvitationResponseSchema):
         return HttpResponse(status.HTTP_201_CREATED)
 
 
-@router.delete(
-    "/team/{team_id}/leave",
-    response={204: None},
-    auth=NinjaRoleRequired(WellKnownRoles.ADMINISTRATOR, WellKnownRoles.DATA_MANAGER),
-)
+@router.delete("/team/{team_id}/leave", response={204: None})
 def leave_team(request, team_id: int):
     """
     :Access: All users
@@ -346,8 +343,16 @@ def kick_member(request, team_id: int, subject: str):
         user__subject=subject,
         leave_date=None,
         team__id=team_id,
-        team__founder=request.auth,
     )
+    if team.founder != request.auth:
+        log.warning(
+            "Unauthorized attempt to remove '%s' from team '%s' by '%s'",
+            subject,
+            team.id,
+            request.auth.subject,
+        )
+        return HttpResponse(status=status.HTTP_403_FORBIDDEN)
+
     team.leave_date = timezone.now()
     team.save(update_fields=["leave_date"])
     log.info("%s removed from team %s by %s", subject, team.id, request.auth.subject)
