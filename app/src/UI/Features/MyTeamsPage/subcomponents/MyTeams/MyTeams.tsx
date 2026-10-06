@@ -37,7 +37,7 @@ const MyTeams = ({ membershipDetails }: PropTypes) => {
           ))}
           {membershipDetails.teams.length === 0 && (
             <tr>
-              <td colSpan={4}>You are not a member of any teams</td>
+              <td colSpan={5}>You are not a member of any teams</td>
             </tr>
           )}
         </tbody>
