@@ -135,9 +135,9 @@ export interface paths {
         put?: never;
         /**
          * Create Team
-         * @description :Access: DataManagers
+         * @description :Access: DataManagers | Admins
          *
-         *     Endpoint for Data Managers to create a new team. Requesting user is auto-enlisted into team.
+         *     Endpoint to create a new team. Requesting user is auto-enlisted into team.
          */
         post: operations["api_protocol_teams_api_create_team"];
         delete?: never;
@@ -173,7 +173,7 @@ export interface paths {
         head?: never;
         /**
          * Update Team Metadata
-         * @description :Access: Data Managers
+         * @description :Access: Data Managers | Admins
          *
          *     Update Description/Name of a team.
          */
@@ -197,7 +197,7 @@ export interface paths {
         put?: never;
         /**
          * Invite User To Team
-         * @description :Access: DataManagers
+         * @description :Access: Team Owners
          *
          *     Endpoint for Data Managers to Invite a user to their team.
          */
@@ -228,12 +228,12 @@ export interface paths {
         options?: never;
         head?: never;
         /**
-         * User Response To Invitation
-         * @description :Access: Recipient of invite.
+         * Update Invitation Status
+         * @description :Access: Invitation Recipient or Sender
          *
          *     Update invitation to reflect users Response. Adds user to team if accepted.
          */
-        patch: operations["api_protocol_teams_api_user_response_to_invitation"];
+        patch: operations["api_protocol_teams_api_update_invitation_status"];
         trace?: never;
     };
     "/ninja/teams/team/{team_id}/leave": {
@@ -3264,7 +3264,10 @@ export interface components {
             available_actions: components["schemas"]["RecordAction"][];
             metadata: components["schemas"]["RecordMetadata"];
         };
-        /** TeamMembershipOut */
+        /**
+         * TeamMembershipOut
+         * @description Returns Teams belonging to a User, includes permission to create a new team
+         */
         TeamMembershipOut: {
             /** Can Create Team */
             can_create_team: boolean;
@@ -3273,14 +3276,14 @@ export interface components {
         };
         /** TeamMembershipRowOut */
         TeamMembershipRowOut: {
+            /** Description */
+            description: string;
             /** Team Founder */
             team_founder: string;
             /** Team Name */
             team_name: string;
             /** Team Id */
             team_id: number;
-            /** Description */
-            description: string;
             /**
              * Join Date
              * Format: date
@@ -3300,27 +3303,29 @@ export interface components {
         InvitationOut: {
             /** Id */
             id: number;
+            /** Agencies */
+            agencies?: string | null;
             /**
              * Date Stamp
              * Format: date-time
              */
             date_stamp: string;
-            status: components["schemas"]["InviteStatus"];
+            /** Description */
+            description: string;
+            /** Employers */
+            employers?: string | null;
             /** Founder */
             founder: string;
-            /** Name */
-            name: string;
-            /** Invitee */
-            invitee: string;
-            /** Agencies */
-            agencies: string;
             /**
              * Founding Date
              * Format: date
              */
             founding_date: string;
-            /** Description */
-            description: string;
+            /** Invitee */
+            invitee: string;
+            /** Name */
+            name: string;
+            status: components["schemas"]["InviteStatus"];
         };
         /**
          * InviteStatus
@@ -3330,15 +3335,17 @@ export interface components {
         /** SingleTeamOut */
         SingleTeamOut: {
             /** Agencies */
-            agencies: string;
-            /** Members */
-            members: components["schemas"]["TeamMemberOut"][];
+            agencies: string | null;
             /** Can Edit */
             can_edit: boolean;
+            /** Employers */
+            employers: string | null;
             /** Founder */
             founder: string;
             /** Invitations */
             invitations?: components["schemas"]["InvitationOut"][] | null;
+            /** Members */
+            members: components["schemas"]["TeamMemberOut"][];
             /** Name */
             name: string;
             /**
@@ -3353,17 +3360,17 @@ export interface components {
         };
         /** TeamMemberOut */
         TeamMemberOut: {
-            /** Subject */
-            subject: string;
-            /** Name */
-            name: string;
-            /** Leave Date */
-            leave_date?: string | null;
             /**
              * Join Date
              * Format: date
              */
             join_date: string;
+            /** Leave Date */
+            leave_date?: string | null;
+            /** Name */
+            name: string;
+            /** Subject */
+            subject: string;
         };
         /**
          * UpdateTeamSchema
@@ -3753,6 +3760,17 @@ export interface operations {
                     };
                 };
             };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
         };
     };
     api_protocol_teams_api_get_team_info: {
@@ -3801,6 +3819,13 @@ export interface operations {
         responses: {
             /** @description OK */
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3865,6 +3890,13 @@ export interface operations {
                     "application/json": components["schemas"]["TeamSuggestedUserOut"][];
                 };
             };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
     };
     api_protocol_teams_api_invite_user_to_team: {
@@ -3892,6 +3924,13 @@ export interface operations {
                         [key: string]: unknown;
                     };
                 };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Conflict */
             409: {
@@ -3926,7 +3965,7 @@ export interface operations {
             };
         };
     };
-    api_protocol_teams_api_user_response_to_invitation: {
+    api_protocol_teams_api_update_invitation_status: {
         parameters: {
             query?: never;
             header?: never;
