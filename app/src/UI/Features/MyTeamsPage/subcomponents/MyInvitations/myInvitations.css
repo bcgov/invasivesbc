@@ -8,13 +8,13 @@
   .action-cnt {
     display: flex;
     box-sizing: border-box;
-    flex-direction: row;
+    flex-direction: column;
   }
 
   .action-btn {
     margin: 3px 0.5rem;
 
-    &.cancel {
+    &.cancel:not(.destructive) {
       color: var(--deep-red);
       border-color: var(--deep-red);
     }
