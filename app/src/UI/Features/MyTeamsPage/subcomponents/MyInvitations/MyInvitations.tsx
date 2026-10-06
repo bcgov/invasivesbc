@@ -24,8 +24,8 @@ const MyInvitations = ({ refresh, invitations }: PropTypes) => {
       <hgroup>
         <h2>My Invitations</h2>
         <p>
-          Review your pending team invitations below. Accepting an invite gives your team owner access to edit shared
-          agency and employer records created while you're part of the team.
+          Review your pending team invitations below. Accepting an invite gives the team owner access to edit records
+          with shared agencies or employers created while you're part of the team.
         </p>
       </hgroup>
       <StyledTable>
