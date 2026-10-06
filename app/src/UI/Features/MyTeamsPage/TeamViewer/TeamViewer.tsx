@@ -20,11 +20,10 @@ type InfoProps = {
 };
 
 const Info = ({ term, definition }: InfoProps) => {
-  if (!definition) return;
   return (
     <div className="list-item">
       <dt>{term}</dt>
-      <dd>{definition}</dd>
+      <dd>{definition || 'None'}</dd>
     </div>
   );
 };
@@ -141,6 +140,7 @@ const TeamViewer = () => {
           <dl className="overview">
             <Info term={'Name'} definition={details.name} />
             <Info term={'Agencies'} definition={details.agencies} />
+            <Info term={'Employer(s)'} definition={details.employers} />
             <Info term={'Founder'} definition={details.founder} />
             <Info term={'Founding Date'} definition={details.founding_date} />
             <Info term={'Description'} definition={details.description} />
@@ -187,7 +187,7 @@ const TeamViewer = () => {
           </StyledTable>
         </Fieldset>
 
-        {canEdit && details?.invitations && (
+        {details?.invitations && (
           <Fieldset label={'Invitations'} tooltip={INVITATION_TOOLTIP}>
             <InviteMember teamId={teamId} refreshTeam={refreshTeamInformation} />
             <StyledTable>
@@ -217,7 +217,7 @@ const TeamViewer = () => {
                     </td>
                   </tr>
                 ))}
-                {details?.invitations.length === 0 && (
+                {details.invitations.length === 0 && (
                   <tr className="empty-row">
                     <td colSpan={4}>There are no invitations for this team</td>
                   </tr>
