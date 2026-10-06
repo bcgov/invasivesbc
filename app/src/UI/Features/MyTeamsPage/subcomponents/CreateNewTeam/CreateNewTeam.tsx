@@ -80,8 +80,11 @@ const CreateNewTeam = () => {
                 Enter your team's details below. This information is private and only visible to current and invited
                 members.
               </p>
-              <p>As team leader, you can edit members' records that share your team's funding agency.</p>
             </hgroup>
+            <p>
+              As team leader, you can edit members' records that share your team's funding agency, or employers.
+              Employers will be added automatically based on your user profile
+            </p>
             <Fieldset label={'Team Information'} nested>
               <TextInput
                 label={'Team Name'}
