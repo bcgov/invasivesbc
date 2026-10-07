@@ -1,0 +1,7 @@
+.my-teams {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  margin: 2rem;
+  box-sizing: border-box;
+}

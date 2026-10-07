@@ -1,0 +1,26 @@
+#my-teams-page {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  background-color: #f1f1f1;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+#my-teams-page .content {
+  display: flex;
+  box-sizing: border-box;
+  background-color: white;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 1100px;
+  margin: 2rem;
+  padding: 3rem 0;
+}
+
+@media only screen and (width > 1100px) {
+  #my-teams-page .content {
+    padding: 3rem 2rem;
+  }
+}

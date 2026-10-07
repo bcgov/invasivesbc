@@ -1,0 +1,59 @@
+[
+  {
+    "model": "api.Role",
+    "pk": "DATA_MANAGER",
+    "fields": {}
+  },
+  {
+    "model": "api.Role",
+    "pk": "ADMINISTRATOR",
+    "fields": {}
+  },
+  {
+    "model": "api.Role",
+    "pk": "BIOCONTROL_USER",
+    "fields": {}
+  },
+  {
+    "model": "api.User",
+    "pk": "bc_admin",
+    "fields": {
+      "display_name": "bc_admin",
+      "email": "bc_admin@provider",
+      "roles": [
+        "ADMINISTRATOR"
+      ]
+    }
+  },
+  {
+    "model": "api.User",
+    "pk": "bc_datamanager",
+    "fields": {
+      "display_name": "bc_datamanager",
+      "email": "bc_datamanager@provider",
+      "roles": [
+        "DATA_MANAGER"
+      ]
+    }
+  },
+  {
+    "model": "api.User",
+    "pk": "bc_biocontrol",
+    "fields": {
+      "display_name": "bc_biocontrol",
+      "email": "bc_biocontrol@provider",
+      "roles": [
+        "BIOCONTROL_USER"
+      ]
+    }
+  },
+  {
+    "model": "api.User",
+    "pk": "bc_noroles",
+    "fields": {
+      "display_name": "bc_noroles",
+      "email": "bc_noroles@provider",
+      "roles": []
+    }
+  }
+]

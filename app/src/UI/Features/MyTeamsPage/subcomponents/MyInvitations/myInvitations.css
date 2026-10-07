@@ -1,0 +1,22 @@
+.my-team-invitations {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  margin: 2rem;
+  box-sizing: border-box;
+
+  .action-cnt {
+    display: flex;
+    box-sizing: border-box;
+    flex-direction: column;
+  }
+
+  .action-btn {
+    margin: 3px 0.5rem;
+
+    &.cancel:not(.destructive) {
+      color: var(--deep-red);
+      border-color: var(--deep-red);
+    }
+  }
+}
