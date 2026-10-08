@@ -54,7 +54,7 @@ const BASELINE_FEATURES = {
   USER_GUIDE: new FeatureFlag('USER_GUIDE', false) /* set to true when there are entries to display */,
   USER_SITE_LIST: new FeatureFlag('USER_SITE_LIST', true),
 
-  ZONES_OF_INTEREST: new FeatureFlag('ZONES_OF_INTEREST', true)
+  ZONES_OF_INTEREST: new FeatureFlag('ZONES_OF_INTEREST', false)
 };
 
 type FeatureFlags = typeof BASELINE_FEATURES;
