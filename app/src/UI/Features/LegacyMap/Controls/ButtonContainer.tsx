@@ -10,7 +10,7 @@ import { WebOnly } from 'UI/Reusable/Predicates/WebOnly';
 import TrackingButtonsContainer from 'UI/Features/LegacyMap/Controls/TrackingButtonsContainer';
 import PrimaryLayerSelect, { PrimaryLayerSelectProps } from 'UI/Features/LegacyMap/Controls/PrimaryLayerSelect';
 import { RecordSetType } from 'interfaces/UserRecordSet';
-import MapZoneSearch from './MapZoneSearch';
+import MapZoneSearch from './MapZoneSearch/MapZoneSearch';
 
 type ButtonContainerProps = PrimaryLayerSelectProps & {};
 
