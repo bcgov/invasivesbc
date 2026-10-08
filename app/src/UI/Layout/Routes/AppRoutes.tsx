@@ -40,6 +40,8 @@ const MyTeamsPage = React.lazy(() => import('UI/Features/MyTeamsPage/MyTeamsPage
 const TeamViewer = React.lazy(() => import('UI/Features/MyTeamsPage/TeamViewer/TeamViewer'));
 const CreateTeam = React.lazy(() => import('UI/Features/MyTeamsPage/subcomponents/CreateNewTeam/CreateNewTeam'));
 
+const SummaryPage = React.lazy(() => import('UI/Features/SummaryPage/SummaryPage'));
+
 const AppRoutes = () => {
   const navigate = useNavigate();
   const userActivated = useSelector((state) => state.UserInfo.activated);
@@ -80,6 +82,16 @@ const AppRoutes = () => {
         Component={() => (
           <Suspense fallback={<Spinner />}>
             <EmbeddedReportsPage />
+          </Suspense>
+        )}
+      />
+      <Route
+        path="/summary"
+        Component={() => (
+          <Suspense fallback={<Spinner />}>
+            <FeatureGated requires="ZONES_OF_INTEREST">
+              <SummaryPage />
+            </FeatureGated>
           </Suspense>
         )}
       />
