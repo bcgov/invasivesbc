@@ -18,7 +18,7 @@ class VectorTileTestCase(BaseTestCase):
         }
     )
 
-    url_pattern = "/ninja/tiles/{}/{}/{}?filterObjects={}"
+    url_pattern = "/ninja/tiles/activity/{}/{}/{}?filterObjects={}"
 
     fixtures = ["test/common/test_activities.json"]
 

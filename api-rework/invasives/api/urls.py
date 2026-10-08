@@ -13,7 +13,7 @@ from .viewsets import (
 )
 
 from api.protocol.activity.api import router as activity_router
-from api.protocol.map_tiles.vector_tiles import router as tile_router
+from api.protocol.map_tiles import tile_router
 from api.protocol.teams import teams_router, TEAMS_ROOT_PATH
 
 from ninja import NinjaAPI

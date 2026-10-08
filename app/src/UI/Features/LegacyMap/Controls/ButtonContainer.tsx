@@ -10,6 +10,7 @@ import { WebOnly } from 'UI/Reusable/Predicates/WebOnly';
 import TrackingButtonsContainer from 'UI/Features/LegacyMap/Controls/TrackingButtonsContainer';
 import PrimaryLayerSelect, { PrimaryLayerSelectProps } from 'UI/Features/LegacyMap/Controls/PrimaryLayerSelect';
 import { RecordSetType } from 'interfaces/UserRecordSet';
+import MapZoneSearch from './MapZoneSearch/MapZoneSearch';
 
 type ButtonContainerProps = PrimaryLayerSelectProps & {};
 
@@ -36,6 +37,7 @@ export const ButtonContainer = ({ layers, selectLayer }: ButtonContainerProps) =
             </WebOnly>
 
             <WhatsHereButton />
+            <MapZoneSearch />
             {writePrivilege.length > 0 && <NewRecord />}
 
             <CenterCurrentRecord type={RecordSetType.Activity} />
