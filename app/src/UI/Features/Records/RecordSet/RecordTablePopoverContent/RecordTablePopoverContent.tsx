@@ -15,7 +15,7 @@ import Button from 'UI/Reusable/Button/Button';
 type PropTypes = {
   recordDisplayId: string;
   recordLookupId: string;
-  recordType: RecordSetType;
+  recordType: RecordSetType | `${RecordSetType}`;
   geom?: GeoJSON;
 };
 const RecordTablePopoverContent = ({ recordDisplayId: id, recordLookupId, recordType, geom }: PropTypes) => {
