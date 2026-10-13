@@ -7,19 +7,23 @@ import { GeoJSON } from 'geojson';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import IActivityTableRow from 'interfaces/TableRows/IActivityTableRow';
 import { activityColumnsToDisplay, iappColumnsToDisplay } from '../RecordTableHelpers';
-import { useDispatch } from 'utils/use_selector';
+import { useDispatch, useSelector } from 'utils/use_selector';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import IIappTableRow from 'interfaces/TableRows/IIappTableRow';
 
-type IappTypes = {
-  type: RecordSetType.IAPP | `${RecordSetType.IAPP}`;
+interface BaseProps {
+  setId?: string;
+  type?: RecordSetType | `${RecordSetType}`;
+}
+interface IappTypes extends BaseProps {
+  type: `${RecordSetType.IAPP}` | 'IAPP';
   data: Array<IIappTableRow>;
-};
+}
 
-type ActivityTypes = {
-  type: RecordSetType.Activity | `${RecordSetType.Activity}`;
+interface ActivityTypes extends BaseProps {
+  type: `${RecordSetType.Activity}` | 'Activity';
   data: Array<IActivityTableRow>;
-};
+}
 
 type PropTypes = IappTypes | ActivityTypes;
 
@@ -28,43 +32,46 @@ const COLUMN_MAP: Record<PropTypes['type'], any[]> = {
   IAPP: iappColumnsToDisplay
 };
 
-const RecordTable = ({ type, data }: PropTypes) => {
-  const getKeyDetails = (row: PropTypes['data'][number]) => {
-    if ('activity_id' in row) {
-      return {
-        id: row.activity_id,
-        geom: row?.geom,
-        identifier: row.short_id
-      };
-    }
-    const id = row.site_id.toString();
-    return {
-      id,
-      geom: row?.geometry,
-      identifier: id
-    };
-  };
-  const onUserHoveredRow = (row: PropTypes['data'][number]) => {
-    const { id, geom, identifier } = getKeyDetails(row);
-    dispatch(
-      UserSettings.Map.setHoveredRecordset({
-        recordType: type,
-        id: id,
-        geom: geom,
-        readableIdentifier: identifier
-      })
-    );
+/**
+ * Table for Displaying IBC and IAPP Records, Includes functionalities for panning to the Map, and opening Records.
+ * Displays sortable functionality if a recordset is attached
+ */
+const RecordTable = ({ type, data, setId }: PropTypes) => {
+  /** @desc Helper for displaying ordering Icon. */
+  const orderDirection = (key: string) => {
+    if (!setId) return null;
+    if (sortColumn !== key) return '↕';
+    return sortOrder === 'ASC' ? '▲' : '▼';
   };
 
-  const handleClick = (evt: MouseEvent<HTMLElement> | TouchEvent<HTMLElement>, row: PropTypes['data'][number]) => {
-    const { id, geom, identifier } = getKeyDetails(row);
+  /** Get details needed to populate a popover. */
+  const getKeyRecordDetails = (row: PropTypes['data'][number]) => {
+    if ('activity_id' in row) return { id: row.activity_id, geom: row?.geom, readableIdentifier: row.short_id };
+    const id = row.site_id.toString();
+    return { id, geom: row?.geometry, readableIdentifier: id };
+  };
+
+  const onUserHoveredRow = (row: PropTypes['data'][number]) => {
+    const { id, geom, readableIdentifier } = getKeyRecordDetails(row);
+    dispatch(UserSettings.Map.setHoveredRecordset({ recordType: type, id, geom, readableIdentifier }));
+  };
+
+  const handleHeaderClick = (key: string) => {
+    if (setId) dispatch(UserSettings.RecordSet.setSort({ setID: setId, sortColumn: key }));
+  };
+
+  const handleRowClick = (evt: MouseEvent<HTMLElement> | TouchEvent<HTMLElement>, row: PropTypes['data'][number]) => {
+    const { id, geom, readableIdentifier } = getKeyRecordDetails(row);
     setRecordId(id);
-    setDisplayId(identifier);
+    setDisplayId(readableIdentifier);
     setGeom(geom);
     setAnchorEl(evt.currentTarget);
   };
 
   const dispatch = useDispatch();
+
+  const sortColumn = useSelector((state) => (setId ? state.UserSettings?.recordSets?.[setId]?.sortColumn : null));
+  const sortOrder = useSelector((state) => (setId ? state.UserSettings?.recordSets?.[setId]?.sortOrder : null));
 
   const [geom, setGeom] = useState<GeoJSON>();
   const [recordId, setRecordId] = useState<string>('');
@@ -87,7 +94,9 @@ const RecordTable = ({ type, data }: PropTypes) => {
         <thead>
           <tr>
             {headers.map((c) => (
-              <th key={c.key}>{c.name}</th>
+              <th key={c.key} onClick={setId ? () => handleHeaderClick(c.key) : undefined}>
+                {c.name}&nbsp;{orderDirection(c.key)}
+              </th>
             ))}
           </tr>
         </thead>
@@ -99,7 +108,7 @@ const RecordTable = ({ type, data }: PropTypes) => {
               onFocus={() => onUserHoveredRow(a)}
             >
               {headers.map((c) => (
-                <td onClick={(evt) => handleClick(evt, a)} key={c.key}>
+                <td onClick={(evt) => handleRowClick(evt, a)} key={c.key}>
                   {(a?.[c.key] as string | number) || <span className="null-value" aria-hidden={true} />}
                 </td>
               ))}
