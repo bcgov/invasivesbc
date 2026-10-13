@@ -5,10 +5,25 @@ import { useSelector } from 'utils/use_selector';
 import Spinner from 'UI/Reusable/Spinner/Spinner';
 import RecordTable from '../Records/RecordSet/RecordTable/RecordTable';
 import BackButton from 'UI/Reusable/BackButton/BackButton';
+import Accordion from 'UI/Reusable/Accordion/Accordion';
 import './summaryPage.css';
 
 const SummaryPage = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const queryApi = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/ninja/summary?${searchParams.toString()}`, {
+        headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' }
+      });
+      if (res?.ok) setData(await res.json());
+    } catch (e) {
+      console.log('[SummaryPage]:', e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const [searchParams] = useSearchParams();
+  // TODO: Replace with API Type for Return
   const [data, setData] = useState<any>();
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -18,25 +33,17 @@ const SummaryPage = () => {
   useEffect(() => {
     setLoading(true);
     void (async () => {
-      await fetch(`${API_BASE}/ninja/summary?${searchParams.toString()}`, {
-        headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' }
-      })
-        .then(async (res) => {
-          if (res?.ok) {
-            setData(await res.json());
-          }
-        })
-        .catch((e) => console.log('[SummaryPage]:', e))
-        .finally(() => setLoading(false));
+      await queryApi();
     })();
   }, [searchParams]);
 
   if (loading) {
-    <div id="summary-page">
-      <div className="content">
+    return (
+      <div id="summary-page">
+        <p>Building Summary...</p>
         <Spinner />
       </div>
-    </div>;
+    );
   }
   return (
     <div id="summary-page">
@@ -48,14 +55,24 @@ const SummaryPage = () => {
           <h2>Zone(s) Summary</h2>
           <p>{zones?.join(', ')}</p>
         </hgroup>
-        <h2>Observations</h2>
-        <RecordTable type={'Activity'} data={data?.observations} />
-        <h2>Treatments</h2>
-        <RecordTable type={'Activity'} data={data?.treatments} />
-        <h2>Monitoring</h2>
-        <RecordTable type={'Activity'} data={data?.observations} />
-        <h2>Biocontrol</h2>
-        <RecordTable type={'Activity'} data={data?.biocontrol} />
+        <Accordion
+          title={<>Observations ({data?.observations?.length ?? 0})</>}
+          initState={data?.observations?.length > 0}
+        >
+          <RecordTable type={'Activity'} data={data?.observations} />
+        </Accordion>
+        <Accordion title={<>Treatments ({data?.treatments?.length ?? 0})</>} initState={data?.treatments?.length > 0}>
+          <RecordTable type={'Activity'} data={data?.treatments} />
+        </Accordion>
+        <Accordion title={<>Monitoring ({data?.monitoring?.length ?? 0})</>} initState={data?.monitoring?.length > 0}>
+          <RecordTable type={'Activity'} data={data?.monitoring} />
+        </Accordion>
+        <Accordion
+          title={<>Biocontrol ({data?.biocontrol?.length ?? 0})</>}
+          initState={data?.treatments?.biocontrol > 0}
+        >
+          <RecordTable type={'Activity'} data={data?.biocontrol} />
+        </Accordion>
       </div>
     </div>
   );
