@@ -57,7 +57,7 @@ function* handle_CHECK_INIT_CONNECTION() {
 function* handle_MANUAL_RECONNECT() {
   const configuration = yield select(selectConfiguration);
   yield put(NetworkActions.setAdministrativeStatus(true));
-  if (yield canConnectToNetwork(configuration.API_BASE + HEALTH_ENDPOINT)) {
+  if (yield canConnectToNetwork(configuration.API_V2_BASE + HEALTH_ENDPOINT)) {
     yield put(NetworkActions.monitorHeartbeat());
   } else {
     yield put(Alerts.create(networkAlertMessages.attemptToReconnectFailed));
@@ -75,7 +75,7 @@ function* handle_MONITOR_HEARTBEAT(cancel: PayloadAction<boolean>) {
 
   do {
     const { consecutiveHeartbeatFailures } = yield select(selectNetworkState);
-    const networkRequestSuccess = yield canConnectToNetwork(configuration.API_BASE + HEALTH_ENDPOINT);
+    const networkRequestSuccess = yield canConnectToNetwork(configuration.API_V2_BASE + HEALTH_ENDPOINT);
     yield put(NetworkActions.updateConnectionStatus(networkRequestSuccess));
     yield delay(getTimeBetweenTicks(consecutiveHeartbeatFailures));
   } while (!(yield cancelled()));
