@@ -1,7 +1,7 @@
 from datetime import date
 from enum import Enum
 import logging
-from typing import Annotated, Any, Literal, Optional, Union
+from typing import Annotated, Any, Literal, Optional, Self, Union
 
 from api.models.activity import ActivitySubtypes
 from pydantic import (
@@ -12,6 +12,7 @@ from pydantic import (
     JsonValue,
     NaiveDatetime,
     UUID4,
+    computed_field,
     field_validator,
     model_validator,
 )
@@ -42,6 +43,15 @@ def subtype_from_input(v: Any) -> ActivitySubtypes:
 AnnotatedActivitySubtypes = Annotated[
     ActivitySubtypes, BeforeValidator(subtype_from_input)
 ]
+
+
+def split_comma_string(v: Any) -> list[str]:
+    if isinstance(v, str):
+        return [item.strip() for item in v.split(",") if item.strip()]
+    return v
+
+
+CommaSeparatedList = Annotated[list[str], BeforeValidator(split_comma_string)]
 
 
 class LegacyProjectCode(BaseModel):
@@ -1015,3 +1025,102 @@ class LegacyActivity(BaseModel):
 
     updated_by: Optional[str]
     updated_by_with_guid: Optional[str]
+
+
+class LegacyUser(BaseModel):
+    @model_validator(mode="after")
+    def strip_empty(self) -> Self:
+        if self.bceid_userid is None and self.idir_userid is None:
+            raise ValueError("one of bceid or idir userids must be set")
+        if self.bceid_userid is not None and self.idir_userid is not None:
+            raise ValueError("exactly one of bceid and idir userids must be set")
+
+        return self
+
+    @computed_field
+    @property
+    def subject(self) -> str:
+        if self.bceid_userid is not None:
+            return f"{self.bceid_userid.lower()}@bceid-business"
+
+        if self.idir_userid is not None:
+            return f"{self.idir_userid.lower()}@bceid-business"
+
+        raise ValueError("subject cannot be computed from available properties")
+
+    @computed_field
+    @property
+    def historical_user_names(self) -> list[str]:
+        possible_user_names = [
+            self.subject,
+        ]
+
+        if self.email is not None and self.email not in possible_user_names:
+            possible_user_names.append(self.email)
+        if (
+            self.idir_account_name is not None
+            and self.idir_account_name not in possible_user_names
+        ):
+            possible_user_names.append(self.idir_account_name)
+        if (
+            self.bceid_account_name is not None
+            and self.bceid_account_name not in possible_user_names
+        ):
+            possible_user_names.append(self.bceid_account_name)
+        if (
+            self.preferred_username is not None
+            and self.preferred_username not in possible_user_names
+        ):
+            possible_user_names.append(self.preferred_username)
+
+        return possible_user_names
+
+    @computed_field
+    @property
+    def display_name(self) -> str:
+        if (
+            self.first_name is not None
+            and self.first_name.strip() is not ""
+            and self.last_name is not None
+            and self.last_name.strip() is not ""
+        ):
+            return f"{self.last_name}, {self.first_name}"
+
+        if self.preferred_username is not None:
+            return self.preferred_username
+
+        return self.subject
+
+    user_id: int
+    first_name: Optional[str] = Field(default=None)
+    last_name: Optional[str] = Field(default=None)
+    email: Optional[str] = Field(default=None)
+    work_phone_number: Optional[str] = Field(default=None)
+    preferred_username: Optional[str] = Field(default=None)
+    account_status: int
+    expiry_date: Optional[NaiveDatetime] = Field(default=None)
+    activation_status: int
+    active_session_id: Optional[int] = Field(default=None)
+    created_at: NaiveDatetime
+    updated_at: NaiveDatetime
+    idir_userid: Optional[str] = Field(default=None)
+
+    bceid_userid: Optional[str] = Field(default=None)
+
+    idir_account_name: Optional[str] = Field(default=None)
+    bceid_account_name: Optional[str] = Field(default=None)
+
+    bceid_account_name: Optional[str] = Field(default=None)
+    primary_employer: Optional[str] = Field(default=None)
+    primary_agency: Optional[str] = Field(default=None)
+
+    employer: Optional[CommaSeparatedList] = Field(default=None)
+    funding_agencies: Optional[CommaSeparatedList] = Field(default=None)
+
+    pac_number: Optional[int] = Field(default=None)
+    pac_service_number_1: Optional[str] = Field(default=None)
+    pac_service_number_2: Optional[str] = Field(default=None)
+
+
+class LegacyUserWithRoles(LegacyUser):
+    roles: Optional[CommaSeparatedList] = Field(default=None)

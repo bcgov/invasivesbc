@@ -12,5 +12,12 @@ class Role(models.Model):
         primary_key=True,
     )
 
+    description = models.TextField(
+        blank=False,
+        null=False,
+        db_comment="User-facing description for the role",
+        default="Unset",
+    )
+
     class Meta:
         db_table = '"authentication"."role"'

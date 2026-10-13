@@ -1,9 +1,16 @@
 import logging
 from dataclasses import dataclass
 from typing import Literal
+from zoneinfo import ZoneInfo
 
+from api.legacy_db.model_serializer import LegacyUser, LegacyUserWithRoles
+from api.models import EmployerAssociation, PACNumber, Role, User
+from api.models.auth import AgencyAssociation, HistoricalUserName
+from django.db import transaction
+from django.utils import timezone
+from packaging.metadata import parse_email
 import psycopg
-from django.db.models import Q
+from django.db.models import Model, Q
 from psycopg.rows import dict_row
 
 from api.legacy_db.migrate import ActivityMigrationCumulativeTaskResult
@@ -96,6 +103,13 @@ class CodeMigrationStatistics:
 
 @dataclass
 class ActivityLinkStatistics:
+    attempted: int = 0
+    succeeded: int = 0
+    failed_for_any_reason: int = 0
+
+
+@dataclass
+class UserMigrationStatistics:
     attempted: int = 0
     succeeded: int = 0
     failed_for_any_reason: int = 0
@@ -492,6 +506,269 @@ class LegacyDB:
         logging.info("run complete")
         logging.info(cumulative_result)
         return cumulative_result
+
+    @staticmethod
+    def add_hardcoded_roles():
+        Role.objects.update_or_create(
+            name="administrator_plants".upper(),
+            defaults={"description": "Administrator - Plants Only"},
+        )
+        Role.objects.update_or_create(
+            name="administrator_animals".upper(),
+            defaults={"description": "Administrator - Animals Only"},
+        )
+        Role.objects.update_or_create(
+            name="bcgov_staff_animals".upper(),
+            defaults={"description": "BC Government Staff User - Animals"},
+        )
+        Role.objects.update_or_create(
+            name="bcgov_staff_plants".upper(),
+            defaults={"description": "BC Government Staff User - Plants"},
+        )
+        Role.objects.update_or_create(
+            name="bcgov_staff_both".upper(),
+            defaults={"description": "BC Government Staff User - Both"},
+        )
+        Role.objects.update_or_create(
+            name="contractor_manager_animals".upper(),
+            defaults={"description": "Contractor Manager - Animals"},
+        )
+        Role.objects.update_or_create(
+            name="contractor_manager_plants".upper(),
+            defaults={"description": "Contractor Manager - Plants"},
+        )
+        Role.objects.update_or_create(
+            name="contractor_manager_both".upper(),
+            defaults={"description": "Contractor Manager - Both"},
+        )
+        Role.objects.update_or_create(
+            name="contractor_staff_animals".upper(),
+            defaults={"description": "Contractor Staff - Animals"},
+        )
+        Role.objects.update_or_create(
+            name="contractor_staff_plants".upper(),
+            defaults={"description": "Contractor Staff - Plants"},
+        )
+        Role.objects.update_or_create(
+            name="contractor_staff_both".upper(),
+            defaults={"description": "Contractor Staff - Both"},
+        )
+        Role.objects.update_or_create(
+            name="indigenous_riso_manager_animals".upper(),
+            defaults={"description": "Non-Provincial Government Manager - Animals"},
+        )
+        Role.objects.update_or_create(
+            name="indigenous_riso_manager_plants".upper(),
+            defaults={"description": "Non-Provincial Government Manager - Plants"},
+        )
+        Role.objects.update_or_create(
+            name="indigenous_riso_manager_both".upper(),
+            defaults={"description": "Non-Provincial Government Manager - Both"},
+        )
+        Role.objects.update_or_create(
+            name="indigenous_riso_staff_animals".upper(),
+            defaults={"description": "Non-Provincial Government Staff - Animals"},
+        )
+        Role.objects.update_or_create(
+            name="indigenous_riso_staff_plants".upper(),
+            defaults={"description": "Non-Provincial Government Staff - Plants"},
+        )
+        Role.objects.update_or_create(
+            name="indigenous_riso_staff_both".upper(),
+            defaults={"description": "Non-Provincial Government Staff - Both"},
+        )
+        Role.objects.update_or_create(
+            name="master_administrator".upper(),
+            defaults={"description": "Master Administrator"},
+        )
+        Role.objects.update_or_create(
+            name="mussel_inspection_officer".upper(),
+            defaults={"description": "Mussels Inspection Officer"},
+        )
+        Role.objects.update_or_create(
+            name="biocontrol_user".upper(),
+            defaults={"description": "Primary Biocontrol User"},
+        )
+        Role.objects.update_or_create(
+            name="data_manager_animals".upper(),
+            defaults={"description": "Data Manager - Animals"},
+        )
+        Role.objects.update_or_create(
+            name="data_manager_plants".upper(),
+            defaults={"description": "Data Manager - Plants"},
+        )
+        Role.objects.update_or_create(
+            name="data_manager_both".upper(),
+            defaults={"description": "Data Manager - Both"},
+        )
+
+    def migrate_users(dry_run=False):
+        stats = UserMigrationStatistics()
+
+        sourcing_query = """
+                       select u.*,
+                              string_agg(r.role_name::text, ', ' order by r.role_name) as roles
+                       from application_user u
+                              left outer join user_access a on a.user_id = u.user_id
+                              left outer join user_role r on r.role_id = a.role_id
+                       group by u.user_id
+                       """
+
+        if not dry_run:
+            LegacyDB.add_hardcoded_roles()
+
+        with psycopg.connect(LEGACY_DB_CONNECTION_STRING, row_factory=dict_row) as conn:
+            with conn.cursor() as cursor:
+                result = cursor.execute(sourcing_query)
+                for row in result.fetchall():
+                    stats.attempted += 1
+                    try:
+                        parsed = LegacyUserWithRoles.model_validate(row)
+                        logging.debug(parsed)
+
+                        if not dry_run:
+                            User.objects.update_or_create(
+                                subject=parsed.subject,
+                                defaults={
+                                    "email": parsed.email,
+                                    "phone_number": parsed.work_phone_number,
+                                    "created": (
+                                        timezone.make_aware(
+                                            parsed.created_at,
+                                            ZoneInfo("America/Vancouver"),
+                                        )
+                                        if parsed.created_at
+                                        else timezone.now
+                                    ),
+                                    "display_name": parsed.display_name,
+                                    "is_active": parsed.account_status == 1,
+                                    "expiry_date": (
+                                        timezone.make_aware(
+                                            parsed.expiry_date,
+                                            ZoneInfo("America/Vancouver"),
+                                        )
+                                        if parsed.expiry_date
+                                        else None
+                                    ),
+                                },
+                            )
+
+                            # bind historical usernames
+                            HistoricalUserName.objects.filter(
+                                user_id=parsed.subject
+                            ).delete()
+                            for hun in parsed.historical_user_names:
+                                HistoricalUserName.objects.update_or_create(
+                                    user_id=parsed.subject, historical_username=hun
+                                )
+
+                            employers = []
+                            if (
+                                parsed.primary_employer is not None
+                                and parsed.primary_employer != ""
+                            ):
+                                employers.append(parsed.primary_employer)
+                            if parsed.employer is not None:
+                                employers.extend(parsed.employer)
+
+                            primary = True  # the first one, whether it's the old value for primary_employer or the first in the list, will be set as the 'primary'
+
+                            # bind employers
+                            for e in employers:
+                                employer = EmployerCode.objects.filter(code=e).first()
+                                if not employer:
+                                    logging.warning(
+                                        f"Employer {e} not found, creating placeholder"
+                                    )
+                                    employer = EmployerCode.objects.create(
+                                        code=e, full=f"{e} -- ETL Placeholder"
+                                    )
+
+                                EmployerAssociation.objects.update_or_create(
+                                    user_id=parsed.subject,
+                                    employer=employer,
+                                    is_primary=primary,
+                                    defaults={"expires": None, "effective": None},
+                                )
+                                primary = False  # set subsequent entries as secondary
+
+                            # bind funding agencies
+                            agencies = []
+                            if (
+                                parsed.primary_agency is not None
+                                and parsed.primary_agency != ""
+                            ):
+                                agencies.append(parsed.primary_agency)
+                            if parsed.funding_agencies is not None:
+                                agencies.extend(parsed.funding_agencies)
+
+                            primary = True  # the first one, whether it's the old value for primary_agency or the first in the list, will be set as the 'primary'
+
+                            for e in agencies:
+                                funding_agency = FundingAgencyCode.objects.filter(
+                                    code=e
+                                ).first()
+                                if not funding_agency:
+                                    logging.warning(
+                                        f"Funding Agency {e} not found, creating placeholder"
+                                    )
+                                    funding_agency = FundingAgencyCode.objects.create(
+                                        code=e, full=f"{e} -- ETL Placeholder"
+                                    )
+
+                                AgencyAssociation.objects.update_or_create(
+                                    user_id=parsed.subject,
+                                    agency=funding_agency,
+                                    is_primary=primary,
+                                    defaults={"expires": None, "effective": None},
+                                )
+                                primary = False  # set subsequent entries as secondary
+
+                            # pac numbers
+                            if (
+                                parsed.pac_number is not None
+                                and parsed.pac_number != ""
+                            ):
+                                PACNumber.objects.update_or_create(
+                                    user_id=parsed.subject,
+                                    number=parsed.pac_number,
+                                    defaults={"expires": None, "effective": None},
+                                )
+                            if (
+                                parsed.pac_service_number_1 is not None
+                                and parsed.pac_service_number_1.strip != ""
+                            ):
+                                PACNumber.objects.update_or_create(
+                                    user_id=parsed.subject,
+                                    number=parsed.pac_service_number_1,
+                                    defaults={"expires": None, "effective": None},
+                                )
+                            if (
+                                parsed.pac_service_number_2 is not None
+                                and parsed.pac_service_number_2.strip() != ""
+                            ):
+                                PACNumber.objects.update_or_create(
+                                    user_id=parsed.subject,
+                                    number=parsed.pac_service_number_2,
+                                    defaults={"expires": None, "effective": None},
+                                )
+
+                            # roles
+                            for r in parsed.roles if parsed.roles else []:
+                                role = Role.objects.filter(name=r.upper()).first()
+                                if not role:
+                                    logging.warning(f"Role {role} not found")
+                                else:
+                                    user = User.objects.get(subject=parsed.subject)
+                                    user.roles.add(role)
+                                    user.save()
+
+                        stats.succeeded += 1
+                    except Exception as e:
+                        logging.error(e)
+                        stats.failed_for_any_reason += 1
+
+        return stats
 
     @staticmethod
     def migrate_links():
