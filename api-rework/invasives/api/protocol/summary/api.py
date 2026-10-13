@@ -23,6 +23,6 @@ def get_summary(request, filters: Query[SummaryIn]):
                 public_id__in=filters.zone,
                 shape__intersects=OuterRef("computed_tile_shape"),
             )
-            query = query.filter(Exists(zones))
+            query = query.filter(Exists(zones)).order_by("-date")
 
         return ActivityRecordSetRowByType(query).data
