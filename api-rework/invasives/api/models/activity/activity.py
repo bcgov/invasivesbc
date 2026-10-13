@@ -60,6 +60,13 @@ class BaseModel(Platform, ComputedLocationFields, BatchInformation, models.Model
 
     migration_remarks = models.TextField(max_length=16384, blank=True, null=True)
 
+    creating_user = models.ForeignKey(
+        "User",
+        on_delete=models.RESTRICT,
+        null=True,
+        db_comment="FK to creating user (team or other principal, eventually)",
+    )
+
     class Meta:
         abstract = True
 

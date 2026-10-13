@@ -88,6 +88,7 @@ def submit_record(request, data: PlantActivitySchema):
         if existing_record := Activity.objects.filter(id=activity_id).first():
             # Protect original created_by value.
             payload["created_by"] = existing_record.created_by
+            payload["creating_user"] = existing_record.creating_user
             # Serialize old activity before updating, else the serializer will fetch the updated data and diffing won't work.
             old_activity = ActivitySerializer(existing_record, read_only=True).data
         else:
