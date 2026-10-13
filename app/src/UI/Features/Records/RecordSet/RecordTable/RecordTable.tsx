@@ -14,14 +14,15 @@ import IIappTableRow from 'interfaces/TableRows/IIappTableRow';
 interface BaseProps {
   setId?: string;
   type?: RecordSetType | `${RecordSetType}`;
+  data: Array<IIappTableRow> | Array<IActivityTableRow>;
 }
 interface IappTypes extends BaseProps {
-  type: `${RecordSetType.IAPP}` | 'IAPP';
+  type: RecordSetType.IAPP | `${RecordSetType.IAPP}`;
   data: Array<IIappTableRow>;
 }
 
 interface ActivityTypes extends BaseProps {
-  type: `${RecordSetType.Activity}` | 'Activity';
+  type: RecordSetType.Activity | `${RecordSetType.Activity}`;
   data: Array<IActivityTableRow>;
 }
 
