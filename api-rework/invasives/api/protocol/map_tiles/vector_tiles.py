@@ -1,13 +1,14 @@
+import json, asyncio
+from ninja import Router
 from django.db.models import Aggregate, F, Func
 from django.contrib.gis.db.models import GeometryField, BinaryField
 from django.contrib.gis.db.models.functions import PointOnSurface
 from django.http import HttpResponse
-from ninja import Router
+from django.contrib.gis.db.models.functions import Transform
+
 from api.ninja_authentication import NinjaKeycloakAuthentication
-import json, asyncio
-
-
 from api.utils.filtered_activity_queryset import FilteredActivityQueryset
+from api.models.mapping import ZoneOfInterest
 
 CENTROID_ZOOM_LIMIT = 12
 CONTENT_TYPE = "application/vnd.mapbox-vector-tile"
@@ -36,8 +37,8 @@ class AsColumn(Func):
         self.template = f'%(expressions)s AS "{alias}"'
 
 
-@router.get("/{z}/{x}/{y}")
-async def req_vector_tile(request, z: int, x: int, y: int):
+@router.get("/activity/{z}/{x}/{y}")
+async def req_activity_vector_tile(request, z: int, x: int, y: int):
     try:
         raw_filters = request.GET.get("filterObjects", "")
         if not raw_filters:
@@ -104,6 +105,36 @@ async def req_vector_tile(request, z: int, x: int, y: int):
         if not tile_bytes:
             return HttpResponse(status=204, content_type=CONTENT_TYPE)
         return HttpResponse(bytes(tile_bytes), content_type=CONTENT_TYPE)
+
+    except asyncio.CancelledError:
+        raise
+
+
+@router.get("/zone/{z}/{x}/{y}")
+async def zone_vector_tile(request, z: int, x: int, y: int):
+    try:
+        if not (0 <= z <= 24) or not (0 <= x < 2**z) or not (0 <= y < 2**z):
+            return HttpResponse(status=400)
+
+        tile_3857 = ST_TileEnvelope(z, x, y)
+        tile_3005 = Transform(tile_3857, 3005)
+
+        result = await ZoneOfInterest.objects.filter(
+            shape__intersects=tile_3005
+        ).aaggregate(
+            tile=ST_AsMVT(
+                AsColumn("public_id", "public_id"),
+                AsColumn(
+                    ST_AsMVTGeom(Transform("shape", 3857), tile_3857, 4096, 64, True),
+                    "geom",
+                ),
+            )
+        )
+
+        tile = result["tile"]
+        if not tile:
+            return HttpResponse(status=204)
+        return HttpResponse(bytes(tile), content_type=CONTENT_TYPE)
 
     except asyncio.CancelledError:
         raise
