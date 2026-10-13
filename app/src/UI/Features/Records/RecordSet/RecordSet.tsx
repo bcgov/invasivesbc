@@ -1,10 +1,10 @@
 import { useDispatch } from 'react-redux';
 import './RecordSet.css';
-import { RecordTable } from './RecordTable';
+import RecordTable from './RecordTable/RecordTable';
 import ExcelExporter from '../ExcelExporter';
 import RecordSetFooter from './RecordSetFooter';
 import { useSelector } from 'utils/use_selector';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { RecordSetId } from 'interfaces/UserRecordSet';
 import Activity from 'state/actions/activity/Activity';
 import Filters from './Filters/Filters';
@@ -12,27 +12,38 @@ import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
 import GlobalFilterWarning from './GlobalFilterWarning/GlobalFilterWarning';
 import RecordSetControl from '../RecordSetControl';
 import BackButton from 'UI/Reusable/BackButton/BackButton';
+import IActivityTableRow from 'interfaces/TableRows/IActivityTableRow';
+import IIappTableRow from 'interfaces/TableRows/IIappTableRow';
+
+type RecordTableData = { type: 'IAPP'; data: IIappTableRow[] } | { type: 'Activity'; data: IActivityTableRow[] };
 
 type PropTypes = { setID: string };
-
 export const RecordSet = ({ setID }: PropTypes) => {
   const dispatch = useDispatch();
 
   const MOBILE = useSelector((state) => state.Configuration.current.build.MOBILE);
   const CACHE_RECORDSETS = useSelector((state) => state.Configuration.current.features.CACHE_RECORDSETS.enabled);
   const isCellPhoneWidth = useSelector((state) => state.AppMode.constraints.tinyScreen);
+  const unmappedRows = useSelector((state) => state.Map?.recordTables?.[setID]?.rows);
   const recordSet = useSelector((state) => state.UserSettings?.recordSets?.[setID]);
   const canCacheRecordset = MOBILE && CACHE_RECORDSETS && !Object.values(RecordSetId).includes(setID as RecordSetId);
 
+  /** Typeguard for Recordsets as rows are not coupled to records  */
+  const userRecordProps = useMemo(() => {
+    if (!unmappedRows || !recordSet.recordSetType) return null;
+    return {
+      type: recordSet.recordSetType,
+      data: unmappedRows
+    } as RecordTableData;
+  }, [unmappedRows, recordSet?.recordSetType]);
   const isDraftRecordset = setID === RecordSetId.Drafts;
 
   useEffect(() => {
     dispatch(Activity.switchRecordSet({ type: 'Activity', setId: setID }));
   }, [setID]);
 
-  if (!recordSet) {
-    return;
-  }
+  if (!recordSet) return;
+
   return (
     <>
       <div className="stickyHeader">
@@ -61,7 +72,7 @@ export const RecordSet = ({ setID }: PropTypes) => {
       <div className="recordSet_container">
         <Filters recordsetId={setID} />
         {!isDraftRecordset && <ExcelExporter setName={setID} />}
-        <RecordTable setID={setID} />
+        {userRecordProps && <RecordTable setId={setID} {...userRecordProps} />}
       </div>
       <RecordSetFooter recordSet={recordSet} />
     </>
