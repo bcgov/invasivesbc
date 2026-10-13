@@ -13,7 +13,7 @@ import { CLICKABLE_LAYER, SELECTED_LAYER, addZoneLayers, removeZoneLayers, selec
  */
 const MapZoneSearch = () => {
   const map = useContext(MapContext) as MapLibreMap | null;
-  if (!map) throw Error('MapContext was not provided');
+  if (!map) throw new Error('MapContext was not provided');
   const navigate = useNavigate();
 
   const [featureActive, setFeatureActive] = useState<boolean>(false);
@@ -27,7 +27,7 @@ const MapZoneSearch = () => {
    */
   const handleClick = useCallback(
     (e: MapMouseEvent | MapTouchEvent) => {
-      if (!map || !map.getLayer(CLICKABLE_LAYER)) return;
+      if (!map?.getLayer?.(CLICKABLE_LAYER)) return;
       let features: Array<MapGeoJSONFeature>;
       try {
         features = map.queryRenderedFeatures(e.point, { layers: [CLICKABLE_LAYER] });

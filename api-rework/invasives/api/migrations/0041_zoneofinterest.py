@@ -39,7 +39,7 @@ def load_features_from_file(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("api", "0039_team_teaminvitation_teammember"),
+        ("api", "0040_activity_creating_user_draftactivity_creating_user_and_more"),
     ]
 
     operations = [

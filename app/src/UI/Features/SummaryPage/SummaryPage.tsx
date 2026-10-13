@@ -1,7 +1,7 @@
-import { useParams, useSearchParams } from 'react-router';
+import { useSearchParams } from 'react-router';
 
 const SummaryPage = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const zones = searchParams.get('zone')?.split(',');
   console.log(zones);
 
