@@ -6,7 +6,6 @@ import { MouseEvent, TouchEvent, useState } from 'react';
 import { GeoJSON } from 'geojson';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import IActivityTableRow from 'interfaces/TableRows/IActivityTableRow';
-import { activityColumnsToDisplay, iappColumnsToDisplay } from '../RecordTableHelpers';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import IIappTableRow from 'interfaces/TableRows/IIappTableRow';
@@ -27,11 +26,6 @@ interface ActivityTypes extends BaseProps {
 }
 
 type PropTypes = IappTypes | ActivityTypes;
-
-const COLUMN_MAP: Record<PropTypes['type'], any[]> = {
-  Activity: activityColumnsToDisplay,
-  IAPP: iappColumnsToDisplay
-};
 
 /**
  * Table for Displaying IBC and IAPP Records, Includes functionalities for panning to the Map, and opening Records.
@@ -71,15 +65,14 @@ const RecordTable = ({ type, data, setId }: PropTypes) => {
 
   const dispatch = useDispatch();
 
+  const headers = useSelector((state) => state.UserSettings.tableColumns[type] ?? []);
   const sortColumn = useSelector((state) => (setId ? state.UserSettings?.recordSets?.[setId]?.sortColumn : null));
   const sortOrder = useSelector((state) => (setId ? state.UserSettings?.recordSets?.[setId]?.sortOrder : null));
 
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [displayId, setDisplayId] = useState<string>('');
   const [geom, setGeom] = useState<GeoJSON>();
   const [recordId, setRecordId] = useState<string>('');
-  const [displayId, setDisplayId] = useState<string>('');
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-
-  const headers = COLUMN_MAP[type];
 
   return (
     <Fragment>
@@ -102,9 +95,9 @@ const RecordTable = ({ type, data, setId }: PropTypes) => {
           </tr>
         </thead>
         <tbody>
-          {data?.map((a) => (
+          {data?.map((a: PropTypes['data'][number]) => (
             <tr
-              key={a?.activity_id as string}
+              key={getKeyRecordDetails(a).id}
               onMouseOver={() => onUserHoveredRow(a)}
               onFocus={() => onUserHoveredRow(a)}
             >
