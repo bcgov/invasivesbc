@@ -149,6 +149,10 @@ html {
   --sm-button-text: 0.85rem;
   --med-button-text: 1rem;
   --lg-button-text: 1.15rem;
+
+  /* Misc Styles */
+  --overlay-background-color: #f1f1f1;
+  --overlay-content-background-color: #fff;
 }
 
 /* Color Classes */
