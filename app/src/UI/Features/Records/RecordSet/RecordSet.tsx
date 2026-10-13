@@ -1,9 +1,7 @@
-import { useDispatch } from 'react-redux';
-import './RecordSet.css';
 import RecordTable from './RecordTable/RecordTable';
 import ExcelExporter from '../ExcelExporter';
 import RecordSetFooter from './RecordSetFooter';
-import { useSelector } from 'utils/use_selector';
+import { useDispatch, useSelector } from 'utils/use_selector';
 import { useEffect, useMemo } from 'react';
 import { RecordSetId } from 'interfaces/UserRecordSet';
 import Activity from 'state/actions/activity/Activity';
@@ -14,6 +12,7 @@ import RecordSetControl from '../RecordSetControl';
 import BackButton from 'UI/Reusable/BackButton/BackButton';
 import IActivityTableRow from 'interfaces/TableRows/IActivityTableRow';
 import IIappTableRow from 'interfaces/TableRows/IIappTableRow';
+import './RecordSet.css';
 
 type RecordTableData = { type: 'IAPP'; data: IIappTableRow[] } | { type: 'Activity'; data: IActivityTableRow[] };
 
