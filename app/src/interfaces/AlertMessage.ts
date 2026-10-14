@@ -10,8 +10,8 @@ import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
  * @property {string} [id] - Unique ID of Alert Message, auto-populated in handler.
  */
 interface AlertMessage {
-  severity: AlertSeverity;
-  subject: AlertSubjects;
+  severity: AlertSeverity | `${AlertSeverity}`;
+  subject: AlertSubjects | `${AlertSubjects}`;
   content: string;
   title?: string;
   autoClose?: number;
