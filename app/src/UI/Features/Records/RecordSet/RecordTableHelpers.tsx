@@ -1,7 +1,7 @@
-import IActivityTableRow from 'interfaces/TableRows/IActivityTableRow';
+import { ActivityPlantRowOut } from 'api/api-schema';
 import IIappTableRow from 'interfaces/TableRows/IIappTableRow';
 
-export const getUnnestedFieldsForActivity = (activity): IActivityTableRow => {
+export const getUnnestedFieldsForActivity = (activity): ActivityPlantRowOut => {
   // needs to be consistent with API column names
   const columns = {
     activity_id: activity?.activity_id,
@@ -28,7 +28,7 @@ export const getUnnestedFieldsForActivity = (activity): IActivityTableRow => {
     geom: activity?.geom
   };
 
-  return structuredClone(columns) as IActivityTableRow;
+  return structuredClone(columns) as ActivityPlantRowOut;
 };
 
 export const getUnnestedFieldsForIAPP = (record): IIappTableRow => {

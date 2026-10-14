@@ -7,6 +7,7 @@ import RecordTable from '../Records/RecordSet/RecordTable/RecordTable';
 import BackButton from 'UI/Reusable/BackButton/BackButton';
 import Accordion from 'UI/Reusable/Accordion/Accordion';
 import './summaryPage.css';
+import { ActivityPlantSummaryOut } from 'api/api-schema';
 
 const SummaryPage = () => {
   const queryApi = async () => {
@@ -24,7 +25,7 @@ const SummaryPage = () => {
 
   const [searchParams] = useSearchParams();
   // TODO: Replace with API Type for Return
-  const [data, setData] = useState<any>();
+  const [data, setData] = useState<ActivityPlantSummaryOut>();
   const [loading, setLoading] = useState<boolean>(true);
 
   const API_BASE = useSelector((state) => state.Configuration.current.runtime.API_V2_BASE);
@@ -42,6 +43,13 @@ const SummaryPage = () => {
       <div id="summary-page">
         <p>Building Summary...</p>
         <Spinner />
+      </div>
+    );
+  }
+  if (!data) {
+    return (
+      <div id="summary-page">
+        <p>An Error Occured. Could not fulfill your request.</p>
       </div>
     );
   }

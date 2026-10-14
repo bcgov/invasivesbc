@@ -10,11 +10,11 @@ import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
 import GlobalFilterWarning from './GlobalFilterWarning/GlobalFilterWarning';
 import RecordSetControl from '../RecordSetControl';
 import BackButton from 'UI/Reusable/BackButton/BackButton';
-import IActivityTableRow from 'interfaces/TableRows/IActivityTableRow';
 import IIappTableRow from 'interfaces/TableRows/IIappTableRow';
 import './RecordSet.css';
+import { ActivityPlantRowOut } from 'api/api-schema';
 
-type RecordTableData = { type: 'IAPP'; data: IIappTableRow[] } | { type: 'Activity'; data: IActivityTableRow[] };
+type RecordTableData = { type: 'IAPP'; data: IIappTableRow[] } | { type: 'Activity'; data: ActivityPlantRowOut[] };
 
 type PropTypes = { setID: string };
 export const RecordSet = ({ setID }: PropTypes) => {

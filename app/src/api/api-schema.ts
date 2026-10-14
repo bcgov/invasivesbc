@@ -101,15 +101,32 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/ninja/tiles/{z}/{x}/{y}": {
+    "/ninja/tiles/activity/{z}/{x}/{y}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Req Vector Tile */
-        get: operations["api_protocol_map_tiles_vector_tiles_req_vector_tile"];
+        /** Req Activity Vector Tile */
+        get: operations["api_protocol_map_tiles_vector_tiles_req_activity_vector_tile"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ninja/tiles/zone/{z}/{x}/{y}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Zone Vector Tile */
+        get: operations["api_protocol_map_tiles_vector_tiles_zone_vector_tile"];
         put?: never;
         post?: never;
         delete?: never;
@@ -274,6 +291,23 @@ export interface paths {
          *     Data manager selects user to remove from the team.
          */
         delete: operations["api_protocol_teams_api_kick_member"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ninja/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Summary */
+        get: operations["api_protocol_summary_api_get_summary"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -1832,7 +1866,7 @@ export interface components {
             pest_management_plan_manual?: string | null;
             treatment_notice_signs: components["schemas"]["YesNoUnknown"];
             /** Precautionary Statement */
-            precautionary_statement: string;
+            precautionary_statement?: string | null;
             /**
              * Application Start Time
              * Format: date-time
@@ -3401,6 +3435,146 @@ export interface components {
             invitation_id: number;
             response: components["schemas"]["InviteStatus"];
         };
+        /** SummaryIn */
+        SummaryIn: {
+            /** Jurisdiction */
+            jurisdiction?: string[] | null;
+            /** Not Jurisdiction */
+            not_jurisdiction?: string[] | null;
+            /** I Jurisdiction */
+            i_jurisdiction?: string | null;
+            /** Noti Jurisdiction */
+            noti_jurisdiction?: string | null;
+            /** Agency */
+            agency?: string[] | null;
+            /** Not Agency */
+            not_agency?: string[] | null;
+            /** I Agency */
+            i_agency?: string | null;
+            /** Noti Agency */
+            noti_agency?: string | null;
+            /** Zone */
+            zone?: string[] | null;
+            /** Created By */
+            created_by?: string[] | null;
+            /** Not Created By */
+            not_created_by?: string[] | null;
+            /** I Created By */
+            i_created_by?: string | null;
+            /** Noti Created By */
+            noti_created_by?: string | null;
+            /** Subtype */
+            subtype?: string[] | null;
+            /** Not Subtype */
+            not_subtype?: string[] | null;
+            /** I Subtype */
+            i_subtype?: string | null;
+            /** Noti Subtype */
+            noti_subtype?: string | null;
+            /** Type */
+            type?: string[] | null;
+            /** Not Type */
+            not_type?: string[] | null;
+            /** I Type */
+            i_type?: string | null;
+            /** Noti Type */
+            noti_type?: string | null;
+        };
+        /** ActivityPlantRowOut */
+        ActivityPlantRowOut: {
+            /**
+             * Activity Id
+             * Format: uuid4
+             */
+            activity_id: string;
+            /**
+             * Activity Date
+             * Format: date
+             */
+            activity_date: string;
+            /** Activity Type */
+            activity_type: string;
+            /** Created By */
+            created_by: string;
+            /** Short Id */
+            short_id: string;
+            geom?: components["schemas"]["Point"] | null;
+            /** Activity Subtype */
+            activity_subtype: string;
+            /** Elevation */
+            elevation: number | null;
+            /** Biogeoclimatic Zones */
+            biogeoclimatic_zones: string | null;
+            /** Regional Districts */
+            regional_districts: string | null;
+            /** Invasive Plant Management Areas */
+            invasive_plant_management_areas: string | null;
+            /** Regional Invasive Species Organization Areas */
+            regional_invasive_species_organization_areas?: string | null;
+            /** Agency */
+            agency?: string | null;
+            /** Updated By */
+            updated_by: string;
+            /** Species Biocontrol Full */
+            species_biocontrol_full?: string | null;
+            /** Species Treated Full */
+            species_treated_full?: string | null;
+            /** Species Negative Full */
+            species_negative_full?: string | null;
+            /** Species Positive Full */
+            species_positive_full?: string | null;
+            /** Invasive Plant */
+            invasive_plant?: string | null;
+            /** Jurisdiction Display */
+            jurisdiction_display?: string | null;
+            /** Project Code */
+            project_code?: string | null;
+            /** Batch Id */
+            batch_id?: number | null;
+        };
+        /** ActivityPlantSummaryOut */
+        ActivityPlantSummaryOut: {
+            /** Observations */
+            observations: components["schemas"]["ActivityPlantRowOut"][];
+            /** Treatments */
+            treatments: components["schemas"]["ActivityPlantRowOut"][];
+            /** Monitoring */
+            monitoring: components["schemas"]["ActivityPlantRowOut"][];
+            /** Biocontrol */
+            biocontrol: components["schemas"]["ActivityPlantRowOut"][];
+        };
+        /**
+         * Point
+         * @description Point Model
+         */
+        Point: {
+            /** Bbox */
+            bbox?: [
+                number,
+                number,
+                number,
+                number
+            ] | [
+                number,
+                number,
+                number,
+                number,
+                number,
+                number
+            ] | null;
+            /**
+             * Type
+             * @constant
+             */
+            type: "Point";
+            /** Coordinates */
+            coordinates: components["schemas"]["Position2D"] | components["schemas"]["Position3D"];
+        };
+        Position3D: [
+            number,
+            number,
+            number
+        ];
     };
     responses: never;
     parameters: never;
@@ -3558,6 +3732,11 @@ export type UpdateTeamSchema = components['schemas']['UpdateTeamSchema'];
 export type InviteUserToTeamSchema = components['schemas']['InviteUserToTeamSchema'];
 export type TeamSuggestedUserOut = components['schemas']['TeamSuggestedUserOut'];
 export type InvitationResponseSchema = components['schemas']['InvitationResponseSchema'];
+export type SummaryIn = components['schemas']['SummaryIn'];
+export type ActivityPlantRowOut = components['schemas']['ActivityPlantRowOut'];
+export type ActivityPlantSummaryOut = components['schemas']['ActivityPlantSummaryOut'];
+export type Point = components['schemas']['Point'];
+export type Position3D = components['schemas']['Position3D'];
 export type $defs = Record<string, never>;
 export interface operations {
     api_protocol_activity_api_list_activities: {
@@ -3694,7 +3873,29 @@ export interface operations {
             };
         };
     };
-    api_protocol_map_tiles_vector_tiles_req_vector_tile: {
+    api_protocol_map_tiles_vector_tiles_req_activity_vector_tile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                z: number;
+                x: number;
+                y: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    api_protocol_map_tiles_vector_tiles_zone_vector_tile: {
         parameters: {
             query?: never;
             header?: never;
@@ -4050,6 +4251,48 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    api_protocol_summary_api_get_summary: {
+        parameters: {
+            query?: {
+                jurisdiction?: string[] | null;
+                not_jurisdiction?: string[] | null;
+                i_jurisdiction?: string | null;
+                noti_jurisdiction?: string | null;
+                agency?: string[] | null;
+                not_agency?: string[] | null;
+                i_agency?: string | null;
+                noti_agency?: string | null;
+                zone?: string[] | null;
+                created_by?: string[] | null;
+                not_created_by?: string[] | null;
+                i_created_by?: string | null;
+                noti_created_by?: string | null;
+                subtype?: string[] | null;
+                not_subtype?: string[] | null;
+                i_subtype?: string | null;
+                noti_subtype?: string | null;
+                type?: string[] | null;
+                not_type?: string[] | null;
+                i_type?: string | null;
+                noti_type?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ActivityPlantSummaryOut"];
+                };
             };
         };
     };

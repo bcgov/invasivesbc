@@ -1,7 +1,7 @@
 import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
 import { useSelector } from 'utils/use_selector';
 import RecordTable from 'UI/Features/Records/RecordSet/RecordTable/RecordTable';
-import IActivityTableRow from 'interfaces/TableRows/IActivityTableRow';
+import { ActivityPlantRowOut } from 'api/api-schema';
 
 /**
  * @desc Display for Records that LINK TO this record.
@@ -9,10 +9,9 @@ import IActivityTableRow from 'interfaces/TableRows/IActivityTableRow';
 const LinkingActivities = () => {
   const TOOLTIP = 'This list shows other activities that have added this record as a linked activity.';
 
-  // TODO: Update Typing when models done
   const linkingActivities = useSelector(
     (state) => state.ActivityPage.formMetadata?.linking_activities
-  ) as unknown as Array<IActivityTableRow>;
+  ) as Array<ActivityPlantRowOut>;
 
   if (!linkingActivities || linkingActivities.length === 0) return null;
   return (
