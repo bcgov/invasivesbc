@@ -75,10 +75,7 @@ const SummaryPage = () => {
         <Accordion title={<>Monitoring ({data?.monitoring?.length ?? 0})</>} initState={data?.monitoring?.length > 0}>
           <RecordTable type={'Activity'} data={data?.monitoring} />
         </Accordion>
-        <Accordion
-          title={<>Biocontrol ({data?.biocontrol?.length ?? 0})</>}
-          initState={data?.treatments?.biocontrol > 0}
-        >
+        <Accordion title={<>Biocontrol ({data?.biocontrol?.length ?? 0})</>} initState={data?.biocontrol?.length > 0}>
           <RecordTable type={'Activity'} data={data?.biocontrol} />
         </Accordion>
       </div>
