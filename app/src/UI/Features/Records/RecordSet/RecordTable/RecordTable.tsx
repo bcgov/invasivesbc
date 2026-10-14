@@ -8,7 +8,7 @@ import { RecordSetType } from 'interfaces/UserRecordSet';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import IIappTableRow from 'interfaces/TableRows/IIappTableRow';
-import { ActivityPlantRowOut, Point } from 'api/api-schema';
+import { ActivityPlantRowOut } from 'api/api-schema';
 
 interface BaseProps {
   setId?: string;
