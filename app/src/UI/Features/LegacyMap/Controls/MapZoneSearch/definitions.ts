@@ -1,4 +1,5 @@
 import { MapLibreMap } from 'maplibre-gl';
+import Alerts from 'state/actions/alerts/Alerts';
 import { LAYER_Z_FOREGROUND } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/types';
 
 /**
@@ -11,6 +12,14 @@ const BORDER_LAYER = 'zoi-border';
 const SELECTED_LAYER = 'zoi-selected';
 const ALL_LAYERS = [SELECTED_LAYER, OUTLINE_LAYER, BORDER_LAYER, CLICKABLE_LAYER];
 
+const MIN_ZOOM_FOR_ZONES = 10;
+const TOO_FAR_OUT_ALERT = Alerts.create({
+  content: 'Zoom in further to view zone boundaries.',
+  severity: 'warning',
+  subject: 'map',
+  autoClose: 10
+});
+
 const selectionFilter = (ids: Set<string>): any => ['in', ['get', 'public_id'], ['literal', Array.from(ids)]];
 
 const addZoneLayers = (map: MapLibreMap, selected: Set<string>) => {
@@ -21,7 +30,7 @@ const addZoneLayers = (map: MapLibreMap, selected: Set<string>) => {
       map.addSource(SOURCE, {
         type: 'vector',
         tiles: ['apiv2:///ninja/tiles/zone/{z}/{x}/{y}'],
-        minzoom: 10
+        minzoom: MIN_ZOOM_FOR_ZONES
       });
     }
 
@@ -93,12 +102,14 @@ const removeZoneLayers = (map: MapLibreMap) => {
 };
 
 export {
-  CLICKABLE_LAYER,
-  SOURCE,
-  OUTLINE_LAYER,
-  BORDER_LAYER,
-  SELECTED_LAYER,
   ALL_LAYERS,
+  BORDER_LAYER,
+  CLICKABLE_LAYER,
+  MIN_ZOOM_FOR_ZONES,
+  OUTLINE_LAYER,
+  SELECTED_LAYER,
+  SOURCE,
+  TOO_FAR_OUT_ALERT,
   addZoneLayers,
   removeZoneLayers,
   selectionFilter
