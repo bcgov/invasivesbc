@@ -1,6 +1,5 @@
 import { Button } from '@mui/material';
 import { useCallback, useState } from 'react';
-import { activityColumnsToDisplay, iappColumnsToDisplay } from 'UI/Features/Records/RecordSet/RecordTableHelpers';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
@@ -150,7 +149,7 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
   const serverSpatialFiltersDisabled = useSelector(
     (state) => state.UserSettings.recordSets[setID].cacheMetadataStatus === UserRecordCacheStatus.CACHED
   );
-  const filterColumns = recordSetType === RecordSetType.Activity ? activityColumnsToDisplay : iappColumnsToDisplay;
+  const filterColumns = useSelector((state) => state.UserSettings.tableColumns[recordSetType] ?? []);
   const filterOptions = filterColumns.map((option) => ({ label: option.name, value: option.key }));
 
   const [inputValue, setInputValue] = useState<string>(filterSet.filter);

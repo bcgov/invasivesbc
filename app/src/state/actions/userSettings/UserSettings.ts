@@ -6,7 +6,7 @@ import { RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
 import { MapRecordsetLayerFilterCategory } from 'state/reducers/map';
 
 interface IHoverRecordset {
-  recordType: RecordSetType;
+  recordType: RecordSetType | `${RecordSetType}`;
   id: string | number;
   geom?: GeoJSON;
   quickPan?: boolean; // Map should pan to this site when update occurs

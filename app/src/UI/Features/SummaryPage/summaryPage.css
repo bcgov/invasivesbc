@@ -1,0 +1,26 @@
+#summary-page {
+  display: flex;
+  width: 100%;
+  box-sizing: border-box;
+  flex-direction: column;
+  padding-bottom: 3rem;
+  min-height: 100%;
+  background-color: var(--overlay-background-color);
+  align-items: center;
+
+  .back-cont {
+    position: absolute;
+    top: calc(1rem + var(--overlay-grip-height));
+    left: 1rem;
+  }
+
+  .content {
+    display: flex;
+    background-color: var(--overlay-content-background-color);
+    box-sizing: border-box;
+    padding: 1rem 0.5rem;
+    flex-direction: column;
+    width: 100%;
+    max-width: 1100px;
+  }
+}
