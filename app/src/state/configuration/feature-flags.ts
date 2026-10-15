@@ -49,12 +49,12 @@ const BASELINE_FEATURES = {
   SIMPLIFIED_LAYOUT: new FeatureFlag('SIMPLIFIED_LAYOUT', false),
 
   TRAINING_PAGE: new FeatureFlag('TRAINING_PAGE', true),
-  TEAMS: new FeatureFlag('TEAMS', false),
+  TEAMS: new FeatureFlag('TEAMS', true),
 
   USER_GUIDE: new FeatureFlag('USER_GUIDE', false) /* set to true when there are entries to display */,
   USER_SITE_LIST: new FeatureFlag('USER_SITE_LIST', true),
 
-  ZONES_OF_INTEREST: new FeatureFlag('ZONES_OF_INTEREST', false)
+  ZONES_OF_INTEREST: new FeatureFlag('ZONES_OF_INTEREST', true)
 };
 
 type FeatureFlags = typeof BASELINE_FEATURES;
