@@ -4,7 +4,7 @@ const getBiocontrolCollectionSubtypeFields = (): BiocontrolCollectionSchema['sub
   entries: [
     {
       invasive_plant: '',
-      biological_agent: '',
+      biocontrol_agent: '',
       collection_type: '',
       collection_method: '',
       start_time_collecting: '',

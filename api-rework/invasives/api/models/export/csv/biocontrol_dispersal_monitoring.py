@@ -13,7 +13,7 @@ class MonitoringBiocontrolDispersal(BaseCsvExportModel):
     mesoslope_position = models.CharField(blank=True, null=True)
     site_surface_shape = models.CharField(blank=True, null=True)
     invasive_plant = models.CharField()
-    biological_agent = models.CharField()
+    biocontrol_agent = models.CharField()
     biocontrol_present = models.CharField(null=True, blank=True)
     biological_agent_presence = models.CharField(blank=True, null=True)
     monitoring_type = models.CharField(null=True, blank=True)
@@ -89,7 +89,7 @@ SUBTYPE_CSV_COLUMNS = [
         "label": "Invasive Plant",
     },
     {
-        "key": "biological_agent",
+        "key": "biocontrol_agent",
         "label": "Biological Agent",
     },
     {

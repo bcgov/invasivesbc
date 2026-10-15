@@ -113,15 +113,17 @@ class ActivityPlantRowOut(ModelSchema):
     def resolve_species_biocontrol_full(obj: Activity):
         if obj.type != ActivityType.Biocontrol.value:
             return None
-        config = ActivityPlantRowOut.get_agent_model(obj)
-        if not config:
-            return None
-        model: Model = config.model
-        return ", ".join(
-            model.objects.filter(activity_data_record__activity_id=obj.id).values_list(
-                config.key
+
+        if model := ActivityPlantRowOut.get_agent_model(obj):
+            return (
+                ", ".join(
+                    model.objects.filter(
+                        activity_data_record__activity_id=obj.id
+                    ).values_list("biocontrol_agent")
+                )
+                or None
             )
-        )
+        return None
 
     @staticmethod
     def resolve_species_treated_full(obj: Activity):
@@ -251,21 +253,9 @@ class ActivityPlantRowOut(ModelSchema):
     @classmethod
     def get_agent_model(cls, obj: Activity) -> dict:
         MAP = {
-            ActivitySubtypes.Biocontrol_Collection.name: {
-                "model": TerrestrialBiocontrolCollectionEntry,
-                "key": "biological_agent",
-            },
-            ActivitySubtypes.Biocontrol_Release.name: {
-                "model": TerrestrialBiocontrolReleaseEntry,
-                "key": "biocontrol_agent",
-            },
-            ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial.name: {
-                "model": TerrestrialBiocontrolDispersalMonitoringEntry,
-                "key": "biocontrol_agent",
-            },
-            ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial.name: {
-                "model": TerrestrialBiocontrolDispersalMonitoringEntry,
-                "key": "biocontrol_agent",
-            },
+            ActivitySubtypes.Biocontrol_Collection.name: TerrestrialBiocontrolCollectionEntry,
+            ActivitySubtypes.Biocontrol_Release.name: TerrestrialBiocontrolReleaseEntry,
+            ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial.name: TerrestrialBiocontrolDispersalMonitoringEntry,
+            ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial.name: TerrestrialBiocontrolDispersalMonitoringEntry,
         }
         return MAP.get(obj.subtype, None)

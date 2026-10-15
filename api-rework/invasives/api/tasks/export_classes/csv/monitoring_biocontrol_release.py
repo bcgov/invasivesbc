@@ -107,7 +107,7 @@ class MonitoringBiocontrolReleasePlantCsvRow(
                     ),
                     # Entry
                     invasive_plant=self.safe_attr(entry, "invasive_plant", "full"),
-                    biological_agent=self.safe_attr(entry, "biocontrol_agent", "full"),
+                    biocontrol_agent=self.safe_attr(entry, "biocontrol_agent", "full"),
                     biocontrol_present=biocontrol_present,
                     biological_agent_presence=biocontrol_presence,
                     monitoring_type=self.safe_attr(entry, "monitoring_type"),

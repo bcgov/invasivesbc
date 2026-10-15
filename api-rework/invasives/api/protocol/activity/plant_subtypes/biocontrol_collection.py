@@ -27,7 +27,7 @@ from api.protocol.activity.validators.code_validation import (
 
 class DraftEntry(CleanSchema):
     invasive_plant: Optional[PlantsWithBiocontrolType]
-    biological_agent: Optional[BiocontrolAgentCodeType]
+    biocontrol_agent: Optional[BiocontrolAgentCodeType]
     historical_iapp_site: Optional[int] = None
     collection_type: Optional[CollectionType]
     plant_count_collection: Optional[int] = None
@@ -51,7 +51,7 @@ class DraftEntry(CleanSchema):
 
 class Entry(DraftEntry):
     invasive_plant: PlantsWithBiocontrolType
-    biological_agent: BiocontrolAgentCodeType
+    biocontrol_agent: BiocontrolAgentCodeType
     historical_iapp_site: Optional[int] = Field(None, ge=0)
     collection_type: CollectionType
     plant_count_collection: Optional[int] = Field(None, gt=0)

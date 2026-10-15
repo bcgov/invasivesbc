@@ -12,7 +12,7 @@ class TreatmentBiocontrolReleasePlant(BaseCsvExportModel):
     mesoslope_position = models.CharField(blank=True, null=True)
     site_surface_shape = models.CharField(blank=True, null=True)
     invasive_plant = models.CharField()
-    biological_agent = models.CharField()
+    biocontrol_agent = models.CharField()
     linear_segment = models.CharField(null=True, blank=True)
     agent_mortality = models.PositiveIntegerField(null=True, blank=True)
     agent_source = models.CharField(null=True, blank=True)
@@ -46,7 +46,7 @@ class TreatmentBiocontrolReleasePlant(BaseCsvExportModel):
             "label": "Invasive Plant",
         },
         {
-            "key": "biological_agent",
+            "key": "biocontrol_agent",
             "label": "Biological Agent",
         },
         {

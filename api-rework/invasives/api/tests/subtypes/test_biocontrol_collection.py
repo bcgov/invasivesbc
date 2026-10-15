@@ -41,7 +41,7 @@ class BiocontrolReleaseTest(BaseActivitySubtypeTest):
         self.assertEqual(ti["number_of_sweeps"], None)
         self.assertEqual(ti["start_time_collecting"], "2026-01-02T08:00")
         self.assertEqual(ti["end_time_collecting"], "2026-01-02T08:00")
-        self.assertEqual(ti["biological_agent"], "CHEIURB")
+        self.assertEqual(ti["biocontrol_agent"], "CHEIURB")
         self.assertEqual(ti["collection_method"], "Cs")
         self.assertEqual(ti["invasive_plant"], "CT")
 
@@ -125,7 +125,7 @@ class BiocontrolReleaseTest(BaseActivitySubtypeTest):
         entry_out = record_out["entries"][0]
 
         self.assertEqual(entry_in["invasive_plant"], entry_out["invasive_plant"])
-        self.assertEqual(entry_in["biological_agent"], entry_out["biological_agent"])
+        self.assertEqual(entry_in["biocontrol_agent"], entry_out["biocontrol_agent"])
         self.assertEqual(entry_in["collection_type"], entry_out["collection_type"])
         self.assertEqual(entry_in["collection_method"], entry_out["collection_method"])
         self.assertEqual(

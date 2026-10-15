@@ -39,7 +39,7 @@ class BaseEntrySerializer(serializers.ModelSerializer):
             "actual_biological_agents",
             "estimated_biological_agents",
             "invasive_plant",
-            "biological_agent",
+            "biocontrol_agent",
             "historical_iapp_site",
             "collection_type",
             "plant_count_collection",
