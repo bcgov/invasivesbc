@@ -6,7 +6,16 @@ import { MapContext } from '../../helpers/components/MapContext';
 import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
 import type { MapGeoJSONFeature, Map as MapLibreMap, MapMouseEvent, MapTouchEvent } from 'maplibre-gl';
 import { useNavigate } from 'react-router';
-import { CLICKABLE_LAYER, SELECTED_LAYER, addZoneLayers, removeZoneLayers, selectionFilter } from './definitions';
+import {
+  CLICKABLE_LAYER,
+  MIN_ZOOM_FOR_ZONES,
+  SELECTED_LAYER,
+  TOO_FAR_OUT_ALERT,
+  addZoneLayers,
+  removeZoneLayers,
+  selectionFilter
+} from './definitions';
+import { useDispatch } from 'utils/use_selector';
 
 /**
  * @desc Feature to Render the Zone Hexagon Grid onto the Map, Allowing User to select Zones of Interest
@@ -15,6 +24,8 @@ const MapZoneSearch = () => {
   const map = useContext(MapContext) as MapLibreMap | null;
   if (!map) throw new Error('MapContext was not provided');
   const navigate = useNavigate();
+
+  const dispatch = useDispatch();
 
   const [featureActive, setFeatureActive] = useState<boolean>(false);
   const [selectedZones, setSelectedZones] = useState<Set<string>>(new Set());
@@ -60,12 +71,14 @@ const MapZoneSearch = () => {
     const clearPointer = () => (map.getCanvas().style.cursor = '');
 
     addZoneLayers(map, selectedRef.current);
+
     map.on('style.load', onStyleLoad);
     map.on('click', handleClick);
     map.on('mousemove', clearPointer);
     map.on('mouseenter', CLICKABLE_LAYER, setPointer);
     map.on('mouseleave', CLICKABLE_LAYER, clearPointer);
 
+    if (map.getZoom() < MIN_ZOOM_FOR_ZONES) dispatch(TOO_FAR_OUT_ALERT);
     return () => {
       map.off('style.load', onStyleLoad);
       map.off('click', handleClick);

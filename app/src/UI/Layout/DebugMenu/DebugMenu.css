@@ -5,7 +5,6 @@
 #debug-panel {
   display: flex;
   flex-direction: column;
-
   background-color: midnightblue;
   padding: 4px;
 
@@ -15,7 +14,15 @@
     line-height: 1.5;
     min-height: 35px;
   }
+
   button:not(last-child) {
     margin-top: 5pt;
+  }
+
+  input[type='text'] {
+    background-color: #fff;
+    outline: none;
+    border: 1pt solid black;
+    height: 2rem;
   }
 }

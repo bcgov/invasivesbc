@@ -30,7 +30,7 @@ const AlertsContainer = () => {
   /**
    * @desc Helper function, converts AlertSubjects to Icons
    */
-  const getImageFromSubject = (subject: AlertSubjects) => {
+  const getImageFromSubject = (subject: AlertSubjects | `${AlertSubjects}`) => {
     switch (subject) {
       case AlertSubjects.Map:
         return <MapOutlined />;
