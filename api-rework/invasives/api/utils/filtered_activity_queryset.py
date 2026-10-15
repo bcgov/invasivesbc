@@ -132,7 +132,7 @@ class FilteredActivityQueryset:
 
         # Paths where a Biocontrol Agents will be found
         self.BIOCONTROL_PATHS = [
-            f"{leading}terrestrialbiocontrolcollectionentry__biological_agent__full",
+            f"{leading}terrestrialbiocontrolcollectionentry__biocontrol_agent__full",
             f"{leading}terrestrialbiocontrolreleaseentry__biocontrol_agent__full",
             f"{leading}terrestrialbiocontroldispersalmonitoringentry__biocontrol_agent__full",
         ]

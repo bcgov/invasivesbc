@@ -76,11 +76,11 @@ class ActivityRecordsetFilterTest(BaseTestCase):
                 "value": "Observation",
             },
             "not_has": {
-                "expected_num_records": 9,
+                "expected_num_records": 10,
                 "value": ActivityType.Monitoring.value,
             },
             "partial": {
-                "expected_num_records": 7,
+                "expected_num_records": 6,
                 "value": "a",
             },
         },
@@ -447,7 +447,7 @@ class ActivityRecordsetFilterTest(BaseTestCase):
         COLUMN_ONE_VALUE = "Treatment"
         COLUMN_TWO = "activity_date"
         COLUMN_TWO_VALUE = "2026-06-04"
-        EXPECTED_RESULTS = 6
+        EXPECTED_RESULTS = 7
         records = self.fetch_rows(
             rules=[
                 self.rule(

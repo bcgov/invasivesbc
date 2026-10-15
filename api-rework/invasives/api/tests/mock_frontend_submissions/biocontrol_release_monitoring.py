@@ -75,7 +75,7 @@ EMPTY_BIOCONTROL_RELEASE_MONITORING = {
             "wind_speed_kmh": None,
         },
     },
-    "type": "Monitoring",
+    "type": "Biocontrol",
     "media": [],
     "created_by": "johnsmith@identifier",
 }
@@ -132,7 +132,7 @@ MINIMAL_BIOCONTROL_RELEASE_MONITORING = {
             "site_surface_shape": "NA",
         },
     },
-    "type": "Monitoring",
+    "type": "Biocontrol",
     "media": [],
     "created_by": "johnsmith@identifier",
     "shape": {
@@ -238,7 +238,7 @@ UPDATED_BIOCONTROL_RELEASE_MONITORING = {
             "site_surface_shape": "NA",
         },
     },
-    "type": "Monitoring",
+    "type": "Biocontrol",
     "media": [],
     "created_by": "johnsmith@identifier",
     "shape": {
