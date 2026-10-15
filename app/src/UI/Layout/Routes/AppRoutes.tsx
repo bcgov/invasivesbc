@@ -86,7 +86,7 @@ const AppRoutes = () => {
         )}
       />
       <Route
-        path="/summary"
+        path="/summary/:summaryParam/:queryValue"
         Component={() => (
           <Suspense fallback={<Spinner />}>
             <FeatureGated requires="ZONES_OF_INTEREST">
