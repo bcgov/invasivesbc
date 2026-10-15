@@ -54,7 +54,7 @@ class ActivityPlantRowOut(ModelSchema):
     )
     regional_invasive_species_organization_areas: Optional[str] = None
     agency: Optional[str] = None
-    updated_by: str
+    updated_by: Optional[str] = None
     species_biocontrol_full: Optional[str] = None
     species_treated_full: Optional[str] = None
     species_negative_full: Optional[str] = None
@@ -114,16 +114,17 @@ class ActivityPlantRowOut(ModelSchema):
         if obj.type != ActivityType.Biocontrol.value:
             return None
 
-        if model := ActivityPlantRowOut.get_agent_model(obj):
-            return (
-                ", ".join(
-                    model.objects.filter(
-                        activity_data_record__activity_id=obj.id
-                    ).values_list("biocontrol_agent")
-                )
-                or None
+        model: Model = ActivityPlantRowOut.get_agent_model(obj)
+        if not model:
+            return None
+        return (
+            ", ".join(
+                model.objects.filter(
+                    activity_data_record__activity_id=obj.id
+                ).values_list("biocontrol_agent__full", flat=True)
             )
-        return None
+            or None
+        )
 
     @staticmethod
     def resolve_species_treated_full(obj: Activity):
