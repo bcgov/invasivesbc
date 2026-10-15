@@ -8,21 +8,19 @@ import OptionalField from 'UI/Features/Records/Activity/forms/common/OptionalFie
 import { useEffect, useMemo } from 'react';
 import './singleSelect.css';
 
-type OptionProps = {
-  label: string;
-};
-const OptionItem = ({ label }: OptionProps) => {
-  if (label.startsWith('★')) {
-    const suffixStart = label.lastIndexOf('-') + 1;
-    const suffix = label.slice(suffixStart);
+type Option = { label: string; value: string | boolean };
+const formatOptionLabel = (option: Option) => {
+  if (option.label.startsWith('★')) {
+    const suffixStart = option.label.lastIndexOf('-') + 1;
+    const suffix = option.label.slice(suffixStart);
     return (
       <>
-        <span className="highlighted">★</span> {label.slice(1, suffixStart)}
+        <span className="highlighted">★</span> {option.label.slice(1, suffixStart)}
         <span className="small">{suffix}</span>
       </>
     );
   }
-  return label;
+  return option.label;
 };
 interface PropTypes<T extends FieldValues> {
   readonly label?: string;
@@ -140,7 +138,7 @@ export function SingleSelect<T extends FieldValues>({
               ref={ref}
               isClearable
               aria-invalid={!!error}
-              formatOptionLabel={(option) => <OptionItem label={option.label} />}
+              formatOptionLabel={formatOptionLabel}
               value={mappedOptions?.find((o) => o.value === (value?.code ?? value)) || null}
             />
             <ErrorMessage error={error} label={label} />
