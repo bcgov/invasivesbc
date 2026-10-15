@@ -23,5 +23,8 @@ def get_summary(request, filters: Query[SummaryIn]):
                 public_id__in=filters.zone,
                 shape__intersects=OuterRef("computed_tile_shape"),
             )
-        query = query.filter(Exists(zones)).order_by("-date")
-        return query
+            query = query.filter(Exists(zones))
+        if filters.user:
+            query = query.filter(creating_user=filters.user)
+
+        return query.order_by("-date")

@@ -13,13 +13,13 @@ import './summaryPage.css';
 
 const SummaryPage = () => {
   // Reject any params outside of these options
-  const SUPPORTED_PARAMS = ['created_by', 'zone'];
+  const SUPPORTED_PARAMS = ['user', 'zone'];
 
   const queryApi = async () => {
     if (!VALID_REQ) return;
     try {
       const params = new URLSearchParams({ [summaryParam]: queryValue }).toString();
-      const res = await fetch(`${API_BASE}/ninja/summary?${params}}`, {
+      const res = await fetch(`${API_BASE}/ninja/summary?${params}`, {
         headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' }
       });
       if (res?.ok) setData(await res.json());

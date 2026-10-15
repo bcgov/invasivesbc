@@ -6,6 +6,7 @@ from api.protocol.activity.validators.code_validation import FundingAgencyCodeTy
 
 class SummaryIn(Schema):
     zone: Optional[List[str]] = None
+    user: Optional[str] = None
 
     @field_validator("zone", mode="before")
     @classmethod
