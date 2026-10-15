@@ -1574,8 +1574,8 @@ export interface components {
         api__protocol__activity__plant_subtypes__biocontrol_collection__Entry: {
             /** Invasive Plant */
             invasive_plant: string;
-            /** Biological Agent */
-            biological_agent: string;
+            /** Biocontrol Agent */
+            biocontrol_agent: string;
             /** Historical Iapp Site */
             historical_iapp_site?: number | null;
             collection_type: components["schemas"]["CollectionType"];
@@ -2899,8 +2899,8 @@ export interface components {
         api__protocol__activity__plant_subtypes__biocontrol_collection__DraftEntry: {
             /** Invasive Plant */
             invasive_plant: string | null;
-            /** Biological Agent */
-            biological_agent: string | null;
+            /** Biocontrol Agent */
+            biocontrol_agent: string | null;
             /** Historical Iapp Site */
             historical_iapp_site?: number | null;
             collection_type: components["schemas"]["CollectionType"] | null;
@@ -3437,48 +3437,8 @@ export interface components {
         };
         /** SummaryIn */
         SummaryIn: {
-            /** Jurisdiction */
-            jurisdiction?: string[] | null;
-            /** Not Jurisdiction */
-            not_jurisdiction?: string[] | null;
-            /** I Jurisdiction */
-            i_jurisdiction?: string | null;
-            /** Noti Jurisdiction */
-            noti_jurisdiction?: string | null;
-            /** Agency */
-            agency?: string[] | null;
-            /** Not Agency */
-            not_agency?: string[] | null;
-            /** I Agency */
-            i_agency?: string | null;
-            /** Noti Agency */
-            noti_agency?: string | null;
             /** Zone */
             zone?: string[] | null;
-            /** Created By */
-            created_by?: string[] | null;
-            /** Not Created By */
-            not_created_by?: string[] | null;
-            /** I Created By */
-            i_created_by?: string | null;
-            /** Noti Created By */
-            noti_created_by?: string | null;
-            /** Subtype */
-            subtype?: string[] | null;
-            /** Not Subtype */
-            not_subtype?: string[] | null;
-            /** I Subtype */
-            i_subtype?: string | null;
-            /** Noti Subtype */
-            noti_subtype?: string | null;
-            /** Type */
-            type?: string[] | null;
-            /** Not Type */
-            not_type?: string[] | null;
-            /** I Type */
-            i_type?: string | null;
-            /** Noti Type */
-            noti_type?: string | null;
         };
         /** ActivityPlantRowOut */
         ActivityPlantRowOut: {
@@ -3514,7 +3474,7 @@ export interface components {
             /** Agency */
             agency?: string | null;
             /** Updated By */
-            updated_by: string;
+            updated_by?: string | null;
             /** Species Biocontrol Full */
             species_biocontrol_full?: string | null;
             /** Species Treated Full */
@@ -4257,27 +4217,7 @@ export interface operations {
     api_protocol_summary_api_get_summary: {
         parameters: {
             query?: {
-                jurisdiction?: string[] | null;
-                not_jurisdiction?: string[] | null;
-                i_jurisdiction?: string | null;
-                noti_jurisdiction?: string | null;
-                agency?: string[] | null;
-                not_agency?: string[] | null;
-                i_agency?: string | null;
-                noti_agency?: string | null;
                 zone?: string[] | null;
-                created_by?: string[] | null;
-                not_created_by?: string[] | null;
-                i_created_by?: string | null;
-                noti_created_by?: string | null;
-                subtype?: string[] | null;
-                not_subtype?: string[] | null;
-                i_subtype?: string | null;
-                noti_subtype?: string | null;
-                type?: string[] | null;
-                not_type?: string[] | null;
-                i_type?: string | null;
-                noti_type?: string | null;
             };
             header?: never;
             path?: never;
