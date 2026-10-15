@@ -112,8 +112,7 @@ const MapZoneSearch = () => {
     if (!featureActive) {
       const selected = Array.from(selectedZones).join(',');
       if (selected) {
-        const params = new URLSearchParams({ zone: selected });
-        navigate({ pathname: '/summary', search: `?${params.toString()}` });
+        navigate(`/summary/zone/${selected}`);
       }
       setSelectedZones((prev) => (prev.size ? new Set() : prev));
     }
