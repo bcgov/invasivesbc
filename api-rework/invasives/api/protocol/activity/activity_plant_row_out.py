@@ -154,6 +154,10 @@ class ActivityPlantRowOut(ModelSchema):
         )
 
     @staticmethod
+    def resolve_created_by(obj: Activity):
+        return obj.creating_user.display_name
+
+    @staticmethod
     def resolve_species_positive_full(obj: Activity):
         if obj.type != ActivityType.Observation.value:
             return None
