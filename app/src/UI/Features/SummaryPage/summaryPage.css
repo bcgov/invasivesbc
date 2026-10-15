@@ -14,13 +14,23 @@
     left: 1rem;
   }
 
+  .content hgroup h2 {
+    text-transform: capitalize;
+  }
+
   .content {
     display: flex;
     background-color: var(--overlay-content-background-color);
     box-sizing: border-box;
+    align-items: center;
     padding: 1rem 0.5rem;
     flex-direction: column;
     width: 100%;
     max-width: 1100px;
+
+    .query {
+      width: 100%;
+      max-width: calc(min(800px, 85vw));
+    }
   }
 }
