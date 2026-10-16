@@ -53,7 +53,7 @@ class TreatmentBiocontrolReleasePlantCsvRow(
                     ),
                     # Entry
                     invasive_plant=self.safe_attr(entry, "invasive_plant", "full"),
-                    biological_agent=self.safe_attr(entry, "biocontrol_agent", "full"),
+                    biocontrol_agent=self.safe_attr(entry, "biocontrol_agent", "full"),
                     linear_segment=self.safe_attr(entry, "linear_segment"),
                     agent_mortality=self.safe_attr(entry, "mortality"),
                     agent_source=self.safe_attr(entry, "agent_source"),

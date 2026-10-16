@@ -74,7 +74,7 @@ class BiocontrolCollectionPlantCsvRow(
                     ),
                     # Entry
                     invasive_plant=self.safe_attr(entry, "invasive_plant", "full"),
-                    biological_agent=self.safe_attr(entry, "biological_agent", "full"),
+                    biocontrol_agent=self.safe_attr(entry, "biocontrol_agent", "full"),
                     historical_iapp_site=self.safe_attr(entry, "historical_iapp_site"),
                     collection_type=self.safe_attr(entry, "collection_type"),
                     plant_count_collection=self.safe_attr(

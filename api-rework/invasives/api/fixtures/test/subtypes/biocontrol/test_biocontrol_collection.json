@@ -163,7 +163,7 @@
       "number_of_sweeps": null,
       "start_time_collecting": "2026-01-02 00:00:00.000 -0800",
       "end_time_collecting": "2026-01-02 00:00:00.000 -0800",
-      "biological_agent": "CHEIURB",
+      "biocontrol_agent": "CHEIURB",
       "collection_method": "Cs",
       "invasive_plant": "CT"
     }
@@ -179,7 +179,7 @@
       "number_of_sweeps": null,
       "start_time_collecting": "2026-01-02 00:00:00.000 -0800",
       "end_time_collecting": "2026-01-02 00:00:00.000 -0800",
-      "biological_agent": "CHEIURB",
+      "biocontrol_agent": "CHEIURB",
       "collection_method": "Cs",
       "invasive_plant": "CT"
     }

@@ -18,7 +18,7 @@ class BaseModel(models.Model):
     """
 
     invasive_plant = models.ForeignKey(PlantsWithBiocontrol, on_delete=models.PROTECT)
-    biological_agent = models.ForeignKey(BiocontrolAgentCode, on_delete=models.PROTECT)
+    biocontrol_agent = models.ForeignKey(BiocontrolAgentCode, on_delete=models.PROTECT)
     historical_iapp_site = models.PositiveBigIntegerField(blank=True, null=True)
     collection_type = models.CharField(choices=CollectionType)
     plant_count_collection = models.PositiveIntegerField(blank=True, null=True)
@@ -86,7 +86,7 @@ class DraftTerrestrialBiocontrolCollectionEntry(BaseModel, DraftRepeatedFormData
         blank=True,
         null=True,
     )
-    biological_agent = models.ForeignKey(
+    biocontrol_agent = models.ForeignKey(
         BiocontrolAgentCode,
         on_delete=models.PROTECT,
         blank=True,

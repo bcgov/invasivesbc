@@ -70,7 +70,7 @@ EMPTY_BIOCONTROL_DISPERSAL_MONITORING = {
             "wind_speed_kmh": None,
         },
     },
-    "type": "Monitoring",
+    "type": "Biocontrol",
     "media": [],
     "created_by": "johnsmith@identifier",
 }
@@ -128,7 +128,7 @@ MINIMAL_BIOCONTROL_DISPERSAL_MONITORING = {
             "wind_speed_kmh": 22,
         },
     },
-    "type": "Monitoring",
+    "type": "Biocontrol",
     "media": [],
     "created_by": "johnsmith@identifier",
     "shape": {
