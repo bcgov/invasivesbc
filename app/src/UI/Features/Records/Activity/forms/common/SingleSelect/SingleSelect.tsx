@@ -5,9 +5,23 @@ import ErrorMessage from 'UI/Features/Records/Activity/forms/common/ErrorMessage
 import { Controller, FieldValues, RegisterOptions, useFormContext, Path } from 'react-hook-form';
 import { getInputWidth, Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import OptionalField from 'UI/Features/Records/Activity/forms/common/OptionalField/OptionalField';
-import './singleSelect.css';
 import { useEffect, useMemo } from 'react';
+import './singleSelect.css';
 
+type Option = { label: string; value: string | boolean };
+const formatOptionLabel = (option: Option) => {
+  if (option.label.startsWith('★')) {
+    const suffixStart = option.label.lastIndexOf('-') + 1;
+    const suffix = option.label.slice(suffixStart);
+    return (
+      <>
+        <span className="highlighted">★</span> {option.label.slice(1, suffixStart)}
+        <span className="small">{suffix}</span>
+      </>
+    );
+  }
+  return option.label;
+};
 interface PropTypes<T extends FieldValues> {
   readonly label?: string;
   readonly name: Path<T>;
@@ -124,6 +138,7 @@ export function SingleSelect<T extends FieldValues>({
               ref={ref}
               isClearable
               aria-invalid={!!error}
+              formatOptionLabel={formatOptionLabel}
               value={mappedOptions?.find((o) => o.value === (value?.code ?? value)) || null}
             />
             <ErrorMessage error={error} label={label} />

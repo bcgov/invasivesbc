@@ -14,6 +14,17 @@
     text-align: left;
     font-size: var(--form-input-font-size);
     min-height: var(--form-input-height);
+
+    .highlighted {
+      color: var(--bc-yellow);
+      font-size: 2rem;
+      -webkit-text-stroke: 1px black;
+    }
+
+    .small {
+      font-size: 0.85em;
+      font-style: italic;
+    }
   }
 
   /* stylelint-disable-next-line selector-class-pattern */
