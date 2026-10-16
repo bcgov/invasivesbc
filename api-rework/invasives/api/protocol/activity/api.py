@@ -30,6 +30,7 @@ from api.protocol.activity.plant_subtypes.union_definition import (
     PlantActivitySchema,
     DraftPlantActivitySchema,
 )
+from api.permissions.activity_access import filter_activities_by_access
 from api.utils.deepdiff import AtomicFieldOperator
 
 router = Router(auth=NinjaKeycloakAuthentication())
@@ -39,9 +40,9 @@ router = Router(auth=NinjaKeycloakAuthentication())
 def list_activities(request):
     return [
         ActivityMinimal(**d)
-        for d in Activity.objects.values(
-            "id", "short_id", "type", "subtype", "date"
-        ).all()
+        for d in filter_activities_by_access(Activity.objects.all(), request.auth)
+        .values("id", "short_id", "type", "subtype", "date")
+        .all()
     ]
 
 
@@ -50,8 +51,11 @@ def activity_search(request, search: ActivitySearchParameters):
     result = ActivitySearchResult(
         items=[
             ActivityMinimal(**d)
-            for d in Activity.objects.filter(
-                date__gt=search.date_from, date__lt=search.date_to
+            for d in filter_activities_by_access(
+                Activity.objects.filter(
+                    date__gt=search.date_from, date__lt=search.date_to
+                ),
+                request.auth,
             )
             .values("id", "short_id", "type", "subtype", "date")
             .all()
@@ -173,7 +177,9 @@ def submit_draft_record(request, data: DraftPlantActivitySchema):
 
 @router.api_operation(["GET"], "/{id}", response=SingleActivityResponse)
 def get_activity_by_id(request, id: str):
-    activity = Activity.objects.filter(id=id).first()
+    activity = filter_activities_by_access(
+        Activity.objects.filter(id=id), request.auth
+    ).first()
     if activity:  # Submission found
         # TODO: Replace with proper 'available_action' values
         history_entries = ActivityModificationRecord.objects.filter(
@@ -190,7 +196,10 @@ def get_activity_by_id(request, id: str):
                 ],
                 "metadata": {
                     "linking_activities": ActivityRecordsetRowSerializer(
-                        activity.activity_set.all().order_by("-date"), many=True
+                        filter_activities_by_access(
+                            activity.activity_set.all(), request.auth
+                        ).order_by("-date"),
+                        many=True,
                     ).data,
                     "history": HistorySerializer(history_entries, many=True).data,
                     "plants": serialized_plants["invasive_plant"],

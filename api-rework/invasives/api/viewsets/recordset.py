@@ -1,10 +1,11 @@
 import csv
 import logging
 
-from api.models.export.csv import CSV_EXPORT_ROW_MAP
 from api.constants import short_id_regex, uuid_regex
 from api.models.activity import Activity
-from api.permissions import HasAdminRole
+from api.models.export.csv import CSV_EXPORT_ROW_MAP
+from api.permissions.activity_access import filter_activities_by_access
+from api.permissions.role_based import HasAnyApplicationRole
 from api.serializers.activity_recordset_row import (
     ActivityRecordsetRowSerializer,
     CachedActivityRecordsetRowSerializer,
@@ -25,7 +26,7 @@ CENTROID_ZOOM_LIMIT = 12
 
 class RecordsetRowsViewSet(AtomicViewSetMixin, GenericViewSet):
     serializer_class = ActivityRecordsetRowSerializer
-    permission_classes = [HasAdminRole]
+    permission_classes = [HasAnyApplicationRole]
 
     @action(detail=False, methods=["GET"])
     def cache(self, request, *args, **kwargs):
@@ -47,7 +48,10 @@ class RecordsetRowsViewSet(AtomicViewSetMixin, GenericViewSet):
             else:
                 return Response(f"Invalid ID: {id}", status=HTTP_400_BAD_REQUEST)
 
-        results = Activity.objects.filter(Q(id__in=uuids) | Q(short_id__in=short_ids))
+        results = filter_activities_by_access(
+            Activity.objects.filter(Q(id__in=uuids) | Q(short_id__in=short_ids)),
+            request.user,
+        )
         serializer = CachedActivityRecordsetRowSerializer(results, many=True)
 
         return Response(serializer.data, status=HTTP_200_OK)
@@ -57,7 +61,9 @@ class RecordsetRowsViewSet(AtomicViewSetMixin, GenericViewSet):
         filter_objects = request.data.get("filterObjects", [])
         meta = filter_objects[0] if filter_objects else {}
         ids_only = meta.get("selectColumns") == ["activity_id"]
-        builder = FilteredActivityQueryset(filter_objects=filter_objects)
+        builder = filter_activities_by_access(
+            FilteredActivityQueryset(filter_objects=filter_objects), request.user
+        )
 
         if ids_only:  # Early Return, just ship IDs
             id_list = builder.select_output_format(fields=["id"])
@@ -98,7 +104,9 @@ class RecordsetRowsViewSet(AtomicViewSetMixin, GenericViewSet):
         if not config_model:
             return Response("Unsupported Activity Type", status=400)
 
-        builder = FilteredActivityQueryset(filter_objects)
+        builder = filter_activities_by_access(
+            FilteredActivityQueryset(filter_objects), request.user
+        )
         builder.apply_filters().apply_sorting()
         activity_queryset = builder.query.filter(subtype=csv_type)
 
