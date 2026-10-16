@@ -43,7 +43,7 @@ class ActivitySubtypes(ActivitySubtype, Enum):
     )
 
     Biocontrol_Release = (
-        SubtypePrimary.Treatment,
+        SubtypePrimary.Biocontrol,
         None,
         None,
         "PBR",
@@ -59,7 +59,7 @@ class ActivitySubtypes(ActivitySubtype, Enum):
         "Biocontrol Dispersal Monitoring",
     )
     Monitoring_Biocontrol_Release_Plant_Terrestrial = (
-        SubtypePrimary.Monitoring,
+        SubtypePrimary.Biocontrol,
         None,
         Species.TerrestrialPlant,
         "PBM",

@@ -23,7 +23,7 @@ EMPTY_BIOCONTROL_COLLECTION = {
         "entries": [
             {
                 "invasive_plant": "",
-                "biological_agent": "",
+                "biocontrol_agent": "",
                 "collection_type": "",
                 "collection_method": "",
                 "start_time_collecting": "",
@@ -84,7 +84,7 @@ MINIMAL_BIOCONTROL_COLLECTION = {
         "entries": [
             {
                 "invasive_plant": "JK",
-                "biological_agent": "APHAITA",
+                "biocontrol_agent": "APHAITA",
                 "collection_type": "Timed",
                 "collection_method": "Cl",
                 "start_time_collecting": "2026-03-08T22:02",
@@ -159,7 +159,7 @@ UPDATED_BIOCONTROL_COLLECTION = {
         "entries": [
             {
                 "invasive_plant": "JK",
-                "biological_agent": "APHAITA",
+                "biocontrol_agent": "APHAITA",
                 "collection_type": "Timed",
                 "collection_method": "Cl",
                 "start_time_collecting": "2026-03-08T22:02",

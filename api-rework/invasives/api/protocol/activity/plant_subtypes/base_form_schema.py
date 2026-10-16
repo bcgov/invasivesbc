@@ -232,7 +232,9 @@ class BaseFormSchema(DraftBaseFormSchema):
                 case SubtypePrimary.Monitoring:
                     return SubtypePrimary.Treatment
                 case SubtypePrimary.Biocontrol:
-                    return SubtypePrimary.Observation
+                    if subtype == ActivitySubtypes.Biocontrol_Release:
+                        return SubtypePrimary.Observation
+                    return SubtypePrimary.Biocontrol
                 case _:
                     pass
 

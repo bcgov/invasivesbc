@@ -127,17 +127,17 @@ export const ActivitySubtypesRelations = {
       ActivitySubtypes.Treatment_Chemical_Plant_Aquatic,
       ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial,
       ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic,
-      ActivitySubtypes.Treatment_Mechanical_Plant_Terrestrial,
-      ActivitySubtypes.Biocontrol_Release
+      ActivitySubtypes.Treatment_Mechanical_Plant_Terrestrial
     ],
     [ActivityType.Biocontrol]: [
-      ActivitySubtypes.Biocontrol_Collection,
-      ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial
+      ActivitySubtypes.Biocontrol_Release,
+      ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial,
+      ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial,
+      ActivitySubtypes.Biocontrol_Collection
     ],
     [ActivityType.Monitoring]: [
       ActivitySubtypes.Monitoring_Chemical_Plant_Terrestrial_Aquatic,
-      ActivitySubtypes.Monitoring_Mechanical_Plant_Terrestrial_Aquatic,
-      ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial
+      ActivitySubtypes.Monitoring_Mechanical_Plant_Terrestrial_Aquatic
     ]
   }
 };

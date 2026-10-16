@@ -273,7 +273,7 @@ class ActivityRecordsetRowSerializer(BaseSerializer):
     PATH_TO_AGENT_MAP = {
         ActivitySubtypes.Biocontrol_Collection.name: {
             "set": "terrestrialbiocontrolcollectionentry_set",
-            "key": "biological_agent",
+            "key": "biocontrol_agent",
         },
         ActivitySubtypes.Biocontrol_Release.name: {
             "set": "terrestrialbiocontrolreleaseentry_set",
@@ -357,7 +357,7 @@ class DraftActivityRecordsetRowSerializer(BaseSerializer):
     PATH_TO_AGENT_MAP = {
         ActivitySubtypes.Biocontrol_Collection.name: {
             "set": "draftterrestrialbiocontrolcollectionentry_set",
-            "key": "biological_agent",
+            "key": "biocontrol_agent",
         },
         ActivitySubtypes.Biocontrol_Release.name: {
             "set": "draftterrestrialbiocontrolreleaseentry_set",

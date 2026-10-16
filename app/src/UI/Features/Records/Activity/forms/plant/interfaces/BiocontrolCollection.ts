@@ -6,7 +6,7 @@ interface BiocontrolCollectionSchema extends BaseForm {
   subtype_data: {
     entries: Array<{
       invasive_plant: string;
-      biological_agent: string;
+      biocontrol_agent: string;
       historical_iapp_site?: number;
       collection_type: string;
       plant_count_collection?: number;

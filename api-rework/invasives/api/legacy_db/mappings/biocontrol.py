@@ -148,7 +148,7 @@ def add_subtype_payload_for_biocontrol_collection(new: Activity, old: LegacyActi
             invasive_plant=PlantsWithBiocontrol.objects.get(
                 code=bcc.invasive_plant_code
             ),
-            biological_agent=BiocontrolAgentCode.objects.get(
+            biocontrol_agent=BiocontrolAgentCode.objects.get(
                 code=bcc.biological_agent_code
             ),
             historical_iapp_site=bcc.historical_iapp_site_id,

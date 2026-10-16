@@ -64,6 +64,7 @@ class BaseModel(Platform, ComputedLocationFields, BatchInformation, models.Model
         "User",
         on_delete=models.RESTRICT,
         null=True,
+        blank=True,
         db_comment="FK to creating user (team or other principal, eventually)",
     )
 

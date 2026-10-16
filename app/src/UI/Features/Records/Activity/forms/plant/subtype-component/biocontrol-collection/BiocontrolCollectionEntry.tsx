@@ -37,7 +37,7 @@ const BiocontrolCollectionEntry = ({ index }: PropTypes) => {
   const SWEEP_COUNT_CODE = 'Cs';
   const codes = useSelector((state) => state.ActivityPage.formCodes);
   const selectedPlant = watch(getPath('invasive_plant'));
-  const selectedAgent = watch(getPath('biological_agent'));
+  const selectedAgent = watch(getPath('biocontrol_agent'));
   const collectionType = watch(getPath('collection_type'));
   const collectionMethod = watch(getPath('collection_method'));
   const { terrestrialPlantOptionsWithAgents } = useFilteredInvasivePlantCodes();
@@ -47,7 +47,7 @@ const BiocontrolCollectionEntry = ({ index }: PropTypes) => {
     const currentSelectionNoLongerValid =
       selectedAgent && !agentOptionsForChosenPlant.some(({ code }) => code === selectedAgent);
     if (currentSelectionNoLongerValid && isDirty) {
-      setValue(getPath('biological_agent'), '');
+      setValue(getPath('biocontrol_agent'), '');
     }
   }, [agentOptionsForChosenPlant]);
 
@@ -70,7 +70,7 @@ const BiocontrolCollectionEntry = ({ index }: PropTypes) => {
         noOptionsMessage="Select an Invasive Plant to see options"
         rules={{ required: true }}
         width={Width.Half}
-        name={getPath('biological_agent')}
+        name={getPath('biocontrol_agent')}
       />
       <NumberInput
         label={'Historical IAPP Site ID'}

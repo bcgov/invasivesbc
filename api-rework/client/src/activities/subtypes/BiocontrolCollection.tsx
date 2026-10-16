@@ -14,9 +14,9 @@ const BiocontrolCollection = ({ subtypeData }) => {
       <Fieldset label={'Collection Information'}>
         {!!subtypeData?.entries?.length && <p>No Data</p>}
         {subtypeData?.entries?.map((ci) => (
-          <div className="group-wrap" key={ci?.invasive_plant + ci?.biological_agent}>
+          <div className="group-wrap" key={ci?.invasive_plant + ci?.biocontrol_agent}>
             <TextInput label={'invasive plant'} value={ci?.invasive_plant} />
-            <TextInput label={'biological agent'} value={ci?.biological_agent} />
+            <TextInput label={'biological agent'} value={ci?.biocontrol_agent} />
             <TextInput label={'historical iapp site'} value={ci?.historical_iapp_site} />
             <TextInput label={'collection type'} value={ci?.collection_type} />
             <TextInput label={'plant count collection'} value={ci?.plant_count_collection} />
