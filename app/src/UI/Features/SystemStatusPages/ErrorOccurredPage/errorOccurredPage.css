@@ -1,0 +1,24 @@
+#system-status-error {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 100%;
+  background-color: var(--overlay-background-color);
+
+  .back-btn {
+    position: absolute;
+    top: calc(1rem + var(--overlay-grip-height));
+    left: 1rem;
+  }
+
+  .content {
+    padding-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    background-color: var(--overlay-content-background-color);
+    max-width: var(--overlay-content-max-width);
+  }
+}

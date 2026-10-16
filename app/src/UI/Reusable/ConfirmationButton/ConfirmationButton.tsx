@@ -1,11 +1,9 @@
-import { ComponentPropsWithoutRef, FocusEvent, MouseEvent, ReactNode, useState } from 'react';
-import Button from '../Button/Button';
+import { FocusEvent, MouseEvent, ReactNode, useState } from 'react';
+import Button, { InputButtonProps } from 'UI/Reusable/Button/Button';
 import { Warning } from '@mui/icons-material';
 
-interface InputButtonProps extends ComponentPropsWithoutRef<'button'> {
-  size?: 'sm' | 'med' | 'lg';
+interface PropTypes extends InputButtonProps {
   confirmationPrompt?: ReactNode;
-  variant?: 'contained' | 'outlined' | 'destructive' | 'icon' | 'none';
 }
 
 /**
@@ -20,7 +18,7 @@ const ConfirmationButton = ({
   onClick,
   onBlur,
   ...props
-}: InputButtonProps) => {
+}: PropTypes) => {
   const [prompted, setPrompted] = useState<boolean>(false);
 
   const handleBlur = (evt: FocusEvent<HTMLButtonElement>) => {
