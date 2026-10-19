@@ -1,13 +1,12 @@
 import json
 
+from api.models.activity import Activity
+from api.models.activity.activity_subtypes import ActivitySubtypes, SubtypePrimary
+from api.permissions.role_based import HasAnyApplicationRole
+from api.serializers.linked_record_query import LinkedRecordQuerySerializer
 from api.viewsets.mixins.atomic import AtomicViewSetMixin
 from django.contrib.gis.geos import GEOSGeometry
 from rest_framework.response import Response
-
-from api.models.activity import Activity
-from api.models.activity.activity_subtypes import ActivitySubtypes, SubtypePrimary
-from api.permissions import HasAdminRole
-from api.serializers.linked_record_query import LinkedRecordQuerySerializer
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework.viewsets import GenericViewSet
 
@@ -15,7 +14,7 @@ from rest_framework.viewsets import GenericViewSet
 class IdsWithinBoundsViewSet(AtomicViewSetMixin, GenericViewSet):
     queryset = Activity.objects.all()
     serializer_class = LinkedRecordQuerySerializer
-    permission_classes = [HasAdminRole]
+    permission_classes = [HasAnyApplicationRole]
 
     def map_subtype_to_type(self, subtype):
         modelled_type: SubtypePrimary = ActivitySubtypes[subtype].typeOfActivity

@@ -1,18 +1,6 @@
 import json
 import logging
 
-from api.viewsets.mixins.atomic import AtomicViewSetMixin
-import psycopg
-from django.contrib.gis.db.models.functions import PointOnSurface, AsGeoJSON
-from django.db.models import Q
-from django.http.response import HttpResponse
-from psycopg.rows import dict_row
-from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny
-from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK
-from rest_framework.viewsets import ReadOnlyModelViewSet
-
 from api.legacy_db.db import LegacyDB
 from api.legacy_db.model_serializer import LegacyActivity
 from api.models.activity.activity import Activity
@@ -21,7 +9,17 @@ from api.permissions import HasAdminRole
 from api.serializers.activity import ActivitySerializer
 from api.serializers.activity_list import ActivityListSerializer
 from api.serializers.activity_migration_status import ActivityMigrationStatusSerializer
+from api.viewsets.mixins.atomic import AtomicViewSetMixin
+from django.contrib.gis.db.models.functions import AsGeoJSON, PointOnSurface
+from django.db.models import Q
+from django.http.response import HttpResponse
 from invasivesbc.settings import LEGACY_DB_CONNECTION_STRING
+import psycopg
+from psycopg.rows import dict_row
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework.status import HTTP_200_OK
+from rest_framework.viewsets import ReadOnlyModelViewSet
 
 
 class ActivityViewSet(AtomicViewSetMixin, ReadOnlyModelViewSet):
@@ -37,6 +35,7 @@ class ActivityViewSet(AtomicViewSetMixin, ReadOnlyModelViewSet):
         .prefetch_related()
         .all(),
     }
+
     permission_classes = [HasAdminRole]
 
     def get_queryset(self):

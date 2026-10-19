@@ -1,5 +1,20 @@
 from datetime import datetime
 
+from api.models import (
+    MapGenerationIntermediateResult,
+    MapGenerationRecord,
+    RasterMapGenerationRequest,
+)
+from api.permissions.role_based import HasAnyApplicationRole
+from api.serializers.map_generation import (
+    MapGenerationEstimateSerializer,
+    MapGenerationRecordSerializer,
+    MapGenerationRequestProgressAndLinkSerializer,
+    MapGenerationRequestSerializer,
+    MapGenerationRequestShallowSerializer,
+)
+from api.services.map_tile_generator.definitions import ProtomapGenerationParameters
+from api.tasks import dispatch_map_generation_request
 from api.viewsets.mixins.atomic import AtomicViewSetMixin
 from django.db import transaction
 from django.db.models import Q
@@ -9,26 +24,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND
 
-from api.models import (
-    MapGenerationIntermediateResult,
-    MapGenerationRecord,
-    RasterMapGenerationRequest,
-)
-from api.serializers.map_generation import (
-    MapGenerationEstimateSerializer,
-    MapGenerationRecordSerializer,
-    MapGenerationRequestSerializer,
-    MapGenerationRequestShallowSerializer,
-)
-from api.serializers.map_generation import (
-    MapGenerationRequestProgressAndLinkSerializer,
-)
-from api.services.map_tile_generator.definitions import ProtomapGenerationParameters
-from api.tasks import dispatch_map_generation_request
-
 
 class MapGenerationRequestViewSet(AtomicViewSetMixin, viewsets.ViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [HasAnyApplicationRole]
     http_method_names = ["get", "post", "put"]
 
     def retrieve(self, request, *args, **kwargs):
