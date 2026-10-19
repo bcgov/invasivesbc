@@ -1,25 +1,24 @@
-import logging
-from ninja import Router, Query
+import uuid, csv, logging
+from django.db import transaction
+from django.db.models import Q
 from django.http import JsonResponse, StreamingHttpResponse
 from rest_framework import status
-from django.db import transaction
+from ninja import Router, Query
 from api.utils.timezones import csv_value
-from typing import List, Union, Annotated
-from api.models.export.csv import CSV_EXPORT_ROW_MAP
-import uuid, csv
-from api.models.activity import Activity
-from django.db.models import Q
+from typing import List
 from api.constants import short_id_regex, uuid_regex
-from api.permissions.activity_access import filter_activities_by_access
-from api.ninja_authentication import NinjaKeycloakAuthentication
-from api.protocol.activity.activity_plant_summary_out import ActivityPlantSummaryOut
-from . import FilterObjectsIn, IdListIn
 from api.utils.filtered_activity_queryset import FilteredActivityQueryset
+from api.models.export.csv import CSV_EXPORT_ROW_MAP
+from api.models.activity import Activity
+from api.ninja_authentication import NinjaKeycloakAuthentication
+from api.permissions.activity_access import filter_activities_by_access
+from api.protocol.activity.activity_plant_summary_out import ActivityPlantSummaryOut
 from api.protocol.activity.activity_plant_row_out import (
     ActivityPlantRowOut,
     CachedActivityPlantRowOut,
     DraftActivityPlantRowOut,
 )
+from . import FilterObjectsIn, IdListIn
 
 ROOT_PATH = "/recordset"
 router = Router(auth=NinjaKeycloakAuthentication())
@@ -29,23 +28,24 @@ log = logging.getLogger(__name__)
 @router.post(
     "/rows",
     response={
-        200: List[DraftActivityPlantRowOut] | List[ActivityPlantRowOut] | List[str]
+        200: List[DraftActivityPlantRowOut]
+        | List[ActivityPlantRowOut]
+        | List[uuid.UUID]  # don't bother casting, frontend will handle as string.
     },
 )
 def get_recordset_rows(request, data: FilterObjectsIn):
-    filter_objects = (data.model_dump(mode="json", exclude_unset=True)).get(
-        "filterObjects", []
-    )
+    req = data.model_dump(mode="json", exclude_unset=True)
+    filter_objects = req.get("filterObjects", [])
     meta = filter_objects[0] if filter_objects else {}
     ids_only = meta.get("selectColumns") == ["activity_id"]
 
     with transaction.atomic():
         builder: FilteredActivityQueryset = filter_activities_by_access(
-            FilteredActivityQueryset(filter_objects=filter_objects), request.auth
+            FilteredActivityQueryset(filter_objects=filter_objects),
+            request.auth,
         )
         if ids_only:  # Early Return, just ship IDs
-            id_list = builder.select_output_format(fields=["id"])
-            return [str(item) for item in id_list]
+            return builder.select_output_format(fields=["id"])
 
         builder.apply_sorting().select_output_format().paginate()
 
