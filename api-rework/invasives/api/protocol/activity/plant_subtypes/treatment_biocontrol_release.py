@@ -1,5 +1,6 @@
 from typing import List, Literal, Optional
-from pydantic import model_validator, field_validator, NaiveDatetime, Field
+from pydantic import model_validator, field_validator, Field
+from api.protocol.activity.validators.local_datetime import LocalDatetime
 from api.protocol.activity.validators.no_future_date import no_future_date
 from api.protocol.activity.plant_subtypes.base_form_schema import (
     BaseFormSchema,
@@ -30,7 +31,7 @@ class DraftEntry(CleanSchema):
     linear_segment: Optional[YesNoUnknown]
     mortality: Optional[int]
     agent_source: Optional[str]
-    collection_date: Optional[NaiveDatetime]
+    collection_date: Optional[LocalDatetime]
     plant_collected_from: Optional[PlantsWithBiocontrolType]
     plant_collected_from_manual: Optional[str]
 
@@ -52,7 +53,7 @@ class Entry(DraftEntry):
     linear_segment: YesNoUnknown
     mortality: int = Field(..., ge=0)
     agent_source: str
-    collection_date: NaiveDatetime
+    collection_date: LocalDatetime
     plant_collected_from: Optional[PlantsWithBiocontrolType] = None
     plant_collected_from_manual: Optional[str] = None
 

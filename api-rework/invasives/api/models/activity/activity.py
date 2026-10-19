@@ -13,6 +13,7 @@ from api.models.mixins.geometry import Geometry, DraftGeometry
 from api.models.mixins.platform import Platform
 from api.models.mixins.regional_detail import ComputedLocationFields
 from django.utils import timezone
+from api.utils.timezones import local_today
 
 UUID_SUBSTRING_LENGTH = 8
 
@@ -122,7 +123,7 @@ class Activity(
         if not self.short_id:
             subtype = ActivitySubtypes[self.subtype].short_id_format
             uuid_substr = str(self.id)[:UUID_SUBSTRING_LENGTH].upper()
-            year = datetime.datetime.now().strftime("%y")
+            year = local_today().strftime("%y")
             self.short_id = f"{year}{subtype}{uuid_substr}"
 
         plant_codes = super().get_invasive_plant_codes()
@@ -250,7 +251,7 @@ class DraftActivity(DraftGeometry, BaseModel, models.Model):
         if not self.short_id:
             subtype = ActivitySubtypes[self.subtype].short_id_format
             uuid_substr = str(self.id)[:UUID_SUBSTRING_LENGTH].upper()
-            year = datetime.datetime.now().strftime("%y")
+            year = local_today().strftime("%y")
             self.short_id = f"{year}{subtype}{uuid_substr}"
 
         plant_codes = super().get_invasive_plant_codes()

@@ -1,9 +1,9 @@
 import logging
 from dataclasses import dataclass
 from typing import Literal
-from zoneinfo import ZoneInfo
 
 from api.legacy_db.model_serializer import LegacyUser, LegacyUserWithRoles
+from api.utils.timezones import legacy_local_to_aware
 from api.models import EmployerAssociation, PACNumber, Role, User
 from api.models.auth import AgencyAssociation, HistoricalUserName
 from django.db import transaction
@@ -633,20 +633,14 @@ class LegacyDB:
                                     "email": parsed.email,
                                     "phone_number": parsed.work_phone_number,
                                     "created": (
-                                        timezone.make_aware(
-                                            parsed.created_at,
-                                            ZoneInfo("America/Vancouver"),
-                                        )
+                                        legacy_local_to_aware(parsed.created_at)
                                         if parsed.created_at
-                                        else timezone.now
+                                        else timezone.now()
                                     ),
                                     "display_name": parsed.display_name,
                                     "is_active": parsed.account_status == 1,
                                     "expiry_date": (
-                                        timezone.make_aware(
-                                            parsed.expiry_date,
-                                            ZoneInfo("America/Vancouver"),
-                                        )
+                                        parsed.expiry_date.date()
                                         if parsed.expiry_date
                                         else None
                                     ),

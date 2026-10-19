@@ -1,9 +1,10 @@
 from rest_framework import serializers
+from api.serializers.fields import LocalDateTimeField
 from api.models.activity import ChemicalTreatmentContext
 
 
 class ChemicalTreatmentContextSerializer(serializers.ModelSerializer):
-    application_start_time = serializers.DateTimeField(format="%Y-%m-%dT%H:%M")
+    application_start_time = LocalDateTimeField()
 
     class Meta:
         model = ChemicalTreatmentContext

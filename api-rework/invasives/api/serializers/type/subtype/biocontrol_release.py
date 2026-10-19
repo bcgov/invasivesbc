@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from api.serializers.fields import LocalDateTimeField
 from api.models.activity import (
     TerrestrialBiocontrolReleaseEntry,
     TerrestrialBiocontrolAgentCount,
@@ -29,7 +30,7 @@ from api.serializers.common import (
 class BaseEntrySerializer(serializers.ModelSerializer):
     actual_biological_agents = serializers.SerializerMethodField()
     estimated_biological_agents = serializers.SerializerMethodField()
-    collection_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M")
+    collection_date = LocalDateTimeField()
 
     class Meta:
         abstract = True

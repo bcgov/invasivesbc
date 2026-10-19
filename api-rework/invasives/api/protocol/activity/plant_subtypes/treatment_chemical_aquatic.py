@@ -1,9 +1,9 @@
 from typing import List, Literal, Optional, Annotated, Union, Any, Self
+from api.protocol.activity.validators.local_datetime import LocalDatetime
 from enum import Enum
 from pydantic import (
     model_validator,
     field_validator,
-    NaiveDatetime,
     Field,
     Discriminator,
     Tag,
@@ -223,7 +223,7 @@ class DraftContext(DraftChemicalWeatherInformation):
     pest_management_plan_manual: Optional[str]
     treatment_notice_signs: Optional[YesNoUnknown]
     precautionary_statement: Optional[ChemicalPrecautionaryStatementType]
-    application_start_time: Optional[NaiveDatetime]
+    application_start_time: Optional[LocalDatetime]
     ntz_reduction: Optional[bool]
     rationale_for_ntz_reduction: Optional[str]
     additional_unmapped_well_water: Optional[bool]
@@ -237,7 +237,7 @@ class Context(ChemicalWeatherInformation):
     pest_management_plan_manual: Optional[str] = None
     treatment_notice_signs: YesNoUnknown
     precautionary_statement: Optional[ChemicalPrecautionaryStatementType] = None
-    application_start_time: NaiveDatetime
+    application_start_time: LocalDatetime
     ntz_reduction: bool
     rationale_for_ntz_reduction: Optional[str] = None
     additional_unmapped_well_water: bool

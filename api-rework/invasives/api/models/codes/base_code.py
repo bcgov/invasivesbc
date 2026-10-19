@@ -1,7 +1,7 @@
-import datetime
-
 from django.core.exceptions import ValidationError
 from django.db import models
+
+from api.utils.timezones import local_today
 
 
 class BaseCode(models.Model):
@@ -27,7 +27,7 @@ class BaseCode(models.Model):
             and self.valid_to < self.valid_from
             or self.valid_to
             and not self.valid_from
-            and self.valid_to < datetime.date.today()
+            and self.valid_to < local_today()
         ):
             raise ValidationError(
                 {"valid_to": "valid_to must be greater than or equal to valid_from."}
@@ -41,7 +41,7 @@ class BaseCode(models.Model):
         """
         Determine if code is active at given point in time.
         """
-        at_time = at_time or datetime.datetime.now()
+        at_time = at_time or local_today()
 
         if self.valid_to is None:
             return self.valid_from <= at_time

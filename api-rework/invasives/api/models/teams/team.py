@@ -1,12 +1,14 @@
 from django.db import models
 from api.models.auth import User
+from api.utils.timezones import local_today
 
 
 class Team(models.Model):
     id = models.BigAutoField(primary_key=True)
     founder = models.ForeignKey(User, on_delete=models.CASCADE)
     founding_date = models.DateField(
-        auto_now_add=True,
+        default=local_today,
+        editable=False,
         db_comment="Date team was created. Deterministic for editable record",
     )
     disbanded_date = models.DateField(

@@ -1,6 +1,10 @@
 from datetime import date, datetime
 from typing import Union
 
+from django.utils import timezone
+
+from api.utils.timezones import LOCAL_TZ, local_today
+
 
 def no_future_date(v: Union[str, date, datetime, None]) -> Union[datetime, date, None]:
     """
@@ -22,10 +26,12 @@ def no_future_date(v: Union[str, date, datetime, None]) -> Union[datetime, date,
         target = v
 
     if isinstance(target, datetime):
-        if target > datetime.now():
+        if timezone.is_naive(target):
+            target = target.replace(tzinfo=LOCAL_TZ)
+        if target > timezone.now():
             raise ValueError("Time cannot occur in the future")
     elif isinstance(target, date):
-        if target > date.today():
+        if target > local_today():
             raise ValueError("Date cannot occur in the future")
 
     return target

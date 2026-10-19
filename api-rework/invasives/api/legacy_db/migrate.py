@@ -3,7 +3,6 @@ import logging
 from dataclasses import dataclass
 from decimal import Decimal, ROUND_DOWN
 from pprint import pformat
-from zoneinfo import ZoneInfo
 
 import geojson
 import psycopg
@@ -62,6 +61,7 @@ from api.models.migrator import (
     ActivityPendingLink,
     MigrationError,
 )
+from api.utils.timezones import legacy_local_to_aware, local_date
 from api.utils.utm_coordinates import point_to_utm
 from invasivesbc.settings import LEGACY_DB_CONNECTION_STRING
 
@@ -118,7 +118,9 @@ def map_pydantic_model_to_django_model(old: LegacyActivity) -> Activity:
     new.location_description = (
         old.activity_payload.form_data.activity_data.location_description
     )
-    new.date = old.activity_payload.form_data.activity_data.activity_date_time
+    new.date = local_date(
+        old.activity_payload.form_data.activity_data.activity_date_time
+    )
     new.form_status = old.form_status
     new.comment = old.activity_payload.form_data.activity_data.general_comment
 
@@ -206,20 +208,14 @@ def map_pydantic_model_to_django_model(old: LegacyActivity) -> Activity:
     new.batch_row_id = old.row_number
 
     if old.created_timestamp is not None:
-        new.created_timestamp = timezone.make_aware(
-            old.created_timestamp, ZoneInfo("America/Vancouver")
-        )
+        new.created_timestamp = legacy_local_to_aware(old.created_timestamp)
         log.debug(f"importing with creation time {new.created_timestamp}")
 
     if old.received_timestamp is not None:
-        new.received_timestamp = timezone.make_aware(
-            old.received_timestamp, ZoneInfo("America/Vancouver")
-        )
+        new.received_timestamp = legacy_local_to_aware(old.received_timestamp)
 
     if old.deleted_timestamp is not None:
-        new.deleted_timestamp = timezone.make_aware(
-            old.deleted_timestamp, ZoneInfo("America/Vancouver")
-        )
+        new.deleted_timestamp = legacy_local_to_aware(old.deleted_timestamp)
 
     new.area_m = old.activity_payload.form_data.activity_data.reported_area
 

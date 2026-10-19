@@ -1,5 +1,6 @@
 from typing import List, Literal, Optional
-from pydantic import model_validator, field_validator, NaiveDatetime, Field
+from pydantic import model_validator, field_validator, Field
+from api.protocol.activity.validators.local_datetime import LocalDatetime
 from api.protocol.activity.validators.no_future_date import no_future_date
 from api.protocol.activity.plant_subtypes.base_form_schema import (
     BaseFormSchema,
@@ -39,8 +40,8 @@ class DraftEntry(CleanSchema):
     plant_count: Optional[int] = None
     location_agent_found: List[AgentLocationFoundTerrainCodeType]
     sign_of_biocontrol_presence: List[BiocontrolPresenceCodeType]
-    start_time: Optional[NaiveDatetime]
-    stop_time: Optional[NaiveDatetime]
+    start_time: Optional[LocalDatetime]
+    stop_time: Optional[LocalDatetime]
     suitable_for_collection: Optional[YesNoUnknown] = None
     number_of_sweeps: Optional[int] = None
     actual_biological_agents: List[DraftBiocontrolCountExtended]
@@ -66,8 +67,8 @@ class Entry(DraftEntry):
     plant_count: Optional[int] = None
     location_agent_found: List[AgentLocationFoundTerrainCodeType]
     sign_of_biocontrol_presence: List[BiocontrolPresenceCodeType]
-    start_time: NaiveDatetime
-    stop_time: NaiveDatetime
+    start_time: LocalDatetime
+    stop_time: LocalDatetime
     suitable_for_collection: Optional[YesNoUnknown] = None
     number_of_sweeps: Optional[int] = None
 

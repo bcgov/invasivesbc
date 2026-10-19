@@ -1,11 +1,12 @@
-from datetime import date
+from datetime import date, datetime
 from enum import Enum
 import logging
 from typing import Annotated, Any, Literal, Optional, Self, Union
 
 from api.models.activity import ActivitySubtypes
+from api.utils.timezones import legacy_local_to_aware
 from pydantic import (
-    AwareDatetime,
+    AfterValidator,
     BaseModel,
     BeforeValidator,
     Field,
@@ -17,6 +18,9 @@ from pydantic import (
     model_validator,
 )
 from pydantic_extra_types.coordinate import Latitude, Longitude
+
+LegacyLocalDatetime = Annotated[datetime, AfterValidator(legacy_local_to_aware)]
+"""Legacy payload datetimes are America/Vancouver wall-clock time, often mislabelled with a +00:00 offset."""
 
 
 class ActivityType(Enum):
@@ -87,7 +91,7 @@ class LegacyActivityData(BaseModel):
     general_comment: Optional[str] = Field(default=None)
     access_description: Optional[str] = Field(default=None)
     location_description: Optional[str] = Field(default=None)
-    activity_date_time: AwareDatetime
+    activity_date_time: LegacyLocalDatetime
     invasive_species_agency_code: str
     employer_code: str
 
@@ -250,7 +254,7 @@ class LegacyActivityChemicalPlantTreatmentInformation(BaseModel):
     pmp_not_in_dropdown: Optional[str] = Field(default=None)
     pest_management_plan: Optional[str] = Field(default=None)
     wind_direction_code: str
-    application_start_time: Optional[AwareDatetime] = Field(default=None)
+    application_start_time: Optional[LegacyLocalDatetime] = Field(default=None)
     pesticide_employer_code: str
     pesticide_use_permit_PUP: Optional[str] = Field(default=None)
     precautionary_statement: Optional[str] = Field(default=None)
@@ -713,8 +717,8 @@ class HasLegacyBiocontrolAgentMonitoringCounts(BaseModel):
 
 
 class LegacyBiocontrolCollectionInformation(HasLegacyBiocontrolAgentCounts, BaseModel):
-    start_time: Optional[AwareDatetime] = Field(default=None)
-    stop_time: Optional[AwareDatetime] = Field(default=None)
+    start_time: Optional[LegacyLocalDatetime] = Field(default=None)
+    stop_time: Optional[LegacyLocalDatetime] = Field(default=None)
     comment: Optional[str] = Field(default=None)
     plant_count: Optional[int] = Field(default=None)
     collection_type: Optional[str] = Field(default=None)
@@ -732,8 +736,8 @@ class LegacyBiocontrolCollectionInformation(HasLegacyBiocontrolAgentCounts, Base
 class LegacyBiocontrolDispersionMonitoring(
     HasLegacyBiocontrolAgentMonitoringCounts, BaseModel
 ):
-    start_time: Optional[AwareDatetime] = Field(default=None)
-    stop_time: Optional[AwareDatetime] = Field(default=None)
+    start_time: Optional[LegacyLocalDatetime] = Field(default=None)
+    stop_time: Optional[LegacyLocalDatetime] = Field(default=None)
     monitoring_type: Optional[str] = Field(default=None)
     linear_segment: Optional[Literal["Yes", "No", "Unknown"]] = Field(default=None)
     biocontrol_present: Optional[bool] = Field(default=None)
@@ -763,7 +767,7 @@ class LegacyBiocontrolReleaseInformation(
     plant_collected_from_unlisted: Optional[str] = Field(default=None)
     total_bio_agent_quantity_actual: Optional[int] = Field(default=None)
     total_bio_agent_quantity_estimated: Optional[int] = Field(default=None)
-    collection_date: Optional[AwareDatetime] = Field(default=None)
+    collection_date: Optional[LegacyLocalDatetime] = Field(default=None)
 
 
 class LegacySpreadResults(BaseModel):
@@ -777,8 +781,8 @@ class LegacySpreadResults(BaseModel):
 class LegacyBiocontrolReleaseTerrestrialPlantInformation(
     HasLegacyBiocontrolAgentMonitoringCounts, BaseModel
 ):
-    start_time: Optional[AwareDatetime] = Field(default=None)
-    stop_time: Optional[AwareDatetime] = Field(default=None)
+    start_time: Optional[LegacyLocalDatetime] = Field(default=None)
+    stop_time: Optional[LegacyLocalDatetime] = Field(default=None)
     plant_count: Optional[int] = Field(default=None)
     invasive_plant_code: Optional[str] = Field(default=None)
     biological_agent_code: Optional[str] = Field(default=None)
@@ -981,7 +985,7 @@ class LegacyActivityPayload(BaseModel):
     geometry: Optional[JsonValue] = Field(default=None)
     short_id: str
     form_data: LegacyActivityFormData
-    created_timestamp: Optional[AwareDatetime] = Field(default=None)
+    created_timestamp: Optional[LegacyLocalDatetime] = Field(default=None)
     form_status: Optional[str] = Field(default=None)
     created_by: Optional[str] = Field(default=None)
     updated_by: Optional[str] = Field(default=None)
@@ -995,8 +999,8 @@ class LegacyActivityPayload(BaseModel):
     review_status: Optional[str] = Field(default=None)
     initial_autofill_done: Optional[bool] = Field(default=None)
     species_treated: Optional[list[str]] = Field(default=None)
-    date_created: Optional[AwareDatetime] = Field(default=None)
-    date_updated: Optional[AwareDatetime] = Field(default=None)
+    date_created: Optional[LegacyLocalDatetime] = Field(default=None)
+    date_updated: Optional[LegacyLocalDatetime] = Field(default=None)
     platform_src: Optional[Literal["web", "ios", "android", "unknown", "batch"]] = (
         Field(default=None)
     )

@@ -2,7 +2,7 @@ import datetime
 from unittest.mock import MagicMock
 
 from django.test import TestCase, override_settings
-from django.utils import timezone
+from api.utils.timezones import local_today
 from rest_framework import exceptions
 
 from api.keycloak_authentication import UserAuthentication
@@ -30,8 +30,8 @@ class AuthenticationExpiryTests(TestCase):
     def test_ninja_accepts_unexpired_user(self):
         for expiry in (
             None,
-            timezone.localdate(),
-            timezone.localdate() + datetime.timedelta(days=1),
+            local_today(),
+            local_today() + datetime.timedelta(days=1),
         ):
             self._user(expiry)
             result = NinjaKeycloakAuthentication().authenticate(
@@ -40,21 +40,21 @@ class AuthenticationExpiryTests(TestCase):
             self.assertEqual(result.subject, "test-user")
 
     def test_ninja_rejects_expired_user(self):
-        self._user(timezone.localdate() - datetime.timedelta(days=1))
+        self._user(local_today() - datetime.timedelta(days=1))
         result = NinjaKeycloakAuthentication().authenticate(self._ninja_request(), "x")
         self.assertIsNone(result)
 
     def test_keycloak_accepts_unexpired_user(self):
         for expiry in (
             None,
-            timezone.localdate(),
-            timezone.localdate() + datetime.timedelta(days=1),
+            local_today(),
+            local_today() + datetime.timedelta(days=1),
         ):
             self._user(expiry)
             user, _ = UserAuthentication().authenticate(self._drf_request())
             self.assertEqual(user.subject, "test-user")
 
     def test_keycloak_rejects_expired_user(self):
-        self._user(timezone.localdate() - datetime.timedelta(days=1))
+        self._user(local_today() - datetime.timedelta(days=1))
         with self.assertRaises(exceptions.AuthenticationFailed):
             UserAuthentication().authenticate(self._drf_request())
