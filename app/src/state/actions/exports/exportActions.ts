@@ -22,7 +22,7 @@ class ExportActions {
       filterObject.isCSV = true;
       filterObject.CSVType = spec.csvType;
 
-      const res = await fetch(`${API_V2_BASE}/recordset/csv`, {
+      const res = await fetch(`${API_V2_BASE}/ninja/recordset/csv`, {
         method: 'POST',
         headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' },
         body: JSON.stringify({ filterObjects: [filterObject] })
@@ -69,7 +69,7 @@ class ExportActions {
       filterObject.CSVType = spec.csvType;
 
       const recordSetEndPoint =
-        set.recordSetType === RecordSetType.Activity ? `${API_V2_BASE}/recordset/csv` : `${API_BASE}/v2/iapp/`;
+        set.recordSetType === RecordSetType.Activity ? `${API_V2_BASE}/ninja/recordset/csv` : `${API_BASE}/v2/iapp/`;
 
       const res = await fetch(recordSetEndPoint, {
         method: 'POST',

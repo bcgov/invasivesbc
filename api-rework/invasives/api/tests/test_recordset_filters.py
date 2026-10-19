@@ -274,7 +274,7 @@ class ActivityRecordsetFilterTest(BaseTestCase):
         )
         client = Client()
         res = client.post(
-            f"/recordset/rows",
+            f"/ninja/recordset/rows",
             headers={"Authorization": "Bearer act_as_user=test_user"},
             content_type="application/json",
             data=payload,

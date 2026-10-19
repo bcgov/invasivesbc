@@ -96,7 +96,10 @@ class BaseCSVTest(BaseTestCase):
         auth = {"Authorization": "Bearer act_as_user=test_user"} if auth else None
         filter = self.FILTER if filter else self.NO_FILTER
         response = self.client.post(
-            "/recordset/csv", headers=auth, content_type="application/json", data=filter
+            "/ninja/recordset/csv",
+            headers=auth,
+            content_type="application/json",
+            data=filter,
         )
 
         if not auth:
