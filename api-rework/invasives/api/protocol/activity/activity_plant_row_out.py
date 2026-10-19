@@ -150,6 +150,8 @@ class ActivityPlantRowOut(ModelSchema):
 
     @staticmethod
     def resolve_species_treated_full(obj: Activity):
+        if obj.type == ActivityType.Observation.value:
+            return None
         models: List[Model] = ActivityPlantRowOut.get_plant_models(obj)
         plants = []
         for model in models:
@@ -351,6 +353,8 @@ class DraftActivityPlantRowOut(ActivityPlantRowOut):
 
     @staticmethod
     def resolve_species_treated_full(obj: DraftActivity):
+        if obj.type == ActivityType.Observation.value:
+            return None
         models: List[Model] = DraftActivityPlantRowOut.get_plant_models(obj)
         plants = []
         for model in models:
