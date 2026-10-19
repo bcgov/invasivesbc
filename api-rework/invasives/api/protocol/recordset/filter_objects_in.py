@@ -6,7 +6,7 @@ from pydantic import field_validator, Field
 class TableFilterIn(Schema):
     field: Optional[str] = None
     filter: Optional[str] = None
-    operator: Literal["CONTAINS"] | Literal["NOT CONTAINS"]
+    operator: Literal["CONTAINS"] | Literal["DOES NOT CONTAIN"]
     operator2: Literal["AND"] | Literal["OR"]
     geojson: Optional[dict] = None
     filterType: (
@@ -22,9 +22,10 @@ class FilterObjects(Schema):
     page: Optional[int] = None
     sortColumn: Optional[str] = None
     sortOrder: Optional[str] = None
+    recordSetType: Optional[Literal["Activity"] | Literal["IAPP"]] = None
     tableFilters: List[TableFilterIn]
     selectColumns: List[str]
-    CSVType: Optional[str]
+    CSVType: Optional[str] = None
 
 
 class FilterObjectsIn(Schema):
