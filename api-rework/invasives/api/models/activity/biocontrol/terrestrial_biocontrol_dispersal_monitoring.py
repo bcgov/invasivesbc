@@ -73,14 +73,10 @@ class TerrestrialBiocontrolDispersalMonitoringEntry(BaseModel, RepeatedFormData)
                 )
             self.plant_count = None  # Ensure other field is blank
 
-        if self.start_time_collecting > timezone.now():
-            errors["start_time_collecting"] = (
-                "Start time for collection cannot occur in the future"
-            )
-        if self.start_time_collecting > self.end_time_collecting:
-            errors["end_time_collecting"] = (
-                "Cannot stop collecting before collecting began."
-            )
+        if self.start_time > timezone.now():
+            errors["start_time"] = "Start time cannot occur in the future"
+        if self.start_time > self.stop_time:
+            errors["stop_time"] = "Cannot stop monitoring before monitoring began."
         if (
             self.activity.subtype
             != ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial

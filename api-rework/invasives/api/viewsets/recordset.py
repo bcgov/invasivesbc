@@ -1,6 +1,8 @@
 import csv
 import logging
 
+from api.models.export.csv import CSV_EXPORT_ROW_MAP
+from api.utils.timezones import csv_value
 from api.constants import short_id_regex, uuid_regex
 from api.models.activity import Activity
 from api.models.export.csv import CSV_EXPORT_ROW_MAP
@@ -123,7 +125,7 @@ class RecordsetRowsViewSet(AtomicViewSetMixin, GenericViewSet):
                 [entry["label"] for entry in config_model.csv_export_config]
             )
             for row in data_stream:
-                yield writer.writerow(row)
+                yield writer.writerow([csv_value(v) for v in row])
 
         response = StreamingHttpResponse(stream_rows(), content_type="text/csv")
         response["Content-Disposition"] = (

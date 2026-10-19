@@ -1,5 +1,6 @@
 from django.db import models
 from api.models.auth import User
+from api.utils.timezones import local_today
 from . import Team
 
 
@@ -10,7 +11,8 @@ class TeamMember(models.Model):
     )
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     join_date = models.DateField(
-        auto_now_add=True,
+        default=local_today,
+        editable=False,
         db_comment="Date user joined the team. Edit permissions begin here.",
     )
     leave_date = models.DateField(

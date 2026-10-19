@@ -6,15 +6,15 @@ import requests
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db.utils import DatabaseError
-from django.utils import timezone
 from rest_framework import authentication, exceptions
 
+from api.utils.timezones import local_today
 from api.constants import WellKnownRoles
 from api.models.auth import User, Role
 
 
 def update_user_attributes_if_needed(user: User, user_token: dict):
-    today = timezone.now().date()
+    today = local_today()
 
     if user.last_seen != today:
         User.objects.filter(subject=user_token["sub"]).update(last_seen=today)
@@ -38,7 +38,7 @@ def update_user_attributes_if_needed(user: User, user_token: dict):
 
 def user_is_expired(user: User) -> bool:
     """True if the user's expiry date is strictly earlier than today."""
-    return user.expiry_date is not None and user.expiry_date < timezone.localdate()
+    return user.expiry_date is not None and user.expiry_date < local_today()
 
 
 class UserAuthentication(authentication.BaseAuthentication):

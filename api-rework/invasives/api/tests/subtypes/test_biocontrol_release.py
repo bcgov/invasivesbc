@@ -37,7 +37,7 @@ class BiocontrolReleaseTest(BaseActivitySubtypeTest):
 
         self.assertEqual(ti["agent_source"], "Leafy Greens")
         self.assertEqual(ti["biocontrol_agent"], "HYLEEUP")
-        self.assertEqual(ti["collection_date"], "2025-04-30T07:00")
+        self.assertEqual(ti["collection_date"], "2025-04-30T00:00")
         self.assertEqual(ti["invasive_plant"], "CT")
         self.assertEqual(ti["linear_segment"], "Yes")
         self.assertEqual(ti["mortality"], 30)

@@ -1,5 +1,6 @@
 from typing import List, Literal, Optional
-from pydantic import model_validator, field_validator, NaiveDatetime, Field
+from pydantic import model_validator, field_validator, Field
+from api.protocol.activity.validators.local_datetime import LocalDatetime
 from api.protocol.activity.validators.no_future_date import no_future_date
 from api.protocol.activity.plant_subtypes.base_form_schema import (
     BaseFormSchema,
@@ -34,8 +35,8 @@ class DraftEntry(CleanSchema):
     time_collection_duration_minutes: Optional[int] = None
     collection_method: Optional[BioAgentCollectionMethodCodeType]
     number_of_sweeps: Optional[int] = None
-    start_time_collecting: Optional[NaiveDatetime]
-    end_time_collecting: Optional[NaiveDatetime]
+    start_time_collecting: Optional[LocalDatetime]
+    end_time_collecting: Optional[LocalDatetime]
     comment: Optional[str]
     actual_biological_agents: List[DraftBiocontrolCountSimple]
     estimated_biological_agents: List[DraftBiocontrolCountSimple]
@@ -58,8 +59,8 @@ class Entry(DraftEntry):
     time_collection_duration_minutes: Optional[int] = Field(None, gt=0)
     collection_method: BioAgentCollectionMethodCodeType
     number_of_sweeps: Optional[int] = Field(None, gt=0)
-    start_time_collecting: NaiveDatetime
-    end_time_collecting: NaiveDatetime
+    start_time_collecting: LocalDatetime
+    end_time_collecting: LocalDatetime
 
     actual_biological_agents: List[BiocontrolCountSimple]
     estimated_biological_agents: List[BiocontrolCountSimple]

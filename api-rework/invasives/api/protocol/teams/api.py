@@ -6,8 +6,8 @@ from typing import List
 from api.constants import WellKnownRoles
 from pydantic import PositiveInt
 from django.shortcuts import get_object_or_404
-from django.utils import timezone
 from django.http import HttpResponse, JsonResponse
+from api.utils.timezones import local_today
 from api.ninja_authentication import NinjaKeycloakAuthentication, NinjaRoleRequired
 from api.models.auth import User
 from api.models.teams import TeamMember, Team, InviteStatus, TeamInvitation
@@ -125,7 +125,7 @@ def disband_team(request, team_id: PositiveInt):
         member = get_object_or_404(
             TeamMember, user=request.auth, leave_date=None, team=team
         )
-        now = timezone.now().date()
+        now = local_today()
         team.disbanded_date = now
         team.save(update_fields=["disbanded_date"])
         member.leave_date = now
@@ -322,7 +322,7 @@ def leave_team(request, team_id: int):
     if membership == None:
         return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
 
-    membership.leave_date = timezone.now()
+    membership.leave_date = local_today()
     membership.save(update_fields=["leave_date"])
 
     log.info("%s left team %s", request.auth.subject, membership.id)
@@ -358,7 +358,7 @@ def kick_member(request, team_id: int, subject: str):
         )
         return HttpResponse(status=status.HTTP_403_FORBIDDEN)
 
-    membership.leave_date = timezone.now()
+    membership.leave_date = local_today()
     membership.save(update_fields=["leave_date"])
     log.info(
         "%s removed from team %s by %s", subject, membership.id, request.auth.subject
