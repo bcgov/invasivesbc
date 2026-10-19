@@ -9,7 +9,10 @@ from rest_framework import exceptions
 from typing import Optional
 from ninja.errors import HttpError
 from api.constants import WellKnownRoles
-from api.keycloak_authentication import update_user_attributes_if_needed
+from api.keycloak_authentication import (
+    update_user_attributes_if_needed,
+    user_is_expired,
+)
 from api.models.auth import User
 
 
@@ -36,6 +39,8 @@ class NinjaKeycloakAuthentication(HttpBearer):
             user = User.objects.filter(subject=subject).first()
             if not user:
                 user, _ = User.objects.update_or_create(subject="test-user")
+            if user_is_expired(user):
+                return None
             return user
 
         if not token:
@@ -77,6 +82,10 @@ class NinjaKeycloakAuthentication(HttpBearer):
             )
 
         user, _ = User.objects.get_or_create(subject=user_token["sub"])
+        if user_is_expired(user):
+            logging.warning("Expired user attempted authentication")
+            return None
+
         update_user_attributes_if_needed(user, user_token)
         return user
 

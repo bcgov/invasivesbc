@@ -36,6 +36,11 @@ def update_user_attributes_if_needed(user: User, user_token: dict):
             logging.warning("Error updating user email or display name", exc_info=True)
 
 
+def user_is_expired(user: User) -> bool:
+    """True if the user's expiry date is strictly earlier than today."""
+    return user.expiry_date is not None and user.expiry_date < timezone.localdate()
+
+
 class UserAuthentication(authentication.BaseAuthentication):
 
     jwks_client = None
@@ -61,6 +66,8 @@ class UserAuthentication(authentication.BaseAuthentication):
 
         if settings.UNIT_TESTING_ENABLED:
             user, _ = User.objects.get_or_create(subject="test-user")
+            if user_is_expired(user):
+                raise exceptions.AuthenticationFailed("User account has expired")
             if not user.roles.filter(name=WellKnownRoles.ADMINISTRATOR.value).exists():
                 admin_role, _ = Role.objects.get_or_create(
                     name=WellKnownRoles.ADMINISTRATOR.value
@@ -119,6 +126,10 @@ class UserAuthentication(authentication.BaseAuthentication):
             )
 
         user, _ = User.objects.get_or_create(subject=user_token["sub"])
+
+        if user_is_expired(user):
+            logging.warning("Expired user attempted authentication")
+            raise exceptions.AuthenticationFailed("User account has expired")
 
         update_user_attributes_if_needed(user, user_token)
 
