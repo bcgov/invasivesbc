@@ -1,17 +1,16 @@
 from itertools import chain
 
+from api.models.codes.code_tables import *
+from api.permissions.role_based import HasAnyApplicationRole
+from api.serializers.code import CodeSerializer
 from api.viewsets.mixins.atomic import AtomicViewSetMixin
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK
 from rest_framework.viewsets import ViewSet
 
-from api.models.codes.code_tables import *
-from api.permissions import HasAdminRole
-from api.serializers.code import CodeSerializer
-
 
 class CodeViewSet(AtomicViewSetMixin, ViewSet):
-    permission_classes = [HasAdminRole]
+    permission_classes = [HasAnyApplicationRole]
     http_method_names = ["get"]
 
     code_models = [
