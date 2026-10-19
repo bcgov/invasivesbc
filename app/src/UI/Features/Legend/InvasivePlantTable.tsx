@@ -13,6 +13,13 @@ const InvasivePlantTable = () => {
         </thead>
         <tbody>
           <tr>
+            <td>AR</td>
+            <td>African rue / harmal</td>
+            <td>Peganum harmala</td>
+            <td>PEGA</td>
+            <td>HAR</td>
+          </tr>
+          <tr>
             <td>AB</td>
             <td>American beachgrass</td>
             <td>Ammophila breviligulata</td>
@@ -489,6 +496,13 @@ const InvasivePlantTable = () => {
             <td>TIN</td>
           </tr>
           <tr>
+            <td>MF</td>
+            <td>Eastern mosquito fern</td>
+            <td>Azolla caroliniana</td>
+            <td>AZOL</td>
+            <td>CAR</td>
+          </tr>
+          <tr>
             <td>ES</td>
             <td>Eggleaf spurge</td>
             <td>Euphorbia oblongata</td>
@@ -923,6 +937,13 @@ const InvasivePlantTable = () => {
             <td>FLO</td>
           </tr>
           <tr>
+            <td>KS</td>
+            <td>Knapweed species</td>
+            <td>Centaurea spp.</td>
+            <td>CENT</td>
+            <td>SPP</td>
+          </tr>
+          <tr>
             <td>KO</td>
             <td>Kochia / Summer Cypress</td>
             <td>Bassia / Kochia scoparia</td>
@@ -1105,6 +1126,13 @@ const InvasivePlantTable = () => {
             <td>NOC</td>
           </tr>
           <tr>
+            <td>NS</td>
+            <td>Nightshade</td>
+            <td>Solanum spp</td>
+            <td>SOLA</td>
+            <td>SPP</td>
+          </tr>
+          <tr>
             <td>NT</td>
             <td>Nodding / musk thistle</td>
             <td>Carduus nutans</td>
@@ -1196,18 +1224,18 @@ const InvasivePlantTable = () => {
             <td>GLA</td>
           </tr>
           <tr>
-            <td>LP</td>
-            <td>Portugese laurel</td>
-            <td>Prunus lusitanica</td>
-            <td>PRUN</td>
-            <td>LUS</td>
-          </tr>
-          <tr>
             <td>PR</td>
             <td>Portuguese broom</td>
             <td>Cytisus striatus</td>
             <td>CYTI</td>
             <td>STR</td>
+          </tr>
+          <tr>
+            <td>LP</td>
+            <td>Portuguese laurel</td>
+            <td>Prunus lusitanica</td>
+            <td>PRUN</td>
+            <td>LUS</td>
           </tr>
           <tr>
             <td>PC</td>
@@ -1392,7 +1420,7 @@ const InvasivePlantTable = () => {
             <td>PUM</td>
           </tr>
           <tr>
-            <td>NS</td>
+            <td>NE</td>
             <td>Silverleaf nightshade</td>
             <td>Solanum elaeagnifolium</td>
             <td>SOLA</td>
@@ -1446,6 +1474,13 @@ const InvasivePlantTable = () => {
             <td>Hieracium laevigatum</td>
             <td>HIER</td>
             <td>LAE</td>
+          </tr>
+          <tr>
+            <td>SO</td>
+            <td>Sowthistle species</td>
+            <td>Sonchus species</td>
+            <td>SONC</td>
+            <td>SPP</td>
           </tr>
           <tr>
             <td>BS</td>
@@ -1719,6 +1754,13 @@ const InvasivePlantTable = () => {
             <td>Nymphoides peltata</td>
             <td>NYMP</td>
             <td>PEL</td>
+          </tr>
+          <tr>
+            <td>YH</td>
+            <td>Yellow hawkweed</td>
+            <td>Hieracium pratense</td>
+            <td>HIER</td>
+            <td>PRA</td>
           </tr>
           <tr>
             <td>HS</td>
