@@ -247,7 +247,7 @@ function createActivityReducer() {
         delete draftState.wellsInRecordArea;
         if (draftState.formType) {
           Object.assign(draftState.formState, {
-            ...getDefaultFormState(draftState.formType, draftState.formState.created_by),
+            ...getDefaultFormState(draftState.formType, { created_by: draftState.formState.created_by }),
             id: draftState.formId,
             short_id: draftState.formState?.short_id,
             subtype: draftState.formType

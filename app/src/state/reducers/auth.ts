@@ -11,7 +11,6 @@ interface IUserExtendedInfo {
   activation_status: number | null;
   work_phone_number: string | null;
   funding_agencies?: string;
-  funding_agencies?: string;
   employer: string | null;
   pac_number: string | null;
   pac_service_number_1: string | null;
@@ -23,7 +22,7 @@ interface OfflineUserState {
   extendedInfo: IUserExtendedInfo;
 
   email: string | null;
-  displayName: string | null;
+  displayName: string | undefined;
   username: string | null;
 
   idir_userid: string | null;
@@ -43,7 +42,7 @@ interface AuthState {
   disrupted: boolean;
 
   email: string | null;
-  displayName: string | null;
+  displayName?: string;
   username: string | null;
 
   idir_userid: string | null;

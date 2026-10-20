@@ -81,6 +81,7 @@ const ActivityForm = () => {
   const MOBILE = useSelector((state) => state.Configuration.current.build.MOBILE);
   const metadata = useSelector((state) => state.ActivityPage?.formMetadata);
   const isLoading = useSelector((state) => state.ActivityPage?.loading);
+  const displayName = useSelector((state) => state.Auth?.displayName);
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
@@ -91,7 +92,7 @@ const ActivityForm = () => {
   const methods = useForm<FormSchema>({
     mode: 'onChange',
     disabled: !isEditing,
-    defaultValues: getDefaultFormState(subtype)
+    defaultValues: getDefaultFormState(subtype!, { participant: displayName })
   });
 
   // Destructure props used at this level
@@ -148,7 +149,8 @@ const ActivityForm = () => {
 
   useEffect(() => {
     // Reset form on ID change.
-    if (!initState && subtype) reset(getDefaultFormState(subtype, currentUser));
+    if (!initState && subtype)
+      reset(getDefaultFormState(subtype, { created_by: currentUser, participant: displayName }));
   }, [formId]);
 
   if (recordNotFound) return <RecordNotFound />;
