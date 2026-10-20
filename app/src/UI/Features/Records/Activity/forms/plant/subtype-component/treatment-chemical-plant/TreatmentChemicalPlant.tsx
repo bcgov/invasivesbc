@@ -30,7 +30,7 @@ import useFieldPath from 'UI/Features/Records/Activity/forms/plant/hooks/useFiel
 const TreatmentChemicalPlant = () => {
   const MAX_ALLOWED_TEMP = 28;
   const MIN_ALLOWED_TEMP = 10;
-  const MAX_WIND_SPEED = 9;
+  const MAX_WIND_SPEED = 8;
 
   const validateWindDirectionAndSpeedPositive = (wind_direction: string, formValues) => {
     const wind_speed = formValues.subtype_data.context?.wind_speed_kmh;
