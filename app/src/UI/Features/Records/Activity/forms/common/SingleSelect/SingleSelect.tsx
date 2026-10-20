@@ -48,12 +48,23 @@ export function SingleSelect<T extends FieldValues>({
   const { control, trigger, watch } = useFormContext<T>();
   const activityDate = watch('date' as Path<T>);
 
+  /**
+   * RHF happily takes 'validate' as either a function or an object,
+   * this parses it appropriately into an object function so it can rest parameter with the notExpired rule without collision
+   */
+  const additionalRules = (() => {
+    if (!rules?.validate) return {};
+    else if (typeof rules.validate === 'function') {
+      return { anonymousRule: rules.validate };
+    } else if (typeof rules.validate === 'object') {
+      return rules.validate;
+    }
+  })();
   useEffect(() => {
     if (activityDate) {
       trigger(name);
     }
   }, [activityDate, name, trigger]);
-
   return (
     <Controller
       name={name}
@@ -61,7 +72,7 @@ export function SingleSelect<T extends FieldValues>({
       rules={{
         ...rules,
         validate: {
-          ...rules?.validate,
+          ...additionalRules,
           notExpired: (selectedValue) => {
             if (!selectedValue || !activityDate) return true;
 
