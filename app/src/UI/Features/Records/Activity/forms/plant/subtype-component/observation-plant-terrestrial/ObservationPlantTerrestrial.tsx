@@ -12,12 +12,18 @@ import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builde
 import { ActivitySubtypes } from 'sharedAPI';
 import MultiSelect from 'UI/Features/Records/Activity/forms/common/MultiSelect/MultiSelect';
 import useFieldPath from 'UI/Features/Records/Activity/forms/plant/hooks/useFieldPath';
+import { useEffect } from 'react';
+import { useFormContext } from 'react-hook-form';
 
 const ObservationPlantTerrestrial = () => {
+  const FLAT_CODE = 'FL';
+  const { watch, setValue } = useFormContext<TerrestrialPlantObservationSchema>();
   const { getPath } = useFieldPath<TerrestrialPlantObservationSchema>('subtype_data.context');
 
+  const aspect = watch(getPath('aspect'));
+  const slope = watch(getPath('slope_percent'));
+
   const validateSlopeAspect = (_, formValues) => {
-    const FLAT_CODE = 'FL';
     const drill = formValues.subtype_data.context;
     const aspect = drill.aspect?.code ?? drill.aspect;
     const slope = drill.slope_percent?.code ?? drill.slope_percent;
@@ -27,6 +33,18 @@ const ObservationPlantTerrestrial = () => {
   };
 
   const codes = useSelector((state) => state.ActivityPage?.formCodes);
+
+  // Business Rule, if slope is set to Flat, aspect should be flat.
+  useEffect(() => {
+    if (!slope || slope !== FLAT_CODE || aspect === FLAT_CODE) return;
+    setValue(getPath('aspect'), FLAT_CODE, { shouldValidate: true, shouldTouch: true });
+  }, [slope]);
+
+  // Business rule, if aspect is set to Flat, slope should be flat.
+  useEffect(() => {
+    if (!aspect || aspect !== FLAT_CODE || slope === FLAT_CODE) return;
+    setValue(getPath('slope_percent'), FLAT_CODE, { shouldValidate: true, shouldTouch: true });
+  }, [aspect]);
 
   return (
     <>
