@@ -58,6 +58,7 @@ class BiocontrolCollectionIn(BaseActivityProcessor):
                 TerrestrialBiocontrolAgentCount(activity_data_record=adr, **count)
                 for count in estimated_agents
             )
+        self.populate_map_symbol(parent, TerrestrialBiocontrolCollectionEntry)
 
 
 class DraftBiocontrolCollectionIn(DraftBaseActivityProcessor):
@@ -103,3 +104,5 @@ class DraftBiocontrolCollectionIn(DraftBaseActivityProcessor):
                 DraftTerrestrialBiocontrolAgentCount(activity_data_record=adr, **count)
                 for count in estimated_agents
             )
+
+        self.populate_map_symbol(parent, DraftTerrestrialBiocontrolCollectionEntry)

@@ -112,6 +112,7 @@ class PlantObservationAquaticIn(BaseActivityProcessor):
             AquaticPlantObservationEntry.objects.create(
                 activity_data_record=adr, **entry
             )
+        self.populate_map_symbol(parent, AquaticPlantObservationEntry)
 
 
 class DraftPlantObservationAquaticIn(DraftBaseActivityProcessor):
@@ -191,3 +192,4 @@ class DraftPlantObservationAquaticIn(DraftBaseActivityProcessor):
             DraftAquaticPlantObservationEntry.objects.create(
                 activity_data_record=adr, **entry
             )
+        self.populate_map_symbol(parent, DraftAquaticPlantObservationEntry)

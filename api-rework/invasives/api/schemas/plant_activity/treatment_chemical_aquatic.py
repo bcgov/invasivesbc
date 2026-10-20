@@ -88,6 +88,7 @@ class TreatmentChemicalAquaticIn(BaseActivityProcessor):
         ChemPlantEntryAquatic.objects.bulk_create(
             ChemPlantEntryAquatic(activity_data_record=adr, **p) for p in plants
         )
+        self.populate_map_symbol(parent, ChemPlantEntryAquatic)
 
 
 class DraftTreatmentChemicalAquaticIn(DraftBaseActivityProcessor):
@@ -139,3 +140,4 @@ class DraftTreatmentChemicalAquaticIn(DraftBaseActivityProcessor):
         DraftChemPlantEntryAquatic.objects.bulk_create(
             DraftChemPlantEntryAquatic(activity_data_record=adr, **p) for p in plant
         )
+        self.populate_map_symbol(parent, DraftChemPlantEntryAquatic)

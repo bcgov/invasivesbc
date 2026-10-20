@@ -87,6 +87,7 @@ class MonitoringBiocontrolReleaseIn(BaseActivityProcessor):
                 )
                 for sign in sign_of_presence
             )
+        self.populate_map_symbol(parent, TerrestrialBiocontrolDispersalMonitoringEntry)
 
 
 class DraftMonitoringBiocontrolReleaseIn(DraftBaseActivityProcessor):
@@ -156,4 +157,7 @@ class DraftMonitoringBiocontrolReleaseIn(DraftBaseActivityProcessor):
                     activity_data_record=adr, sign_of_presence=sign
                 )
                 for sign in sign_of_presence
+            )
+            self.populate_map_symbol(
+                parent, DraftTerrestrialBiocontrolDispersalMonitoringEntry
             )

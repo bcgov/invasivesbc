@@ -32,6 +32,7 @@ class PlantTreatmentMechanicalAquaticIn(BaseActivityProcessor):
             AquaticMechanicalAuthorization.objects.create(
                 activity_data_record=adr, authorization_information=auth_info
             )
+        self.populate_map_symbol(parent, AquaticPlantMechanicalTreatmentEntry)
 
 
 class DraftPlantTreatmentMechanicalAquaticIn(DraftBaseActivityProcessor):
@@ -53,3 +54,4 @@ class DraftPlantTreatmentMechanicalAquaticIn(DraftBaseActivityProcessor):
             DraftAquaticMechanicalAuthorization.objects.create(
                 activity_data_record=adr, authorization_information=auth_info
             )
+        self.populate_map_symbol(parent, DraftAquaticPlantMechanicalTreatmentEntry)

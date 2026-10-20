@@ -17,6 +17,7 @@ class PlantTreatmentMechanicalTerrestrialIn(BaseActivityProcessor):
             TerrestrialPlantMechanicalTreatmentEntry(activity_data_record=adr, **entry)
             for entry in subtype_data.get("entries", [])
         )
+        self.populate_map_symbol(parent, TerrestrialPlantMechanicalTreatmentEntry)
 
 
 class DraftPlantTreatmentMechanicalTerrestrialIn(DraftBaseActivityProcessor):
@@ -29,3 +30,4 @@ class DraftPlantTreatmentMechanicalTerrestrialIn(DraftBaseActivityProcessor):
             )
             for entry in subtype_data.get("entries", [])
         )
+        self.populate_map_symbol(parent, DraftTerrestrialPlantMechanicalTreatmentEntry)

@@ -20,7 +20,7 @@ from . import BaseActivityProcessor, DraftBaseActivityProcessor
 class PlantObservationTerrestrialIn(BaseActivityProcessor):
 
     @classmethod
-    def save_subtype_records(cls, subtype_data: Dict[str, Any], parent: Activity):
+    def save_subtype_records(self, subtype_data: Dict[str, Any], parent: Activity):
         """
         Processes a pre-validated dictionary structure.
         Pydantic has already cast empty strings to None and verified all types.
@@ -58,12 +58,13 @@ class PlantObservationTerrestrialIn(BaseActivityProcessor):
             TerrestrialPlantObservationEntries.objects.create(
                 activity_data_record=adr, **entry
             )
+        self.populate_map_symbol(parent, TerrestrialPlantObservationEntries)
 
 
 class DraftPlantObservationTerrestrialIn(DraftBaseActivityProcessor):
 
     @classmethod
-    def save_subtype_records(cls, subtype_data: Dict[str, Any], parent: DraftActivity):
+    def save_subtype_records(self, subtype_data: Dict[str, Any], parent: DraftActivity):
         """
         Processes a pre-validated dictionary structure.
         Pydantic has already cast empty strings to None and verified all types.
@@ -102,3 +103,4 @@ class DraftPlantObservationTerrestrialIn(DraftBaseActivityProcessor):
             DraftTerrestrialPlantObservationEntries.objects.create(
                 activity_data_record=adr, **entry
             )
+        self.populate_map_symbol(parent, DraftTerrestrialPlantObservationEntries)
