@@ -4,6 +4,8 @@ from django.test import TestCase, override_settings
 @override_settings(UNIT_TESTING_ENABLED=True)
 class BaseTestCase(TestCase):
     fixtures = [
+        "test/common/test_employer_codes",
+        "test/common/test_funding_agency_codes",
         "test/common/base_authentication",
     ]
 
