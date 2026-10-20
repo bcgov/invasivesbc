@@ -5,11 +5,12 @@ from django.db import transaction
 from typing import List
 from api.constants import WellKnownRoles
 from pydantic import PositiveInt
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from api.utils.timezones import local_today
 from api.ninja_authentication import NinjaKeycloakAuthentication, NinjaRoleRequired
-from api.models.auth import User, EmployerAssociation
+from api.models.auth import User, EmployerAssociation, AgencyAssociation
 from api.models.teams import TeamMember, Team, InviteStatus, TeamInvitation
 from api.schemas.teams import (
     InvitationOut,
@@ -234,7 +235,6 @@ def get_suggested_users(request, team_id):
 
     Get List of Suggestions based on the Agency list of a team.
     """
-    # TODO: Implement Agency Filter when old auth ported over.
     team = get_object_or_404(Team, id=team_id)
     if team.founder != request.auth:
         return HttpResponse(status=status.HTTP_403_FORBIDDEN)
@@ -244,9 +244,11 @@ def get_suggested_users(request, team_id):
     )
     suggestions = (
         User.objects.filter(
-            # agencies__in=team.agencies  # Filter Agencies
+            Q(agencyassociations__agency__in=team.agencies.all())
+            | Q(employerassociations__employer__in=team.employers.all())
         )
         .exclude(subject__in=members)  # Remove existing team members
+        .distinct()  # Prevent duplication from the Q OR conditions in filter
         .order_by("display_name")
     )
     return suggestions
