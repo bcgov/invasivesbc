@@ -396,8 +396,7 @@ class TeamsTest(BaseTestCase):
         self.assertEqual(data["name"], TEAM_ONE_CONFIG["name"])
         self.assertEqual(data["description"], TEAM_ONE_CONFIG["description"])
         self.assertIsNotNone(data["agencies"])
-        # TODO: Verify Employers not 'None' when implemented. For now, check key exists
-        self.assertTrue("employers" in data)
+        self.assertIsNotNone(data["employers"])
         self.assertIsNotNone(data["founding_date"])
         self.assertIsNotNone(data["id"])
         self.assertIsNotNone(data["founder"])
