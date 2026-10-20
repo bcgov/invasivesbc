@@ -10,7 +10,7 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from api.utils.timezones import local_today
 from api.ninja_authentication import NinjaKeycloakAuthentication, NinjaRoleRequired
-from api.models.auth import User, EmployerAssociation, AgencyAssociation
+from api.models.auth import User, EmployerAssociation
 from api.models.teams import TeamMember, Team, InviteStatus, TeamInvitation
 from api.schemas.teams import (
     InvitationOut,
@@ -73,6 +73,7 @@ def create_team(request, data: CreateTeamSchema):
         team = Team.objects.create(
             founder=request.auth, name=data.name, description=data.description
         )
+        # Assign Employers based on user profile
         employers = EmployerAssociation.objects.filter(user=request.auth).values_list(
             "employer", flat=True
         )
@@ -192,15 +193,20 @@ def invite_user_to_team(request, team_id: PositiveInt, data: InviteUserToTeamSch
 
     Endpoint for Data Managers to Invite a user to their team.
     """
-    # TODO: Ensure User being added has one matching Agency/Employer to Team.
     with transaction.atomic():
         if request.auth.subject == data.subject:
             return JsonResponse(
                 status=status.HTTP_400_BAD_REQUEST,
                 data={"details": "Cannot invite self to team"},
             )
-        recipient = get_object_or_404(User, subject=data.subject)
         team = get_object_or_404(Team, id=team_id, disbanded_date=None)
+        recipient = get_object_or_404(
+            User.objects.filter(
+                Q(agencyassociations__agency__in=team.agencies.all())
+                | Q(employerassociations__employer__in=team.employers.all()),
+                subject=data.subject,
+            ).distinct(),
+        )
         if team.founder != request.auth:
             return HttpResponse(status=status.HTTP_403_FORBIDDEN)
 
