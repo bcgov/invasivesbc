@@ -66,7 +66,10 @@ class FormActions {
       });
 
       if (res.ok) dispatch(Alerts.create(formAlerts.recordDeleted));
-      else dispatch(Alerts.create(formAlerts.recordCouldNotBeDeleted));
+      else {
+        dispatch(Alerts.create(formAlerts.recordCouldNotBeDeleted));
+        return rejectWithValue('Server side issue occured.');
+      }
     }
   );
 
