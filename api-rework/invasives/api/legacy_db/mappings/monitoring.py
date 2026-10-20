@@ -20,6 +20,7 @@ from api.models.codes import (
     InvasivePlantsOnSiteCode,
 )
 from api.models.enums import YesNo
+from api.schemas.plant_activity.base_activity import BaseActivityProcessor
 
 
 def add_monitoring_entry(
@@ -91,6 +92,9 @@ def add_monitoring_entry(
             activity_data_record=adr,
             invasive_plants_on_site=InvasivePlantsOnSiteCode.objects.get(code=pos),
         )
+    BaseActivityProcessor.populate_map_symbol(
+        new, TerrestrialTreatmentMonitoringEntry, AquaticTreatmentMonitoringEntry
+    )
 
 
 def add_subtype_payload_for_plant_mechanical_monitoring(

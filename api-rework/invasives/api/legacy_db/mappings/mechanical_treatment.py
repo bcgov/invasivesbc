@@ -15,6 +15,7 @@ from api.models.codes import (
     TerrestrialPlantCode,
     AquaticPlantCode,
 )
+from api.schemas.plant_activity.base_activity import BaseActivityProcessor
 
 
 def add_subtype_payload_for_plant_terrestrial_treatment(
@@ -52,6 +53,9 @@ def add_subtype_payload_for_plant_terrestrial_treatment(
                 else None
             ),
         )
+    BaseActivityProcessor.populate_map_symbol(
+        new, TerrestrialPlantMechanicalTreatmentEntry
+    )
 
 
 def add_subtype_payload_for_plant_aquatic_treatment(new: Activity, old: LegacyActivity):
@@ -96,3 +100,4 @@ def add_subtype_payload_for_plant_aquatic_treatment(new: Activity, old: LegacyAc
                 else None
             ),
         )
+    BaseActivityProcessor.populate_map_symbol(new, AquaticPlantMechanicalTreatmentEntry)

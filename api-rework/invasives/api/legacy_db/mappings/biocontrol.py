@@ -33,6 +33,7 @@ from api.models.codes import (
     BiocontrolPresenceCode,
     AgentLocationFoundTerrainCode,
 )
+from api.schemas.plant_activity.base_activity import BaseActivityProcessor
 
 import logging
 
@@ -270,6 +271,9 @@ def add_subtype_payload_for_biocontrol_dispersal_monitoring_terrestrial_plant(
                     ),
                     quantity=ba.release_quantity,
                 )
+    BaseActivityProcessor.populate_map_symbol(
+        new, TerrestrialBiocontrolDispersalMonitoringEntry
+    )
 
 
 def add_subtype_payload_for_biocontrol_release_monitoring_terrestrial_plant(
@@ -356,3 +360,6 @@ def add_subtype_payload_for_biocontrol_release_monitoring_terrestrial_plant(
                     ),
                     quantity=ba.release_quantity,
                 )
+    BaseActivityProcessor.populate_map_symbol(
+        new, TerrestrialBiocontrolDispersalMonitoringEntry
+    )
