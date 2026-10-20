@@ -6,7 +6,6 @@ import { useEffect, useMemo } from 'react';
 import { RecordSetId } from 'interfaces/UserRecordSet';
 import Activity from 'state/actions/activity/Activity';
 import Filters from './Filters/Filters';
-import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
 import GlobalFilterWarning from './GlobalFilterWarning/GlobalFilterWarning';
 import RecordSetControl from '../RecordSetControl';
 import BackButton from 'UI/Reusable/BackButton/BackButton';
@@ -56,15 +55,13 @@ export const RecordSet = ({ setID }: PropTypes) => {
 
           <GlobalFilterWarning />
           {!isCellPhoneWidth && (
-            <MobileOnly>
-              <div className="recordset-control">
-                <RecordSetControl
-                  hideCache={!canCacheRecordset}
-                  isDefaultRecordset={!canCacheRecordset}
-                  recordset={recordSet}
-                />
-              </div>
-            </MobileOnly>
+            <div className="recordset-control">
+              <RecordSetControl
+                hideCache={!canCacheRecordset}
+                isDefaultRecordset={!canCacheRecordset}
+                recordset={recordSet}
+              />
+            </div>
           )}
         </div>
       </div>
