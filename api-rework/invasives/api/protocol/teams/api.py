@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from api.utils.timezones import local_today
 from api.ninja_authentication import NinjaKeycloakAuthentication, NinjaRoleRequired
-from api.models.auth import User
+from api.models.auth import User, EmployerAssociation
 from api.models.teams import TeamMember, Team, InviteStatus, TeamInvitation
 from api.schemas.teams import (
     InvitationOut,
@@ -60,7 +60,9 @@ def create_team(request, data: CreateTeamSchema):
     Endpoint to create a new team. Requesting user is auto-enlisted into team.
     """
     with transaction.atomic():
-        if Team.objects.filter(founder=request.auth, name=data.name).exists():
+        if Team.objects.filter(
+            founder=request.auth, name=data.name, disbanded_date=None
+        ).exists():
             return JsonResponse(
                 status=status.HTTP_409_CONFLICT,
                 data={"details": "You already have a team by this name"},
@@ -70,8 +72,12 @@ def create_team(request, data: CreateTeamSchema):
         team = Team.objects.create(
             founder=request.auth, name=data.name, description=data.description
         )
+        employers = EmployerAssociation.objects.filter(user=request.auth).values_list(
+            "employer", flat=True
+        )
+
+        team.employers.set(employers)
         team.agencies.set(data.agencies)
-        # team.employers.set(request.auth.employers) # TODO: Implement when Employers added to user profile.
 
         TeamMember.objects.create(team=team, user=request.auth)
 
