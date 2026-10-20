@@ -1,9 +1,12 @@
 from .base_test_case import BaseTestCase
 import json, re
-from django.test.client import Client
 from django.contrib.gis.geos import GEOSGeometry
 from api.models.activity import ActivitySubtypes, ActivityType
 from pydantic import TypeAdapter
+from unittest import mock
+from api.models.auth import User, Role
+from api.constants import WellKnownRoles
+from api.ninja_authentication import NinjaKeycloakAuthentication
 from api.schemas.plant_activity import ACTIVITY_PROCESSORS
 from api.protocol.activity.plant_subtypes.union_definition import PlantActivitySchema
 from api.tests.mock_frontend_submissions import (
@@ -42,6 +45,12 @@ NOT_OPERAND = "DOES NOT CONTAIN"
 adapter = TypeAdapter(PlantActivitySchema)
 
 
+def fake_authenticate(self, request, token):
+    if not token:
+        return None
+    return User.objects.filter(subject=token).first()
+
+
 class ActivityRecordsetFilterTest(BaseTestCase):
     """
     In depth test suite for Filtering Activities.
@@ -58,6 +67,21 @@ class ActivityRecordsetFilterTest(BaseTestCase):
     Uses:
         Sample size of 14 records.
     """
+
+    @classmethod
+    def setUpTestData(cls):
+        Role.objects.get_or_create(name=WellKnownRoles.MASTER_ADMINISTRATOR.value)
+        admin = User.objects.create(subject="bc_admin")
+        admin.roles.add(WellKnownRoles.MASTER_ADMINISTRATOR.value)
+        super().setUpTestData()
+
+    def setUp(self):
+        patcher = mock.patch.object(
+            NinjaKeycloakAuthentication, "authenticate", fake_authenticate
+        )
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        super().setUp()
 
     single_filter_test_cases = {
         "short_id": {
@@ -214,7 +238,7 @@ class ActivityRecordsetFilterTest(BaseTestCase):
         },
     }
 
-    fixtures = [
+    extra_fixtures = [
         "test/common/test_invasive_plant_codes",
         "test/subtypes/biocontrol/test_biocontrol_codes",
         "test/subtypes/treatments/test_mechanical_treatment_codes",
@@ -272,10 +296,9 @@ class ActivityRecordsetFilterTest(BaseTestCase):
             sort_column=sort_column,
             sort_order=sort_order,
         )
-        client = Client()
-        res = client.post(
-            f"/recordset/rows",
-            headers={"Authorization": "Bearer act_as_user=test_user"},
+        res = self.client.post(
+            f"/ninja/recordset/rows",
+            headers={"Authorization": "Bearer bc_admin"},
             content_type="application/json",
             data=payload,
         )
@@ -350,7 +373,7 @@ class ActivityRecordsetFilterTest(BaseTestCase):
 
             for result in results:
                 received_value: str = result.get(column, None)
-                if does_contain:
+                if does_contain and received_value != None:
                     self.assertIn(
                         search_filter.casefold(),
                         received_value.casefold(),

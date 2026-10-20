@@ -4,4 +4,3 @@ from .health import HealthViewset
 from .ids_within_bounds import IdsWithinBoundsViewSet
 from .maps import MapGenerationRecordViewset, MapGenerationRequestViewSet
 from .migration import MigrationStatusViewSet
-from .recordset import RecordsetRowsViewSet

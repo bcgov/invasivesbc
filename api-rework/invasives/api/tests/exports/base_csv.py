@@ -1,11 +1,21 @@
 from django.test.client import Client
 from api.tests.base_test_case import BaseTestCase
 from api.models.activity import ActivitySubtypes
+from api.models.auth import User, Role
+from api.constants import WellKnownRoles
 from django.core.management import call_command
+from unittest import mock
+from api.ninja_authentication import NinjaKeycloakAuthentication
 from django.test import override_settings
 from io import StringIO
 import csv
 from api.models.export.csv import CSV_EXPORT_ROW_MAP
+
+
+def fake_authenticate(self, request, token):
+    if not token:
+        return None
+    return User.objects.filter(subject=token).first()
 
 
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True, CELERY_TASK_EAGER_PROPOGATES=True)
@@ -42,6 +52,19 @@ class BaseCSVTest(BaseTestCase):
         self.set_filters(subtype, filter_id)
         call_command("refresh_export_tables")
         self.client = Client()
+        patcher = mock.patch.object(
+            NinjaKeycloakAuthentication, "authenticate", fake_authenticate
+        )
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        super().setUp()
+
+    @classmethod
+    def setUpTestData(cls):
+        Role.objects.get_or_create(name=WellKnownRoles.MASTER_ADMINISTRATOR.value)
+        admin = User.objects.create(subject="bc_admin")
+        admin.roles.add(WellKnownRoles.MASTER_ADMINISTRATOR.value)
+        super().setUpTestData()
 
     def set_annotations(self, subtype: ActivitySubtypes):
         """
@@ -93,14 +116,17 @@ class BaseCSVTest(BaseTestCase):
          :filter: Request the CSV using the supplied filters (filter on record id)
          :auth: Request the CSV as an authenticated user (unauthenticated users will be denied)
         """
-        auth = {"Authorization": "Bearer act_as_user=test_user"} if auth else None
+        auth = {"Authorization": "Bearer bc_admin"} if auth else None
         filter = self.FILTER if filter else self.NO_FILTER
         response = self.client.post(
-            "/recordset/csv", headers=auth, content_type="application/json", data=filter
+            "/ninja/recordset/csv",
+            headers=auth,
+            content_type="application/json",
+            data=filter,
         )
 
         if not auth:
-            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.status_code, 401)
             return
 
         self.assertEqual(response.status_code, 200)

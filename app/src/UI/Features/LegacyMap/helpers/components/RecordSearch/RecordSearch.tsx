@@ -82,7 +82,7 @@ const RecordSearch = () => {
       let iappSuggestions = [];
       try {
         if (partialRecordId.length >= MINIMUM_LOOKUP_LENGTH) {
-          const res = await fetch(`${API_V2_BASE}/recordset/rows`, {
+          const res = await fetch(`${API_V2_BASE}/ninja/recordset/rows`, {
             method: 'POST',
             headers: {
               Authorization: await getCurrentJWT(),
