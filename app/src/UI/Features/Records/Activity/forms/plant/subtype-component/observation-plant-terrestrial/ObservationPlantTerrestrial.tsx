@@ -16,11 +16,12 @@ import useFieldPath from 'UI/Features/Records/Activity/forms/plant/hooks/useFiel
 const ObservationPlantTerrestrial = () => {
   const { getPath } = useFieldPath<TerrestrialPlantObservationSchema>('subtype_data.context');
 
-  const validateSlopeAspect = (val, formValues) => {
-    const aspect = val?.code ?? val;
-    const slope =
-      formValues.subtype_data?.context?.slope_percent?.code ?? formValues.subtype_data?.context?.slope_percent;
-    if ([aspect, slope].includes('FL') && aspect !== slope)
+  const validateSlopeAspect = (_, formValues) => {
+    const FLAT_CODE = 'FL';
+    const drill = formValues.subtype_data.context;
+    const aspect = drill.aspect?.code ?? drill.aspect;
+    const slope = drill.slope_percent?.code ?? drill.slope_percent;
+    if ([aspect, slope].includes(FLAT_CODE) && aspect !== slope)
       return 'If either Aspect or Slope is flat, both of them must be flat.';
     return true;
   };
@@ -67,8 +68,8 @@ const ObservationPlantTerrestrial = () => {
           tooltip={tooltips.plant.aspect}
           required
           rules={{
-            required: true,
             deps: [getPath('slope_percent')],
+            required: true,
             validate: (val, formValues) => validateSlopeAspect(val, formValues)
           }}
           width={Width.Half}
