@@ -8,7 +8,7 @@ from api.models.codes.code_tables import ServiceLicenseNumberAndCompany
 class UserProfileOut(ModelSchema):
     employers: List[str]
     funding_agencies: List[str]
-    pac_number: Optional[int] = None  # TODO: Should be Int
+    pac_number: Optional[str] = None  # TODO: Should be Int
     pac_service_numbers: List[str]
     roles: List[str]
     write_privilege: List[str]
