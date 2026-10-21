@@ -55,5 +55,45 @@
       "email": "bc_noroles@provider",
       "roles": []
     }
+  },
+  {
+    "model": "api.EmployerAssociation",
+    "pk": 1,
+    "fields": {
+      "employer": "MOTI",
+      "user": "bc_admin",
+      "effective": null,
+      "expires": null
+    }
+  },
+  {
+    "model": "api.EmployerAssociation",
+    "pk": 2,
+    "fields": {
+      "employer": "MOTI",
+      "user": "bc_datamanager",
+      "effective": null,
+      "expires": null
+    }
+  },
+  {
+    "model": "api.EmployerAssociation",
+    "pk": 3,
+    "fields": {
+      "employer": "MOTI",
+      "user": "bc_biocontrol",
+      "effective": null,
+      "expires": null
+    }
+  },
+  {
+    "model": "api.EmployerAssociation",
+    "pk": 4,
+    "fields": {
+      "employer": "MOTI",
+      "user": "bc_noroles",
+      "effective": null,
+      "expires": null
+    }
   }
 ]
