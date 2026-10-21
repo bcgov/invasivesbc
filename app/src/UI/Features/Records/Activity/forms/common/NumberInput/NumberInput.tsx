@@ -15,7 +15,7 @@ interface PropTypes extends InputHTMLAttributes<HTMLInputElement> {
   readOnly?: boolean;
   required?: boolean;
   tooltip?: string;
-  width?: Width;
+  width?: Width | `${Width}`;
   acceptFloats?: boolean;
   step?: number | 'any';
 }

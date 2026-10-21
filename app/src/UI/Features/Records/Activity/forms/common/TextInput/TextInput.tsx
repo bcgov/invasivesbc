@@ -14,7 +14,7 @@ interface PropTypes extends InputHTMLAttributes<HTMLInputElement> {
   advisoryText?: string;
   placeholder?: string;
   tooltip?: string;
-  width?: Width;
+  width?: Width | `${Width}`;
 }
 
 // Use forwardRef so Hook Form can manage the input focus
