@@ -43,6 +43,7 @@ from api.protocol.activity.plant_subtypes.treatment_chemical_terrestrial import 
     DraftBaseChemicalDetails as TerrestrialBase,
 )
 from api.serializers.activity import ActivitySerializer
+from api.schemas.plant_activity.base_activity import BaseActivityProcessor
 
 log = logging.getLogger(__name__)
 
@@ -136,6 +137,10 @@ def add_chemical_treatment_details(new: Activity, old: LegacyActivity):
                 else HUNDRED_PERCENT
             ),
         )
+
+    BaseActivityProcessor.populate_map_symbol(
+        new, ChemPlantEntryAquatic, ChemPlantEntryTerrestrial
+    )
 
 
 def add_chemical_treatment_context(new: Activity, old: LegacyActivity):

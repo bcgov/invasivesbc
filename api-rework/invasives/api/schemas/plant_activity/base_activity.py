@@ -1,4 +1,4 @@
-from django.db import transaction
+from django.db import transaction, models
 from typing import Dict, Any, List
 from api.models.activity.activity import Activity, DraftActivity
 from api.models.activity import (
@@ -113,6 +113,22 @@ class BaseActivityProcessor:
     def save_subtype_records(cls, subtype_data: Dict[str, Any], parent: Activity):
         raise NotImplementedError("Subclasses must implement `save_subtype_records`.")
 
+    @classmethod
+    def populate_map_symbol(cls, parent: Activity, *subtype_row_model: models.Model):
+        plants = set()
+        for model in subtype_row_model:
+            plants.update(
+                model.objects.filter(
+                    activity_data_record__activity_id=parent,
+                    invasive_plant__isnull=False,
+                )
+                .distinct("invasive_plant__code")
+                .order_by("invasive_plant__code")
+                .values_list("invasive_plant__code", flat=True)
+            )
+        parent.computed_map_symbol = ", ".join(sorted(plants))
+        parent.save()
+
 
 DRAFT_MODEL_MAPPING = {
     "participants": DraftParticipant,
@@ -208,3 +224,21 @@ class DraftBaseActivityProcessor:
     @classmethod
     def save_subtype_records(cls, subtype_data: Dict[str, Any], parent: DraftActivity):
         raise NotImplementedError("Subclasses must implement `save_subtype_records`.")
+
+    @classmethod
+    def populate_map_symbol(
+        cls, parent: DraftActivity, *subtype_row_model: models.Model
+    ):
+        plants = set()
+        for model in subtype_row_model:
+            plants.update(
+                model.objects.filter(
+                    activity_data_record__activity_id=parent,
+                    invasive_plant__isnull=False,
+                )
+                .distinct("invasive_plant__code")
+                .order_by("invasive_plant__code")
+                .values_list("invasive_plant__code", flat=True)
+            )
+        parent.computed_map_symbol = ", ".join(sorted(plants))
+        parent.save()

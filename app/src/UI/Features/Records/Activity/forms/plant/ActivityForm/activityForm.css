@@ -17,8 +17,7 @@ input[type='button']:hover {
   }
 
   .back-button {
-    margin-right: auto;
-    margin-top: 4px;
+    margin: 1rem auto auto 1rem;
   }
 
   .form-section {

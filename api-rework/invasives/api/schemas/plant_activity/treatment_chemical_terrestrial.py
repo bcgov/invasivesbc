@@ -87,6 +87,7 @@ class TreatmentChemicalTerrestrialIn(BaseActivityProcessor):
         ChemPlantEntryTerrestrial.objects.bulk_create(
             ChemPlantEntryTerrestrial(activity_data_record=adr, **p) for p in plants
         )
+        self.populate_map_symbol(parent, ChemPlantEntryTerrestrial)
 
 
 class DraftTreatmentChemicalTerrestrialIn(DraftBaseActivityProcessor):
@@ -138,3 +139,4 @@ class DraftTreatmentChemicalTerrestrialIn(DraftBaseActivityProcessor):
         DraftChemPlantEntryTerrestrial.objects.bulk_create(
             DraftChemPlantEntryTerrestrial(activity_data_record=adr, **p) for p in plant
         )
+        self.populate_map_symbol(parent, DraftChemPlantEntryTerrestrial)

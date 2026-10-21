@@ -33,6 +33,7 @@ from api.models.codes import (
     AquaticPlantCode,
 )
 from api.models.enums import ObservationType
+from api.schemas.plant_activity.base_activity import BaseActivityProcessor
 
 
 def add_target_plant_phenology(new: Activity, old: LegacyActivity):
@@ -241,6 +242,8 @@ def add_subtype_payload_for_plant_terrestrial_observation(
         if plant.voucher_specimen_collection_information is not None:
             add_voucher_specimen(new, adr, plant)
 
+    BaseActivityProcessor.populate_map_symbol(new, TerrestrialPlantObservationEntries)
+
 
 def add_aquatic_plant_observation_information(new: Activity, old: LegacyActivity):
     old_information = (
@@ -306,3 +309,5 @@ def add_subtype_payload_for_plant_aquatic_observation(
 
         if plant.voucher_specimen_collection_information is not None:
             add_voucher_specimen(new, adr, plant)
+
+    BaseActivityProcessor.populate_map_symbol(new, AquaticPlantObservationEntry)

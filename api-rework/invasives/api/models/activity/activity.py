@@ -126,9 +126,6 @@ class Activity(
             year = local_today().strftime("%y")
             self.short_id = f"{year}{subtype}{uuid_substr}"
 
-        plant_codes = super().get_invasive_plant_codes()
-        self.computed_map_symbol = ", ".join(plant_codes)
-
         super().save(*args, **kwargs)
 
         if self.form_status == "Submitted":
@@ -253,10 +250,6 @@ class DraftActivity(DraftGeometry, BaseModel, models.Model):
             uuid_substr = str(self.id)[:UUID_SUBSTRING_LENGTH].upper()
             year = local_today().strftime("%y")
             self.short_id = f"{year}{subtype}{uuid_substr}"
-
-        plant_codes = super().get_invasive_plant_codes()
-        self.computed_map_symbol = ", ".join(plant_codes)
-
         super().save(*args, **kwargs)
 
 

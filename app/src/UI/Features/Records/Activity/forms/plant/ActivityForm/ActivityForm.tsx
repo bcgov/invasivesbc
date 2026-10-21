@@ -10,7 +10,6 @@ import DebugFormData from 'UI/Features/Records/Activity/forms/debug/DebugFormDat
 import { NavLink, useParams } from 'react-router';
 import ActivityActions from 'state/actions/activity/Activity';
 import Form from './Form';
-import './activityForm.css';
 import Photos from './Photos';
 import FormControl from './FormControl';
 import RecordNotFound from './RecordNotFound/RecordNotFound';
@@ -18,7 +17,8 @@ import UserSettings from 'state/actions/userSettings/UserSettings';
 import Button from 'UI/Reusable/Button/Button';
 import { EditDocument } from '@mui/icons-material';
 import BackButton from 'UI/Reusable/BackButton/BackButton';
-import Spinner from 'UI/Reusable/Spinner/Spinner';
+import LoadingPage from 'UI/Features/SystemStatusPages/LoadingPage/LoadingPage';
+import './activityForm.css';
 
 const FORM_UPDATE_THROTTLE_DELAY = 1000; //ms
 const FORM_UPDATE_MAX_DELAY = 5000; //ms
@@ -81,6 +81,7 @@ const ActivityForm = () => {
   const MOBILE = useSelector((state) => state.Configuration.current.build.MOBILE);
   const metadata = useSelector((state) => state.ActivityPage?.formMetadata);
   const isLoading = useSelector((state) => state.ActivityPage?.loading);
+  const displayName = useSelector((state) => state.Auth?.displayName);
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
@@ -91,7 +92,7 @@ const ActivityForm = () => {
   const methods = useForm<FormSchema>({
     mode: 'onChange',
     disabled: !isEditing,
-    defaultValues: getDefaultFormState(subtype)
+    defaultValues: getDefaultFormState(subtype!, { participant: displayName })
   });
 
   // Destructure props used at this level
@@ -148,11 +149,12 @@ const ActivityForm = () => {
 
   useEffect(() => {
     // Reset form on ID change.
-    if (!initState && subtype) reset(getDefaultFormState(subtype, currentUser));
+    if (!initState && subtype)
+      reset(getDefaultFormState(subtype, { created_by: currentUser, participant: displayName }));
   }, [formId]);
 
   if (recordNotFound) return <RecordNotFound />;
-  if (isLoading) return <Spinner />;
+  if (isLoading) return <LoadingPage />;
   if (!formId) {
     return (
       <div className="activity-page">

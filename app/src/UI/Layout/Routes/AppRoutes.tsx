@@ -34,7 +34,9 @@ const BatchGeometryTool = React.lazy(() => import('UI/Features/Batch/BatchGeomet
 const LegendsPopup = React.lazy(() => import('UI/Features/Legend/LegendsPopup'));
 const ManageTripsPage = React.lazy(() => import('UI/Features/ManageTripsPage/ManageTripsPage'));
 const UserGuide = React.lazy(() => import('UI/Features/UserGuide/UserGuide'));
-const ActivityForm = React.lazy(() => import('UI/Features/Records/Activity/forms/plant/ActivityForm/ActivityForm'));
+const ActivityFormWrapper = React.lazy(
+  () => import('UI/Features/Records/Activity/forms/plant/ActivityForm/ActivityFormWrapper')
+);
 
 const MyTeamsPage = React.lazy(() => import('UI/Features/MyTeamsPage/MyTeamsPage'));
 const TeamViewer = React.lazy(() => import('UI/Features/MyTeamsPage/TeamViewer/TeamViewer'));
@@ -56,7 +58,7 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/Landing" replace />} />
-      <Route path="/Records/Activity/:id/:mode" element={<ActivityForm />} />
+      <Route path="/Records/Activity/:id/:mode" element={<ActivityFormWrapper />} />
       <Route path="/Map" Component={() => <></>} />
       <Route path="/Landing" Component={() => <LandingComponent />} />
       <Route path="/Records/LegacyForm/:id/:mode" Component={() => <Activity />}></Route>

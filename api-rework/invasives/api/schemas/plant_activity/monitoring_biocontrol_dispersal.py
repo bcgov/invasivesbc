@@ -79,6 +79,7 @@ class MonitoringBiocontrolDispersalIn(BaseActivityProcessor):
                 )
                 for sign in sign_of_presence
             )
+        self.populate_map_symbol(parent, TerrestrialBiocontrolDispersalMonitoringEntry)
 
 
 class DraftMonitoringBiocontrolDispersalIn(DraftBaseActivityProcessor):
@@ -141,3 +142,6 @@ class DraftMonitoringBiocontrolDispersalIn(DraftBaseActivityProcessor):
                 )
                 for sign in sign_of_presence
             )
+        self.populate_map_symbol(
+            parent, DraftTerrestrialBiocontrolDispersalMonitoringEntry
+        )

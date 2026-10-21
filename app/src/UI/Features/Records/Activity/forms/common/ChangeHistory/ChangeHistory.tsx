@@ -1,9 +1,9 @@
-import './changeHistory.css';
 import { useSelector } from 'utils/use_selector';
-import { ReactNode, useState } from 'react';
+import { Fragment, ReactNode, useState } from 'react';
 import { ArrowForward } from '@mui/icons-material';
 import StyledModal from 'UI/Reusable/StyledModal/StyledModal';
 import Button from 'UI/Reusable/Button/Button';
+import './changeHistory.css';
 
 enum ChangeType {
   ItemAdded = 'iterable_item_added',
@@ -73,7 +73,7 @@ const _formattedValuesChanges = (vc: Record<PropertyKey, any> = {}): Array<React
     const [showDiff, setShowDiff] = useState<boolean>(!IS_LARGE_DIFF);
 
     return (
-      <li className="diff-entry">
+      <li className="diff-entry" key={key}>
         <dt className="label">{formatLabel(key)}</dt>
         <dd className="italic">Value Modified</dd>
         {IS_LARGE_DIFF && (
@@ -123,7 +123,7 @@ const _formattedTypeChanges = (va: Record<PropertyKey, any> = {}): Array<ReactNo
 const _formattedValuesAdded = (va: Record<PropertyKey, any> = {}): Array<ReactNode> => {
   const entries: Array<ReactNode> = Object.entries(va).map(([key, value]) => {
     return (
-      <li className="diff-entry">
+      <li className="diff-entry" key={key}>
         <dt>{formatLabel(key)}</dt>
         <dd className="italic">Value Added</dd>
         <dd className="green">
@@ -144,7 +144,7 @@ const _formattedValuesAdded = (va: Record<PropertyKey, any> = {}): Array<ReactNo
 const _formattedValuesRemoved = (vr: Record<PropertyKey, any> = {}): Array<ReactNode> => {
   const entries: Array<ReactNode> = Object.entries(vr).map(([key, value]) => {
     return (
-      <li className="diff-entry">
+      <li className="diff-entry" key={key}>
         <dt>{formatLabel(key)}</dt>
         <dd className="italic">Value Removed</dd>
         <dd className="deep-red">
@@ -168,12 +168,12 @@ const AllChanges = ({ diff }) => {
     ..._formattedValuesRemoved(diff?.[ChangeType.ItemRemoved])
   ];
   return (
-    <>
+    <Fragment>
       <dt>Changes</dt>
       <dd>
-        <ul className="changes">{entries.map((r) => r)}</ul>
+        <ul className="changes">{...entries}</ul>
       </dd>
-    </>
+    </Fragment>
   );
 };
 

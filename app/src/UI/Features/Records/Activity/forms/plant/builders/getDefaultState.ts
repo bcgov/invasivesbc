@@ -50,10 +50,14 @@ const getSubtypeData = (subtype: ActivitySubtypes): FormSchema['subtype_data'] =
   }
 };
 
+type DefaultFormOptionTypes = {
+  created_by?: string;
+  participant?: string;
+};
 /**
  * Get the default values needed for a form, used for form create/reset logic.
  */
-const getDefaultFormState = (subtype: ActivitySubtypes, created_by?: string): FormSchema => {
+const getDefaultFormState = (subtype: ActivitySubtypes, options?: DefaultFormOptionTypes): FormSchema => {
   const subtype_data = getSubtypeData(subtype);
   const { id, short_id } = createRecordId(subtype);
   return {
@@ -77,11 +81,11 @@ const getDefaultFormState = (subtype: ActivitySubtypes, created_by?: string): Fo
     utm_easting: 0,
     utm_northing: 0,
     linked_activities: [],
-    participants: [{ name: '', pac_number: undefined }],
+    participants: [{ name: options?.participant ?? '', pac_number: undefined }],
     subtype_data: subtype_data,
     type: ActivitySubtypesToType[subtype],
     media: [],
-    created_by
+    created_by: options?.created_by ?? ''
   } as FormSchema;
 };
 

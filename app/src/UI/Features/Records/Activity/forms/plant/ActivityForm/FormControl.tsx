@@ -49,7 +49,7 @@ const FormControl = () => {
           if (confirmation) {
             dispatch(FormActions.clearFormState());
             const newState = {
-              ...getDefaultFormState(subtype, created_by),
+              ...getDefaultFormState(subtype!, { created_by: created_by }),
               id: formState?.id,
               short_id: formState?.short_id
             };

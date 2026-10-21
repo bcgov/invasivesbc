@@ -42,6 +42,11 @@ class PlantMonitoringChemicalIn(BaseActivityProcessor):
                 InvasivePlantsOnSite(activity_data_record=adr, **plant)
                 for plant in plants_on_site
             )
+            self.populate_map_symbol(
+                parent,
+                AquaticTreatmentMonitoringEntry,
+                TerrestrialTreatmentMonitoringEntry,
+            )
 
 
 class DraftPlantMonitoringChemicalIn(DraftBaseActivityProcessor):
@@ -73,4 +78,9 @@ class DraftPlantMonitoringChemicalIn(DraftBaseActivityProcessor):
             DraftInvasivePlantsOnSite.objects.bulk_create(
                 DraftInvasivePlantsOnSite(activity_data_record=adr, **plant)
                 for plant in plants_on_site
+            )
+            self.populate_map_symbol(
+                parent,
+                DraftAquaticTreatmentMonitoringEntry,
+                DraftTerrestrialTreatmentMonitoringEntry,
             )
