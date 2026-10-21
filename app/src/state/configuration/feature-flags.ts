@@ -43,6 +43,7 @@ const BASELINE_FEATURES = {
   OFFLINE_PROTOMAPS: new FeatureFlag('OFFLINE_PROTOMAPS', true),
   OFFLINE_SYNC: new FeatureFlag('OFFLINE_SYNC', true),
 
+  REGISTRATION_PAGE: new FeatureFlag('REGISTRATION', true),
   PLAN_MY_TRIP: new FeatureFlag('PLAN_MY_TRIP', true),
   PHOTO_ATTACHMENTS: new FeatureFlag('PHOTO_ATTACHMENTS', true),
 
