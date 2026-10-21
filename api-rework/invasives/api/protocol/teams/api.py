@@ -5,11 +5,12 @@ from django.db import transaction
 from typing import List
 from api.constants import WellKnownRoles
 from pydantic import PositiveInt
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from api.utils.timezones import local_today
 from api.ninja_authentication import NinjaKeycloakAuthentication, NinjaRoleRequired
-from api.models.auth import User
+from api.models.auth import User, EmployerAssociation
 from api.models.teams import TeamMember, Team, InviteStatus, TeamInvitation
 from api.schemas.teams import (
     InvitationOut,
@@ -60,7 +61,9 @@ def create_team(request, data: CreateTeamSchema):
     Endpoint to create a new team. Requesting user is auto-enlisted into team.
     """
     with transaction.atomic():
-        if Team.objects.filter(founder=request.auth, name=data.name).exists():
+        if Team.objects.filter(
+            founder=request.auth, name=data.name, disbanded_date=None
+        ).exists():
             return JsonResponse(
                 status=status.HTTP_409_CONFLICT,
                 data={"details": "You already have a team by this name"},
@@ -70,8 +73,13 @@ def create_team(request, data: CreateTeamSchema):
         team = Team.objects.create(
             founder=request.auth, name=data.name, description=data.description
         )
+        # Assign Employers based on user profile
+        employers = EmployerAssociation.objects.filter(user=request.auth).values_list(
+            "employer", flat=True
+        )
+
+        team.employers.set(employers)
         team.agencies.set(data.agencies)
-        # team.employers.set(request.auth.employers) # TODO: Implement when Employers added to user profile.
 
         TeamMember.objects.create(team=team, user=request.auth)
 
@@ -185,15 +193,20 @@ def invite_user_to_team(request, team_id: PositiveInt, data: InviteUserToTeamSch
 
     Endpoint for Data Managers to Invite a user to their team.
     """
-    # TODO: Ensure User being added has one matching Agency/Employer to Team.
     with transaction.atomic():
         if request.auth.subject == data.subject:
             return JsonResponse(
                 status=status.HTTP_400_BAD_REQUEST,
                 data={"details": "Cannot invite self to team"},
             )
-        recipient = get_object_or_404(User, subject=data.subject)
         team = get_object_or_404(Team, id=team_id, disbanded_date=None)
+        recipient = get_object_or_404(
+            User.objects.filter(
+                Q(agencyassociations__agency__in=team.agencies.all())
+                | Q(employerassociations__employer__in=team.employers.all()),
+                subject=data.subject,
+            ).distinct(),
+        )
         if team.founder != request.auth:
             return HttpResponse(status=status.HTTP_403_FORBIDDEN)
 
@@ -228,7 +241,6 @@ def get_suggested_users(request, team_id):
 
     Get List of Suggestions based on the Agency list of a team.
     """
-    # TODO: Implement Agency Filter when old auth ported over.
     team = get_object_or_404(Team, id=team_id)
     if team.founder != request.auth:
         return HttpResponse(status=status.HTTP_403_FORBIDDEN)
@@ -238,9 +250,11 @@ def get_suggested_users(request, team_id):
     )
     suggestions = (
         User.objects.filter(
-            # agencies__in=team.agencies  # Filter Agencies
+            Q(agencyassociations__agency__in=team.agencies.all())
+            | Q(employerassociations__employer__in=team.employers.all())
         )
         .exclude(subject__in=members)  # Remove existing team members
+        .distinct()  # Prevent duplication from the Q OR conditions in filter
         .order_by("display_name")
     )
     return suggestions

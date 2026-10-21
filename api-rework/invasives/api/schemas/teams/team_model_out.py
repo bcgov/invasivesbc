@@ -131,8 +131,8 @@ class TeamMembershipOut(Schema):
 
 
 class TeamSuggestedUserOut(Schema):
-    code: str = Field(..., validation_alias="subject")
-    full_name: str = Field(..., validation_alias="display_name")
+    code: str = Field(..., alias="subject")
+    full_name: str = Field(..., alias="display_name")
 
     class Config:
         from_attributes = True
