@@ -21,6 +21,7 @@ const RoleAssignment = React.lazy(() => import('UI/Features/Admin/users/RoleAssi
 
 const EmbeddedReportsPage = React.lazy(() => import('UI/Features/Reports/EmbeddedReportsPage'));
 const AccessRequestPage = React.lazy(() => import('UI/Features/AccessRequest/AccessRequestPage'));
+const UserRegistrationPage = React.lazy(() => import('UI/Features/UserRegistration/UserRegistrationPage'));
 const TrainingPage = React.lazy(() => import('UI/Features/Training/Training'));
 const NewsPage = React.lazy(() => import('UI/Features/News/NewsPage'));
 
@@ -153,6 +154,16 @@ const AppRoutes = () => {
         )}
       />
 
+      <Route
+        path="/register"
+        Component={() => (
+          <Suspense fallback={<Spinner />}>
+            <FeatureGated requires="REGISTRATION_PAGE">
+              <UserRegistrationPage />
+            </FeatureGated>
+          </Suspense>
+        )}
+      />
       <Route
         path="/AccessRequest"
         Component={() => (
