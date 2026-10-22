@@ -19,14 +19,17 @@ from api.models.activity import (
 from api.utils.s3_media_files import S3MediaFiles
 from pydantic import ConfigDict, Field
 from geojson_pydantic import Point
-from api.protocol.activity.activity_plant_row_out import ActivityPlantRowOut
 from typing import List, Optional
 from ninja import ModelSchema, Schema
 
 
 class JurisdictionOut(Schema):
-    jurisdiction: Optional[str] = Field(..., alias="jurisdiction.code")
+    jurisdiction: Optional[str]
     percent_covered: Optional[int] = None
+
+    @staticmethod
+    def resolve_jurisdiction(obj):
+        return obj.jurisdiction.code if obj.jurisdiction else None
 
 
 class LinkedActivityOut(Schema):
@@ -46,11 +49,19 @@ class ProjectOut(Schema):
 
 
 class FundingAgencyOut(Schema):
-    invasive_species_agency_code: Optional[str] = Field(..., alias="agency.code")
+    invasive_species_agency_code: Optional[str]
+
+    @staticmethod
+    def resolve_invasive_species_agency_code(obj):
+        return obj.agency.code if obj.agency else None
 
 
 class EmployerOut(Schema):
-    employer: Optional[str] = Field(..., alias="employer.code")
+    employer: Optional[str]
+
+    @staticmethod
+    def resolve_employer(obj):
+        return obj.employer.code if obj.employer else None
 
 
 class ParticipantOut(Schema):
@@ -94,7 +105,6 @@ class BaseRecordOut(ModelSchema, ABC):
             "form_status",
             "linked_activities",
             "type",
-            "subtype",
             "access_description",
             "comment",
             "date",
@@ -111,15 +121,21 @@ class BaseRecordOut(ModelSchema, ABC):
 
     @staticmethod
     def resolve_employer(obj: Activity):
-        return Employer.objects.filter(activity_data_record__activity_id=obj.id)
+        return Employer.objects.filter(
+            activity_data_record__activity_id=obj.id
+        ).select_related("employer")
 
     @staticmethod
     def resolve_funding_agencies(obj: Activity):
-        return FundingAgency.objects.filter(activity_data_record__activity_id=obj.id)
+        return FundingAgency.objects.filter(
+            activity_data_record__activity_id=obj.id
+        ).select_related("agency")
 
     @staticmethod
     def resolve_jurisdictions(obj: Activity):
-        return Jurisdiction.objects.filter(activity_data_record__activity_id=obj.id)
+        return Jurisdiction.objects.filter(
+            activity_data_record__activity_id=obj.id
+        ).select_related("jurisdiction")
 
     @staticmethod
     def resolve_linked_activities(obj: Activity):
@@ -171,19 +187,21 @@ class DraftBaseRecordOut(BaseRecordOut, ABC):
 
     @staticmethod
     def resolve_employer(obj: Activity):
-        return DraftEmployer.objects.filter(activity_data_record__activity_id=obj.id)
+        return DraftEmployer.objects.filter(
+            activity_data_record__activity_id=obj.id
+        ).select_related("employer")
 
     @staticmethod
     def resolve_funding_agencies(obj: Activity):
         return DraftFundingAgency.objects.filter(
             activity_data_record__activity_id=obj.id
-        )
+        ).select_related("agency")
 
     @staticmethod
     def resolve_jurisdictions(obj: Activity):
         return DraftJurisdiction.objects.filter(
             activity_data_record__activity_id=obj.id
-        )
+        ).select_related("jurisdiction")
 
     @staticmethod
     def resolve_linked_activities(obj: Activity):
