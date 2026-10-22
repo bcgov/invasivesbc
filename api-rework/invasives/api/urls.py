@@ -16,6 +16,7 @@ from api.protocol.map_tiles import tile_router
 from api.protocol.summary import summary_router, SUMMARY_PATH
 from api.protocol.teams import teams_router, TEAMS_ROOT_PATH
 from api.protocol.recordset import recordset_router, RECORDSET_ROOT_PATH
+from api.protocol.auth import auth_router, AUTH_ROOT_PATH
 
 from ninja import NinjaAPI
 
@@ -31,6 +32,7 @@ ROUTER.register(r"migrations", MigrationStatusViewSet, "migration")
 
 ninja_api = NinjaAPI()
 ninja_api.add_router("/activities", activity_router)
+ninja_api.add_router(AUTH_ROOT_PATH, auth_router)
 ninja_api.add_router(RECORDSET_ROOT_PATH, recordset_router)
 ninja_api.add_router(SUMMARY_PATH, summary_router)
 ninja_api.add_router(TEAMS_ROOT_PATH, teams_router)

@@ -101,15 +101,18 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/ninja/tiles/activity/{z}/{x}/{y}": {
+    "/ninja/auth/user": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Req Activity Vector Tile */
-        get: operations["api_protocol_map_tiles_vector_tiles_req_activity_vector_tile"];
+        /**
+         * Get Self
+         * @description Return requesters own profile
+         */
+        get: operations["api_protocol_auth_api_get_self"];
         put?: never;
         post?: never;
         delete?: never;
@@ -118,15 +121,99 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/ninja/tiles/zone/{z}/{x}/{y}": {
+    "/ninja/auth/user/{subject}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Zone Vector Tile */
-        get: operations["api_protocol_map_tiles_vector_tiles_zone_vector_tile"];
+        /**
+         * Get User
+         * @description Return Profile of specified user
+         */
+        get: operations["api_protocol_auth_api_get_user"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ninja/recordset/rows": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Get Recordset Rows */
+        post: operations["api_protocol_recordset_api_get_recordset_rows"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ninja/recordset/csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Get Csv Export
+         * @description Export Endpoint for InvasivesBC Recordsets.
+         *
+         *     Current functionality supports exporting any Recordset via, using the filters
+         *     applied to the user's recordset. whether or not specified by the user, there is a subtype filter applied to all requests.
+         *     This ensures common model entries don't get crossed. e.g.: Biocontrol Dispersal v Biocontrol Collections
+         *
+         *     To change CSV Headers/Values/Formats, update :data:`CSV_EXPORT_ROW_MAP` classes
+         */
+        post: operations["api_protocol_recordset_api_get_csv_export"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ninja/recordset/cache": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Recordset Cache
+         * @description Given a 'idList' query param of IDs (short or full)
+         *     return a list of Recordset rows and data payloads (For caching purposes)
+         */
+        get: operations["api_protocol_recordset_api_get_recordset_cache"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ninja/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Summary */
+        get: operations["api_protocol_summary_api_get_summary"];
         put?: never;
         post?: never;
         delete?: never;
@@ -296,15 +383,32 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/ninja/summary": {
+    "/ninja/tiles/activity/{z}/{x}/{y}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get Summary */
-        get: operations["api_protocol_summary_api_get_summary"];
+        /** Req Activity Vector Tile */
+        get: operations["api_protocol_map_tiles_vector_tiles_req_activity_vector_tile"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ninja/tiles/zone/{z}/{x}/{y}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Zone Vector Tile */
+        get: operations["api_protocol_map_tiles_vector_tiles_zone_vector_tile"];
         put?: never;
         post?: never;
         delete?: never;
@@ -3298,6 +3402,295 @@ export interface components {
             available_actions: components["schemas"]["RecordAction"][];
             metadata: components["schemas"]["RecordMetadata"];
         };
+        /** UserProfileOut */
+        UserProfileOut: {
+            /** Employers */
+            employers: string[];
+            /** Funding Agencies */
+            funding_agencies: string[];
+            /** Pac Number */
+            pac_number?: string | null;
+            /** Pac Service Numbers */
+            pac_service_numbers: string[];
+            /** Roles */
+            roles: string[];
+            /** Write Privilege */
+            write_privilege: string[];
+            /**
+             * Subject
+             * @default Unset
+             */
+            subject: string | null;
+            /** Display Name */
+            display_name?: string | null;
+            /** Email */
+            email?: string | null;
+            /**
+             * Is Active
+             * @default true
+             */
+            is_active: boolean;
+            /** Phone Number */
+            phone_number?: string | null;
+            /** Expiry Date */
+            expiry_date?: string | null;
+        };
+        /** ActivityPlantRowOut */
+        ActivityPlantRowOut: {
+            /**
+             * Activity Id
+             * Format: uuid4
+             */
+            activity_id: string;
+            /**
+             * Activity Date
+             * Format: date
+             */
+            activity_date: string;
+            /** Activity Type */
+            activity_type: string;
+            /** Created By */
+            created_by: string;
+            /** Short Id */
+            short_id: string;
+            geom?: components["schemas"]["Point"] | null;
+            /** Activity Subtype */
+            activity_subtype: string;
+            /** Elevation */
+            elevation: number | null;
+            /** Biogeoclimatic Zones */
+            biogeoclimatic_zones: string | null;
+            /** Regional Districts */
+            regional_districts: string | null;
+            /** Invasive Plant Management Areas */
+            invasive_plant_management_areas: string | null;
+            /** Regional Invasive Species Organization Areas */
+            regional_invasive_species_organization_areas?: string | null;
+            /** Agency */
+            agency?: string | null;
+            /** Updated By */
+            updated_by?: string | null;
+            /** Species Biocontrol Full */
+            species_biocontrol_full?: string | null;
+            /** Species Treated Full */
+            species_treated_full?: string | null;
+            /** Species Negative Full */
+            species_negative_full?: string | null;
+            /** Species Positive Full */
+            species_positive_full?: string | null;
+            /** Invasive Plant */
+            invasive_plant?: string | null;
+            /** Jurisdiction Display */
+            jurisdiction_display?: string | null;
+            /** Project Code */
+            project_code?: string | null;
+            /** Batch Id */
+            batch_id?: number | null;
+        };
+        /** DraftActivityPlantRowOut */
+        DraftActivityPlantRowOut: {
+            /**
+             * Activity Id
+             * Format: uuid4
+             */
+            activity_id: string;
+            /**
+             * Activity Date
+             * Format: date
+             */
+            activity_date: string;
+            /** Activity Type */
+            activity_type: string;
+            /** Created By */
+            created_by: string;
+            /** Short Id */
+            short_id: string;
+            geom?: components["schemas"]["Point"] | null;
+            /** Activity Subtype */
+            activity_subtype: string;
+            /** Elevation */
+            elevation?: number | null;
+            /** Biogeoclimatic Zones */
+            biogeoclimatic_zones?: string | null;
+            /** Regional Districts */
+            regional_districts?: string | null;
+            /** Invasive Plant Management Areas */
+            invasive_plant_management_areas?: string | null;
+            /** Regional Invasive Species Organization Areas */
+            regional_invasive_species_organization_areas?: string | null;
+            /** Agency */
+            agency?: string | null;
+            /** Updated By */
+            updated_by?: string | null;
+            /** Species Biocontrol Full */
+            species_biocontrol_full?: string | null;
+            /** Species Treated Full */
+            species_treated_full?: string | null;
+            /** Species Negative Full */
+            species_negative_full?: string | null;
+            /** Species Positive Full */
+            species_positive_full?: string | null;
+            /** Invasive Plant */
+            invasive_plant?: string | null;
+            /** Jurisdiction Display */
+            jurisdiction_display?: string | null;
+            /** Project Code */
+            project_code?: string | null;
+            /** Batch Id */
+            batch_id?: number | null;
+        };
+        /**
+         * Point
+         * @description Point Model
+         */
+        Point: {
+            /** Bbox */
+            bbox?: [
+                number,
+                number,
+                number,
+                number
+            ] | [
+                number,
+                number,
+                number,
+                number,
+                number,
+                number
+            ] | null;
+            /**
+             * Type
+             * @constant
+             */
+            type: "Point";
+            /** Coordinates */
+            coordinates: components["schemas"]["Position2D"] | components["schemas"]["Position3D"];
+        };
+        Position3D: [
+            number,
+            number,
+            number
+        ];
+        /** FilterObjects */
+        FilterObjects: {
+            /** Limit */
+            limit?: number | null;
+            /** Page */
+            page?: number | null;
+            /** Sortcolumn */
+            sortColumn?: string | null;
+            /** Sortorder */
+            sortOrder?: string | null;
+            /** Recordsettype */
+            recordSetType?: "Activity" | "IAPP" | null;
+            /** Tablefilters */
+            tableFilters: components["schemas"]["TableFilterIn"][];
+            /** Selectcolumns */
+            selectColumns: string[];
+            /** Csvtype */
+            CSVType?: string | null;
+        };
+        /** FilterObjectsIn */
+        FilterObjectsIn: {
+            /** Filterobjects */
+            filterObjects: components["schemas"]["FilterObjects"][];
+        };
+        /** TableFilterIn */
+        TableFilterIn: {
+            /** Field */
+            field?: string | null;
+            /** Filter */
+            filter?: string | null;
+            /** Operator */
+            operator: "CONTAINS" | "DOES NOT CONTAIN";
+            /** Operator2 */
+            operator2: "AND" | "OR";
+            /** Geojson */
+            geojson?: {
+                [key: string]: unknown;
+            } | null;
+            /** Filtertype */
+            filterType: "spatialFilterDrawn" | "spatialFilterUploaded" | "tableFilter" | "mostRecentObservation";
+        };
+        /** ActivityPlantSummaryOut */
+        ActivityPlantSummaryOut: {
+            /** Observations */
+            observations: components["schemas"]["ActivityPlantRowOut"][];
+            /** Treatments */
+            treatments: components["schemas"]["ActivityPlantRowOut"][];
+            /** Monitoring */
+            monitoring: components["schemas"]["ActivityPlantRowOut"][];
+            /** Biocontrol */
+            biocontrol: components["schemas"]["ActivityPlantRowOut"][];
+        };
+        /** IdListIn */
+        IdListIn: {
+            /** Idlist */
+            idList: string[];
+        };
+        /** CachedActivityPlantRowOut */
+        CachedActivityPlantRowOut: {
+            /**
+             * Activity Id
+             * Format: uuid4
+             */
+            activity_id: string;
+            /**
+             * Activity Date
+             * Format: date
+             */
+            activity_date: string;
+            /** Activity Type */
+            activity_type: string;
+            /** Created By */
+            created_by: string;
+            /** Short Id */
+            short_id: string;
+            geom?: components["schemas"]["Point"] | null;
+            /** Activity Subtype */
+            activity_subtype: string;
+            /** Elevation */
+            elevation: number | null;
+            /** Biogeoclimatic Zones */
+            biogeoclimatic_zones: string | null;
+            /** Regional Districts */
+            regional_districts: string | null;
+            /** Invasive Plant Management Areas */
+            invasive_plant_management_areas: string | null;
+            /** Regional Invasive Species Organization Areas */
+            regional_invasive_species_organization_areas?: string | null;
+            /** Agency */
+            agency?: string | null;
+            /** Updated By */
+            updated_by?: string | null;
+            /** Species Biocontrol Full */
+            species_biocontrol_full?: string | null;
+            /** Species Treated Full */
+            species_treated_full?: string | null;
+            /** Species Negative Full */
+            species_negative_full?: string | null;
+            /** Species Positive Full */
+            species_positive_full?: string | null;
+            /** Invasive Plant */
+            invasive_plant?: string | null;
+            /** Jurisdiction Display */
+            jurisdiction_display?: string | null;
+            /** Project Code */
+            project_code?: string | null;
+            /** Batch Id */
+            batch_id?: number | null;
+            /** Data */
+            data: {
+                [key: string]: unknown;
+            };
+        };
+        /** SummaryIn */
+        SummaryIn: {
+            /** Zone */
+            zone?: string[] | null;
+            /** User */
+            user?: string | null;
+        };
         /**
          * TeamMembershipOut
          * @description Returns Teams belonging to a User, includes permission to create a new team
@@ -3322,7 +3715,7 @@ export interface components {
              * Join Date
              * Format: date
              */
-            join_date: string;
+            join_date?: string;
         };
         /** CreateTeamSchema */
         CreateTeamSchema: {
@@ -3386,7 +3779,7 @@ export interface components {
              * Founding Date
              * Format: date
              */
-            founding_date: string;
+            founding_date?: string;
             /** Id */
             id?: number | null;
             /** Description */
@@ -3435,106 +3828,6 @@ export interface components {
             invitation_id: number;
             response: components["schemas"]["InviteStatus"];
         };
-        /** SummaryIn */
-        SummaryIn: {
-            /** Zone */
-            zone?: string[] | null;
-        };
-        /** ActivityPlantRowOut */
-        ActivityPlantRowOut: {
-            /**
-             * Activity Id
-             * Format: uuid4
-             */
-            activity_id: string;
-            /**
-             * Activity Date
-             * Format: date
-             */
-            activity_date: string;
-            /** Activity Type */
-            activity_type: string;
-            /** Created By */
-            created_by: string;
-            /** Short Id */
-            short_id: string;
-            geom?: components["schemas"]["Point"] | null;
-            /** Activity Subtype */
-            activity_subtype: string;
-            /** Elevation */
-            elevation: number | null;
-            /** Biogeoclimatic Zones */
-            biogeoclimatic_zones: string | null;
-            /** Regional Districts */
-            regional_districts: string | null;
-            /** Invasive Plant Management Areas */
-            invasive_plant_management_areas: string | null;
-            /** Regional Invasive Species Organization Areas */
-            regional_invasive_species_organization_areas?: string | null;
-            /** Agency */
-            agency?: string | null;
-            /** Updated By */
-            updated_by?: string | null;
-            /** Species Biocontrol Full */
-            species_biocontrol_full?: string | null;
-            /** Species Treated Full */
-            species_treated_full?: string | null;
-            /** Species Negative Full */
-            species_negative_full?: string | null;
-            /** Species Positive Full */
-            species_positive_full?: string | null;
-            /** Invasive Plant */
-            invasive_plant?: string | null;
-            /** Jurisdiction Display */
-            jurisdiction_display?: string | null;
-            /** Project Code */
-            project_code?: string | null;
-            /** Batch Id */
-            batch_id?: number | null;
-        };
-        /** ActivityPlantSummaryOut */
-        ActivityPlantSummaryOut: {
-            /** Observations */
-            observations: components["schemas"]["ActivityPlantRowOut"][];
-            /** Treatments */
-            treatments: components["schemas"]["ActivityPlantRowOut"][];
-            /** Monitoring */
-            monitoring: components["schemas"]["ActivityPlantRowOut"][];
-            /** Biocontrol */
-            biocontrol: components["schemas"]["ActivityPlantRowOut"][];
-        };
-        /**
-         * Point
-         * @description Point Model
-         */
-        Point: {
-            /** Bbox */
-            bbox?: [
-                number,
-                number,
-                number,
-                number
-            ] | [
-                number,
-                number,
-                number,
-                number,
-                number,
-                number
-            ] | null;
-            /**
-             * Type
-             * @constant
-             */
-            type: "Point";
-            /** Coordinates */
-            coordinates: components["schemas"]["Position2D"] | components["schemas"]["Position3D"];
-        };
-        Position3D: [
-            number,
-            number,
-            number
-        ];
     };
     responses: never;
     parameters: never;
@@ -3681,6 +3974,18 @@ export type ApiProtocolActivityPlantSubtypesTreatmentMechanicalTerrestrialDraftS
 export type RecordAction = components['schemas']['RecordAction'];
 export type RecordMetadata = components['schemas']['RecordMetadata'];
 export type SingleActivityResponse = components['schemas']['SingleActivityResponse'];
+export type UserProfileOut = components['schemas']['UserProfileOut'];
+export type ActivityPlantRowOut = components['schemas']['ActivityPlantRowOut'];
+export type DraftActivityPlantRowOut = components['schemas']['DraftActivityPlantRowOut'];
+export type Point = components['schemas']['Point'];
+export type Position3D = components['schemas']['Position3D'];
+export type FilterObjects = components['schemas']['FilterObjects'];
+export type FilterObjectsIn = components['schemas']['FilterObjectsIn'];
+export type TableFilterIn = components['schemas']['TableFilterIn'];
+export type ActivityPlantSummaryOut = components['schemas']['ActivityPlantSummaryOut'];
+export type IdListIn = components['schemas']['IdListIn'];
+export type CachedActivityPlantRowOut = components['schemas']['CachedActivityPlantRowOut'];
+export type SummaryIn = components['schemas']['SummaryIn'];
 export type TeamMembershipOut = components['schemas']['TeamMembershipOut'];
 export type TeamMembershipRowOut = components['schemas']['TeamMembershipRowOut'];
 export type CreateTeamSchema = components['schemas']['CreateTeamSchema'];
@@ -3692,11 +3997,6 @@ export type UpdateTeamSchema = components['schemas']['UpdateTeamSchema'];
 export type InviteUserToTeamSchema = components['schemas']['InviteUserToTeamSchema'];
 export type TeamSuggestedUserOut = components['schemas']['TeamSuggestedUserOut'];
 export type InvitationResponseSchema = components['schemas']['InvitationResponseSchema'];
-export type SummaryIn = components['schemas']['SummaryIn'];
-export type ActivityPlantRowOut = components['schemas']['ActivityPlantRowOut'];
-export type ActivityPlantSummaryOut = components['schemas']['ActivityPlantSummaryOut'];
-export type Point = components['schemas']['Point'];
-export type Position3D = components['schemas']['Position3D'];
 export type $defs = Record<string, never>;
 export interface operations {
     api_protocol_activity_api_list_activities: {
@@ -3833,21 +4133,26 @@ export interface operations {
             };
         };
     };
-    api_protocol_map_tiles_vector_tiles_req_activity_vector_tile: {
+    api_protocol_auth_api_get_self: {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                z: number;
-                x: number;
-                y: number;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
         responses: {
             /** @description OK */
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserProfileOut"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3855,14 +4160,12 @@ export interface operations {
             };
         };
     };
-    api_protocol_map_tiles_vector_tiles_zone_vector_tile: {
+    api_protocol_auth_api_get_user: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                z: number;
-                x: number;
-                y: number;
+                subject: string;
             };
             cookie?: never;
         };
@@ -3873,7 +4176,113 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["UserProfileOut"];
+                };
+            };
+        };
+    };
+    api_protocol_recordset_api_get_recordset_rows: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FilterObjectsIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DraftActivityPlantRowOut"][] | components["schemas"]["ActivityPlantRowOut"][] | string[];
+                };
+            };
+        };
+    };
+    api_protocol_recordset_api_get_csv_export: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FilterObjectsIn"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ActivityPlantSummaryOut"];
+                };
+            };
+        };
+    };
+    api_protocol_recordset_api_get_recordset_cache: {
+        parameters: {
+            query: {
+                idList: string[];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CachedActivityPlantRowOut"][];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    api_protocol_summary_api_get_summary: {
+        parameters: {
+            query?: {
+                zone?: string[] | null;
+                user?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ActivityPlantSummaryOut"];
+                };
             };
         };
     };
@@ -4214,13 +4623,15 @@ export interface operations {
             };
         };
     };
-    api_protocol_summary_api_get_summary: {
+    api_protocol_map_tiles_vector_tiles_req_activity_vector_tile: {
         parameters: {
-            query?: {
-                zone?: string[] | null;
-            };
+            query?: never;
             header?: never;
-            path?: never;
+            path: {
+                z: number;
+                x: number;
+                y: number;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -4230,9 +4641,29 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "application/json": components["schemas"]["ActivityPlantSummaryOut"];
+                content?: never;
+            };
+        };
+    };
+    api_protocol_map_tiles_vector_tiles_zone_vector_tile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                z: number;
+                x: number;
+                y: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
                 };
+                content?: never;
             };
         };
     };
