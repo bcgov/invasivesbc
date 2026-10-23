@@ -1,6 +1,6 @@
 import Width from './Width';
 
-const getInputWidth = (val?: Width) => {
+const getInputWidth = (val?: Width | `${Width}`) => {
   return (() => {
     switch (val) {
       case Width.Full:

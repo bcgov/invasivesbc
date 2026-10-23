@@ -1,7 +1,7 @@
 import { PropsWithChildren, ReactNode } from 'react';
-import './fieldset.css';
 import { getInputWidth, Width } from '../utils';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
+import './fieldset.css';
 
 interface PropTypes extends PropsWithChildren {
   className?: string;
@@ -9,7 +9,7 @@ interface PropTypes extends PropsWithChildren {
   label: string;
   tooltip?: string;
   nested?: boolean;
-  width?: Width;
+  width?: Width | `${Width}`;
 }
 
 const Fieldset = ({ label, width, tooltip, children, nested, className }: PropTypes) => {

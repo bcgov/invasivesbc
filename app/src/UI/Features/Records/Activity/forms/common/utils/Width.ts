@@ -1,8 +1,8 @@
 enum Width {
-  Full,
-  Half,
-  Third,
-  Quarter
+  Full = 'Full',
+  Half = 'Half',
+  Third = 'Third',
+  Quarter = 'Quarter'
 }
 
 export default Width;

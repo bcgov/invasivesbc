@@ -17,7 +17,7 @@ interface PropTypes<T extends FieldValues> {
   readonly rules?: RegisterOptions<T, Path<T>>;
   readonly tooltip?: string;
   readonly valueKey?: string;
-  readonly width?: Width;
+  readonly width?: Width | `${Width}`;
 }
 
 export function MultiSelect<T extends FieldValues>({

@@ -114,7 +114,8 @@ export interface paths {
          */
         get: operations["api_protocol_auth_api_get_self"];
         put?: never;
-        post?: never;
+        /** Request Access */
+        post: operations["api_protocol_auth_api_request_access"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3435,6 +3436,23 @@ export interface components {
             /** Expiry Date */
             expiry_date?: string | null;
         };
+        /** UserAccessIn */
+        UserAccessIn: {
+            /** Employer */
+            employer: string[];
+            /** Funding Agencies */
+            funding_agencies: string[];
+            /** Pac Number */
+            pac_number?: number | null;
+            /** Pac Service Numbers */
+            pac_service_numbers: string[];
+            /** Phone */
+            phone: string | null;
+            /** Roles */
+            roles: string[];
+            /** Comments */
+            comments: string | null;
+        };
         /** ActivityPlantRowOut */
         ActivityPlantRowOut: {
             /**
@@ -3975,6 +3993,7 @@ export type RecordAction = components['schemas']['RecordAction'];
 export type RecordMetadata = components['schemas']['RecordMetadata'];
 export type SingleActivityResponse = components['schemas']['SingleActivityResponse'];
 export type UserProfileOut = components['schemas']['UserProfileOut'];
+export type UserAccessIn = components['schemas']['UserAccessIn'];
 export type ActivityPlantRowOut = components['schemas']['ActivityPlantRowOut'];
 export type DraftActivityPlantRowOut = components['schemas']['DraftActivityPlantRowOut'];
 export type Point = components['schemas']['Point'];
@@ -4157,6 +4176,43 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    api_protocol_auth_api_request_access: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserAccessIn"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
             };
         };
     };

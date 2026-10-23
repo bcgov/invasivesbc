@@ -1,0 +1,21 @@
+.overlay-content-wrapper {
+  display: flex;
+  width: 100%;
+  box-sizing: border-box;
+  flex-direction: column;
+  padding-bottom: 3rem;
+  min-height: 100%;
+  background-color: var(--overlay-background-color);
+  align-items: center;
+
+  & > div {
+    background-color: white;
+    max-width: var(--overlay-content-max-width);
+  }
+
+  .back-button {
+    position: absolute;
+    top: calc(var(--overlay-grip-height) + 1rem);
+    left: 1rem;
+  }
+}

@@ -1,6 +1,7 @@
 from itertools import chain
 
 from api.models.codes.code_tables import *
+from api.models.auth import Role
 from api.permissions.role_based import HasAnyApplicationRole
 from api.serializers.code import CodeSerializer
 from api.viewsets.mixins.atomic import AtomicViewSetMixin
@@ -60,6 +61,7 @@ class CodeViewSet(AtomicViewSetMixin, ViewSet):
         WaterbodySubstrateCode,
         WaterbodyUseCode,
         WindDirectionCode,
+        Role,
     ]
 
     def list(self, request):

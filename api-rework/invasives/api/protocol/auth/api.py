@@ -1,12 +1,12 @@
 import logging
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from ninja import Router
 from api.models.auth import User
 from api.ninja_authentication import NinjaKeycloakAuthentication, NinjaRoleRequired
 from api.constants import WellKnownRoles
-from . import UserProfileOut
+from . import UserProfileOut, UserAccessIn
 
 ROOT_PATH = "/auth"
 router = Router(auth=NinjaKeycloakAuthentication())
@@ -33,3 +33,11 @@ def get_self(request):
 def get_user(request, subject):
     """Return Profile of specified user"""
     return get_object_or_404(User, subject=subject)
+
+
+@router.post("/register", response={201: dict, 204: dict})
+def request_access(request, data: UserAccessIn):
+    return JsonResponse(
+        status=status.HTTP_201_CREATED,
+        data=data.model_dump(mode="json"),
+    )

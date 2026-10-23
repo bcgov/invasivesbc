@@ -1,0 +1,13 @@
+#user-registration {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1rem;
+
+  .submission-btn {
+    background-color: var(--bc-blue);
+    color: white;
+    padding: 0.75rem 2rem;
+  }
+}
