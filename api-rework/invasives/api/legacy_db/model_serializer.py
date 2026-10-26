@@ -1084,9 +1084,9 @@ class LegacyUser(BaseModel):
     def display_name(self) -> str:
         if (
             self.first_name is not None
-            and self.first_name.strip() is not ""
+            and self.first_name.strip() != ""
             and self.last_name is not None
-            and self.last_name.strip() is not ""
+            and self.last_name.strip() != ""
         ):
             return f"{self.last_name}, {self.first_name}"
 
