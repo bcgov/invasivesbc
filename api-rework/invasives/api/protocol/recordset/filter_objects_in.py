@@ -23,7 +23,7 @@ class FilterObjects(Schema):
     sortColumn: Optional[str] = None
     sortOrder: Optional[str] = None
     recordSetType: Optional[Literal["Activity"] | Literal["IAPP"]] = None
-    tableFilters: List[TableFilterIn]
+    tableFilters: Optional[List[TableFilterIn]] = []
     selectColumns: List[str]
     CSVType: Optional[str] = None
 
