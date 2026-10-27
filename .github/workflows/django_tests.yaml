@@ -8,6 +8,22 @@ on:
     branches:
       - "normalized-database"
 
+permissions:
+  contents: read
+  # Lock down everything else explicitly
+  checks: none
+  actions: none
+  deployments: none
+  discussions: none
+  id-token: none
+  issues: none
+  packages: none
+  pages: none
+  pull-requests: none
+  repository-projects: none
+  security-events: none
+  statuses: none
+
 jobs:
   django-test:
     name: "Django Tests"
@@ -36,7 +52,7 @@ jobs:
         with:
           python-version: '3.14'
           cache: 'pip'
-      - run: pip install -r requirements.txt
+      - run: pip install -r requirements.txt --no-deps
         working-directory: ./api-rework/invasives
       - env:
           DB_NAME: django
