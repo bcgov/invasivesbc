@@ -1,7 +1,24 @@
 name: Automatic Rebase
 on:
   issue_comment:
-    types: [created]
+    types: [ created ]
+
+permissions:
+  contents: write
+  issues: read
+  pull-requests: read
+  # Lock down everything else explicitly
+  checks: none
+  actions: none
+  deployments: none
+  discussions: none
+  id-token: none
+  packages: none
+  pages: none
+  repository-projects: none
+  security-events: none
+  statuses: none
+
 jobs:
   rebase:
     name: Rebase

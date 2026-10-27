@@ -2,6 +2,22 @@ name: "Web app state test coverage"
 on:
   pull_request:
 
+permissions:
+  contents: read
+  # Lock down everything else explicitly
+  checks: none
+  actions: none
+  deployments: none
+  discussions: none
+  id-token: none
+  issues: none
+  packages: none
+  pages: none
+  pull-requests: none
+  repository-projects: none
+  security-events: none
+  statuses: none
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -23,7 +39,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20.11.0"
-      - name: Install 
+      - name: Install
         run: |
           cd sharedAPI
           npm install --legacy-peer-deps

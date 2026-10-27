@@ -8,6 +8,23 @@ on:
     branches:
       - "normalized-database"
 
+
+permissions:
+  contents: read
+  # Lock down everything else explicitly
+  checks: none
+  actions: none
+  deployments: none
+  discussions: none
+  id-token: none
+  issues: none
+  packages: none
+  pages: none
+  pull-requests: none
+  repository-projects: none
+  security-events: none
+  statuses: none
+
 jobs:
   black:
     name: "Black"
