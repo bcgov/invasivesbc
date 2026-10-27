@@ -345,6 +345,8 @@ function createUserSettingsReducer(_configuration: AppConfig) {
         draftState.activeActivity = action.payload.newFormId;
       } else if (FormActions.duplicateForm.fulfilled.match(action)) {
         draftState.activeActivity = action.payload.data.id;
+      } else if (FormActions.sendForm.fulfilled.match(action)) {
+        draftState.activeActivity = action.payload?.id;
       } else if (UserSettings.RecordSet.setSort.match(action)) {
         // if the sort column is the same as the current sort column, toggle the sort order
         // if its already desc, remove the sort column and order
