@@ -78,4 +78,4 @@ class DraftMonitoringTreatmentEntryOut(MonitoringTreatmentEntryOut):
     def resolve_invasive_plants_on_site(obj: Entry) -> List[PlantOnSite]:
         return DraftInvasivePlantsOnSite.objects.filter(
             activity_data_record__id=obj.activity_data_record.id
-        )
+        ).select_related("invasive_plants_on_site")

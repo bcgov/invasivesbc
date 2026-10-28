@@ -24,11 +24,15 @@ class SubtypeData(Schema):
     def resolve_entries(obj: Activity) -> List[MonitoringTreatmentEntryOut]:
         aq = AquaticTreatmentMonitoringEntry.objects.filter(
             activity_data_record__activity_id=obj.id
-        ).select_related("invasive_plant")
+        ).select_related(
+            "invasive_plant", "management_efficacy_rating", "treatment_efficacy_rating"
+        )
 
         t = TerrestrialTreatmentMonitoringEntry.objects.filter(
             activity_data_record__activity_id=obj.id
-        ).select_related("invasive_plant")
+        ).select_related(
+            "invasive_plant", "management_efficacy_rating", "treatment_efficacy_rating"
+        )
         return list(chain(aq, t))
 
 
