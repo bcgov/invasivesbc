@@ -349,15 +349,7 @@ class ObservationAquaticPlantOut(BaseRecordOut):
     subtype: Literal["Observation_Plant_Aquatic"]
     subtype_data: SubtypeData
 
-    @staticmethod
-    def resolve_subtype_data(obj: Activity):
-        return obj
-
 
 class DraftObservationAquaticPlantOut(DraftBaseRecordOut):
     subtype: Literal["Observation_Plant_Aquatic"]
     subtype_data: DraftSubtypeData
-
-    @staticmethod
-    def resolve_subtype_data(obj: DraftActivity):
-        return obj

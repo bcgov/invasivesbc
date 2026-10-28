@@ -63,15 +63,7 @@ class MonitoringTreatmentChemicalOut(BaseRecordOut):
     subtype: Literal["Monitoring_Chemical_Plant_Terrestrial_Aquatic"]
     subtype_data: SubtypeData
 
-    @staticmethod
-    def resolve_subtype_data(obj: Activity):
-        return obj
-
 
 class DraftMonitoringTreatmentChemicalOut(DraftBaseRecordOut):
     subtype: Literal["Monitoring_Chemical_Plant_Terrestrial_Aquatic"]
     subtype_data: DraftSubtypeData
-
-    @staticmethod
-    def resolve_subtype_data(obj: DraftActivity):
-        return obj

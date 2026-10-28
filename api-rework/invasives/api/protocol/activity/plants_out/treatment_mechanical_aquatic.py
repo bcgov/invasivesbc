@@ -106,15 +106,7 @@ class TreatmentMechanicalAquaticPlantOut(BaseRecordOut):
     subtype: Literal["Treatment_Mechanical_Plant_Aquatic"]
     subtype_data: SubtypeData
 
-    @staticmethod
-    def resolve_subtype_data(obj: Activity):
-        return obj
-
 
 class DraftTreatmentMechanicalAquaticPlantOut(DraftBaseRecordOut):
     subtype: Literal["Treatment_Mechanical_Plant_Aquatic"]
     subtype_data: DraftSubtypeData
-
-    @staticmethod
-    def resolve_subtype_data(obj: DraftActivity):
-        return obj

@@ -85,7 +85,6 @@ class UploadedImageOut(Schema):
 
 class BaseRecordOut(ModelSchema, ABC):
     model_config = ConfigDict(arbitrary_types_allowed=True)
-
     centroid: Point
     employer: List[EmployerOut]
     funding_agencies: List[FundingAgencyOut]
@@ -171,6 +170,10 @@ class BaseRecordOut(ModelSchema, ABC):
 
         return feature_object
 
+    @staticmethod
+    def resolve_subtype_data(obj: Activity):
+        return obj
+
 
 class DraftBaseRecordOut(BaseRecordOut, ABC):
     shape: Optional[dict] = None
@@ -241,3 +244,7 @@ class DraftBaseRecordOut(BaseRecordOut, ABC):
             feature_object["properties"]["radius"] = obj.shape_radius
 
         return feature_object
+
+    @staticmethod
+    def resolve_subtype_data(obj: DraftActivity):
+        return obj

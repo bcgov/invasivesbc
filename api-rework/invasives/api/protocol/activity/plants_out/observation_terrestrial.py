@@ -193,15 +193,7 @@ class ObservationTerrestrialPlantOut(BaseRecordOut):
     subtype: Literal["Observation_Plant_Terrestrial"]
     subtype_data: SubtypeData
 
-    @staticmethod
-    def resolve_subtype_data(obj: Activity):
-        return obj
-
 
 class DraftObservationTerrestrialPlantOut(DraftBaseRecordOut):
     subtype: Literal["Observation_Plant_Terrestrial"]
     subtype_data: DraftSubtypeData
-
-    @staticmethod
-    def resolve_subtype_data(obj: DraftActivity):
-        return obj
