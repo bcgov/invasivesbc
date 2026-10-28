@@ -30,6 +30,7 @@ const defaultRecordSets: Record<PropertyKey, Partial<UserRecordSet>> = {
   },
   [RecordSetId.Activity]: {
     id: RecordSetId.Activity,
+    tableFilters: [],
     idList: [],
     recordSetType: RecordSetType.Activity,
     recordSetName: 'All InvasivesBC Activities',
@@ -42,6 +43,7 @@ const defaultRecordSets: Record<PropertyKey, Partial<UserRecordSet>> = {
   [RecordSetId.IAPP]: {
     recordSetType: RecordSetType.IAPP,
     id: RecordSetId.IAPP,
+    tableFilters: [],
     idList: [],
     recordSetName: 'All IAPP Records',
     color: '#21f34f',
@@ -57,6 +59,7 @@ if (buildTimeConfig.MOBILE) {
     recordSetType: RecordSetType.Activity,
     id: RecordSetId.OfflineActivities,
     idList: [],
+    tableFilters: [],
     recordSetName: 'All Offline Activities',
     cacheMetadataStatus: UserRecordCacheStatus.NOT_ELIGIBLE,
     drawOrder: 4,
