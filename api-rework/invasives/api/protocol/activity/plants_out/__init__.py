@@ -27,6 +27,15 @@ from .treatment_mechanical_terrestrial import (
     TreatmentMechanicalTerrestrialPlantOut,
     DraftTreatmentMechanicalTerrestrialPlantOut,
 )
+from .monitoring_treatment_chemical import (
+    MonitoringTreatmentChemicalOut,
+    DraftMonitoringTreatmentChemicalOut,
+)
+
+from .monitoring_treatment_mechanical import (
+    MonitoringTreatmentMechanicalOut,
+    DraftMonitoringTreatmentMechanicalOut,
+)
 
 PlantRecordOut = Union[
     ObservationTerrestrialPlantOut,
@@ -37,4 +46,8 @@ PlantRecordOut = Union[
     DraftTreatmentMechanicalAquaticPlantOut,
     TreatmentMechanicalTerrestrialPlantOut,
     DraftTreatmentMechanicalTerrestrialPlantOut,
+    MonitoringTreatmentChemicalOut,
+    DraftMonitoringTreatmentChemicalOut,
+    MonitoringTreatmentMechanicalOut,
+    DraftMonitoringTreatmentMechanicalOut,
 ]
