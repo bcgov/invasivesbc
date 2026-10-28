@@ -19,10 +19,22 @@ from .observation_aquatic import (
     ObservationAquaticPlantOut,
     DraftObservationAquaticPlantOut,
 )
+from .treatment_mechanical_aquatic import (
+    TreatmentMechanicalAquaticPlantOut,
+    DraftTreatmentMechanicalAquaticPlantOut,
+)
+from .treatment_mechanical_terrestrial import (
+    TreatmentMechanicalTerrestrialPlantOut,
+    DraftTreatmentMechanicalTerrestrialPlantOut,
+)
 
 PlantRecordOut = Union[
     ObservationTerrestrialPlantOut,
     ObservationAquaticPlantOut,
     DraftObservationTerrestrialPlantOut,
     DraftObservationAquaticPlantOut,
+    TreatmentMechanicalAquaticPlantOut,
+    DraftTreatmentMechanicalAquaticPlantOut,
+    TreatmentMechanicalTerrestrialPlantOut,
+    DraftTreatmentMechanicalTerrestrialPlantOut,
 ]

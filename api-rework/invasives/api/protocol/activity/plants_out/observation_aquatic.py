@@ -1,6 +1,6 @@
 from . import BaseRecordOut, DraftBaseRecordOut, _get_codes
 from typing import Optional, List, Literal
-from .common import VoucherSpecimenOut
+from .common import VoucherSpecimenOut, ShorelineType
 from api.models.activity import (
     Activity,
     DraftActivity,
@@ -38,21 +38,11 @@ from ninja import Schema
 type Entry = AquaticPlantObservationEntry | DraftAquaticPlantObservationEntry
 type Ctx = AquaticPlantObservationContext | DraftAquaticPlantObservationContext
 type WbCtx = WaterbodyContext | DraftWaterbodyContext
-type Shoreline = ShorelineTypes | DraftShorelineTypes
 
 
 ##########
 # Shared
 ####
-
-
-class ShorelineType(Schema):
-    shoreline_type: Optional[str]
-    percent_covered: Optional[int]
-
-    @staticmethod
-    def resolve_shoreline_type(obj: ShorelineTypes):
-        return obj.shoreline_type.code if obj.shoreline_type else None
 
 
 ##########

@@ -68,7 +68,7 @@ class DraftSubtypeData(SubtypeData):
 ##########
 # Subtypes
 ####
-class TreatmentMechanicalTreatmentPlantOut(BaseRecordOut):
+class TreatmentMechanicalTerrestrialPlantOut(BaseRecordOut):
     subtype: Literal["Treatment_Mechanical_Plant_Terrestrial"]
     subtype_data: SubtypeData
 
@@ -77,7 +77,7 @@ class TreatmentMechanicalTreatmentPlantOut(BaseRecordOut):
         return obj
 
 
-class DraftTreatmentMechanicalTreatmentPlantOut(DraftBaseRecordOut):
+class DraftTreatmentMechanicalTerrestrialPlantOut(DraftBaseRecordOut):
     subtype: Literal["Treatment_Mechanical_Plant_Terrestrial"]
     subtype_data: DraftSubtypeData
 
