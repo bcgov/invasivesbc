@@ -36,6 +36,10 @@ from .monitoring_treatment_mechanical import (
     MonitoringTreatmentMechanicalOut,
     DraftMonitoringTreatmentMechanicalOut,
 )
+from .biocontrol_release import (
+    BiocontrolReleaseOut,
+    DraftBiocontrolReleaseOut,
+)
 
 PlantRecordOut = Union[
     ObservationTerrestrialPlantOut,
@@ -50,4 +54,6 @@ PlantRecordOut = Union[
     DraftMonitoringTreatmentChemicalOut,
     MonitoringTreatmentMechanicalOut,
     DraftMonitoringTreatmentMechanicalOut,
+    BiocontrolReleaseOut,
+    DraftBiocontrolReleaseOut,
 ]

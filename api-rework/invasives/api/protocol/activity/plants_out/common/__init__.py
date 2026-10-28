@@ -4,3 +4,11 @@ from .monitoring_treatment_entry import (
     MonitoringTreatmentEntryOut,
     DraftMonitoringTreatmentEntryOut,
 )
+from .biocontrol import (
+    MicrositeConditionOut,
+    TargetPlantPhenologyOut,
+    WeatherConditionsOut,
+    DraftTargetPlantPhenologyOut,
+    SimpleAgentCountOut,
+    ExtendedAgentCountOut,
+)
