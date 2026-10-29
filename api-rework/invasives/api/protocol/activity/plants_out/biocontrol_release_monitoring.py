@@ -20,6 +20,8 @@ from .common import (
     DraftMicrositeConditionOutMixin,
     ExtendedAgentCountOutMixin,
     DraftExtendedAgentCountOutMixin,
+    SpreadResultsOutMixin,
+    DraftSpreadResultsOutMixin,
 )
 from ninja import Schema
 
@@ -82,6 +84,7 @@ class SubtypeData(
     MicrositeConditionOutMixin,
     WeatherConditionsOutMixin,
     TargetPlantPhenologyOutMixin,
+    SpreadResultsOutMixin,
     Schema,
 ):
     entries: List[Entries]
@@ -118,6 +121,7 @@ class DraftSubtypeData(
     DraftMicrositeConditionOutMixin,
     DraftWeatherConditionsOutMixin,
     DraftTargetPlantPhenologyOutMixin,
+    DraftSpreadResultsOutMixin,
     Schema,
 ):
     entries: List[DraftEntries]
