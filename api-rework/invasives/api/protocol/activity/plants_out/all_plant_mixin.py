@@ -168,7 +168,6 @@ class AllPlantMixin(Schema, ABC):
 
     @staticmethod
     def resolve_negative_plants(obj: Record) -> str:
-        print("We Do come in here??")
         if obj.type != ActivityType.Observation.value:
             return None
         model: Model = _get_paths(obj)[0]

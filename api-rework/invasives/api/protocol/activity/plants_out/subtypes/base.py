@@ -81,7 +81,6 @@ class UploadedImageOut(Schema):
         try:
             return S3MediaFiles().get_b64_encoded_image(file_name=obj.file_name)
         except Exception as e:
-            print(e)
             return None
 
 
