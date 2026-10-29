@@ -50,3 +50,6 @@ from .plant_treated import (
 from .well_entry import (
     WellEntryOut,
 )
+from .treatment_mechanical_entry import (
+    MechanicalTreatmentEntryOut,
+)

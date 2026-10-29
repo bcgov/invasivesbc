@@ -1,8 +1,9 @@
-from . import BaseRecordOut, DraftBaseRecordOut
-from typing import List, Literal
 from itertools import chain
+from typing import List, Literal
+from ninja import Schema
+
+from . import BaseRecordOut, DraftBaseRecordOut
 from .common import MonitoringTreatmentEntryOut, DraftMonitoringTreatmentEntryOut
-from django.db.models import F, CharField, Value
 from api.models.activity import (
     Activity,
     DraftActivity,
@@ -11,7 +12,6 @@ from api.models.activity import (
     DraftTerrestrialTreatmentMonitoringEntry,
     DraftAquaticTreatmentMonitoringEntry,
 )
-from ninja import Schema
 
 
 ##########

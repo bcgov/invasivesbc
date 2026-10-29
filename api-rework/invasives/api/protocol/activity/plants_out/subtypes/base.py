@@ -1,5 +1,11 @@
-import json, uuid
 from abc import ABC
+from geojson_pydantic import Point
+import json
+from ninja import ModelSchema, Schema
+from pydantic import ConfigDict, Field
+from typing import List, Optional
+import uuid
+
 from api.models.activity import (
     Activity,
     DraftActivity,
@@ -17,10 +23,6 @@ from api.models.activity import (
     DraftUploadedImage,
 )
 from api.utils.s3_media_files import S3MediaFiles
-from pydantic import ConfigDict, Field
-from geojson_pydantic import Point
-from typing import List, Optional
-from ninja import ModelSchema, Schema
 
 
 class JurisdictionOut(Schema):

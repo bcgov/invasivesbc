@@ -1,7 +1,8 @@
-from . import BaseRecordOut, DraftBaseRecordOut
+from ninja import Schema
 from typing import Optional, List, Literal
-from .common import ShorelineType
 
+from . import BaseRecordOut, DraftBaseRecordOut
+from .common import ShorelineType, MechanicalTreatmentEntryOut
 from api.models.activity import (
     Activity,
     DraftActivity,
@@ -12,34 +13,8 @@ from api.models.activity import (
     DraftAquaticMechanicalAuthorization,
     DraftShorelineTypes,
 )
-from ninja import Schema
 
 type EntryType = AquaticPlantMechanicalTreatmentEntry | DraftAquaticPlantMechanicalTreatmentEntry
-
-
-##########
-# Shared
-####
-class Entry(Schema):
-    disposed_material_amount: Optional[float] = None
-    disposed_material_format: Optional[str] = None
-    disposal_method: Optional[str] = None
-    invasive_plant: Optional[str] = None
-    mechanical_method: Optional[str] = None
-    treated_area_msq: Optional[float] = None
-
-    @staticmethod
-    def resolve_disposal_method(obj: EntryType):
-        return obj.disposal_method.code if obj.disposal_method else None
-
-    @staticmethod
-    def resolve_invasive_plant(obj: EntryType):
-        return obj.invasive_plant.code if obj.invasive_plant else None
-
-    @staticmethod
-    def resolve_mechanical_method(obj: EntryType):
-        return obj.mechanical_method.code if obj.mechanical_method else None
-
 
 ##########
 # Regular
@@ -48,7 +23,7 @@ class Entry(Schema):
 
 class SubtypeData(Schema):
     authorization_information: Optional[str] = None
-    entries: List[Entry]
+    entries: List[MechanicalTreatmentEntryOut]
     shoreline_types: List[ShorelineType]
 
     @staticmethod

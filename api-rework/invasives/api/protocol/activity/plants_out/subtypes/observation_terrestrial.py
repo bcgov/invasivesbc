@@ -1,5 +1,7 @@
-from . import BaseRecordOut, DraftBaseRecordOut
+from ninja import Schema
 from typing import Optional, List, Literal
+
+from . import BaseRecordOut, DraftBaseRecordOut
 from .common import VoucherSpecimenOut
 from api.models.activity import (
     Activity,
@@ -15,7 +17,6 @@ from api.models.activity import (
     SpecificUse,
     DraftSpecificUse,
 )
-from ninja import Schema
 
 type Entry = TerrestrialPlantObservationEntries | DraftTerrestrialPlantObservationEntries
 type Ctx = TerrestrialPlantObservationContext | DraftTerrestrialPlantObservationContext
@@ -166,7 +167,7 @@ class DraftSubtypeData(SubtypeData):
         ).select_related("density", "distribution", "invasive_plant", "life_stage")
 
     @staticmethod
-    def resolve_pretreatment_observation(obj: Activity):
+    def resolve_pretreatment_observation(obj: DraftActivity):
         return (
             DraftPretreatmentObservation.objects.filter(
                 activity_data_record__activity_id=obj.id
@@ -176,7 +177,7 @@ class DraftSubtypeData(SubtypeData):
         )
 
     @staticmethod
-    def resolve_context(obj: Activity):
+    def resolve_context(obj: DraftActivity):
         return (
             DraftTerrestrialPlantObservationContext.objects.filter(
                 activity_data_record__activity_id=obj.id

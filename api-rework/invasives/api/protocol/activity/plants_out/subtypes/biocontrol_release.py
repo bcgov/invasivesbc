@@ -1,12 +1,8 @@
-from . import BaseRecordOut, DraftBaseRecordOut, _serialize_html_date_time
-from typing import Optional, List, Literal
 from datetime import datetime
-from api.models.activity import (
-    Activity,
-    DraftActivity,
-    TerrestrialBiocontrolReleaseEntry,
-    DraftTerrestrialBiocontrolReleaseEntry,
-)
+from ninja import Schema
+from typing import Optional, List, Literal
+
+from . import BaseRecordOut, DraftBaseRecordOut, _serialize_html_date_time
 from .common import (
     TargetPlantPhenologyOutMixin,
     DraftTargetPlantPhenologyOutMixin,
@@ -17,8 +13,12 @@ from .common import (
     SimpleAgentCountOutMixin,
     DraftSimpleAgentCountOutMixin,
 )
-
-from ninja import Schema
+from api.models.activity import (
+    Activity,
+    DraftActivity,
+    TerrestrialBiocontrolReleaseEntry,
+    DraftTerrestrialBiocontrolReleaseEntry,
+)
 
 type Entry = TerrestrialBiocontrolReleaseEntry | DraftTerrestrialBiocontrolReleaseEntry
 

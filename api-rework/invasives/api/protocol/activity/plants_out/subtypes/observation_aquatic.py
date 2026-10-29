@@ -1,5 +1,7 @@
-from . import BaseRecordOut, DraftBaseRecordOut, _get_codes
+from ninja import Schema
 from typing import Optional, List, Literal
+
+from . import BaseRecordOut, DraftBaseRecordOut, _get_codes
 from .common import VoucherSpecimenOut, ShorelineType
 from api.models.activity import (
     Activity,
@@ -33,16 +35,10 @@ from api.models.activity import (
     ShorelineTypes,
     DraftShorelineTypes,
 )
-from ninja import Schema
 
 type Entry = AquaticPlantObservationEntry | DraftAquaticPlantObservationEntry
 type Ctx = AquaticPlantObservationContext | DraftAquaticPlantObservationContext
 type WbCtx = WaterbodyContext | DraftWaterbodyContext
-
-
-##########
-# Shared
-####
 
 
 ##########

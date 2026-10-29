@@ -1,6 +1,14 @@
-from . import BaseRecordOut, DraftBaseRecordOut
-from typing import Optional, List, Literal
 from itertools import chain
+from typing import Optional, List, Literal
+from ninja import Schema
+
+from . import BaseRecordOut, DraftBaseRecordOut
+from .common import (
+    ChemicalTreatmentContextOut,
+    HerbicideOut,
+    PlantTreatedOut,
+    WellEntryOut,
+)
 from api.models.activity import (
     Activity,
     DraftActivity,
@@ -17,13 +25,6 @@ from api.models.activity import (
     DraftLiquidHerbicideEntry,
     DraftGranularHerbicideEntry,
 )
-from .common import (
-    ChemicalTreatmentContextOut,
-    HerbicideOut,
-    PlantTreatedOut,
-    WellEntryOut,
-)
-from ninja import Schema
 
 
 ##########
