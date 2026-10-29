@@ -46,6 +46,10 @@ from .biocontrol_release_monitoring import (
     BiocontrolReleaseMonitoringOut,
     DraftBiocontrolReleaseMonitoringOut,
 )
+from .biocontrol_dispersal_monitoring import (
+    BiocontrolDispersalMonitoringOut,
+    DraftBiocontrolDispersalMonitoringOut,
+)
 
 PlantRecordOut = Union[
     ObservationTerrestrialPlantOut,
@@ -66,4 +70,6 @@ PlantRecordOut = Union[
     DraftBiocontrolCollectionOut,
     BiocontrolReleaseMonitoringOut,
     DraftBiocontrolReleaseMonitoringOut,
+    BiocontrolDispersalMonitoringOut,
+    DraftBiocontrolDispersalMonitoringOut,
 ]

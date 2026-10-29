@@ -44,7 +44,6 @@ class Entries(ExtendedAgentCountOutMixin, Schema):
     sign_of_biocontrol_presence: List[str]
     start_time: Optional[datetime]
     stop_time: Optional[datetime]
-    linear_segment: Optional[str]
     suitable_for_collection: Optional[str]
 
     @staticmethod

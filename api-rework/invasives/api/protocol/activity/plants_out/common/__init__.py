@@ -34,3 +34,7 @@ from .agent_counts import (
     DraftSimpleAgentCountOutMixin,
     DraftExtendedAgentCountOutMixin,
 )
+from .spread_results import (
+    SpreadResultsOutMixin,
+    DraftSpreadResultsOutMixin,
+)
