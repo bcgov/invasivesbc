@@ -1,9 +1,10 @@
 from typing import Optional
 from datetime import datetime
-from api.models.activity import Activity, DraftActivity
+from api.protocol.activity.plants_out.subtypes import _serialize_html_date_time
+from api.models.activity import ChemicalTreatmentContext, DraftChemicalTreatmentContext
 from ninja import Schema
 
-type Record = Activity | DraftActivity
+type Record = ChemicalTreatmentContext | DraftChemicalTreatmentContext
 
 
 class ChemicalTreatmentContextOut(Schema):
@@ -22,6 +23,10 @@ class ChemicalTreatmentContextOut(Schema):
     rationale_for_ntz_reduction: Optional[str]
     additional_unmapped_well_water: Optional[bool]
     pest_injury_threshold_determination: Optional[bool]
+
+    @staticmethod
+    def resolve_application_start_time(obj: Record):
+        return _serialize_html_date_time(obj.application_start_time)
 
     @staticmethod
     def resolve_pesticide_use_permit(obj: Record):

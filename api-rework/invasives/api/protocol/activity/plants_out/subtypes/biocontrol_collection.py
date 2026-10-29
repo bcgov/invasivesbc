@@ -1,4 +1,4 @@
-from . import BaseRecordOut, DraftBaseRecordOut
+from . import BaseRecordOut, DraftBaseRecordOut, _serialize_html_date_time
 from typing import Optional, List, Literal
 from datetime import datetime
 from api.models.activity import (
@@ -38,15 +38,23 @@ class Entry(SimpleAgentCountOutMixin, Schema):
     comment: Optional[int]
 
     @staticmethod
-    def resolve_invasive_plant(obj):
+    def resolve_start_time_collecting(obj: Entry):
+        return _serialize_html_date_time(obj.start_time_collecting)
+
+    @staticmethod
+    def resolve_end_time_collecting(obj: Entry):
+        return _serialize_html_date_time(obj.end_time_collecting)
+
+    @staticmethod
+    def resolve_invasive_plant(obj: Entry):
         return obj.invasive_plant.code if obj.invasive_plant else None
 
     @staticmethod
-    def resolve_biocontrol_agent(obj):
+    def resolve_biocontrol_agent(obj: Entry):
         return obj.biocontrol_agent.code if obj.biocontrol_agent else None
 
     @staticmethod
-    def resolve_collection_method(obj):
+    def resolve_collection_method(obj: Entry):
         return obj.collection_method.code if obj.collection_method else None
 
 

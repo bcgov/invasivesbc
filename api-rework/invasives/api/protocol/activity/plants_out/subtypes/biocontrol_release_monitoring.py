@@ -1,4 +1,4 @@
-from . import BaseRecordOut, DraftBaseRecordOut, _get_codes
+from . import BaseRecordOut, DraftBaseRecordOut, _get_codes, _serialize_html_date_time
 from typing import Optional, List, Literal
 from datetime import datetime
 from api.models.activity import (
@@ -45,6 +45,14 @@ class Entries(ExtendedAgentCountOutMixin, Schema):
     start_time: Optional[datetime]
     stop_time: Optional[datetime]
     suitable_for_collection: Optional[str]
+
+    @staticmethod
+    def resolve_start_time(obj):
+        return _serialize_html_date_time(obj.start_time)
+
+    @staticmethod
+    def resolve_start_time(obj):
+        return _serialize_html_date_time(obj.stop_time)
 
     @staticmethod
     def resolve_invasive_plant(obj):
