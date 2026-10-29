@@ -29,10 +29,6 @@ class ChemicalTreatmentContextOut(Schema):
         return _serialize_html_date_time(obj.application_start_time)
 
     @staticmethod
-    def resolve_pesticide_use_permit(obj: Record):
-        return obj.pesticide_use_permit.code if obj.pesticide_use_permit else None
-
-    @staticmethod
     def resolve_pest_management_plan(obj: Record):
         return obj.pest_management_plan.code if obj.pest_management_plan else None
 
