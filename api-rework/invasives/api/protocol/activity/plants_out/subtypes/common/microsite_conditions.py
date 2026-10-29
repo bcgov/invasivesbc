@@ -27,7 +27,7 @@ class MicrositeConditionOut(Schema):
 
 
 class MicrositeConditionOutMixin(Schema):
-    microsite_conditions: MicrositeConditionOut
+    microsite_conditions: Optional[MicrositeConditionOut]
 
     @staticmethod
     def resolve_microsite_conditions(obj: Activity):
