@@ -35,7 +35,7 @@ class Entry(SimpleAgentCountOutMixin, Schema):
     number_of_sweeps: Optional[int]
     start_time_collecting: Optional[datetime]
     end_time_collecting: Optional[datetime]
-    comment: Optional[int]
+    comment: Optional[str]
 
     @staticmethod
     def resolve_start_time_collecting(obj: Entry):
