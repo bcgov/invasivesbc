@@ -1,36 +1,29 @@
-from typing import List
-from django.http import JsonResponse
-from ninja import Router
 from deepdiff import DeepDiff
-
-from ninja.errors import HttpError
-import json
-from django.shortcuts import get_object_or_404
 from django.contrib.gis.geos import GEOSGeometry
-from api.serializers import HistorySerializer
-from api.serializers.activity import ActivitySerializer, DraftActivitySerializer
-from api.serializers.activity_recordset_row import ActivityRecordsetRowSerializer
-from api.serializers import ActivityAllPlantSerializer
-from api.schemas.plant_activity import ACTIVITY_PROCESSORS, DRAFT_ACTIVITY_PROCESSORS
+from django.db import transaction
+from django.shortcuts import get_object_or_404
+import json
+from ninja import Router
+from ninja.errors import HttpError
+from typing import List
+
 from api.ninja_authentication import NinjaKeycloakAuthentication
-from api.models.enums import FormStatus
 from api.models.activity import Activity, DraftActivity, ActivitySubtypes
 from api.models.audits import ActivityModificationRecord
-from django.db import transaction
-from api.schemas import (
-    SingleActivityResponse,
-    RecordAction,
-)
+from api.models.enums import FormStatus
+from api.schemas.plant_activity import ACTIVITY_PROCESSORS, DRAFT_ACTIVITY_PROCESSORS
 from api.protocol.activity.activity import (
     ActivityMinimal,
     ActivitySearchParameters,
     ActivitySearchResult,
 )
+from api.permissions.activity_access import filter_activities_by_access
+from api.protocol.activity.plants_out import PlantRecordWithMetadataOut
 from api.protocol.activity.plant_subtypes.union_definition import (
     PlantActivitySchema,
     DraftPlantActivitySchema,
 )
-from api.permissions.activity_access import filter_activities_by_access
+from api.serializers.activity import ActivitySerializer
 from api.utils.deepdiff import AtomicFieldOperator
 
 router = Router(auth=NinjaKeycloakAuthentication())
@@ -65,7 +58,7 @@ def activity_search(request, search: ActivitySearchParameters):
     return result
 
 
-@router.post("/submit", response={200: dict})
+@router.post("/submit", response={200: PlantRecordWithMetadataOut})
 def submit_record(request, data: PlantActivitySchema):
     """
     Handler for Incoming records with "Submitted" status.
@@ -74,9 +67,7 @@ def submit_record(request, data: PlantActivitySchema):
     - Adds Activity Modification Record if changes found (update)
     """
     with transaction.atomic():
-        ######
-        # Tidy Incoming Record
-        ###
+        # Housekeeping on incoming record
         payload = data.model_dump(mode="python", exclude_unset=True)
         payload["form_status"] = FormStatus.Submitted.value
 
@@ -85,16 +76,16 @@ def submit_record(request, data: PlantActivitySchema):
             geometry_dict = shape_data.get("geometry", shape_data)
             payload["shape"] = GEOSGeometry(json.dumps(geometry_dict))
 
-        ######
         # Check if Updating, or creating a new record
-        ###
         activity_id = payload.get("id")
         if existing_record := Activity.objects.filter(id=activity_id).first():
-            # Protect original created_by value.
+            # Protect original values.
             payload["created_by"] = existing_record.created_by
             payload["creating_user"] = existing_record.creating_user
-            # Serialize old activity before updating, else the serializer will fetch the updated data and diffing won't work.
-            old_activity = ActivitySerializer(existing_record, read_only=True).data
+            # Serialize /before/ updating else diff won't work.
+            old_activity_for_diffing = ActivitySerializer(
+                existing_record, read_only=True
+            ).data
         else:
             # Ensure Subtype matches current standard.
             payload["creating_user"] = request.auth
@@ -108,12 +99,14 @@ def submit_record(request, data: PlantActivitySchema):
         processed_activity = processor.process(
             payload=payload, instance=existing_record
         )
-        new_record = ActivitySerializer(processed_activity, read_only=True).data
+        new_record_for_diffing = ActivitySerializer(
+            processed_activity, read_only=True
+        ).data
 
         if existing_record:
             diff = DeepDiff(
-                old_activity,
-                new_record,
+                old_activity_for_diffing,
+                new_record_for_diffing,
                 custom_operators=[
                     AtomicFieldOperator(regex_paths=[r"root\['shape'\]"])
                 ],
@@ -125,15 +118,15 @@ def submit_record(request, data: PlantActivitySchema):
                     activity=existing_record,
                     platform="web",
                 )
-        ######
-        # Delete Draft Version of record (if exists)
-        ###
-        DraftActivity.objects.filter(id=activity_id).delete()
+        # Delete Draft of record (if exists)
+        DraftActivity.objects.filter(
+            id=activity_id, creating_user=request.auth
+        ).delete()
 
-        return JsonResponse(new_record, status=200)
+        return processed_activity
 
 
-@router.post("/draft")
+@router.post("/draft", response={200: PlantRecordWithMetadataOut})
 def submit_draft_record(request, data: DraftPlantActivitySchema):
     """
     Handler for Incoming records with "Draft" status.
@@ -158,9 +151,7 @@ def submit_draft_record(request, data: DraftPlantActivitySchema):
             payload["shape"] = GEOSGeometry(json.dumps(geometry_dict))
 
         # Determine if Create or Update
-        activity_id = payload.get("id")
-        instance = DraftActivity.objects.filter(id=activity_id).first()
-
+        instance = DraftActivity.objects.filter(id=payload.get("id")).first()
         if not instance:
             payload["creating_user"] = request.auth
             payload["type"] = ActivitySubtypes[payload["subtype"]].typeOfActivity
@@ -170,62 +161,16 @@ def submit_draft_record(request, data: DraftPlantActivitySchema):
         if not processor:
             raise HttpError(400, f"Unsupported activity subtype: {subtype_key}")
 
-        processed_activity = processor.process(payload=payload, instance=instance)
-        serialized_data = DraftActivitySerializer(processed_activity).data
-        return JsonResponse(serialized_data, status=200)
+        return processor.process(payload=payload, instance=instance)
 
 
-@router.api_operation(["GET"], "/{id}", response=SingleActivityResponse)
+@router.api_operation(["GET"], "/{id}", response=PlantRecordWithMetadataOut)
 def get_activity_by_id(request, id: str):
-    activity = filter_activities_by_access(
+    if activity := filter_activities_by_access(
         Activity.objects.filter(id=id), request.auth
-    ).first()
-    if activity:  # Submission found
-        # TODO: Replace with proper 'available_action' values
-        history_entries = ActivityModificationRecord.objects.filter(
-            activity=activity
-        ).order_by("-version")
-        serialized_plants = ActivityAllPlantSerializer(activity).data
-        return JsonResponse(
-            {
-                "data": ActivitySerializer(activity).data,
-                "available_actions": [
-                    RecordAction.SUBMIT,
-                    RecordAction.EDIT,
-                    RecordAction.DELETE,
-                ],
-                "metadata": {
-                    "linking_activities": ActivityRecordsetRowSerializer(
-                        filter_activities_by_access(
-                            activity.activity_set.all(), request.auth
-                        ).order_by("-date"),
-                        many=True,
-                    ).data,
-                    "history": HistorySerializer(history_entries, many=True).data,
-                    "plants": serialized_plants["invasive_plant"],
-                    "positive_plants": serialized_plants["species_positive_full"],
-                    "negative_plants": serialized_plants["species_negative_full"],
-                    "batch_id": activity.batch_id,
-                    "created_date": activity.created_timestamp,
-                },
-            }
-        )
-
-    # Check if its a users draft record.
-    # TODO: Match user to Draft, to avoid pulling other users Draft records.
-    activity = get_object_or_404(DraftActivity, pk=id)
-    return JsonResponse(
-        {
-            "data": DraftActivitySerializer(activity).data,
-            # TODO: Replace with proper 'available_action' values
-            "available_actions": [
-                RecordAction.SUBMIT,
-                RecordAction.EDIT,
-                RecordAction.DELETE,
-            ],
-            "metadata": {},
-        }
-    )
+    ).first():
+        return activity
+    return get_object_or_404(DraftActivity, pk=id, creating_user=request.auth)
 
 
 @router.api_operation(["DELETE"], "/{id}", response={204: None})
