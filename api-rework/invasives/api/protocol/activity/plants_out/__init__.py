@@ -4,9 +4,7 @@ from typing import Union, List
 
 def _get_codes(model: Model, adr, field: str) -> List[str] | List[int]:
     """Handler for Parsing back a list of values"""
-    return list(
-        model.objects.filter(activity_data_record=adr).values_list(field, flat=True)
-    )
+    return model.objects.filter(activity_data_record=adr).values_list(field, flat=True)
 
 
 from .base import BaseRecordOut, DraftBaseRecordOut
@@ -44,6 +42,10 @@ from .biocontrol_collection import (
     BiocontrolCollectionOut,
     DraftBiocontrolCollectionOut,
 )
+from .biocontrol_release_monitoring import (
+    BiocontrolReleaseMonitoringOut,
+    DraftBiocontrolReleaseMonitoringOut,
+)
 
 PlantRecordOut = Union[
     ObservationTerrestrialPlantOut,
@@ -62,4 +64,6 @@ PlantRecordOut = Union[
     DraftBiocontrolReleaseOut,
     BiocontrolCollectionOut,
     DraftBiocontrolCollectionOut,
+    BiocontrolReleaseMonitoringOut,
+    DraftBiocontrolReleaseMonitoringOut,
 ]
