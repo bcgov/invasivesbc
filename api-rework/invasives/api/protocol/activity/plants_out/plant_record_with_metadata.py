@@ -28,7 +28,6 @@ class Metadata(AllPlantMixin, Schema):
     def resolve_linking_activities(obj: Record, context) -> List[ActivityPlantRowOut]:
         if isinstance(obj, DraftActivity):
             return []
-        return obj.activity_set.all() or []  # TODO: REMOVE FOR ACCESS VERSION
         return filter_activities_by_access(
             obj.activity_set.all(),
             context["request"].auth,
