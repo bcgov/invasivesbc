@@ -36,7 +36,7 @@ class MicrositeConditionOutMixin(Schema):
         ).first()
 
 
-class DraftMicrositeConditionOutMixin(Schema):
+class DraftMicrositeConditionOutMixin(MicrositeConditionOutMixin):
     @staticmethod
     def resolve_microsite_conditions(obj: DraftActivity):
         return DraftMicrositeCondition.objects.filter(
