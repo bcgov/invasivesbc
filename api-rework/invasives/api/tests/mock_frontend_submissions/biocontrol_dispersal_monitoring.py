@@ -108,8 +108,8 @@ MINIMAL_BIOCONTROL_DISPERSAL_MONITORING = {
                 "location_agent_found": [],
                 "linear_segment": "Yes",
                 "sign_of_biocontrol_presence": [],
-                "start_time": "2026-06-07T22:02",
-                "stop_time": "2026-06-08T03:33",
+                "start_time": "2026-06-07T22:02:00Z",
+                "stop_time": "2026-06-08T03:33:00Z",
                 "suitable_for_collection": "",
                 "actual_biological_agents": [],
                 "estimated_biological_agents": [],
@@ -185,8 +185,8 @@ UPDATED_BIOCONTROL_DISPERSAL_MONITORING = {
                 "location_agent_found": ["BS"],
                 "linear_segment": "Yes",
                 "sign_of_biocontrol_presence": ["CY"],
-                "start_time": "2026-06-07T22:02",
-                "stop_time": "2026-06-08T03:33",
+                "start_time": "2026-06-07T22:02:00Z",
+                "stop_time": "2026-06-08T03:33:00Z",
                 "suitable_for_collection": "Yes",
                 "actual_biological_agents": [
                     {

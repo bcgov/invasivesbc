@@ -85,7 +85,7 @@ MINIMAL_BIOCONTROL_RELEASE = {
             {
                 "agent_source": "Agent Source Field",
                 "biocontrol_agent": "APHAITA",
-                "collection_date": "2026-06-08T03:22",
+                "collection_date": "2026-06-08T03:22:00Z",
                 "linear_segment": "Yes",
                 "invasive_plant": "JK",
                 "mortality": 0,
@@ -158,7 +158,7 @@ UPDATED_BIOCONTROL_RELEASE = {
             {
                 "agent_source": "Agent Source Field",
                 "biocontrol_agent": "APHAITA",
-                "collection_date": "2026-06-08T03:22",
+                "collection_date": "2026-06-08T03:22:00Z",
                 "linear_segment": "Yes",
                 "invasive_plant": "JK",
                 "mortality": 0,
