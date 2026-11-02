@@ -2,7 +2,7 @@ from datetime import datetime
 from ninja import Schema
 from typing import Optional, List, Literal
 
-from . import BaseRecordOut, DraftBaseRecordOut, _serialize_html_date_time
+from . import BaseRecordOut, DraftBaseRecordOut
 from .common import (
     TargetPlantPhenologyOutMixin,
     DraftTargetPlantPhenologyOutMixin,
@@ -39,10 +39,6 @@ class Entries(SimpleAgentCountOutMixin, Schema):
     mortality: Optional[int]
     plant_collected_from: Optional[str]
     plant_collected_from_manual: Optional[str]
-
-    @staticmethod
-    def resolve_application_start_time(obj: Entry):
-        return _serialize_html_date_time(obj.collection_date)
 
     @staticmethod
     def resolve_invasive_plant(obj: Entry):

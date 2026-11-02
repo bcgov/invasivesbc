@@ -8,14 +8,6 @@ def _get_codes(model: Model, adr, field: str) -> List[str] | List[int]:
     return model.objects.filter(activity_data_record=adr).values_list(field, flat=True)
 
 
-def _serialize_html_date_time(time: datetime):
-    """
-    Formats the datetime into YYYY-MM-DDTHH:MM:SS format
-    stripping out any timezone 'Z' or offset so HTML date inputs accept it.
-    """
-    return time.strftime("%Y-%m-%dT%H:%M:%S") if time else None
-
-
 from .base import BaseRecordOut, DraftBaseRecordOut
 
 from .observation_terrestrial import (
