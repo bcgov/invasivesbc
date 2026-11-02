@@ -17,7 +17,7 @@ class Metadata(AllPlantMixin, Schema):
     created_date: datetime = Field(..., alias="created_timestamp")
     batch_id: Optional[int]
     linking_activities: List[ActivityPlantRowOut]
-    created_by: str
+    created_by: Optional[str]
 
     @staticmethod
     def resolve_history(obj: Record) -> List[RecordHistoryOut]:
@@ -27,9 +27,9 @@ class Metadata(AllPlantMixin, Schema):
 
     @staticmethod
     def resolve_created_by(obj: Record) -> str:
-        if obj.creating_user:
+        if obj.creating_user != None:
             return obj.creating_user.display_name
-        return obj.created_by
+        return obj.created_by or ""
 
     @staticmethod
     def resolve_linking_activities(obj: Record, context) -> List[ActivityPlantRowOut]:

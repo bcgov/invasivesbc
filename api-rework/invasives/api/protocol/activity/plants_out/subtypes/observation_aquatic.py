@@ -165,6 +165,7 @@ class SubtypeData(Schema):
     waterbody_context: WbContext
     adjacent_land_use: List[str]
     substrate_type: List[str]
+    shoreline_types: List[ShorelineType]
 
     @staticmethod
     def resolve_adjacent_land_use(obj: Activity):
@@ -201,10 +202,14 @@ class SubtypeData(Schema):
         ).first()
 
     @staticmethod
+    def resolve_shoreline_types(obj: DraftActivity):
+        return ShorelineTypes.objects.filter(activity_data_record__activity_id=obj.id)
+
+    @staticmethod
     def resolve_substrate_type(obj: Activity):
         return WaterbodySubstrateType.objects.filter(
             activity_data_record__activity_id=obj.id
-        ).values_list("substrate_type__code")
+        ).values_list("substrate_type__code", flat=True)
 
 
 ##########
@@ -295,6 +300,7 @@ class DraftSubtypeData(SubtypeData):
     entries: List[DraftEntries]
     pretreatment_observation: Optional[str]
     waterbody_context: Optional[DraftWbContext]
+    shoreline_types: List[ShorelineType]
     substrate_type: List[str]
 
     @staticmethod
@@ -317,6 +323,12 @@ class DraftSubtypeData(SubtypeData):
             )
             .values_list("pre_treatment_observation", flat=True)
             .first()
+        )
+
+    @staticmethod
+    def resolve_shoreline_types(obj: DraftActivity):
+        return DraftShorelineTypes.objects.filter(
+            activity_data_record__activity_id=obj.id
         )
 
     @staticmethod

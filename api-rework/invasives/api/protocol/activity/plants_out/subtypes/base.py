@@ -5,6 +5,7 @@ from ninja import ModelSchema, Schema
 from pydantic import ConfigDict, Field
 from typing import List, Optional
 import uuid
+from api.permissions.activity_access import filter_activities_by_access
 
 from api.models.activity import (
     Activity,
@@ -140,8 +141,10 @@ class BaseRecordOut(ModelSchema, ABC):
         ).select_related("jurisdiction")
 
     @staticmethod
-    def resolve_linked_activities(obj: Activity):
-        return obj.linked_activities.all()
+    def resolve_linked_activities(obj: Activity, context):
+        return filter_activities_by_access(
+            obj.linked_activities.all(), context["request"].auth
+        )
 
     @staticmethod
     def resolve_media(obj: Activity):
@@ -210,8 +213,10 @@ class DraftBaseRecordOut(BaseRecordOut, ABC):
         ).select_related("jurisdiction")
 
     @staticmethod
-    def resolve_linked_activities(obj: Activity):
-        return obj.linked_activities.all()
+    def resolve_linked_activities(obj: Activity, context):
+        return filter_activities_by_access(
+            obj.linked_activities.all(), context["request"].auth
+        )
 
     @staticmethod
     def resolve_media(obj: Activity):
@@ -220,7 +225,7 @@ class DraftBaseRecordOut(BaseRecordOut, ABC):
         )
 
     @staticmethod
-    def resolve_participant(obj: Activity):
+    def resolve_participants(obj: Activity):
         return DraftParticipant.objects.filter(activity_data_record__activity_id=obj.id)
 
     @staticmethod

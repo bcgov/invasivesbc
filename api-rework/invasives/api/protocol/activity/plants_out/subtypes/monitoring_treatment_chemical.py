@@ -33,7 +33,7 @@ class SubtypeData(Schema):
         ).select_related(
             "invasive_plant", "management_efficacy_rating", "treatment_efficacy_rating"
         )
-        return list(chain(aq, t))
+        return list(chain(t, aq))
 
 
 ##########
@@ -51,7 +51,7 @@ class DraftSubtypeData(SubtypeData):
         t = DraftTerrestrialTreatmentMonitoringEntry.objects.filter(
             activity_data_record__activity_id=obj.id
         ).select_related("invasive_plant")
-        return list(chain(aq, t))
+        return list(chain(t, aq))
 
 
 ##########
