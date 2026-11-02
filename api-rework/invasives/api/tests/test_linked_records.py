@@ -61,7 +61,7 @@ class LinkedActivityTests(BaseActivitySubtypeTest):
         linking_record["shape"] = init_record["shape"]
         response = self.submit_record(linking_record)
         record = response.json()
-        self.assertEqual(len(record["linked_activities"]), 1)
+        self.assertEqual(len(record["data"]["linked_activities"]), 1)
 
     def test_linking_record_failed_shape(self):
         """
