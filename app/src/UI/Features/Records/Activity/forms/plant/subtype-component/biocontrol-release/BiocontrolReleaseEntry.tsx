@@ -90,15 +90,12 @@ const BiocontrolReleaseEntry = ({ index }: PropTypes) => {
         {...register(getPath('agent_source'), { required: true })}
       />
       <DateInput
-        defaultValue={new Date().toISOString().slice(0, 10)}
-        error={get(errors, getPath('collection_date'))}
         includeTime
         label={'Collection Date'}
+        name={getPath('collection_date')}
         required
         width={Width.Half}
-        {...register(getPath('collection_date'), {
-          validate: (val) => noFutureDate(val)
-        })}
+        rules={{ validate: (val) => noFutureDate(val) }}
       />
       <SingleSelect
         label={'Plant Collected From'}

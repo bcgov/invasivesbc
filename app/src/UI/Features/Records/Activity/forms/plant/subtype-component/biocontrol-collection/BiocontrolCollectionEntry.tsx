@@ -21,8 +21,8 @@ type PropTypes = {
 };
 const BiocontrolCollectionEntry = ({ index }: PropTypes) => {
   const validateMonitoringStartStopTimes = (_, formValues) => {
-    const startTime = formValues.subtype_data?.entries?.[index]?.start_time;
-    const stopTime = formValues.subtype_data?.entries?.[index]?.stop_time;
+    const startTime = formValues.subtype_data?.entries?.[index]?.start_time_collecting;
+    const stopTime = formValues.subtype_data?.entries?.[index]?.end_time_collecting;
     if (!startTime || !stopTime || startTime <= stopTime) return true;
     return 'Start time must be before stop time.';
   };
@@ -142,34 +142,34 @@ const BiocontrolCollectionEntry = ({ index }: PropTypes) => {
         <FormSpacer width={Width.Half} />
       )}
       <DateInput
-        error={get(errors, getPath('start_time_collecting'))}
         includeTime
-        label={'Start Time Collecting'}
+        label="Start Time Collecting"
+        name={getPath('start_time_collecting')}
         required
         width={Width.Half}
-        {...register(getPath('start_time_collecting'), {
+        rules={{
           deps: [getPath('end_time_collecting')],
           required: true,
           validate: {
             noFutureData: (val) => noFutureDate(val),
             startBeforeStop: validateMonitoringStartStopTimes
           }
-        })}
+        }}
       />
       <DateInput
-        error={get(errors, getPath('end_time_collecting'))}
-        label={'Stop Time Collecting'}
         includeTime
+        label="Stop Time Collecting"
+        name={getPath('end_time_collecting')}
         required
         width={Width.Half}
-        {...register(getPath('end_time_collecting'), {
+        rules={{
           deps: [getPath('start_time_collecting')],
           required: true,
           validate: {
             noFutureData: (val) => noFutureDate(val),
             startBeforeStop: validateMonitoringStartStopTimes
           }
-        })}
+        }}
       />
       <TextArea
         label={'Comment'}
