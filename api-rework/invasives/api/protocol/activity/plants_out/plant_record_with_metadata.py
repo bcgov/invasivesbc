@@ -17,12 +17,19 @@ class Metadata(AllPlantMixin, Schema):
     created_date: datetime = Field(..., alias="created_timestamp")
     batch_id: Optional[int]
     linking_activities: List[ActivityPlantRowOut]
+    created_by: str
 
     @staticmethod
     def resolve_history(obj: Record) -> List[RecordHistoryOut]:
         if isinstance(obj, DraftActivity):
             return []
         return ActivityModificationRecord.objects.filter(activity=obj).order_by("-date")
+
+    @staticmethod
+    def resolve_created_by(obj: Record) -> str:
+        if obj.creating_user:
+            return obj.creating_user.display_name
+        return obj.created_by
 
     @staticmethod
     def resolve_linking_activities(obj: Record, context) -> List[ActivityPlantRowOut]:

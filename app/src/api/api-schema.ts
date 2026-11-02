@@ -1818,6 +1818,8 @@ export interface components {
             batch_id: number | null;
             /** Linking Activities */
             linking_activities: components["schemas"]["ActivityPlantRowOut"][];
+            /** Created By */
+            created_by: string;
         };
         /** MicrositeConditionOut */
         MicrositeConditionOut: {
