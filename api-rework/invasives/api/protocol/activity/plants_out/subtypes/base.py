@@ -92,7 +92,7 @@ class BaseRecordOut(ModelSchema, ABC):
     jurisdictions: List[JurisdictionOut]
     linked_activities: List[LinkedActivityOut]
     media: List[UploadedImageOut]
-    participant: List[ParticipantOut]
+    participants: List[ParticipantOut]
     projects: List[ProjectOut]
     shape: dict
 
@@ -146,7 +146,7 @@ class BaseRecordOut(ModelSchema, ABC):
         return UploadedImage.objects.filter(activity_data_record__activity_id=obj.id)
 
     @staticmethod
-    def resolve_participant(obj: Activity):
+    def resolve_participants(obj: Activity):
         return Participant.objects.filter(activity_data_record__activity_id=obj.id)
 
     @staticmethod
