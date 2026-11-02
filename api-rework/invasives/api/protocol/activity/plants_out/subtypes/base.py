@@ -109,6 +109,8 @@ class BaseRecordOut(ModelSchema, ABC):
             "comment",
             "date",
             "area_m",
+            "latitude",
+            "longitude",
             "utm_zone",
             "utm_easting",
             "utm_northing",
