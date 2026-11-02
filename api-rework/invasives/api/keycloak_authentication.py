@@ -65,7 +65,9 @@ class UserAuthentication(authentication.BaseAuthentication):
             raise exceptions.AuthenticationFailed("Authorization header required")
 
         if settings.UNIT_TESTING_ENABLED:
-            user, _ = User.objects.get_or_create(subject="test-user")
+            user, _ = User.objects.get_or_create(
+                subject="test-user", display_name="test, user"
+            )
             if user_is_expired(user):
                 raise exceptions.AuthenticationFailed("User account has expired")
             if not user.roles.filter(name=WellKnownRoles.ADMINISTRATOR.value).exists():
