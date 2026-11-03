@@ -9,3 +9,4 @@ from .treatment_chemical_aquatic import build_treatment_chemical_aquatic
 from .biocontrol_release import build_biocontrol_release
 from .biocontrol_collection import build_biocontrol_collection
 from .biocontrol_dispersal_monitoring import build_biocontrol_dispersal_monitoring
+from .biocontrol_release_monitoring import build_biocontrol_release_monitoring

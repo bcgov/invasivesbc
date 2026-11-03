@@ -20,12 +20,16 @@ from api.tests.factories.plants.subtypes import (
     build_biocontrol_dispersal_monitoring,
 )
 from api.schemas.plant_activity import ACTIVITY_PROCESSORS
+from api.models.activity import Activity
+from typing import Optional
 from api.protocol.activity.plant_subtypes.union_definition import PlantActivitySchema
 
 adapter = TypeAdapter(PlantActivitySchema)
 
 
-def build_plant_record(subtype: ActivitySubtypes, subject: str):
+def build_plant_record(
+    subtype: ActivitySubtypes, subject: str, *linking_activities: Optional[Activity]
+):
     """
     Given a user and Subtype, generate a mock Plant Activity.
     Leverages the Pydantic Plant Schema + Protocols for creation handling.
@@ -48,6 +52,7 @@ def build_plant_record(subtype: ActivitySubtypes, subject: str):
         ActivitySubtypes.Biocontrol_Release.name: build_biocontrol_release,
         ActivitySubtypes.Biocontrol_Collection.name: build_biocontrol_collection,
         ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial.name: build_biocontrol_dispersal_monitoring,
+        ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial.name: build_biocontrol_dispersal_monitoring,
     }
     if mock := MAP.get(subtype.name, None):
         # Cast to adapter (Which our submission API uses)

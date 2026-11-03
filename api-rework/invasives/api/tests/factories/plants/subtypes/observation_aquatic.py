@@ -29,10 +29,10 @@ def build_waterbody_context():
         "access": str(uuid.uuid4()),
         "colour": str(uuid.uuid4()),
         "comment": str(uuid.uuid4()),
-        "max_depth_m": random.randint(0, 500),
+        "max_depth_m": random.randint(1, 500),
         "name_gazetted": str(uuid.uuid4()),
         "name_local": str(uuid.uuid4()),
-        "secchi_depth": random.randint(0, 500),
+        "secchi_depth": random.randint(1, 500) if random.random() > 0.5 else None,
         "tidal_influence": random.choice(list(YesNoUnknown)).value,
         "type": rand_code(WaterbodyTypeCode),
     }
@@ -60,29 +60,41 @@ def build_voucher_specimen():
     }
 
 
-def build_negative_observation():
+def build_negative_observation(plant_code):
     return {
         "sample_point_id": str(uuid.uuid4()),
         "density": None,
         "distribution": None,
-        "invasive_plant": rand_code(AquaticPlantCode),
+        "invasive_plant": plant_code,
         "life_stage": None,
         "observation_type": ObservationType.Negative.value,
     }
 
 
-def build_positive_observation(include_vs: bool = False):
+def build_positive_observation(plant_code, include_vs: bool = False):
     base = {
         "sample_point_id": None,
         "density": rand_code(DensityCode),
         "distribution": rand_code(DistributionCode),
-        "invasive_plant": rand_code(AquaticPlantCode),
+        "invasive_plant": plant_code,
         "life_stage": rand_code(PlantLifeStageCode),
         "observation_type": ObservationType.Positive.value,
     }
     if include_vs:
         base["voucher_specimen"] = build_voucher_specimen()
     return base
+
+
+def build_entries():
+    plant_code = set()
+    while len(plant_code) < 3:
+        plant_code.add(rand_code(model=AquaticPlantCode))
+
+    return [
+        build_positive_observation(plant_code.pop()),
+        build_negative_observation(plant_code.pop()),
+        build_positive_observation(plant_code.pop(), include_vs=True),
+    ]
 
 
 def build_subtype_date():
@@ -93,11 +105,7 @@ def build_subtype_date():
         "waterlevel_management": rand_code_list(model=WaterLevelManagement),
         "shoreline_types": build_shoreline_types(),
         "waterbody_context": build_waterbody_context(),
-        "entries": [
-            build_positive_observation(),
-            build_negative_observation(),
-            build_positive_observation(include_vs=True),
-        ],
+        "entries": build_entries(),
         "context": build_context(),
         "pretreatment_observation": random.choice(list(YesNoUnknown)).value,
     }

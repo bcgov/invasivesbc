@@ -6,7 +6,7 @@ from api.tests.factories.plants.common import build_mock_base
 from api.tests.factories.common import build_user, build_date_str
 from api.tests.factories.helpers import rand_code, rand_code_list
 from api.models.codes import (
-    AquaticPlantCode,
+    TerrestrialPlantCode,
     PlantLifeStageCode,
     DistributionCode,
     DensityCode,
@@ -45,21 +45,21 @@ def build_voucher_specimen():
     }
 
 
-def build_negative_observation():
+def build_negative_observation(plant_code):
     return {
         "density": None,
         "distribution": None,
-        "invasive_plant": rand_code(AquaticPlantCode),
+        "invasive_plant": plant_code,
         "life_stage": None,
         "observation_type": ObservationType.Negative.value,
     }
 
 
-def build_positive_observation(include_vs: bool = False):
+def build_positive_observation(plant_code, include_vs: bool = False):
     base = {
         "density": rand_code(DensityCode),
         "distribution": rand_code(DistributionCode),
-        "invasive_plant": rand_code(AquaticPlantCode),
+        "invasive_plant": plant_code,
         "life_stage": rand_code(PlantLifeStageCode),
         "observation_type": ObservationType.Positive.value,
     }
@@ -68,20 +68,30 @@ def build_positive_observation(include_vs: bool = False):
     return base
 
 
+def build_entries():
+    plant_code = set()
+    while len(plant_code) < 3:
+        plant_code.add(rand_code(model=TerrestrialPlantCode))
+
+    return [
+        build_positive_observation(plant_code.pop()),
+        build_negative_observation(plant_code.pop()),
+        build_positive_observation(plant_code.pop(), include_vs=True),
+    ]
+
+
 def build_subtype_date():
     return {
-        "entries": [
-            build_positive_observation(),
-            build_negative_observation(),
-            build_positive_observation(include_vs=True),
-        ],
+        "entries": build_entries(),
         "context": build_context(),
         "pretreatment_observation": random.choice(list(YesNoUnknown)).value,
     }
 
 
 def build_observation_plant_terrestrial(
-    subject, subtype: ActivitySubtypes, form_id: uuid = uuid.uuid4()
+    subject,
+    subtype: ActivitySubtypes,
+    form_id: uuid = uuid.uuid4(),
 ):
     return {
         **build_mock_base(subject, subtype, form_id),

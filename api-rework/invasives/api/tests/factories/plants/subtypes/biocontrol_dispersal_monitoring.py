@@ -14,9 +14,9 @@ from api.models.enums import CollectionType, YesNoUnknown
 from api.models.codes import (
     BiocontrolAgentCode,
     PlantsWithBiocontrol,
-    BioAgentCollectionMethodCode,
     BiocontrolPresenceCode,
     AgentLocationFoundTerrainCode,
+    BioAgentMonitoringMethodCode,
 )
 
 
@@ -25,8 +25,7 @@ def build_entries():
     timestamp = build_date_str()
     m_type = random.choice(list(CollectionType)).value
     is_timed = m_type == CollectionType.Timed.value
-    monitoring_method = rand_code(model=BioAgentCollectionMethodCode)
-    is_sweep = monitoring_method == "Cs"
+    monitoring_method = rand_code(model=BioAgentMonitoringMethodCode)
     biocontrol_present = random.random() > 0.5
     return [
         {
