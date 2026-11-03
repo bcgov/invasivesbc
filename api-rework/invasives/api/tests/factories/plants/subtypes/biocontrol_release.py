@@ -1,6 +1,6 @@
 import uuid, random
-from api.models.activity import ActivitySubtypes, ObservationType
-from api.models.enums import YesNoUnknown, YesNo
+from api.models.activity import ActivitySubtypes
+from api.models.enums import YesNo
 from api.tests.factories.plants.common import (
     build_mock_base,
     build_weather_conditions,
@@ -9,20 +9,10 @@ from api.tests.factories.plants.common import (
     build_agent_count_simple,
 )
 
-from api.tests.factories.common import build_user, build_date_str
+from api.tests.factories.common import build_date_str
 from api.tests.factories.helpers import rand_code, rand_code_list
 from api.models.enums import YesNo
-from api.models.codes import (
-    BiocontrolAgentCode,
-    PlantsWithBiocontrol,
-    PlantLifeStageCode,
-    DistributionCode,
-    DensityCode,
-    AspectCode,
-    SlopePercentCode,
-    SoilTextureCode,
-    SpecificUseCode,
-)
+from api.models.codes import BiocontrolAgentCode, PlantsWithBiocontrol
 
 
 def build_entries():
