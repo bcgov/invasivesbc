@@ -1,11 +1,7 @@
 import uuid
 import random
-from api.tests.factories.helpers import rand_code
-from api.tests.factories.common import (
-    build_user,
-    build_postal_code,
-    build_date_str,
-)
+from api.tests.factories.helpers import rand_code, rand_code_list
+from api.tests.factories.common import build_user, build_postal_code, build_date_str
 from api.models.codes import EmployerCode, FundingAgencyCode, JurisdictionCode
 from api.models.activity import ActivitySubtypes, FormStatus
 from api.models.auth import User
@@ -25,20 +21,6 @@ def build_jurisdictions(min: int = 1, max: int = 3):
         {"jurisdiction": code, "percent_covered": percent}
         for code, percent in zip(codes, percents)
     ]
-
-
-def build_employers(min: int = 1, max: int = 3):
-    codes = set()
-    for _ in range(random.randint(min, max)):
-        codes.add(rand_code(EmployerCode))
-    return [{"employer": code} for code in codes]
-
-
-def build_funding_agencies(min: int = 1, max: int = 3):
-    codes = set()
-    for _ in range(random.randint(min, max)):
-        codes.add(rand_code(FundingAgencyCode))
-    return [{"invasive_species_agency_code": code} for code in codes]
 
 
 def build_project_codes(min: int = 0, max: int = 3):
@@ -105,8 +87,10 @@ def build_mock_base(subject, subtype: ActivitySubtypes, form_id: uuid = uuid.uui
         "short_id": None,  # Activity model will handle it
         "subtype": subtype.name,
         "type": subtype.typeOfActivity.value,
-        "employer": build_employers(),
-        "funding_agencies": build_funding_agencies(),
+        "employer": rand_code_list(model=EmployerCode, key="employer"),
+        "funding_agencies": rand_code_list(
+            model=FundingAgencyCode, key="invasive_species_agency_code"
+        ),
         "jurisdictions": build_jurisdictions(),
         "projects": build_project_codes(),
         "subtype_data": None,

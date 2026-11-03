@@ -8,6 +8,7 @@ from api.tests.factories.common import (
 )
 from api.tests.factories.plants.subtypes import (
     build_observation_plant_terrestrial,
+    build_observation_plant_aquatic,
 )
 from api.schemas.plant_activity import ACTIVITY_PROCESSORS
 from api.protocol.activity.plant_subtypes.union_definition import PlantActivitySchema
@@ -15,18 +16,17 @@ from api.protocol.activity.plant_subtypes.union_definition import PlantActivityS
 adapter = TypeAdapter(PlantActivitySchema)
 
 
-def create_plant_record(
-    subtype: ActivitySubtypes, subject: str, form_id: uuid.UUID = uuid.uuid4()
-):
+def create_plant_record(subtype: ActivitySubtypes, subject: str):
     user, _ = User.objects.get_or_create(
         subject=subject, defaults={"display_name": build_user()}
     )
     MAP = {
-        ActivitySubtypes.Observation_Plant_Terrestrial.name: build_observation_plant_terrestrial
+        ActivitySubtypes.Observation_Plant_Terrestrial.name: build_observation_plant_terrestrial,
+        ActivitySubtypes.Observation_Plant_Aquatic.name: build_observation_plant_aquatic,
     }
     if mock := MAP.get(subtype.name, None):
         record = adapter.validate_python(
-            mock(subtype=subtype, subject=user, form_id=form_id)
+            mock(subtype=subtype, subject=user, form_id=uuid.uuid4())
         ).model_dump(mode="python", exclude_unset=True)
         processor = ACTIVITY_PROCESSORS.get(subtype.name)
 

@@ -1,1 +1,2 @@
-from .observation_plant_terrestrial import build_observation_plant_terrestrial
+from .observation_terrestrial import build_observation_plant_terrestrial
+from .observation_aquatic import build_observation_plant_aquatic

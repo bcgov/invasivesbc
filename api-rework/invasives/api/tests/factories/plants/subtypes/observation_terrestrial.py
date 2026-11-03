@@ -3,15 +3,10 @@ from api.models.activity import ActivitySubtypes, ObservationType
 from api.models.enums import YesNoUnknown, YesNo
 from api.tests.factories.plants.common import build_mock_base
 
-from api.tests.factories.common import (
-    build_user,
-    build_postal_code,
-    build_date_str,
-    build_date_time_str,
-)
-from api.tests.factories.helpers import rand_code
+from api.tests.factories.common import build_user, build_date_str
+from api.tests.factories.helpers import rand_code, rand_code_list
 from api.models.codes import (
-    TerrestrialPlantCode,
+    AquaticPlantCode,
     PlantLifeStageCode,
     DistributionCode,
     DensityCode,
@@ -29,7 +24,7 @@ def build_context():
         "aspect": rand_code(AspectCode),
         "slope_percent": rand_code(SlopePercentCode),
         "soil_texture": rand_code(SoilTextureCode),
-        "specific_uses": [{"specific_use": rand_code(SpecificUseCode)}],
+        "specific_uses": rand_code_list(model=SpecificUseCode, key="specific_use"),
         "suitable_for_biocontrol_agent": random.choice(list(YesNoUnknown)).value,
     }
 
@@ -54,7 +49,7 @@ def build_negative_observation():
     return {
         "density": None,
         "distribution": None,
-        "invasive_plant": rand_code(TerrestrialPlantCode),
+        "invasive_plant": rand_code(AquaticPlantCode),
         "life_stage": None,
         "observation_type": ObservationType.Negative.value,
     }
@@ -64,7 +59,7 @@ def build_positive_observation(include_vs: bool = False):
     base = {
         "density": rand_code(DensityCode),
         "distribution": rand_code(DistributionCode),
-        "invasive_plant": rand_code(TerrestrialPlantCode),
+        "invasive_plant": rand_code(AquaticPlantCode),
         "life_stage": rand_code(PlantLifeStageCode),
         "observation_type": ObservationType.Positive.value,
     }
@@ -73,17 +68,13 @@ def build_positive_observation(include_vs: bool = False):
     return base
 
 
-def build_entries():
-    return [
-        build_positive_observation(),
-        build_negative_observation(),
-        build_positive_observation(include_vs=True),
-    ]
-
-
 def build_subtype_date():
     return {
-        "entries": build_entries(),
+        "entries": [
+            build_positive_observation(),
+            build_negative_observation(),
+            build_positive_observation(include_vs=True),
+        ],
         "context": build_context(),
         "pretreatment_observation": random.choice(list(YesNoUnknown)).value,
     }
@@ -92,6 +83,7 @@ def build_subtype_date():
 def build_observation_plant_terrestrial(
     subject, subtype: ActivitySubtypes, form_id: uuid = uuid.uuid4()
 ):
-    base = build_mock_base(subject, subtype, form_id)
-    base["subtype_data"] = build_subtype_date()
-    return base
+    return {
+        **build_mock_base(subject, subtype, form_id),
+        "subtype_data": build_subtype_date(),
+    }
