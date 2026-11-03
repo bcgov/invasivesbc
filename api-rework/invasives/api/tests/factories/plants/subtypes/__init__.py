@@ -6,3 +6,4 @@ from .monitoring_chemical_treatment import build_monitoring_chemical_treatment
 from .monitoring_mechanical_treatment import build_monitoring_mechanical_treatment
 from .treatment_chemical_terrestrial import build_treatment_chemical_terrestrial
 from .treatment_chemical_aquatic import build_treatment_chemical_aquatic
+from .biocontrol_release import build_biocontrol_release
