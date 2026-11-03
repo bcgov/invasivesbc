@@ -1,9 +1,10 @@
 import uuid
 import random
+from typing import List
 from api.tests.factories.helpers import rand_code, rand_code_list
 from api.tests.factories.common import build_user, build_postal_code, build_date_str
 from api.models.codes import EmployerCode, FundingAgencyCode, JurisdictionCode
-from api.models.activity import ActivitySubtypes, FormStatus
+from api.models.activity import ActivitySubtypes, FormStatus, Activity
 from api.models.auth import User
 
 
@@ -77,7 +78,12 @@ def build_participants(subtype: ActivitySubtypes, min: int = 1, max: int = 3):
     return [{"name": code} for code in codes]
 
 
-def build_mock_base(subject, subtype: ActivitySubtypes, form_id: uuid = uuid.uuid4()):
+def build_mock_base(
+    subject,
+    subtype: ActivitySubtypes,
+    linking_activities: List[Activity],
+    form_id: uuid = uuid.uuid4(),
+):
     user, _ = User.objects.get_or_create(
         subject=subject, defaults={"display_name": build_user()}
     )
@@ -91,6 +97,9 @@ def build_mock_base(subject, subtype: ActivitySubtypes, form_id: uuid = uuid.uui
             model=FundingAgencyCode, key="invasive_species_agency_code"
         ),
         "jurisdictions": build_jurisdictions(),
+        "linking_activities": [
+            {"label": "", "full": act.id} for act in linking_activities
+        ],
         "projects": build_project_codes(),
         "subtype_data": None,
         "location_description": str(uuid.uuid4()),

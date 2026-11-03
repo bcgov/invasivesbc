@@ -77,9 +77,14 @@ def build_subtype_date():
 
 
 def build_biocontrol_release_monitoring(
-    subject, subtype: ActivitySubtypes, form_id: uuid = uuid.uuid4()
+    subject, subtype: ActivitySubtypes, linking_activities, form_id: uuid = uuid.uuid4()
 ):
     return {
-        **build_mock_base(subject, subtype, form_id),
+        **build_mock_base(
+            subject=subject,
+            subtype=subtype,
+            linking_activities=linking_activities,
+            form_id=form_id,
+        ),
         "subtype_data": build_subtype_date(),
     }

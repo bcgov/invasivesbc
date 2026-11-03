@@ -28,7 +28,7 @@ adapter = TypeAdapter(PlantActivitySchema)
 
 
 def build_plant_record(
-    subtype: ActivitySubtypes, subject: str, *linking_activities: Optional[Activity]
+    subtype: ActivitySubtypes, subject: str, *linking_activities: Activity
 ):
     """
     Given a user and Subtype, generate a mock Plant Activity.
@@ -57,7 +57,12 @@ def build_plant_record(
     if mock := MAP.get(subtype.name, None):
         # Cast to adapter (Which our submission API uses)
         record = adapter.validate_python(
-            mock(subtype=subtype, subject=user, form_id=uuid.uuid4())
+            mock(
+                subtype=subtype,
+                subject=user,
+                form_id=uuid.uuid4(),
+                linking_activities=linking_activities,
+            )
         ).model_dump(mode="python", exclude_unset=True)
         # Prep Processor
         processor = ACTIVITY_PROCESSORS.get(subtype.name)
