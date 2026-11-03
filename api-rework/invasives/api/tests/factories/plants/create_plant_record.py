@@ -29,7 +29,7 @@ def create_plant_record(
             mock(subtype=subtype, subject=user, form_id=form_id)
         ).model_dump(mode="python", exclude_unset=True)
         processor = ACTIVITY_PROCESSORS.get(subtype.name)
-        print("Second Last")
+
         shape_data = record.get("shape")
         if shape_data:
             geometry_dict = shape_data.get("geometry", shape_data)
