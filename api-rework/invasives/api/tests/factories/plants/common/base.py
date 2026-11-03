@@ -81,7 +81,6 @@ def build_mock_base(subject, subtype: ActivitySubtypes, form_id: uuid = uuid.uui
     user, _ = User.objects.get_or_create(
         subject=subject, defaults={"display_name": build_user()}
     )
-    print(subtype.typeOfActivity.value)
     return {
         "id": str(form_id),
         "short_id": None,  # Activity model will handle it

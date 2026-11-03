@@ -13,6 +13,8 @@ from api.tests.factories.plants.subtypes import (
     build_treatment_mechanical_aquatic,
     build_monitoring_mechanical_treatment,
     build_monitoring_chemical_treatment,
+    build_treatment_chemical_terrestrial,
+    build_treatment_chemical_aquatic,
 )
 from api.schemas.plant_activity import ACTIVITY_PROCESSORS
 from api.protocol.activity.plant_subtypes.union_definition import PlantActivitySchema
@@ -38,6 +40,8 @@ def build_plant_record(subtype: ActivitySubtypes, subject: str):
         ActivitySubtypes.Treatment_Mechanical_Plant_Terrestrial.name: build_treatment_mechanical_terrestrial,
         ActivitySubtypes.Monitoring_Chemical_Plant_Terrestrial_Aquatic.name: build_monitoring_chemical_treatment,
         ActivitySubtypes.Monitoring_Mechanical_Plant_Terrestrial_Aquatic.name: build_monitoring_mechanical_treatment,
+        ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial.name: build_treatment_chemical_terrestrial,
+        ActivitySubtypes.Treatment_Chemical_Plant_Aquatic.name: build_treatment_chemical_aquatic,
     }
     if mock := MAP.get(subtype.name, None):
         # Cast to adapter (Which our submission API uses)
