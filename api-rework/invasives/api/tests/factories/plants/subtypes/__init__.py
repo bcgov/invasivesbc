@@ -1,2 +1,4 @@
 from .observation_terrestrial import build_observation_plant_terrestrial
 from .observation_aquatic import build_observation_plant_aquatic
+from .treatment_mechanical_aquatic import build_treatment_mechanical_aquatic
+from .treatment_mechanical_terrestrial import build_treatment_mechanical_terrestrial

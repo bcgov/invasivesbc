@@ -1,7 +1,7 @@
 import uuid, random
 from api.models.activity import ActivitySubtypes, ObservationType
 from api.models.enums import YesNoUnknown
-from api.tests.factories.plants.common import build_mock_base
+from api.tests.factories.plants.common import build_mock_base, build_shoreline_types
 
 from api.tests.factories.common import build_user, build_date_str
 from api.tests.factories.helpers import rand_code, rand_code_list
@@ -14,7 +14,6 @@ from api.models.codes import (
     WaterbodySubstrateCode,
     WaterbodyUseCode,
     WaterLevelManagement,
-    ShorelineTypeCode,
     WaterbodyFlowCode,
     WaterbodyTypeCode,
     WaterbodyFlowSeasonalCode,
@@ -84,22 +83,6 @@ def build_positive_observation(include_vs: bool = False):
     if include_vs:
         base["voucher_specimen"] = build_voucher_specimen()
     return base
-
-
-def build_shoreline_types(min: int = 1, max: int = 4):
-    num_entries = random.randint(min, max)
-
-    codes = set()
-    while len(codes) < num_entries:
-        codes.add(rand_code(ShorelineTypeCode))
-    cuts = sorted(random.sample(range(1, 100), num_entries - 1))
-    bounds = [0, *cuts, 100]
-    percents = [hi - lo for lo, hi in zip(bounds, bounds[1:])]
-
-    return [
-        {"shoreline_type": code, "percent_covered": percent}
-        for code, percent in zip(codes, percents)
-    ]
 
 
 def build_subtype_date():
