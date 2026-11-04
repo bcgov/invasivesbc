@@ -1,14 +1,12 @@
-import { useParams } from 'react-router';
+import { useLocation } from 'react-router';
 import ActivityForm from './ActivityForm';
-import { useSelector } from 'utils/use_selector';
 
 /**
  * @desc Lightweight wrapper for resetting local state when forms change without a rerender
  *       e.g. direct navigation via map popover
  */
 const ActivityFormWrapper = () => {
-  const { id } = useParams();
-  const formId = useSelector((state) => state.ActivityPage?.formId ?? '');
-  return <ActivityForm key={id + formId} />;
+  const { key } = useLocation(); // Updates even if route is the same (e.g. /new -> /new)
+  return <ActivityForm key={key} />;
 };
 export default ActivityFormWrapper;
