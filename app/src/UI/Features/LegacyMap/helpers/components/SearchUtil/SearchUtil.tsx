@@ -13,6 +13,7 @@ import { calc_lat_long_from_utm } from 'utils/utm';
 import RecordSearch from '../RecordSearch/RecordSearch';
 import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
 import Button from 'UI/Reusable/Button/Button';
+import useLocalStorage from 'UI/Features/Records/Activity/forms/plant/hooks/useLocalStorage';
 import './searchUtil.css';
 
 const SearchUtil = () => {
@@ -109,6 +110,8 @@ const SearchUtil = () => {
 
   const dispatch = useDispatch();
 
+  const persisted_mode = useLocalStorage('persisted-search-mode');
+
   const base_url = useSelector((state) => state.Configuration.current.runtime.API_BASE);
   const connected = useSelector((state) => state.Network.connected);
   const authorizedUser = useSelector((state) => state.Auth.loggedInOrWorkingOffline);
@@ -131,8 +134,10 @@ const SearchUtil = () => {
   const [utmResults, setUtmResults] = useState<number[]>([]);
 
   // Mode
-  const [mode, setMode] = useState<Mode>(Mode.RECORD_ID);
+  const [mode, setMode] = useState<Mode | `${Mode}`>((persisted_mode.get() as `${Mode}`) ?? Mode.RECORD_ID);
 
+  // Keep in Sync across app loads.
+  useEffect(() => persisted_mode.set(mode as string), [mode]);
   /**
    * Calculate lat long from UTM.
    */
