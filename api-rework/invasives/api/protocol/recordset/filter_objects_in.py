@@ -6,8 +6,10 @@ from pydantic import field_validator, Field
 class TableFilterIn(Schema):
     field: Optional[str] = None
     filter: Optional[str] = None
-    operator: Literal["CONTAINS"] | Literal["DOES NOT CONTAIN"]
-    operator2: Literal["AND"] | Literal["OR"]
+    operator: (
+        Literal["CONTAINS"] | Literal["DOES NOT CONTAIN"] | Literal["CONTAINED IN"]
+    )
+    operator2: Optional[Literal["AND"] | Literal["OR"]] = None
     geojson: Optional[dict] = None
     filterType: (
         Literal["spatialFilterDrawn"]
