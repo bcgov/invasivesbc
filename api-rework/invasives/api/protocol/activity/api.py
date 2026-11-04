@@ -89,7 +89,6 @@ def submit_record(request, data: PlantActivitySchema):
         else:
             # Ensure Subtype matches current standard.
             payload["creating_user"] = request.auth
-            payload["type"] = ActivitySubtypes[payload["subtype"]].typeOfActivity
 
         subtype_key = payload.get("subtype")
         processor = ACTIVITY_PROCESSORS.get(subtype_key)
@@ -154,7 +153,6 @@ def submit_draft_record(request, data: DraftPlantActivitySchema):
         instance = DraftActivity.objects.filter(id=payload.get("id")).first()
         if not instance:
             payload["creating_user"] = request.auth
-            payload["type"] = ActivitySubtypes[payload["subtype"]].typeOfActivity
 
         subtype_key = payload.get("subtype")
         processor = DRAFT_ACTIVITY_PROCESSORS.get(subtype_key)

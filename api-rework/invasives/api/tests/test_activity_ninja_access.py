@@ -8,6 +8,7 @@ from api.models import Role, User
 from api.models.activity import Activity, ActivitySubtypes, ActivityType
 from api.ninja_authentication import NinjaKeycloakAuthentication
 from api.tests.base_test_case import BaseTestCase
+from api.tests.factories.plants.create_plant_record import build_plant_record
 
 BASE = "/ninja/activities"
 
@@ -17,6 +18,7 @@ def fake_authenticate(self, request, token):
 
 
 class ActivityNinjaAccessTest(BaseTestCase):
+
     @classmethod
     def setUpTestData(cls):
         Role.objects.get_or_create(name=WellKnownRoles.MASTER_ADMINISTRATOR.value)
@@ -37,10 +39,18 @@ class ActivityNinjaAccessTest(BaseTestCase):
                 shape=GEOSGeometry("POINT(-123 49)", srid=4326),
             )
 
-        cls.owner_obs = make(1, ActivityType.Observation, owner)
-        cls.other_obs = make(2, ActivityType.Observation, other)
-        cls.owner_bio = make(3, ActivityType.Biocontrol, owner)
-        cls.other_bio = make(4, ActivityType.Biocontrol, other)
+        cls.owner_obs = build_plant_record(
+            subject=owner, subtype=ActivitySubtypes.Observation_Plant_Terrestrial
+        )
+        cls.other_obs = build_plant_record(
+            subject=other, subtype=ActivitySubtypes.Observation_Plant_Terrestrial
+        )
+        cls.owner_bio = build_plant_record(
+            subject=owner, subtype=ActivitySubtypes.Biocontrol_Release
+        )
+        cls.other_bio = build_plant_record(
+            subject=other, subtype=ActivitySubtypes.Biocontrol_Release
+        )
         cls.all_ids = {
             str(a.id)
             for a in (cls.owner_obs, cls.other_obs, cls.owner_bio, cls.other_bio)
