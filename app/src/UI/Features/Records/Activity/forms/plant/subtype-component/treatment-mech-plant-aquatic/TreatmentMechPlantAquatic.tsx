@@ -153,6 +153,7 @@ const TreatmentMechPlantAquatic = () => {
                   width={Width.Half}
                 />
                 <NumberInput
+                  acceptFloats
                   label={'Disposed Material Amount'}
                   error={get(errors, `${basePath}.disposed_material_amount`)}
                   width={Width.Half}
