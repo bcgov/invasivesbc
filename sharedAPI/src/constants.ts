@@ -39,10 +39,10 @@ export enum ActivitySubtypesShortLabels {
   Monitoring_Chemical_Plant_Terrestrial_Aquatic = 'Chemical Treatment Monitoring',
   Monitoring_Mechanical_Plant_Terrestrial_Aquatic = 'Mechanical Treatment Monitoring',
   Monitoring_Biocontrol_Release_Plant_Terrestrial = 'Biocontrol Release Monitoring', //
-  Treatment_Mechanical_Plant_Terrestrial = 'Terrestrial Plant Treatment - Mechanical', //
-  Treatment_Mechanical_Plant_Aquatic = 'Aquatic Plant Treatment - Mechanical', //
-  Treatment_Chemical_Plant_Terrestrial = 'Terrestrial Plant Treatment - Chemical', //
-  Treatment_Chemical_Plant_Aquatic = 'Aquatic Plant Treatment - Chemical', //
+  Treatment_Mechanical_Plant_Terrestrial = 'Mechanical - Terrestrial Plant Treatment', //
+  Treatment_Mechanical_Plant_Aquatic = 'Mechanical - Aquatic Plant Treatment', //
+  Treatment_Chemical_Plant_Terrestrial = 'Chemical - Terrestrial Plant Treatment', //
+  Treatment_Chemical_Plant_Aquatic = 'Chemical - Aquatic Plant Treatment', //
   Monitoring_Biocontrol_Dispersal_Plant_Terrestrial = 'Biocontrol Dispersal Monitoring', //
   Biocontrol_Collection = 'Biocontrol Collection', //
   Biocontrol_Release = 'Biocontrol Release' //
