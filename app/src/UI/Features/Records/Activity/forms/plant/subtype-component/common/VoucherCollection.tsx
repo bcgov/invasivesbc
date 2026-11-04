@@ -51,23 +51,18 @@ const VoucherCollection = ({ index }) => {
       <FormSpacer width={Width.Half} />
 
       <DateInput
-        error={get(errors, getPath('date_collected'))}
         label="Date Voucher Collected"
+        name={getPath('date_collected')}
         required
         width={Width.Half}
-        {...register(getPath('date_collected'), {
-          required: true,
-          validate: (val) => noFutureDate(val)
-        })}
+        rules={{ required: true, validate: (val) => noFutureDate(val) }}
       />
 
       <DateInput
-        error={get(errors, getPath('date_verified'))}
         label="Date Voucher Verified"
+        name={getPath('date_verified')}
         width={Width.Half}
-        {...register(getPath('date_verified'), {
-          validate: (val) => noFutureDate(val)
-        })}
+        rules={{ validate: (val) => noFutureDate(val) }}
       />
       <Fieldset label={'Voucher Verification Completed By'}>
         <TextInput

@@ -112,8 +112,8 @@ MINIMAL_BIOCONTROL_RELEASE_MONITORING = {
                 "count_duration_minutes": None,
                 "location_agent_found": [],
                 "sign_of_biocontrol_presence": [],
-                "start_time": "2026-06-09T03:22",
-                "stop_time": "2026-06-09T04:22",
+                "start_time": "2026-06-09T03:22:00Z",
+                "stop_time": "2026-06-09T04:22:00Z",
                 "suitable_for_collection": "",
                 "actual_biological_agents": [],
                 "estimated_biological_agents": [],
@@ -188,8 +188,8 @@ UPDATED_BIOCONTROL_RELEASE_MONITORING = {
                 "count_duration_minutes": 22,
                 "location_agent_found": ["BS", "CP"],
                 "sign_of_biocontrol_presence": ["AP", "CY"],
-                "start_time": "2026-06-09T03:22",
-                "stop_time": "2026-06-09T04:22",
+                "start_time": "2026-06-09T03:22:00Z",
+                "stop_time": "2026-06-09T04:22:00Z",
                 "suitable_for_collection": "Yes",
                 "actual_biological_agents": [
                     {

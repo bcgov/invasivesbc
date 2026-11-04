@@ -11,7 +11,5 @@ class SummaryOut(Schema):
     @classmethod
     def split_zone(cls, v):
         if isinstance(v, str):
-            print("inner", v)
             return v.split(",")
-        print("outter", v)
         return v

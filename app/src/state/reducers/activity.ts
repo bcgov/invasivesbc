@@ -263,9 +263,13 @@ function createActivityReducer() {
       } else if (FormActions.updateState.match(action)) {
         draftState.formState = structuredClone(action.payload);
       } else if (FormActions.sendForm.fulfilled.match(action)) {
-        if (!draftState.formState) return;
-        draftState.formId = action.payload.id;
-        draftState.activeActivity = action.payload.id;
+        if (action.payload?.data.id) {
+          draftState.formId = action.payload.data.id;
+          draftState.activeActivity = action.payload.data.id;
+          draftState.formState = action.payload.data as unknown as FormSchema;
+        }
+        draftState.formMetadata = action.payload?.metadata;
+        draftState.recordActions = action.payload?.available_actions;
       } else if (Activity.get.match(action)) {
         draftState.failCode = null;
         draftState.loading = true;

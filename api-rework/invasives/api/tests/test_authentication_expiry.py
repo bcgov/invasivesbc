@@ -14,7 +14,9 @@ from api.ninja_authentication import NinjaKeycloakAuthentication
 class AuthenticationExpiryTests(TestCase):
     def _user(self, expiry_date):
         return User.objects.update_or_create(
-            subject="test-user", defaults={"expiry_date": expiry_date}
+            subject="test-user",
+            display_name="test, user",
+            defaults={"expiry_date": expiry_date},
         )[0]
 
     def _ninja_request(self):

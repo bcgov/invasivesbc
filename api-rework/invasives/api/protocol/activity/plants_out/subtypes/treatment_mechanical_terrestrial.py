@@ -17,9 +17,7 @@ type EntryType = TerrestrialPlantMechanicalTreatmentEntry | DraftTerrestrialPlan
 # Regular
 ####
 class SubtypeData(Schema):
-    authorization_information: Optional[str] = None
     entries: List[MechanicalTreatmentEntryOut]
-    shoreline_types: List[ShorelineType]
 
     @staticmethod
     def resolve_entries(obj: Activity):

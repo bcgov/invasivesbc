@@ -323,12 +323,12 @@ const TreatmentChemicalPlant = () => {
           width={Width.Half}
         />
         <DateInput
-          error={get(errors, getContextPath('application_start_time'))}
           includeTime
           label={'Application Start Time'}
+          name={getContextPath('application_start_time')}
           required
           width={Width.Half}
-          {...register(getContextPath('application_start_time'), { required: true, validate: noFutureDate })}
+          rules={{ required: true, validate: noFutureDate }}
         />
         <CheckboxInput
           label={'Additional/Unmapped Wells or Water License intakes within 30m'}

@@ -190,8 +190,8 @@ const Form = () => {
           label={'Date'}
           tooltip={tooltips.basic.date}
           required
-          error={get(errors, 'date')}
-          {...register('date', { required: true, validate: (val) => noFutureDate(val) })}
+          name={'date'}
+          rules={{ required: true, validate: (val) => noFutureDate(val) }}
           width={Width.Half}
         />
         <Employer width={Width.Half} />

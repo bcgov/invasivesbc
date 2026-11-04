@@ -36,7 +36,7 @@ const RecordMetadata = ({ formState }: PropTypes) => {
           <Info term={'Activity Type'} definition={formState?.type} />
           <Info term={'Activity Subtype'} definition={ActivitySubtypesShortLabels[formState?.subtype]} />
           <Info term={'Date of Activity'} definition={formState?.date} />
-          <Info term={'Created By'} definition={formState?.created_by} />
+          <Info term={'Created By'} definition={metadata?.created_by} />
           {metadata?.created_date && (
             <Info term={'Created At'} definition={moment(metadata?.created_date).format('YYYY-MM-DD')} />
           )}

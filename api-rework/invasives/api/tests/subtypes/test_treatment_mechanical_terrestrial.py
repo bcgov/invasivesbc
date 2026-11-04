@@ -110,7 +110,7 @@ class TerrestrialMechanicalTreatmentTest(BaseActivitySubtypeTest):
         # Update Draft Record
         res = self.draft_record(payload)
         self.assertEqual(res.status_code, 200)
-        record = res.json()
+        record = res.json()["data"]
 
         # Update didn't delete DraftActivity,
         record_exists = DraftActivity.objects.filter(id=payload["id"]).exists()
@@ -145,7 +145,7 @@ class TerrestrialMechanicalTreatmentTest(BaseActivitySubtypeTest):
 
         # Submit Updated Record
         response = self.submit_record(payload)
-        record = response.json()
+        record = response.json()["data"]
 
         self.match_updated_subtype_details(
             record_in=payload["subtype_data"], record_out=record["subtype_data"]

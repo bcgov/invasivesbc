@@ -38,7 +38,9 @@ class NinjaKeycloakAuthentication(HttpBearer):
             subject = header.split("act_as_user=")[1]
             user = User.objects.filter(subject=subject).first()
             if not user:
-                user, _ = User.objects.update_or_create(subject="test-user")
+                user, _ = User.objects.update_or_create(
+                    subject="test-user", display_name="test, user"
+                )
             if user_is_expired(user):
                 return None
             return user

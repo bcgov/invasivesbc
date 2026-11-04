@@ -43,7 +43,7 @@ class TreatmentContextOut(Schema):
 
     @staticmethod
     def resolve_application_method(obj):
-        obj.application_method.code if obj.application_method else None
+        return obj.application_method.code if obj.application_method else None
 
     @staticmethod
     def resolve_herbicide(obj):

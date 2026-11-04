@@ -164,6 +164,7 @@ class DraftBaseFormSchema(CleanSchema):
     date: date
     id: str
     created_by: str
+    type: str
     # Should only accept drafts, not submissions.
     form_status: Literal[FormStatus.Draft]
     linked_activities: List[LinkedActivity]
@@ -190,6 +191,11 @@ class DraftBaseFormSchema(CleanSchema):
 
     class Meta:
         abstract = True
+
+    @model_validator(mode="before")
+    def set_type(self):
+        self.type = ActivitySubtypes[self.subtype].typeOfActivity.value
+        return self
 
 
 class BaseFormSchema(DraftBaseFormSchema):

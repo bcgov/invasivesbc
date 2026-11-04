@@ -5,6 +5,7 @@ from ninja import ModelSchema, Schema
 from pydantic import ConfigDict, Field
 from typing import List, Optional
 import uuid
+from api.permissions.activity_access import filter_activities_by_access
 
 from api.models.activity import (
     Activity,
@@ -81,7 +82,6 @@ class UploadedImageOut(Schema):
         try:
             return S3MediaFiles().get_b64_encoded_image(file_name=obj.file_name)
         except Exception as e:
-            print(e)
             return None
 
 
@@ -93,7 +93,7 @@ class BaseRecordOut(ModelSchema, ABC):
     jurisdictions: List[JurisdictionOut]
     linked_activities: List[LinkedActivityOut]
     media: List[UploadedImageOut]
-    participant: List[ParticipantOut]
+    participants: List[ParticipantOut]
     projects: List[ProjectOut]
     shape: dict
 
@@ -110,6 +110,8 @@ class BaseRecordOut(ModelSchema, ABC):
             "comment",
             "date",
             "area_m",
+            "latitude",
+            "longitude",
             "utm_zone",
             "utm_easting",
             "utm_northing",
@@ -139,15 +141,17 @@ class BaseRecordOut(ModelSchema, ABC):
         ).select_related("jurisdiction")
 
     @staticmethod
-    def resolve_linked_activities(obj: Activity):
-        return obj.linked_activities.all()
+    def resolve_linked_activities(obj: Activity, context):
+        return filter_activities_by_access(
+            obj.linked_activities.all(), context["request"].auth
+        )
 
     @staticmethod
     def resolve_media(obj: Activity):
         return UploadedImage.objects.filter(activity_data_record__activity_id=obj.id)
 
     @staticmethod
-    def resolve_participant(obj: Activity):
+    def resolve_participants(obj: Activity):
         return Participant.objects.filter(activity_data_record__activity_id=obj.id)
 
     @staticmethod
@@ -209,8 +213,10 @@ class DraftBaseRecordOut(BaseRecordOut, ABC):
         ).select_related("jurisdiction")
 
     @staticmethod
-    def resolve_linked_activities(obj: Activity):
-        return obj.linked_activities.all()
+    def resolve_linked_activities(obj: Activity, context):
+        return filter_activities_by_access(
+            obj.linked_activities.all(), context["request"].auth
+        )
 
     @staticmethod
     def resolve_media(obj: Activity):
@@ -219,7 +225,7 @@ class DraftBaseRecordOut(BaseRecordOut, ABC):
         )
 
     @staticmethod
-    def resolve_participant(obj: Activity):
+    def resolve_participants(obj: Activity):
         return DraftParticipant.objects.filter(activity_data_record__activity_id=obj.id)
 
     @staticmethod

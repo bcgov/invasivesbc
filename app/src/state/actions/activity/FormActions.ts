@@ -2,7 +2,7 @@ import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { Feature, GeoJSON } from 'geojson';
 import { ActivityStatus, ActivitySubtypes } from 'sharedAPI';
 import Alerts from 'state/actions/alerts/Alerts';
-import { RecordAction, RecordMetadata } from 'api/api-schema';
+import { PlantRecordWithMetadataOut, RecordAction } from 'api/api-schema';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import { RootState } from 'state/reducers/rootReducer';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
@@ -100,7 +100,7 @@ class FormActions {
       return {
         data: duplicatedForm as FormSchema,
         available_actions: ['EDIT', 'DELETE', 'SUBMIT'] as Array<RecordAction>,
-        metadata: {} as RecordMetadata
+        metadata: {} as PlantRecordWithMetadataOut['metadata']
       };
     }
   );
@@ -220,7 +220,7 @@ class FormActions {
         } else {
           dispatch(Alerts.create(formAlerts.recordSubmittedSuccess));
         }
-        return await res.json();
+        return (await res.json()) as PlantRecordWithMetadataOut;
       }
     }
   );

@@ -195,34 +195,34 @@ const BiocontrolReleaseMonitoringEntry = ({ index }: PropTypes) => {
       )}
 
       <DateInput
-        error={get(errors, getPath('start_time'))}
         includeTime
         label={'Monitoring Start Time'}
+        name={getPath('start_time')}
         required
         width={Width.Half}
-        {...register(getPath('start_time'), {
+        rules={{
           deps: [getPath('stop_time')],
           required: true,
           validate: {
             noFutureData: (val) => noFutureDate(val),
             startBeforeStop: validateMonitoringStartStopTimes
           }
-        })}
+        }}
       />
       <DateInput
-        error={get(errors, getPath('stop_time'))}
-        label={'Monitoring Stop Time'}
         includeTime
+        label={'Monitoring Stop Time'}
+        name={getPath('stop_time')}
         required
         width={Width.Half}
-        {...register(getPath('stop_time'), {
+        rules={{
           deps: [getPath('start_time')],
           required: true,
           validate: {
             noFutureData: (val) => noFutureDate(val),
             startBeforeStop: validateMonitoringStartStopTimes
           }
-        })}
+        }}
       />
       {biocontrolPresent && (
         <>

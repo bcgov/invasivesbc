@@ -171,13 +171,9 @@ class TerrestrialObservationTest(BaseActivitySubtypeTest):
         self.assertEqual(
             context_in["visible_well_nearby"], context_out["visible_well_nearby"]
         )
-        self.assertEqual(context_in["aspect"], context_out["aspect"]["code"])
-        self.assertEqual(
-            context_in["slope_percent"], context_out["slope_percent"]["code"]
-        )
-        self.assertEqual(
-            context_in["soil_texture"], context_out["soil_texture"]["code"]
-        )
+        self.assertEqual(context_in["aspect"], context_out["aspect"])
+        self.assertEqual(context_in["slope_percent"], context_out["slope_percent"])
+        self.assertEqual(context_in["soil_texture"], context_out["soil_texture"])
         self.assertEqual(
             context_in["suitable_for_biocontrol_agent"],
             context_out["suitable_for_biocontrol_agent"],
@@ -217,7 +213,7 @@ class TerrestrialObservationTest(BaseActivitySubtypeTest):
         # Update Draft Record
         res = self.draft_record(payload)
         self.assertEqual(res.status_code, 200)
-        record = res.json()
+        record = res.json()["data"]
 
         # Update didn't delete DraftActivity,
         record_exists = DraftActivity.objects.filter(id=payload["id"]).exists()
@@ -239,8 +235,8 @@ class TerrestrialObservationTest(BaseActivitySubtypeTest):
             - Record is created in DB
         """
         payload = MINIMAL_TERRESTRIAL_OBSERVATION
-        self.submit_record(payload).json()
-        record = self.fetch(id=payload["id"]).json()
+        self.submit_record(payload).json()["data"]
+        record = self.fetch(id=payload["id"])
 
         self.assertIsNotNone(record)
 
@@ -255,7 +251,7 @@ class TerrestrialObservationTest(BaseActivitySubtypeTest):
         self.submit_record(MINIMAL_TERRESTRIAL_OBSERVATION)
         # Submit Updated Record
         response = self.submit_record(payload)
-        record = response.json()
+        record = response.json()["data"]
 
         self.match_updated_subtype_details(
             record_in=payload["subtype_data"],
