@@ -1,6 +1,5 @@
 import uuid, random
 from django.db.models import Model
-from api.tests.factories.plants.common import build_mock_base
 from api.tests.factories.helpers import rand_code
 from api.tests.factories.common import build_date_time_str
 from api.models.enums import YesNoUnknown

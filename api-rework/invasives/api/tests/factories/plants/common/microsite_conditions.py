@@ -1,4 +1,3 @@
-import uuid, random
 from api.tests.factories.helpers import rand_code
 from api.models.codes import MesoslopePositionCode, SiteSurfaceShapeCode
 

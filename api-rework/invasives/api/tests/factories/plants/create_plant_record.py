@@ -1,11 +1,8 @@
 import uuid, json
 from pydantic import TypeAdapter
 from django.contrib.gis.geos import GEOSGeometry
-from api.models.activity import ActivitySubtypes
 from api.models.auth import User
-from api.tests.factories.common import (
-    build_user,
-)
+from api.tests.factories.common import build_user
 from api.tests.factories.plants.subtypes import (
     build_observation_plant_terrestrial,
     build_observation_plant_aquatic,
@@ -20,8 +17,7 @@ from api.tests.factories.plants.subtypes import (
     build_biocontrol_dispersal_monitoring,
 )
 from api.schemas.plant_activity import ACTIVITY_PROCESSORS
-from api.models.activity import Activity
-from typing import Optional
+from api.models.activity import Activity, ActivitySubtypes
 from api.protocol.activity.plant_subtypes.union_definition import PlantActivitySchema
 
 adapter = TypeAdapter(PlantActivitySchema)
