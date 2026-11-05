@@ -71,11 +71,6 @@ def submit_record(request, data: PlantActivitySchema):
         payload = data.model_dump(mode="python", exclude_unset=True)
         payload["form_status"] = FormStatus.Submitted.value
 
-        shape_data = payload.get("shape")
-        if shape_data:
-            geometry_dict = shape_data.get("geometry", shape_data)
-            payload["shape"] = GEOSGeometry(json.dumps(geometry_dict))
-
         # Check if Updating, or creating a new record
         activity_id = payload.get("id")
         if existing_record := Activity.objects.filter(id=activity_id).first():
@@ -143,11 +138,6 @@ def submit_draft_record(request, data: DraftPlantActivitySchema):
                 "A submitted record already exists with this ID. Cannot convert to draft record.",
                 status=409,
             )
-
-        shape_data = payload.get("shape", None)
-        if shape_data:
-            geometry_dict = shape_data.get("geometry", shape_data)
-            payload["shape"] = GEOSGeometry(json.dumps(geometry_dict))
 
         # Determine if Create or Update
         instance = DraftActivity.objects.filter(id=payload.get("id")).first()
