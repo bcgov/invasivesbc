@@ -116,6 +116,10 @@ class Activity(
         """
         For new records, Mutate the activity ID into the ShortID For a record
         """
+
+        # don't pass this kwarg (if it exists) to super, handle it locally
+        skip_post_commit_hook = kwargs.pop("skip_post_commit_hook", False)
+
         if kwargs.get("update_fields"):
             # Only update fields, nothing extra needed
             return super().save(*args, **kwargs)
@@ -128,7 +132,7 @@ class Activity(
 
         super().save(*args, **kwargs)
 
-        if self.form_status == "Submitted":
+        if self.form_status == "Submitted" and not skip_post_commit_hook:
             from api.tasks import build_csv_rows
 
             if not self.computed_fields_generated:
@@ -142,6 +146,8 @@ class Activity(
                 transaction.on_commit(lambda: sequential.apply_async())
             else:
                 transaction.on_commit(lambda: build_csv_rows.apply_async((self.id,)))
+
+        return None
 
 
 class ActivityDataRecord(models.Model):
