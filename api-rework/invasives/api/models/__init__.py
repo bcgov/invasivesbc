@@ -1,3 +1,4 @@
+from .read_only_wrapper import ReadOnlyManager
 from .auth import User, Role, EmployerAssociation, PACNumber
 from .cache import *
 from .map_generation import *
