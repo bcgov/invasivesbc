@@ -34,7 +34,8 @@ class WeatherConditionsOut(Schema):
 
 
 class WeatherConditionsOutMixin(Schema):
-    weather_conditions: WeatherConditionsOut
+    # Flagged as optional because of old system where this was bypassable.
+    weather_conditions: Optional[WeatherConditionsOut]
 
     @staticmethod
     def resolve_weather_conditions(obj: Activity):
