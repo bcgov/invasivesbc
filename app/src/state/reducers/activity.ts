@@ -281,9 +281,9 @@ function createActivityReducer() {
         const { data, available_actions, metadata } = action.payload;
         draftState.formType = data.subtype as ActivitySubtypes;
         draftState.formId = data.id;
-        draftState.formState = data as unknown as FormSchema;
+        draftState.formState = data;
         draftState.recordActions = available_actions;
-        draftState.formMetadata = metadata as RecordMetadata;
+        draftState.formMetadata = metadata;
         draftState.loading = false;
       } else if (Activity.getActivity.rejected.match(action) && isRejectedWithValue(action) && action.payload === 404) {
         draftState.recordNotFound = true;

@@ -12,7 +12,7 @@ import UserRecord from 'interfaces/UserRecord';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import { RootState } from 'state/reducers/rootReducer';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
-import { RecordAction, SingleActivityResponse } from 'api/api-schema';
+import { PlantRecordWithMetadataOut, RecordAction } from 'api/api-schema';
 import FormCode from 'interfaces/FormCode';
 
 interface INewActivity {
@@ -119,7 +119,7 @@ class Activity {
             data: JSON.parse(record.data),
             available_actions: ['DELETE', 'EDIT', 'SUBMIT'],
             metadata: {}
-          } as SingleActivityResponse;
+          } as PlantRecordWithMetadataOut;
         }
         if (!Network.connected) {
           // Attempt fetching from cache if online
@@ -130,7 +130,7 @@ class Activity {
               data: offlineRecord,
               available_actions: [] as Array<RecordAction>,
               metadata: {}
-            } as SingleActivityResponse;
+            } as PlantRecordWithMetadataOut;
           return rejectWithValue(404);
         }
       }
