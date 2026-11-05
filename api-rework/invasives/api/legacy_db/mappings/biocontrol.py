@@ -297,6 +297,12 @@ def add_subtype_payload_for_biocontrol_release_monitoring_terrestrial_plant(
     ):
         adr = ActivityDataRecord.objects.create(activity=new)
 
+        # Legacy DB kept values in one column, this separates them based on the Type of monitoring.
+        translated_plant_count = (
+            {"plant_count": ri.plant_count}
+            if (ri.monitoring_type and ri.monitoring_type == "Count")
+            else {"count_duration_minutes": ri.plant_count}
+        )
         TerrestrialBiocontrolDispersalMonitoringEntry.objects.create(
             activity_data_record=adr,
             invasive_plant=PlantsWithBiocontrol.objects.get(
@@ -311,11 +317,11 @@ def add_subtype_payload_for_biocontrol_release_monitoring_terrestrial_plant(
             monitoring_method=BioAgentMonitoringMethodCode.objects.get(
                 code=ri.biocontrol_monitoring_methods_code
             ),
-            plant_count=ri.plant_count,
             number_of_sweeps=ri.num_of_sweeps,
             start_time=ri.start_time,
             stop_time=ri.stop_time,
             suitable_for_collection=ri.suitable_collection_site,
+            **translated_plant_count,
         )
 
         add_agent_location_and_presence(adr, ri)
