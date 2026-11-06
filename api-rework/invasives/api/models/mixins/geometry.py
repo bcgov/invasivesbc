@@ -34,7 +34,7 @@ class GeometryMixin(models.Model):
     location_description = models.CharField(max_length=16384, null=True)
 
     shape = geomodels.GeometryField(
-        srid=4326, geography=False, spatial_index=True, null=False
+        srid=3005, geography=False, spatial_index=True, null=False
     )
     shape_radius = models.DecimalField(
         max_digits=17,
@@ -116,7 +116,7 @@ class DraftGeometry(GeometryMixin):
         blank=True,
     )
     shape = geomodels.GeometryField(
-        srid=4326,
+        srid=3005,
         geography=False,
         spatial_index=True,
         null=True,

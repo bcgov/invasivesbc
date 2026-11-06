@@ -313,11 +313,6 @@ class ActivityRecordsetFilterTest(BaseTestCase):
         for mock in mocks:
             schema_instance = adapter.validate_python(mock)
             parsed = schema_instance.model_dump(mode="python", exclude_unset=True)
-            shape_data = parsed.get("shape", None)
-
-            if shape_data:
-                geometry_dict = shape_data.get("geometry", shape_data)
-                parsed["shape"] = GEOSGeometry(json.dumps(geometry_dict))
             parsed["type"] = ActivitySubtypes[parsed["subtype"]].typeOfActivity
             subtype = parsed.get("subtype")
             processor = ACTIVITY_PROCESSORS.get(subtype)

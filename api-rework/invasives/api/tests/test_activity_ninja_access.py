@@ -36,7 +36,9 @@ class ActivityNinjaAccessTest(BaseTestCase):
                 date=datetime.date(2024, 1, 1),
                 created_by="x",
                 creating_user=creator,
-                shape=GEOSGeometry("POINT(-123 49)", srid=4326),
+                shape=GEOSGeometry(
+                    "POINT(1219731.7708793015 447290.49891930923)", srid=3005
+                ),
             )
 
         cls.owner_obs = build_plant_record(
@@ -135,7 +137,7 @@ class ActivityNinjaAccessTest(BaseTestCase):
             date=datetime.date(2024, 1, 1),
             created_by="x",
             creating_user=self.owner_obs.creating_user,
-            shape=GEOSGeometry("POINT(-123 49)", srid=4326),
+            shape=GEOSGeometry("POINT(-123 49)", srid=3005),
         )
         linkers = [self.owner_bio, self.other_obs, extra]
         for a in linkers:
