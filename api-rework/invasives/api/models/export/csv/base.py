@@ -37,7 +37,7 @@ class BaseCsvExportModel(models.Model):
     computed_elevation_m = models.IntegerField(null=True, blank=True)
     has_photo = models.CharField()
     created_timestamp = models.DateTimeField()
-    shape = geomodels.GeometryField(srid=4326, geography=False)
+    shape = geomodels.GeometryField(srid=3005, geography=False)
 
     class Meta:
         abstract = True

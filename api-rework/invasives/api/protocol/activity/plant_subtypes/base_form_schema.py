@@ -1,7 +1,7 @@
 import json
 from datetime import date
 from ninja import Schema
-from typing import Annotated, Dict, List, Literal, Optional, Union
+from typing import List, Literal, Optional
 from django.contrib.gis.geos import GEOSGeometry
 from pydantic import Field, model_validator, field_validator, ConfigDict
 from api.models.activity import FormStatus, Activity
@@ -14,72 +14,8 @@ from api.protocol.activity.validators.code_validation import (
     JurisdictionCodeType,
     FundingAgencyCodeType,
 )
-from geojson_pydantic import Feature, FeatureCollection
-from geojson_pydantic.geometries import (
-    Point,
-    MultiPoint,
-    LineString,
-    MultiLineString,
-    Polygon,
-    MultiPolygon,
-    GeometryCollection as _GeometryCollection,
-)
-from geojson_pydantic.types import Position2D
 
 MAX_AREA_FOR_RECORD = 500000
-
-
-# Override base classes to use a 2D Coordinate system as we don't use z-indexes in app.
-class Point2D(Point):
-    coordinates: Position2D
-
-
-class MultiPoint2D(MultiPoint):
-    coordinates: List[Position2D]
-
-
-class LineString2D(LineString):
-    coordinates: List[Position2D]
-
-
-class MultiLineString2D(MultiLineString):
-    coordinates: List[List[Position2D]]
-
-
-class Polygon2D(Polygon):
-    coordinates: List[List[Position2D]]
-
-
-class MultiPolygon2D(MultiPolygon):
-    coordinates: List[List[List[Position2D]]]
-
-
-class GeometryCollection2D(_GeometryCollection):
-    geometries: List["Geometry2D"]
-
-
-Geometry2D = Annotated[
-    Union[
-        Point2D,
-        MultiPoint2D,
-        LineString2D,
-        MultiLineString2D,
-        Polygon2D,
-        MultiPolygon2D,
-        GeometryCollection2D,
-    ],
-    Field(discriminator="type"),
-]
-
-GeometryCollection2D.model_rebuild()
-Feature2D = Feature[Geometry2D, Optional[Dict]]
-FeatureCollection2D = FeatureCollection[Feature2D]
-
-
-AnyGeoJSON2D = Annotated[
-    Union[Feature2D, FeatureCollection2D, Geometry2D],
-    Field(discriminator="type"),
-]
 
 
 class CleanSchema(Schema):
@@ -177,7 +113,7 @@ class DraftBaseFormSchema(CleanSchema):
 
     # Geometry Values
     area_m: Optional[int]
-    shape: Optional[AnyGeoJSON2D] = None
+    shape: Optional[GEOSGeometry] = None
     latitude: Optional[float]
     longitude: Optional[float]
     utm_easting: Optional[int]
@@ -191,6 +127,15 @@ class DraftBaseFormSchema(CleanSchema):
 
     class Meta:
         abstract = True
+
+    @model_validator(mode="before")
+    def transform_user_shape(self):
+        if shape := getattr(self, "shape", None):
+            geometry_dict = self.shape.get("geometry", shape)
+            geom = GEOSGeometry(json.dumps(geometry_dict), srid=4326)
+            geom.transform(3005)
+            self.shape = geom
+        return self
 
     @model_validator(mode="before")
     def set_type(self):
@@ -208,7 +153,7 @@ class BaseFormSchema(DraftBaseFormSchema):
     jurisdictions: List[JurisdictionSchema] = Field(..., min_length=1)
     participants: List[Participant] = Field(..., min_length=1)
     area_m: int = Field(..., gt=0, le=MAX_AREA_FOR_RECORD)
-    shape: AnyGeoJSON2D
+    shape: GEOSGeometry
     latitude: float
     longitude: float
     utm_easting: int

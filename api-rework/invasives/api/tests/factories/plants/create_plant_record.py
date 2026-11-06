@@ -62,10 +62,5 @@ def build_plant_record(
         ).model_dump(mode="python", exclude_unset=True)
         # Prep Processor
         processor = ACTIVITY_PROCESSORS.get(subtype.name)
-        # Process Shape to comply
-        shape_data = record.get("shape")
-        if shape_data:
-            geometry_dict = shape_data.get("geometry", shape_data)
-            record["shape"] = GEOSGeometry(json.dumps(geometry_dict))
         # Handle Activity Processing (Creation)
         return processor.process(payload=record, instance=None)
