@@ -14,3 +14,4 @@ from .treatments import *
 from .biocontrol import *
 
 from .uploaded_image import *
+from .bcgw_observation_export_view import BCGWObservationExportView
