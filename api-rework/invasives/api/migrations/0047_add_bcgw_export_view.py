@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("api", "0045_drop_stale_plant_fks"),
+        ("api", "0046_alter_activity_shape_and_more"),
     ]
 
     operations = [
