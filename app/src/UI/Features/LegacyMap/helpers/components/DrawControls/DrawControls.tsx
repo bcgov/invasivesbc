@@ -447,6 +447,7 @@ const DrawControls = ({ mapReady }) => {
 
     if (whatsHereToggle) {
       setMode(TargetMode.WHATS_HERE);
+      disableDrawButtons(true);
     } else if (planMyTripDrawMode) {
       setMode(TargetMode.TRIP_PLANNING);
     } else if (drawingCustomLayer) {
