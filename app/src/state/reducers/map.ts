@@ -234,6 +234,8 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         draftState.whatsHere.IAPPPage = 0;
         draftState.whatsHere.IAPPLimit = 5;
         draftState.whatsHere.IAPPSortDirection = SortFilter.Desc;
+
+        draftState.whatsHere.feature = action.meta.arg.shape;
       } else if (WhatsHere.processWhatsHereIds.fulfilled.match(action)) {
         draftState.whatsHere.shapeCentre = action.payload.shapeCentre;
         draftState.whatsHere.ActivityIDs = action.payload.ibcIds;

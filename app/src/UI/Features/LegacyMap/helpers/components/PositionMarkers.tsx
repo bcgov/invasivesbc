@@ -12,6 +12,7 @@ import { handlePositionTracking } from 'UI/Features/LegacyMap/helpers/functional
 import { buildTimeConfig } from 'state/configuration/build-time-config';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import { makeMapMarker, makeMarkerElement } from 'utils/makeMapMarker';
+import { refreshWhatsHereFeature } from '../functional/whats-here';
 
 const PositionMarkers = ({ mapReady }) => {
   const map = useContext(MapContext);
@@ -73,10 +74,11 @@ const PositionMarkers = ({ mapReady }) => {
       id: readableIdentifier,
       recordType: userRecordOnHoverRecordType
     });
+    refreshWhatsHereFeature(map, { whatsHereFeature: hoveredFeature });
     refreshCurrentRecMakers(map, {
       userRecordOnHoverRecordGeometry,
       whatsHereMarker: hoveredFeatureMarker.current,
-      whatsHereFeature: userRecordOnHoverRecordGeometry
+      whatsHereFeature: hoveredFeatureMarker
     });
   }, [hoveredFeature, userRecordOnHoverRecordID, userRecordOnHoverRecordGeometry, readableIdentifier, mapReady, map]);
 
