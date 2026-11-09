@@ -1,5 +1,4 @@
 import { useContext, useEffect, useRef } from 'react';
-import { refreshWhatsHereFeature } from 'UI/Features/LegacyMap/helpers/functional/whats-here';
 import {
   refreshCurrentRecMakers,
   refreshHighlightedRecord
@@ -50,9 +49,9 @@ const PositionMarkers = ({ mapReady }) => {
   const readableIdentifier = useSelector((state) => state.Map?.readableIdentifier);
 
   // Map Marker Refs
-  const activityMarker = useRef<maplibregl.Marker>();
-  const IAPPMarker = useRef<maplibregl.Marker>();
-  const hoveredFeatureMarker = useRef<maplibregl.Marker>();
+  const activityMarker = useRef<maplibregl.Marker>(null);
+  const IAPPMarker = useRef<maplibregl.Marker>(null);
+  const hoveredFeatureMarker = useRef<maplibregl.Marker>(null);
   const positionMarker = useRef(
     new maplibregl.Marker({
       element: makeMarkerElement(
@@ -77,9 +76,9 @@ const PositionMarkers = ({ mapReady }) => {
     refreshCurrentRecMakers(map, {
       userRecordOnHoverRecordGeometry,
       whatsHereMarker: hoveredFeatureMarker.current,
-      whatsHereFeature: hoveredFeature
+      whatsHereFeature: userRecordOnHoverRecordGeometry
     });
-  }, [hoveredFeature, userRecordOnHoverRecordID, readableIdentifier, mapReady, map]);
+  }, [hoveredFeature, userRecordOnHoverRecordID, userRecordOnHoverRecordGeometry, readableIdentifier, mapReady, map]);
 
   // Sets Map Marker for Active IAPP
   useEffect(() => {
@@ -127,7 +126,6 @@ const PositionMarkers = ({ mapReady }) => {
   useEffect(() => {
     if (!mapReady) return;
     if (map == null) return;
-
     refreshHighlightedRecord(map, { userRecordOnHoverRecordGeometry, userRecordOnHoverRecordType });
     if (quickPanToRecord && userRecordOnHoverRecordGeometry) {
       const c = pointOnFeature(userRecordOnHoverRecordGeometry).geometry.coordinates as LngLatLike;
@@ -140,15 +138,6 @@ const PositionMarkers = ({ mapReady }) => {
       }
     }
   }, [userRecordOnHoverRecordGeometry, quickPanToRecord, map, mapReady]);
-
-  useEffect(() => {
-    if (!mapReady) return;
-    if (map == null) {
-      return;
-    }
-
-    refreshWhatsHereFeature(map, { whatsHereFeature: hoveredFeature });
-  }, [hoveredFeature, appModeUrl, map, mapReady]);
 
   useEffect(() => {
     try {

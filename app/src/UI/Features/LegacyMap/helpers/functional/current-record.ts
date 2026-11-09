@@ -12,15 +12,14 @@ export const refreshCurrentRecMakers = (map, options: any) => {
     options.activityMarker.addTo(map);
   }
 
-  if (
-    options.whatsHereMarker &&
-    (options.userRecordOnHoverRecordGeometry?.geometry?.[0] || options.userRecordOnHoverRecordGeometry?.geometry)
-  ) {
-    options.whatsHereMarker.setLngLat(
-      pointOnFeature(
-        options.userRecordOnHoverRecordGeometry?.geometry?.[0] || options.userRecordOnHoverRecordGeometry?.geometry
-      ).geometry?.coordinates
-    );
+  if (options.userRecordOnHoverRecordGeometry) {
+    if (options.userRecordOnHoverRecordGeometry.type === 'Point') {
+      options.whatsHereMarker.setLngLat(options.userRecordOnHoverRecordGeometry.coordinates);
+    } else {
+      options.whatsHereMarker.setLngLat(
+        pointOnFeature(options.userRecordOnHoverRecordGeometry?.geometry).geometry.coordinates
+      );
+    }
     options.whatsHereMarker.addTo(map);
   }
 };
