@@ -34,7 +34,7 @@ const makeMarkerElement = (image: string, classes: string) => {
 const markerPopoverContents = (
   markerRef: MutableRefObject<maplibregl.Marker | undefined>,
   id?: string | number,
-  recordType?: RecordSetType
+  recordType?: `${RecordSetType}`
 ) => {
   const main = document.createElement('div');
   if (id) {
@@ -63,7 +63,7 @@ interface IMarkerOptions {
   ref: MutableRefObject<maplibregl.Marker | undefined>;
   classes?: string;
   id?: string | number;
-  recordType?: RecordSetType;
+  recordType?: `${RecordSetType}`;
 }
 interface IMarkerOptionsIcon extends IMarkerOptions {
   iconSrc: string;
