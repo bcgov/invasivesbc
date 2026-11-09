@@ -122,7 +122,6 @@ class FilteredActivityQueryset:
             f"{leading}terrestrialbiocontrolreleaseentry__{plant_column}",
             f"{leading}aquatictreatmentmonitoringentry__{plant_column}",
             f"{leading}terrestrialbiocontrolcollectionentry__{plant_column}",
-            f"{leading}terrestrialbiocontrolreleaseentry__{plant_column}",
             f"{leading}chemplantentryaquatic__{plant_column}",
             f"{leading}chemplantentryterrestrial__{plant_column}",
         ]
@@ -157,15 +156,23 @@ class FilteredActivityQueryset:
     def apply_filters(self):
         if self._is_filtered:
             return self
-
         for obj in self.filter_objects:
-            ids_to_filter = obj.get("ids_to_filter")
-            if ids_to_filter:
-                uuids = [id for id in ids_to_filter if uuid_regex.match(id)]
-                short_ids = [id for id in ids_to_filter if short_id_regex.match(id)]
-                self.queryset = self.queryset.filter(
-                    Q(id__in=uuids) | Q(short_id__in=short_ids)
-                )
+            if raw_ids := obj.get("ids_to_filter"):
+                uuids, short_ids = [], []
+                for id in raw_ids:
+
+                    if uuid_regex.match(id.lower()):
+                        uuids.append(id.lower())
+                    elif short_id_regex.match(id):
+                        short_ids.append(id)
+
+                id_q = Q()
+                if uuids:
+                    id_q |= Q(id__in=uuids)
+                if short_ids:
+                    id_q |= Q(short_id__in=short_ids)
+                if id_q:
+                    self.queryset = self.queryset.filter(id_q)
 
             or_group = Q()
             for f in obj.get("tableFilters", []):
@@ -180,8 +187,10 @@ class FilteredActivityQueryset:
             if or_group:
                 self.queryset = self.queryset.filter(or_group)
 
-        # Collapse duplicates caused by ORM filter joins.
-        self.queryset = self.queryset.distinct()
+        # Only 1:M table filters can duplicate rows; an ID-only request can't
+        if any(obj.get("tableFilters") for obj in self.filter_objects):
+            self.queryset = self.queryset.distinct()
+
         self._is_filtered = True
         return self
 
@@ -190,11 +199,11 @@ class FilteredActivityQueryset:
         Adjust the response of the Queryset if needed (E.g.: User only wants list of IDs)
         """
         self.apply_filters()
-        self.queryset = self.queryset.prefetch_related(*self.BASE_PREFETCH)
         if fields:
             if len(fields) == 1:
                 return self.queryset.values_list(fields[0], flat=True)
             return self.queryset.values_list(*fields)
+        self.queryset = self.queryset.prefetch_related(*self.BASE_PREFETCH)
         return self
 
     def apply_sorting(self):
@@ -411,7 +420,6 @@ class FilteredActivityQueryset:
         else:
             db_path = self.SORT_MAPPING.get(field, field)
             current_q = Q(**{f"{db_path}__icontains": value})
-
         if operator == "DOES NOT CONTAIN":
             if field in one_to_many_relations:
                 matching_ids = self.model.objects.filter(current_q).values("id")
