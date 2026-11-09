@@ -14,7 +14,7 @@
     border-collapse: separate; /* Change from collapse to separate */
     border-spacing: 0; /* Removes the gaps between cells */
     border-bottom: 1pt solid lightgray;
-
+    width: max-content;
     thead {
       top: 0;
       overflow-x: scroll;
@@ -64,6 +64,9 @@
       padding: 8px;
       vertical-align: text-top;
       text-align: left;
+      max-width: 500px;
+      white-space: normal;
+      overflow-wrap: anywhere;
 
       .null-value {
         color: #ccc;
