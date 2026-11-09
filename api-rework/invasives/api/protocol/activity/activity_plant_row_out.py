@@ -75,6 +75,7 @@ class ActivityPlantRowOut(ModelSchema):
         ..., alias="computed_invasive_plant_management_areas"
     )
     regional_invasive_species_organization_areas: Optional[str] = None
+    reported_area: Optional[int] = Field(..., alias="area_m")
     agency: Optional[str] = None
     updated_by: Optional[str] = None
     species_biocontrol_full: Optional[str] = None
@@ -115,7 +116,7 @@ class ActivityPlantRowOut(ModelSchema):
     @staticmethod
     def resolve_agency(obj: Activity):
         return (
-            ",".join(
+            ", ".join(
                 FundingAgency.objects.filter(activity_data_record__activity_id=obj.id)
                 .distinct("agency__full")
                 .order_by("agency__full")
@@ -160,7 +161,7 @@ class ActivityPlantRowOut(ModelSchema):
                 .distinct("invasive_plant__full")
                 .values_list("invasive_plant__full", flat=True)
             )
-        return ",".join(sorted(set(plants))) or None
+        return ", ".join(sorted(set(plants))) or None
 
     @staticmethod
     def resolve_species_negative_full(obj: Activity):
@@ -214,7 +215,7 @@ class ActivityPlantRowOut(ModelSchema):
                 .distinct("invasive_plant__full")
                 .values_list("invasive_plant__full", flat=True)
             )
-        return ",".join(sorted(set(plants))) or None
+        return ", ".join(sorted(set(plants))) or None
 
     @staticmethod
     def resolve_jurisdiction_display(obj: Activity):
@@ -318,7 +319,7 @@ class DraftActivityPlantRowOut(ActivityPlantRowOut):
     @staticmethod
     def resolve_agency(obj: DraftActivity):
         return (
-            ",".join(
+            ", ".join(
                 DraftFundingAgency.objects.filter(
                     activity_data_record__activity_id=obj.id, agency__isnull=False
                 )
@@ -366,7 +367,7 @@ class DraftActivityPlantRowOut(ActivityPlantRowOut):
                 .distinct("invasive_plant__full")
                 .values_list("invasive_plant__full", flat=True)
             )
-        return ",".join(sorted(set(plants))) or None
+        return ", ".join(sorted(set(plants))) or None
 
     @staticmethod
     def resolve_species_negative_full(obj: DraftActivity):
@@ -425,7 +426,7 @@ class DraftActivityPlantRowOut(ActivityPlantRowOut):
                 .distinct("invasive_plant__full")
                 .values_list("invasive_plant__full", flat=True)
             )
-        return ",".join(sorted(set(plants))) or None
+        return ", ".join(sorted(set(plants))) or None
 
     @staticmethod
     def resolve_jurisdiction_display(obj: DraftActivity):
