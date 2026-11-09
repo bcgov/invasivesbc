@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { useDispatch, useSelector } from 'utils/use_selector';
@@ -28,6 +28,8 @@ import DrawToolActions from 'state/actions/drawtool/drawToolActions';
 import { useLocation, useNavigate } from 'react-router';
 import DrawControlCrosshair from '../DrawControlCrosshair/DrawControlCrosshair';
 import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
+import bbox from '@turf/bbox';
+import { PointLike } from 'maplibre-gl';
 
 // @ts-expect-error mapboxdraw compatibility with maplibre-gl issue
 MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl';
@@ -366,52 +368,78 @@ const DrawControls = ({ mapReady }) => {
     });
   };
 
-  const drawCreate = useCallback((event) => {
-    if (!drawInstance.current) return;
+  const drawCreate = useCallback(
+    (event) => {
+      if (!drawInstance.current) return;
 
-    const currentMode = modeRef.current;
+      const currentMode = modeRef.current;
 
-    //enforce one at a time everywhere
-    const feature = event.features[0];
-    try {
-      drawInstance.current.deleteAll();
-      drawInstance.current.add(feature);
-    } catch (e) {
-      console.error(e);
-    }
-
-    switch (currentMode) {
-      case TargetMode.WHATS_HERE: {
-        dispatch(WhatsHere.map_feature({ type: 'Feature', geometry: feature.geometry }));
-        if (location.pathname !== '/WhatsHere') {
-          navigate('/WhatsHere');
-        }
-        break;
-      }
-      case TargetMode.ACTIVITY_FORM:
-      case TargetMode.LEGACY_FORM: {
-        dispatch(DrawToolActions.createShape(feature));
-        break;
-      }
-      case TargetMode.ACTIVITY_GEO_TRACK: {
-        break; // don't do anything
-      }
-      case TargetMode.CUSTOM_LAYER:
-        dispatch(DrawToolActions.updateShape(feature));
-        break;
-      case TargetMode.TRIP_PLANNING: {
-        dispatch(PlanMyTrip.setShape({ geometry: feature.geometry }));
-        break;
-      }
-      case TargetMode.DISABLED: {
+      //enforce one at a time everywhere
+      const feature = event.features[0];
+      try {
         drawInstance.current.deleteAll();
-        break;
+        drawInstance.current.add(feature);
+      } catch (e) {
+        console.error(e);
       }
-      default: {
-        dispatch(DrawToolActions.createShape(feature));
+
+      switch (currentMode) {
+        case TargetMode.WHATS_HERE: {
+          /** @desc Query the Map for Features in the given bounds. */
+          const getWhatsHereIds = (feature) => {
+            const layers = map
+              .getLayersOrder()
+              .filter((id) => id.includes('recordset-layer-') || id.includes('offline-activity'));
+
+            const [minLng, minLat, maxLng, maxLat] = bbox(feature);
+            const sw = map.project([minLng, minLat]); // bottom-left on screen
+            const ne = map.project([maxLng, maxLat]); // top-right on screen
+
+            const pixelBox: [PointLike, PointLike] = [
+              [Math.min(sw.x, ne.x), Math.min(sw.y, ne.y)],
+              [Math.max(sw.x, ne.x), Math.max(sw.y, ne.y)]
+            ];
+            return Array.from(
+              new Set(
+                map
+                  .queryRenderedFeatures(pixelBox, { layers })
+                  .map((f) => f?.properties?.id ?? f?.properties?.site_id)
+                  .filter(Boolean) as Array<string | number>
+              )
+            );
+          };
+          dispatch(WhatsHere.processWhatsHereIds({ ids: getWhatsHereIds(feature), shape: feature }));
+          if (location.pathname !== '/WhatsHere') {
+            navigate('/WhatsHere');
+          }
+          break;
+        }
+        case TargetMode.ACTIVITY_FORM:
+        case TargetMode.LEGACY_FORM: {
+          dispatch(DrawToolActions.createShape(feature));
+          break;
+        }
+        case TargetMode.ACTIVITY_GEO_TRACK: {
+          break; // don't do anything
+        }
+        case TargetMode.CUSTOM_LAYER:
+          dispatch(DrawToolActions.updateShape(feature));
+          break;
+        case TargetMode.TRIP_PLANNING: {
+          dispatch(PlanMyTrip.setShape({ geometry: feature.geometry }));
+          break;
+        }
+        case TargetMode.DISABLED: {
+          drawInstance.current.deleteAll();
+          break;
+        }
+        default: {
+          dispatch(DrawToolActions.createShape(feature));
+        }
       }
-    }
-  }, []);
+    },
+    [map]
+  );
 
   // setup mode based on what's going on in the redux store / current url
   useEffect(() => {
