@@ -516,7 +516,7 @@ const DrawControls = ({ mapReady }) => {
 
     switch (mode) {
       case TargetMode.WHATS_HERE:
-        drawInstance.current.changeMode('whats_here_box_mode');
+        drawInstance.current.changeMode('whats_here_box_mode', { persist: true });
         break;
       case TargetMode.ACTIVITY_GEO_TRACK:
         drawInstance.current.changeMode('geo_tracking_mode');

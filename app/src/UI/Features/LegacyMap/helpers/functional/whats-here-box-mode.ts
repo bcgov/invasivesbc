@@ -1,4 +1,4 @@
-import MapboxDraw, { DrawCustomMode, DrawFeature } from '@mapbox/mapbox-gl-draw';
+import MapboxDraw, { DrawCustomMode, DrawFeature, DrawMode } from '@mapbox/mapbox-gl-draw';
 import { GeoJSON } from 'geojson';
 
 enum DrawState {
@@ -14,9 +14,12 @@ interface WhatsHereBoxState {
   startPoint: [number, number];
   endPoint: [number, number];
   drawing: DrawState;
+  persist: boolean;
 }
 
-interface WhatsHereBoxOptions {}
+interface WhatsHereBoxOptions {
+  persist?: boolean;
+}
 
 function updateRectangle(state: WhatsHereBoxState) {
   state.rectangle.updateCoordinate('0.0', state.startPoint[0], state.startPoint[1]); //minX, minY - the starting point
@@ -27,7 +30,7 @@ function updateRectangle(state: WhatsHereBoxState) {
 }
 
 const WhatsHereBoxMode: DrawCustomMode<WhatsHereBoxState, WhatsHereBoxOptions> = {
-  onSetup: function (_opts: WhatsHereBoxOptions): WhatsHereBoxState {
+  onSetup: function (opts: WhatsHereBoxOptions): WhatsHereBoxState {
     const rectangle = this.newFeature({
       type: 'Feature',
       properties: {},
@@ -62,7 +65,8 @@ const WhatsHereBoxMode: DrawCustomMode<WhatsHereBoxState, WhatsHereBoxOptions> =
       startPointIndicator,
       startPoint: [0, 0],
       endPoint: [0, 0],
-      drawing: DrawState.INVALID
+      drawing: DrawState.INVALID,
+      persist: !!opts?.persist
     };
   },
   onClick: function (state: WhatsHereBoxState, e: MapboxDraw.MapMouseEvent) {
@@ -71,7 +75,11 @@ const WhatsHereBoxMode: DrawCustomMode<WhatsHereBoxState, WhatsHereBoxOptions> =
         state.endPoint = [e.lngLat.lng, e.lngLat.lat];
         state.drawing = DrawState.DRAWN;
         updateRectangle(state);
-        this.changeMode('simple_select', { featuresId: state.rectangle.id });
+        if (state.persist) {
+          this.changeMode('whats_here_box_mode' as DrawMode, { persist: true }, { silent: true });
+        } else {
+          this.changeMode('simple_select', { featuresId: state.rectangle.id });
+        }
         break;
 
       case DrawState.DRAWN:
