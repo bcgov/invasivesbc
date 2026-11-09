@@ -438,7 +438,7 @@ const DrawControls = ({ mapReady }) => {
         }
       }
     },
-    [map]
+    [map, location]
   );
 
   // setup mode based on what's going on in the redux store / current url
