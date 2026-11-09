@@ -6,7 +6,6 @@
   margin-bottom: var(--record-table-footer-height);
   max-height: 300pt;
   overflow-x: auto;
-  width: 100%;
   text-size-adjust: 100%; /* Disables iOS Autoscaling text size */
 
   .table-inner {
@@ -15,6 +14,7 @@
     border-spacing: 0; /* Removes the gaps between cells */
     border-bottom: 1pt solid lightgray;
     width: max-content;
+    margin-inline: auto;
     thead {
       top: 0;
       overflow-x: scroll;
