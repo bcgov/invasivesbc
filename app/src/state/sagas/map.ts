@@ -255,14 +255,7 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST() {
   const endRecord = whatsHere.ActivityLimit * (whatsHere.ActivityPage + 1);
   const slicedIDs = whatsHere.ActivityIDs.slice(startRecord, endRecord);
   const filterObject = {
-    selectColumns: [
-      'activity_id',
-      'short_id',
-      'activity_payload',
-      'activity_type',
-      'jurisdiction_display',
-      'map_symbol'
-    ],
+    selectColumns: ['activity_id', 'short_id', 'activity_payload', 'activity_type', 'jurisdiction_display'],
     limit: 200000,
     ids_to_filter: slicedIDs
   };
@@ -303,11 +296,13 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST() {
       short_id: act.short_id,
       activity_type: act.activity_type,
       jurisdiction_code: act.jurisdiction_display,
-      species_code: act.invasive_plant,
-      reported_area: act.reported_area,
+      reported_area: `${act.reported_area}m²`,
       geometry: act.geom,
       created_by: act.created_by,
-      created: new Date(act.activity_date as string).toDateString()
+      species_positive_full: act.species_positive_full,
+      species_negative_full: act.species_negative_full,
+      species_treated_full: act.species_treated_full,
+      created: Temporal.PlainDate.from(act.activity_date as string).toString()
     };
   });
   yield put(WhatsHere.activity_rows_success(mappedToWhatsHereColumns));
@@ -712,7 +707,7 @@ function* activitiesPageSaga() {
     takeEvery(MapActions.initForRecordset, handle_MAP_INIT_FOR_RECORDSETS),
 
     takeEvery(MapActions.refetchServerBoundaries, refetchServerBoundaries),
-    takeEvery(WhatsHere.server_filtered_ids_fetched, handle_WHATS_HERE_SERVER_FILTERED_IDS_FETCHED),
+    takeEvery(WhatsHere.processWhatsHereIds.fulfilled, handle_WHATS_HERE_SERVER_FILTERED_IDS_FETCHED),
     takeEvery(UserSettings.RecordSet.cycleColourById, handle_RECORDSET_ROTATE_COLOUR),
     takeEvery(UserSettings.RecordSet.toggleVisibility, handle_RECORDSET_TOGGLE_VISIBILITY),
     takeEvery(UserSettings.RecordSet.toggleLabelVisibility, handle_RECORDSET_TOGGLE_LABEL_VISIBILITY),
