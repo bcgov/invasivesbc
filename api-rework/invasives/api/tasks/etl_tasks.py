@@ -8,8 +8,8 @@ from psycopg.rows import dict_row
 from api.legacy_db.db import LegacyDB
 from api.legacy_db.migrate import (
     parse_and_migrate_single_activity,
-    ActivityMigrationTaskResult,
-    ActivityMigrationCumulativeTaskResult,
+    MigrationTaskResult,
+    MigrationCumulativeTaskResult,
 )
 from invasivesbc import celery_app
 from invasivesbc.settings import LEGACY_DB_CONNECTION_STRING
@@ -30,17 +30,17 @@ def import_codes(self):
 @celery_app.task(bind=True, max_retries=3, time_limit=300)
 def import_single_activity(
     self, activity_id: str, dry_run=False, clobber=False
-) -> ActivityMigrationTaskResult:
+) -> MigrationTaskResult:
     return parse_and_migrate_single_activity(
         activity_id, dry_run=dry_run, clobber=clobber
     )
 
 
 @celery_app.task(bind=True, max_retries=0, time_limit=3600 * 72)
-def import_all_activities(self, clobber=True) -> ActivityMigrationCumulativeTaskResult:
+def import_all_activities(self, clobber=True) -> MigrationCumulativeTaskResult:
     logging.info("Importing all activities")
 
-    cumulative_result = ActivityMigrationCumulativeTaskResult()
+    cumulative_result = MigrationCumulativeTaskResult()
 
     with psycopg.connect(LEGACY_DB_CONNECTION_STRING, row_factory=dict_row) as conn:
         with conn.cursor() as cursor:

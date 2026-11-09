@@ -11,9 +11,13 @@ from django.utils import timezone
 from packaging.metadata import parse_email
 import psycopg
 from django.db.models import Model, Q
+from pydantic import ValidationError
 from psycopg.rows import dict_row
+from rich import pretty
 
-from api.legacy_db.migrate import ActivityMigrationCumulativeTaskResult
+from api.legacy_db.iapp_query import fetch_iapp_site_rows
+from api.legacy_db.iapp_serializer import LegacyIAPPSite
+from api.legacy_db.migrate import MigrationCumulativeTaskResult, MigrationTaskResult
 from api.models.activity import Activity
 from api.models.codes import (
     AdjacentLandUseCode,
@@ -467,7 +471,7 @@ class LegacyDB:
         source: Literal["all", "previously-failed", "random-sample", "single"] = "all",
         restrict_to_subtype: str | None = None,
         pk=None,
-    ) -> ActivityMigrationCumulativeTaskResult:
+    ) -> MigrationCumulativeTaskResult:
 
         from api.tasks import import_single_activity
 
@@ -489,7 +493,7 @@ class LegacyDB:
             )
             sourcing_query_parameters["activity_subtype"] = restrict_to_subtype
 
-        cumulative_result = ActivityMigrationCumulativeTaskResult()
+        cumulative_result = MigrationCumulativeTaskResult()
 
         with psycopg.connect(LEGACY_DB_CONNECTION_STRING, row_factory=dict_row) as conn:
             with conn.cursor() as cursor:
@@ -504,6 +508,52 @@ class LegacyDB:
                     cumulative_result.add(result)
 
         logging.info("run complete")
+        logging.info(cumulative_result)
+        return cumulative_result
+
+    @staticmethod
+    def migrate_iapp(
+        dry_run=False,
+        clobber=False,
+        source: Literal["all", "random-sample"] = "all",
+    ) -> MigrationCumulativeTaskResult:
+        if source not in ("all", "random-sample"):
+            raise ValueError(f"Unsupported IAPP source: {source}")
+
+        if not dry_run:
+            logging.info(
+                "IAPP persistence is not implemented; skipping saves and ignoring clobber=%s",
+                clobber,
+            )
+
+        cumulative_result = MigrationCumulativeTaskResult()
+        with psycopg.connect(LEGACY_DB_CONNECTION_STRING, row_factory=dict_row) as conn:
+            site_ids = None
+            if source == "random-sample":
+                with conn.cursor() as cursor:
+                    result = cursor.execute(
+                        "SELECT sampled.site_id "
+                        "FROM ( "
+                        "SELECT DISTINCT site_id "
+                        "FROM invasivesbc.site_selection_extract "
+                        ") AS sampled "
+                        "WHERE random() < 0.02"
+                    )
+                    site_ids = [row["site_id"] for row in result.fetchall()]
+
+            for row in fetch_iapp_site_rows(conn, site_ids):
+                site_id = row["site_id"]
+                status = MigrationTaskResult(record_id=str(site_id), save_skipped=True)
+                try:
+                    site = LegacyIAPPSite.model_validate(row)
+                    status.parse_ok = True
+                    if dry_run:
+                        pretty.pprint(site)
+                except ValidationError as error:
+                    logging.warning("IAPP site %s failed to parse: %s", site_id, error)
+                cumulative_result.add(status)
+
+        logging.info("IAPP migration complete")
         logging.info(cumulative_result)
         return cumulative_result
 

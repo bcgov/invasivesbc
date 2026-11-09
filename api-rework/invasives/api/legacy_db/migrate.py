@@ -395,8 +395,8 @@ def map_pydantic_model_to_django_model(old: LegacyActivity) -> Activity:
 
 
 @dataclass
-class ActivityMigrationTaskResult:
-    activity_id: str
+class MigrationTaskResult:
+    record_id: str
     pre_existing: bool = False
     clobbered: bool = False
     parse_ok: bool = False
@@ -407,26 +407,25 @@ class ActivityMigrationTaskResult:
     unspecified_failure: bool = False
 
 
-class ActivityMigrationCumulativeTaskResult:
-    """Used to accumulate and log in runs (such as the ETL process) when multiple activities are migrated"""
+class MigrationCumulativeTaskResult:
+    """Accumulate and log results when multiple records are migrated."""
 
-    total: int = 0
+    def __init__(self):
+        self.total = 0
+        self.pre_existing = 0
+        self.clobbered = 0
+        self.parse_ok = 0
+        self.save_skipped = 0
+        self.save_ok = 0
+        self.pending_links_created = 0
+        self.django_validation_failed = 0
+        self.unspecified_failure = 0
+        self.failed_parse: list[str] = []
+        self.failed_save: list[str] = []
+        self.failed_validation: list[str] = []
+        self.failed_unspecified: list[str] = []
 
-    pre_existing: int = 0
-    clobbered: int = 0
-    parse_ok: int = 0
-    save_skipped: int = 0
-    save_ok: int = 0
-    pending_links_created: int = 0
-    django_validation_failed: int = 0
-    unspecified_failure: int = 0
-
-    failed_parse: list[str] = []
-    failed_save: list[str] = []
-    failed_validation: list[str] = []
-    failed_unspecified: list[str] = []
-
-    def add(self, result: ActivityMigrationTaskResult):
+    def add(self, result: MigrationTaskResult):
         self.total = self.total + 1
 
         if result.pre_existing:
@@ -443,20 +442,20 @@ class ActivityMigrationCumulativeTaskResult:
             self.pending_links_created = self.pending_links_created + 1
         if result.django_validation_failed:
             self.django_validation_failed = self.django_validation_failed + 1
-            self.failed_validation.append(result.activity_id)
+            self.failed_validation.append(result.record_id)
         if result.unspecified_failure:
             self.unspecified_failure = self.unspecified_failure + 1
-            self.failed_unspecified.append(result.activity_id)
+            self.failed_unspecified.append(result.record_id)
 
-        if not result.save_ok:
-            self.failed_save.append(result.activity_id)
+        if not result.save_ok and not result.save_skipped:
+            self.failed_save.append(result.record_id)
 
         if not result.parse_ok:
-            self.failed_parse.append(result.activity_id)
+            self.failed_parse.append(result.record_id)
 
     def __repr__(self) -> str:
         return (
-            f"ActivityMigrationCumulativeTaskResult(\n"
+            f"MigrationCumulativeTaskResult(\n"
             f"    total={self.total},\n"
             f"    pre_existing={self.pre_existing},\n"
             f"    clobbered={self.clobbered},\n"
@@ -484,9 +483,9 @@ class ActivityMigrationCumulativeTaskResult:
 
 def parse_and_migrate_single_activity(
     activity_id: str, clobber=True, dry_run=False
-) -> ActivityMigrationTaskResult:
+) -> MigrationTaskResult:
 
-    status = ActivityMigrationTaskResult(activity_id=activity_id)
+    status = MigrationTaskResult(record_id=activity_id)
 
     with psycopg.connect(LEGACY_DB_CONNECTION_STRING, row_factory=dict_row) as conn:
         with conn.cursor() as cursor:
