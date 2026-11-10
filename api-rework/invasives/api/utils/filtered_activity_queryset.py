@@ -161,8 +161,8 @@ class FilteredActivityQueryset:
                 uuids, short_ids = [], []
                 for id in raw_ids:
 
-                    if uuid_regex.match(id.lower()):
-                        uuids.append(id.lower())
+                    if uuid_regex.match(id):
+                        uuids.append(id)
                     elif short_id_regex.match(id):
                         short_ids.append(id)
 
