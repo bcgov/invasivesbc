@@ -145,6 +145,7 @@ const useOfflineRecordSetLayers = () => {
               .requiresAuthentication(true)
               .requiresNetwork(false)
               .requiresOffline(true)
+              .requiresFeature('CACHE_RECORDSETS')
               .build(),
             layers: [
               createCircleLayer({ ...centroidLayerConfiguration, maxzoom: 12.5 }),
