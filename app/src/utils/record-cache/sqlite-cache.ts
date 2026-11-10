@@ -137,8 +137,8 @@ class SQLiteRecordCacheService extends RecordCacheService {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
-    const centroidArr: GeoJSON[] = [];
-    const geoJsonArr: GeoJSON[] = [];
+    const centroidArr: Feature[] = [];
+    const geoJsonArr: Feature[] = [];
 
     let results: DBSQLiteValues;
 
