@@ -24,7 +24,7 @@ const SummaryPage = () => {
       });
       if (res?.ok) setData(await res.json());
     } catch (e) {
-      console.log('[SummaryPage]:', e);
+      console.error('[SummaryPage]:', e);
     } finally {
       setLoading(false);
     }
