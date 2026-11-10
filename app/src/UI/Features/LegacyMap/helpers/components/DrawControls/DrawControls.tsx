@@ -30,6 +30,7 @@ import DrawControlCrosshair from '../DrawControlCrosshair/DrawControlCrosshair';
 import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
 import bbox from '@turf/bbox';
 import { PointLike } from 'maplibre-gl';
+import recordsetLayerRe from 'constants/recordsetLayerRegex';
 
 // @ts-expect-error mapboxdraw compatibility with maplibre-gl issue
 MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl';
@@ -387,10 +388,7 @@ const DrawControls = ({ mapReady }) => {
         case TargetMode.WHATS_HERE: {
           /** @desc Query the Map for Features in the given bounds. */
           const getWhatsHereIds = (feature) => {
-            const layers = map
-              .getLayersOrder()
-              .filter((id) => id.includes('recordset-layer-') || id.includes('offline-activity'));
-
+            const layers = map.getLayersOrder().filter((id) => recordsetLayerRe.test(id));
             const [minLng, minLat, maxLng, maxLat] = bbox(feature);
             const sw = map.project([minLng, minLat]); // bottom-left on screen
             const ne = map.project([maxLng, maxLat]); // top-right on screen
