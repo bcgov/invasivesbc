@@ -16,7 +16,7 @@ class Command(BaseCommand):
         )
         parser.add_argument(
             "--clobber",
-            help="Overwrite previously migrated records (currently unused)",
+            help="Refresh previously migrated sites (and their child rows) instead of skipping them",
             action="store_true",
         )
         parser.add_argument("--source", choices=["all", "random-sample"], default="all")
