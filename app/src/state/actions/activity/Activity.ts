@@ -49,6 +49,7 @@ interface ActivityTableRowGetRequest extends ActivityTableRowRequest {
 
 interface ActivityTableRowsGetSuccess extends ActivityTableRowRequest {
   rows: Record<PropertyKey, any>[];
+  totalRecords: number;
 }
 
 interface IGetIdsForRecordset {

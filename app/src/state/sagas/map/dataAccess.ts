@@ -92,6 +92,13 @@ export function* getRowsFromCachedRecordset(req: ActivityTableRowGetRequest) {
       console.warn('filterObject returned by getRecordFilterObjectFromStateForAPI is null, probable data error');
     }
 
+    const totalRecordQuery: IQueryParams = {
+      tableFilters: filters?.tableFilters,
+      ids_to_filter: filters?.ids_to_filter,
+      recordSetType: filters?.recordSetType,
+      selectColumns: ['activity_id'],
+      sort: { by: filters.sortColumn, order: filters.sortOrder }
+    };
     const queryObj: IQueryParams = {
       limit: limit,
       page: page,
@@ -101,11 +108,13 @@ export function* getRowsFromCachedRecordset(req: ActivityTableRowGetRequest) {
       sort: { by: filters.sortColumn, order: filters.sortOrder }
     };
     const records = yield service.query(queryObj);
+    const count = (yield service.query(totalRecordQuery)).length ?? 0;
+
     yield put(
       Activity.getRowsSuccess({
         recordSetID: recordSetID,
-        totalRecords: records.total,
-        rows: records.entries,
+        totalRecords: count,
+        rows: records,
         tableFiltersHash: tableFiltersHash,
         page: page,
         limit: limit
@@ -170,6 +179,13 @@ export function* getIappRowsFromCache(payload: IappTableRowRequest) {
       console.warn('filterObject returned by getRecordFilterObjectFromStateForAPI is null, probable data error');
     }
     const service = yield RecordCacheServiceFactory.getPlatformInstance();
+    const totalRecordQuery: IQueryParams = {
+      tableFilters: filters?.tableFilters,
+      ids_to_filter: filters?.ids_to_filter,
+      recordSetType: filters?.recordSetType,
+      selectColumns: ['site_id'],
+      sort: { by: filters.sortColumn, order: filters.sortOrder }
+    };
     const queryObj: IQueryParams = {
       limit: limit,
       page: page,
@@ -184,9 +200,11 @@ export function* getIappRowsFromCache(payload: IappTableRowRequest) {
     };
 
     const records = yield service.query(queryObj);
+    const count = (yield service.query(totalRecordQuery)).length ?? 0;
     yield put(
       IappActions.getRowsSuccess({
         recordSetID: recordSetID,
+        totalCount: count,
         rows: records.map((r) => r?.table_data),
         tableFiltersHash: tableFiltersHash,
         page: page,
