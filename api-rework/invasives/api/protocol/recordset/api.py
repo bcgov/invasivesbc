@@ -32,15 +32,16 @@ def get_recordset_rows(request, data: FilterObjectsIn):
 
     with transaction.atomic():
         builder: FilteredActivityQueryset = filter_activities_by_access(
-            FilteredActivityQueryset(filter_objects=filter_objects),
+            FilteredActivityQueryset(filter_objects=filter_objects).apply_filters(),
             request.auth,
         )
         total_records = builder.query.count()
+
         if ids_only:  # Early Return, just ship IDs
-            return builder.select_output_format(fields=["id"])
+            entries = builder.select_output_format(fields=["id"])
+            return {"total": total_records, "entries": entries}
 
         builder.apply_sorting().select_output_format().paginate()
-
         return {"total": total_records, "entries": builder.query}
 
 
