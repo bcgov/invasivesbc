@@ -45,13 +45,9 @@ class WhatsHere {
   static readonly NewWhatsHereFeature = createAction(`${this.PREFIX}/NewWhatsHereFeature`);
   static readonly ChangePage = createAction(`${this.PREFIX}/ChangePage`);
 
-  // Legacy
   static readonly activity_rows_request = createAction(`${this.PREFIX}/activity_rows_request`);
   static readonly activity_rows_success = createAction<Record<string, any>[]>(`${this.PREFIX}/activity_rows_success`);
 
-  static readonly getIdsForRecordsetSuccess = createAction<IGetIdsForRecordsetSuccess>(
-    `${this.PREFIX}/getIdsForRecordsetSuccess`
-  );
   static readonly iapp_rows_request = createAction(`${this.PREFIX}/iapp_rows_request`);
   static readonly iapp_rows_success = createAction<Record<string, any>[]>(`${this.PREFIX}/iapp_rows_success`);
   static readonly iapp_rows_offline = createAction(`${this.PREFIX}/iapp_rows_offline`);
