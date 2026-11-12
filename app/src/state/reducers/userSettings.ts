@@ -263,12 +263,6 @@ function createUserSettingsReducer(_configuration: AppConfig) {
         draftState.activeActivity = action.meta.arg;
       } else if (IappActions.getSuccess.match(action)) {
         draftState.activeIAPP = action.payload?.iapp?.site_id;
-      } else if (
-        Activity.Offline.getIdsForRecordsetSuccess.match(action) ||
-        WhatsHere.getIdsForRecordsetSuccess.match(action)
-      ) {
-        const { recordSetID, idList } = action.payload;
-        draftState.recordSets[recordSetID].idList = idList;
       } else if (UserSettings.RecordSet.addFilter.match(action)) {
         const { filterType, setID, field, operator, operator2, filter, hidden } = action.payload;
         draftState.recordSets[setID].tableFilters ??= [];

@@ -6,13 +6,12 @@ import { ActivitySubtypes } from 'sharedAPI';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import GeoShapes from 'constants/geoShapes';
 import UserSettings from 'state/actions/userSettings/UserSettings';
-import { RecordSetId, RecordSetType } from 'interfaces/UserRecordSet';
+import { RecordSetType } from 'interfaces/UserRecordSet';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { SortFilter } from 'interfaces/filterParams';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import IappActions from 'state/actions/activity/Iapp';
 import Activity from 'state/actions/activity/Activity';
-import RecordCache from 'state/actions/cache/RecordCache';
 import IRecordTable from 'interfaces/recordTable';
 import { GeoTrackingStatus } from 'constants/geoTrackingStatus';
 import MapActions from 'state/actions/map';
@@ -63,7 +62,6 @@ interface MapState {
   drawingCustomLayerName: string;
   error: boolean;
   initialized: boolean;
-  layers: any[];
   linkToCSV: string | null;
   map_center: [number, number];
   map_zoom: number;
@@ -149,7 +147,6 @@ const initialState: MapState = {
     [MapRecordsetLayerFilterCategory.Monitoring]: true,
     [MapRecordsetLayerFilterCategory.Biocontrol]: true
   },
-  layers: [],
   linkToCSV: '',
   panned: false,
   positionTracking: false,
@@ -240,19 +237,6 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         draftState.whatsHere.shapeCentre = action.payload.shapeCentre;
         draftState.whatsHere.ActivityIDs = action.payload.ibcIds;
         draftState.whatsHere.IAPPIDs = action.payload.iapp;
-      } else if (UserSettings.RecordSet.requestRemoval.fulfilled.match(action)) {
-        const index = draftState.layers.findIndex((layer) => layer.recordSetID === action.meta.arg.setId);
-        if (index !== -1) {
-          draftState.layers.splice(index, 1);
-        }
-      } else if (UserSettings.RecordSet.set.match(action)) {
-        const layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.setName);
-        if (layerIndex === -1) return;
-        Object.keys(action.payload.updatedSet).forEach((key) => {
-          if (['color', 'mapToggle', 'drawOrder', 'labelToggle'].includes(key)) {
-            draftState.layers[layerIndex].layerState[key] = action.payload.updatedSet[key];
-          }
-        });
       } else if (
         UserSettings.RecordSet.updateFilter.match(action) ||
         UserSettings.RecordSet.removeFilter.match(action)
@@ -311,11 +295,6 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
       } else if (WhatsHere.server_filtered_ids_fetched.match(action)) {
         draftState.whatsHere.ActivityIDs = Array.from(new Set(action.payload.activities));
         draftState.whatsHere.IAPPIDs = Array.from(new Set(action.payload.iapp));
-      } else if (RecordCache.requestCaching.fulfilled.match(action)) {
-        const index = draftState.layers.findIndex((layer) => layer.recordSetID === action.meta.arg.setId);
-        if (index !== -1) {
-          draftState.layers[index].layerState.cacheMetadataStatus = action.payload.status;
-        }
       } else if (WhatsHere.sort_filter_update.match(action)) {
         const { field, direction } = action.payload;
         if (action.payload.type === RecordSetType.IAPP) {
@@ -424,7 +403,7 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         });
       } else if (IappActions.getRowsSuccess.match(action)) {
         // the hash, page, and limit all need to line up
-        const { recordSetID, tableFiltersHash, limit, page, rows } = action.payload;
+        const { recordSetID, tableFiltersHash, limit, page, rows, totalCount } = action.payload;
         const recordTable = draftState.recordTables?.[recordSetID];
         if (recordTable?.tableFiltersHash !== tableFiltersHash) {
           console.warn('hash mismatch', draftState.recordTables?.[recordSetID]?.tableFiltersHash, tableFiltersHash);
@@ -440,13 +419,21 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         }
         if (recordTable) {
           draftState.recordTables[recordSetID].rows = rows;
+          draftState.recordTables[recordSetID].totalRecords = totalCount;
         } else {
-          draftState.recordTables[recordSetID] = { loading: false, limit, page, rows, tableFiltersHash };
+          draftState.recordTables[recordSetID] = {
+            loading: false,
+            limit,
+            page,
+            rows,
+            totalRecords: totalCount,
+            tableFiltersHash
+          };
         } // set defaults
         draftState.recordTables[recordSetID].loading = false;
       } else if (Activity.getRowsSuccess.match(action)) {
         // the hash, page, and limit all need to line up
-        const { recordSetID, tableFiltersHash, limit, page, rows } = action.payload;
+        const { recordSetID, tableFiltersHash, limit, page, rows, totalRecords } = action.payload;
         const recordTable = draftState.recordTables?.[recordSetID];
         if (recordTable?.tableFiltersHash !== tableFiltersHash) {
           console.warn('hash mismatch', recordTable?.tableFiltersHash, tableFiltersHash);
@@ -462,30 +449,11 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         }
         if (draftState.recordTables?.[recordSetID]) {
           draftState.recordTables[recordSetID].rows = rows;
+          draftState.recordTables[recordSetID].totalRecords = totalRecords;
         } else {
           draftState.recordTables[recordSetID] = { loading: false, limit, page, rows, tableFiltersHash };
         } // set defaults
         draftState.recordTables[action.payload.recordSetID].loading = false;
-      } else if (AppActions.prepOfflineActivityLayer.match(action)) {
-        let index = draftState.layers.findIndex((layer) => layer.recordSetID === RecordSetId.OfflineActivities);
-        if (index === -1) {
-          draftState.layers.push({
-            recordSetID: RecordSetId.OfflineActivities,
-            type: RecordSetType.Activity,
-            layerState: { mapToggle: action.payload.mapToggle, labelToggle: action.payload.labelToggle }
-          });
-          index = draftState.layers.findIndex((layer) => layer.recordSetID === RecordSetId.OfflineActivities);
-        }
-        draftState.layers[index].loading = false;
-      } else if (WhatsHere.getIdsForRecordsetSuccess.match(action)) {
-        let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-        if (index === -1) {
-          draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.Activity });
-          index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-        }
-        if (action.payload.tableFiltersHash !== draftState.layers[index]?.tableFiltersHash) return;
-
-        draftState.layers[index].loading = false;
       } else if (UserSettings.Map.setHoveredRecordset.match(action)) {
         const { recordType, id, geom, quickPan = false, readableIdentifier } = action.payload;
         draftState.userRecordOnHoverRecordType = recordType;
@@ -572,24 +540,6 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         draftState.map_zoom = zoom;
         draftState.map_center = [lng, lat];
         draftState.panned = false;
-      } else if (AppActions.vectorFiltersPrepped.match(action)) {
-        const ap = action.payload;
-        let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-        if (!draftState.layers[index]) {
-          draftState.layers.push({
-            recordSetID: ap.recordSetID,
-            type: ap.recordSetType,
-            layerState: {
-              color: ap.color,
-              mapToggle: ap.mapToggle,
-              labelToggle: ap.labelToggle,
-              cacheMetadataStatus: ap.cacheMetadataStatus
-            }
-          });
-          index = draftState.layers.findIndex((layer) => layer.recordSetID === ap.recordSetID);
-        }
-        draftState.layers[index].filterObject = ap.filterObject;
-        draftState.layers[index].tableFiltersHash = ap.tableFiltersHash;
       } else if (ExportActions.requestExcel.pending.match(action)) {
         draftState.CanTriggerCSV = false;
       } else if (ExportActions.requestExcel.fulfilled.match(action)) {

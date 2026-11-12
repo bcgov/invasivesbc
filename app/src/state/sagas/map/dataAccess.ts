@@ -159,7 +159,8 @@ export function* getRowsFromCachedRecordset(req: ActivityTableRowGetRequest) {
     yield put(
       Activity.getRowsSuccess({
         recordSetID: recordSetID,
-        rows: records,
+        totalRecords: records.total,
+        rows: records.entries,
         tableFiltersHash: tableFiltersHash,
         page: page,
         limit: limit

@@ -39,9 +39,6 @@ const RecordSetControl = ({
   const RECORD_ID = recordset.id;
   const { cycleRecordsetColour, toggleRecordsetLabel, toggleRecordsetLayer, deleteRecordSet } =
     useRecordSetControls(RECORD_ID);
-  const hasLayerIndex = useSelector(
-    (state) => !!state.Map.layers.find((layer) => layer?.recordSetID === RECORD_ID)?.layerState
-  );
   const [isProgressBar, setIsProgressBar] = useState(false);
 
   const handleProgressStateChange = (state: boolean) => {
@@ -67,7 +64,7 @@ const RecordSetControl = ({
         {!hideLabel && (
           <HoverTooltip tooltipText={LABEL_TOGGLE_TIP}>
             <IconButton
-              disabled={!recordset?.mapToggle || !hasLayerIndex}
+              disabled={!recordset?.mapToggle}
               onClick={toggleRecordsetLabel}
               color="primary"
               data-testid="label-toggle"
@@ -79,12 +76,7 @@ const RecordSetControl = ({
 
         {!hideLayer && (
           <HoverTooltip tooltipText={LAYER_TOGGLE_TIP}>
-            <IconButton
-              data-testid="layer-toggle"
-              onClick={toggleRecordsetLayer}
-              color="primary"
-              disabled={!hasLayerIndex}
-            >
+            <IconButton data-testid="layer-toggle" onClick={toggleRecordsetLayer} color="primary">
               {recordset?.mapToggle ? <Layers /> : <LayersClear />}
             </IconButton>
           </HoverTooltip>
@@ -94,12 +86,7 @@ const RecordSetControl = ({
           <>
             {!hideColour && !isDefaultRecordset && (
               <HoverTooltip tooltipText={COLOUR_CYCLE_TIP}>
-                <IconButton
-                  data-testid="cycle-color"
-                  onClick={cycleRecordsetColour}
-                  color="primary"
-                  disabled={!hasLayerIndex}
-                >
+                <IconButton data-testid="cycle-color" onClick={cycleRecordsetColour} color="primary">
                   <ColorLens />
                 </IconButton>
               </HoverTooltip>

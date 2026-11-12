@@ -34,6 +34,7 @@ interface ICreateLocal {
 interface ActivityTableRowRequest {
   recordSetID: string | number;
   tableFiltersHash: string;
+  totalRecords: number;
   page: number;
   limit: number;
 }

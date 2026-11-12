@@ -20,9 +20,8 @@ const RecordSetFooter = ({ recordSet }: PropTypes) => {
 
   const dispatch = useDispatch();
   const recordTable = useSelector((state) => state.Map.recordTables?.[recordSet.id]);
-
   const loading = recordTable?.loading;
-  const totalRecords = recordSet.idList.length;
+  const totalRecords = recordTable?.totalRecords;
   const firstRowIndex = recordTable?.page * recordTable?.limit;
   const lastRowIndex =
     totalRecords < firstRowIndex + recordTable?.limit ? totalRecords : firstRowIndex + recordTable?.limit;

@@ -32,7 +32,8 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action: PayloadAction<A
       yield put(
         Activity.getRowsSuccess({
           recordSetID: action.payload.recordSetID,
-          rows: result,
+          rows: result.entries,
+          totalRecords: result.total,
           tableFiltersHash: action.payload.tableFiltersHash,
           page: action.payload.page,
           limit: action.payload.limit
@@ -66,6 +67,7 @@ export function* handle_IAPP_TABLE_ROWS_GET_ONLINE(action: PayloadAction<IappTab
       IappActions.getRowsSuccess({
         recordSetID: action.payload.recordSetID,
         rows: networkReturn.data.result,
+        totalCount: networkReturn.data.count,
         tableFiltersHash: action.payload.tableFiltersHash,
         page: action.payload.page,
         limit: action.payload.limit
