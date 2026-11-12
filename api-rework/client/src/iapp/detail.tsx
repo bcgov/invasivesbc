@@ -9,7 +9,6 @@ const IAPPDetail: React.FC = () => {
 
   const [loading, setLoading] = useState<boolean>(true);
   const [anyError, setAnyError] = useState<boolean>(false);
-  const [serial, setSerial] = useState(0);
 
   const [data, setData] = useState(undefined);
 
@@ -35,7 +34,7 @@ const IAPPDetail: React.FC = () => {
     Promise.all(promises).then(() => {
       setLoading(false);
     });
-  }, [id, serial]);
+  }, [id]);
 
   if (loading) {
     return <Spinner />;
