@@ -4,11 +4,10 @@ import { IconButton } from '@mui/material';
 import { UserRecordSet } from 'interfaces/UserRecordSet';
 import { ColorLens, Delete, Label, LabelOff, Layers, LayersClear } from '@mui/icons-material';
 import { useState } from 'react';
-import { useSelector } from 'utils/use_selector';
 import { useRecordSetControls } from 'utils/useRecordSetControls';
-import './recordsetControl.css';
 import HoverTooltip from 'UI/Reusable/HoverTooltip/HoverTooltip';
 import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
+import './recordsetControl.css';
 
 type PropTypes = {
   isDefaultRecordset: boolean;
