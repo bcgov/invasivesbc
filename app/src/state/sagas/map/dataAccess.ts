@@ -3,69 +3,14 @@ import getSelectColumnsByRecordSetType from 'sharedAPI/src/getSelectColumnsByRec
 import { PayloadAction } from '@reduxjs/toolkit';
 import { selectMap } from 'state/reducers/map';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
-import { RecordSetId, RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
+import { RecordSetId, RecordSetType } from 'interfaces/UserRecordSet';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { selectNetworkConnected } from 'state/reducers/network';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import IappActions, { IappTableRowRequest } from 'state/actions/activity/Iapp';
-import Activity, { ActivityTableRowGetRequest, IGetIdsForRecordset } from 'state/actions/activity/Activity';
+import Activity, { ActivityTableRowGetRequest } from 'state/actions/activity/Activity';
 import { IQueryParams } from 'utils/record-cache';
-import AppActions, { IPrepFilter } from 'state/actions/appActions/appActions';
-
-export function* handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT(action: PayloadAction<IPrepFilter>) {
-  const { recordSetID, tableFiltersHash } = action.payload;
-  try {
-    const currentState = yield select((state) => state?.UserSettings);
-    const recordset: UserRecordSet = currentState.recordSets[recordSetID];
-    const filterObject = getRecordFilterObjectFromStateForAPI(recordSetID, currentState);
-    if (filterObject == null) {
-      console.warn('filterObject returned by getRecordFilterObjectFromStateForAPI is null, probable data error');
-    }
-
-    yield put(
-      AppActions.vectorFiltersPrepped({
-        filterObject: filterObject,
-        recordSetID: recordSetID,
-        tableFiltersHash: tableFiltersHash,
-        recordSetType: recordset.recordSetType,
-        color: recordset.color,
-        mapToggle: recordset.mapToggle,
-        labelToggle: recordset.labelToggle,
-        cacheMetadataStatus: recordset.cacheMetadataStatus
-      })
-    );
-  } catch (e) {
-    console.error(e);
-    throw e;
-  }
-}
-
-export function* getIdsForRecordsetFromCache(action: IGetIdsForRecordset) {
-  try {
-    const service = yield RecordCacheServiceFactory.getPlatformInstance();
-    if (yield service.isCached(action.recordSetID)) {
-      const userSettingsState = yield select(selectUserSettings);
-      const filters = getRecordFilterObjectFromStateForAPI(action.recordSetID, userSettingsState);
-
-      if (filters == null) {
-        console.warn('null filterObject returned by getRecordFilterObjectFromStateForAPI, probable data error');
-      }
-
-      const queryObj: IQueryParams = {
-        tableFilters: filters.tableFilters,
-        recordSetType: filters.recordSetType,
-        ids_to_filter: filters?.ids_to_filter,
-        selectColumns: ['id'],
-        limit: 1000000 // Override 50k limit of query tool since known size is small.
-      };
-      const ids = yield service.query(queryObj);
-      yield put(WhatsHere.getIdsForRecordsetSuccess({ ...action, idList: ids.map((record) => record.id) ?? [] }));
-    }
-  } catch (e) {
-    console.error('[getIdsForRecordsetFromCache]', e);
-  }
-}
 
 export const getRecordFilterObjectFromStateForAPI = (recordSetID, recordSetsState) => {
   try {

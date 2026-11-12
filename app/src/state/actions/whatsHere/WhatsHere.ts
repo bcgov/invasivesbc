@@ -49,7 +49,6 @@ class WhatsHere {
   static readonly activity_rows_request = createAction(`${this.PREFIX}/activity_rows_request`);
   static readonly activity_rows_success = createAction<Record<string, any>[]>(`${this.PREFIX}/activity_rows_success`);
 
-  static readonly getIdsForRecordset = createAction<IGetIdsForRecordset>(`${this.PREFIX}/getIdsForRecordset`);
   static readonly getIdsForRecordsetSuccess = createAction<IGetIdsForRecordsetSuccess>(
     `${this.PREFIX}/getIdsForRecordsetSuccess`
   );

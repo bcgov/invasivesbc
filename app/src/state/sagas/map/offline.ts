@@ -58,13 +58,6 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE(action) {
 
   try {
     yield put(
-      Activity.Offline.getIdsForRecordset({
-        filterObj: filterObject,
-        recordSetID: action.payload.recordSetID,
-        tableFiltersHash: action.payload.tableFiltersHash
-      })
-    );
-    yield put(
       Activity.getRowsSuccess({
         recordSetID: action.payload.recordSetID,
         rows: dataArray,
