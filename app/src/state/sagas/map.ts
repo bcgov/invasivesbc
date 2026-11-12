@@ -1,4 +1,4 @@
-import { area, buffer } from '@turf/turf';
+import { buffer } from '@turf/turf';
 import { Feature } from 'geojson';
 import { all, call, debounce, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
@@ -22,7 +22,6 @@ import UserSettings from 'state/actions/userSettings/UserSettings';
 import Activity, { SwitchRecordSetPayload } from 'state/actions/activity/Activity';
 import { RootState } from 'state/reducers/rootReducer';
 import { RECORD_COLOURS } from 'constants/colors';
-import EFilterType from 'constants/EFilterType';
 import {
   IAddFilter,
   IRemoveFilter,
@@ -30,7 +29,7 @@ import {
   ISetSort,
   IUpdateFilter
 } from 'state/actions/userSettings/RecordSet';
-import { selectNetworkConnected, selectNetworkState } from 'state/reducers/network';
+import { selectNetworkConnected } from 'state/reducers/network';
 import UserRecord from 'interfaces/UserRecord';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
@@ -44,8 +43,6 @@ import { GEO_TRACKING_FEATURE } from 'UI/Features/LegacyMap/helpers/functional/c
 import { isPaused, isTracking } from 'utils/geoTrackingHelpers';
 import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
 import DrawToolActions from 'state/actions/drawtool/drawToolActions';
-import Alerts from 'state/actions/alerts/Alerts';
-import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 
 const config = await import('state/configuration/runtime-config');
 const API_V2_BASE = config.runtimeConfig.API_V2_BASE;
@@ -67,118 +64,8 @@ function* refetchServerBoundaries() {
   }
 }
 
-function* handle_WHATS_HERE_FEATURE(whatsHereFeature: PayloadAction<Feature>) {
-  const METERS_IN_HECTARE = 10000;
-  const MAX_HECTARES = 3000;
-  const newGeom =
-    whatsHereFeature.payload.geometry.type === GeoShapes.Polygon
-      ? whatsHereFeature.payload
-      : buffer(whatsHereFeature.payload, 5, { units: 'centimeters' });
-
-  const isOversized = newGeom && area(newGeom) > METERS_IN_HECTARE * MAX_HECTARES;
-  if (isOversized) {
-    yield all([
-      // Terminate process, end loading spinner/status
-      yield put(WhatsHere.server_filtered_ids_fetched([], [])),
-      yield put(
-        Alerts.create({
-          subject: AlertSubjects.Map,
-          severity: AlertSeverity.Error,
-          content: `Reduce area of search to <${MAX_HECTARES.toLocaleString()} Hectares`,
-          autoClose: 4
-        })
-      )
-    ]);
-    return;
-  }
-
-  const { connected } = yield select(selectNetworkState);
-
-  if (connected) {
-    // get all the toggled on recordsets
-    const tableFilters = [
-      {
-        id: '0.81778552637744651712083357942',
-        filterType: EFilterType.Drawn,
-        operator: 'CONTAINED IN',
-        filter: '0.652479498272151712093656568',
-        geojson: whatsHereFeature.payload
-      }
-    ];
-
-    const activitiesfilterObj = {
-      selectColumns: ['activity_id'],
-      tableFilters,
-      limit: 200000
-    };
-    const iappfilterObj = {
-      selectColumns: ['site_id'],
-      tableFilters,
-      limit: 200000
-    };
-    const activitiesNetworkReturn = yield fetch(`${API_V2_BASE}/ninja/recordset/rows`, {
-      method: 'POST',
-      headers: { Authorization: yield getCurrentJWT(), 'Content-Type': 'application/json' },
-      body: JSON.stringify({ filterObjects: [activitiesfilterObj] })
-    });
-    const iappNetworkReturn = yield call(InvasivesAPI_Call, 'POST', `/api/v2/iapp/`, {
-      filterObjects: [iappfilterObj]
-    });
-    if (activitiesNetworkReturn?.ok && iappNetworkReturn?.ok) {
-      const activitiesServerIDList = yield activitiesNetworkReturn.json();
-
-      const iappReturn = iappNetworkReturn?.data?.data?.result ?? iappNetworkReturn?.data?.result ?? [];
-      const iappServerIDList: string[] = iappReturn.map((row: Record<PropertyKey, any>) => row.site_id);
-      const { activity, iapp } = yield parseRecordSetsForWhatsHere(activitiesServerIDList, iappServerIDList);
-
-      yield put(WhatsHere.server_filtered_ids_fetched(activity, iapp));
-      return;
-    }
-  }
-  // Get IDs from Offline Caches
-  const service = yield RecordCacheServiceFactory.getPlatformInstance();
-  const overlappingRecords: string[] = yield service.getRecordIdsOverlappingFeature(whatsHereFeature.payload);
-  const { activity, iapp } = yield parseRecordSetsForWhatsHere(overlappingRecords, overlappingRecords);
-  yield put(WhatsHere.server_filtered_ids_fetched(activity, iapp));
-}
-
-/**
- * @desc Compares list of IDs against Ids in a Recordset
- * @param activity Activity Records to check
- * @param iapp IAPP Records to check
- * @returns {{activity: string[], iapp: string[]}} IDs That are contained in an active Recordset on the map
- */
-function* parseRecordSetsForWhatsHere(activity, iapp) {
-  const recordSets = (yield select(selectUserSettings)).recordSets as Record<PropertyKey, UserRecordSet>;
-  const toggledActivityLayers: Array<Array<string | number>> = [];
-  const toggledIappLayers: Array<Array<string | number>> = [];
-
-  Object.values(recordSets).forEach((recordSet) => {
-    const { recordSetType, mapToggle } = recordSet;
-    if (recordSetType === RecordSetType.Activity && mapToggle) {
-      toggledActivityLayers.push(recordSet.idList);
-    } else if (recordSetType === RecordSetType.IAPP && mapToggle) {
-      toggledIappLayers.push(recordSet.idList);
-    }
-  });
-
-  const localActivityIDs = toggledActivityLayers.flatMap((idList) => idList);
-  const localIappIds = toggledIappLayers.flatMap((idList) => idList);
-
-  const iappIds = localIappIds.filter((l) => iapp.includes(l) || activity.includes(l.toString()));
-  const activityIds = localActivityIDs.filter((l) => activity.includes(l));
-
-  return {
-    activity: activityIds,
-    iapp: iappIds
-  };
-}
-
 function* whatsHereSaga() {
-  yield all([
-    takeEvery(WhatsHere.init_get_activities, handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY),
-    takeEvery(WhatsHere.map_feature, handle_WHATS_HERE_FEATURE)
-  ]);
+  yield all([takeEvery(WhatsHere.init_get_activities, handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY)]);
 }
 
 function* handle_WHATS_HERE_IAPP_ROWS_REQUEST() {
