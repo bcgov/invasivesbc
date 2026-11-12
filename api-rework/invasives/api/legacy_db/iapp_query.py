@@ -64,6 +64,13 @@ WITH sites AS (
     FROM invasivesbc.biological_dispersal_extract AS t
     WHERE t.site_id IN (SELECT site_id FROM sites)
     GROUP BY t.site_id
+), images AS (
+    SELECT m.mapped_site_id AS site_id,
+           json_agg(to_jsonb(i) || jsonb_build_object('mapped_site_id', m.mapped_site_id) ORDER BY i.id) AS rows
+    FROM invasivesbc.iapp_imported_images AS i
+    JOIN invasivesbc.iapp_imported_images_map AS m ON m.imported_image_id = i.id
+    WHERE m.mapped_site_id IN (SELECT site_id FROM sites)
+    GROUP BY m.mapped_site_id
 )
 SELECT s.site_id AS site_id,
        s.protected AS protected,
@@ -76,7 +83,8 @@ SELECT s.site_id AS site_id,
        COALESCE(mm.rows, '[]'::json) AS mechanical_monitorings,
        COALESCE(bt.rows, '[]'::json) AS biological_treatments,
        COALESCE(bm.rows, '[]'::json) AS biological_monitorings,
-       COALESCE(bd.rows, '[]'::json) AS biological_dispersals
+       COALESCE(bd.rows, '[]'::json) AS biological_dispersals,
+       COALESCE(im.rows, '[]'::json) AS images
 FROM sites AS s
 LEFT JOIN spatial AS sp ON sp.site_id = s.site_id
 LEFT JOIN site_selections AS ss ON ss.site_id = s.site_id
@@ -88,6 +96,7 @@ LEFT JOIN mechanical_monitorings AS mm ON mm.site_id = s.site_id
 LEFT JOIN biological_treatments AS bt ON bt.site_id = s.site_id
 LEFT JOIN biological_monitorings AS bm ON bm.site_id = s.site_id
 LEFT JOIN biological_dispersals AS bd ON bd.site_id = s.site_id
+LEFT JOIN images AS im ON im.site_id = s.site_id
 ORDER BY s.site_id
 """
 

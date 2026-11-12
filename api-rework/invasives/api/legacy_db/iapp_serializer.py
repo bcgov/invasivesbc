@@ -1,4 +1,4 @@
-from datetime import date, time
+from datetime import date, datetime, time
 from typing import Annotated, Any, Optional
 
 from pydantic import (
@@ -277,6 +277,25 @@ class LegacyIAPPBiologicalDispersal(LegacyIAPPBioDamageFlags, LegacyIAPPSiteAttr
     monitoring_comments: Optional[str]
 
 
+class LegacyIAPPImportedImage(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    id: int
+    original_iapp_id: int
+    perspective_code: Optional[str]
+    sample_point_id: Optional[int]
+    site_id: Optional[int]
+    treatment_id: Optional[int]
+    image_date: date
+    reference_no: str
+    comments: Optional[str]
+    detected_mime_type: Optional[str]
+    imported_at: datetime
+    revision_count_at_import_time: int
+    media_key: Optional[str]
+    mapped_site_id: Optional[int]
+
+
 class LegacyIAPPSite(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -292,6 +311,7 @@ class LegacyIAPPSite(BaseModel):
     biological_treatments: list[LegacyIAPPBiologicalTreatment]
     biological_monitorings: list[LegacyIAPPBiologicalMonitoring]
     biological_dispersals: list[LegacyIAPPBiologicalDispersal]
+    images: list[LegacyIAPPImportedImage]
 
     @field_validator("geometries")
     @classmethod
@@ -322,6 +342,17 @@ class LegacyIAPPSite(BaseModel):
                         f"{field_name} row site_id {row_site_id} does not match "
                         f"parent site_id {self.site_id}"
                     )
+        for image in self.images:
+            image_site_id = (
+                image.get("mapped_site_id")
+                if isinstance(image, dict)
+                else image.mapped_site_id
+            )
+            if image_site_id != self.site_id:
+                raise ValueError(
+                    f"images row mapped_site_id {image_site_id} does not match "
+                    f"parent site_id {self.site_id}"
+                )
         return self
 
     @computed_field

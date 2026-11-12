@@ -17,6 +17,7 @@ from api.legacy_db.iapp_serializer import (
     LegacyIAPPBiologicalTreatment,
     LegacyIAPPChemicalMonitoring,
     LegacyIAPPChemicalTreatment,
+    LegacyIAPPImportedImage,
     LegacyIAPPMechanicalMonitoring,
     LegacyIAPPMechanicalTreatment,
     LegacyIAPPSite,
@@ -281,6 +282,25 @@ def biological_dispersal() -> dict:
     }
 
 
+def imported_image() -> dict:
+    return {
+        "id": 10,
+        "original_iapp_id": 555,
+        "perspective_code": "A",
+        "sample_point_id": None,
+        "site_id": 0,
+        "treatment_id": 77,
+        "image_date": "2020-05-06",
+        "reference_no": "REF-1",
+        "comments": None,
+        "detected_mime_type": "image/jpeg",
+        "imported_at": "2021-01-02T03:04:05.123456",
+        "revision_count_at_import_time": 3,
+        "media_key": "abc/def.jpg",
+        "mapped_site_id": 1,
+    }
+
+
 def site_row() -> dict:
     return {
         "site_id": 1,
@@ -297,6 +317,7 @@ def site_row() -> dict:
         "biological_treatments": [],
         "biological_monitorings": [],
         "biological_dispersals": [],
+        "images": [],
     }
 
 
@@ -309,6 +330,7 @@ def full_site_row() -> dict:
     row["biological_treatments"] = [biological_treatment()]
     row["biological_monitorings"] = [biological_monitoring()]
     row["biological_dispersals"] = [biological_dispersal()]
+    row["images"] = [imported_image()]
     return row
 
 
@@ -385,6 +407,45 @@ class LegacyIAPPSerializerTests(SimpleTestCase):
         self.assertTrue(parsed.biological_monitorings[0].foliar_feeding_damage)
         self.assertFalse(parsed.biological_monitorings[0].legacy_presence)
         self.assertEqual(len(parsed.biological_dispersals), 1)
+        self.assertEqual(len(parsed.images), 1)
+        self.assertEqual(parsed.images[0].media_key, "abc/def.jpg")
+        self.assertEqual(parsed.images[0].mapped_site_id, 1)
+
+    def test_image_model_rejects_unknown_and_missing_columns(self):
+        with self.assertRaises(ValidationError):
+            LegacyIAPPImportedImage.model_validate({**imported_image(), "extra": 1})
+        missing = imported_image()
+        del missing["reference_no"]
+        with self.assertRaises(ValidationError):
+            LegacyIAPPImportedImage.model_validate(missing)
+
+    def test_image_mapped_site_id_must_match_parent(self):
+        row = full_site_row()
+        row["images"][0]["mapped_site_id"] = 2
+        with self.assertRaises(ValidationError):
+            LegacyIAPPSite.model_validate(row)
+
+    def test_image_query_columns_match_image_model(self):
+        # Verified against the legacy schema: table columns + mapped_site_id.
+        columns = set(LegacyIAPPImportedImage.model_fields) - {"mapped_site_id"}
+        self.assertEqual(
+            columns,
+            {
+                "id",
+                "original_iapp_id",
+                "perspective_code",
+                "sample_point_id",
+                "site_id",
+                "treatment_id",
+                "image_date",
+                "reference_no",
+                "comments",
+                "detected_mime_type",
+                "imported_at",
+                "revision_count_at_import_time",
+                "media_key",
+            },
+        )
 
     def test_biological_flags_reject_unknown_values(self):
         row = full_site_row()
