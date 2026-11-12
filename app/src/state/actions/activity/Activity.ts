@@ -6,7 +6,6 @@ import Photos from './Photos';
 import Suggestions from './Suggestions';
 import AutoFill from './AutoFill';
 import ChemicalTreatments from './ChemicalTreatments';
-import FilterObjects from 'interfaces/FilterObjects';
 import IActivityPermissions from 'interfaces/IActivityPermissions';
 import UserRecord from 'interfaces/UserRecord';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
@@ -50,19 +49,6 @@ interface ActivityTableRowGetRequest extends ActivityTableRowRequest {
 interface ActivityTableRowsGetSuccess extends ActivityTableRowRequest {
   rows: Record<PropertyKey, any>[];
   totalRecords: number;
-}
-
-interface IGetIdsForRecordset {
-  recordSetID: PropertyKey;
-  tableFiltersHash: string;
-}
-
-interface IGetIdsForRecordsetOnline extends IGetIdsForRecordset {
-  filterObj: FilterObjects;
-}
-
-interface IGetIdsForRecordsetSuccess extends IGetIdsForRecordset {
-  idList: Array<string | number>;
 }
 
 interface IGetSuccess {
@@ -191,9 +177,6 @@ export type {
   IActivityFormChangeRequest,
   INewActivity,
   ICreateLocal,
-  IGetIdsForRecordsetSuccess,
-  IGetIdsForRecordsetOnline,
-  IGetIdsForRecordset,
   ActivityTableRowsGetSuccess,
   ActivityTableRowGetRequest,
   IActivityError,

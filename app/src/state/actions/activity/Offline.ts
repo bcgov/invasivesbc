@@ -1,5 +1,4 @@
 import { createAction } from '@reduxjs/toolkit';
-import { IGetIdsForRecordsetSuccess } from './Activity';
 import UserRecord from 'interfaces/UserRecord';
 import { OfflineActivitySyncState } from 'state/reducers/offlineActivity';
 

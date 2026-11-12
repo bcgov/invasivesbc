@@ -5,14 +5,6 @@ import { center } from '@turf/turf';
 import { SortFilter } from 'interfaces/filterParams';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 
-interface IGetIdsForRecordset {
-  recordSetID: PropertyKey;
-  tableFiltersHash: string;
-}
-interface IGetIdsForRecordsetSuccess extends IGetIdsForRecordset {
-  idList: Array<string | number>;
-}
-
 interface IProcessWhatsHereIDs {
   ids: Array<string | number>;
   shape: Feature;
@@ -84,4 +76,3 @@ class WhatsHere {
 }
 
 export default WhatsHere;
-export type { IGetIdsForRecordset };
