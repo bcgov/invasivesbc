@@ -14,26 +14,18 @@ type PropTypes = {
 };
 
 const TabularWhatsHereData = ({ recordsetType }: PropTypes) => {
-  const whatsHere = useSelector((state) => state.Map?.whatsHere);
-  const recordDisplayId = {
-    [RecordSetType.Activity]: whatsHere?.clickedActivityDescription,
-    [RecordSetType.IAPP]: whatsHere?.clickedIAPP
-  };
-  const recordLookupId = {
-    [RecordSetType.Activity]: whatsHere?.clickedActivity,
-    [RecordSetType.IAPP]: whatsHere?.clickedIAPP
-  };
   const dispatch = useDispatch();
+  const whatsHere = useSelector((state) => state.Map?.whatsHere);
   const { loggedInOrWorkingOffline } = useSelector((state) => state.Auth);
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [activeRecord, setActiveRecord] = useState<{ readableIdentifier: string; id: string }>();
 
   const handleCellClick = (e: MouseEvent | TouchEvent, row) => {
     if (!loggedInOrWorkingOffline) return;
     dispatchUpdatedID(row);
     setAnchorEl(e.currentTarget as HTMLElement);
   };
-
   const dispatchUpdatedID = (params) => {
     const { id, readableId } = config[recordsetType];
     const payload = {
@@ -42,9 +34,9 @@ const TabularWhatsHereData = ({ recordsetType }: PropTypes) => {
       geom: params.geometry,
       readableIdentifier: params[readableId]
     };
+    setActiveRecord(payload);
     dispatch(UserSettings.Map.setHoveredRecordset(payload));
   };
-
   const config = {
     [RecordSetType.Activity]: {
       id: 'id',
@@ -81,9 +73,9 @@ const TabularWhatsHereData = ({ recordsetType }: PropTypes) => {
     <Fragment>
       <CustomPopover buttonOverrideOptions={{ anchorEl, setAnchorEl }}>
         <RecordTablePopoverContent
-          recordDisplayId={recordDisplayId[recordsetType]}
+          recordDisplayId={activeRecord?.readableIdentifier ?? ''}
           recordType={recordsetType}
-          recordLookupId={recordLookupId[recordsetType]}
+          recordLookupId={activeRecord?.id ?? ''}
         />
       </CustomPopover>
       <StyledTable>

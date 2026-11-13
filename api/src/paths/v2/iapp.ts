@@ -278,18 +278,33 @@ function getIAPPSitesBySearchFilterCriteria(): RequestHandler {
         });
         return res.status(503).json({ message: 'Database connection unavailable', namespace: 'IAPP', code: 503 });
       }
+      const totalRecordsForQuery = structuredClone(filterObject);
+      Object.assign(totalRecordsForQuery, {
+        selectColumns: ['site_id'],
+        limit: 999999999999,
+        offset: 0
+      });
+
+      // Make duplicate query to return all results for the filter
+      const countSql: SQLStatement = SQL`
+        with iapp_result AS (
+        `.append(getIAPPSQLv2(totalRecordsForQuery)).append(`
+        )
+        SELECT COUNT(*)
+        FROM iapp_result
+      `);
 
       sql = getIAPPSQLv2(filterObject);
       if (filterObject.isCSV) {
         await streamIAPPResult(filterObject, res, sql);
       } else {
         const response = await connection.query(sql.text, sql.values);
-
+        const countResponse = await connection.query(countSql.text, countSql.values);
         return res.status(200).json({
           message: 'fetched sites by criteria',
           request: req.body,
           result: response.rows,
-          count: response.rowCount,
+          count: Number.parseInt(countResponse.rows[0].count),
           namespace: 'IAPP',
           code: 200
         });
@@ -712,7 +727,7 @@ function limitStatement(sqlStatement: SQLStatement, filterObject: any) {
 }
 
 function offSetStatement(sqlStatement: SQLStatement, filterObject: any) {
-  const offset = sqlStatement.append(` offset ${filterObject.offset};`);
+  const offset = sqlStatement.append(` offset ${filterObject.offset}`);
   return offset;
 }
 

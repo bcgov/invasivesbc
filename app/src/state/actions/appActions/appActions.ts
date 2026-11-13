@@ -45,9 +45,6 @@ class AppActions {
   static readonly prepVectorFilters = createAction<IPrepFilter>(`${this.PREFIX}/prepVectorFilters`);
   static readonly vectorFiltersPrepped = createAction<IPreppedFilters>(`${this.PREFIX}/vectorFiltersPrepped`);
   static readonly setUserCoords = createAction<IUserCoord>(`${this.PREFIX}/setUserCoords`);
-  static readonly prepOfflineActivityLayer = createAction<IPreppedOfflineActivityLayer>(
-    `${this.PREFIX}/prepOfflineActivityLayer`
-  );
 }
 
 export default AppActions;

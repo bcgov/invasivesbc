@@ -37,8 +37,8 @@ const getIdsForRecordset = async (record: UserRecordSet): Promise<Array<string |
   if (!res?.ok) throw Error('Network Call Failed');
   const data = await res.json();
 
-  // IAPP Activities come in a result wrapper, where IBC records come direct
-  const ids = data?.result?.map((id) => id[config.col]) ?? data;
+  // IAPP Activities come in a result wrapper, where IBC records come wrapped in entries
+  const ids = data?.result?.map((id) => id[config.col]) ?? data.entries;
   return ids;
 };
 

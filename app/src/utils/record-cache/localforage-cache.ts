@@ -297,12 +297,13 @@ class LocalForageRecordCacheService extends RecordCacheService {
    * @returns { RecordSetSourceMetadata } Returns cached GeoJson, all IAPP Sites are Points.
    */
   async createIappRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata> {
-    const geoJsonArr: any[] = [];
+    const geoJsonArr: Feature[] = [];
     for (const id of ids) {
       const data: IappRecord = await this.loadIapp(id, IappRecordMode.Row);
-      const label = `${id}\n${data.geojson.properties.map_symbol ?? ''}`;
+      const map_symbol = data?.geojson?.properties?.map_symbol ?? '';
+      const label = `${id}\n${map_symbol}`;
       const feature = data.geojson;
-      feature.properties = { name: label, description: id };
+      feature.properties = { name: label, description: id, site_id: id, map_symbol: map_symbol };
       geoJsonArr.push(feature);
     }
     const cachedGeoJson: GeoJSONSourceSpecification = {

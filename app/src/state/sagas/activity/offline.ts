@@ -215,8 +215,6 @@ function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
               })
             );
           }
-          // Refetch Draft Records now that we're synced
-          yield put(WhatsHere.getIdsForRecordset({ recordSetID: RecordSetId.Drafts, tableFiltersHash: 'init' }));
         } else {
           let errorDetail = networkReturn.data;
           if (networkReturn.status === 422) {

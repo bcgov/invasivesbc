@@ -127,7 +127,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
       type: 'geojson',
       data: {
         type: 'FeatureCollection',
-        features: geojson as any[]
+        features: geojson as Feature[]
       }
     };
     return { cachedGeoJson };
@@ -856,10 +856,12 @@ class SQLiteRecordCacheService extends RecordCacheService {
   private transformIapp(id: string, iappRecord: IappRecord, iappRow: IappTableRow): Array<any> {
     const normalizedRows = getUnnestedFieldsForIAPP(iappRow);
     const geojson = iappRow.geojson;
-    const map_symbol = geojson?.properties?.map_symbol;
+    const map_symbol = geojson?.properties?.map_symbol ?? '';
     geojson.properties = {
       name: id + (map_symbol ? '\n' + map_symbol : ''),
-      description: id
+      description: id,
+      site_id: id,
+      map_symbol: map_symbol
     };
     const stringRecord = JSON.stringify(iappRecord);
     const stringRow = JSON.stringify(iappRow);
