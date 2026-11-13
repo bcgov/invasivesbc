@@ -1,20 +1,15 @@
-import logging
 from dataclasses import dataclass
+import logging
 from typing import Literal
 
-from api.legacy_db.model_serializer import LegacyUser, LegacyUserWithRoles
-from api.utils.timezones import legacy_local_to_aware
+from api.legacy_db.iapp_query import fetch_iapp_site_rows
+from api.legacy_db.iapp_serializer import LegacyIAPPSite
+from api.legacy_db.migrate import MigrationCumulativeTaskResult, MigrationTaskResult
+from api.legacy_db.migrate_iapp import create_iapp_site, refresh_iapp_site
+from api.legacy_db.model_serializer import LegacyUserWithRoles
 from api.models import EmployerAssociation, PACNumber, Role, User
-from api.models.auth import AgencyAssociation, HistoricalUserName
-from django.db import transaction
-from django.utils import timezone
-from packaging.metadata import parse_email
-import psycopg
-from django.db.models import Model, Q
-from psycopg.rows import dict_row
-
-from api.legacy_db.migrate import ActivityMigrationCumulativeTaskResult
 from api.models.activity import Activity
+from api.models.auth import AgencyAssociation, HistoricalUserName
 from api.models.codes import (
     AdjacentLandUseCode,
     AgentLocationFoundCode,
@@ -69,8 +64,18 @@ from api.models.codes import (
     WaterbodyUseCode,
     WindDirectionCode,
 )
+from api.models.iapp import IAPPSite
 from api.models.migrator import ActivityPendingLink
+from api.utils.timezones import legacy_local_to_aware
+from django.core.exceptions import ValidationError as DjangoValidationError
+from django.db import DatabaseError
+from django.db.models import Q
+from django.utils import timezone
 from invasivesbc.settings import LEGACY_DB_CONNECTION_STRING
+import psycopg
+from psycopg.rows import dict_row
+from pydantic import ValidationError
+from rich import pretty
 
 logging.basicConfig(level=logging.DEBUG)
 logging.getLogger("psycopg").setLevel(logging.DEBUG)
@@ -467,7 +472,7 @@ class LegacyDB:
         source: Literal["all", "previously-failed", "random-sample", "single"] = "all",
         restrict_to_subtype: str | None = None,
         pk=None,
-    ) -> ActivityMigrationCumulativeTaskResult:
+    ) -> MigrationCumulativeTaskResult:
 
         from api.tasks import import_single_activity
 
@@ -489,7 +494,7 @@ class LegacyDB:
             )
             sourcing_query_parameters["activity_subtype"] = restrict_to_subtype
 
-        cumulative_result = ActivityMigrationCumulativeTaskResult()
+        cumulative_result = MigrationCumulativeTaskResult()
 
         with psycopg.connect(LEGACY_DB_CONNECTION_STRING, row_factory=dict_row) as conn:
             with conn.cursor() as cursor:
@@ -504,6 +509,74 @@ class LegacyDB:
                     cumulative_result.add(result)
 
         logging.info("run complete")
+        logging.info(cumulative_result)
+        return cumulative_result
+
+    @staticmethod
+    def migrate_iapp(
+        dry_run=False,
+        clobber=False,
+        source: Literal["all", "random-sample"] = "all",
+    ) -> MigrationCumulativeTaskResult:
+        if source not in ("all", "random-sample"):
+            raise ValueError(f"Unsupported IAPP source: {source}")
+
+        cumulative_result = MigrationCumulativeTaskResult()
+        with psycopg.connect(LEGACY_DB_CONNECTION_STRING, row_factory=dict_row) as conn:
+            site_ids = None
+            if source == "random-sample":
+                with conn.cursor() as cursor:
+                    result = cursor.execute(
+                        "SELECT sampled.site_id "
+                        "FROM ( "
+                        "SELECT DISTINCT site_id "
+                        "FROM invasivesbc.site_selection_extract "
+                        ") AS sampled "
+                        "WHERE random() < 0.02"
+                    )
+                    site_ids = [row["site_id"] for row in result.fetchall()]
+
+            for row in fetch_iapp_site_rows(conn, site_ids):
+                site_id = row["site_id"]
+                status = MigrationTaskResult(record_id=str(site_id))
+                try:
+                    site = LegacyIAPPSite.model_validate(row)
+                    status.parse_ok = True
+                    if dry_run:
+                        pretty.pprint(site)
+                    else:
+                        status.pre_existing = IAPPSite.objects.filter(
+                            pk=site.site_id
+                        ).exists()
+                        if status.pre_existing and clobber:
+                            refresh_iapp_site(site)
+                            status.clobbered = True
+                            status.save_ok = True
+                        elif not status.pre_existing:
+                            create_iapp_site(site)
+                            status.save_ok = True
+                except ValidationError as error:
+                    logging.warning("IAPP site %s failed to parse: %s", site_id, error)
+                except DjangoValidationError as error:
+                    logging.warning(
+                        "IAPP site %s failed validation: %s", site_id, error
+                    )
+                    status.django_validation_failed = True
+                except DatabaseError:
+                    logging.warning(
+                        "database error while saving IAPP site %s",
+                        site_id,
+                        exc_info=True,
+                    )
+                except Exception:
+                    logging.warning(
+                        "IAPP site %s failed to migrate", site_id, exc_info=True
+                    )
+                    status.unspecified_failure = True
+                status.save_skipped = dry_run or (status.pre_existing and not clobber)
+                cumulative_result.add(status)
+
+        logging.info("IAPP migration complete")
         logging.info(cumulative_result)
         return cumulative_result
 

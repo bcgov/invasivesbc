@@ -1,6 +1,7 @@
 from .activity import ActivityViewSet
 from .code import CodeViewSet
 from .health import HealthViewset
+from .iapp import IAPPViewSet
 from .ids_within_bounds import IdsWithinBoundsViewSet
 from .maps import MapGenerationRecordViewset, MapGenerationRequestViewSet
 from .migration import MigrationStatusViewSet

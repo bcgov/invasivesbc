@@ -6,3 +6,4 @@ from .audits import *
 from .export import *
 from .teams import *
 from .mapping import *
+from .iapp import *

@@ -14,6 +14,8 @@ import { AgGridProvider } from 'ag-grid-react';
 import { AllCommunityModule } from 'ag-grid-community';
 import MigrationStatusList from 'activities/migration_list';
 import { CONFIG } from 'configuration';
+import IAPPList from 'iapp/list';
+import IAPPDetail from 'iapp/detail';
 
 const MIN_FRESHNESS = 60;
 const SESSION_STORE_PATH_KEY = 'post-auth-redirect-path';
@@ -213,8 +215,7 @@ const Client: React.FC = () => {
     <AuthContext
       value={{
         state: auth
-      }}
-    >
+      }}>
       <BrowserRouter>
         <Header authenticated={auth.authenticated} handleLogout={handleLogout} handleLogin={handleLogin} />
         <div className="main">
@@ -228,6 +229,8 @@ const Client: React.FC = () => {
               <Route path="/" element={<ActivitiesList />} />
               <Route path="/migration-status" element={<MigrationStatusList />} />
               <Route path="/activities" element={<ActivitiesList />} />
+              <Route path="/iapp" element={<IAPPList />} />
+              <Route path="/iapp/:id/*" element={<IAPPDetail />} />
               <Route path="/activities/:id/*" element={<ActivitiesDetail />} />
               <Route path="/map/*" element={<Map />} />
             </Routes>

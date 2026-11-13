@@ -13,8 +13,8 @@
     "npm": ">= 6.0.0"
   },
   "dependencies": {
-    "@turf/bbox": "7.3.3",
-    "@turf/centroid": "7.3.3",
+    "@turf/bbox": "7.4.0",
+    "@turf/centroid": "7.4.0",
     "ag-grid-community": "^35.1.0",
     "ag-grid-react": "^35.1.0",
     "esbuild": "^0.27.2",
@@ -25,8 +25,8 @@
     "lodash.clonedeep": "^4.5.0",
     "lodash.debounce": "^4.0.8",
     "lodash.throttle": "^4.1.1",
-    "maplibre-gl": "^5.24.0",
-    "moment": "^2.30.1",
+    "maplibre-gl": "^6.18.0",
+    "moment": "^2.31.0",
     "openapi-typescript": "^7.13.0",
     "pmtiles": "4.4.1",
     "react": "^19.2.3",
@@ -36,14 +36,13 @@
     "typescript": "^5.9.3"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^29.0.0",
+    "@rollup/plugin-commonjs": "^29.0.3",
     "@rollup/plugin-inject": "^5.0.5",
     "@types/lodash.clonedeep": "^4.5.9",
     "@types/lodash.debounce": "^4.0.9",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@vitejs/plugin-react": "^5.1.2",
-    "@vitest/coverage-v8": "^4.0.17",
+    "@vitest/coverage-v8": "^5.1.0",
     "cross-env": "^10.1.0",
     "dotenv": "^17.2.3",
     "dotenv-expand": "^12.0.3",
@@ -62,9 +61,8 @@
     "stylelint-config-standard": "^40.0.0",
     "stylelint-config-standard-scss": "^17.0.0",
     "typescript-eslint": "^8.53.1",
-    "vite": "^7.3.1",
-    "vite-tsconfig-paths": "^6.0.4",
-    "vitest": "^4.0.17"
+    "vite": "^8.3.8",
+    "vitest": "^5.1.0"
   },
   "scripts": {
     "pre-commit": "lint-staged",

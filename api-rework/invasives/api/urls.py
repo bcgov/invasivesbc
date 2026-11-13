@@ -8,6 +8,7 @@ from .viewsets import (
     MapGenerationRecordViewset,
     MapGenerationRequestViewSet,
     MigrationStatusViewSet,
+    IAPPViewSet,
     IdsWithinBoundsViewSet,
 )
 
@@ -25,6 +26,7 @@ ROUTER = DefaultRouter(trailing_slash=False)
 ROUTER.register(r"activities", ActivityViewSet, "activity")
 ROUTER.register(r"codes", CodeViewSet, "code")
 ROUTER.register(r"health", HealthViewset, "health")
+ROUTER.register(r"iapp", IAPPViewSet, "iapp")
 ROUTER.register(r"ids-within-bounds", IdsWithinBoundsViewSet, "ids-within-bounds")
 ROUTER.register(r"maps/records", MapGenerationRecordViewset, "map_generation_record")
 ROUTER.register(r"maps/requests", MapGenerationRequestViewSet, "map_generation_request")
