@@ -119,7 +119,6 @@ const BatchMetadata = ({ batch }) => {
                     <option value="" disabled>
                       Select
                     </option>
-                    <option value={'Draft'}>Draft</option>
                     <option value={'Submitted'}>Submitted</option>
                   </select>
                 </td>

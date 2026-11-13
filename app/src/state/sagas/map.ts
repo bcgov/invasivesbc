@@ -1,34 +1,27 @@
-import { area, buffer } from '@turf/turf';
+import { buffer } from '@turf/turf';
 import { Feature } from 'geojson';
-import { actionChannel, all, call, debounce, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
+import { all, call, debounce, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
-import { buffers } from 'redux-saga';
 import { Md5 } from 'ts-md5';
 import {
-  getIdsForRecordsetFromCache,
   handle_ACTIVITIES_TABLE_GET_ROWS,
   handle_IAPP_TABLE_ROWS_GET_REQUEST,
-  handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY,
-  handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT
+  handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY
 } from './map/dataAccess';
 import { handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE, handle_IAPP_TABLE_ROWS_GET_ONLINE } from './map/online';
-import {
-  handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE,
-  handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE
-} from './map/offline';
+import { handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE } from './map/offline';
 import { getCurrentJWT } from './auth/auth';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { selectMap } from 'state/reducers/map';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { TRACKING_SAGA_HANDLERS } from 'state/sagas/map/tracking';
-import WhatsHere, { IGetIdsForRecordset } from 'state/actions/whatsHere/WhatsHere';
+import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import Prompt from 'state/actions/prompts/Prompt';
 import { RecordSetId, RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import Activity, { SwitchRecordSetPayload } from 'state/actions/activity/Activity';
 import { RootState } from 'state/reducers/rootReducer';
 import { RECORD_COLOURS } from 'constants/colors';
-import EFilterType from 'constants/EFilterType';
 import {
   IAddFilter,
   IRemoveFilter,
@@ -36,13 +29,12 @@ import {
   ISetSort,
   IUpdateFilter
 } from 'state/actions/userSettings/RecordSet';
-import { selectNetworkConnected, selectNetworkState } from 'state/reducers/network';
+import { selectNetworkConnected } from 'state/reducers/network';
 import UserRecord from 'interfaces/UserRecord';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import IappActions from 'state/actions/activity/Iapp';
 import IappRecord from 'interfaces/IappRecord';
-import NetworkActions from 'state/actions/network/NetworkActions';
 import MapActions from 'state/actions/map';
 import GeoShapes from 'constants/geoShapes';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
@@ -50,11 +42,7 @@ import { normalizeToPolygonCoordinates } from 'utils/geometryHelpers';
 import { GEO_TRACKING_FEATURE } from 'UI/Features/LegacyMap/helpers/functional/constants';
 import { isPaused, isTracking } from 'utils/geoTrackingHelpers';
 import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
-import AppActions from 'state/actions/appActions/appActions';
 import DrawToolActions from 'state/actions/drawtool/drawToolActions';
-import getIdsForRecordset from 'utils/getIdsForRecordset';
-import Alerts from 'state/actions/alerts/Alerts';
-import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 
 const config = await import('state/configuration/runtime-config');
 const API_V2_BASE = config.runtimeConfig.API_V2_BASE;
@@ -76,118 +64,8 @@ function* refetchServerBoundaries() {
   }
 }
 
-function* handle_WHATS_HERE_FEATURE(whatsHereFeature: PayloadAction<Feature>) {
-  const METERS_IN_HECTARE = 10000;
-  const MAX_HECTARES = 3000;
-  const newGeom =
-    whatsHereFeature.payload.geometry.type === GeoShapes.Polygon
-      ? whatsHereFeature.payload
-      : buffer(whatsHereFeature.payload, 5, { units: 'centimeters' });
-
-  const isOversized = newGeom && area(newGeom) > METERS_IN_HECTARE * MAX_HECTARES;
-  if (isOversized) {
-    yield all([
-      // Terminate process, end loading spinner/status
-      yield put(WhatsHere.server_filtered_ids_fetched([], [])),
-      yield put(
-        Alerts.create({
-          subject: AlertSubjects.Map,
-          severity: AlertSeverity.Error,
-          content: `Reduce area of search to <${MAX_HECTARES.toLocaleString()} Hectares`,
-          autoClose: 4
-        })
-      )
-    ]);
-    return;
-  }
-
-  const { connected } = yield select(selectNetworkState);
-
-  if (connected) {
-    // get all the toggled on recordsets
-    const tableFilters = [
-      {
-        id: '0.81778552637744651712083357942',
-        filterType: EFilterType.Drawn,
-        operator: 'CONTAINED IN',
-        filter: '0.652479498272151712093656568',
-        geojson: whatsHereFeature.payload
-      }
-    ];
-
-    const activitiesfilterObj = {
-      selectColumns: ['activity_id'],
-      tableFilters,
-      limit: 200000
-    };
-    const iappfilterObj = {
-      selectColumns: ['site_id'],
-      tableFilters,
-      limit: 200000
-    };
-    const activitiesNetworkReturn = yield fetch(`${API_V2_BASE}/ninja/recordset/rows`, {
-      method: 'POST',
-      headers: { Authorization: yield getCurrentJWT(), 'Content-Type': 'application/json' },
-      body: JSON.stringify({ filterObjects: [activitiesfilterObj] })
-    });
-    const iappNetworkReturn = yield call(InvasivesAPI_Call, 'POST', `/api/v2/iapp/`, {
-      filterObjects: [iappfilterObj]
-    });
-    if (activitiesNetworkReturn?.ok && iappNetworkReturn?.ok) {
-      const activitiesServerIDList = yield activitiesNetworkReturn.json();
-
-      const iappReturn = iappNetworkReturn?.data?.data?.result ?? iappNetworkReturn?.data?.result ?? [];
-      const iappServerIDList: string[] = iappReturn.map((row: Record<PropertyKey, any>) => row.site_id);
-      const { activity, iapp } = yield parseRecordSetsForWhatsHere(activitiesServerIDList, iappServerIDList);
-
-      yield put(WhatsHere.server_filtered_ids_fetched(activity, iapp));
-      return;
-    }
-  }
-  // Get IDs from Offline Caches
-  const service = yield RecordCacheServiceFactory.getPlatformInstance();
-  const overlappingRecords: string[] = yield service.getRecordIdsOverlappingFeature(whatsHereFeature.payload);
-  const { activity, iapp } = yield parseRecordSetsForWhatsHere(overlappingRecords, overlappingRecords);
-  yield put(WhatsHere.server_filtered_ids_fetched(activity, iapp));
-}
-
-/**
- * @desc Compares list of IDs against Ids in a Recordset
- * @param activity Activity Records to check
- * @param iapp IAPP Records to check
- * @returns {{activity: string[], iapp: string[]}} IDs That are contained in an active Recordset on the map
- */
-function* parseRecordSetsForWhatsHere(activity, iapp) {
-  const recordSets = (yield select(selectUserSettings)).recordSets as Record<PropertyKey, UserRecordSet>;
-  const toggledActivityLayers: Array<Array<string | number>> = [];
-  const toggledIappLayers: Array<Array<string | number>> = [];
-
-  Object.values(recordSets).forEach((recordSet) => {
-    const { recordSetType, mapToggle } = recordSet;
-    if (recordSetType === RecordSetType.Activity && mapToggle) {
-      toggledActivityLayers.push(recordSet.idList);
-    } else if (recordSetType === RecordSetType.IAPP && mapToggle) {
-      toggledIappLayers.push(recordSet.idList);
-    }
-  });
-
-  const localActivityIDs = toggledActivityLayers.flatMap((idList) => idList);
-  const localIappIds = toggledIappLayers.flatMap((idList) => idList);
-
-  const iappIds = localIappIds.filter((l) => iapp.includes(l) || activity.includes(l.toString()));
-  const activityIds = localActivityIDs.filter((l) => activity.includes(l));
-
-  return {
-    activity: activityIds,
-    iapp: iappIds
-  };
-}
-
 function* whatsHereSaga() {
-  yield all([
-    takeEvery(WhatsHere.init_get_activities, handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY),
-    takeEvery(WhatsHere.map_feature, handle_WHATS_HERE_FEATURE)
-  ]);
+  yield all([takeEvery(WhatsHere.init_get_activities, handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY)]);
 }
 
 function* handle_WHATS_HERE_IAPP_ROWS_REQUEST() {
@@ -255,14 +133,7 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST() {
   const endRecord = whatsHere.ActivityLimit * (whatsHere.ActivityPage + 1);
   const slicedIDs = whatsHere.ActivityIDs.slice(startRecord, endRecord);
   const filterObject = {
-    selectColumns: [
-      'activity_id',
-      'short_id',
-      'activity_payload',
-      'activity_type',
-      'jurisdiction_display',
-      'map_symbol'
-    ],
+    selectColumns: ['activity_id', 'short_id', 'activity_payload', 'activity_type', 'jurisdiction_display'],
     limit: 200000,
     ids_to_filter: slicedIDs
   };
@@ -286,7 +157,7 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST() {
       body: JSON.stringify({ filterObjects: [filterObject] })
     });
     if (networkReturn?.ok) {
-      records = yield networkReturn.json();
+      records = (yield networkReturn.json()).entries;
     } else {
       const service = yield RecordCacheServiceFactory.getPlatformInstance();
       records = yield service.getPaginatedCachedActivityRecords(
@@ -303,11 +174,13 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST() {
       short_id: act.short_id,
       activity_type: act.activity_type,
       jurisdiction_code: act.jurisdiction_display,
-      species_code: act.invasive_plant,
-      reported_area: act.reported_area,
+      reported_area: `${act.reported_area}m²`,
       geometry: act.geom,
       created_by: act.created_by,
-      created: new Date(act.activity_date as string).toDateString()
+      species_positive_full: act.species_positive_full,
+      species_negative_full: act.species_negative_full,
+      species_treated_full: act.species_treated_full,
+      created: Temporal.PlainDate.from(act.activity_date as string).toString()
     };
   });
   yield put(WhatsHere.activity_rows_success(mappedToWhatsHereColumns));
@@ -366,12 +239,6 @@ function* handle_UserFilterChange(action: PayloadAction<{ setID: string | number
   const currentSet = map?.currentOpenSet;
   const recordSetType = record?.recordSetType;
 
-  yield put(
-    AppActions.prepVectorFilters({
-      recordSetID: setID,
-      tableFiltersHash: record?.tableFiltersHash
-    })
-  );
   const actionArg = {
     recordSetID: setID,
     tableFiltersHash: record?.tableFiltersHash,
@@ -388,7 +255,6 @@ function* handle_UserFilterChange(action: PayloadAction<{ setID: string | number
       yield put(IappActions.getRows(actionArg));
       break;
   }
-  yield put(WhatsHere.getIdsForRecordset(actionArg));
 }
 
 function* handle_PAGE_OR_LIMIT_UPDATE(action: PayloadAction<ISetPageLimit>) {
@@ -414,44 +280,11 @@ function* handle_PAGE_OR_LIMIT_UPDATE(action: PayloadAction<ISetPageLimit>) {
  * @desc Waits for the new recordset to get its IDList then begins downloading records for it.
  */
 function* handle_DOWNLOAD_NEW_TRIP_RECORDSET(action: PayloadAction<UserRecordSet>) {
-  yield call(handle_MAP_INIT_FOR_RECORDSETS);
   const connected = yield select(selectNetworkConnected);
 
   if (!connected) return;
   const recordId = action.payload.id;
-  const desiredAction = WhatsHere.getIdsForRecordsetSuccess.type;
-
-  // Wait for Recordsets to have valid IDList
-  yield take((incAction) => incAction.type === desiredAction && incAction.payload.recordSetID === recordId);
   yield put(PlanMyTrip.Recordset.download(recordId));
-}
-
-function* handle_MAP_INIT_FOR_RECORDSETS() {
-  const INIT_TABLE_HASH = 'init';
-  const uninitializedLayers: Array<{ recordSetID: string; recordSetType: RecordSetType }> = [];
-
-  const { recordSets } = yield select(selectUserSettings);
-  const { layers } = yield select(selectMap);
-  const layerIds: Array<string> = layers.map((l) => l?.recordSetID);
-  // Check for Layers not initialized
-  Object.keys(recordSets)
-    .filter((k) => !layerIds.includes(k))
-    .forEach((k) => uninitializedLayers.push({ recordSetID: k, recordSetType: recordSets[k].recordSetType }));
-  layers
-    .filter((l) => !Object.hasOwn(l, 'loading'))
-    .forEach((l) => uninitializedLayers.push({ recordSetID: l.recordSetID, recordSetType: l.type }));
-
-  for (const { recordSetID } of uninitializedLayers) {
-    const payload = { recordSetID, tableFiltersHash: INIT_TABLE_HASH };
-
-    if (recordSetID === RecordSetId.OfflineActivities) {
-      const { mapToggle, labelToggle } = recordSets[RecordSetId.OfflineActivities];
-      yield put(AppActions.prepOfflineActivityLayer({ mapToggle, labelToggle }));
-    } else {
-      yield put(AppActions.prepVectorFilters(payload));
-    }
-    yield put(WhatsHere.getIdsForRecordset(payload));
-  }
 }
 
 function* handle_REMOVE_CUSTOM_LAYER(action) {
@@ -640,43 +473,6 @@ function* handle_ACTIVITIES_TABLE_GET_ROWS_REQUEST(action) {
     yield put(Activity.getRowsOnline(action.payload));
   }
 }
-function* handle_GET_RECORDSET_IDS(action: PayloadAction<IGetIdsForRecordset>) {
-  const currentState = yield select((state) => state.UserSettings);
-  const workingOffline = yield select((state) => state.Auth.workingOffline);
-  const connected = yield select((state) => state.Network.connected);
-  const userIsOffline = workingOffline || !connected;
-
-  // Delegate errant Offline actions
-  if (action.payload.recordSetID === RecordSetId.OfflineActivities) {
-    yield handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE(action);
-    return;
-  }
-  // Attempt to retrieve Records from API
-  try {
-    if (!userIsOffline) {
-      const ids = yield getIdsForRecordset(currentState.recordSets[action.payload.recordSetID]);
-      yield put(WhatsHere.getIdsForRecordsetSuccess({ idList: ids, ...action.payload }));
-      return; // Exit out, we don't need to scan for Cached Records
-    }
-  } catch (e) {
-    console.error('[handle_GET_RECORDSET_IDS]:', e);
-  }
-  // If Online attempt fails, or user is currently offline, delegate to Cache
-  if (buildTimeConfig.MOBILE) {
-    yield getIdsForRecordsetFromCache(action.payload);
-  }
-}
-
-/**
- * @desc Channel to run handle_GET_RECORDSET_IDS requests synchronously.
- *       Prevents spamming API and getting Out of Memory crashes on Mobile
- */
-function* createQueueWorker(channel) {
-  while (true) {
-    const action = yield take(channel);
-    yield call(handle_GET_RECORDSET_IDS, action);
-  }
-}
 
 function* handle_updateTableFiltersHash(action: PayloadAction<IRemoveFilter | IUpdateFilter | IAddFilter>) {
   const { setID } = action.payload;
@@ -705,14 +501,10 @@ function* activitiesPageSaga() {
     takeEvery(UserSettings.RecordSet.setSort, handle_RECORDSET_SET_SORT),
 
     //Conditions where we may want to redraw the Map layers, fetch IDLists, so on
-    takeEvery(NetworkActions.online, handle_MAP_INIT_FOR_RECORDSETS),
-    takeEvery(UserSettings.RecordSet.add, handle_MAP_INIT_FOR_RECORDSETS),
     takeEvery(PlanMyTrip.Recordset.create, handle_DOWNLOAD_NEW_TRIP_RECORDSET),
-    takeEvery(UserSettings.SiteLists.createRecordsetsFromSiteList, handle_MAP_INIT_FOR_RECORDSETS),
-    takeEvery(MapActions.initForRecordset, handle_MAP_INIT_FOR_RECORDSETS),
 
     takeEvery(MapActions.refetchServerBoundaries, refetchServerBoundaries),
-    takeEvery(WhatsHere.server_filtered_ids_fetched, handle_WHATS_HERE_SERVER_FILTERED_IDS_FETCHED),
+    takeEvery(WhatsHere.processWhatsHereIds.fulfilled, handle_WHATS_HERE_SERVER_FILTERED_IDS_FETCHED),
     takeEvery(UserSettings.RecordSet.cycleColourById, handle_RECORDSET_ROTATE_COLOUR),
     takeEvery(UserSettings.RecordSet.toggleVisibility, handle_RECORDSET_TOGGLE_VISIBILITY),
     takeEvery(UserSettings.RecordSet.toggleLabelVisibility, handle_RECORDSET_TOGGLE_LABEL_VISIBILITY),
@@ -720,15 +512,11 @@ function* activitiesPageSaga() {
     takeEvery(UserSettings.RecordSet.setPageLimit, handle_PAGE_OR_LIMIT_UPDATE),
     takeEvery(UserSettings.InitState.getSuccess, handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS),
     takeEvery(MapActions.initRequest, handle_MAP_INIT_REQUEST),
-    takeEvery(AppActions.prepVectorFilters, handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT),
-
-    fork(createQueueWorker, yield actionChannel([WhatsHere.getIdsForRecordset], buffers.expanding())),
 
     takeLatest(Activity.getRows, handle_ACTIVITIES_TABLE_GET_ROWS),
     takeEvery(Activity.getRowsRequest, handle_ACTIVITIES_TABLE_GET_ROWS_REQUEST),
     takeEvery(Activity.getRowsOnline, handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE),
     takeEvery(Activity.getRowsOffline, handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE),
-    takeEvery(Activity.Offline.getIdsForRecordset, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE),
     takeEvery(Activity.switchRecordSet, handle_SWITCH_RECORDSET),
 
     takeEvery(IappActions.getRows, handle_IAPP_TABLE_ROWS_GET_REQUEST),

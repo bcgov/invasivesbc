@@ -60,6 +60,7 @@ export const RecordSet = ({ setID }: PropTypes) => {
                 hideCache={!canCacheRecordset}
                 isDefaultRecordset={!canCacheRecordset}
                 recordset={recordSet}
+                hideDelete
               />
             </div>
           )}

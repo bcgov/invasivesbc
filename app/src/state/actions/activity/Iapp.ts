@@ -14,6 +14,7 @@ interface IappTableRowGetRequest extends IappTableRowRequest {
 
 interface IappTableRowsGetSuccess extends IappTableRowRequest {
   rows: Record<PropertyKey, any>[];
+  totalCount: number;
 }
 
 interface IappTableRowsGetFailure extends IappTableRowRequest {

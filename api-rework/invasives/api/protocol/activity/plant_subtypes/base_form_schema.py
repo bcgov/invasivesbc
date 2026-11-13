@@ -132,8 +132,9 @@ class DraftBaseFormSchema(CleanSchema):
     def transform_user_shape(self):
         if shape := getattr(self, "shape", None):
             geometry_dict = self.shape.get("geometry", shape)
-            geom = GEOSGeometry(json.dumps(geometry_dict), srid=4326)
-            geom.transform(3005)
+            geom = GEOSGeometry(json.dumps(geometry_dict), srid=4326).transform(
+                3005, clone=True
+            )
             self.shape = geom
         return self
 

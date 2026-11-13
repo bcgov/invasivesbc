@@ -17,6 +17,7 @@ interface PropTypes {
 
 const RecordSetCacheButtons = ({ recordSet, setId, onCacheStateChange }: PropTypes) => {
   const dispatch = useDispatch();
+  const totalRecords = useSelector((state) => state.Map.recordTables[setId]?.totalRecords);
   const connected = useSelector((state) => state.Network.connected);
   const downloadProgress = useSelector(
     (state) => state.UserSettings?.recordSets[setId].cacheDownloadProgress,
@@ -74,7 +75,7 @@ const RecordSetCacheButtons = ({ recordSet, setId, onCacheStateChange }: PropTyp
         title: 'Download Records',
         prompt: [
           'Would you like to download this cache? The record sets will be available for offline use.',
-          `You will download ${recordSet.idList.length ?? 0} record(s).`
+          totalRecords ? `You will download ${totalRecords} record(s).` : ''
         ],
         confirmText: 'Download Records',
         callback: (confirmation: boolean) => {

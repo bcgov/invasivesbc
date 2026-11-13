@@ -1,4 +1,4 @@
-import MapboxDraw, { DrawCustomMode, DrawFeature } from '@mapbox/mapbox-gl-draw';
+import MapboxDraw, { DrawCustomMode, DrawCustomModeThis, DrawFeature, DrawMode } from '@mapbox/mapbox-gl-draw';
 import { GeoJSON } from 'geojson';
 
 enum DrawState {
@@ -14,9 +14,12 @@ interface WhatsHereBoxState {
   startPoint: [number, number];
   endPoint: [number, number];
   drawing: DrawState;
+  persist: boolean;
 }
 
-interface WhatsHereBoxOptions {}
+interface WhatsHereBoxOptions {
+  persist?: boolean;
+}
 
 function updateRectangle(state: WhatsHereBoxState) {
   state.rectangle.updateCoordinate('0.0', state.startPoint[0], state.startPoint[1]); //minX, minY - the starting point
@@ -26,8 +29,37 @@ function updateRectangle(state: WhatsHereBoxState) {
   state.rectangle.updateCoordinate('0.4', state.startPoint[0], state.startPoint[1]); //minX,minY - ending point (equals to starting point)
 }
 
+function handleTapClickGesture(
+  this: DrawCustomModeThis,
+  state: WhatsHereBoxState,
+  e: MapboxDraw.MapMouseEvent | MapboxDraw.MapTouchEvent
+) {
+  switch (state.drawing) {
+    case DrawState.DRAWING:
+      state.endPoint = [e.lngLat.lng, e.lngLat.lat];
+      state.drawing = DrawState.DRAWN;
+      updateRectangle(state);
+      if (state.persist) {
+        this.changeMode('whats_here_box_mode' as DrawMode, { persist: true }, { silent: true });
+      } else {
+        this.changeMode('simple_select', { featuresId: state.rectangle.id });
+      }
+      break;
+
+    case DrawState.DRAWN:
+    case DrawState.INVALID:
+    default:
+      state.drawing = DrawState.DRAWING;
+      state.startPoint = [e.lngLat.lng, e.lngLat.lat];
+      state.endPoint = [e.lngLat.lng, e.lngLat.lat];
+      state.startPointIndicator.updateCoordinate('0', e.lngLat.lng, e.lngLat.lat);
+      updateRectangle(state);
+      break;
+  }
+}
+
 const WhatsHereBoxMode: DrawCustomMode<WhatsHereBoxState, WhatsHereBoxOptions> = {
-  onSetup: function (_opts: WhatsHereBoxOptions): WhatsHereBoxState {
+  onSetup: function (opts: WhatsHereBoxOptions): WhatsHereBoxState {
     const rectangle = this.newFeature({
       type: 'Feature',
       properties: {},
@@ -62,29 +94,12 @@ const WhatsHereBoxMode: DrawCustomMode<WhatsHereBoxState, WhatsHereBoxOptions> =
       startPointIndicator,
       startPoint: [0, 0],
       endPoint: [0, 0],
-      drawing: DrawState.INVALID
+      drawing: DrawState.INVALID,
+      persist: !!opts?.persist
     };
   },
-  onClick: function (state: WhatsHereBoxState, e: MapboxDraw.MapMouseEvent) {
-    switch (state.drawing) {
-      case DrawState.DRAWING:
-        state.endPoint = [e.lngLat.lng, e.lngLat.lat];
-        state.drawing = DrawState.DRAWN;
-        updateRectangle(state);
-        this.changeMode('simple_select', { featuresId: state.rectangle.id });
-        break;
-
-      case DrawState.DRAWN:
-      case DrawState.INVALID:
-      default:
-        state.drawing = DrawState.DRAWING;
-        state.startPoint = [e.lngLat.lng, e.lngLat.lat];
-        state.endPoint = [e.lngLat.lng, e.lngLat.lat];
-        state.startPointIndicator.updateCoordinate('0', e.lngLat.lng, e.lngLat.lat);
-        updateRectangle(state);
-        break;
-    }
-  },
+  onClick: handleTapClickGesture,
+  onTap: handleTapClickGesture,
   onMouseMove: function (state: WhatsHereBoxState, e: MapboxDraw.MapMouseEvent) {
     if (state.drawing == DrawState.DRAWING) {
       state.endPoint[0] = e.lngLat.lng;
@@ -95,25 +110,6 @@ const WhatsHereBoxMode: DrawCustomMode<WhatsHereBoxState, WhatsHereBoxOptions> =
   onKeyUp: function (_state: WhatsHereBoxState, e: KeyboardEvent) {
     if (e.keyCode === 27) {
       this.changeMode('simple_select');
-    }
-  },
-  onTap: function (state: WhatsHereBoxState, e: MapboxDraw.MapTouchEvent) {
-    switch (state.drawing) {
-      case DrawState.DRAWING:
-        state.endPoint = [e.lngLat.lng, e.lngLat.lat];
-        state.drawing = DrawState.DRAWN;
-        updateRectangle(state);
-        this.changeMode('simple_select', { featuresId: state.rectangle.id });
-        break;
-      case DrawState.DRAWN:
-      case DrawState.INVALID:
-      default:
-        state.drawing = DrawState.DRAWING;
-        state.startPointIndicator.updateCoordinate('0', e.lngLat.lng, e.lngLat.lat);
-        state.startPoint = [e.lngLat.lng, e.lngLat.lat];
-        state.endPoint = [e.lngLat.lng, e.lngLat.lat];
-        updateRectangle(state);
-        break;
     }
   },
 

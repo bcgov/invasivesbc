@@ -5,6 +5,7 @@ interface IRecordTable {
   limit: number;
   loading: boolean;
   page: number;
+  totalRecords: number;
   rows: Array<IIappTableRow> | Array<ActivityPlantRowOut>;
   tableFiltersHash: string | null;
 }

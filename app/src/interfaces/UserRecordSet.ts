@@ -27,7 +27,6 @@ export enum UserRecordCacheStatus {
 export interface UserRecordSet {
   tableFilters: IFilter[];
   id: string;
-  idList: Array<string | number>;
   ids_to_filter?: Array<string | number>; // May include Activity Short ID's, or Site IDs for IAPP
   color: string;
   drawOrder: number;
