@@ -1,7 +1,7 @@
 import localForage from 'localforage';
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
 import booleanIntersects from '@turf/boolean-intersects';
-import { Feature, GeoJSON } from 'geojson';
+import { Feature } from 'geojson';
 import { bboxPolygon } from '@turf/turf';
 import {
   IappRecordMode,
@@ -297,12 +297,13 @@ class LocalForageRecordCacheService extends RecordCacheService {
    * @returns { RecordSetSourceMetadata } Returns cached GeoJson, all IAPP Sites are Points.
    */
   async createIappRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata> {
-    const geoJsonArr: any[] = [];
+    const geoJsonArr: Feature[] = [];
     for (const id of ids) {
       const data: IappRecord = await this.loadIapp(id, IappRecordMode.Row);
-      const label = `${id}\n${data.geojson.properties.map_symbol ?? ''}`;
+      const map_symbol = data?.geojson?.properties?.map_symbol ?? '';
+      const label = `${id}\n${map_symbol}`;
       const feature = data.geojson;
-      feature.properties = { name: label, description: id };
+      feature.properties = { name: label, description: id, site_id: id, map_symbol: map_symbol };
       geoJsonArr.push(feature);
     }
     const cachedGeoJson: GeoJSONSourceSpecification = {
@@ -322,33 +323,21 @@ class LocalForageRecordCacheService extends RecordCacheService {
    * @returns { RecordSetSourceMetadata } Two formatted queries for High/Low zoom layers
    */
   async createActivityRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata> {
-    const centroidArr: GeoJSON[] = [];
-    const geoJsonArr: GeoJSON[] = [];
+    const centroidArr: Feature[] = [];
+    const geoJsonArr: Feature[] = [];
 
     for (const id of ids) {
-      const data: UserRecord = (await this.loadActivity(id)) as UserRecord;
-      const geojson = {
-        ...(data.shape as GeoJSON),
-        properties: {
-          description: id
-        }
-      };
-      centroidArr.push(data.centroid as GeoJSON);
-      geoJsonArr.push(geojson);
+      const data = (await this.loadActivity(id, 'row')) as UserRecord;
+      centroidArr.push(data.centroid as Feature);
+      geoJsonArr.push(data.geom as Feature);
     }
     const cachedCentroid: GeoJSONSourceSpecification = {
       type: 'geojson',
-      data: {
-        type: 'FeatureCollection',
-        features: centroidArr as keyof GeoJSONSourceSpecification['data']
-      }
+      data: { type: 'FeatureCollection', features: centroidArr }
     };
     const cachedGeoJson: GeoJSONSourceSpecification = {
       type: 'geojson',
-      data: {
-        type: 'FeatureCollection',
-        features: geoJsonArr as keyof GeoJSONSourceSpecification['data']
-      }
+      data: { type: 'FeatureCollection', features: geoJsonArr }
     };
     return { cachedCentroid, cachedGeoJson };
   }

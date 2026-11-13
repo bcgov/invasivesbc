@@ -7,7 +7,6 @@ import { buildTimeConfig } from 'state/configuration/build-time-config';
 const defaultRecordSets: Record<PropertyKey, Partial<UserRecordSet>> = {
   [RecordSetId.Drafts]: {
     id: RecordSetId.Drafts,
-    idList: [],
     recordSetType: RecordSetType.Activity,
     recordSetName: 'My Drafts',
     // add draft key
@@ -31,7 +30,6 @@ const defaultRecordSets: Record<PropertyKey, Partial<UserRecordSet>> = {
   [RecordSetId.Activity]: {
     id: RecordSetId.Activity,
     tableFilters: [],
-    idList: [],
     recordSetType: RecordSetType.Activity,
     recordSetName: 'All InvasivesBC Activities',
     cacheMetadataStatus: UserRecordCacheStatus.NOT_ELIGIBLE,
@@ -44,7 +42,6 @@ const defaultRecordSets: Record<PropertyKey, Partial<UserRecordSet>> = {
     recordSetType: RecordSetType.IAPP,
     id: RecordSetId.IAPP,
     tableFilters: [],
-    idList: [],
     recordSetName: 'All IAPP Records',
     color: '#21f34f',
     mapToggle: false,
@@ -58,7 +55,6 @@ if (buildTimeConfig.MOBILE) {
   defaultRecordSets[RecordSetId.OfflineActivities] = {
     recordSetType: RecordSetType.Activity,
     id: RecordSetId.OfflineActivities,
-    idList: [],
     tableFilters: [],
     recordSetName: 'All Offline Activities',
     cacheMetadataStatus: UserRecordCacheStatus.NOT_ELIGIBLE,

@@ -1,6 +1,7 @@
 import uuid, csv, logging
 from django.db import transaction
 from django.db.models import Q
+from typing import List
 from django.http import JsonResponse, StreamingHttpResponse
 from rest_framework import status
 from ninja import Router, Query
@@ -13,11 +14,8 @@ from api.models.activity import Activity
 from api.ninja_authentication import NinjaKeycloakAuthentication
 from api.permissions.activity_access import filter_activities_by_access
 from api.protocol.activity.activity_plant_summary_out import ActivityPlantSummaryOut
-from api.protocol.activity.activity_plant_row_out import (
-    ActivityPlantRowOut,
-    CachedActivityPlantRowOut,
-    DraftActivityPlantRowOut,
-)
+from api.protocol.activity.activity_plant_row_out import CachedActivityPlantRowOut
+from api.protocol.recordset.recordset_rows_response_out import RecordsetRowsResponseOut
 from . import FilterObjectsIn, IdListIn
 
 ROOT_PATH = "/recordset"
@@ -25,14 +23,7 @@ router = Router(auth=NinjaKeycloakAuthentication())
 log = logging.getLogger(__name__)
 
 
-@router.post(
-    "/rows",
-    response={
-        200: List[DraftActivityPlantRowOut]
-        | List[ActivityPlantRowOut]
-        | List[uuid.UUID]  # don't bother casting, frontend will handle as string.
-    },
-)
+@router.post("/rows", response=RecordsetRowsResponseOut)
 def get_recordset_rows(request, data: FilterObjectsIn):
     req = data.model_dump(mode="json", exclude_unset=True)
     filter_objects = req.get("filterObjects", [])
@@ -41,15 +32,17 @@ def get_recordset_rows(request, data: FilterObjectsIn):
 
     with transaction.atomic():
         builder: FilteredActivityQueryset = filter_activities_by_access(
-            FilteredActivityQueryset(filter_objects=filter_objects),
+            FilteredActivityQueryset(filter_objects=filter_objects).apply_filters(),
             request.auth,
         )
+        total_records = builder.query.count()
+
         if ids_only:  # Early Return, just ship IDs
-            return builder.select_output_format(fields=["id"])
+            entries = builder.select_output_format(fields=["id"])
+            return {"total": total_records, "entries": entries}
 
         builder.apply_sorting().select_output_format().paginate()
-
-        return builder.query
+        return {"total": total_records, "entries": builder.query}
 
 
 @router.post("/csv", response={200: ActivityPlantSummaryOut})

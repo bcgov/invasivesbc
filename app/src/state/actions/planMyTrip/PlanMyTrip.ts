@@ -12,6 +12,7 @@ import Alerts from 'state/actions/alerts/Alerts';
 import tripAlertMessages from 'constants/alerts/tripAlerts';
 import OfflineProtomaps from 'state/actions/cache/OfflineProtomaps';
 import EFilterType from 'constants/EFilterType';
+import getIdsForRecordset from 'utils/getIdsForRecordset';
 
 /**
  * @desc Parameters for a user planning their trip
@@ -102,8 +103,9 @@ class PmtRecordset {
     `${this.PREFIX}/download`,
     async (setId: string, { dispatch, getState, rejectWithValue }) => {
       const state = getState() as RootState;
-      const recordsetIds = state.UserSettings.recordSets?.[setId]?.idList?.length;
-      if (recordsetIds > 0) {
+      const recordset = state.UserSettings.recordSets?.[setId];
+      const count = (await getIdsForRecordset(recordset)).length;
+      if (count > 0) {
         await dispatch(RecordCache.requestCaching({ setId }));
       } else {
         dispatch(UserSettings.RecordSet.requestRemoval({ setId }));

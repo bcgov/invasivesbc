@@ -24,6 +24,7 @@ class FilterObjects(Schema):
     page: Optional[int] = None
     sortColumn: Optional[str] = None
     sortOrder: Optional[str] = None
+    ids_to_filter: Optional[List[str]] = None
     recordSetType: Optional[Literal["Activity"] | Literal["IAPP"]] = None
     tableFilters: Optional[List[TableFilterIn]] = []
     selectColumns: List[str]

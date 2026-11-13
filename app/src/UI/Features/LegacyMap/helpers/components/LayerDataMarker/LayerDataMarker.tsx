@@ -5,12 +5,13 @@ import ReactDOM from 'react-dom/client';
 import LayerDataMarkerContent from './LayerDataMarkerContent';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import { useNavigate } from 'react-router';
+import recordsetLayerRe from 'constants/recordsetLayerRegex';
 
 const LayerDataMarker = () => {
   const MINIMUM_ZOOM = 12;
   const BUFFER_IN_PX = 5;
 
-  const map = useContext(MapContext);
+  const map = useContext(MapContext) as maplibregl.Map;
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -31,12 +32,9 @@ const LayerDataMarker = () => {
   const timeOfTouchStart = useRef<number>(0);
 
   const [recordsetLayers, setRecordsetLayers] = useState<string[]>([]);
-
   const updateLayers = () => {
     if (!map) return [];
-    const newLayers = map
-      .getLayersOrder()
-      .filter((layer) => layer.includes('recordset-layer-') || layer.includes('offline-activity'));
+    const newLayers = map.getLayersOrder().filter((layer) => recordsetLayerRe.test(layer));
     setRecordsetLayers(newLayers);
   };
 
@@ -92,7 +90,6 @@ const LayerDataMarker = () => {
       );
 
       if (!uniqueFormattedFeaturesAtClickTarget?.length) return;
-
       const el = createPopupDiv(uniqueFormattedFeaturesAtClickTarget.length);
 
       popupRef?.current?.remove(); // enforce singleton behaviour

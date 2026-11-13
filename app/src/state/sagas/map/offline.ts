@@ -3,26 +3,6 @@ import { getRecordFilterObjectFromStateForAPI } from './dataAccess';
 import { OfflineActivityRecord, OfflineActivitySyncState, selectOfflineActivity } from 'state/reducers/offlineActivity';
 import Activity from 'state/actions/activity/Activity';
 
-export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE(action) {
-  try {
-    const { serializedActivities } = yield select(selectOfflineActivity);
-
-    const idList =
-      Object.values(serializedActivities).filter(
-        (value) => (value as OfflineActivityRecord).sync_state !== OfflineActivitySyncState.SYNCHRONIZED
-      ) ?? [];
-    yield put(
-      Activity.Offline.getIdsForRecordsetSuccess({
-        recordSetID: action.payload.recordSetID,
-        idList: idList.map((id) => (id as any).short_id),
-        tableFiltersHash: action.payload.tableFiltersHash
-      })
-    );
-  } catch (e) {
-    console.error(e);
-  }
-}
-
 export function* handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE(action) {
   const { serializedActivities } = yield select(selectOfflineActivity);
   const mapState = yield select((state) => state.Map);
@@ -57,13 +37,6 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE(action) {
   dataArray = dataArray.slice(startIndex, endIndex);
 
   try {
-    yield put(
-      Activity.Offline.getIdsForRecordset({
-        filterObj: filterObject,
-        recordSetID: action.payload.recordSetID,
-        tableFiltersHash: action.payload.tableFiltersHash
-      })
-    );
     yield put(
       Activity.getRowsSuccess({
         recordSetID: action.payload.recordSetID,

@@ -139,3 +139,4 @@ class UserSettings {
 }
 
 export default UserSettings;
+export type { IHoverRecordset };

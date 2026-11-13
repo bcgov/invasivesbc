@@ -1,5 +1,5 @@
 import { DBSQLiteValues, SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
-import { Feature, GeoJSON } from 'geojson';
+import { Feature, GeoJSON, Point } from 'geojson';
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
 import booleanIntersects from '@turf/boolean-intersects';
 import bbox from '@turf/bbox';
@@ -127,7 +127,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
       type: 'geojson',
       data: {
         type: 'FeatureCollection',
-        features: geojson as any[]
+        features: geojson as Feature[]
       }
     };
     return { cachedGeoJson };
@@ -137,8 +137,8 @@ class SQLiteRecordCacheService extends RecordCacheService {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
-    const centroidArr: GeoJSON[] = [];
-    const geoJsonArr: GeoJSON[] = [];
+    const centroidArr: Feature[] = [];
+    const geoJsonArr: Feature[] = [];
 
     let results: DBSQLiteValues;
 
@@ -155,8 +155,8 @@ class SQLiteRecordCacheService extends RecordCacheService {
 
       results?.values?.forEach((item) => {
         try {
-          centroidArr.push(item['CENTROID']);
-          geoJsonArr.push(item['GEOJSON']);
+          centroidArr.push(JSON.parse(item['CENTROID']));
+          geoJsonArr.push(JSON.parse(item['GEOJSON']));
         } catch (e) {
           console.error('Error parsing record:', e);
         }
@@ -814,29 +814,13 @@ class SQLiteRecordCacheService extends RecordCacheService {
   private transformActivity(id: string, rec: UserRecord): Array<any> {
     const stringifiedData = JSON.stringify(rec.data);
     const geometry = rec.geom as GeoJSON;
-    const plantCodes = (() => {
-      const { entries, treatment_context } = rec.data.subtype_data;
-      const plants = new Set<string | undefined>();
-      entries?.forEach((e) => {
-        plants.add(e?.invasive_plant_aquatic);
-        plants.add(e?.invasive_plant);
-      });
-      treatment_context?.plants_treated?.forEach((pt) => plants.add(pt.invasive_plant));
-      plants.delete(undefined); // Remove undefined (if exists)
-      return Array.from(plants).filter(Boolean).join(', ');
-    })();
-    geometry.properties = {
-      name: rec.short_id + `${plantCodes ? '\n' + plantCodes : ''}`,
-      description: id,
-      activity_subtype: rec.activity_subtype
-    };
-    const centroidObj = rec.data?.centroid ? { ...rec.data.centroid, properties: { ...geometry.properties } } : null;
+    const centroidObj = rec.centroid as Feature<Point>;
     const geojson = JSON.stringify(geometry) ?? null;
 
     return [
       id, // ID
-      centroidObj.coordinates[1], // LATITUDE
-      centroidObj.coordinates[0], // LONGITUDE
+      centroidObj.geometry.coordinates[1], // LATITUDE
+      centroidObj.geometry.coordinates[0], // LONGITUDE
       geojson, // GEOJSON
       JSON.stringify(centroidObj), // CENTROID
       stringifiedData, // DATA
@@ -872,10 +856,12 @@ class SQLiteRecordCacheService extends RecordCacheService {
   private transformIapp(id: string, iappRecord: IappRecord, iappRow: IappTableRow): Array<any> {
     const normalizedRows = getUnnestedFieldsForIAPP(iappRow);
     const geojson = iappRow.geojson;
-    const map_symbol = geojson?.properties?.map_symbol;
+    const map_symbol = geojson?.properties?.map_symbol ?? '';
     geojson.properties = {
       name: id + (map_symbol ? '\n' + map_symbol : ''),
-      description: id
+      description: id,
+      site_id: id,
+      map_symbol: map_symbol
     };
     const stringRecord = JSON.stringify(iappRecord);
     const stringRow = JSON.stringify(iappRow);

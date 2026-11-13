@@ -125,7 +125,6 @@ class RecordSet {
   public static readonly createDefaultRecordset = (type: RecordSetType, id?: string): UserRecordSet => ({
     tableFilters: [],
     id: id ?? nanoid(),
-    idList: [],
     color: RECORD_COLOURS[0],
     drawOrder: 0,
     expanded: false,

@@ -507,6 +507,8 @@ export interface components {
             invasive_plant_management_areas: string | null;
             /** Regional Invasive Species Organization Areas */
             regional_invasive_species_organization_areas?: string | null;
+            /** Reported Area */
+            reported_area: number | null;
             /** Agency */
             agency?: string | null;
             /** Updated By */
@@ -1819,7 +1821,7 @@ export interface components {
             /** Linking Activities */
             linking_activities: components["schemas"]["ActivityPlantRowOut"][];
             /** Created By */
-            created_by: string;
+            created_by: string | null;
         };
         /** MicrositeConditionOut */
         MicrositeConditionOut: {
@@ -2150,8 +2152,8 @@ export interface components {
                 number
             ] | null;
             /**
-             * Type
-             * @constant
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
              */
             type: "Point";
             /** Coordinates */
@@ -2617,14 +2619,14 @@ export interface components {
         /** DraftSubtypeData */
         api__protocol__activity__plants_out__subtypes__biocontrol_collection__DraftSubtypeData: {
             microsite_conditions: components["schemas"]["MicrositeConditionOut"] | null;
-            weather_conditions: components["schemas"]["WeatherConditionsOut"];
+            weather_conditions: components["schemas"]["WeatherConditionsOut"] | null;
             target_plant_phenology: components["schemas"]["DraftTargetPlantPhenologyOut"] | null;
             /** Entries */
             entries: components["schemas"]["DraftEntry"][];
         };
         /** SubtypeData */
         api__protocol__activity__plants_out__subtypes__biocontrol_collection__SubtypeData: {
-            weather_conditions: components["schemas"]["WeatherConditionsOut"];
+            weather_conditions: components["schemas"]["WeatherConditionsOut"] | null;
             microsite_conditions: components["schemas"]["MicrositeConditionOut"] | null;
             target_plant_phenology: components["schemas"]["TargetPlantPhenologyOut"] | null;
             /** Entries */
@@ -2670,7 +2672,7 @@ export interface components {
         /** DraftSubtypeData */
         api__protocol__activity__plants_out__subtypes__biocontrol_dispersal_monitoring__DraftSubtypeData: {
             target_plant_phenology: components["schemas"]["DraftTargetPlantPhenologyOut"] | null;
-            weather_conditions: components["schemas"]["WeatherConditionsOut"];
+            weather_conditions: components["schemas"]["WeatherConditionsOut"] | null;
             microsite_conditions: components["schemas"]["MicrositeConditionOut"] | null;
             /** Entries */
             entries: components["schemas"]["api__protocol__activity__plants_out__subtypes__biocontrol_dispersal_monitoring__DraftEntries"][];
@@ -2715,7 +2717,7 @@ export interface components {
         /** SubtypeData */
         api__protocol__activity__plants_out__subtypes__biocontrol_dispersal_monitoring__SubtypeData: {
             target_plant_phenology: components["schemas"]["TargetPlantPhenologyOut"] | null;
-            weather_conditions: components["schemas"]["WeatherConditionsOut"];
+            weather_conditions: components["schemas"]["WeatherConditionsOut"] | null;
             microsite_conditions: components["schemas"]["MicrositeConditionOut"] | null;
             /** Entries */
             entries: components["schemas"]["api__protocol__activity__plants_out__subtypes__biocontrol_dispersal_monitoring__Entries"][];
@@ -2745,7 +2747,7 @@ export interface components {
         };
         /** DraftSubtypeData */
         api__protocol__activity__plants_out__subtypes__biocontrol_release__DraftSubtypeData: {
-            weather_conditions: components["schemas"]["WeatherConditionsOut"];
+            weather_conditions: components["schemas"]["WeatherConditionsOut"] | null;
             microsite_conditions: components["schemas"]["MicrositeConditionOut"] | null;
             target_plant_phenology: components["schemas"]["DraftTargetPlantPhenologyOut"] | null;
             /** Entries */
@@ -2778,7 +2780,7 @@ export interface components {
         api__protocol__activity__plants_out__subtypes__biocontrol_release__SubtypeData: {
             microsite_conditions: components["schemas"]["MicrositeConditionOut"] | null;
             target_plant_phenology: components["schemas"]["TargetPlantPhenologyOut"] | null;
-            weather_conditions: components["schemas"]["WeatherConditionsOut"];
+            weather_conditions: components["schemas"]["WeatherConditionsOut"] | null;
             /** Entries */
             entries: components["schemas"]["api__protocol__activity__plants_out__subtypes__biocontrol_release__Entries"][];
         };
@@ -2821,7 +2823,7 @@ export interface components {
         api__protocol__activity__plants_out__subtypes__biocontrol_release_monitoring__DraftSubtypeData: {
             spread_results: components["schemas"]["SpreadResultsOut"] | null;
             target_plant_phenology: components["schemas"]["DraftTargetPlantPhenologyOut"] | null;
-            weather_conditions: components["schemas"]["WeatherConditionsOut"];
+            weather_conditions: components["schemas"]["WeatherConditionsOut"] | null;
             microsite_conditions: components["schemas"]["MicrositeConditionOut"] | null;
             /** Entries */
             entries: components["schemas"]["api__protocol__activity__plants_out__subtypes__biocontrol_release_monitoring__DraftEntries"][];
@@ -2865,7 +2867,7 @@ export interface components {
         api__protocol__activity__plants_out__subtypes__biocontrol_release_monitoring__SubtypeData: {
             spread_results: components["schemas"]["SpreadResultsOut"] | null;
             target_plant_phenology: components["schemas"]["TargetPlantPhenologyOut"] | null;
-            weather_conditions: components["schemas"]["WeatherConditionsOut"];
+            weather_conditions: components["schemas"]["WeatherConditionsOut"] | null;
             microsite_conditions: components["schemas"]["MicrositeConditionOut"] | null;
             /** Entries */
             entries: components["schemas"]["api__protocol__activity__plants_out__subtypes__biocontrol_release_monitoring__Entries"][];
@@ -2918,6 +2920,8 @@ export interface components {
             adjacent_land_use: string[];
             /** Substrate Type */
             substrate_type: string[];
+            /** Shoreline Types */
+            shoreline_types: components["schemas"]["ShorelineType"][];
         };
         /** Entries */
         api__protocol__activity__plants_out__subtypes__observation_aquatic__Entries: {
@@ -2947,6 +2951,8 @@ export interface components {
             adjacent_land_use: string[];
             /** Substrate Type */
             substrate_type: string[];
+            /** Shoreline Types */
+            shoreline_types: components["schemas"]["ShorelineType"][];
         };
         /** Context */
         api__protocol__activity__plants_out__subtypes__observation_terrestrial__Context: {
@@ -3074,2916 +3080,13 @@ export interface components {
         };
         /** DraftSubtypeData */
         api__protocol__activity__plants_out__subtypes__treatment_mechanical_terrestrial__DraftSubtypeData: {
-            /** Authorization Information */
-            authorization_information?: string | null;
             /** Entries */
             entries: components["schemas"]["MechanicalTreatmentEntryOut"][];
-            /** Shoreline Types */
-            shoreline_types: components["schemas"]["ShorelineType"][];
         };
         /** SubtypeData */
         api__protocol__activity__plants_out__subtypes__treatment_mechanical_terrestrial__SubtypeData: {
-            /** Authorization Information */
-            authorization_information?: string | null;
             /** Entries */
             entries: components["schemas"]["MechanicalTreatmentEntryOut"][];
-            /** Shoreline Types */
-            shoreline_types: components["schemas"]["ShorelineType"][];
-        };
-        /** ApplicationRateHerbicide */
-        ApplicationRateHerbicide: {
-            /** Type */
-            type: string;
-            /** Name */
-            name: string;
-            /** Application Rate */
-            application_rate: number;
-        };
-        /** BaseHerbicide */
-        BaseHerbicide: {
-            /** Type */
-            type: string;
-            /** Name */
-            name: string;
-            /** Application Rate */
-            application_rate?: number | null;
-        };
-        /** BiocontrolCollection */
-        BiocontrolCollection: {
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Id */
-            id: string;
-            /** Created By */
-            created_by: string;
-            form_status: components["schemas"]["FormStatus"];
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivity"][];
-            /** Employer */
-            employer: components["schemas"]["Employer"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgency"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["JurisdictionSchema"][];
-            /** Media */
-            media: components["schemas"]["Media"][];
-            /** Participants */
-            participants: components["schemas"]["Participant"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectCode"][];
-            /** Area M */
-            area_m: number;
-            /** Shape */
-            shape: components["schemas"]["Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type____Union_Dict__NoneType__"] | components["schemas"]["FeatureCollection_Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type_____Union_Dict__NoneType___"] | components["schemas"]["Point2D"] | components["schemas"]["MultiPoint2D"] | components["schemas"]["LineString2D"] | components["schemas"]["MultiLineString2D"] | components["schemas"]["Polygon2D"] | components["schemas"]["MultiPolygon2D"] | components["schemas"]["GeometryCollection2D"];
-            /** Latitude */
-            latitude: number;
-            /** Longitude */
-            longitude: number;
-            /** Utm Easting */
-            utm_easting: number;
-            /** Utm Northing */
-            utm_northing: number;
-            /** Utm Zone */
-            utm_zone: number;
-            /** Access Description */
-            access_description: string | null;
-            /** Comment */
-            comment: string | null;
-            /** Location Description */
-            location_description: string;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            subtype: "Biocontrol_Collection";
-            subtype_data: components["schemas"]["api__protocol__activity__plant_subtypes__biocontrol_collection__SubtypeData"];
-        };
-        /** BiocontrolCountExtended */
-        BiocontrolCountExtended: {
-            /** Quantity */
-            quantity: number;
-            /** Stage */
-            stage: string;
-            /**
-             * Is Estimate
-             * @default false
-             */
-            is_estimate: boolean;
-            /** Plant Position */
-            plant_position: string;
-            /** Agent Location */
-            agent_location: string;
-        };
-        /** BiocontrolCountSimple */
-        BiocontrolCountSimple: {
-            /** Quantity */
-            quantity: number;
-            /** Stage */
-            stage: string;
-            /**
-             * Is Estimate
-             * @default false
-             */
-            is_estimate: boolean;
-        };
-        /** BiocontrolDispersalMonitoring */
-        BiocontrolDispersalMonitoring: {
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Id */
-            id: string;
-            /** Created By */
-            created_by: string;
-            form_status: components["schemas"]["FormStatus"];
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivity"][];
-            /** Employer */
-            employer: components["schemas"]["Employer"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgency"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["JurisdictionSchema"][];
-            /** Media */
-            media: components["schemas"]["Media"][];
-            /** Participants */
-            participants: components["schemas"]["Participant"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectCode"][];
-            /** Area M */
-            area_m: number;
-            /** Shape */
-            shape: components["schemas"]["Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type____Union_Dict__NoneType__"] | components["schemas"]["FeatureCollection_Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type_____Union_Dict__NoneType___"] | components["schemas"]["Point2D"] | components["schemas"]["MultiPoint2D"] | components["schemas"]["LineString2D"] | components["schemas"]["MultiLineString2D"] | components["schemas"]["Polygon2D"] | components["schemas"]["MultiPolygon2D"] | components["schemas"]["GeometryCollection2D"];
-            /** Latitude */
-            latitude: number;
-            /** Longitude */
-            longitude: number;
-            /** Utm Easting */
-            utm_easting: number;
-            /** Utm Northing */
-            utm_northing: number;
-            /** Utm Zone */
-            utm_zone: number;
-            /** Access Description */
-            access_description: string | null;
-            /** Comment */
-            comment: string | null;
-            /** Location Description */
-            location_description: string;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            subtype: "Monitoring_Biocontrol_Dispersal_Plant_Terrestrial";
-            subtype_data: components["schemas"]["api__protocol__activity__plant_subtypes__biocontrol_dispersal_monitoring__SubtypeData"];
-        };
-        /** ChemicalContextApplicationRate */
-        ChemicalContextApplicationRate: {
-            /** Herbicide */
-            herbicide: components["schemas"]["ApplicationRateHerbicide"][];
-            /** Delivery Rate */
-            delivery_rate: number;
-            /** Amount Mix Used L */
-            amount_mix_used_l: number;
-            /** Plants Treated */
-            plants_treated: components["schemas"]["TreatedPlant"][];
-            /**
-             * Tank Mix
-             * @default false
-             * @constant
-             */
-            tank_mix: false;
-            /**
-             * Calculation Type
-             * @enum {string}
-             */
-            calculation_type: "PAR" | "D";
-            /** Application Method */
-            application_method: string;
-            /** Results */
-            results?: unknown[] | null;
-        };
-        /** ChemicalContextDilution */
-        ChemicalContextDilution: {
-            /** Herbicide */
-            herbicide: components["schemas"]["BaseHerbicide"][];
-            /** Amount Mix Used L */
-            amount_mix_used_l: number;
-            /** Dilution Percent */
-            dilution_percent: number;
-            /** Area Treated Sqm */
-            area_treated_sqm: number;
-            /** Plants Treated */
-            plants_treated: components["schemas"]["TreatedPlant"][];
-            /**
-             * Tank Mix
-             * @default false
-             * @constant
-             */
-            tank_mix: false;
-            /**
-             * Calculation Type
-             * @enum {string}
-             */
-            calculation_type: "PAR" | "D";
-            /** Application Method */
-            application_method: string;
-            /** Results */
-            results?: unknown[] | null;
-        };
-        /**
-         * CollectionType
-         * @enum {string}
-         */
-        CollectionType: "Timed" | "Count";
-        /** Employer */
-        Employer: {
-            /** Employer */
-            employer: string;
-        };
-        /** FeatureCollection[Feature[Annotated[Union[Point2D, MultiPoint2D, LineString2D, MultiLineString2D, Polygon2D, MultiPolygon2D, GeometryCollection2D], FieldInfo(annotation=NoneType, required=True, discriminator='type')], Union[Dict, NoneType]]] */
-        FeatureCollection_Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type_____Union_Dict__NoneType___: {
-            /** Bbox */
-            bbox?: [
-                number,
-                number,
-                number,
-                number
-            ] | [
-                number,
-                number,
-                number,
-                number,
-                number,
-                number
-            ] | null;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            type: "FeatureCollection";
-            /** Features */
-            features: components["schemas"]["Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type____Union_Dict__NoneType__"][];
-        };
-        /** Feature[Annotated[Union[Point2D, MultiPoint2D, LineString2D, MultiLineString2D, Polygon2D, MultiPolygon2D, GeometryCollection2D], FieldInfo(annotation=NoneType, required=True, discriminator='type')], Union[Dict, NoneType]] */
-        Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type____Union_Dict__NoneType__: {
-            /** Bbox */
-            bbox?: [
-                number,
-                number,
-                number,
-                number
-            ] | [
-                number,
-                number,
-                number,
-                number,
-                number,
-                number
-            ] | null;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            type: "Feature";
-            /** Geometry */
-            geometry: (components["schemas"]["Point2D"] | components["schemas"]["MultiPoint2D"] | components["schemas"]["LineString2D"] | components["schemas"]["MultiLineString2D"] | components["schemas"]["Polygon2D"] | components["schemas"]["MultiPolygon2D"] | components["schemas"]["GeometryCollection2D"]) | null;
-            /** Properties */
-            properties: {
-                [key: string]: unknown;
-            } | null;
-            /** Id */
-            id?: number | string | null;
-        };
-        /**
-         * FormStatus
-         * @enum {string}
-         */
-        FormStatus: "Draft" | "Submitted" | "Flagged" | "Deleted";
-        /**
-         * FundingAgency
-         * @description Single Funding Agency Entry, Casts alias to match the incoming payload to the db column
-         */
-        FundingAgency: {
-            /** Invasive Species Agency Code */
-            invasive_species_agency_code: string;
-        };
-        /** GeometryCollection2D */
-        GeometryCollection2D: {
-            /** Bbox */
-            bbox?: [
-                number,
-                number,
-                number,
-                number
-            ] | [
-                number,
-                number,
-                number,
-                number,
-                number,
-                number
-            ] | null;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            type: "GeometryCollection";
-            /** Geometries */
-            geometries: (components["schemas"]["Point2D"] | components["schemas"]["MultiPoint2D"] | components["schemas"]["LineString2D"] | components["schemas"]["MultiLineString2D"] | components["schemas"]["Polygon2D"] | components["schemas"]["MultiPolygon2D"] | components["schemas"]["GeometryCollection2D"])[];
-        };
-        /** InvasivePlantOnSite */
-        InvasivePlantOnSite: {
-            /** Invasive Plants On Site */
-            invasive_plants_on_site: string;
-        };
-        /** JurisdictionSchema */
-        JurisdictionSchema: {
-            /** Jurisdiction */
-            jurisdiction: string;
-            /** Percent Covered */
-            percent_covered: number;
-        };
-        /** LineString2D */
-        LineString2D: {
-            /** Bbox */
-            bbox?: [
-                number,
-                number,
-                number,
-                number
-            ] | [
-                number,
-                number,
-                number,
-                number,
-                number,
-                number
-            ] | null;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            type: "LineString";
-            /** Coordinates */
-            coordinates: components["schemas"]["Position2D"][];
-        };
-        /** LinkedActivity */
-        LinkedActivity: {
-            /** Label */
-            label: string;
-            /** Full */
-            full: string;
-        };
-        /**
-         * Media
-         * @description Single Media Entry (Photo Upload) for Plant Activity Forms
-         */
-        Media: {
-            /** Description */
-            description: string;
-            /** Encoded File */
-            encoded_file: string;
-            /** File Name */
-            file_name: string;
-        };
-        /** MicrositeCondition */
-        MicrositeCondition: {
-            /** Mesoslope Position */
-            mesoslope_position: string | null;
-            /** Site Surface Shape */
-            site_surface_shape: string | null;
-        };
-        /** MonitoringBiocontrolRelease */
-        MonitoringBiocontrolRelease: {
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Id */
-            id: string;
-            /** Created By */
-            created_by: string;
-            form_status: components["schemas"]["FormStatus"];
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivity"][];
-            /** Employer */
-            employer: components["schemas"]["Employer"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgency"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["JurisdictionSchema"][];
-            /** Media */
-            media: components["schemas"]["Media"][];
-            /** Participants */
-            participants: components["schemas"]["Participant"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectCode"][];
-            /** Area M */
-            area_m: number;
-            /** Shape */
-            shape: components["schemas"]["Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type____Union_Dict__NoneType__"] | components["schemas"]["FeatureCollection_Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type_____Union_Dict__NoneType___"] | components["schemas"]["Point2D"] | components["schemas"]["MultiPoint2D"] | components["schemas"]["LineString2D"] | components["schemas"]["MultiLineString2D"] | components["schemas"]["Polygon2D"] | components["schemas"]["MultiPolygon2D"] | components["schemas"]["GeometryCollection2D"];
-            /** Latitude */
-            latitude: number;
-            /** Longitude */
-            longitude: number;
-            /** Utm Easting */
-            utm_easting: number;
-            /** Utm Northing */
-            utm_northing: number;
-            /** Utm Zone */
-            utm_zone: number;
-            /** Access Description */
-            access_description: string | null;
-            /** Comment */
-            comment: string | null;
-            /** Location Description */
-            location_description: string;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            subtype: "Monitoring_Biocontrol_Release_Plant_Terrestrial";
-            subtype_data: components["schemas"]["api__protocol__activity__plant_subtypes__monitoring_biocontrol_release__SubtypeData"];
-        };
-        /** MonitoringChemical */
-        MonitoringChemical: {
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Id */
-            id: string;
-            /** Created By */
-            created_by: string;
-            form_status: components["schemas"]["FormStatus"];
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivity"][];
-            /** Employer */
-            employer: components["schemas"]["Employer"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgency"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["JurisdictionSchema"][];
-            /** Media */
-            media: components["schemas"]["Media"][];
-            /** Participants */
-            participants: components["schemas"]["Participant"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectCode"][];
-            /** Area M */
-            area_m: number;
-            /** Shape */
-            shape: components["schemas"]["Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type____Union_Dict__NoneType__"] | components["schemas"]["FeatureCollection_Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type_____Union_Dict__NoneType___"] | components["schemas"]["Point2D"] | components["schemas"]["MultiPoint2D"] | components["schemas"]["LineString2D"] | components["schemas"]["MultiLineString2D"] | components["schemas"]["Polygon2D"] | components["schemas"]["MultiPolygon2D"] | components["schemas"]["GeometryCollection2D"];
-            /** Latitude */
-            latitude: number;
-            /** Longitude */
-            longitude: number;
-            /** Utm Easting */
-            utm_easting: number;
-            /** Utm Northing */
-            utm_northing: number;
-            /** Utm Zone */
-            utm_zone: number;
-            /** Access Description */
-            access_description: string | null;
-            /** Comment */
-            comment: string | null;
-            /** Location Description */
-            location_description: string;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            subtype: "Monitoring_Chemical_Plant_Terrestrial_Aquatic";
-            subtype_data: components["schemas"]["api__protocol__activity__plant_subtypes__monitoring_mechanical__SubtypeData"];
-        };
-        /** MonitoringMechanical */
-        MonitoringMechanical: {
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Id */
-            id: string;
-            /** Created By */
-            created_by: string;
-            form_status: components["schemas"]["FormStatus"];
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivity"][];
-            /** Employer */
-            employer: components["schemas"]["Employer"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgency"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["JurisdictionSchema"][];
-            /** Media */
-            media: components["schemas"]["Media"][];
-            /** Participants */
-            participants: components["schemas"]["Participant"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectCode"][];
-            /** Area M */
-            area_m: number;
-            /** Shape */
-            shape: components["schemas"]["Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type____Union_Dict__NoneType__"] | components["schemas"]["FeatureCollection_Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type_____Union_Dict__NoneType___"] | components["schemas"]["Point2D"] | components["schemas"]["MultiPoint2D"] | components["schemas"]["LineString2D"] | components["schemas"]["MultiLineString2D"] | components["schemas"]["Polygon2D"] | components["schemas"]["MultiPolygon2D"] | components["schemas"]["GeometryCollection2D"];
-            /** Latitude */
-            latitude: number;
-            /** Longitude */
-            longitude: number;
-            /** Utm Easting */
-            utm_easting: number;
-            /** Utm Northing */
-            utm_northing: number;
-            /** Utm Zone */
-            utm_zone: number;
-            /** Access Description */
-            access_description: string | null;
-            /** Comment */
-            comment: string | null;
-            /** Location Description */
-            location_description: string;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            subtype: "Monitoring_Mechanical_Plant_Terrestrial_Aquatic";
-            subtype_data: components["schemas"]["api__protocol__activity__plant_subtypes__monitoring_mechanical__SubtypeData"];
-        };
-        /** MultiLineString2D */
-        MultiLineString2D: {
-            /** Bbox */
-            bbox?: [
-                number,
-                number,
-                number,
-                number
-            ] | [
-                number,
-                number,
-                number,
-                number,
-                number,
-                number
-            ] | null;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            type: "MultiLineString";
-            /** Coordinates */
-            coordinates: components["schemas"]["Position2D"][][];
-        };
-        /** MultiPoint2D */
-        MultiPoint2D: {
-            /** Bbox */
-            bbox?: [
-                number,
-                number,
-                number,
-                number
-            ] | [
-                number,
-                number,
-                number,
-                number,
-                number,
-                number
-            ] | null;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            type: "MultiPoint";
-            /** Coordinates */
-            coordinates: components["schemas"]["Position2D"][];
-        };
-        /** MultiPolygon2D */
-        MultiPolygon2D: {
-            /** Bbox */
-            bbox?: [
-                number,
-                number,
-                number,
-                number
-            ] | [
-                number,
-                number,
-                number,
-                number,
-                number,
-                number
-            ] | null;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            type: "MultiPolygon";
-            /** Coordinates */
-            coordinates: components["schemas"]["Position2D"][][][];
-        };
-        /** ObservationAquaticSchema */
-        ObservationAquaticSchema: {
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Id */
-            id: string;
-            /** Created By */
-            created_by: string;
-            form_status: components["schemas"]["FormStatus"];
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivity"][];
-            /** Employer */
-            employer: components["schemas"]["Employer"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgency"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["JurisdictionSchema"][];
-            /** Media */
-            media: components["schemas"]["Media"][];
-            /** Participants */
-            participants: components["schemas"]["Participant"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectCode"][];
-            /** Area M */
-            area_m: number;
-            /** Shape */
-            shape: components["schemas"]["Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type____Union_Dict__NoneType__"] | components["schemas"]["FeatureCollection_Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type_____Union_Dict__NoneType___"] | components["schemas"]["Point2D"] | components["schemas"]["MultiPoint2D"] | components["schemas"]["LineString2D"] | components["schemas"]["MultiLineString2D"] | components["schemas"]["Polygon2D"] | components["schemas"]["MultiPolygon2D"] | components["schemas"]["GeometryCollection2D"];
-            /** Latitude */
-            latitude: number;
-            /** Longitude */
-            longitude: number;
-            /** Utm Easting */
-            utm_easting: number;
-            /** Utm Northing */
-            utm_northing: number;
-            /** Utm Zone */
-            utm_zone: number;
-            /** Access Description */
-            access_description: string | null;
-            /** Comment */
-            comment: string | null;
-            /** Location Description */
-            location_description: string;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            subtype: "Observation_Plant_Aquatic";
-            subtype_data: components["schemas"]["api__protocol__activity__plant_subtypes__observation_aquatic__SubtypeData"];
-        };
-        /** ObservationTerrestrialSchema */
-        ObservationTerrestrialSchema: {
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Id */
-            id: string;
-            /** Created By */
-            created_by: string;
-            form_status: components["schemas"]["FormStatus"];
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivity"][];
-            /** Employer */
-            employer: components["schemas"]["Employer"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgency"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["JurisdictionSchema"][];
-            /** Media */
-            media: components["schemas"]["Media"][];
-            /** Participants */
-            participants: components["schemas"]["Participant"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectCode"][];
-            /** Area M */
-            area_m: number;
-            /** Shape */
-            shape: components["schemas"]["Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type____Union_Dict__NoneType__"] | components["schemas"]["FeatureCollection_Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type_____Union_Dict__NoneType___"] | components["schemas"]["Point2D"] | components["schemas"]["MultiPoint2D"] | components["schemas"]["LineString2D"] | components["schemas"]["MultiLineString2D"] | components["schemas"]["Polygon2D"] | components["schemas"]["MultiPolygon2D"] | components["schemas"]["GeometryCollection2D"];
-            /** Latitude */
-            latitude: number;
-            /** Longitude */
-            longitude: number;
-            /** Utm Easting */
-            utm_easting: number;
-            /** Utm Northing */
-            utm_northing: number;
-            /** Utm Zone */
-            utm_zone: number;
-            /** Access Description */
-            access_description: string | null;
-            /** Comment */
-            comment: string | null;
-            /** Location Description */
-            location_description: string;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            subtype: "Observation_Plant_Terrestrial";
-            subtype_data: components["schemas"]["api__protocol__activity__plant_subtypes__observation_terrestrial__SubtypeData"];
-        };
-        /**
-         * ObservationType
-         * @enum {string}
-         */
-        ObservationType: "Positive" | "Negative";
-        /** Participant */
-        Participant: {
-            /** Name */
-            name: string;
-            /** Pac Number */
-            pac_number?: number | null;
-        };
-        /**
-         * PlantDisposalFormat
-         * @enum {string}
-         */
-        PlantDisposalFormat: "number of plants" | "volume (m3)" | "weight";
-        /** PlantHeight */
-        PlantHeight: {
-            /** Height Cm */
-            height_cm: number;
-        };
-        /** Point2D */
-        Point2D: {
-            /** Bbox */
-            bbox?: [
-                number,
-                number,
-                number,
-                number
-            ] | [
-                number,
-                number,
-                number,
-                number,
-                number,
-                number
-            ] | null;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            type: "Point";
-            coordinates: components["schemas"]["Position2D"];
-        };
-        /** Polygon2D */
-        Polygon2D: {
-            /** Bbox */
-            bbox?: [
-                number,
-                number,
-                number,
-                number
-            ] | [
-                number,
-                number,
-                number,
-                number,
-                number,
-                number
-            ] | null;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            type: "Polygon";
-            /** Coordinates */
-            coordinates: components["schemas"]["Position2D"][][];
-        };
-        /** ProjectCode */
-        ProjectCode: {
-            /** Description */
-            description: string;
-        };
-        /** SpecificUseType */
-        SpecificUseType: {
-            /** Specific Use */
-            specific_use: string;
-        };
-        /** SpreadResultsMixin */
-        SpreadResultsMixin: {
-            /** Agent Density */
-            agent_density?: number | null;
-            /** Plant Attack */
-            plant_attack?: number | null;
-            /** Max Spread Distance M */
-            max_spread_distance_m?: number | null;
-            /** Max Spread Aspect Deg */
-            max_spread_aspect_deg?: number | null;
-        };
-        /** TankMixChemicalContext */
-        TankMixChemicalContext: {
-            /** Herbicide */
-            herbicide: components["schemas"]["ApplicationRateHerbicide"][];
-            /** Delivery Rate */
-            delivery_rate: number;
-            /** Amount Mix Used L */
-            amount_mix_used_l: number;
-            /** Plants Treated */
-            plants_treated: components["schemas"]["TreatedPlant"][];
-            /**
-             * Tank Mix
-             * @default true
-             * @constant
-             */
-            tank_mix: true;
-            /**
-             * Calculation Type
-             * @enum {string}
-             */
-            calculation_type: "PAR" | "D";
-            /** Application Method */
-            application_method: string;
-            /** Results */
-            results?: unknown[] | null;
-        };
-        /** TargetPlantPhenology */
-        TargetPlantPhenology: {
-            /** Winter Dormant */
-            winter_dormant: number;
-            /** Seedlings */
-            seedlings: number;
-            /** Rosettes */
-            rosettes: number;
-            /** Bolts */
-            bolts: number;
-            /** Flowering */
-            flowering: number;
-            /** Seeds Forming */
-            seeds_forming: number;
-            /** Senescent */
-            senescent: number;
-            /** Target Plant Heights */
-            target_plant_heights?: components["schemas"]["PlantHeight"][];
-        };
-        /** TreatedPlant */
-        TreatedPlant: {
-            /** Invasive Plant */
-            invasive_plant: string;
-            /** Percent Covered */
-            percent_covered: number;
-        };
-        /** TreatmentBiocontrolRelease */
-        TreatmentBiocontrolRelease: {
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Id */
-            id: string;
-            /** Created By */
-            created_by: string;
-            form_status: components["schemas"]["FormStatus"];
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivity"][];
-            /** Employer */
-            employer: components["schemas"]["Employer"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgency"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["JurisdictionSchema"][];
-            /** Media */
-            media: components["schemas"]["Media"][];
-            /** Participants */
-            participants: components["schemas"]["Participant"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectCode"][];
-            /** Area M */
-            area_m: number;
-            /** Shape */
-            shape: components["schemas"]["Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type____Union_Dict__NoneType__"] | components["schemas"]["FeatureCollection_Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type_____Union_Dict__NoneType___"] | components["schemas"]["Point2D"] | components["schemas"]["MultiPoint2D"] | components["schemas"]["LineString2D"] | components["schemas"]["MultiLineString2D"] | components["schemas"]["Polygon2D"] | components["schemas"]["MultiPolygon2D"] | components["schemas"]["GeometryCollection2D"];
-            /** Latitude */
-            latitude: number;
-            /** Longitude */
-            longitude: number;
-            /** Utm Easting */
-            utm_easting: number;
-            /** Utm Northing */
-            utm_northing: number;
-            /** Utm Zone */
-            utm_zone: number;
-            /** Access Description */
-            access_description: string | null;
-            /** Comment */
-            comment: string | null;
-            /** Location Description */
-            location_description: string;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            subtype: "Biocontrol_Release";
-            subtype_data: components["schemas"]["api__protocol__activity__plant_subtypes__treatment_biocontrol_release__SubtypeData"];
-        };
-        /** TreatmentChemicalAquatic */
-        TreatmentChemicalAquatic: {
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Id */
-            id: string;
-            /** Created By */
-            created_by: string;
-            form_status: components["schemas"]["FormStatus"];
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivity"][];
-            /** Employer */
-            employer: components["schemas"]["Employer"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgency"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["JurisdictionSchema"][];
-            /** Media */
-            media: components["schemas"]["Media"][];
-            /** Participants */
-            participants: components["schemas"]["Participant"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectCode"][];
-            /** Area M */
-            area_m: number;
-            /** Shape */
-            shape: components["schemas"]["Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type____Union_Dict__NoneType__"] | components["schemas"]["FeatureCollection_Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type_____Union_Dict__NoneType___"] | components["schemas"]["Point2D"] | components["schemas"]["MultiPoint2D"] | components["schemas"]["LineString2D"] | components["schemas"]["MultiLineString2D"] | components["schemas"]["Polygon2D"] | components["schemas"]["MultiPolygon2D"] | components["schemas"]["GeometryCollection2D"];
-            /** Latitude */
-            latitude: number;
-            /** Longitude */
-            longitude: number;
-            /** Utm Easting */
-            utm_easting: number;
-            /** Utm Northing */
-            utm_northing: number;
-            /** Utm Zone */
-            utm_zone: number;
-            /** Access Description */
-            access_description: string | null;
-            /** Comment */
-            comment: string | null;
-            /** Location Description */
-            location_description: string;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            subtype: "Treatment_Chemical_Plant_Aquatic";
-            subtype_data: components["schemas"]["api__protocol__activity__plant_subtypes__treatment_chemical_aquatic__BaseChemicalDetails"];
-        };
-        /** TreatmentChemicalTerrestrial */
-        TreatmentChemicalTerrestrial: {
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Id */
-            id: string;
-            /** Created By */
-            created_by: string;
-            form_status: components["schemas"]["FormStatus"];
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivity"][];
-            /** Employer */
-            employer: components["schemas"]["Employer"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgency"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["JurisdictionSchema"][];
-            /** Media */
-            media: components["schemas"]["Media"][];
-            /** Participants */
-            participants: components["schemas"]["Participant"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectCode"][];
-            /** Area M */
-            area_m: number;
-            /** Shape */
-            shape: components["schemas"]["Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type____Union_Dict__NoneType__"] | components["schemas"]["FeatureCollection_Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type_____Union_Dict__NoneType___"] | components["schemas"]["Point2D"] | components["schemas"]["MultiPoint2D"] | components["schemas"]["LineString2D"] | components["schemas"]["MultiLineString2D"] | components["schemas"]["Polygon2D"] | components["schemas"]["MultiPolygon2D"] | components["schemas"]["GeometryCollection2D"];
-            /** Latitude */
-            latitude: number;
-            /** Longitude */
-            longitude: number;
-            /** Utm Easting */
-            utm_easting: number;
-            /** Utm Northing */
-            utm_northing: number;
-            /** Utm Zone */
-            utm_zone: number;
-            /** Access Description */
-            access_description: string | null;
-            /** Comment */
-            comment: string | null;
-            /** Location Description */
-            location_description: string;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            subtype: "Treatment_Chemical_Plant_Terrestrial";
-            subtype_data: components["schemas"]["api__protocol__activity__plant_subtypes__treatment_chemical_terrestrial__BaseChemicalDetails"];
-        };
-        /** TreatmentMechanicalAquatic */
-        TreatmentMechanicalAquatic: {
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Id */
-            id: string;
-            /** Created By */
-            created_by: string;
-            form_status: components["schemas"]["FormStatus"];
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivity"][];
-            /** Employer */
-            employer: components["schemas"]["Employer"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgency"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["JurisdictionSchema"][];
-            /** Media */
-            media: components["schemas"]["Media"][];
-            /** Participants */
-            participants: components["schemas"]["Participant"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectCode"][];
-            /** Area M */
-            area_m: number;
-            /** Shape */
-            shape: components["schemas"]["Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type____Union_Dict__NoneType__"] | components["schemas"]["FeatureCollection_Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type_____Union_Dict__NoneType___"] | components["schemas"]["Point2D"] | components["schemas"]["MultiPoint2D"] | components["schemas"]["LineString2D"] | components["schemas"]["MultiLineString2D"] | components["schemas"]["Polygon2D"] | components["schemas"]["MultiPolygon2D"] | components["schemas"]["GeometryCollection2D"];
-            /** Latitude */
-            latitude: number;
-            /** Longitude */
-            longitude: number;
-            /** Utm Easting */
-            utm_easting: number;
-            /** Utm Northing */
-            utm_northing: number;
-            /** Utm Zone */
-            utm_zone: number;
-            /** Access Description */
-            access_description: string | null;
-            /** Comment */
-            comment: string | null;
-            /** Location Description */
-            location_description: string;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            subtype: "Treatment_Mechanical_Plant_Aquatic";
-            subtype_data: components["schemas"]["api__protocol__activity__plant_subtypes__treatment_mechanical_aquatic__SubtypeData"];
-        };
-        /** TreatmentMechanicalTerrestrial */
-        TreatmentMechanicalTerrestrial: {
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Id */
-            id: string;
-            /** Created By */
-            created_by: string;
-            form_status: components["schemas"]["FormStatus"];
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivity"][];
-            /** Employer */
-            employer: components["schemas"]["Employer"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgency"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["JurisdictionSchema"][];
-            /** Media */
-            media: components["schemas"]["Media"][];
-            /** Participants */
-            participants: components["schemas"]["Participant"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectCode"][];
-            /** Area M */
-            area_m: number;
-            /** Shape */
-            shape: components["schemas"]["Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type____Union_Dict__NoneType__"] | components["schemas"]["FeatureCollection_Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type_____Union_Dict__NoneType___"] | components["schemas"]["Point2D"] | components["schemas"]["MultiPoint2D"] | components["schemas"]["LineString2D"] | components["schemas"]["MultiLineString2D"] | components["schemas"]["Polygon2D"] | components["schemas"]["MultiPolygon2D"] | components["schemas"]["GeometryCollection2D"];
-            /** Latitude */
-            latitude: number;
-            /** Longitude */
-            longitude: number;
-            /** Utm Easting */
-            utm_easting: number;
-            /** Utm Northing */
-            utm_northing: number;
-            /** Utm Zone */
-            utm_zone: number;
-            /** Access Description */
-            access_description: string | null;
-            /** Comment */
-            comment: string | null;
-            /** Location Description */
-            location_description: string;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            subtype: "Treatment_Mechanical_Plant_Terrestrial";
-            subtype_data: components["schemas"]["api__protocol__activity__plant_subtypes__treatment_mechanical_terrestrial__SubtypeData"];
-        };
-        /**
-         * TreatmentPass
-         * @enum {string}
-         */
-        TreatmentPass: "First" | "Second" | "Third" | "Greater" | "Unknown";
-        /** VoucherSpecimenSchema */
-        VoucherSpecimenSchema: {
-            /** Voucher Sample Id */
-            voucher_sample_id: string;
-            /** Herbarium */
-            herbarium?: string | null;
-            /** Accession Number */
-            accession_number?: string | null;
-            /** Completed By Person */
-            completed_by_person?: string | null;
-            /** Completed By Org */
-            completed_by_org?: string | null;
-            /** Utm Zone */
-            utm_zone: number;
-            /** Utm Easting */
-            utm_easting: number;
-            /** Utm Northing */
-            utm_northing: number;
-            /**
-             * Date Collected
-             * Format: date
-             */
-            date_collected: string;
-            /** Date Verified */
-            date_verified?: string | null;
-        };
-        /** WaterbodyContext */
-        WaterbodyContext: {
-            /** Inflow Permanent */
-            inflow_permanent: string[];
-            /** Inflow Seasonal */
-            inflow_seasonal: string[];
-            /** Outflow Permanent */
-            outflow_permanent: string[];
-            /** Outflow Seasonal */
-            outflow_seasonal: string[];
-            /** Access */
-            access: string | null;
-            /** Comment */
-            comment: string | null;
-            /** Name Local */
-            name_local: string | null;
-            /** Name Gazetted */
-            name_gazetted: string | null;
-            tidal_influence: components["schemas"]["YesNoUnknown"];
-            /** Type */
-            type: string;
-            /** Colour */
-            colour: string | null;
-            /** Max Depth M */
-            max_depth_m: number | null;
-            /** Secchi Depth */
-            secchi_depth: number | null;
-        };
-        /** WeatherConditions */
-        WeatherConditions: {
-            /** Comments */
-            comments?: string | null;
-            /** Cloud Cover */
-            cloud_cover: string;
-            /** Precipitation */
-            precipitation: string;
-            /** Wind Direction */
-            wind_direction: string;
-            /** Wind Speed Kmh */
-            wind_speed_kmh: number;
-            /** Temperature */
-            temperature: number;
-        };
-        /** WellEntry */
-        WellEntry: {
-            /** Well Tag */
-            well_tag: string;
-            /** Distance */
-            distance: number;
-        };
-        /**
-         * YesNo
-         * @enum {string}
-         */
-        YesNo: "Yes" | "No";
-        /**
-         * YesNoUnknown
-         * @enum {string}
-         */
-        YesNoUnknown: "Yes" | "No" | "Unknown";
-        /** Entry */
-        api__protocol__activity__plant_subtypes__biocontrol_collection__Entry: {
-            /** Invasive Plant */
-            invasive_plant: string;
-            /** Biocontrol Agent */
-            biocontrol_agent: string;
-            /** Historical Iapp Site */
-            historical_iapp_site?: number | null;
-            collection_type: components["schemas"]["CollectionType"];
-            /** Plant Count Collection */
-            plant_count_collection?: number | null;
-            /** Time Collection Duration Minutes */
-            time_collection_duration_minutes?: number | null;
-            /** Collection Method */
-            collection_method: string;
-            /** Number Of Sweeps */
-            number_of_sweeps?: number | null;
-            /**
-             * Start Time Collecting
-             * Format: date-time
-             */
-            start_time_collecting: string;
-            /**
-             * End Time Collecting
-             * Format: date-time
-             */
-            end_time_collecting: string;
-            /** Comment */
-            comment: string | null;
-            /** Actual Biological Agents */
-            actual_biological_agents: components["schemas"]["BiocontrolCountSimple"][];
-            /** Estimated Biological Agents */
-            estimated_biological_agents: components["schemas"]["BiocontrolCountSimple"][];
-        };
-        /** SubtypeData */
-        api__protocol__activity__plant_subtypes__biocontrol_collection__SubtypeData: {
-            /** Entries */
-            entries: components["schemas"]["api__protocol__activity__plant_subtypes__biocontrol_collection__Entry"][];
-            microsite_conditions: components["schemas"]["MicrositeCondition"];
-            weather_conditions: components["schemas"]["WeatherConditions"];
-            target_plant_phenology?: components["schemas"]["TargetPlantPhenology"] | null;
-        };
-        /** Entry */
-        api__protocol__activity__plant_subtypes__biocontrol_dispersal_monitoring__Entry: {
-            /** Biocontrol Agent */
-            biocontrol_agent: string;
-            /** Biocontrol Present */
-            biocontrol_present: boolean;
-            /** Invasive Plant */
-            invasive_plant: string;
-            monitoring_type: components["schemas"]["CollectionType"];
-            /** Plant Count */
-            plant_count?: number | null;
-            linear_segment?: components["schemas"]["YesNoUnknown"] | null;
-            /** Monitoring Method */
-            monitoring_method: string;
-            /** Count Duration Minutes */
-            count_duration_minutes?: number | null;
-            /** Location Agent Found */
-            location_agent_found: string[];
-            /** Number Of Sweeps */
-            number_of_sweeps?: number | null;
-            /** Sign Of Biocontrol Presence */
-            sign_of_biocontrol_presence: string[];
-            /**
-             * Start Time
-             * Format: date-time
-             */
-            start_time: string;
-            /**
-             * Stop Time
-             * Format: date-time
-             */
-            stop_time: string;
-            suitable_for_collection?: components["schemas"]["YesNoUnknown"] | null;
-            /**
-             * Actual Biological Agents
-             * @default []
-             */
-            actual_biological_agents: components["schemas"]["BiocontrolCountExtended"][];
-            /**
-             * Estimated Biological Agents
-             * @default []
-             */
-            estimated_biological_agents: components["schemas"]["BiocontrolCountExtended"][];
-        };
-        /** SubtypeData */
-        api__protocol__activity__plant_subtypes__biocontrol_dispersal_monitoring__SubtypeData: {
-            /** Entries */
-            entries: components["schemas"]["api__protocol__activity__plant_subtypes__biocontrol_dispersal_monitoring__Entry"][];
-            microsite_conditions: components["schemas"]["MicrositeCondition"];
-            weather_conditions: components["schemas"]["WeatherConditions"];
-            target_plant_phenology?: components["schemas"]["TargetPlantPhenology"] | null;
-        };
-        /** Entry */
-        api__protocol__activity__plant_subtypes__monitoring_biocontrol_release__Entry: {
-            /** Biocontrol Agent */
-            biocontrol_agent: string;
-            /** Biocontrol Present */
-            biocontrol_present: boolean;
-            /** Invasive Plant */
-            invasive_plant: string;
-            monitoring_type: components["schemas"]["CollectionType"];
-            /** Monitoring Method */
-            monitoring_method: string;
-            /** Count Duration Minutes */
-            count_duration_minutes?: number | null;
-            /** Plant Count */
-            plant_count?: number | null;
-            /** Location Agent Found */
-            location_agent_found: string[];
-            /** Sign Of Biocontrol Presence */
-            sign_of_biocontrol_presence: string[];
-            /**
-             * Start Time
-             * Format: date-time
-             */
-            start_time: string;
-            /**
-             * Stop Time
-             * Format: date-time
-             */
-            stop_time: string;
-            suitable_for_collection?: components["schemas"]["YesNoUnknown"] | null;
-            /** Number Of Sweeps */
-            number_of_sweeps?: number | null;
-            /** Actual Biological Agents */
-            actual_biological_agents: components["schemas"]["BiocontrolCountExtended"][];
-            /** Estimated Biological Agents */
-            estimated_biological_agents: components["schemas"]["BiocontrolCountExtended"][];
-            /** Historical Iapp Site */
-            historical_iapp_site?: number | null;
-        };
-        /** SubtypeData */
-        api__protocol__activity__plant_subtypes__monitoring_biocontrol_release__SubtypeData: {
-            /** Entries */
-            entries: components["schemas"]["api__protocol__activity__plant_subtypes__monitoring_biocontrol_release__Entry"][];
-            microsite_conditions: components["schemas"]["MicrositeCondition"];
-            weather_conditions: components["schemas"]["WeatherConditions"];
-            spread_results?: components["schemas"]["SpreadResultsMixin"] | null;
-            target_plant_phenology?: components["schemas"]["TargetPlantPhenology"] | null;
-        };
-        /** Entry */
-        api__protocol__activity__plant_subtypes__monitoring_mechanical__Entry: {
-            /** Invasive Plant */
-            invasive_plant?: string | null;
-            /** Invasive Plant Aquatic */
-            invasive_plant_aquatic?: string | null;
-            evidence_of_treatment: components["schemas"]["YesNo"];
-            treatment_pass?: components["schemas"]["TreatmentPass"] | null;
-            /** Comment */
-            comment?: string | null;
-            /** Invasive Plants On Site */
-            invasive_plants_on_site: components["schemas"]["InvasivePlantOnSite"][];
-            /** Management Efficacy Rating */
-            management_efficacy_rating: string;
-            /** Treatment Efficacy Rating */
-            treatment_efficacy_rating?: string | null;
-        };
-        /** SubtypeData */
-        api__protocol__activity__plant_subtypes__monitoring_mechanical__SubtypeData: {
-            /** Entries */
-            entries: components["schemas"]["api__protocol__activity__plant_subtypes__monitoring_mechanical__Entry"][];
-        };
-        /** Context */
-        api__protocol__activity__plant_subtypes__observation_aquatic__Context: {
-            suitable_for_biocontrol: components["schemas"]["YesNoUnknown"];
-        };
-        /** Entry */
-        api__protocol__activity__plant_subtypes__observation_aquatic__Entry: {
-            /** Sample Point Id */
-            sample_point_id?: string | null;
-            observation_type: components["schemas"]["ObservationType"];
-            /** Invasive Plant */
-            invasive_plant: string;
-            /** Density */
-            density?: string | null;
-            /** Distribution */
-            distribution?: string | null;
-            /** Life Stage */
-            life_stage?: string | null;
-            voucher_specimen?: components["schemas"]["VoucherSpecimenSchema"] | null;
-        };
-        /** SubtypeData */
-        api__protocol__activity__plant_subtypes__observation_aquatic__SubtypeData: {
-            context: components["schemas"]["api__protocol__activity__plant_subtypes__observation_aquatic__Context"];
-            waterbody_context: components["schemas"]["WaterbodyContext"];
-            /** Entries */
-            entries: components["schemas"]["api__protocol__activity__plant_subtypes__observation_aquatic__Entry"][];
-            /** Substrate Type */
-            substrate_type: string[];
-            /** Water Use */
-            water_use: string[];
-            /** Waterlevel Management */
-            waterlevel_management: string[];
-            /** Adjacent Land Use */
-            adjacent_land_use: string[];
-            pretreatment_observation: components["schemas"]["YesNoUnknown"];
-            /** Shoreline Types */
-            shoreline_types: components["schemas"]["ShorelineType"][];
-        };
-        /** Context */
-        api__protocol__activity__plant_subtypes__observation_terrestrial__Context: {
-            research_observation: components["schemas"]["YesNoUnknown"];
-            suitable_for_biocontrol_agent: components["schemas"]["YesNoUnknown"];
-            visible_well_nearby: components["schemas"]["YesNoUnknown"];
-            /** Aspect */
-            aspect: string;
-            /** Slope Percent */
-            slope_percent: string;
-            /** Soil Texture */
-            soil_texture: string | null;
-            /** Specific Uses */
-            specific_uses: components["schemas"]["SpecificUseType"][];
-        };
-        /** Entry */
-        api__protocol__activity__plant_subtypes__observation_terrestrial__Entry: {
-            observation_type: components["schemas"]["ObservationType"];
-            /** Invasive Plant */
-            invasive_plant: string;
-            /** Density */
-            density?: string | null;
-            /** Distribution */
-            distribution?: string | null;
-            /** Life Stage */
-            life_stage?: string | null;
-            voucher_specimen?: components["schemas"]["VoucherSpecimenSchema"] | null;
-        };
-        /** SubtypeData */
-        api__protocol__activity__plant_subtypes__observation_terrestrial__SubtypeData: {
-            context: components["schemas"]["api__protocol__activity__plant_subtypes__observation_terrestrial__Context"];
-            pretreatment_observation: components["schemas"]["YesNoUnknown"];
-            /** Entries */
-            entries: components["schemas"]["api__protocol__activity__plant_subtypes__observation_terrestrial__Entry"][];
-        };
-        /** Entry */
-        api__protocol__activity__plant_subtypes__treatment_biocontrol_release__Entry: {
-            /** Invasive Plant */
-            invasive_plant: string;
-            /** Biocontrol Agent */
-            biocontrol_agent: string;
-            linear_segment: components["schemas"]["YesNoUnknown"];
-            /** Mortality */
-            mortality: number;
-            /** Agent Source */
-            agent_source: string;
-            /**
-             * Collection Date
-             * Format: date-time
-             */
-            collection_date: string;
-            /** Plant Collected From */
-            plant_collected_from?: string | null;
-            /** Plant Collected From Manual */
-            plant_collected_from_manual?: string | null;
-            /** Actual Biological Agents */
-            actual_biological_agents: components["schemas"]["BiocontrolCountSimple"][];
-            /** Estimated Biological Agents */
-            estimated_biological_agents: components["schemas"]["BiocontrolCountSimple"][];
-        };
-        /** SubtypeData */
-        api__protocol__activity__plant_subtypes__treatment_biocontrol_release__SubtypeData: {
-            /** Entries */
-            entries: components["schemas"]["api__protocol__activity__plant_subtypes__treatment_biocontrol_release__Entry"][];
-            microsite_conditions: components["schemas"]["MicrositeCondition"];
-            weather_conditions: components["schemas"]["WeatherConditions"];
-            target_plant_phenology?: components["schemas"]["TargetPlantPhenology"] | null;
-        };
-        /** BaseChemicalDetails */
-        api__protocol__activity__plant_subtypes__treatment_chemical_aquatic__BaseChemicalDetails: {
-            context: components["schemas"]["api__protocol__activity__plant_subtypes__treatment_chemical_aquatic__Context"];
-            /** Well Entries */
-            well_entries: components["schemas"]["WellEntry"][];
-            /** Treatment Context */
-            treatment_context: components["schemas"]["TankMixChemicalContext"] | components["schemas"]["ChemicalContextDilution"] | components["schemas"]["ChemicalContextApplicationRate"];
-        };
-        /** Context */
-        api__protocol__activity__plant_subtypes__treatment_chemical_aquatic__Context: {
-            /** Humidity */
-            humidity?: number | null;
-            /** Temperature C */
-            temperature_c: number;
-            /** Wind Speed Kmh */
-            wind_speed_kmh: number;
-            /** Wind Direction */
-            wind_direction: string;
-            /** Pesticide Employer Code */
-            pesticide_employer_code?: string | null;
-            /** Pesticide Use Permit */
-            pesticide_use_permit?: string | null;
-            /** Pest Management Plan */
-            pest_management_plan?: string | null;
-            /** Pest Management Plan Manual */
-            pest_management_plan_manual?: string | null;
-            treatment_notice_signs: components["schemas"]["YesNoUnknown"];
-            /** Precautionary Statement */
-            precautionary_statement?: string | null;
-            /**
-             * Application Start Time
-             * Format: date-time
-             */
-            application_start_time: string;
-            /** Ntz Reduction */
-            ntz_reduction: boolean;
-            /** Rationale For Ntz Reduction */
-            rationale_for_ntz_reduction?: string | null;
-            /** Additional Unmapped Well Water */
-            additional_unmapped_well_water: boolean;
-            /** Pest Injury Threshold Determination */
-            pest_injury_threshold_determination: boolean;
-        };
-        /** BaseChemicalDetails */
-        api__protocol__activity__plant_subtypes__treatment_chemical_terrestrial__BaseChemicalDetails: {
-            context: components["schemas"]["api__protocol__activity__plant_subtypes__treatment_chemical_terrestrial__Context"];
-            /** Well Entries */
-            well_entries: components["schemas"]["WellEntry"][];
-            /** Treatment Context */
-            treatment_context: components["schemas"]["TankMixChemicalContext"] | components["schemas"]["ChemicalContextDilution"] | components["schemas"]["ChemicalContextApplicationRate"];
-        };
-        /** Context */
-        api__protocol__activity__plant_subtypes__treatment_chemical_terrestrial__Context: {
-            /** Humidity */
-            humidity?: number | null;
-            /** Temperature C */
-            temperature_c: number;
-            /** Wind Speed Kmh */
-            wind_speed_kmh: number;
-            /** Wind Direction */
-            wind_direction: string;
-            /** Pesticide Employer Code */
-            pesticide_employer_code?: string | null;
-            /** Pesticide Use Permit */
-            pesticide_use_permit?: string | null;
-            /** Pest Management Plan */
-            pest_management_plan?: string | null;
-            /** Pest Management Plan Manual */
-            pest_management_plan_manual?: string | null;
-            treatment_notice_signs: components["schemas"]["YesNoUnknown"];
-            /** Precautionary Statement */
-            precautionary_statement?: string | null;
-            /**
-             * Application Start Time
-             * Format: date-time
-             */
-            application_start_time: string;
-            /** Ntz Reduction */
-            ntz_reduction: boolean;
-            /** Rationale For Ntz Reduction */
-            rationale_for_ntz_reduction?: string | null;
-            /** Additional Unmapped Well Water */
-            additional_unmapped_well_water: boolean;
-            /** Pest Injury Threshold Determination */
-            pest_injury_threshold_determination: boolean;
-        };
-        /** Entry */
-        api__protocol__activity__plant_subtypes__treatment_mechanical_aquatic__Entry: {
-            /** Disposed Material Amount */
-            disposed_material_amount: number | null;
-            disposed_material_format: components["schemas"]["PlantDisposalFormat"] | null;
-            /** Disposal Method */
-            disposal_method: string;
-            /** Invasive Plant */
-            invasive_plant: string;
-            /** Mechanical Method */
-            mechanical_method: string;
-            /** Treated Area Msq */
-            treated_area_msq: number;
-        };
-        /** SubtypeData */
-        api__protocol__activity__plant_subtypes__treatment_mechanical_aquatic__SubtypeData: {
-            /** Entries */
-            entries: components["schemas"]["api__protocol__activity__plant_subtypes__treatment_mechanical_aquatic__Entry"][];
-            /** Shoreline Types */
-            shoreline_types: components["schemas"]["ShorelineType"][];
-            /** Authorization Information */
-            authorization_information?: string | null;
-        };
-        /** Entry */
-        api__protocol__activity__plant_subtypes__treatment_mechanical_terrestrial__Entry: {
-            /** Disposed Material Amount */
-            disposed_material_amount: number | null;
-            disposed_material_format: components["schemas"]["PlantDisposalFormat"] | null;
-            /** Disposal Method */
-            disposal_method: string;
-            /** Invasive Plant */
-            invasive_plant: string;
-            /** Mechanical Method */
-            mechanical_method: string;
-            /** Treated Area Msq */
-            treated_area_msq: number;
-        };
-        /** SubtypeData */
-        api__protocol__activity__plant_subtypes__treatment_mechanical_terrestrial__SubtypeData: {
-            /** Entries */
-            entries: components["schemas"]["api__protocol__activity__plant_subtypes__treatment_mechanical_terrestrial__Entry"][];
-        };
-        /** DraftApplicationRateHerbicide */
-        DraftApplicationRateHerbicide: {
-            /** Type */
-            type?: string | null;
-            /** Name */
-            name?: string | null;
-            /** Application Rate */
-            application_rate: number | null;
-        };
-        /** DraftBaseChemicalTreatmentContext */
-        DraftBaseChemicalTreatmentContext: {
-            /** Plants Treated */
-            plants_treated: components["schemas"]["DraftTreatedPlant"][];
-            /** Tank Mix */
-            tank_mix: boolean;
-            /** Calculation Type */
-            calculation_type?: ("PAR" | "D") | null;
-            /** Application Method */
-            application_method?: string | null;
-            /** Results */
-            results?: unknown[] | null;
-            /** Herbicide */
-            herbicide?: (components["schemas"]["DraftApplicationRateHerbicide"] | components["schemas"]["DraftBaseHerbicide"])[] | null;
-        };
-        /** DraftBaseHerbicide */
-        DraftBaseHerbicide: {
-            /** Type */
-            type?: string | null;
-            /** Name */
-            name?: string | null;
-            /** Application Rate */
-            application_rate?: number | null;
-        };
-        /** DraftBiocontrolCollection */
-        DraftBiocontrolCollection: {
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Id */
-            id: string;
-            /** Created By */
-            created_by: string;
-            /**
-             * Form Status
-             * @constant
-             */
-            form_status: "Draft";
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivity"][];
-            /** Employer */
-            employer: components["schemas"]["Employer"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgency"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["DraftJurisdictionSchema"][];
-            /** Media */
-            media: components["schemas"]["Media"][];
-            /** Participants */
-            participants: components["schemas"]["DraftParticipant"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectCode"][];
-            /** Area M */
-            area_m: number | null;
-            /** Shape */
-            shape?: (components["schemas"]["Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type____Union_Dict__NoneType__"] | components["schemas"]["FeatureCollection_Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type_____Union_Dict__NoneType___"] | components["schemas"]["Point2D"] | components["schemas"]["MultiPoint2D"] | components["schemas"]["LineString2D"] | components["schemas"]["MultiLineString2D"] | components["schemas"]["Polygon2D"] | components["schemas"]["MultiPolygon2D"] | components["schemas"]["GeometryCollection2D"]) | null;
-            /** Latitude */
-            latitude: number | null;
-            /** Longitude */
-            longitude: number | null;
-            /** Utm Easting */
-            utm_easting: number | null;
-            /** Utm Northing */
-            utm_northing: number | null;
-            /** Utm Zone */
-            utm_zone: number | null;
-            /** Access Description */
-            access_description: string | null;
-            /** Comment */
-            comment: string | null;
-            /** Location Description */
-            location_description: string | null;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            subtype: "Biocontrol_Collection";
-            subtype_data: components["schemas"]["api__protocol__activity__plant_subtypes__biocontrol_collection__DraftSubtypeData"];
-        };
-        /** DraftBiocontrolCountExtended */
-        DraftBiocontrolCountExtended: {
-            /** Quantity */
-            quantity: number | null;
-            /** Stage */
-            stage: string | null;
-            /**
-             * Is Estimate
-             * @default false
-             */
-            is_estimate: boolean;
-            /** Plant Position */
-            plant_position: string | null;
-            /** Agent Location */
-            agent_location: string | null;
-        };
-        /** DraftBiocontrolCountSimple */
-        DraftBiocontrolCountSimple: {
-            /** Quantity */
-            quantity: number | null;
-            /** Stage */
-            stage: string | null;
-            /**
-             * Is Estimate
-             * @default false
-             */
-            is_estimate: boolean;
-        };
-        /** DraftBiocontrolDispersalMonitoring */
-        DraftBiocontrolDispersalMonitoring: {
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Id */
-            id: string;
-            /** Created By */
-            created_by: string;
-            /**
-             * Form Status
-             * @constant
-             */
-            form_status: "Draft";
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivity"][];
-            /** Employer */
-            employer: components["schemas"]["Employer"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgency"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["DraftJurisdictionSchema"][];
-            /** Media */
-            media: components["schemas"]["Media"][];
-            /** Participants */
-            participants: components["schemas"]["DraftParticipant"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectCode"][];
-            /** Area M */
-            area_m: number | null;
-            /** Shape */
-            shape?: (components["schemas"]["Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type____Union_Dict__NoneType__"] | components["schemas"]["FeatureCollection_Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type_____Union_Dict__NoneType___"] | components["schemas"]["Point2D"] | components["schemas"]["MultiPoint2D"] | components["schemas"]["LineString2D"] | components["schemas"]["MultiLineString2D"] | components["schemas"]["Polygon2D"] | components["schemas"]["MultiPolygon2D"] | components["schemas"]["GeometryCollection2D"]) | null;
-            /** Latitude */
-            latitude: number | null;
-            /** Longitude */
-            longitude: number | null;
-            /** Utm Easting */
-            utm_easting: number | null;
-            /** Utm Northing */
-            utm_northing: number | null;
-            /** Utm Zone */
-            utm_zone: number | null;
-            /** Access Description */
-            access_description: string | null;
-            /** Comment */
-            comment: string | null;
-            /** Location Description */
-            location_description: string | null;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            subtype: "Monitoring_Biocontrol_Dispersal_Plant_Terrestrial";
-            subtype_data: components["schemas"]["api__protocol__activity__plant_subtypes__biocontrol_dispersal_monitoring__DraftSubtypeData"];
-        };
-        /** DraftChemicalContextApplicationRate */
-        DraftChemicalContextApplicationRate: {
-            /** Herbicide */
-            herbicide?: (components["schemas"]["DraftApplicationRateHerbicide"] | components["schemas"]["DraftBaseHerbicide"])[] | null;
-            /** Delivery Rate */
-            delivery_rate?: number | null;
-            /** Amount Mix Used L */
-            amount_mix_used_l?: number | null;
-            /** Plants Treated */
-            plants_treated: components["schemas"]["DraftTreatedPlant"][];
-            /**
-             * Tank Mix
-             * @default false
-             * @constant
-             */
-            tank_mix: false;
-            /** Calculation Type */
-            calculation_type?: ("PAR" | "D") | null;
-            /** Application Method */
-            application_method?: string | null;
-            /** Results */
-            results?: unknown[] | null;
-        };
-        /** DraftChemicalContextDilution */
-        DraftChemicalContextDilution: {
-            /** Herbicide */
-            herbicide?: (components["schemas"]["DraftApplicationRateHerbicide"] | components["schemas"]["DraftBaseHerbicide"])[] | null;
-            /** Amount Mix Used L */
-            amount_mix_used_l?: number | null;
-            /** Dilution Percent */
-            dilution_percent?: number | null;
-            /** Area Treated Sqm */
-            area_treated_sqm?: number | null;
-            /** Plants Treated */
-            plants_treated: components["schemas"]["DraftTreatedPlant"][];
-            /**
-             * Tank Mix
-             * @default false
-             * @constant
-             */
-            tank_mix: false;
-            /** Calculation Type */
-            calculation_type?: ("PAR" | "D") | null;
-            /** Application Method */
-            application_method?: string | null;
-            /** Results */
-            results?: unknown[] | null;
-        };
-        /** DraftJurisdictionSchema */
-        DraftJurisdictionSchema: {
-            /** Jurisdiction */
-            jurisdiction: string | null;
-            /** Percent Covered */
-            percent_covered: number | null;
-        };
-        /** DraftMicrositeCondition */
-        DraftMicrositeCondition: {
-            /** Mesoslope Position */
-            mesoslope_position: string | null;
-            /** Site Surface Shape */
-            site_surface_shape: string | null;
-        };
-        /** DraftMonitoringBiocontrolRelease */
-        DraftMonitoringBiocontrolRelease: {
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Id */
-            id: string;
-            /** Created By */
-            created_by: string;
-            /**
-             * Form Status
-             * @constant
-             */
-            form_status: "Draft";
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivity"][];
-            /** Employer */
-            employer: components["schemas"]["Employer"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgency"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["DraftJurisdictionSchema"][];
-            /** Media */
-            media: components["schemas"]["Media"][];
-            /** Participants */
-            participants: components["schemas"]["DraftParticipant"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectCode"][];
-            /** Area M */
-            area_m: number | null;
-            /** Shape */
-            shape?: (components["schemas"]["Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type____Union_Dict__NoneType__"] | components["schemas"]["FeatureCollection_Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type_____Union_Dict__NoneType___"] | components["schemas"]["Point2D"] | components["schemas"]["MultiPoint2D"] | components["schemas"]["LineString2D"] | components["schemas"]["MultiLineString2D"] | components["schemas"]["Polygon2D"] | components["schemas"]["MultiPolygon2D"] | components["schemas"]["GeometryCollection2D"]) | null;
-            /** Latitude */
-            latitude: number | null;
-            /** Longitude */
-            longitude: number | null;
-            /** Utm Easting */
-            utm_easting: number | null;
-            /** Utm Northing */
-            utm_northing: number | null;
-            /** Utm Zone */
-            utm_zone: number | null;
-            /** Access Description */
-            access_description: string | null;
-            /** Comment */
-            comment: string | null;
-            /** Location Description */
-            location_description: string | null;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            subtype: "Monitoring_Biocontrol_Release_Plant_Terrestrial";
-            subtype_data: components["schemas"]["api__protocol__activity__plant_subtypes__monitoring_biocontrol_release__DraftSubtypeData"];
-        };
-        /** DraftMonitoringChemical */
-        DraftMonitoringChemical: {
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Id */
-            id: string;
-            /** Created By */
-            created_by: string;
-            /**
-             * Form Status
-             * @constant
-             */
-            form_status: "Draft";
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivity"][];
-            /** Employer */
-            employer: components["schemas"]["Employer"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgency"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["DraftJurisdictionSchema"][];
-            /** Media */
-            media: components["schemas"]["Media"][];
-            /** Participants */
-            participants: components["schemas"]["DraftParticipant"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectCode"][];
-            /** Area M */
-            area_m: number | null;
-            /** Shape */
-            shape?: (components["schemas"]["Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type____Union_Dict__NoneType__"] | components["schemas"]["FeatureCollection_Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type_____Union_Dict__NoneType___"] | components["schemas"]["Point2D"] | components["schemas"]["MultiPoint2D"] | components["schemas"]["LineString2D"] | components["schemas"]["MultiLineString2D"] | components["schemas"]["Polygon2D"] | components["schemas"]["MultiPolygon2D"] | components["schemas"]["GeometryCollection2D"]) | null;
-            /** Latitude */
-            latitude: number | null;
-            /** Longitude */
-            longitude: number | null;
-            /** Utm Easting */
-            utm_easting: number | null;
-            /** Utm Northing */
-            utm_northing: number | null;
-            /** Utm Zone */
-            utm_zone: number | null;
-            /** Access Description */
-            access_description: string | null;
-            /** Comment */
-            comment: string | null;
-            /** Location Description */
-            location_description: string | null;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            subtype: "Monitoring_Chemical_Plant_Terrestrial_Aquatic";
-            subtype_data: components["schemas"]["api__protocol__activity__plant_subtypes__monitoring_mechanical__DraftSubtypeData"];
-        };
-        /** DraftMonitoringMechanical */
-        DraftMonitoringMechanical: {
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Id */
-            id: string;
-            /** Created By */
-            created_by: string;
-            /**
-             * Form Status
-             * @constant
-             */
-            form_status: "Draft";
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivity"][];
-            /** Employer */
-            employer: components["schemas"]["Employer"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgency"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["DraftJurisdictionSchema"][];
-            /** Media */
-            media: components["schemas"]["Media"][];
-            /** Participants */
-            participants: components["schemas"]["DraftParticipant"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectCode"][];
-            /** Area M */
-            area_m: number | null;
-            /** Shape */
-            shape?: (components["schemas"]["Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type____Union_Dict__NoneType__"] | components["schemas"]["FeatureCollection_Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type_____Union_Dict__NoneType___"] | components["schemas"]["Point2D"] | components["schemas"]["MultiPoint2D"] | components["schemas"]["LineString2D"] | components["schemas"]["MultiLineString2D"] | components["schemas"]["Polygon2D"] | components["schemas"]["MultiPolygon2D"] | components["schemas"]["GeometryCollection2D"]) | null;
-            /** Latitude */
-            latitude: number | null;
-            /** Longitude */
-            longitude: number | null;
-            /** Utm Easting */
-            utm_easting: number | null;
-            /** Utm Northing */
-            utm_northing: number | null;
-            /** Utm Zone */
-            utm_zone: number | null;
-            /** Access Description */
-            access_description: string | null;
-            /** Comment */
-            comment: string | null;
-            /** Location Description */
-            location_description: string | null;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            subtype: "Monitoring_Mechanical_Plant_Terrestrial_Aquatic";
-            subtype_data: components["schemas"]["api__protocol__activity__plant_subtypes__monitoring_mechanical__DraftSubtypeData"];
-        };
-        /** DraftObservationAquaticSchema */
-        DraftObservationAquaticSchema: {
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Id */
-            id: string;
-            /** Created By */
-            created_by: string;
-            /**
-             * Form Status
-             * @constant
-             */
-            form_status: "Draft";
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivity"][];
-            /** Employer */
-            employer: components["schemas"]["Employer"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgency"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["DraftJurisdictionSchema"][];
-            /** Media */
-            media: components["schemas"]["Media"][];
-            /** Participants */
-            participants: components["schemas"]["DraftParticipant"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectCode"][];
-            /** Area M */
-            area_m: number | null;
-            /** Shape */
-            shape?: (components["schemas"]["Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type____Union_Dict__NoneType__"] | components["schemas"]["FeatureCollection_Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type_____Union_Dict__NoneType___"] | components["schemas"]["Point2D"] | components["schemas"]["MultiPoint2D"] | components["schemas"]["LineString2D"] | components["schemas"]["MultiLineString2D"] | components["schemas"]["Polygon2D"] | components["schemas"]["MultiPolygon2D"] | components["schemas"]["GeometryCollection2D"]) | null;
-            /** Latitude */
-            latitude: number | null;
-            /** Longitude */
-            longitude: number | null;
-            /** Utm Easting */
-            utm_easting: number | null;
-            /** Utm Northing */
-            utm_northing: number | null;
-            /** Utm Zone */
-            utm_zone: number | null;
-            /** Access Description */
-            access_description: string | null;
-            /** Comment */
-            comment: string | null;
-            /** Location Description */
-            location_description: string | null;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            subtype: "Observation_Plant_Aquatic";
-            subtype_data: components["schemas"]["api__protocol__activity__plant_subtypes__observation_aquatic__DraftSubtypeData"];
-        };
-        /** DraftObservationTerrestrialSchema */
-        DraftObservationTerrestrialSchema: {
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Id */
-            id: string;
-            /** Created By */
-            created_by: string;
-            /**
-             * Form Status
-             * @constant
-             */
-            form_status: "Draft";
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivity"][];
-            /** Employer */
-            employer: components["schemas"]["Employer"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgency"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["DraftJurisdictionSchema"][];
-            /** Media */
-            media: components["schemas"]["Media"][];
-            /** Participants */
-            participants: components["schemas"]["DraftParticipant"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectCode"][];
-            /** Area M */
-            area_m: number | null;
-            /** Shape */
-            shape?: (components["schemas"]["Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type____Union_Dict__NoneType__"] | components["schemas"]["FeatureCollection_Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type_____Union_Dict__NoneType___"] | components["schemas"]["Point2D"] | components["schemas"]["MultiPoint2D"] | components["schemas"]["LineString2D"] | components["schemas"]["MultiLineString2D"] | components["schemas"]["Polygon2D"] | components["schemas"]["MultiPolygon2D"] | components["schemas"]["GeometryCollection2D"]) | null;
-            /** Latitude */
-            latitude: number | null;
-            /** Longitude */
-            longitude: number | null;
-            /** Utm Easting */
-            utm_easting: number | null;
-            /** Utm Northing */
-            utm_northing: number | null;
-            /** Utm Zone */
-            utm_zone: number | null;
-            /** Access Description */
-            access_description: string | null;
-            /** Comment */
-            comment: string | null;
-            /** Location Description */
-            location_description: string | null;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            subtype: "Observation_Plant_Terrestrial";
-            subtype_data: components["schemas"]["api__protocol__activity__plant_subtypes__observation_terrestrial__DraftSubtypeData"];
-        };
-        /** DraftParticipant */
-        DraftParticipant: {
-            /** Name */
-            name?: string | null;
-            /** Pac Number */
-            pac_number?: number | null;
-        };
-        /** DraftPlantHeight */
-        DraftPlantHeight: {
-            /** Height Cm */
-            height_cm: number | null;
-        };
-        /** DraftShorelineType */
-        DraftShorelineType: {
-            /** Shoreline Type */
-            shoreline_type: string | null;
-            /** Percent Covered */
-            percent_covered: number | null;
-        };
-        /** DraftSpreadResultsMixin */
-        DraftSpreadResultsMixin: {
-            /** Agent Density */
-            agent_density: number | null;
-            /** Plant Attack */
-            plant_attack: number | null;
-            /** Max Spread Distance M */
-            max_spread_distance_m: number | null;
-            /** Max Spread Aspect Deg */
-            max_spread_aspect_deg: number | null;
-        };
-        /** DraftTankMixChemicalContext */
-        DraftTankMixChemicalContext: {
-            /** Herbicide */
-            herbicide?: (components["schemas"]["DraftApplicationRateHerbicide"] | components["schemas"]["DraftBaseHerbicide"])[] | null;
-            /** Delivery Rate */
-            delivery_rate?: number | null;
-            /** Amount Mix Used L */
-            amount_mix_used_l?: number | null;
-            /** Plants Treated */
-            plants_treated: components["schemas"]["DraftTreatedPlant"][];
-            /**
-             * Tank Mix
-             * @default true
-             * @constant
-             */
-            tank_mix: true;
-            /** Calculation Type */
-            calculation_type?: ("PAR" | "D") | null;
-            /** Application Method */
-            application_method?: string | null;
-            /** Results */
-            results?: unknown[] | null;
-        };
-        /** DraftTargetPlantPhenology */
-        DraftTargetPlantPhenology: {
-            /** Winter Dormant */
-            winter_dormant: number | null;
-            /** Seedlings */
-            seedlings: number | null;
-            /** Rosettes */
-            rosettes: number | null;
-            /** Bolts */
-            bolts: number | null;
-            /** Flowering */
-            flowering: number | null;
-            /** Seeds Forming */
-            seeds_forming: number | null;
-            /** Senescent */
-            senescent: number | null;
-            /** Target Plant Heights */
-            target_plant_heights?: components["schemas"]["DraftPlantHeight"][];
-        };
-        /** DraftTreatedPlant */
-        DraftTreatedPlant: {
-            /** Invasive Plant */
-            invasive_plant: string | null;
-            /** Percent Covered */
-            percent_covered: number | null;
-        };
-        /** DraftTreatmentBiocontrolRelease */
-        DraftTreatmentBiocontrolRelease: {
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Id */
-            id: string;
-            /** Created By */
-            created_by: string;
-            /**
-             * Form Status
-             * @constant
-             */
-            form_status: "Draft";
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivity"][];
-            /** Employer */
-            employer: components["schemas"]["Employer"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgency"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["DraftJurisdictionSchema"][];
-            /** Media */
-            media: components["schemas"]["Media"][];
-            /** Participants */
-            participants: components["schemas"]["DraftParticipant"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectCode"][];
-            /** Area M */
-            area_m: number | null;
-            /** Shape */
-            shape?: (components["schemas"]["Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type____Union_Dict__NoneType__"] | components["schemas"]["FeatureCollection_Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type_____Union_Dict__NoneType___"] | components["schemas"]["Point2D"] | components["schemas"]["MultiPoint2D"] | components["schemas"]["LineString2D"] | components["schemas"]["MultiLineString2D"] | components["schemas"]["Polygon2D"] | components["schemas"]["MultiPolygon2D"] | components["schemas"]["GeometryCollection2D"]) | null;
-            /** Latitude */
-            latitude: number | null;
-            /** Longitude */
-            longitude: number | null;
-            /** Utm Easting */
-            utm_easting: number | null;
-            /** Utm Northing */
-            utm_northing: number | null;
-            /** Utm Zone */
-            utm_zone: number | null;
-            /** Access Description */
-            access_description: string | null;
-            /** Comment */
-            comment: string | null;
-            /** Location Description */
-            location_description: string | null;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            subtype: "Biocontrol_Release";
-            subtype_data: components["schemas"]["api__protocol__activity__plant_subtypes__treatment_biocontrol_release__DraftSubtypeData"];
-        };
-        /** DraftTreatmentChemicalAquatic */
-        DraftTreatmentChemicalAquatic: {
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Id */
-            id: string;
-            /** Created By */
-            created_by: string;
-            /**
-             * Form Status
-             * @constant
-             */
-            form_status: "Draft";
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivity"][];
-            /** Employer */
-            employer: components["schemas"]["Employer"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgency"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["DraftJurisdictionSchema"][];
-            /** Media */
-            media: components["schemas"]["Media"][];
-            /** Participants */
-            participants: components["schemas"]["DraftParticipant"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectCode"][];
-            /** Area M */
-            area_m: number | null;
-            /** Shape */
-            shape?: (components["schemas"]["Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type____Union_Dict__NoneType__"] | components["schemas"]["FeatureCollection_Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type_____Union_Dict__NoneType___"] | components["schemas"]["Point2D"] | components["schemas"]["MultiPoint2D"] | components["schemas"]["LineString2D"] | components["schemas"]["MultiLineString2D"] | components["schemas"]["Polygon2D"] | components["schemas"]["MultiPolygon2D"] | components["schemas"]["GeometryCollection2D"]) | null;
-            /** Latitude */
-            latitude: number | null;
-            /** Longitude */
-            longitude: number | null;
-            /** Utm Easting */
-            utm_easting: number | null;
-            /** Utm Northing */
-            utm_northing: number | null;
-            /** Utm Zone */
-            utm_zone: number | null;
-            /** Access Description */
-            access_description: string | null;
-            /** Comment */
-            comment: string | null;
-            /** Location Description */
-            location_description: string | null;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            subtype: "Treatment_Chemical_Plant_Aquatic";
-            subtype_data: components["schemas"]["api__protocol__activity__plant_subtypes__treatment_chemical_aquatic__DraftBaseChemicalDetails"];
-        };
-        /** DraftTreatmentChemicalTerrestrial */
-        DraftTreatmentChemicalTerrestrial: {
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Id */
-            id: string;
-            /** Created By */
-            created_by: string;
-            /**
-             * Form Status
-             * @constant
-             */
-            form_status: "Draft";
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivity"][];
-            /** Employer */
-            employer: components["schemas"]["Employer"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgency"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["DraftJurisdictionSchema"][];
-            /** Media */
-            media: components["schemas"]["Media"][];
-            /** Participants */
-            participants: components["schemas"]["DraftParticipant"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectCode"][];
-            /** Area M */
-            area_m: number | null;
-            /** Shape */
-            shape?: (components["schemas"]["Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type____Union_Dict__NoneType__"] | components["schemas"]["FeatureCollection_Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type_____Union_Dict__NoneType___"] | components["schemas"]["Point2D"] | components["schemas"]["MultiPoint2D"] | components["schemas"]["LineString2D"] | components["schemas"]["MultiLineString2D"] | components["schemas"]["Polygon2D"] | components["schemas"]["MultiPolygon2D"] | components["schemas"]["GeometryCollection2D"]) | null;
-            /** Latitude */
-            latitude: number | null;
-            /** Longitude */
-            longitude: number | null;
-            /** Utm Easting */
-            utm_easting: number | null;
-            /** Utm Northing */
-            utm_northing: number | null;
-            /** Utm Zone */
-            utm_zone: number | null;
-            /** Access Description */
-            access_description: string | null;
-            /** Comment */
-            comment: string | null;
-            /** Location Description */
-            location_description: string | null;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            subtype: "Treatment_Chemical_Plant_Terrestrial";
-            subtype_data: components["schemas"]["api__protocol__activity__plant_subtypes__treatment_chemical_terrestrial__DraftBaseChemicalDetails"];
-        };
-        /** DraftTreatmentMechanicalAquatic */
-        DraftTreatmentMechanicalAquatic: {
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Id */
-            id: string;
-            /** Created By */
-            created_by: string;
-            /**
-             * Form Status
-             * @constant
-             */
-            form_status: "Draft";
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivity"][];
-            /** Employer */
-            employer: components["schemas"]["Employer"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgency"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["DraftJurisdictionSchema"][];
-            /** Media */
-            media: components["schemas"]["Media"][];
-            /** Participants */
-            participants: components["schemas"]["DraftParticipant"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectCode"][];
-            /** Area M */
-            area_m: number | null;
-            /** Shape */
-            shape?: (components["schemas"]["Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type____Union_Dict__NoneType__"] | components["schemas"]["FeatureCollection_Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type_____Union_Dict__NoneType___"] | components["schemas"]["Point2D"] | components["schemas"]["MultiPoint2D"] | components["schemas"]["LineString2D"] | components["schemas"]["MultiLineString2D"] | components["schemas"]["Polygon2D"] | components["schemas"]["MultiPolygon2D"] | components["schemas"]["GeometryCollection2D"]) | null;
-            /** Latitude */
-            latitude: number | null;
-            /** Longitude */
-            longitude: number | null;
-            /** Utm Easting */
-            utm_easting: number | null;
-            /** Utm Northing */
-            utm_northing: number | null;
-            /** Utm Zone */
-            utm_zone: number | null;
-            /** Access Description */
-            access_description: string | null;
-            /** Comment */
-            comment: string | null;
-            /** Location Description */
-            location_description: string | null;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            subtype: "Treatment_Mechanical_Plant_Aquatic";
-            subtype_data: components["schemas"]["api__protocol__activity__plant_subtypes__treatment_mechanical_aquatic__DraftSubtypeData"];
-        };
-        /** DraftTreatmentMechanicalTerrestrial */
-        DraftTreatmentMechanicalTerrestrial: {
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Id */
-            id: string;
-            /** Created By */
-            created_by: string;
-            /**
-             * Form Status
-             * @constant
-             */
-            form_status: "Draft";
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivity"][];
-            /** Employer */
-            employer: components["schemas"]["Employer"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgency"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["DraftJurisdictionSchema"][];
-            /** Media */
-            media: components["schemas"]["Media"][];
-            /** Participants */
-            participants: components["schemas"]["DraftParticipant"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectCode"][];
-            /** Area M */
-            area_m: number | null;
-            /** Shape */
-            shape?: (components["schemas"]["Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type____Union_Dict__NoneType__"] | components["schemas"]["FeatureCollection_Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type_____Union_Dict__NoneType___"] | components["schemas"]["Point2D"] | components["schemas"]["MultiPoint2D"] | components["schemas"]["LineString2D"] | components["schemas"]["MultiLineString2D"] | components["schemas"]["Polygon2D"] | components["schemas"]["MultiPolygon2D"] | components["schemas"]["GeometryCollection2D"]) | null;
-            /** Latitude */
-            latitude: number | null;
-            /** Longitude */
-            longitude: number | null;
-            /** Utm Easting */
-            utm_easting: number | null;
-            /** Utm Northing */
-            utm_northing: number | null;
-            /** Utm Zone */
-            utm_zone: number | null;
-            /** Access Description */
-            access_description: string | null;
-            /** Comment */
-            comment: string | null;
-            /** Location Description */
-            location_description: string | null;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            subtype: "Treatment_Mechanical_Plant_Terrestrial";
-            subtype_data: components["schemas"]["api__protocol__activity__plant_subtypes__treatment_mechanical_terrestrial__DraftSubtypeData"];
-        };
-        /** DraftWaterbodyContext */
-        DraftWaterbodyContext: {
-            /** Inflow Permanent */
-            inflow_permanent: string[];
-            /** Inflow Seasonal */
-            inflow_seasonal: string[];
-            /** Outflow Permanent */
-            outflow_permanent: string[];
-            /** Outflow Seasonal */
-            outflow_seasonal: string[];
-            /** Access */
-            access: string | null;
-            /** Comment */
-            comment: string | null;
-            /** Name Local */
-            name_local: string | null;
-            /** Name Gazetted */
-            name_gazetted: string | null;
-            tidal_influence: components["schemas"]["YesNoUnknown"] | null;
-            /** Type */
-            type: string | null;
-            /** Colour */
-            colour: string | null;
-            /** Max Depth M */
-            max_depth_m: number | null;
-            /** Secchi Depth */
-            secchi_depth: number | null;
-        };
-        /** DraftWeatherConditions */
-        DraftWeatherConditions: {
-            /** Comments */
-            comments?: string | null;
-            /** Cloud Cover */
-            cloud_cover: string | null;
-            /** Precipitation */
-            precipitation: string | null;
-            /** Wind Direction */
-            wind_direction: string | null;
-            /** Wind Speed Kmh */
-            wind_speed_kmh: number | null;
-            /** Temperature */
-            temperature: number | null;
-        };
-        /** DraftEntry */
-        api__protocol__activity__plant_subtypes__biocontrol_collection__DraftEntry: {
-            /** Invasive Plant */
-            invasive_plant: string | null;
-            /** Biocontrol Agent */
-            biocontrol_agent: string | null;
-            /** Historical Iapp Site */
-            historical_iapp_site?: number | null;
-            collection_type: components["schemas"]["CollectionType"] | null;
-            /** Plant Count Collection */
-            plant_count_collection?: number | null;
-            /** Time Collection Duration Minutes */
-            time_collection_duration_minutes?: number | null;
-            /** Collection Method */
-            collection_method: string | null;
-            /** Number Of Sweeps */
-            number_of_sweeps?: number | null;
-            /** Start Time Collecting */
-            start_time_collecting: string | null;
-            /** End Time Collecting */
-            end_time_collecting: string | null;
-            /** Comment */
-            comment: string | null;
-            /** Actual Biological Agents */
-            actual_biological_agents: components["schemas"]["DraftBiocontrolCountSimple"][];
-            /** Estimated Biological Agents */
-            estimated_biological_agents: components["schemas"]["DraftBiocontrolCountSimple"][];
-        };
-        /** DraftSubtypeData */
-        api__protocol__activity__plant_subtypes__biocontrol_collection__DraftSubtypeData: {
-            /** Entries */
-            entries: components["schemas"]["api__protocol__activity__plant_subtypes__biocontrol_collection__DraftEntry"][];
-            microsite_conditions: components["schemas"]["DraftMicrositeCondition"] | null;
-            weather_conditions: components["schemas"]["DraftWeatherConditions"] | null;
-            target_plant_phenology?: components["schemas"]["DraftTargetPlantPhenology"] | null;
-        };
-        /** DraftEntry */
-        api__protocol__activity__plant_subtypes__biocontrol_dispersal_monitoring__DraftEntry: {
-            /** Biocontrol Agent */
-            biocontrol_agent: string | null;
-            /** Biocontrol Present */
-            biocontrol_present?: boolean | null;
-            /** Invasive Plant */
-            invasive_plant: string | null;
-            monitoring_type: components["schemas"]["CollectionType"] | null;
-            /** Plant Count */
-            plant_count?: number | null;
-            linear_segment: components["schemas"]["YesNoUnknown"] | null;
-            /** Monitoring Method */
-            monitoring_method?: string | null;
-            /** Count Duration Minutes */
-            count_duration_minutes?: number | null;
-            /** Location Agent Found */
-            location_agent_found: string[];
-            /** Number Of Sweeps */
-            number_of_sweeps?: number | null;
-            /** Sign Of Biocontrol Presence */
-            sign_of_biocontrol_presence: string[];
-            /** Start Time */
-            start_time: string | null;
-            /** Stop Time */
-            stop_time: string | null;
-            suitable_for_collection?: components["schemas"]["YesNoUnknown"] | null;
-            /** Actual Biological Agents */
-            actual_biological_agents: components["schemas"]["DraftBiocontrolCountExtended"][];
-            /** Estimated Biological Agents */
-            estimated_biological_agents: components["schemas"]["DraftBiocontrolCountExtended"][];
-        };
-        /** DraftSubtypeData */
-        api__protocol__activity__plant_subtypes__biocontrol_dispersal_monitoring__DraftSubtypeData: {
-            /** Entries */
-            entries: components["schemas"]["api__protocol__activity__plant_subtypes__biocontrol_dispersal_monitoring__DraftEntry"][];
-            microsite_conditions: components["schemas"]["DraftMicrositeCondition"] | null;
-            weather_conditions: components["schemas"]["DraftWeatherConditions"] | null;
-            target_plant_phenology?: components["schemas"]["DraftTargetPlantPhenology"] | null;
-        };
-        /** DraftEntry */
-        api__protocol__activity__plant_subtypes__monitoring_biocontrol_release__DraftEntry: {
-            /** Biocontrol Agent */
-            biocontrol_agent: string | null;
-            /**
-             * Biocontrol Present
-             * @default false
-             */
-            biocontrol_present: boolean | null;
-            /** Invasive Plant */
-            invasive_plant: string | null;
-            monitoring_type: components["schemas"]["CollectionType"] | null;
-            /** Monitoring Method */
-            monitoring_method: string | null;
-            /** Count Duration Minutes */
-            count_duration_minutes?: number | null;
-            /** Plant Count */
-            plant_count?: number | null;
-            /** Location Agent Found */
-            location_agent_found: string[];
-            /** Sign Of Biocontrol Presence */
-            sign_of_biocontrol_presence: string[];
-            /** Start Time */
-            start_time: string | null;
-            /** Stop Time */
-            stop_time: string | null;
-            suitable_for_collection?: components["schemas"]["YesNoUnknown"] | null;
-            /** Number Of Sweeps */
-            number_of_sweeps?: number | null;
-            /** Actual Biological Agents */
-            actual_biological_agents: components["schemas"]["DraftBiocontrolCountExtended"][];
-            /** Estimated Biological Agents */
-            estimated_biological_agents: components["schemas"]["DraftBiocontrolCountExtended"][];
-            /** Historical Iapp Site */
-            historical_iapp_site?: number | null;
-        };
-        /** DraftSubtypeData */
-        api__protocol__activity__plant_subtypes__monitoring_biocontrol_release__DraftSubtypeData: {
-            /** Entries */
-            entries: components["schemas"]["api__protocol__activity__plant_subtypes__monitoring_biocontrol_release__DraftEntry"][];
-            microsite_conditions: components["schemas"]["DraftMicrositeCondition"];
-            weather_conditions: components["schemas"]["DraftWeatherConditions"];
-            spread_results?: components["schemas"]["DraftSpreadResultsMixin"] | null;
-            target_plant_phenology?: components["schemas"]["DraftTargetPlantPhenology"] | null;
-        };
-        /** DraftEntry */
-        api__protocol__activity__plant_subtypes__monitoring_mechanical__DraftEntry: {
-            /** Invasive Plant */
-            invasive_plant?: string | null;
-            /** Invasive Plant Aquatic */
-            invasive_plant_aquatic?: string | null;
-            evidence_of_treatment: components["schemas"]["YesNo"] | null;
-            treatment_pass?: components["schemas"]["TreatmentPass"] | null;
-            /** Comment */
-            comment?: string | null;
-            /** Invasive Plants On Site */
-            invasive_plants_on_site: components["schemas"]["InvasivePlantOnSite"][];
-            /** Management Efficacy Rating */
-            management_efficacy_rating: string | null;
-            /** Treatment Efficacy Rating */
-            treatment_efficacy_rating?: string | null;
-        };
-        /** DraftSubtypeData */
-        api__protocol__activity__plant_subtypes__monitoring_mechanical__DraftSubtypeData: {
-            /** Entries */
-            entries: components["schemas"]["api__protocol__activity__plant_subtypes__monitoring_mechanical__DraftEntry"][];
-        };
-        /** DraftContext */
-        api__protocol__activity__plant_subtypes__observation_aquatic__DraftContext: {
-            suitable_for_biocontrol: components["schemas"]["YesNoUnknown"] | null;
-        };
-        /** DraftEntry */
-        api__protocol__activity__plant_subtypes__observation_aquatic__DraftEntry: {
-            /** Sample Point Id */
-            sample_point_id?: string | null;
-            observation_type: components["schemas"]["ObservationType"] | null;
-            /** Invasive Plant */
-            invasive_plant: string | null;
-            /** Density */
-            density?: string | null;
-            /** Distribution */
-            distribution?: string | null;
-            /** Life Stage */
-            life_stage?: string | null;
-            voucher_specimen?: components["schemas"]["VoucherSpecimenSchema"] | null;
-        };
-        /** DraftSubtypeData */
-        api__protocol__activity__plant_subtypes__observation_aquatic__DraftSubtypeData: {
-            context: components["schemas"]["api__protocol__activity__plant_subtypes__observation_aquatic__DraftContext"];
-            waterbody_context: components["schemas"]["DraftWaterbodyContext"];
-            /** Entries */
-            entries: components["schemas"]["api__protocol__activity__plant_subtypes__observation_aquatic__DraftEntry"][];
-            /** Substrate Type */
-            substrate_type: string[];
-            /** Water Use */
-            water_use: string[];
-            /** Waterlevel Management */
-            waterlevel_management: string[];
-            /** Adjacent Land Use */
-            adjacent_land_use: string[];
-            pretreatment_observation: components["schemas"]["YesNoUnknown"] | null;
-            /** Shoreline Types */
-            shoreline_types: components["schemas"]["DraftShorelineType"][];
-        };
-        /** DraftContext */
-        api__protocol__activity__plant_subtypes__observation_terrestrial__DraftContext: {
-            research_observation: components["schemas"]["YesNoUnknown"] | null;
-            suitable_for_biocontrol_agent: components["schemas"]["YesNoUnknown"] | null;
-            visible_well_nearby: components["schemas"]["YesNoUnknown"] | null;
-            /** Aspect */
-            aspect: string | null;
-            /** Slope Percent */
-            slope_percent: string | null;
-            /** Soil Texture */
-            soil_texture: string | null;
-            /** Specific Uses */
-            specific_uses: components["schemas"]["SpecificUseType"][];
-        };
-        /** DraftEntry */
-        api__protocol__activity__plant_subtypes__observation_terrestrial__DraftEntry: {
-            observation_type: components["schemas"]["ObservationType"] | null;
-            /** Invasive Plant */
-            invasive_plant: string | null;
-            /** Density */
-            density?: string | null;
-            /** Distribution */
-            distribution?: string | null;
-            /** Life Stage */
-            life_stage?: string | null;
-            voucher_specimen?: components["schemas"]["VoucherSpecimenSchema"] | null;
-        };
-        /** DraftSubtypeData */
-        api__protocol__activity__plant_subtypes__observation_terrestrial__DraftSubtypeData: {
-            context: components["schemas"]["api__protocol__activity__plant_subtypes__observation_terrestrial__DraftContext"];
-            pretreatment_observation: components["schemas"]["YesNoUnknown"] | null;
-            /** Entries */
-            entries: components["schemas"]["api__protocol__activity__plant_subtypes__observation_terrestrial__DraftEntry"][];
-        };
-        /** DraftEntry */
-        api__protocol__activity__plant_subtypes__treatment_biocontrol_release__DraftEntry: {
-            /** Invasive Plant */
-            invasive_plant: string | null;
-            /** Biocontrol Agent */
-            biocontrol_agent: string | null;
-            linear_segment: components["schemas"]["YesNoUnknown"] | null;
-            /** Mortality */
-            mortality: number | null;
-            /** Agent Source */
-            agent_source: string | null;
-            /** Collection Date */
-            collection_date: string | null;
-            /** Plant Collected From */
-            plant_collected_from: string | null;
-            /** Plant Collected From Manual */
-            plant_collected_from_manual: string | null;
-            /** Actual Biological Agents */
-            actual_biological_agents: components["schemas"]["DraftBiocontrolCountSimple"][];
-            /** Estimated Biological Agents */
-            estimated_biological_agents: components["schemas"]["DraftBiocontrolCountSimple"][];
-        };
-        /** DraftSubtypeData */
-        api__protocol__activity__plant_subtypes__treatment_biocontrol_release__DraftSubtypeData: {
-            /** Entries */
-            entries: components["schemas"]["api__protocol__activity__plant_subtypes__treatment_biocontrol_release__DraftEntry"][];
-            microsite_conditions: components["schemas"]["DraftMicrositeCondition"];
-            weather_conditions: components["schemas"]["DraftWeatherConditions"];
-            target_plant_phenology?: components["schemas"]["DraftTargetPlantPhenology"] | null;
-        };
-        /** DraftBaseChemicalDetails */
-        api__protocol__activity__plant_subtypes__treatment_chemical_aquatic__DraftBaseChemicalDetails: {
-            context: components["schemas"]["api__protocol__activity__plant_subtypes__treatment_chemical_aquatic__DraftContext"];
-            /** Well Entries */
-            well_entries: components["schemas"]["WellEntry"][];
-            /** Treatment Context */
-            treatment_context: components["schemas"]["DraftTankMixChemicalContext"] | components["schemas"]["DraftChemicalContextDilution"] | components["schemas"]["DraftChemicalContextApplicationRate"] | components["schemas"]["DraftBaseChemicalTreatmentContext"];
-        };
-        /** DraftContext */
-        api__protocol__activity__plant_subtypes__treatment_chemical_aquatic__DraftContext: {
-            /** Humidity */
-            humidity?: number | null;
-            /** Temperature C */
-            temperature_c?: number | null;
-            /** Wind Speed Kmh */
-            wind_speed_kmh?: number | null;
-            /** Wind Direction */
-            wind_direction: string | null;
-            /** Pesticide Employer Code */
-            pesticide_employer_code: string | null;
-            /** Pesticide Use Permit */
-            pesticide_use_permit: string | null;
-            /** Pest Management Plan */
-            pest_management_plan: string | null;
-            /** Pest Management Plan Manual */
-            pest_management_plan_manual: string | null;
-            treatment_notice_signs: components["schemas"]["YesNoUnknown"] | null;
-            /** Precautionary Statement */
-            precautionary_statement: string | null;
-            /** Application Start Time */
-            application_start_time: string | null;
-            /** Ntz Reduction */
-            ntz_reduction: boolean | null;
-            /** Rationale For Ntz Reduction */
-            rationale_for_ntz_reduction: string | null;
-            /** Additional Unmapped Well Water */
-            additional_unmapped_well_water: boolean | null;
-            /** Pest Injury Threshold Determination */
-            pest_injury_threshold_determination: boolean | null;
-        };
-        /** DraftBaseChemicalDetails */
-        api__protocol__activity__plant_subtypes__treatment_chemical_terrestrial__DraftBaseChemicalDetails: {
-            context: components["schemas"]["api__protocol__activity__plant_subtypes__treatment_chemical_terrestrial__DraftContext"];
-            /** Well Entries */
-            well_entries: components["schemas"]["WellEntry"][];
-            /** Treatment Context */
-            treatment_context: components["schemas"]["DraftTankMixChemicalContext"] | components["schemas"]["DraftChemicalContextDilution"] | components["schemas"]["DraftChemicalContextApplicationRate"] | components["schemas"]["DraftBaseChemicalTreatmentContext"];
-        };
-        /** DraftContext */
-        api__protocol__activity__plant_subtypes__treatment_chemical_terrestrial__DraftContext: {
-            /** Humidity */
-            humidity?: number | null;
-            /** Temperature C */
-            temperature_c?: number | null;
-            /** Wind Speed Kmh */
-            wind_speed_kmh?: number | null;
-            /** Wind Direction */
-            wind_direction: string | null;
-            /** Pesticide Employer Code */
-            pesticide_employer_code: string | null;
-            /** Pesticide Use Permit */
-            pesticide_use_permit: string | null;
-            /** Pest Management Plan */
-            pest_management_plan: string | null;
-            /** Pest Management Plan Manual */
-            pest_management_plan_manual: string | null;
-            treatment_notice_signs: components["schemas"]["YesNoUnknown"] | null;
-            /** Precautionary Statement */
-            precautionary_statement: string | null;
-            /** Application Start Time */
-            application_start_time: string | null;
-            /** Ntz Reduction */
-            ntz_reduction: boolean | null;
-            /** Rationale For Ntz Reduction */
-            rationale_for_ntz_reduction: string | null;
-            /** Additional Unmapped Well Water */
-            additional_unmapped_well_water: boolean | null;
-            /** Pest Injury Threshold Determination */
-            pest_injury_threshold_determination: boolean | null;
-        };
-        /** DraftEntry */
-        api__protocol__activity__plant_subtypes__treatment_mechanical_aquatic__DraftEntry: {
-            /** Disposed Material Amount */
-            disposed_material_amount: number | null;
-            disposed_material_format: components["schemas"]["PlantDisposalFormat"] | null;
-            /** Disposal Method */
-            disposal_method: string | null;
-            /** Invasive Plant */
-            invasive_plant: string | null;
-            /** Mechanical Method */
-            mechanical_method: string | null;
-            /** Treated Area Msq */
-            treated_area_msq: number | null;
-        };
-        /** DraftSubtypeData */
-        api__protocol__activity__plant_subtypes__treatment_mechanical_aquatic__DraftSubtypeData: {
-            /** Entries */
-            entries: components["schemas"]["api__protocol__activity__plant_subtypes__treatment_mechanical_aquatic__DraftEntry"][];
-            /** Shoreline Types */
-            shoreline_types: components["schemas"]["DraftShorelineType"][];
-            /** Authorization Information */
-            authorization_information?: string | null;
-        };
-        /** DraftEntry */
-        api__protocol__activity__plant_subtypes__treatment_mechanical_terrestrial__DraftEntry: {
-            /** Disposed Material Amount */
-            disposed_material_amount: number | null;
-            disposed_material_format: components["schemas"]["PlantDisposalFormat"] | null;
-            /** Disposal Method */
-            disposal_method: string | null;
-            /** Invasive Plant */
-            invasive_plant: string | null;
-            /** Mechanical Method */
-            mechanical_method: string | null;
-            /** Treated Area Msq */
-            treated_area_msq: number | null;
-        };
-        /** DraftSubtypeData */
-        api__protocol__activity__plant_subtypes__treatment_mechanical_terrestrial__DraftSubtypeData: {
-            /** Entries */
-            entries: components["schemas"]["api__protocol__activity__plant_subtypes__treatment_mechanical_terrestrial__DraftEntry"][];
         };
         /** UserProfileOut */
         UserProfileOut: {
@@ -6066,6 +3169,8 @@ export interface components {
             invasive_plant_management_areas?: string | null;
             /** Regional Invasive Species Organization Areas */
             regional_invasive_species_organization_areas?: string | null;
+            /** Reported Area */
+            reported_area: number | null;
             /** Agency */
             agency?: string | null;
             /** Updated By */
@@ -6087,6 +3192,13 @@ export interface components {
             /** Batch Id */
             batch_id?: number | null;
         };
+        /** RecordsetRowsResponseOut */
+        RecordsetRowsResponseOut: {
+            /** Total */
+            total: number;
+            /** Entries */
+            entries: components["schemas"]["ActivityPlantRowOut"][] | components["schemas"]["DraftActivityPlantRowOut"][] | string[] | null;
+        };
         /** FilterObjects */
         FilterObjects: {
             /** Limit */
@@ -6097,6 +3209,8 @@ export interface components {
             sortColumn?: string | null;
             /** Sortorder */
             sortOrder?: string | null;
+            /** Ids To Filter */
+            ids_to_filter?: string[] | null;
             /** Recordsettype */
             recordSetType?: "Activity" | "IAPP" | null;
             /**
@@ -6121,9 +3235,9 @@ export interface components {
             /** Filter */
             filter?: string | null;
             /** Operator */
-            operator: "CONTAINS" | "DOES NOT CONTAIN";
+            operator: "CONTAINS" | "DOES NOT CONTAIN" | "CONTAINED IN";
             /** Operator2 */
-            operator2: "AND" | "OR";
+            operator2?: "AND" | "OR" | null;
             /** Geojson */
             geojson?: {
                 [key: string]: unknown;
@@ -6147,7 +3261,12 @@ export interface components {
             /** Idlist */
             idList: string[];
         };
-        /** CachedActivityPlantRowOut */
+        /** BaseModel */
+        BaseModel: Record<string, never>;
+        /**
+         * CachedActivityPlantRowOut
+         * @description Stack Metadata for Cached recordsets tile layers
+         */
         CachedActivityPlantRowOut: {
             /**
              * Activity Id
@@ -6165,7 +3284,7 @@ export interface components {
             created_by: string;
             /** Short Id */
             short_id: string;
-            geom?: components["schemas"]["Point"] | null;
+            geom?: components["schemas"]["Feature"] | null;
             /** Activity Subtype */
             activity_subtype: string;
             /** Elevation */
@@ -6178,6 +3297,8 @@ export interface components {
             invasive_plant_management_areas: string | null;
             /** Regional Invasive Species Organization Areas */
             regional_invasive_species_organization_areas?: string | null;
+            /** Reported Area */
+            reported_area: number | null;
             /** Agency */
             agency?: string | null;
             /** Updated By */
@@ -6199,9 +3320,203 @@ export interface components {
             /** Batch Id */
             batch_id?: number | null;
             /** Data */
-            data: {
+            data: components["schemas"]["ObservationTerrestrialPlantOut"] | components["schemas"]["ObservationAquaticPlantOut"] | components["schemas"]["DraftObservationTerrestrialPlantOut"] | components["schemas"]["DraftObservationAquaticPlantOut"] | components["schemas"]["TreatmentMechanicalAquaticPlantOut"] | components["schemas"]["TreatmentMechanicalTerrestrialPlantOut"] | components["schemas"]["TreatmentChemicalTerrestrialOut"] | components["schemas"]["TreatmentChemicalAquaticOut"] | components["schemas"]["DraftTreatmentMechanicalAquaticPlantOut"] | components["schemas"]["DraftTreatmentMechanicalTerrestrialPlantOut"] | components["schemas"]["DraftTreatmentChemicalTerrestrialOut"] | components["schemas"]["DraftTreatmentChemicalAquaticOut"] | components["schemas"]["MonitoringTreatmentChemicalOut"] | components["schemas"]["MonitoringTreatmentMechanicalOut"] | components["schemas"]["DraftMonitoringTreatmentChemicalOut"] | components["schemas"]["DraftMonitoringTreatmentMechanicalOut"] | components["schemas"]["BiocontrolReleaseOut"] | components["schemas"]["BiocontrolCollectionOut"] | components["schemas"]["BiocontrolReleaseMonitoringOut"] | components["schemas"]["BiocontrolDispersalMonitoringOut"] | components["schemas"]["DraftBiocontrolReleaseOut"] | components["schemas"]["DraftBiocontrolCollectionOut"] | components["schemas"]["DraftBiocontrolReleaseMonitoringOut"] | components["schemas"]["DraftBiocontrolDispersalMonitoringOut"];
+            centroid?: components["schemas"]["Feature"] | null;
+        };
+        /**
+         * Feature
+         * @description Feature Model
+         */
+        Feature: {
+            /** Bbox */
+            bbox?: [
+                number,
+                number,
+                number,
+                number
+            ] | [
+                number,
+                number,
+                number,
+                number,
+                number,
+                number
+            ] | null;
+            /**
+             * Type
+             * @constant
+             */
+            type: "Feature";
+            /** Geometry */
+            geometry: (components["schemas"]["Point"] | components["schemas"]["MultiPoint"] | components["schemas"]["LineString"] | components["schemas"]["MultiLineString"] | components["schemas"]["Polygon"] | components["schemas"]["MultiPolygon"] | components["schemas"]["GeometryCollection"]) | null;
+            /** Properties */
+            properties: {
                 [key: string]: unknown;
-            };
+            } | components["schemas"]["BaseModel"] | null;
+            /** Id */
+            id?: number | string | null;
+        };
+        /**
+         * GeometryCollection
+         * @description GeometryCollection Model
+         */
+        GeometryCollection: {
+            /** Bbox */
+            bbox?: [
+                number,
+                number,
+                number,
+                number
+            ] | [
+                number,
+                number,
+                number,
+                number,
+                number,
+                number
+            ] | null;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "GeometryCollection";
+            /** Geometries */
+            geometries: (components["schemas"]["Point"] | components["schemas"]["MultiPoint"] | components["schemas"]["LineString"] | components["schemas"]["MultiLineString"] | components["schemas"]["Polygon"] | components["schemas"]["MultiPolygon"] | components["schemas"]["GeometryCollection"])[];
+        };
+        /**
+         * LineString
+         * @description LineString Model
+         */
+        LineString: {
+            /** Bbox */
+            bbox?: [
+                number,
+                number,
+                number,
+                number
+            ] | [
+                number,
+                number,
+                number,
+                number,
+                number,
+                number
+            ] | null;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "LineString";
+            /** Coordinates */
+            coordinates: (components["schemas"]["Position2D"] | components["schemas"]["Position3D"])[];
+        };
+        /**
+         * MultiLineString
+         * @description MultiLineString Model
+         */
+        MultiLineString: {
+            /** Bbox */
+            bbox?: [
+                number,
+                number,
+                number,
+                number
+            ] | [
+                number,
+                number,
+                number,
+                number,
+                number,
+                number
+            ] | null;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "MultiLineString";
+            /** Coordinates */
+            coordinates: (components["schemas"]["Position2D"] | components["schemas"]["Position3D"])[][];
+        };
+        /**
+         * MultiPoint
+         * @description MultiPoint Model
+         */
+        MultiPoint: {
+            /** Bbox */
+            bbox?: [
+                number,
+                number,
+                number,
+                number
+            ] | [
+                number,
+                number,
+                number,
+                number,
+                number,
+                number
+            ] | null;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "MultiPoint";
+            /** Coordinates */
+            coordinates: (components["schemas"]["Position2D"] | components["schemas"]["Position3D"])[];
+        };
+        /**
+         * MultiPolygon
+         * @description MultiPolygon Model
+         */
+        MultiPolygon: {
+            /** Bbox */
+            bbox?: [
+                number,
+                number,
+                number,
+                number
+            ] | [
+                number,
+                number,
+                number,
+                number,
+                number,
+                number
+            ] | null;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "MultiPolygon";
+            /** Coordinates */
+            coordinates: (components["schemas"]["Position2D"] | components["schemas"]["Position3D"])[][][];
+        };
+        /**
+         * Polygon
+         * @description Polygon Model
+         */
+        Polygon: {
+            /** Bbox */
+            bbox?: [
+                number,
+                number,
+                number,
+                number
+            ] | [
+                number,
+                number,
+                number,
+                number,
+                number,
+                number
+            ] | null;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "Polygon";
+            /** Coordinates */
+            coordinates: (components["schemas"]["Position2D"] | components["schemas"]["Position3D"])[][];
         };
         /** SummaryIn */
         SummaryIn: {
@@ -6457,146 +3772,24 @@ export type ApiProtocolActivityPlantsOutSubtypesTreatmentMechanicalAquaticDraftS
 export type ApiProtocolActivityPlantsOutSubtypesTreatmentMechanicalAquaticSubtypeData = components['schemas']['api__protocol__activity__plants_out__subtypes__treatment_mechanical_aquatic__SubtypeData'];
 export type ApiProtocolActivityPlantsOutSubtypesTreatmentMechanicalTerrestrialDraftSubtypeData = components['schemas']['api__protocol__activity__plants_out__subtypes__treatment_mechanical_terrestrial__DraftSubtypeData'];
 export type ApiProtocolActivityPlantsOutSubtypesTreatmentMechanicalTerrestrialSubtypeData = components['schemas']['api__protocol__activity__plants_out__subtypes__treatment_mechanical_terrestrial__SubtypeData'];
-export type ApplicationRateHerbicide = components['schemas']['ApplicationRateHerbicide'];
-export type BaseHerbicide = components['schemas']['BaseHerbicide'];
-export type BiocontrolCollection = components['schemas']['BiocontrolCollection'];
-export type BiocontrolCountExtended = components['schemas']['BiocontrolCountExtended'];
-export type BiocontrolCountSimple = components['schemas']['BiocontrolCountSimple'];
-export type BiocontrolDispersalMonitoring = components['schemas']['BiocontrolDispersalMonitoring'];
-export type ChemicalContextApplicationRate = components['schemas']['ChemicalContextApplicationRate'];
-export type ChemicalContextDilution = components['schemas']['ChemicalContextDilution'];
-export type CollectionType = components['schemas']['CollectionType'];
-export type Employer = components['schemas']['Employer'];
-export type FeatureCollectionFeatureAnnotatedUnionPoint2DMultiPoint2DLineString2DMultiLineString2DPolygon2DMultiPolygon2DGeometryCollection2DFieldInfoAnnotationNoneTypeRequiredTrueDiscriminatorTypeUnionDictNoneType = components['schemas']['FeatureCollection_Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type_____Union_Dict__NoneType___'];
-export type FeatureAnnotatedUnionPoint2DMultiPoint2DLineString2DMultiLineString2DPolygon2DMultiPolygon2DGeometryCollection2DFieldInfoAnnotationNoneTypeRequiredTrueDiscriminatorTypeUnionDictNoneType = components['schemas']['Feature_Annotated_Union_Point2D__MultiPoint2D__LineString2D__MultiLineString2D__Polygon2D__MultiPolygon2D__GeometryCollection2D___FieldInfo_annotation_NoneType__required_True__discriminator__type____Union_Dict__NoneType__'];
-export type FormStatus = components['schemas']['FormStatus'];
-export type FundingAgency = components['schemas']['FundingAgency'];
-export type GeometryCollection2D = components['schemas']['GeometryCollection2D'];
-export type InvasivePlantOnSite = components['schemas']['InvasivePlantOnSite'];
-export type JurisdictionSchema = components['schemas']['JurisdictionSchema'];
-export type LineString2D = components['schemas']['LineString2D'];
-export type LinkedActivity = components['schemas']['LinkedActivity'];
-export type Media = components['schemas']['Media'];
-export type MicrositeCondition = components['schemas']['MicrositeCondition'];
-export type MonitoringBiocontrolRelease = components['schemas']['MonitoringBiocontrolRelease'];
-export type MonitoringChemical = components['schemas']['MonitoringChemical'];
-export type MonitoringMechanical = components['schemas']['MonitoringMechanical'];
-export type MultiLineString2D = components['schemas']['MultiLineString2D'];
-export type MultiPoint2D = components['schemas']['MultiPoint2D'];
-export type MultiPolygon2D = components['schemas']['MultiPolygon2D'];
-export type ObservationAquaticSchema = components['schemas']['ObservationAquaticSchema'];
-export type ObservationTerrestrialSchema = components['schemas']['ObservationTerrestrialSchema'];
-export type ObservationType = components['schemas']['ObservationType'];
-export type Participant = components['schemas']['Participant'];
-export type PlantDisposalFormat = components['schemas']['PlantDisposalFormat'];
-export type PlantHeight = components['schemas']['PlantHeight'];
-export type Point2D = components['schemas']['Point2D'];
-export type Polygon2D = components['schemas']['Polygon2D'];
-export type ProjectCode = components['schemas']['ProjectCode'];
-export type SpecificUseType = components['schemas']['SpecificUseType'];
-export type SpreadResultsMixin = components['schemas']['SpreadResultsMixin'];
-export type TankMixChemicalContext = components['schemas']['TankMixChemicalContext'];
-export type TargetPlantPhenology = components['schemas']['TargetPlantPhenology'];
-export type TreatedPlant = components['schemas']['TreatedPlant'];
-export type TreatmentBiocontrolRelease = components['schemas']['TreatmentBiocontrolRelease'];
-export type TreatmentChemicalAquatic = components['schemas']['TreatmentChemicalAquatic'];
-export type TreatmentChemicalTerrestrial = components['schemas']['TreatmentChemicalTerrestrial'];
-export type TreatmentMechanicalAquatic = components['schemas']['TreatmentMechanicalAquatic'];
-export type TreatmentMechanicalTerrestrial = components['schemas']['TreatmentMechanicalTerrestrial'];
-export type TreatmentPass = components['schemas']['TreatmentPass'];
-export type VoucherSpecimenSchema = components['schemas']['VoucherSpecimenSchema'];
-export type WaterbodyContext = components['schemas']['WaterbodyContext'];
-export type WeatherConditions = components['schemas']['WeatherConditions'];
-export type WellEntry = components['schemas']['WellEntry'];
-export type YesNo = components['schemas']['YesNo'];
-export type YesNoUnknown = components['schemas']['YesNoUnknown'];
-export type ApiProtocolActivityPlantSubtypesBiocontrolCollectionEntry = components['schemas']['api__protocol__activity__plant_subtypes__biocontrol_collection__Entry'];
-export type ApiProtocolActivityPlantSubtypesBiocontrolCollectionSubtypeData = components['schemas']['api__protocol__activity__plant_subtypes__biocontrol_collection__SubtypeData'];
-export type ApiProtocolActivityPlantSubtypesBiocontrolDispersalMonitoringEntry = components['schemas']['api__protocol__activity__plant_subtypes__biocontrol_dispersal_monitoring__Entry'];
-export type ApiProtocolActivityPlantSubtypesBiocontrolDispersalMonitoringSubtypeData = components['schemas']['api__protocol__activity__plant_subtypes__biocontrol_dispersal_monitoring__SubtypeData'];
-export type ApiProtocolActivityPlantSubtypesMonitoringBiocontrolReleaseEntry = components['schemas']['api__protocol__activity__plant_subtypes__monitoring_biocontrol_release__Entry'];
-export type ApiProtocolActivityPlantSubtypesMonitoringBiocontrolReleaseSubtypeData = components['schemas']['api__protocol__activity__plant_subtypes__monitoring_biocontrol_release__SubtypeData'];
-export type ApiProtocolActivityPlantSubtypesMonitoringMechanicalEntry = components['schemas']['api__protocol__activity__plant_subtypes__monitoring_mechanical__Entry'];
-export type ApiProtocolActivityPlantSubtypesMonitoringMechanicalSubtypeData = components['schemas']['api__protocol__activity__plant_subtypes__monitoring_mechanical__SubtypeData'];
-export type ApiProtocolActivityPlantSubtypesObservationAquaticContext = components['schemas']['api__protocol__activity__plant_subtypes__observation_aquatic__Context'];
-export type ApiProtocolActivityPlantSubtypesObservationAquaticEntry = components['schemas']['api__protocol__activity__plant_subtypes__observation_aquatic__Entry'];
-export type ApiProtocolActivityPlantSubtypesObservationAquaticSubtypeData = components['schemas']['api__protocol__activity__plant_subtypes__observation_aquatic__SubtypeData'];
-export type ApiProtocolActivityPlantSubtypesObservationTerrestrialContext = components['schemas']['api__protocol__activity__plant_subtypes__observation_terrestrial__Context'];
-export type ApiProtocolActivityPlantSubtypesObservationTerrestrialEntry = components['schemas']['api__protocol__activity__plant_subtypes__observation_terrestrial__Entry'];
-export type ApiProtocolActivityPlantSubtypesObservationTerrestrialSubtypeData = components['schemas']['api__protocol__activity__plant_subtypes__observation_terrestrial__SubtypeData'];
-export type ApiProtocolActivityPlantSubtypesTreatmentBiocontrolReleaseEntry = components['schemas']['api__protocol__activity__plant_subtypes__treatment_biocontrol_release__Entry'];
-export type ApiProtocolActivityPlantSubtypesTreatmentBiocontrolReleaseSubtypeData = components['schemas']['api__protocol__activity__plant_subtypes__treatment_biocontrol_release__SubtypeData'];
-export type ApiProtocolActivityPlantSubtypesTreatmentChemicalAquaticBaseChemicalDetails = components['schemas']['api__protocol__activity__plant_subtypes__treatment_chemical_aquatic__BaseChemicalDetails'];
-export type ApiProtocolActivityPlantSubtypesTreatmentChemicalAquaticContext = components['schemas']['api__protocol__activity__plant_subtypes__treatment_chemical_aquatic__Context'];
-export type ApiProtocolActivityPlantSubtypesTreatmentChemicalTerrestrialBaseChemicalDetails = components['schemas']['api__protocol__activity__plant_subtypes__treatment_chemical_terrestrial__BaseChemicalDetails'];
-export type ApiProtocolActivityPlantSubtypesTreatmentChemicalTerrestrialContext = components['schemas']['api__protocol__activity__plant_subtypes__treatment_chemical_terrestrial__Context'];
-export type ApiProtocolActivityPlantSubtypesTreatmentMechanicalAquaticEntry = components['schemas']['api__protocol__activity__plant_subtypes__treatment_mechanical_aquatic__Entry'];
-export type ApiProtocolActivityPlantSubtypesTreatmentMechanicalAquaticSubtypeData = components['schemas']['api__protocol__activity__plant_subtypes__treatment_mechanical_aquatic__SubtypeData'];
-export type ApiProtocolActivityPlantSubtypesTreatmentMechanicalTerrestrialEntry = components['schemas']['api__protocol__activity__plant_subtypes__treatment_mechanical_terrestrial__Entry'];
-export type ApiProtocolActivityPlantSubtypesTreatmentMechanicalTerrestrialSubtypeData = components['schemas']['api__protocol__activity__plant_subtypes__treatment_mechanical_terrestrial__SubtypeData'];
-export type DraftApplicationRateHerbicide = components['schemas']['DraftApplicationRateHerbicide'];
-export type DraftBaseChemicalTreatmentContext = components['schemas']['DraftBaseChemicalTreatmentContext'];
-export type DraftBaseHerbicide = components['schemas']['DraftBaseHerbicide'];
-export type DraftBiocontrolCollection = components['schemas']['DraftBiocontrolCollection'];
-export type DraftBiocontrolCountExtended = components['schemas']['DraftBiocontrolCountExtended'];
-export type DraftBiocontrolCountSimple = components['schemas']['DraftBiocontrolCountSimple'];
-export type DraftBiocontrolDispersalMonitoring = components['schemas']['DraftBiocontrolDispersalMonitoring'];
-export type DraftChemicalContextApplicationRate = components['schemas']['DraftChemicalContextApplicationRate'];
-export type DraftChemicalContextDilution = components['schemas']['DraftChemicalContextDilution'];
-export type DraftJurisdictionSchema = components['schemas']['DraftJurisdictionSchema'];
-export type DraftMicrositeCondition = components['schemas']['DraftMicrositeCondition'];
-export type DraftMonitoringBiocontrolRelease = components['schemas']['DraftMonitoringBiocontrolRelease'];
-export type DraftMonitoringChemical = components['schemas']['DraftMonitoringChemical'];
-export type DraftMonitoringMechanical = components['schemas']['DraftMonitoringMechanical'];
-export type DraftObservationAquaticSchema = components['schemas']['DraftObservationAquaticSchema'];
-export type DraftObservationTerrestrialSchema = components['schemas']['DraftObservationTerrestrialSchema'];
-export type DraftParticipant = components['schemas']['DraftParticipant'];
-export type DraftPlantHeight = components['schemas']['DraftPlantHeight'];
-export type DraftShorelineType = components['schemas']['DraftShorelineType'];
-export type DraftSpreadResultsMixin = components['schemas']['DraftSpreadResultsMixin'];
-export type DraftTankMixChemicalContext = components['schemas']['DraftTankMixChemicalContext'];
-export type DraftTargetPlantPhenology = components['schemas']['DraftTargetPlantPhenology'];
-export type DraftTreatedPlant = components['schemas']['DraftTreatedPlant'];
-export type DraftTreatmentBiocontrolRelease = components['schemas']['DraftTreatmentBiocontrolRelease'];
-export type DraftTreatmentChemicalAquatic = components['schemas']['DraftTreatmentChemicalAquatic'];
-export type DraftTreatmentChemicalTerrestrial = components['schemas']['DraftTreatmentChemicalTerrestrial'];
-export type DraftTreatmentMechanicalAquatic = components['schemas']['DraftTreatmentMechanicalAquatic'];
-export type DraftTreatmentMechanicalTerrestrial = components['schemas']['DraftTreatmentMechanicalTerrestrial'];
-export type DraftWaterbodyContext = components['schemas']['DraftWaterbodyContext'];
-export type DraftWeatherConditions = components['schemas']['DraftWeatherConditions'];
-export type ApiProtocolActivityPlantSubtypesBiocontrolCollectionDraftEntry = components['schemas']['api__protocol__activity__plant_subtypes__biocontrol_collection__DraftEntry'];
-export type ApiProtocolActivityPlantSubtypesBiocontrolCollectionDraftSubtypeData = components['schemas']['api__protocol__activity__plant_subtypes__biocontrol_collection__DraftSubtypeData'];
-export type ApiProtocolActivityPlantSubtypesBiocontrolDispersalMonitoringDraftEntry = components['schemas']['api__protocol__activity__plant_subtypes__biocontrol_dispersal_monitoring__DraftEntry'];
-export type ApiProtocolActivityPlantSubtypesBiocontrolDispersalMonitoringDraftSubtypeData = components['schemas']['api__protocol__activity__plant_subtypes__biocontrol_dispersal_monitoring__DraftSubtypeData'];
-export type ApiProtocolActivityPlantSubtypesMonitoringBiocontrolReleaseDraftEntry = components['schemas']['api__protocol__activity__plant_subtypes__monitoring_biocontrol_release__DraftEntry'];
-export type ApiProtocolActivityPlantSubtypesMonitoringBiocontrolReleaseDraftSubtypeData = components['schemas']['api__protocol__activity__plant_subtypes__monitoring_biocontrol_release__DraftSubtypeData'];
-export type ApiProtocolActivityPlantSubtypesMonitoringMechanicalDraftEntry = components['schemas']['api__protocol__activity__plant_subtypes__monitoring_mechanical__DraftEntry'];
-export type ApiProtocolActivityPlantSubtypesMonitoringMechanicalDraftSubtypeData = components['schemas']['api__protocol__activity__plant_subtypes__monitoring_mechanical__DraftSubtypeData'];
-export type ApiProtocolActivityPlantSubtypesObservationAquaticDraftContext = components['schemas']['api__protocol__activity__plant_subtypes__observation_aquatic__DraftContext'];
-export type ApiProtocolActivityPlantSubtypesObservationAquaticDraftEntry = components['schemas']['api__protocol__activity__plant_subtypes__observation_aquatic__DraftEntry'];
-export type ApiProtocolActivityPlantSubtypesObservationAquaticDraftSubtypeData = components['schemas']['api__protocol__activity__plant_subtypes__observation_aquatic__DraftSubtypeData'];
-export type ApiProtocolActivityPlantSubtypesObservationTerrestrialDraftContext = components['schemas']['api__protocol__activity__plant_subtypes__observation_terrestrial__DraftContext'];
-export type ApiProtocolActivityPlantSubtypesObservationTerrestrialDraftEntry = components['schemas']['api__protocol__activity__plant_subtypes__observation_terrestrial__DraftEntry'];
-export type ApiProtocolActivityPlantSubtypesObservationTerrestrialDraftSubtypeData = components['schemas']['api__protocol__activity__plant_subtypes__observation_terrestrial__DraftSubtypeData'];
-export type ApiProtocolActivityPlantSubtypesTreatmentBiocontrolReleaseDraftEntry = components['schemas']['api__protocol__activity__plant_subtypes__treatment_biocontrol_release__DraftEntry'];
-export type ApiProtocolActivityPlantSubtypesTreatmentBiocontrolReleaseDraftSubtypeData = components['schemas']['api__protocol__activity__plant_subtypes__treatment_biocontrol_release__DraftSubtypeData'];
-export type ApiProtocolActivityPlantSubtypesTreatmentChemicalAquaticDraftBaseChemicalDetails = components['schemas']['api__protocol__activity__plant_subtypes__treatment_chemical_aquatic__DraftBaseChemicalDetails'];
-export type ApiProtocolActivityPlantSubtypesTreatmentChemicalAquaticDraftContext = components['schemas']['api__protocol__activity__plant_subtypes__treatment_chemical_aquatic__DraftContext'];
-export type ApiProtocolActivityPlantSubtypesTreatmentChemicalTerrestrialDraftBaseChemicalDetails = components['schemas']['api__protocol__activity__plant_subtypes__treatment_chemical_terrestrial__DraftBaseChemicalDetails'];
-export type ApiProtocolActivityPlantSubtypesTreatmentChemicalTerrestrialDraftContext = components['schemas']['api__protocol__activity__plant_subtypes__treatment_chemical_terrestrial__DraftContext'];
-export type ApiProtocolActivityPlantSubtypesTreatmentMechanicalAquaticDraftEntry = components['schemas']['api__protocol__activity__plant_subtypes__treatment_mechanical_aquatic__DraftEntry'];
-export type ApiProtocolActivityPlantSubtypesTreatmentMechanicalAquaticDraftSubtypeData = components['schemas']['api__protocol__activity__plant_subtypes__treatment_mechanical_aquatic__DraftSubtypeData'];
-export type ApiProtocolActivityPlantSubtypesTreatmentMechanicalTerrestrialDraftEntry = components['schemas']['api__protocol__activity__plant_subtypes__treatment_mechanical_terrestrial__DraftEntry'];
-export type ApiProtocolActivityPlantSubtypesTreatmentMechanicalTerrestrialDraftSubtypeData = components['schemas']['api__protocol__activity__plant_subtypes__treatment_mechanical_terrestrial__DraftSubtypeData'];
 export type UserProfileOut = components['schemas']['UserProfileOut'];
 export type UserAccessIn = components['schemas']['UserAccessIn'];
 export type DraftActivityPlantRowOut = components['schemas']['DraftActivityPlantRowOut'];
+export type RecordsetRowsResponseOut = components['schemas']['RecordsetRowsResponseOut'];
 export type FilterObjects = components['schemas']['FilterObjects'];
 export type FilterObjectsIn = components['schemas']['FilterObjectsIn'];
 export type TableFilterIn = components['schemas']['TableFilterIn'];
 export type ActivityPlantSummaryOut = components['schemas']['ActivityPlantSummaryOut'];
 export type IdListIn = components['schemas']['IdListIn'];
+export type BaseModel = components['schemas']['BaseModel'];
 export type CachedActivityPlantRowOut = components['schemas']['CachedActivityPlantRowOut'];
+export type Feature = components['schemas']['Feature'];
+export type GeometryCollection = components['schemas']['GeometryCollection'];
+export type LineString = components['schemas']['LineString'];
+export type MultiLineString = components['schemas']['MultiLineString'];
+export type MultiPoint = components['schemas']['MultiPoint'];
+export type MultiPolygon = components['schemas']['MultiPolygon'];
+export type Polygon = components['schemas']['Polygon'];
 export type SummaryIn = components['schemas']['SummaryIn'];
 export type TeamMembershipOut = components['schemas']['TeamMembershipOut'];
 export type TeamMembershipRowOut = components['schemas']['TeamMembershipRowOut'];
@@ -6664,7 +3857,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["ObservationTerrestrialSchema"] | components["schemas"]["ObservationAquaticSchema"] | components["schemas"]["TreatmentBiocontrolRelease"] | components["schemas"]["BiocontrolCollection"] | components["schemas"]["TreatmentChemicalTerrestrial"] | components["schemas"]["TreatmentChemicalAquatic"] | components["schemas"]["TreatmentMechanicalTerrestrial"] | components["schemas"]["TreatmentMechanicalAquatic"] | components["schemas"]["MonitoringMechanical"] | components["schemas"]["MonitoringChemical"] | components["schemas"]["MonitoringBiocontrolRelease"] | components["schemas"]["BiocontrolDispersalMonitoring"];
+                "application/json": unknown;
             };
         };
         responses: {
@@ -6688,7 +3881,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["DraftObservationTerrestrialSchema"] | components["schemas"]["DraftObservationAquaticSchema"] | components["schemas"]["DraftTreatmentBiocontrolRelease"] | components["schemas"]["DraftBiocontrolCollection"] | components["schemas"]["DraftTreatmentChemicalTerrestrial"] | components["schemas"]["DraftTreatmentChemicalAquatic"] | components["schemas"]["DraftTreatmentMechanicalTerrestrial"] | components["schemas"]["DraftTreatmentMechanicalAquatic"] | components["schemas"]["DraftMonitoringMechanical"] | components["schemas"]["DraftMonitoringChemical"] | components["schemas"]["DraftMonitoringBiocontrolRelease"] | components["schemas"]["DraftBiocontrolDispersalMonitoring"];
+                "application/json": unknown;
             };
         };
         responses: {
@@ -6850,7 +4043,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["DraftActivityPlantRowOut"][] | components["schemas"]["ActivityPlantRowOut"][] | string[];
+                    "application/json": components["schemas"]["RecordsetRowsResponseOut"];
                 };
             };
         };

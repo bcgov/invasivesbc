@@ -120,7 +120,9 @@ class BaseRecordOut(ModelSchema, ABC):
 
     @staticmethod
     def resolve_centroid(obj: Activity):
-        return json.loads(obj.shape.point_on_surface.geojson)
+        return json.loads(
+            obj.shape.transform(4326, clone=True).point_on_surface.geojson
+        )
 
     @staticmethod
     def resolve_employer(obj: Activity):
@@ -160,7 +162,9 @@ class BaseRecordOut(ModelSchema, ABC):
 
     @staticmethod
     def resolve_shape(obj: Activity):
-        geojson_py_object = json.loads(obj.shape.geojson)
+        geojson_py_object = json.loads(
+            obj.computed_tile_shape.transform(4326, clone=True).geojson
+        )
 
         if geojson_py_object["type"] == "Feature":
             return geojson_py_object

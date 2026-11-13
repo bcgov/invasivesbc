@@ -304,7 +304,8 @@ class ActivityRecordsetFilterTest(BaseTestCase):
         )
         self.assertEqual(res.status_code, 200)
         response_data = res.json()
-        return response_data
+
+        return response_data["entries"]
 
     def setUpTestData():
         """

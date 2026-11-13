@@ -18,7 +18,9 @@ from api.protocol.activity.activity import (
     ActivitySearchResult,
 )
 from api.permissions.activity_access import filter_activities_by_access
-from api.protocol.activity.plants_out import PlantRecordWithMetadataOut
+from api.protocol.activity.plants_out.plant_record_with_metadata import (
+    PlantRecordWithMetadataOut,
+)
 from api.protocol.activity.plant_subtypes.union_definition import (
     PlantActivitySchema,
     DraftPlantActivitySchema,
