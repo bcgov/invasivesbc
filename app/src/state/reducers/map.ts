@@ -1,6 +1,6 @@
 import { createNextState, createSelector, nanoid } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
-import { Feature, GeoJSON, Point, Polygon } from 'geojson';
+import { GeoJSON, Position } from 'geojson';
 import { FilterSpecification } from 'maplibre-gl';
 import { ActivitySubtypes } from 'sharedAPI';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
@@ -82,10 +82,11 @@ interface MapState {
 
   userCoords: any;
   userRecordOnHoverRecordID?: string | number;
-  userRecordOnHoverRecordGeometry?: Feature | Polygon | Point;
-  userRecordOnHoverRecordType?: RecordSetType;
+  userRecordOnHoverRecordGeometry?: GeoJSON;
+  userRecordOnHoverRecordType?: `${RecordSetType}`;
   globalMapFilters: MapRecordsetLayerFilters;
   whatsHere: {
+    shapeCentre?: Position;
     toggle: boolean;
     feature: any | null;
     limit: number;
@@ -105,7 +106,7 @@ interface MapState {
     ActivitySortField: string;
     ActivitySortDirection: string;
 
-    IAPPIDs: string[];
+    IAPPIDs: Array<string> | Array<number>;
     iappRows: any[];
     IAPPPage: number;
     IAPPLimit: number;
@@ -170,6 +171,7 @@ const initialState: MapState = {
   userRecordOnHoverRecordGeometry: undefined,
   userRecordOnHoverRecordType: undefined,
   whatsHere: {
+    shapeCentre: [0, 0],
     toggle: false,
     limit: 5,
     page: 0,
@@ -213,7 +215,32 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
        in) and builder.addCase instead of switches, although I assume you lose fallthrough cases then.
       */
     return createNextState(state, (draftState: Draft<MapState>) => {
-      if (UserSettings.RecordSet.requestRemoval.fulfilled.match(action)) {
+      if (WhatsHere.processWhatsHereIds.pending.match(action)) {
+        // Reset State
+        draftState.whatsHere.shapeCentre = [0, 0];
+        draftState.whatsHere.limit = 5;
+        draftState.whatsHere.page = 0;
+
+        draftState.whatsHere.loadingActivities = false;
+        draftState.whatsHere.activityRows = [];
+        draftState.whatsHere.ActivityIDs = [];
+        draftState.whatsHere.ActivityPage = 0;
+        draftState.whatsHere.ActivityLimit = 5;
+        draftState.whatsHere.ActivitySortDirection = SortFilter.Desc;
+
+        draftState.whatsHere.loadingIAPP = false;
+        draftState.whatsHere.iappRows = [];
+        draftState.whatsHere.IAPPIDs = [];
+        draftState.whatsHere.IAPPPage = 0;
+        draftState.whatsHere.IAPPLimit = 5;
+        draftState.whatsHere.IAPPSortDirection = SortFilter.Desc;
+
+        draftState.whatsHere.feature = action.meta.arg.shape;
+      } else if (WhatsHere.processWhatsHereIds.fulfilled.match(action)) {
+        draftState.whatsHere.shapeCentre = action.payload.shapeCentre;
+        draftState.whatsHere.ActivityIDs = action.payload.ibcIds;
+        draftState.whatsHere.IAPPIDs = action.payload.iapp;
+      } else if (UserSettings.RecordSet.requestRemoval.fulfilled.match(action)) {
         const index = draftState.layers.findIndex((layer) => layer.recordSetID === action.meta.arg.setId);
         if (index !== -1) {
           draftState.layers.splice(index, 1);
@@ -460,11 +487,12 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
 
         draftState.layers[index].loading = false;
       } else if (UserSettings.Map.setHoveredRecordset.match(action)) {
-        draftState.userRecordOnHoverRecordType = action.payload.recordType;
-        draftState.userRecordOnHoverRecordID = action.payload.id;
-        draftState.userRecordOnHoverRecordGeometry = action.payload.geom;
-        draftState.quickPanToRecord = !!action.payload?.quickPan;
-        draftState.readableIdentifier = action.payload?.readableIdentifier;
+        const { recordType, id, geom, quickPan = false, readableIdentifier } = action.payload;
+        draftState.userRecordOnHoverRecordType = recordType;
+        draftState.userRecordOnHoverRecordID = id;
+        draftState.userRecordOnHoverRecordGeometry = geom;
+        draftState.quickPanToRecord = !!quickPan;
+        draftState.readableIdentifier = readableIdentifier;
       } else if (UserSettings.Map.markCoordinate.match(action)) {
         draftState.userRecordOnHoverRecordType = undefined;
         draftState.userRecordOnHoverRecordID = undefined;

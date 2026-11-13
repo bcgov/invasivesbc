@@ -4,9 +4,10 @@ import json
 
 from django.db.models import Model
 from ninja import ModelSchema
-from geojson_pydantic import Point
+from geojson_pydantic import Feature, Point
 from pydantic import UUID4, Field
-from api.serializers.activity import ActivitySerializer
+from api.protocol.activity.plants_out import PlantRecordOut
+from api.constants import ACTIVITY_TO_PLANT, DRAFT_ACTIVITY_TO_PLANT
 from api.models.activity import (
     Activity,
     ActivitySubtypes,
@@ -15,44 +16,19 @@ from api.models.activity import (
     ProjectCode,
     FundingAgency,
     Jurisdiction,
-    # Chem Treatments
-    ChemPlantEntryAquatic,
-    ChemPlantEntryTerrestrial,
-    # Observations
-    AquaticPlantObservationEntry,
-    TerrestrialPlantObservationEntries,
-    # Mech Treatments
-    AquaticPlantMechanicalTreatmentEntry,
-    TerrestrialPlantMechanicalTreatmentEntry,
-    # Monitoring
-    AquaticTreatmentMonitoringEntry,
-    TerrestrialTreatmentMonitoringEntry,
+    DraftActivity,
+    DraftProjectCode,
+    DraftFundingAgency,
+    DraftJurisdiction,
     # Biocontrol,
     TerrestrialBiocontrolReleaseEntry,
     TerrestrialBiocontrolDispersalMonitoringEntry,
     TerrestrialBiocontrolReleaseEntry,
     TerrestrialBiocontrolCollectionEntry,
-    # Chem Treatments
-    DraftChemPlantEntryAquatic,
-    DraftChemPlantEntryTerrestrial,
-    # Observations
-    DraftAquaticPlantObservationEntry,
-    DraftTerrestrialPlantObservationEntries,
-    # Mech Treatments
-    DraftAquaticPlantMechanicalTreatmentEntry,
-    DraftTerrestrialPlantMechanicalTreatmentEntry,
-    # Monitoring
-    DraftAquaticTreatmentMonitoringEntry,
-    DraftTerrestrialTreatmentMonitoringEntry,
-    # Biocontrol,
     DraftTerrestrialBiocontrolReleaseEntry,
     DraftTerrestrialBiocontrolDispersalMonitoringEntry,
     DraftTerrestrialBiocontrolReleaseEntry,
     DraftTerrestrialBiocontrolCollectionEntry,
-    DraftActivity,
-    DraftProjectCode,
-    DraftFundingAgency,
-    DraftJurisdiction,
 )
 from api.models.enums.observation_type import ObservationType
 from api.models.audits import ActivityModificationRecord
@@ -75,6 +51,7 @@ class ActivityPlantRowOut(ModelSchema):
         ..., alias="computed_invasive_plant_management_areas"
     )
     regional_invasive_species_organization_areas: Optional[str] = None
+    reported_area: Optional[int] = Field(..., alias="area_m")
     agency: Optional[str] = None
     updated_by: Optional[str] = None
     species_biocontrol_full: Optional[str] = None
@@ -98,7 +75,9 @@ class ActivityPlantRowOut(ModelSchema):
 
     @staticmethod
     def resolve_geom(obj: Activity):
-        return json.loads(obj.shape.point_on_surface.geojson)
+        return json.loads(
+            obj.computed_tile_shape.transform(4326, clone=True).point_on_surface.geojson
+        )
 
     @staticmethod
     def resolve_regional_invasive_species_organization_areas(obj: Activity):
@@ -115,7 +94,7 @@ class ActivityPlantRowOut(ModelSchema):
     @staticmethod
     def resolve_agency(obj: Activity):
         return (
-            ",".join(
+            ", ".join(
                 FundingAgency.objects.filter(activity_data_record__activity_id=obj.id)
                 .distinct("agency__full")
                 .order_by("agency__full")
@@ -160,7 +139,7 @@ class ActivityPlantRowOut(ModelSchema):
                 .distinct("invasive_plant__full")
                 .values_list("invasive_plant__full", flat=True)
             )
-        return ",".join(sorted(set(plants))) or None
+        return ", ".join(sorted(set(plants))) or None
 
     @staticmethod
     def resolve_species_negative_full(obj: Activity):
@@ -214,7 +193,7 @@ class ActivityPlantRowOut(ModelSchema):
                 .distinct("invasive_plant__full")
                 .values_list("invasive_plant__full", flat=True)
             )
-        return ",".join(sorted(set(plants))) or None
+        return ", ".join(sorted(set(plants))) or None
 
     @staticmethod
     def resolve_jurisdiction_display(obj: Activity):
@@ -239,47 +218,7 @@ class ActivityPlantRowOut(ModelSchema):
 
     @classmethod
     def get_plant_models(cls, obj: Activity) -> List[Model]:
-        MAP = {
-            ActivitySubtypes.Biocontrol_Collection.name: [
-                TerrestrialBiocontrolCollectionEntry
-            ],
-            ActivitySubtypes.Biocontrol_Release.name: [
-                TerrestrialBiocontrolReleaseEntry
-            ],
-            ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial.name: [
-                TerrestrialBiocontrolDispersalMonitoringEntry
-            ],
-            ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial.name: [
-                TerrestrialBiocontrolDispersalMonitoringEntry
-            ],
-            ActivitySubtypes.Observation_Plant_Aquatic.name: [
-                AquaticPlantObservationEntry
-            ],
-            ActivitySubtypes.Observation_Plant_Terrestrial.name: [
-                TerrestrialPlantObservationEntries
-            ],
-            ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial.name: [
-                ChemPlantEntryTerrestrial
-            ],
-            ActivitySubtypes.Treatment_Chemical_Plant_Aquatic.name: [
-                ChemPlantEntryAquatic
-            ],
-            ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic.name: [
-                AquaticPlantMechanicalTreatmentEntry
-            ],
-            ActivitySubtypes.Treatment_Mechanical_Plant_Terrestrial.name: [
-                TerrestrialPlantMechanicalTreatmentEntry
-            ],
-            ActivitySubtypes.Monitoring_Chemical_Plant_Terrestrial_Aquatic.name: [
-                AquaticTreatmentMonitoringEntry,
-                TerrestrialTreatmentMonitoringEntry,
-            ],
-            ActivitySubtypes.Monitoring_Mechanical_Plant_Terrestrial_Aquatic.name: [
-                AquaticTreatmentMonitoringEntry,
-                TerrestrialTreatmentMonitoringEntry,
-            ],
-        }
-        return MAP.get(obj.subtype, [])
+        return ACTIVITY_TO_PLANT.get(obj.subtype, [])
 
     @classmethod
     def get_agent_model(cls, obj: Activity) -> dict:
@@ -307,8 +246,12 @@ class DraftActivityPlantRowOut(ActivityPlantRowOut):
 
     @staticmethod
     def resolve_geom(obj: DraftActivity):
-        if obj.shape:
-            return json.loads(obj.shape.point_on_surface.geojson)
+        if obj.computed_tile_shape:
+            return json.loads(
+                obj.computed_tile_shape.transform(
+                    4326, clone=True
+                ).point_on_surface.geojson
+            )
         return None
 
     @staticmethod
@@ -318,7 +261,7 @@ class DraftActivityPlantRowOut(ActivityPlantRowOut):
     @staticmethod
     def resolve_agency(obj: DraftActivity):
         return (
-            ",".join(
+            ", ".join(
                 DraftFundingAgency.objects.filter(
                     activity_data_record__activity_id=obj.id, agency__isnull=False
                 )
@@ -366,7 +309,7 @@ class DraftActivityPlantRowOut(ActivityPlantRowOut):
                 .distinct("invasive_plant__full")
                 .values_list("invasive_plant__full", flat=True)
             )
-        return ",".join(sorted(set(plants))) or None
+        return ", ".join(sorted(set(plants))) or None
 
     @staticmethod
     def resolve_species_negative_full(obj: DraftActivity):
@@ -425,7 +368,7 @@ class DraftActivityPlantRowOut(ActivityPlantRowOut):
                 .distinct("invasive_plant__full")
                 .values_list("invasive_plant__full", flat=True)
             )
-        return ",".join(sorted(set(plants))) or None
+        return ", ".join(sorted(set(plants))) or None
 
     @staticmethod
     def resolve_jurisdiction_display(obj: DraftActivity):
@@ -452,47 +395,7 @@ class DraftActivityPlantRowOut(ActivityPlantRowOut):
 
     @classmethod
     def get_plant_models(cls, obj: DraftActivity) -> List[Model]:
-        MAP = {
-            ActivitySubtypes.Biocontrol_Collection.name: [
-                DraftTerrestrialBiocontrolCollectionEntry
-            ],
-            ActivitySubtypes.Biocontrol_Release.name: [
-                DraftTerrestrialBiocontrolReleaseEntry
-            ],
-            ActivitySubtypes.Monitoring_Biocontrol_Dispersal_Plant_Terrestrial.name: [
-                DraftTerrestrialBiocontrolDispersalMonitoringEntry
-            ],
-            ActivitySubtypes.Monitoring_Biocontrol_Release_Plant_Terrestrial.name: [
-                DraftTerrestrialBiocontrolDispersalMonitoringEntry
-            ],
-            ActivitySubtypes.Observation_Plant_Aquatic.name: [
-                DraftAquaticPlantObservationEntry
-            ],
-            ActivitySubtypes.Observation_Plant_Terrestrial.name: [
-                DraftTerrestrialPlantObservationEntries
-            ],
-            ActivitySubtypes.Treatment_Chemical_Plant_Terrestrial.name: [
-                DraftChemPlantEntryTerrestrial
-            ],
-            ActivitySubtypes.Treatment_Chemical_Plant_Aquatic.name: [
-                DraftChemPlantEntryAquatic
-            ],
-            ActivitySubtypes.Treatment_Mechanical_Plant_Aquatic.name: [
-                DraftAquaticPlantMechanicalTreatmentEntry
-            ],
-            ActivitySubtypes.Treatment_Mechanical_Plant_Terrestrial.name: [
-                DraftTerrestrialPlantMechanicalTreatmentEntry
-            ],
-            ActivitySubtypes.Monitoring_Chemical_Plant_Terrestrial_Aquatic.name: [
-                DraftAquaticTreatmentMonitoringEntry,
-                DraftTerrestrialTreatmentMonitoringEntry,
-            ],
-            ActivitySubtypes.Monitoring_Mechanical_Plant_Terrestrial_Aquatic.name: [
-                DraftAquaticTreatmentMonitoringEntry,
-                DraftTerrestrialTreatmentMonitoringEntry,
-            ],
-        }
-        return MAP.get(obj.subtype, [])
+        return DRAFT_ACTIVITY_TO_PLANT.get(obj.subtype, [])
 
     @classmethod
     def get_agent_model(cls, obj: DraftActivity) -> dict:
@@ -506,8 +409,52 @@ class DraftActivityPlantRowOut(ActivityPlantRowOut):
 
 
 class CachedActivityPlantRowOut(ActivityPlantRowOut):
-    data: dict
+    """Stack Metadata for Cached recordsets tile layers"""
+
+    data: PlantRecordOut
+    centroid: Optional[Feature] = None
+    geom: Optional[Feature] = None
 
     @staticmethod
     def resolve_data(obj: Activity):
-        return ActivitySerializer(obj).data
+        return obj
+
+    @staticmethod
+    def resolve_geom(obj: Activity):
+        if obj.computed_tile_shape:
+            return {
+                "type": "Feature",
+                "geometry": json.loads(
+                    obj.computed_tile_shape.transform(4326, clone=True).geojson
+                ),
+                "properties": {
+                    "description": obj.id,
+                    "id": obj.id,
+                    "short_id": obj.short_id,
+                    "type": obj.type,
+                    "subtype": obj.subtype,
+                    "map_symbol": obj.computed_map_symbol,
+                },
+            }
+        return None
+
+    @staticmethod
+    def resolve_centroid(obj: Activity):
+        if obj.computed_tile_shape:
+            return {
+                "type": "Feature",
+                "geometry": json.loads(
+                    obj.computed_tile_shape.point_on_surface.transform(
+                        4326, clone=True
+                    ).geojson
+                ),
+                "properties": {
+                    "description": obj.id,
+                    "id": obj.id,
+                    "short_id": obj.short_id,
+                    "type": obj.type,
+                    "subtype": obj.subtype,
+                    "map_symbol": obj.computed_map_symbol,
+                },
+            }
+        return None

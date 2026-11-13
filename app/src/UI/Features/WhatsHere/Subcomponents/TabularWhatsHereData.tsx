@@ -2,44 +2,47 @@ import WhatsHerePagination from 'UI/Features/WhatsHere/Subcomponents/WhatsHerePa
 import { useSelector } from 'utils/use_selector';
 import { useDispatch } from 'react-redux';
 import NoRowsInSearch from 'UI/Features/WhatsHere/Subcomponents/NoRowsInSearch';
-import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { RecordSetType } from 'interfaces/UserRecordSet';
-import { MouseEvent, TouchEvent } from 'react';
+import { Fragment, MouseEvent, TouchEvent, useState } from 'react';
 import UserSettings from 'state/actions/userSettings/UserSettings';
+import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
+import RecordTablePopoverContent from 'UI/Features/Records/RecordSet/RecordTablePopoverContent/RecordTablePopoverContent';
+import StyledTable from 'UI/Reusable/StyledTable/StyledTable';
 
 type PropTypes = {
-  setAnchorEl: (anchorEl: HTMLElement | null) => void;
   recordsetType: RecordSetType;
 };
 
-const TabularWhatsHereData = ({ setAnchorEl, recordsetType }: PropTypes) => {
+const TabularWhatsHereData = ({ recordsetType }: PropTypes) => {
+  const whatsHere = useSelector((state) => state.Map?.whatsHere);
+  const recordDisplayId = {
+    [RecordSetType.Activity]: whatsHere?.clickedActivityDescription,
+    [RecordSetType.IAPP]: whatsHere?.clickedIAPP
+  };
+  const recordLookupId = {
+    [RecordSetType.Activity]: whatsHere?.clickedActivity,
+    [RecordSetType.IAPP]: whatsHere?.clickedIAPP
+  };
   const dispatch = useDispatch();
   const { loggedInOrWorkingOffline } = useSelector((state) => state.Auth);
-  const whatsHere = useSelector((state) => state.Map?.whatsHere);
+
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   const handleCellClick = (e: MouseEvent | TouchEvent, row) => {
-    if (loggedInOrWorkingOffline) {
-      dispatchUpdatedID(row);
-      setAnchorEl(e.currentTarget as HTMLElement);
-      highlightGeometry(row);
-    }
+    if (!loggedInOrWorkingOffline) return;
+    dispatchUpdatedID(row);
+    setAnchorEl(e.currentTarget as HTMLElement);
   };
 
   const dispatchUpdatedID = (params) => {
     const { id, readableId } = config[recordsetType];
-    dispatch(
-      UserSettings.Map.setHoveredRecordset({
-        id: params[id],
-        geom: params.geometry,
-        recordType: recordsetType,
-        readableIdentifier: params[readableId]
-      })
-    );
-  };
-
-  const highlightGeometry = async (params) => {
-    const { id, readableId } = config[recordsetType];
-    dispatch(WhatsHere.id_clicked({ type: recordsetType, description: params[readableId], id: params[id] }));
+    const payload = {
+      recordType: recordsetType,
+      id: params[id],
+      geom: params.geometry,
+      readableIdentifier: params[readableId]
+    };
+    dispatch(UserSettings.Map.setHoveredRecordset(payload));
   };
 
   const config = {
@@ -53,7 +56,9 @@ const TabularWhatsHereData = ({ setAnchorEl, recordsetType }: PropTypes) => {
         { field: 'reported_area', headerName: 'Area' },
         { field: 'created', headerName: 'Date' },
         { field: 'jurisdiction_code', headerName: 'Jurisdiction(s)' },
-        { field: 'species_code', headerName: 'Invasive Plant(s)' },
+        { field: 'species_positive_full', headerName: 'Species Positive' },
+        { field: 'species_negative_full', headerName: 'Species Negative' },
+        { field: 'species_treated_full', headerName: 'Species Treated' },
         { field: 'created_by', headerName: 'Created By' }
       ]
     },
@@ -69,36 +74,40 @@ const TabularWhatsHereData = ({ setAnchorEl, recordsetType }: PropTypes) => {
       ]
     }
   };
-
   if (config[recordsetType].rows.length === 0) {
     return <NoRowsInSearch />;
   }
   return (
-    <>
-      <div className="whats-here-table-container">
-        <table className={recordsetType}>
-          <thead>
-            <tr>
-              {config[recordsetType].cols.map(({ headerName }) => (
-                <th key={headerName}>{headerName}</th>
+    <Fragment>
+      <CustomPopover buttonOverrideOptions={{ anchorEl, setAnchorEl }}>
+        <RecordTablePopoverContent
+          recordDisplayId={recordDisplayId[recordsetType]}
+          recordType={recordsetType}
+          recordLookupId={recordLookupId[recordsetType]}
+        />
+      </CustomPopover>
+      <StyledTable>
+        <thead>
+          <tr>
+            {config[recordsetType].cols.map(({ headerName }) => (
+              <th key={headerName}>{headerName}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {config[recordsetType].rows.map((r) => (
+            <tr key={r?.[config[recordsetType].id]} onMouseOver={() => dispatchUpdatedID(r)}>
+              {config[recordsetType].cols.map(({ field }) => (
+                <td key={field} onClick={(e) => handleCellClick(e, r)}>
+                  {r?.[field] ?? <div className="null-value" />}
+                </td>
               ))}
             </tr>
-          </thead>
-          <tbody>
-            {config[recordsetType].rows.map((r) => (
-              <tr key={r?.[config[recordsetType].id]} onMouseOver={() => dispatchUpdatedID(r)}>
-                {config[recordsetType].cols.map(({ field }) => (
-                  <td key={field} onClick={(e) => handleCellClick(e, r)}>
-                    {r?.[field]}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          ))}
+        </tbody>
+      </StyledTable>
       <WhatsHerePagination type={recordsetType} />
-    </>
+    </Fragment>
   );
 };
 

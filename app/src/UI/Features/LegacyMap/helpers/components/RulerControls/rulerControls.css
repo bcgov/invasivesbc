@@ -9,6 +9,7 @@
   box-sizing: border-box;
   border: none;
   border-radius: 5px;
+  color: black;
 
   span {
     margin-left: 5px;

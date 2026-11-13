@@ -144,21 +144,20 @@ const useOfflineRecordSetLayers = () => {
             predicates: new MapDefinitionEligibilityPredicatesBuilder()
               .requiresAuthentication(true)
               .requiresNetwork(false)
+              .requiresOffline(true)
+              .requiresFeature('CACHE_RECORDSETS')
               .build(),
             layers: [
-              createFillLayer({ ...layerConfiguration, minzoom: 12 }),
-              createCircleLayer({ ...layerConfiguration, minzoom: 12 }),
-              createBorderLayer({ ...layerConfiguration, minzoom: 12 }),
+              createCircleLayer({ ...centroidLayerConfiguration, maxzoom: 12.5 }),
+              createFillLayer({ ...layerConfiguration, minzoom: 12.5 }),
+              createCircleLayer({ ...layerConfiguration, minzoom: 12.5 }),
+              createBorderLayer({ ...layerConfiguration, minzoom: 12.5 }),
               createLabelLayer({
                 ...layerConfiguration,
                 get_tag: 'name',
                 visibility: rec.labelToggle ? 'visible' : 'none',
                 minzoom: 12
-              }),
-              // Add slight overlap so layers don't disappear randomly while transitioning.
-              createFillLayer({ ...centroidLayerConfiguration, maxzoom: 12.5 }),
-              createCircleLayer({ ...centroidLayerConfiguration, maxzoom: 12.5 }),
-              createBorderLayer({ ...centroidLayerConfiguration, maxzoom: 12.5 })
+              })
             ]
           }
         ]

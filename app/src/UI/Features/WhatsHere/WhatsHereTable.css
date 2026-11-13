@@ -36,60 +36,6 @@
     align-items: center;
   }
 
-  /*Table Container for wrapping and overflowing */
-  .whats-here-table-container {
-    box-sizing: border-box;
-    overflow-x: auto;
-    max-height: 375px;
-    margin-top: 1rem;
-    table {
-      margin: auto;
-      width: max-content;
-      border-collapse: collapse;
-      text-align: left;
-      thead {
-        border-bottom: 1pt solid black;
-      }
-      td {
-        vertical-align: text-top;
-      }
-      tr {
-        height: 45px;
-        td,
-        th {
-          padding-left: 1rem;
-        }
-        td:last-child,
-        th:last-child {
-          padding-right: 1rem;
-        }
-      }
-      tbody tr {
-        background-color: var(--odd-list-item-bg-color);
-        &:nth-child(even) {
-          background-color: var(--even-list-item-bg-color);
-        }
-        &:hover {
-          background-color: var(--hovered-list-item-bg-color);
-        }
-      }
-      /* Specific Selectors when Display Activity Records */
-      &.Activity {
-        td:nth-child(3)::after {
-          content: 'm\00B2'; /* Set m^2 after "reported area" field */
-        }
-        tbody td:nth-child(5) {
-          font-size: 0.9rem;
-        }
-      }
-      &.IAPP {
-        td:nth-child(3) {
-          font-size: 0.9rem;
-        }
-      }
-    }
-  }
-
   .whats-here-pagination {
     margin-bottom: calc(1rem + var(--footer-bar-height));
   }

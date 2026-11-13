@@ -1,4 +1,7 @@
-import { createAction } from '@reduxjs/toolkit';
+import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { reUuid } from 'sharedAPI/src/regex';
+import { Feature } from 'geojson';
+import { center } from '@turf/turf';
 import { SortFilter } from 'interfaces/filterParams';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 
@@ -10,10 +13,39 @@ interface IGetIdsForRecordsetSuccess extends IGetIdsForRecordset {
   idList: Array<string | number>;
 }
 
+interface IProcessWhatsHereIDs {
+  ids: Array<string | number>;
+  shape: Feature;
+}
 class WhatsHere {
   private static readonly PREFIX = 'WhatsHere';
-  static readonly activity_rows_online = createAction(`${this.PREFIX}/activity_rows_online`);
-  static readonly activity_rows_offline = createAction(`${this.PREFIX}/activity_rows_offline`);
+
+  static readonly processWhatsHereIds = createAsyncThunk(
+    `${this.PREFIX}/processWhatsHereIDs`,
+    (opts: IProcessWhatsHereIDs) => {
+      const centreCoord = center(opts.shape).geometry.coordinates;
+      const activityIdReg = new RegExp(reUuid);
+      const siteIdReg = new RegExp(/^\d{1,6}$/);
+
+      const iappIds: Array<number> = [];
+      const ibcIds: Array<string> = [];
+
+      opts.ids.forEach((id) => {
+        if (typeof id === 'number') {
+          iappIds.push(id);
+        } else if (activityIdReg.test(id)) {
+          ibcIds.push(id);
+        } else if (siteIdReg.test(id)) {
+          iappIds.push(Number.parseInt(id));
+        }
+      });
+      return { iapp: iappIds, ibcIds: ibcIds, shapeCentre: centreCoord };
+    }
+  );
+  static readonly NewWhatsHereFeature = createAction(`${this.PREFIX}/NewWhatsHereFeature`);
+  static readonly ChangePage = createAction(`${this.PREFIX}/ChangePage`);
+
+  // Legacy
   static readonly activity_rows_request = createAction(`${this.PREFIX}/activity_rows_request`);
   static readonly activity_rows_success = createAction<Record<string, any>[]>(`${this.PREFIX}/activity_rows_success`);
 
@@ -23,7 +55,6 @@ class WhatsHere {
   );
   static readonly iapp_rows_request = createAction(`${this.PREFIX}/iapp_rows_request`);
   static readonly iapp_rows_success = createAction<Record<string, any>[]>(`${this.PREFIX}/iapp_rows_success`);
-  static readonly iapp_rows_online = createAction(`${this.PREFIX}/iapp_rows_online`);
   static readonly iapp_rows_offline = createAction(`${this.PREFIX}/iapp_rows_offline`);
   static readonly id_clicked = createAction<{ type?: RecordSetType; description?: string; id?: string }>(
     `${this.PREFIX}/id_clicked`
