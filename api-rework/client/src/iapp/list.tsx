@@ -1,8 +1,8 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef } from 'react';
 import { CONFIG } from 'configuration';
 import { useNavigate } from 'react-router';
 import { AuthContext } from 'client';
-import { ColDef } from 'ag-grid-community';
+import { ColDef, IDatasource, IGetRowsParams } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import { customizedAgTheme } from 'ag-theme';
 
@@ -15,15 +15,15 @@ interface IAPPSummary {
 
 interface IAPPSummaryResponse {
   results: IAPPSummary[];
+  count: number;
 }
 
 const IAPPList: React.FC = () => {
-  const [result, setResult] = useState<IAPPSummaryResponse | undefined>(undefined);
-
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState<string>('');
   const { state: auth } = useContext(AuthContext);
+  const tokenRef = useRef<string | null>(auth.token);
+  useEffect(() => {
+    tokenRef.current = auth.token;
+  }, [auth.token]);
 
   const navigate = useNavigate();
 
@@ -45,55 +45,47 @@ const IAPPList: React.FC = () => {
     { field: 'species', headerName: 'Species' }
   ];
 
-  useEffect(() => {
-    setLoading(true);
-    setErrorMessage('');
-    setError(false);
+  const ds = useMemo<IDatasource>(() => {
+    return {
+      getRows: async (params: IGetRowsParams) => {
+        const { startRow, endRow, successCallback, failCallback } = params;
+        const count = endRow - startRow;
 
-    fetch(`${CONFIG.API_URL}/iapp`, {
-      headers: {
-        Authorization: `Bearer ${auth.token}`
-      }
-      // method: 'POST',
-    })
-      .then(async (res) => {
-        setLoading(false);
-        if (res.status === 200) {
-          const serverResult: IAPPSummaryResponse = await res.json();
-          setResult(serverResult);
-        } else {
-          setResult(undefined);
-          setError(true);
-          let extraMessage = '';
-          if (res.status === 403) {
-            extraMessage = `You should request access to this page, providing your SSO subject [${auth.user_details?.sub || ''}]`;
-          }
-          setErrorMessage(`response status code was [${res.status} ${res.statusText}] ${extraMessage}`);
+        try {
+          const fetchResult = await fetch(`${CONFIG.API_URL}/iapp?offset=${startRow}&limit=${count}`, {
+            headers: {
+              Authorization: `Bearer ${tokenRef.current}`
+            }
+          });
+
+          const result: IAPPSummaryResponse = await fetchResult.json();
+
+          successCallback(result.results, result.count);
+        } catch {
+          failCallback();
         }
-      })
-      .catch((reason) => {
-        setLoading(false);
-        setError(true);
-        setErrorMessage(`${reason}`);
-      });
+      }
+    };
   }, []);
 
   return (
     <>
-      {error && <pre>{errorMessage}</pre>}
       <div style={{ height: '80dvh' }}>
         <AgGridReact
-          loading={loading}
-          rowData={result?.results || []}
           columnDefs={colDefs}
           onRowClicked={(e) => {
             navigate(`/iapp/${e.data.id}/django`);
           }}
           defaultColDef={{
-            flex: 1
+            flex: 1,
+            sortable: false
           }}
           theme={customizedAgTheme}
-          pagination
+          rowModelType={'infinite'}
+          datasource={ds}
+          cacheBlockSize={500}
+          maxBlocksInCache={5}
+          blockLoadDebounceMillis={300}
         />
       </div>
     </>
