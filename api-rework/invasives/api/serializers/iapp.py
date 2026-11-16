@@ -26,7 +26,12 @@ IAPP_RECORD_TYPES = {
     "mechanical_monitoring": "mechanical_monitorings",
     "mechanical_treatment": "mechanical_treatments",
 }
-IAPP_UNKNOWN_RECORD_TYPE = "Unknown"
+IAPP_UNKNOWN_RECORD_TYPE = "Observation"
+
+
+def _join(values) -> str:
+    # None becomes a placeholder entry so the parallel fields stay aligned.
+    return ", ".join("Unknown" if v is None else str(v) for v in values)
 
 
 def record_type_annotation(record_type: str) -> str:
@@ -46,13 +51,14 @@ class GeoJSONGeometryField(serializers.Field):
 
 class IAPPSiteListSerializer(serializers.Serializer):
     """
-    Shallow site summary. Expects a queryset annotated with `survey_date`,
-    `species`, `latitude`, `longitude` and one `has_<record type>` flag per record type (see IAPPViewSet).
+    Shallow site summary. Expects a queryset annotated with `survey_dates`,
+    `species_list`, `survey_types` (parallel arrays ordered newest survey first), `latitude`, `longitude` and one `has_<record type>` flag per record type (see IAPPViewSet).
     """
 
     site_id = serializers.IntegerField(read_only=True)
-    survey_date = serializers.DateField(read_only=True, allow_null=True)
-    species = serializers.CharField(read_only=True, allow_null=True)
+    survey_date = serializers.SerializerMethodField()
+    species = serializers.SerializerMethodField()
+    survey_type = serializers.SerializerMethodField()
     record_type = serializers.SerializerMethodField()
     latitude = serializers.DecimalField(
         max_digits=7, decimal_places=5, read_only=True, allow_null=True
@@ -60,6 +66,15 @@ class IAPPSiteListSerializer(serializers.Serializer):
     longitude = serializers.DecimalField(
         max_digits=8, decimal_places=5, read_only=True, allow_null=True
     )
+
+    def get_survey_date(self, obj) -> str:
+        return _join(d.isoformat() if d else None for d in obj.survey_dates or [])
+
+    def get_species(self, obj) -> str:
+        return _join(obj.species_list or [])
+
+    def get_survey_type(self, obj) -> str:
+        return _join(obj.survey_types or [])
 
     def get_record_type(self, obj) -> str:
         present = sorted(

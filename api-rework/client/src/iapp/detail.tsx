@@ -42,7 +42,7 @@ const IAPPDetail: React.FC = () => {
 
   return (
     <div className="iapp-detail">
-      <NavLink to={'/'}>← IAPP List</NavLink>
+      <NavLink to={'/iapp'}>← IAPP Site List</NavLink>
       <h4>{id}</h4>
 
       {anyError && (

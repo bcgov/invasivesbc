@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { CONFIG } from 'configuration';
 import './activities.scss';
-import { useNavigate } from 'react-router';
+import { NavLink, useNavigate } from 'react-router';
 import { AuthContext } from 'client';
 import { ColDef } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
@@ -36,9 +36,9 @@ const ActivitiesList: React.FC = () => {
       headerName: 'ID',
       cellRenderer: (params) => {
         return (
-          <a href={`/activities/${params.value}/django`} className={'id-link'}>
+          <NavLink to={`/activities/${params.value}/django`} className={'id-link'}>
             {params.value}
-          </a>
+          </NavLink>
         );
       }
     },
