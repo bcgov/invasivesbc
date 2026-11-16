@@ -10,6 +10,8 @@ from api.protocol.activity.plants_out import PlantRecordOut
 from api.constants import ACTIVITY_TO_PLANT, DRAFT_ACTIVITY_TO_PLANT
 from api.models.activity import (
     Activity,
+    Employer,
+    DraftEmployer,
     ActivitySubtypes,
     ActivityType,
     RisoArea,
@@ -50,6 +52,7 @@ class ActivityPlantRowOut(ModelSchema):
     invasive_plant_management_areas: Optional[str] = Field(
         ..., alias="computed_invasive_plant_management_areas"
     )
+    employers: Optional[str] = None
     regional_invasive_species_organization_areas: Optional[str] = None
     reported_area: Optional[int] = Field(..., alias="area_m")
     agency: Optional[str] = None
@@ -99,6 +102,19 @@ class ActivityPlantRowOut(ModelSchema):
                 .distinct("agency__full")
                 .order_by("agency__full")
                 .values_list("agency__full", flat=True)
+            )
+            or None
+        )
+
+    @staticmethod
+    def resolve_employers(obj: Activity):
+        return (
+            ", ".join(
+                Employer.objects.filter(activity_data_record__activity_id=obj.id)
+                .distinct("employer__full")
+                .order_by("employer__full")
+                .prefetch_related("employer__full")
+                .values_list("employer__full", flat=True)
             )
             or None
         )
@@ -257,6 +273,19 @@ class DraftActivityPlantRowOut(ActivityPlantRowOut):
     @staticmethod
     def resolve_regional_invasive_species_organization_areas(obj: DraftActivity):
         return None
+
+    @staticmethod
+    def resolve_employers(obj: Activity):
+        return (
+            ", ".join(
+                DraftEmployer.objects.filter(activity_data_record__activity_id=obj.id)
+                .distinct("employer__full")
+                .order_by("employer__full")
+                .prefetch_related("employer__full")
+                .values_list("employer__full", flat=True)
+            )
+            or None
+        )
 
     @staticmethod
     def resolve_agency(obj: DraftActivity):
