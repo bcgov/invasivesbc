@@ -562,13 +562,14 @@ class SQLiteRecordCacheService extends RecordCacheService {
    * @param data Incoming Activity Data
    */
   async saveActivity(data: Array<UserRecord>): Promise<void> {
-    const NUM_ACTIVITY_COLUMNS = 26;
+    const NUM_ACTIVITY_COLUMNS = 27;
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
     const entry = `( ${Array(NUM_ACTIVITY_COLUMNS).fill('?').join(',')} )`;
     const values: Array<any> = [];
     data.forEach((rec: UserRecord) => values.push(this.transformActivity(rec.activity_id as string, rec)));
+
     let query = `INSERT INTO CACHED_RECORDS(ID,
                                             LATITUDE,
                                             LONGITUDE,
@@ -594,7 +595,8 @@ class SQLiteRecordCacheService extends RecordCacheService {
                                             SPECIES_BIOCONTROL_FULL,
                                             CREATED_BY,
                                             UPDATED_BY,
-                                            AGENCY)
+                                            AGENCY,
+                                            EMPLOYERS)
     VALUES `;
 
     query += values.map(() => entry).join(', ');
@@ -625,7 +627,8 @@ class SQLiteRecordCacheService extends RecordCacheService {
       SPECIES_BIOCONTROL_FULL = excluded.SPECIES_BIOCONTROL_FULL,
       CREATED_BY = excluded.CREATED_BY,
       UPDATED_BY = excluded.UPDATED_BY,
-      AGENCY = excluded.AGENCY
+      AGENCY = excluded.AGENCY,
+      EMPLOYERS = excluded.EMPLOYERS
     `;
     await this.cacheDB.run(query, values.flat(), false);
   }
@@ -843,7 +846,8 @@ class SQLiteRecordCacheService extends RecordCacheService {
       rec.species_biocontrol_full ?? null,
       rec.created_by ?? null,
       rec.updated_by ?? null,
-      rec.agency ?? null
+      rec.agency ?? null,
+      rec.employers ?? null
     ];
   }
 
