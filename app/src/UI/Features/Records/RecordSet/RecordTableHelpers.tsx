@@ -62,6 +62,8 @@ export const activityColumnsToDisplay = [
   { key: 'activity_date', name: 'Activity Date', hide: false },
   { key: 'project_code', name: 'Project Code', hide: false },
   { key: 'jurisdiction_display', name: 'Jurisdiction', hide: false },
+  { key: 'employers', name: 'Employer', hide: false },
+  { key: 'agency', name: 'Agency', hide: false },
   { key: 'invasive_plant', name: 'Invasive Plant', hide: false },
   { key: 'species_positive_full', name: 'All Positive', hide: false },
   { key: 'species_negative_full', name: 'All Negative', hide: false },
@@ -69,7 +71,6 @@ export const activityColumnsToDisplay = [
   { key: 'species_biocontrol_full', name: 'Biocontrol Species', hide: false },
   { key: 'created_by', name: 'Created By', hide: false },
   { key: 'updated_by', name: 'Updated By', hide: false },
-  { key: 'agency', name: 'Agency', hide: false },
   {
     key: 'regional_invasive_species_organization_areas',
     name: 'Regional Invasive Species Organization Areas',
