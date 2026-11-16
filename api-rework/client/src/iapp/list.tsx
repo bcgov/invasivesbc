@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useMemo, useRef } from 'react';
 import { CONFIG } from 'configuration';
-import { useNavigate } from 'react-router';
+import { NavLink, useNavigate } from 'react-router';
 import { AuthContext } from 'client';
 import { ColDef, IDatasource, IGetRowsParams } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
@@ -33,11 +33,7 @@ const IAPPList: React.FC = () => {
       field: 'site_id',
       headerName: 'Site ID',
       cellRenderer: (params) => {
-        return (
-          <a href={`/iapp/${params.value}/django`} className={'id-link'}>
-            {params.value}
-          </a>
-        );
+        return <NavLink to={`/iapp/${params.value}/django`}>{params.value}</NavLink>;
       }
     },
     { field: 'record_type' },
@@ -74,7 +70,7 @@ const IAPPList: React.FC = () => {
         <AgGridReact
           columnDefs={colDefs}
           onRowClicked={(e) => {
-            navigate(`/iapp/${e.data.id}/django`);
+            navigate(`/iapp/${e.data.site_id}/django`);
           }}
           defaultColDef={{
             flex: 1,
