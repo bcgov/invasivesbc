@@ -24,28 +24,29 @@ log = logging.getLogger(__name__)
 class Column(Enum):
     """Expected Columns that may be filtered on by end user"""
 
-    SUBTYPE = "subtype"
+    ACTIVITY_DATE = "activity_date"
     ACTIVITY_SUBTYPE = "activity_subtype"
-    PROJECT_CODE = "project_code"
+    BIO_ZONE = "biogeoclimatic_zones"
+    BIOCONTROL_AGENT = "species_biocontrol_full"
+    DISTRICTS = "regional_districts"
+    ELEVATION = "elevation"
+    EMPLOYERS = "employers"
     FUNDING_AGENCY = "agency"
     JURISDICTION = "jurisdiction_display"
     ID = "activity_id"
-    SHORT_ID = "short_id"
-    TYPE = "activity_type"
-    ACTIVITY_DATE = "activity_date"
-    RISOS = "regional_invasive_species_organization_areas"
-    DISTRICTS = "regional_districts"
-    OWNERSHIP = "ownership"
-    MOTI = "moti_districts"
     IPMA = "invasive_plant_management_areas"
-    BIO_ZONE = "biogeoclimatic_zones"
-    ELEVATION = "elevation"
-    UPDATED_BY = "updated_by"
+    MOTI = "moti_districts"
     NEGATIVE_PLANT = "species_negative_full"
-    POSITIVE_PLANT = "species_positive_full"
-    TREATED_PLANT = "species_treated_full"
+    OWNERSHIP = "ownership"
     PLANT = "invasive_plant"
-    BIOCONTROL_AGENT = "species_biocontrol_full"
+    POSITIVE_PLANT = "species_positive_full"
+    PROJECT_CODE = "project_code"
+    RISOS = "regional_invasive_species_organization_areas"
+    SHORT_ID = "short_id"
+    SUBTYPE = "subtype"
+    TREATED_PLANT = "species_treated_full"
+    TYPE = "activity_type"
+    UPDATED_BY = "updated_by"
 
 
 class FilteredActivityQueryset:
@@ -97,6 +98,7 @@ class FilteredActivityQueryset:
             Column.PROJECT_CODE.value: f"{leading}projectcode__description",
             Column.FUNDING_AGENCY.value: f"{leading}fundingagency__agency__full",
             Column.JURISDICTION.value: f"{leading}jurisdiction__jurisdiction__full",
+            Column.EMPLOYERS.value: f"{leading}employer__employer__full",
             Column.ID.value: "id",
             Column.TYPE.value: "type",
             Column.ACTIVITY_DATE.value: "date",
@@ -329,6 +331,7 @@ class FilteredActivityQueryset:
         operator = f.get("operator")
         filter_type = f.get("filterType")
         one_to_many_relations = [
+            "employers",
             "project_code",
             "jurisdiction_display",
             "invasive_plant",
