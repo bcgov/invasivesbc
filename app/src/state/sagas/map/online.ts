@@ -9,6 +9,7 @@ import { selectConfiguration } from 'state/reducers/configuration';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import Alerts from 'state/actions/alerts/Alerts';
 import networkAlertMessages from 'constants/alerts/networkAlerts';
+import { getUnnestedFieldsForIAPP } from 'UI/Features/Records/RecordSet/RecordTableHelpers';
 
 export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action: PayloadAction<ActivityTableRowGetRequest>) {
   const mapState = yield select((state) => state.Map);
@@ -63,10 +64,11 @@ export function* handle_IAPP_TABLE_ROWS_GET_ONLINE(action: PayloadAction<IappTab
   if (tableFiltersHash !== action.payload.tableFiltersHash) return;
 
   if (networkReturn?.ok && networkReturn?.data?.result) {
+    const formattedRows = networkReturn.data.result.map(getUnnestedFieldsForIAPP);
     yield put(
       IappActions.getRowsSuccess({
         recordSetID: action.payload.recordSetID,
-        rows: networkReturn.data.result,
+        rows: formattedRows,
         totalCount: networkReturn.data.count,
         tableFiltersHash: action.payload.tableFiltersHash,
         page: action.payload.page,
