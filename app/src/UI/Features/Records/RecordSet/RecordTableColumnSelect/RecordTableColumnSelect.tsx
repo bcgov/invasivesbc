@@ -8,7 +8,7 @@ import UserSettings from 'state/actions/userSettings/UserSettings';
 import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
 
 type PropTypes = {
-  recordSetType: RecordSetType;
+  recordSetType: `${RecordSetType}`;
 };
 const RecordTableColumnSelect = ({ recordSetType }: PropTypes) => {
   const handleClick = (event: MouseEvent<any> | TouchEvent<any>) => setAnchorEl(event.currentTarget);

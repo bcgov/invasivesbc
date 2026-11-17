@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'utils/use_selector';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import IIappTableRow from 'interfaces/TableRows/IIappTableRow';
 import { ActivityPlantRowOut } from 'api/api-schema';
+import RecordTableColumnSelect from '../RecordTableColumnSelect/RecordTableColumnSelect';
 
 interface BaseProps {
   setId?: string;
@@ -73,6 +74,7 @@ const RecordTable = ({ type, data, setId }: PropTypes) => {
   const [displayId, setDisplayId] = useState<string>('');
   const [geom, setGeom] = useState<GeoJSON>();
   const [recordId, setRecordId] = useState<string>('');
+  const visibleHeaders = headers.filter((f) => !f?.hide);
 
   return (
     <Fragment>
@@ -84,10 +86,11 @@ const RecordTable = ({ type, data, setId }: PropTypes) => {
           geom={geom}
         />
       </CustomPopover>
+      <RecordTableColumnSelect recordSetType={type} />
       <StyledTable>
         <thead>
           <tr>
-            {headers.map((c) => (
+            {visibleHeaders.map((c) => (
               <th key={c.key} onClick={setId ? () => handleHeaderClick(c.key) : undefined}>
                 {c.name}&nbsp;{orderDirection(c.key)}
               </th>
@@ -101,7 +104,7 @@ const RecordTable = ({ type, data, setId }: PropTypes) => {
               onMouseOver={() => onUserHoveredRow(a)}
               onFocus={() => onUserHoveredRow(a)}
             >
-              {headers.map((c) => (
+              {visibleHeaders.map((c) => (
                 <td onClick={(evt) => handleRowClick(evt, a)} key={c.key}>
                   {(a?.[c.key] as string | number) || <span className="null-value" aria-hidden={true} />}
                 </td>
@@ -110,7 +113,7 @@ const RecordTable = ({ type, data, setId }: PropTypes) => {
           ))}
           {data?.length === 0 && (
             <tr>
-              <td colSpan={headers.length}>No records to display</td>
+              <td colSpan={visibleHeaders.length}>No records to display</td>
             </tr>
           )}
         </tbody>
