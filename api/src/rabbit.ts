@@ -7,7 +7,7 @@ import amqp, { ConfirmChannel, ChannelModel } from 'amqplib';
   leading to conflicts from the end that did not create it.
  */
 
-const url = `${process.env.CELERY_BROKER_URL}`;
+const url = process.env.CELERY_BROKER_URL ?? 'unset';
 const QUEUE = 'node_tasks';
 
 let connPromise: Promise<ChannelModel> | null = null;
