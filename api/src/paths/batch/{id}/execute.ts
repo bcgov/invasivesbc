@@ -10,7 +10,6 @@ import { BatchValidationService } from 'utils/batch/validation/validation';
 import { BatchExecutionService } from 'utils/batch/execution';
 import OpenAPISpec from 'utils/OpenAPISpec';
 import LoggerHandler from 'utils/endpoints/LoggerHandler';
-import { autofillBatch } from 'utils/batch/autofillBatch';
 import { publishPriorityTask } from 'rabbit';
 
 const logger = new LoggerHandler('batch');
@@ -99,9 +98,7 @@ function execBatch(): RequestHandler {
       logger.info('[execute] Finished Batch upload', { id, executionTime: `${Date.now() - START_TIME}ms` });
       // Return the success to the user, so they can continue on
       res.status(200).json({ desiredActivityState, treatmentOfErrorRows });
-      // Now in the background gather and update the autofill information.
-      await autofillBatch(id);
-      await publishPriorityTask('node_tasks.normalize_batch', [id], {}, 9);
+      await publishPriorityTask('node_tasks.normalize_batch', [id]);
     } finally {
       connection?.release();
     }

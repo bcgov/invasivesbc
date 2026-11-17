@@ -369,7 +369,7 @@ function createActivity(): RequestHandler {
         };
         await commitContext(context);
       }
-      await publishPriorityTask('node_tasks.normalize_legacy_record', [result.activity_id], {}, 9);
+      await publishPriorityTask('node_tasks.normalize_legacy_record', [result.activity_id]);
       return res.status(201).json({
         message: 'Activity created.',
         request: req.body,
@@ -526,7 +526,7 @@ async function updateActivityHandler(req: InvasivesRequest, res: Response): Prom
       await commitContext(context);
     }
     // Send a task for celery to pickup, triggering an ETL on the record.
-    await publishPriorityTask('node_tasks.normalize_legacy_record', [result.activity_id], {}, 9);
+    await publishPriorityTask('node_tasks.normalize_legacy_record', [result.activity_id]);
 
     return res.status(200).json(result);
   } finally {
