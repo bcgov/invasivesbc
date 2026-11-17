@@ -1,5 +1,5 @@
-import { randomUUID } from 'crypto';
-import amqp, { ConfirmChannel, ChannelModel } from 'amqplib';
+import { randomUUID } from 'node:crypto';
+import amqp, { ConfirmChannel } from 'amqplib';
 
 /*
   Celery Priority Task handler for Node. 
@@ -10,28 +10,25 @@ import amqp, { ConfirmChannel, ChannelModel } from 'amqplib';
 const url = process.env.CELERY_BROKER_URL ?? 'unset';
 const QUEUE = 'node_tasks';
 
-let connPromise: Promise<ChannelModel> | null = null;
-let chPromise: Promise<ConfirmChannel> | null = null;
+let channel: ConfirmChannel | null = null;
 
-const getChannel = () => {
-  if (!chPromise) {
-    connPromise = amqp.connect(url);
-    chPromise = connPromise
+const getChannel = async (): Promise<ConfirmChannel> => {
+  if (!channel) {
+    await amqp
+      .connect(url)
       .then(async (conn) => {
-        conn.on('error', (e) => console.error('amqp conn error', e));
+        channel = await conn.createConfirmChannel();
+        conn.on('error', (e) => console.error(e));
         conn.on('close', () => {
-          connPromise = null;
-          chPromise = null;
+          channel = null;
         });
-        return conn.createConfirmChannel();
       })
       .catch((e) => {
-        connPromise = null;
-        chPromise = null;
+        channel = null;
         throw e;
       });
   }
-  return chPromise;
+  return channel;
 };
 
 export async function publishPriorityTask(taskName: string, args: unknown[] = [], kwargs: object = {}, priority = 9) {
