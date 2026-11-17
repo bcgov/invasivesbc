@@ -11,6 +11,7 @@ import { BatchExecutionService } from 'utils/batch/execution';
 import OpenAPISpec from 'utils/OpenAPISpec';
 import LoggerHandler from 'utils/endpoints/LoggerHandler';
 import { autofillBatch } from 'utils/batch/autofillBatch';
+import { publishPriorityTask } from 'rabbit';
 
 const logger = new LoggerHandler('batch');
 const POST: Operation = [execBatch()];
@@ -100,6 +101,7 @@ function execBatch(): RequestHandler {
       res.status(200).json({ desiredActivityState, treatmentOfErrorRows });
       // Now in the background gather and update the autofill information.
       await autofillBatch(id);
+      await publishPriorityTask('node_tasks.normalize_batch', [id], {}, 9);
     } finally {
       connection?.release();
     }
