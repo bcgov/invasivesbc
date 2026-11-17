@@ -1,7 +1,13 @@
 import { randomUUID } from 'crypto';
 import amqp, { ConfirmChannel, ChannelModel } from 'amqplib';
 
-const url = 'amqp://guest:guest@127.0.0.1:5672?frameMax=131072';
+/*
+  Celery Priority Task handler for Node. 
+  used amqp to send tasks over celery-node, as c-n and django would conflict for the right to create a queue.
+  leading to conflicts from the end that did not create it.
+ */
+
+const url = `${process.env.CELERY_BROKER_URL}`;
 const QUEUE = 'node_tasks';
 
 let connPromise: Promise<ChannelModel> | null = null;
