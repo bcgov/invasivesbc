@@ -74,11 +74,11 @@ class RecordSet {
 
   static readonly toggleRecordColumn = createAction(
     `${this.PREFIX}.toggleRecordColumn`,
-    (recordType: RecordSetType, key: string) => ({ payload: { recordType, key } })
+    (recordType: `${RecordSetType}`, key: string) => ({ payload: { recordType, key } })
   );
   static readonly toggleAllRecordColumns = createAction(
     `${this.PREFIX}/toggleAllColumns`,
-    (recordType: RecordSetType, hide: boolean) => ({ payload: { recordType, hide } })
+    (recordType: `${RecordSetType}`, hide: boolean) => ({ payload: { recordType, hide } })
   );
   static readonly syncCacheStatusWithCacheService = createAsyncThunk(
     `${this.PREFIX}/syncCacheStatusWithCacheService`,
