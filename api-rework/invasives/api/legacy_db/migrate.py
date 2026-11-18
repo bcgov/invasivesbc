@@ -61,6 +61,7 @@ from api.models.migrator import (
     ActivityPendingLink,
     MigrationError,
 )
+from api.models.auth import HistoricalUserName
 from api.utils.timezones import legacy_local_to_aware, local_date
 from api.utils.utm_coordinates import point_to_utm
 from invasivesbc.settings import LEGACY_DB_CONNECTION_STRING
@@ -123,6 +124,11 @@ def map_pydantic_model_to_django_model(old: LegacyActivity) -> Activity:
     )
     new.form_status = old.form_status
     new.comment = old.activity_payload.form_data.activity_data.general_comment
+
+    if matched_user := HistoricalUserName.objects.filter(
+        historical_username=old.created_by
+    ).first():
+        new.creating_user = matched_user.user
 
     if old.activity_payload.geometry is None:
         logging.warning("geometry is null -- this is almost certainly an error")

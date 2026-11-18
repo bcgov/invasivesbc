@@ -3,11 +3,10 @@ name: black
 on:
   push:
     branches:
-      - "normalized-database"
+      - 'normalized-database'
   pull_request:
     branches:
-      - "normalized-database"
-
+      - 'normalized-database'
 
 permissions:
   contents: read
@@ -27,12 +26,12 @@ permissions:
 
 jobs:
   black:
-    name: "Black"
+    name: 'Black'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
       - uses: psf/black@stable
         with:
-          options: "--check --verbose"
-          src: "./api-rework/invasives/api"
-          version: "~= 25.0"
+          options: '--check --verbose'
+          src: './api-rework/invasives/api'
+          version: '~= 26.10.1'

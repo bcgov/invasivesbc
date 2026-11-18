@@ -130,8 +130,9 @@ def query_singleton_spatial_tables(a: Activity):
         - computed_invasive_plant_management_areas
         - computed_regional_districts
     """
-    wkt_shape = a.shape.wkt
-    srid = a.shape.srid
+    geom = a.shape.transform(4326, clone=True)
+    wkt_shape = geom.wkt
+    srid = geom.srid
     try:
         with psycopg.connect(LEGACY_DB_CONNECTION_STRING, row_factory=dict_row) as conn:
             with conn.cursor() as cursor:
@@ -167,8 +168,9 @@ def query_singleton_spatial_tables(a: Activity):
 
 def fetch_computed_riso_areas(a: Activity):
     # TODO: Port tables over and create unmanaged models
-    wkt_shape = a.shape.wkt
-    srid = a.shape.srid
+    geom = a.shape.transform(4326, clone=True)
+    wkt_shape = geom.wkt
+    srid = geom.srid
     try:
         with psycopg.connect(LEGACY_DB_CONNECTION_STRING, row_factory=dict_row) as conn:
             with conn.cursor() as cursor:
