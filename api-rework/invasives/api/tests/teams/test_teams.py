@@ -20,11 +20,11 @@ class TeamsTest(BaseTestCase):
         "test/common/test_employer.json",
     ]
 
-    NO_ROLE_USER = "bc_noroles"
+    MEMBER_USER = "bc_biocontrol"
     NONE = 0
 
     def post(self, url, payload, user: str = "bc_datamanager"):
-        headers = {"Authorization": f"Bearer act_as_user={user}"} if user else None
+        headers = self.auth_headers(user) if user else None
         return self.client.post(
             self.base_url + url,
             content_type="application/json",
@@ -33,7 +33,7 @@ class TeamsTest(BaseTestCase):
         )
 
     def patch(self, url, payload, user: str = "bc_datamanager"):
-        headers = {"Authorization": f"Bearer act_as_user={user}"} if user else None
+        headers = self.auth_headers(user) if user else None
         return self.client.patch(
             self.base_url + url,
             content_type="application/json",
@@ -42,7 +42,7 @@ class TeamsTest(BaseTestCase):
         )
 
     def delete(self, url, payload=None, user: str = "bc_datamanager"):
-        headers = {"Authorization": f"Bearer act_as_user={user}"} if user else None
+        headers = self.auth_headers(user) if user else None
         return self.client.delete(
             self.base_url + url,
             content_type="application/json",
@@ -51,7 +51,7 @@ class TeamsTest(BaseTestCase):
         )
 
     def get(self, url, user: str = "bc_datamanager"):
-        headers = {"Authorization": f"Bearer act_as_user={user}"} if user else None
+        headers = self.auth_headers(user) if user else None
         return self.client.get(
             self.base_url + url,
             content_type="application/json",
@@ -103,7 +103,7 @@ class TeamsTest(BaseTestCase):
         res = self.post(
             url="/team",
             payload={**TEAM_ONE_CONFIG, "name": "Unauthorized Team Creation"},
-            user=self.NO_ROLE_USER,
+            user=self.MEMBER_USER,
         )
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -188,7 +188,7 @@ class TeamsTest(BaseTestCase):
         )
 
         ## Fetch Team Page  -- Failure (Non-member)
-        res = self.get(url=f"/team/{TEAM_ID}", user=self.NO_ROLE_USER)
+        res = self.get(url=f"/team/{TEAM_ID}", user=self.MEMBER_USER)
         self.assertEqual(
             res.status_code,
             status.HTTP_403_FORBIDDEN,
@@ -255,7 +255,7 @@ class TeamsTest(BaseTestCase):
         TEAM_ID = data["id"]
 
         ## Get Own Invitations  -- Success
-        res = self.get("/invite", user=self.NO_ROLE_USER)
+        res = self.get("/invite", user=self.MEMBER_USER)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         data = res.json()
         self.assertEqual(len(data), self.NONE, "Unexpected Invitations were found")
@@ -263,7 +263,7 @@ class TeamsTest(BaseTestCase):
         ## Invite User Failed -- Not Team Founder
         res = self.post(
             url=f"/team/{TEAM_ID}/invite",
-            payload={"subject": self.NO_ROLE_USER},
+            payload={"subject": self.MEMBER_USER},
             user="bc_admin",
         )
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
@@ -285,7 +285,7 @@ class TeamsTest(BaseTestCase):
         ## Invite User Success -- Founder
         res = self.post(
             url=f"/team/{TEAM_ID}/invite",
-            payload={"subject": self.NO_ROLE_USER},
+            payload={"subject": self.MEMBER_USER},
         )
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
@@ -296,7 +296,7 @@ class TeamsTest(BaseTestCase):
         )
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
         ## Get Invitations  -- Success (1 Active Invite)
-        res = self.get("/invite", user=self.NO_ROLE_USER)
+        res = self.get("/invite", user=self.MEMBER_USER)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         data = res.json()
         self.assertEqual(len(data), 1)
@@ -315,7 +315,7 @@ class TeamsTest(BaseTestCase):
         res = self.patch(
             "/invite",
             payload={"invitation_id": INVITATION_ID, "response": "Cancelled"},
-            user=self.NO_ROLE_USER,
+            user=self.MEMBER_USER,
         )
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -335,7 +335,7 @@ class TeamsTest(BaseTestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
         ## Get Invitations  -- Zero Active Invites (Previously 1)
-        res = self.get("/invite", user=self.NO_ROLE_USER)
+        res = self.get("/invite", user=self.MEMBER_USER)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         data = res.json()
         self.assertEqual(len(data), self.NONE, "Unexpected Invitations were found")
@@ -343,18 +343,18 @@ class TeamsTest(BaseTestCase):
         ## Resubmit Invitation -- Founder
         res = self.post(
             url=f"/team/{TEAM_ID}/invite",
-            payload={"subject": self.NO_ROLE_USER},
+            payload={"subject": self.MEMBER_USER},
         )
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
 
         ## Get Invitations  -- Success (1 Invite Found)
-        res = self.get("/invite", user=self.NO_ROLE_USER)
+        res = self.get("/invite", user=self.MEMBER_USER)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         data = res.json()
         self.assertEqual(len(data), 1)
 
         ## Check enrolled teams of user being invited (None)
-        res = self.get(url="/team", user=self.NO_ROLE_USER)
+        res = self.get(url="/team", user=self.MEMBER_USER)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         data = res.json()
 
@@ -364,13 +364,13 @@ class TeamsTest(BaseTestCase):
         res = self.patch(
             "/invite",
             payload={"invitation_id": INVITATION_ID, "response": "Accepted"},
-            user=self.NO_ROLE_USER,
+            user=self.MEMBER_USER,
         )
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
         pre_invite = TeamInvitation.objects.all().count()
         ## Get Invitations  -- Success
-        res = self.get("/invite", user=self.NO_ROLE_USER)
+        res = self.get("/invite", user=self.MEMBER_USER)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         data = res.json()
         self.assertEqual(len(data), self.NONE)  # Accepted Invitation Does not appear.
@@ -381,7 +381,7 @@ class TeamsTest(BaseTestCase):
         )
 
         ## Get Teams List -- (bc_noroles)
-        res = self.get(url="/team", user=self.NO_ROLE_USER)
+        res = self.get(url="/team", user=self.MEMBER_USER)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         data = res.json()
         teams = data["teams"]
@@ -389,7 +389,7 @@ class TeamsTest(BaseTestCase):
         self.assertEqual(data["teams"][0]["team_id"], TEAM_ID)  # User was added to Team
 
         ## Non-Founder Member Loads Team Details (Limited View)
-        res = self.get(url=f"/team/{TEAM_ID}", user=self.NO_ROLE_USER)
+        res = self.get(url=f"/team/{TEAM_ID}", user=self.MEMBER_USER)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         data: SingleTeamOut = res.json()
 
@@ -409,12 +409,12 @@ class TeamsTest(BaseTestCase):
         ## Invite User Failure -- Founder (Invited User already on Team)
         res = self.post(
             url=f"/team/{TEAM_ID}/invite",
-            payload={"subject": self.NO_ROLE_USER},
+            payload={"subject": self.MEMBER_USER},
         )
         self.assertEqual(res.status_code, status.HTTP_409_CONFLICT)
 
         ## Get Suggested Users for Team -- Member (Non-Founder)
-        res = self.get(url=f"/team/{TEAM_ID}/invite", user=self.NO_ROLE_USER)
+        res = self.get(url=f"/team/{TEAM_ID}/invite", user=self.MEMBER_USER)
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
 
         ## Leave Team - Non-Member
@@ -422,11 +422,11 @@ class TeamsTest(BaseTestCase):
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
         ## Leave Team - Member
-        res = self.delete(url=f"/team/{TEAM_ID}/leave", user=self.NO_ROLE_USER)
+        res = self.delete(url=f"/team/{TEAM_ID}/leave", user=self.MEMBER_USER)
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
 
         ## User can no longer load team page
-        res = self.get(url=f"/team/{TEAM_ID}", user=self.NO_ROLE_USER)
+        res = self.get(url=f"/team/{TEAM_ID}", user=self.MEMBER_USER)
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
 
         # Re-add memberships
@@ -434,24 +434,24 @@ class TeamsTest(BaseTestCase):
 
         ## Kick User -- Non-Member (Fail)
         res = self.delete(
-            url=f"/team/{TEAM_ID}/members/{self.NO_ROLE_USER}",
+            url=f"/team/{TEAM_ID}/members/{self.MEMBER_USER}",
             user="bc_admin",
         )
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
 
         ## Kick User -- Member (Fail)
         res = self.delete(
-            url=f"/team/{TEAM_ID}/members/{self.NO_ROLE_USER}",
-            user=self.NO_ROLE_USER,
+            url=f"/team/{TEAM_ID}/members/{self.MEMBER_USER}",
+            user=self.MEMBER_USER,
         )
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
 
         ## Kick User -- Admin (Success)
-        res = self.delete(url=f"/team/{TEAM_ID}/members/{self.NO_ROLE_USER}")
+        res = self.delete(url=f"/team/{TEAM_ID}/members/{self.MEMBER_USER}")
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
 
         ## Kick Non-Member User -- Admin (Fail)
-        res = self.delete(url=f"/team/{TEAM_ID}/members/{self.NO_ROLE_USER}")
+        res = self.delete(url=f"/team/{TEAM_ID}/members/{self.MEMBER_USER}")
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
         ## Disband Team -- Non-Member (Fail)
@@ -459,7 +459,7 @@ class TeamsTest(BaseTestCase):
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
 
         ## Disband Team -- Member (Fail)
-        res = self.delete(url=f"/team/{TEAM_ID}", user=self.NO_ROLE_USER)
+        res = self.delete(url=f"/team/{TEAM_ID}", user=self.MEMBER_USER)
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
 
         ## Disband Team -- Founder (Success)

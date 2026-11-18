@@ -12,7 +12,7 @@ class TestModificationRecord(BaseActivitySubtypeTest):
     Tests that modifying a record will create an audit trail
     """
 
-    fixtures = [
+    extra_fixtures = [
         "test/common/test_employer_codes",
         "test/common/test_jurisdictions_codes",
         "test/common/test_funding_agency_codes",

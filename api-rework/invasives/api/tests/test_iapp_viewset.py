@@ -7,11 +7,10 @@ from api.legacy_db.migrate_iapp import create_iapp_site
 from api.models import Role, User
 from api.serializers.iapp import IAPP_RECORD_TYPES
 from api.tests.test_iapp_serializer import full_site_row
-from django.test import TestCase, override_settings
+from django.test import TestCase
 from rest_framework.test import APIClient
 
 
-@override_settings(UNIT_TESTING_ENABLED=True)
 class IAPPViewSetTest(TestCase):
     @classmethod
     def setUpTestData(cls):

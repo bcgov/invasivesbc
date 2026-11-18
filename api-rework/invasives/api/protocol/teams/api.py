@@ -9,7 +9,7 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from api.utils.timezones import local_today
-from api.ninja_authentication import NinjaKeycloakAuthentication, NinjaRoleRequired
+from api.ninja_authentication import NinjaAnyRoleRequired, NinjaRoleRequired
 from api.models.auth import User, EmployerAssociation
 from api.models.teams import TeamMember, Team, InviteStatus, TeamInvitation
 from api.schemas.teams import (
@@ -26,7 +26,7 @@ from . import (
 )
 
 ROOT_PATH = "/teams"
-router = Router(auth=NinjaKeycloakAuthentication())
+router = Router(auth=NinjaAnyRoleRequired())
 log = logging.getLogger(__name__)
 
 ##############

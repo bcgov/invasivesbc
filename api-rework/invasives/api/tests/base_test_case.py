@@ -1,14 +1,16 @@
-from django.test import TestCase, override_settings
+from django.test import TestCase
+
+from api.tests.auth import JWTAuthenticationMixin
 
 
-@override_settings(UNIT_TESTING_ENABLED=True)
-class BaseTestCase(TestCase):
-    fixtures = [
+class BaseTestCase(JWTAuthenticationMixin, TestCase):
+    base_fixtures = (
         "all_codes",
         "test/common/test_employer_codes",
         "test/common/test_funding_agency_codes",
         "test/common/base_authentication",
-    ]
+    )
+    fixtures = base_fixtures
 
     usernames = [
         "bc_admin",
@@ -17,10 +19,13 @@ class BaseTestCase(TestCase):
         "bc_noroles",
     ]
 
-    extra_fixtures = None
+    extra_fixtures = ()
 
     @classmethod
     def setUpClass(cls):
-        if cls.extra_fixtures is not None:
-            cls.fixtures = cls.fixtures + cls.extra_fixtures
+        """Retain base and parent fixtures without modifying inherited lists."""
+        fixtures = list(cls.base_fixtures)
+        for base in reversed(cls.__mro__):
+            fixtures.extend(base.__dict__.get("extra_fixtures", ()))
+        cls.fixtures = list(dict.fromkeys(fixtures))
         super().setUpClass()

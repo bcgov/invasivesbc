@@ -4,7 +4,7 @@ from .base_csv import BaseCSVTest
 
 
 class TestTerrestrialObservationCSV(BaseCSVTest):
-    fixtures = BaseCSVTest.fixtures + [
+    extra_fixtures = [
         "test/subtypes/observations/test_terrestrial_observation_codes",
         "test/subtypes/observations/test_terrestrial_observation",
         "test/common/test_employer_codes",

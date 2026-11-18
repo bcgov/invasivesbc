@@ -4,17 +4,25 @@ from django.shortcuts import get_object_or_404
 from rest_framework import status
 from ninja import Router
 from api.models.auth import User
-from api.ninja_authentication import NinjaKeycloakAuthentication, NinjaRoleRequired
+from api.ninja_authentication import (
+    NinjaAnyRoleRequired,
+    NinjaKeycloakAuthentication,
+    NinjaRoleRequired,
+)
 from api.constants import WellKnownRoles
 from . import UserProfileOut, UserAccessIn
 
 ROOT_PATH = "/auth"
-router = Router(auth=NinjaKeycloakAuthentication())
+router = Router(auth=NinjaAnyRoleRequired())
 
 log = logging.getLogger(__name__)
 
 
-@router.get("/user", response={200: UserProfileOut, 401: None})
+@router.get(
+    "/user",
+    response={200: UserProfileOut, 401: None},
+    auth=NinjaKeycloakAuthentication(),
+)
 def get_self(request):
     """Return requesters own profile"""
     if request.auth:
@@ -35,7 +43,11 @@ def get_user(request, subject):
     return get_object_or_404(User, subject=subject)
 
 
-@router.post("/register", response={201: dict, 204: dict})
+@router.post(
+    "/register",
+    response={201: dict, 204: dict},
+    auth=NinjaKeycloakAuthentication(),
+)
 def request_access(request, data: UserAccessIn):
     return JsonResponse(
         status=status.HTTP_201_CREATED,

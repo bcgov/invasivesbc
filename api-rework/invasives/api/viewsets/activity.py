@@ -6,6 +6,7 @@ from api.legacy_db.model_serializer import LegacyActivity
 from api.models.activity.activity import Activity
 from api.models.migrator.activity_migration_status import ActivityMigrationStatus
 from api.permissions import HasAdminRole
+from api.permissions.activity_access import filter_activities_by_access
 from api.serializers.activity import ActivitySerializer
 from api.serializers.activity_list import ActivityListSerializer
 from api.serializers.activity_migration_status import ActivityMigrationStatusSerializer
@@ -40,9 +41,11 @@ class ActivityViewSet(AtomicViewSetMixin, ReadOnlyModelViewSet):
 
     def get_queryset(self):
         if self.action in self.querysets.keys():
-            return self.querysets[self.action]
+            return filter_activities_by_access(
+                self.querysets[self.action], self.request.user
+            )
 
-        return self.querysets["default"]
+        return filter_activities_by_access(self.querysets["default"], self.request.user)
 
     def get_serializer_class(self):
         if self.action == "list":

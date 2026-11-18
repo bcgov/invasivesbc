@@ -1,33 +1,22 @@
 import datetime
-from unittest.mock import MagicMock
 
-from django.test import TestCase, override_settings
-from api.utils.timezones import local_today
+from django.test import RequestFactory
 from rest_framework import exceptions
 
 from api.keycloak_authentication import UserAuthentication
 from api.models.auth import User
 from api.ninja_authentication import NinjaKeycloakAuthentication
+from api.tests.auth import token_for
+from api.tests.base_test_case import BaseTestCase
+from api.utils.timezones import local_today
 
 
-@override_settings(UNIT_TESTING_ENABLED=True)
-class AuthenticationExpiryTests(TestCase):
+class AuthenticationExpiryTests(BaseTestCase):
     def _user(self, expiry_date):
-        return User.objects.update_or_create(
-            subject="test-user",
-            display_name="test, user",
-            defaults={"expiry_date": expiry_date},
-        )[0]
-
-    def _ninja_request(self):
-        request = MagicMock()
-        request.META = {"HTTP_AUTHORIZATION": "Bearer x act_as_user=test-user"}
-        return request
-
-    def _drf_request(self):
-        request = MagicMock()
-        request.META = {"HTTP_AUTHORIZATION": "Bearer x"}
-        return request
+        user = User.objects.get(subject="bc_admin")
+        user.expiry_date = expiry_date
+        user.save(update_fields=["expiry_date"])
+        return user
 
     def test_ninja_accepts_unexpired_user(self):
         for expiry in (
@@ -35,15 +24,19 @@ class AuthenticationExpiryTests(TestCase):
             local_today(),
             local_today() + datetime.timedelta(days=1),
         ):
-            self._user(expiry)
-            result = NinjaKeycloakAuthentication().authenticate(
-                self._ninja_request(), "x"
-            )
-            self.assertEqual(result.subject, "test-user")
+            with self.subTest(expiry=expiry):
+                user = self._user(expiry)
+                result = NinjaKeycloakAuthentication().authenticate(
+                    RequestFactory().get("/"), token_for(user)
+                )
+                self.assertEqual(result.subject, user.subject)
 
     def test_ninja_rejects_expired_user(self):
-        self._user(local_today() - datetime.timedelta(days=1))
-        result = NinjaKeycloakAuthentication().authenticate(self._ninja_request(), "x")
+        user = self._user(local_today() - datetime.timedelta(days=1))
+        with self.assertLogs(level="WARNING"):
+            result = NinjaKeycloakAuthentication().authenticate(
+                RequestFactory().get("/"), token_for(user)
+            )
         self.assertIsNone(result)
 
     def test_keycloak_accepts_unexpired_user(self):
@@ -52,11 +45,15 @@ class AuthenticationExpiryTests(TestCase):
             local_today(),
             local_today() + datetime.timedelta(days=1),
         ):
-            self._user(expiry)
-            user, _ = UserAuthentication().authenticate(self._drf_request())
-            self.assertEqual(user.subject, "test-user")
+            with self.subTest(expiry=expiry):
+                user = self._user(expiry)
+                request = RequestFactory().get("/", headers=self.auth_headers(user))
+                result, _ = UserAuthentication().authenticate(request)
+                self.assertEqual(result.subject, user.subject)
 
     def test_keycloak_rejects_expired_user(self):
-        self._user(local_today() - datetime.timedelta(days=1))
-        with self.assertRaises(exceptions.AuthenticationFailed):
-            UserAuthentication().authenticate(self._drf_request())
+        user = self._user(local_today() - datetime.timedelta(days=1))
+        request = RequestFactory().get("/", headers=self.auth_headers(user))
+        with self.assertLogs(level="WARNING"):
+            with self.assertRaises(exceptions.AuthenticationFailed):
+                UserAuthentication().authenticate(request)

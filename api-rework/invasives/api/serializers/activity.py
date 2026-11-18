@@ -17,6 +17,10 @@ from api.models.activity import (
     DraftProjectCode,
 )
 from api.models.activity.activity import Activity, DraftActivity
+from api.permissions.activity_access import (
+    filter_activities_by_access,
+    get_activity_permissions,
+)
 from api.models.activity import UploadedImage, DraftUploadedImage
 from api.serializers.common import (
     UploadedImageSerializer,
@@ -61,6 +65,7 @@ from api.serializers.type.subtype import (
 
 
 class BaseSerializer(serializers.ModelSerializer):
+    permissions = serializers.SerializerMethodField()
     jurisdictions = serializers.SerializerMethodField()
     projects = serializers.SerializerMethodField()
     funding_agencies = serializers.SerializerMethodField()
@@ -107,7 +112,16 @@ class BaseSerializer(serializers.ModelSerializer):
             "centroid",
             "media",
             "migration_remarks",
+            "permissions",
         )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if "request" not in self.context:
+            self.fields.pop("permissions")
+
+    def get_permissions(self, obj):
+        return get_activity_permissions(self.context["request"].user, obj)
 
 
 class ActivitySerializer(BaseSerializer):
@@ -148,7 +162,10 @@ class ActivitySerializer(BaseSerializer):
 
     def get_linked_activities(self, obj):
         arr = []
-        for linked_id in obj.linked_activities.all():
+        linked = obj.linked_activities.all()
+        if "request" in self.context:
+            linked = filter_activities_by_access(linked, self.context["request"].user)
+        for linked_id in linked:
             arr.append(
                 {
                     "label": f"{linked_id.short_id} | {linked_id.date} | {linked_id.created_by}",
@@ -252,7 +269,10 @@ class DraftActivitySerializer(BaseSerializer):
 
     def get_linked_activities(self, obj):
         arr = []
-        for linked_id in obj.linked_activities.all():
+        linked = obj.linked_activities.all()
+        if "request" in self.context:
+            linked = filter_activities_by_access(linked, self.context["request"].user)
+        for linked_id in linked:
             arr.append(
                 {
                     "label": f"{linked_id.short_id} | {linked_id.date} | {linked_id.created_by}",

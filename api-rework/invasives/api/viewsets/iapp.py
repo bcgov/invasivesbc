@@ -1,5 +1,6 @@
 from api.models.iapp import IAPPSite, IAPPSiteSelection, IAPPSurvey
 from api.permissions import HasAdminRole
+from api.permissions.activity_access import SENSITIVE_ROLES, _role_names
 from api.serializers.iapp import (
     IAPP_CHILD_SERIALIZERS,
     IAPP_RECORD_TYPES,
@@ -42,8 +43,11 @@ class IAPPViewSet(AtomicViewSetMixin, ReadOnlyModelViewSet):
     lookup_value_regex = r"\d+"
 
     def get_queryset(self):
+        sites = IAPPSite.objects.all()
+        if not _role_names(self.request.user) & SENSITIVE_ROLES:
+            sites = sites.filter(protected=False)
         if self.action == "list":
-            return IAPPSite.objects.annotate(
+            return sites.annotate(
                 survey_dates=_survey_array("survey_date"),
                 species_list=_survey_array("invasive_plant"),
                 survey_types=_survey_array("survey_type"),
@@ -58,9 +62,7 @@ class IAPPViewSet(AtomicViewSetMixin, ReadOnlyModelViewSet):
                     for name, related in IAPP_RECORD_TYPES.items()
                 },
             ).order_by("site_id")
-        return IAPPSite.objects.prefetch_related(*IAPP_CHILD_SERIALIZERS).order_by(
-            "site_id"
-        )
+        return sites.prefetch_related(*IAPP_CHILD_SERIALIZERS).order_by("site_id")
 
     def get_serializer_class(self):
         if self.action == "list":

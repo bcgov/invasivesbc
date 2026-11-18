@@ -3,7 +3,7 @@ from .base_csv import BaseCSVTest
 
 
 class TestBiocontrolReleaseCSV(BaseCSVTest):
-    fixtures = BaseCSVTest.fixtures + [
+    extra_fixtures = [
         "test/common/test_invasive_plant_codes",
         "test/common/test_wind_codes",
         "test/subtypes/treatments/test_biocontrol_release_codes",

@@ -59,12 +59,12 @@ const NewRecordDialog = () => {
     }));
   }, [type, category]);
 
-  const onSubmit: SubmitHandler<NewRecordForm> = (data) => {
-    if (mode === 'new') {
-      dispatch(FormActions.createNewForm(data.subtype));
-    } else {
-      dispatch(FormActions.duplicateForm({ subtype: data.subtype }));
-    }
+  const onSubmit: SubmitHandler<NewRecordForm> = async (data) => {
+    const result =
+      mode === 'new'
+        ? await dispatch(FormActions.createNewForm(data.subtype))
+        : await dispatch(FormActions.duplicateForm({ subtype: data.subtype }));
+    if (result.meta.requestStatus !== 'fulfilled') return;
     navigate('/Records/Activity/new/form');
   };
 

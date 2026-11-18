@@ -4,3674 +4,3688 @@
  */
 
 export interface paths {
-    "/ninja/activities/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List Activities */
-        get: operations["api_protocol_activity_api_list_activities"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+  '/ninja/activities/creation-permissions/{subtype}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/ninja/activities/search": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Activity Search */
-        post: operations["api_protocol_activity_api_activity_search"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /** Creation Permissions */
+    get: operations['api_protocol_activity_api_creation_permissions'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/ninja/activities/': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/ninja/activities/submit": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Submit Record
-         * @description Handler for Incoming records with "Submitted" status.
-         *     Performs strict validation on payload to ensure data integrity.
-         *     - Adds record to the 'activity' schema
-         *     - Adds Activity Modification Record if changes found (update)
-         */
-        post: operations["api_protocol_activity_api_submit_record"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /** List Activities */
+    get: operations['api_protocol_activity_api_list_activities'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/ninja/activities/search': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/ninja/activities/draft": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Submit Draft Record
-         * @description Handler for Incoming records with "Draft" status.
-         *     Performs loose validation on incoming data to remove extraneous keys and ensure payload integrity
-         *     - Adds record to the 'draft_activity' schema
-         */
-        post: operations["api_protocol_activity_api_submit_draft_record"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /** Activity Search */
+    post: operations['api_protocol_activity_api_activity_search'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/ninja/activities/submit': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/ninja/activities/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Activity By Id */
-        get: operations["api_protocol_activity_api_get_activity_by_id"];
-        put?: never;
-        post?: never;
-        /** Delete Activity By Id */
-        delete: operations["api_protocol_activity_api_delete_activity_by_id"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /**
+     * Submit Record
+     * @description Handler for Incoming records with "Submitted" status.
+     *     Performs strict validation on payload to ensure data integrity.
+     *     - Adds record to the 'activity' schema
+     *     - Adds Activity Modification Record if changes found (update)
+     */
+    post: operations['api_protocol_activity_api_submit_record'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/ninja/activities/draft': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/ninja/auth/user": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Self
-         * @description Return requesters own profile
-         */
-        get: operations["api_protocol_auth_api_get_self"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /**
+     * Submit Draft Record
+     * @description Handler for Incoming records with "Draft" status.
+     *     Performs loose validation on incoming data to remove extraneous keys and ensure payload integrity
+     *     - Adds record to the 'draft_activity' schema
+     */
+    post: operations['api_protocol_activity_api_submit_draft_record'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/ninja/activities/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/ninja/auth/user/{subject}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get User
-         * @description Return Profile of specified user
-         */
-        get: operations["api_protocol_auth_api_get_user"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /** Get Activity By Id */
+    get: operations['api_protocol_activity_api_get_activity_by_id'];
+    put?: never;
+    post?: never;
+    /** Delete Activity By Id */
+    delete: operations['api_protocol_activity_api_delete_activity_by_id'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/ninja/auth/user': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/ninja/auth/register": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Request Access */
-        post: operations["api_protocol_auth_api_request_access"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get Self
+     * @description Return requesters own profile
+     */
+    get: operations['api_protocol_auth_api_get_self'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/ninja/auth/user/{subject}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/ninja/recordset/rows": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Get Recordset Rows */
-        post: operations["api_protocol_recordset_api_get_recordset_rows"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get User
+     * @description Return Profile of specified user
+     */
+    get: operations['api_protocol_auth_api_get_user'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/ninja/auth/register': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/ninja/recordset/csv": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Get Csv Export
-         * @description Export Endpoint for InvasivesBC Recordsets.
-         *
-         *     Current functionality supports exporting any Recordset via, using the filters
-         *     applied to the user's recordset. whether or not specified by the user, there is a subtype filter applied to all requests.
-         *     This ensures common model entries don't get crossed. e.g.: Biocontrol Dispersal v Biocontrol Collections
-         *
-         *     To change CSV Headers/Values/Formats, update :data:`CSV_EXPORT_ROW_MAP` classes
-         */
-        post: operations["api_protocol_recordset_api_get_csv_export"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /** Request Access */
+    post: operations['api_protocol_auth_api_request_access'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/ninja/recordset/rows': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/ninja/recordset/cache": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Recordset Cache
-         * @description Given a 'idList' query param of IDs (short or full)
-         *     return a list of Recordset rows and data payloads (For caching purposes)
-         */
-        get: operations["api_protocol_recordset_api_get_recordset_cache"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /** Get Recordset Rows */
+    post: operations['api_protocol_recordset_api_get_recordset_rows'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/ninja/recordset/csv': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/ninja/summary": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Summary */
-        get: operations["api_protocol_summary_api_get_summary"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /**
+     * Get Csv Export
+     * @description Export Endpoint for InvasivesBC Recordsets.
+     *
+     *     Current functionality supports exporting any Recordset via, using the filters
+     *     applied to the user's recordset. whether or not specified by the user, there is a subtype filter applied to all requests.
+     *     This ensures common model entries don't get crossed. e.g.: Biocontrol Dispersal v Biocontrol Collections
+     *
+     *     To change CSV Headers/Values/Formats, update :data:`CSV_EXPORT_ROW_MAP` classes
+     */
+    post: operations['api_protocol_recordset_api_get_csv_export'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/ninja/recordset/cache': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/ninja/teams/team": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get List Of Teams
-         * @description :Access: All users
-         *
-         *     Get list of all Teams requesting user has membership in
-         */
-        get: operations["api_protocol_teams_api_get_list_of_teams"];
-        put?: never;
-        /**
-         * Create Team
-         * @description :Access: DataManagers | Admins
-         *
-         *     Endpoint to create a new team. Requesting user is auto-enlisted into team.
-         */
-        post: operations["api_protocol_teams_api_create_team"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get Recordset Cache
+     * @description Given a 'idList' query param of IDs (short or full)
+     *     return a list of Recordset rows and data payloads (For caching purposes)
+     */
+    get: operations['api_protocol_recordset_api_get_recordset_cache'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/ninja/summary': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/ninja/teams/team/{team_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Team Info
-         * @description :Access: All Users on designated team.
-         *
-         *     Returns all info for specified team
-         */
-        get: operations["api_protocol_teams_api_get_team_info"];
-        put?: never;
-        post?: never;
-        /**
-         * Disband Team
-         * @description :Access: Founders of a team
-         *
-         *     Marks teams as deleted (soft) removing them from searches
-         */
-        delete: operations["api_protocol_teams_api_disband_team"];
-        options?: never;
-        head?: never;
-        /**
-         * Update Team Metadata
-         * @description :Access: Data Managers | Admins
-         *
-         *     Update Description/Name of a team.
-         */
-        patch: operations["api_protocol_teams_api_update_team_metadata"];
-        trace?: never;
+    /** Get Summary */
+    get: operations['api_protocol_summary_api_get_summary'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/ninja/teams/team': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/ninja/teams/team/{team_id}/invite": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Suggested Users
-         * @description :Access: Team Founders
-         *
-         *     Get List of Suggestions based on the Agency list of a team.
-         */
-        get: operations["api_protocol_teams_api_get_suggested_users"];
-        put?: never;
-        /**
-         * Invite User To Team
-         * @description :Access: Team Owners
-         *
-         *     Endpoint for Data Managers to Invite a user to their team.
-         */
-        post: operations["api_protocol_teams_api_invite_user_to_team"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get List Of Teams
+     * @description :Access: All users
+     *
+     *     Get list of all Teams requesting user has membership in
+     */
+    get: operations['api_protocol_teams_api_get_list_of_teams'];
+    put?: never;
+    /**
+     * Create Team
+     * @description :Access: DataManagers | Admins
+     *
+     *     Endpoint to create a new team. Requesting user is auto-enlisted into team.
+     */
+    post: operations['api_protocol_teams_api_create_team'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/ninja/teams/team/{team_id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/ninja/teams/invite": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Active Invitations
-         * @description :Access: All users
-         *
-         *     Get list of active PENDING invitations awaiting a user.
-         */
-        get: operations["api_protocol_teams_api_get_active_invitations"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /**
-         * Update Invitation Status
-         * @description :Access: Invitation Recipient or Sender
-         *
-         *     Update invitation to reflect users Response. Adds user to team if accepted.
-         */
-        patch: operations["api_protocol_teams_api_update_invitation_status"];
-        trace?: never;
+    /**
+     * Get Team Info
+     * @description :Access: All Users on designated team.
+     *
+     *     Returns all info for specified team
+     */
+    get: operations['api_protocol_teams_api_get_team_info'];
+    put?: never;
+    post?: never;
+    /**
+     * Disband Team
+     * @description :Access: Founders of a team
+     *
+     *     Marks teams as deleted (soft) removing them from searches
+     */
+    delete: operations['api_protocol_teams_api_disband_team'];
+    options?: never;
+    head?: never;
+    /**
+     * Update Team Metadata
+     * @description :Access: Data Managers | Admins
+     *
+     *     Update Description/Name of a team.
+     */
+    patch: operations['api_protocol_teams_api_update_team_metadata'];
+    trace?: never;
+  };
+  '/ninja/teams/team/{team_id}/invite': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/ninja/teams/team/{team_id}/leave": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /**
-         * Leave Team
-         * @description :Access: All users
-         *     Requesting user is removed from the team
-         */
-        delete: operations["api_protocol_teams_api_leave_team"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get Suggested Users
+     * @description :Access: Team Founders
+     *
+     *     Get List of Suggestions based on the Agency list of a team.
+     */
+    get: operations['api_protocol_teams_api_get_suggested_users'];
+    put?: never;
+    /**
+     * Invite User To Team
+     * @description :Access: Team Owners
+     *
+     *     Endpoint for Data Managers to Invite a user to their team.
+     */
+    post: operations['api_protocol_teams_api_invite_user_to_team'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/ninja/teams/invite': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/ninja/teams/team/{team_id}/members/{subject}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /**
-         * Kick Member
-         * @description :Access: Data Managers
-         *
-         *     Data manager selects user to remove from the team.
-         */
-        delete: operations["api_protocol_teams_api_kick_member"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get Active Invitations
+     * @description :Access: All users
+     *
+     *     Get list of active PENDING invitations awaiting a user.
+     */
+    get: operations['api_protocol_teams_api_get_active_invitations'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /**
+     * Update Invitation Status
+     * @description :Access: Invitation Recipient or Sender
+     *
+     *     Update invitation to reflect users Response. Adds user to team if accepted.
+     */
+    patch: operations['api_protocol_teams_api_update_invitation_status'];
+    trace?: never;
+  };
+  '/ninja/teams/team/{team_id}/leave': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/ninja/tiles/activity/{z}/{x}/{y}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Req Activity Vector Tile */
-        get: operations["api_protocol_map_tiles_vector_tiles_req_activity_vector_tile"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * Leave Team
+     * @description :Access: All users
+     *     Requesting user is removed from the team
+     */
+    delete: operations['api_protocol_teams_api_leave_team'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/ninja/teams/team/{team_id}/members/{subject}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/ninja/tiles/zone/{z}/{x}/{y}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Zone Vector Tile */
-        get: operations["api_protocol_map_tiles_vector_tiles_zone_vector_tile"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * Kick Member
+     * @description :Access: Data Managers
+     *
+     *     Data manager selects user to remove from the team.
+     */
+    delete: operations['api_protocol_teams_api_kick_member'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/ninja/tiles/activity/{z}/{x}/{y}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
+    /** Req Activity Vector Tile */
+    get: operations['api_protocol_map_tiles_vector_tiles_req_activity_vector_tile'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/ninja/tiles/zone/{z}/{x}/{y}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Zone Vector Tile */
+    get: operations['api_protocol_map_tiles_vector_tiles_zone_vector_tile'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-    schemas: {
-        /**
-         * ActivityMinimal
-         * @description Minimal fields - shared between all representations
-         */
-        ActivityMinimal: {
-            /**
-             * Id
-             * Format: uuid4
-             */
-            id: string;
-            /** Short Id */
-            short_id: string;
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Type */
-            type: string;
-            /** Subtype */
-            subtype: string;
-        };
-        /**
-         * ActivitySearchParameters
-         * @description An object representing activity search parameters
-         */
-        ActivitySearchParameters: {
-            /** Date From */
-            date_from: string | null;
-            /** Date To */
-            date_to: string | null;
-        };
-        /** ActivitySearchResult */
-        ActivitySearchResult: {
-            /** Items */
-            items: components["schemas"]["ActivityMinimal"][];
-            search: components["schemas"]["ActivitySearchParameters"];
-        };
-        /** ActivityPlantRowOut */
-        ActivityPlantRowOut: {
-            /**
-             * Activity Id
-             * Format: uuid4
-             */
-            activity_id: string;
-            /**
-             * Activity Date
-             * Format: date
-             */
-            activity_date: string;
-            /** Activity Type */
-            activity_type: string;
-            /** Created By */
-            created_by: string;
-            /** Short Id */
-            short_id: string;
-            geom?: components["schemas"]["Point"] | null;
-            /** Activity Subtype */
-            activity_subtype: string;
-            /** Elevation */
-            elevation: number | null;
-            /** Biogeoclimatic Zones */
-            biogeoclimatic_zones: string | null;
-            /** Regional Districts */
-            regional_districts: string | null;
-            /** Invasive Plant Management Areas */
-            invasive_plant_management_areas: string | null;
-            /** Regional Invasive Species Organization Areas */
-            regional_invasive_species_organization_areas?: string | null;
-            /** Reported Area */
-            reported_area: number | null;
-            /** Agency */
-            agency?: string | null;
-            /** Updated By */
-            updated_by?: string | null;
-            /** Species Biocontrol Full */
-            species_biocontrol_full?: string | null;
-            /** Species Treated Full */
-            species_treated_full?: string | null;
-            /** Species Negative Full */
-            species_negative_full?: string | null;
-            /** Species Positive Full */
-            species_positive_full?: string | null;
-            /** Invasive Plant */
-            invasive_plant?: string | null;
-            /** Jurisdiction Display */
-            jurisdiction_display?: string | null;
-            /** Project Code */
-            project_code?: string | null;
-            /** Batch Id */
-            batch_id?: number | null;
-        };
-        /** BiocontrolCollectionOut */
-        BiocontrolCollectionOut: {
-            centroid: components["schemas"]["Point"];
-            /** Employer */
-            employer: components["schemas"]["EmployerOut"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgencyOut"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["JurisdictionOut"][];
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivityOut"][];
-            /** Media */
-            media: components["schemas"]["UploadedImageOut"][];
-            /** Participants */
-            participants: components["schemas"]["ParticipantOut"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectOut"][];
-            /** Shape */
-            shape: {
-                [key: string]: unknown;
-            };
-            /** Short Id */
-            short_id: string;
-            /** Id */
-            id?: string | null;
-            /** Created By */
-            created_by: string;
-            /**
-             * Form Status
-             * @default Draft
-             */
-            form_status: string;
-            /** Type */
-            type: string;
-            /** Access Description */
-            access_description?: string | null;
-            /** Comment */
-            comment?: string | null;
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Area M */
-            area_m?: number | null;
-            /** Latitude */
-            latitude?: string | null;
-            /** Longitude */
-            longitude?: string | null;
-            /** Utm Zone */
-            utm_zone?: number | null;
-            /** Utm Easting */
-            utm_easting?: number | null;
-            /** Utm Northing */
-            utm_northing?: number | null;
-            /** Location Description */
-            location_description?: string | null;
-            /**
-             * Subtype
-             * @constant
-             */
-            subtype: "Biocontrol_Collection";
-            subtype_data: components["schemas"]["api__protocol__activity__plants_out__subtypes__biocontrol_collection__SubtypeData"];
-        };
-        /** BiocontrolDispersalMonitoringOut */
-        BiocontrolDispersalMonitoringOut: {
-            centroid: components["schemas"]["Point"];
-            /** Employer */
-            employer: components["schemas"]["EmployerOut"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgencyOut"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["JurisdictionOut"][];
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivityOut"][];
-            /** Media */
-            media: components["schemas"]["UploadedImageOut"][];
-            /** Participants */
-            participants: components["schemas"]["ParticipantOut"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectOut"][];
-            /** Shape */
-            shape: {
-                [key: string]: unknown;
-            };
-            /** Short Id */
-            short_id: string;
-            /** Id */
-            id?: string | null;
-            /** Created By */
-            created_by: string;
-            /**
-             * Form Status
-             * @default Draft
-             */
-            form_status: string;
-            /** Type */
-            type: string;
-            /** Access Description */
-            access_description?: string | null;
-            /** Comment */
-            comment?: string | null;
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Area M */
-            area_m?: number | null;
-            /** Latitude */
-            latitude?: string | null;
-            /** Longitude */
-            longitude?: string | null;
-            /** Utm Zone */
-            utm_zone?: number | null;
-            /** Utm Easting */
-            utm_easting?: number | null;
-            /** Utm Northing */
-            utm_northing?: number | null;
-            /** Location Description */
-            location_description?: string | null;
-            /**
-             * Subtype
-             * @constant
-             */
-            subtype: "Monitoring_Biocontrol_Dispersal_Plant_Terrestrial";
-            subtype_data: components["schemas"]["api__protocol__activity__plants_out__subtypes__biocontrol_dispersal_monitoring__SubtypeData"];
-        };
-        /** BiocontrolReleaseMonitoringOut */
-        BiocontrolReleaseMonitoringOut: {
-            centroid: components["schemas"]["Point"];
-            /** Employer */
-            employer: components["schemas"]["EmployerOut"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgencyOut"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["JurisdictionOut"][];
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivityOut"][];
-            /** Media */
-            media: components["schemas"]["UploadedImageOut"][];
-            /** Participants */
-            participants: components["schemas"]["ParticipantOut"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectOut"][];
-            /** Shape */
-            shape: {
-                [key: string]: unknown;
-            };
-            /** Short Id */
-            short_id: string;
-            /** Id */
-            id?: string | null;
-            /** Created By */
-            created_by: string;
-            /**
-             * Form Status
-             * @default Draft
-             */
-            form_status: string;
-            /** Type */
-            type: string;
-            /** Access Description */
-            access_description?: string | null;
-            /** Comment */
-            comment?: string | null;
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Area M */
-            area_m?: number | null;
-            /** Latitude */
-            latitude?: string | null;
-            /** Longitude */
-            longitude?: string | null;
-            /** Utm Zone */
-            utm_zone?: number | null;
-            /** Utm Easting */
-            utm_easting?: number | null;
-            /** Utm Northing */
-            utm_northing?: number | null;
-            /** Location Description */
-            location_description?: string | null;
-            /**
-             * Subtype
-             * @constant
-             */
-            subtype: "Monitoring_Biocontrol_Release_Plant_Terrestrial";
-            subtype_data: components["schemas"]["api__protocol__activity__plants_out__subtypes__biocontrol_release_monitoring__SubtypeData"];
-        };
-        /** BiocontrolReleaseOut */
-        BiocontrolReleaseOut: {
-            centroid: components["schemas"]["Point"];
-            /** Employer */
-            employer: components["schemas"]["EmployerOut"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgencyOut"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["JurisdictionOut"][];
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivityOut"][];
-            /** Media */
-            media: components["schemas"]["UploadedImageOut"][];
-            /** Participants */
-            participants: components["schemas"]["ParticipantOut"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectOut"][];
-            /** Shape */
-            shape: {
-                [key: string]: unknown;
-            };
-            /** Short Id */
-            short_id: string;
-            /** Id */
-            id?: string | null;
-            /** Created By */
-            created_by: string;
-            /**
-             * Form Status
-             * @default Draft
-             */
-            form_status: string;
-            /** Type */
-            type: string;
-            /** Access Description */
-            access_description?: string | null;
-            /** Comment */
-            comment?: string | null;
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Area M */
-            area_m?: number | null;
-            /** Latitude */
-            latitude?: string | null;
-            /** Longitude */
-            longitude?: string | null;
-            /** Utm Zone */
-            utm_zone?: number | null;
-            /** Utm Easting */
-            utm_easting?: number | null;
-            /** Utm Northing */
-            utm_northing?: number | null;
-            /** Location Description */
-            location_description?: string | null;
-            /**
-             * Subtype
-             * @constant
-             */
-            subtype: "Biocontrol_Release";
-            subtype_data: components["schemas"]["api__protocol__activity__plants_out__subtypes__biocontrol_release__SubtypeData"];
-        };
-        /** ChemicalTreatmentContextOut */
-        ChemicalTreatmentContextOut: {
-            /** Pesticide Use Permit */
-            pesticide_use_permit: string | null;
-            /** Pest Management Plan */
-            pest_management_plan: string | null;
-            /** Pest Management Plan Manual */
-            pest_management_plan_manual: string | null;
-            /** Pesticide Employer Code */
-            pesticide_employer_code: string | null;
-            /** Temperature C */
-            temperature_c: number | null;
-            /** Wind Speed Kmh */
-            wind_speed_kmh: number | null;
-            /** Application Start Time */
-            application_start_time: string | null;
-            /** Wind Direction */
-            wind_direction: string | null;
-            /** Humidity */
-            humidity: number | null;
-            /** Treatment Notice Signs */
-            treatment_notice_signs: string | null;
-            /** Precautionary Statement */
-            precautionary_statement: string | null;
-            /** Ntz Reduction */
-            ntz_reduction: boolean | null;
-            /** Rationale For Ntz Reduction */
-            rationale_for_ntz_reduction: string | null;
-            /** Additional Unmapped Well Water */
-            additional_unmapped_well_water: boolean | null;
-            /** Pest Injury Threshold Determination */
-            pest_injury_threshold_determination: boolean | null;
-        };
-        /** DraftBiocontrolCollectionOut */
-        DraftBiocontrolCollectionOut: {
-            centroid?: components["schemas"]["Point"] | null;
-            /** Employer */
-            employer: components["schemas"]["EmployerOut"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgencyOut"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["JurisdictionOut"][];
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivityOut"][];
-            /** Media */
-            media: components["schemas"]["UploadedImageOut"][];
-            /** Participants */
-            participants: components["schemas"]["ParticipantOut"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectOut"][];
-            /** Shape */
-            shape?: {
-                [key: string]: unknown;
-            } | null;
-            /** Short Id */
-            short_id: string;
-            /** Id */
-            id?: string | null;
-            /** Created By */
-            created_by: string;
-            /**
-             * Form Status
-             * @default Draft
-             */
-            form_status: string;
-            /** Type */
-            type: string;
-            /** Access Description */
-            access_description?: string | null;
-            /** Comment */
-            comment?: string | null;
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Area M */
-            area_m?: number | null;
-            /** Latitude */
-            latitude?: string | null;
-            /** Longitude */
-            longitude?: string | null;
-            /** Utm Zone */
-            utm_zone?: number | null;
-            /** Utm Easting */
-            utm_easting?: number | null;
-            /** Utm Northing */
-            utm_northing?: number | null;
-            /** Location Description */
-            location_description?: string | null;
-            /**
-             * Subtype
-             * @constant
-             */
-            subtype: "Biocontrol_Collection";
-            subtype_data: components["schemas"]["api__protocol__activity__plants_out__subtypes__biocontrol_collection__DraftSubtypeData"];
-        };
-        /** DraftBiocontrolDispersalMonitoringOut */
-        DraftBiocontrolDispersalMonitoringOut: {
-            centroid?: components["schemas"]["Point"] | null;
-            /** Employer */
-            employer: components["schemas"]["EmployerOut"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgencyOut"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["JurisdictionOut"][];
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivityOut"][];
-            /** Media */
-            media: components["schemas"]["UploadedImageOut"][];
-            /** Participants */
-            participants: components["schemas"]["ParticipantOut"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectOut"][];
-            /** Shape */
-            shape?: {
-                [key: string]: unknown;
-            } | null;
-            /** Short Id */
-            short_id: string;
-            /** Id */
-            id?: string | null;
-            /** Created By */
-            created_by: string;
-            /**
-             * Form Status
-             * @default Draft
-             */
-            form_status: string;
-            /** Type */
-            type: string;
-            /** Access Description */
-            access_description?: string | null;
-            /** Comment */
-            comment?: string | null;
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Area M */
-            area_m?: number | null;
-            /** Latitude */
-            latitude?: string | null;
-            /** Longitude */
-            longitude?: string | null;
-            /** Utm Zone */
-            utm_zone?: number | null;
-            /** Utm Easting */
-            utm_easting?: number | null;
-            /** Utm Northing */
-            utm_northing?: number | null;
-            /** Location Description */
-            location_description?: string | null;
-            /**
-             * Subtype
-             * @constant
-             */
-            subtype: "Monitoring_Biocontrol_Dispersal_Plant_Terrestrial";
-            subtype_data: components["schemas"]["api__protocol__activity__plants_out__subtypes__biocontrol_dispersal_monitoring__DraftSubtypeData"];
-        };
-        /** DraftBiocontrolReleaseMonitoringOut */
-        DraftBiocontrolReleaseMonitoringOut: {
-            centroid?: components["schemas"]["Point"] | null;
-            /** Employer */
-            employer: components["schemas"]["EmployerOut"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgencyOut"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["JurisdictionOut"][];
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivityOut"][];
-            /** Media */
-            media: components["schemas"]["UploadedImageOut"][];
-            /** Participants */
-            participants: components["schemas"]["ParticipantOut"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectOut"][];
-            /** Shape */
-            shape?: {
-                [key: string]: unknown;
-            } | null;
-            /** Short Id */
-            short_id: string;
-            /** Id */
-            id?: string | null;
-            /** Created By */
-            created_by: string;
-            /**
-             * Form Status
-             * @default Draft
-             */
-            form_status: string;
-            /** Type */
-            type: string;
-            /** Access Description */
-            access_description?: string | null;
-            /** Comment */
-            comment?: string | null;
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Area M */
-            area_m?: number | null;
-            /** Latitude */
-            latitude?: string | null;
-            /** Longitude */
-            longitude?: string | null;
-            /** Utm Zone */
-            utm_zone?: number | null;
-            /** Utm Easting */
-            utm_easting?: number | null;
-            /** Utm Northing */
-            utm_northing?: number | null;
-            /** Location Description */
-            location_description?: string | null;
-            /**
-             * Subtype
-             * @constant
-             */
-            subtype: "Monitoring_Biocontrol_Release_Plant_Terrestrial";
-            subtype_data: components["schemas"]["api__protocol__activity__plants_out__subtypes__biocontrol_release_monitoring__DraftSubtypeData"];
-        };
-        /** DraftBiocontrolReleaseOut */
-        DraftBiocontrolReleaseOut: {
-            centroid?: components["schemas"]["Point"] | null;
-            /** Employer */
-            employer: components["schemas"]["EmployerOut"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgencyOut"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["JurisdictionOut"][];
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivityOut"][];
-            /** Media */
-            media: components["schemas"]["UploadedImageOut"][];
-            /** Participants */
-            participants: components["schemas"]["ParticipantOut"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectOut"][];
-            /** Shape */
-            shape?: {
-                [key: string]: unknown;
-            } | null;
-            /** Short Id */
-            short_id: string;
-            /** Id */
-            id?: string | null;
-            /** Created By */
-            created_by: string;
-            /**
-             * Form Status
-             * @default Draft
-             */
-            form_status: string;
-            /** Type */
-            type: string;
-            /** Access Description */
-            access_description?: string | null;
-            /** Comment */
-            comment?: string | null;
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Area M */
-            area_m?: number | null;
-            /** Latitude */
-            latitude?: string | null;
-            /** Longitude */
-            longitude?: string | null;
-            /** Utm Zone */
-            utm_zone?: number | null;
-            /** Utm Easting */
-            utm_easting?: number | null;
-            /** Utm Northing */
-            utm_northing?: number | null;
-            /** Location Description */
-            location_description?: string | null;
-            /**
-             * Subtype
-             * @constant
-             */
-            subtype: "Biocontrol_Release";
-            subtype_data: components["schemas"]["api__protocol__activity__plants_out__subtypes__biocontrol_release__DraftSubtypeData"];
-        };
-        /** DraftEntry */
-        DraftEntry: {
-            /** Actual Biological Agents */
-            actual_biological_agents: components["schemas"]["SimpleAgentCountOut"][];
-            /** Estimated Biological Agents */
-            estimated_biological_agents: components["schemas"]["SimpleAgentCountOut"][];
-            /** Invasive Plant */
-            invasive_plant: string | null;
-            /** Biocontrol Agent */
-            biocontrol_agent: string | null;
-            /** Historical Iapp Site */
-            historical_iapp_site: number | null;
-            /** Collection Type */
-            collection_type: string | null;
-            /** Plant Count Collection */
-            plant_count_collection: number | null;
-            /** Time Collection Duration Minutes */
-            time_collection_duration_minutes: number | null;
-            /** Collection Method */
-            collection_method: string | null;
-            /** Number Of Sweeps */
-            number_of_sweeps: number | null;
-            /** Start Time Collecting */
-            start_time_collecting: string | null;
-            /** End Time Collecting */
-            end_time_collecting: string | null;
-            /** Comment */
-            comment: string | null;
-        };
-        /** DraftMonitoringTreatmentChemicalOut */
-        DraftMonitoringTreatmentChemicalOut: {
-            centroid?: components["schemas"]["Point"] | null;
-            /** Employer */
-            employer: components["schemas"]["EmployerOut"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgencyOut"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["JurisdictionOut"][];
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivityOut"][];
-            /** Media */
-            media: components["schemas"]["UploadedImageOut"][];
-            /** Participants */
-            participants: components["schemas"]["ParticipantOut"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectOut"][];
-            /** Shape */
-            shape?: {
-                [key: string]: unknown;
-            } | null;
-            /** Short Id */
-            short_id: string;
-            /** Id */
-            id?: string | null;
-            /** Created By */
-            created_by: string;
-            /**
-             * Form Status
-             * @default Draft
-             */
-            form_status: string;
-            /** Type */
-            type: string;
-            /** Access Description */
-            access_description?: string | null;
-            /** Comment */
-            comment?: string | null;
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Area M */
-            area_m?: number | null;
-            /** Latitude */
-            latitude?: string | null;
-            /** Longitude */
-            longitude?: string | null;
-            /** Utm Zone */
-            utm_zone?: number | null;
-            /** Utm Easting */
-            utm_easting?: number | null;
-            /** Utm Northing */
-            utm_northing?: number | null;
-            /** Location Description */
-            location_description?: string | null;
-            /**
-             * Subtype
-             * @constant
-             */
-            subtype: "Monitoring_Chemical_Plant_Terrestrial_Aquatic";
-            subtype_data: components["schemas"]["api__protocol__activity__plants_out__subtypes__monitoring_treatment_chemical__DraftSubtypeData"];
-        };
-        /** DraftMonitoringTreatmentEntryOut */
-        DraftMonitoringTreatmentEntryOut: {
-            /** Invasive Plant */
-            invasive_plant?: string | null;
-            /** Invasive Plant Aquatic */
-            invasive_plant_aquatic?: string | null;
-            /** Evidence Of Treatment */
-            evidence_of_treatment: string | null;
-            /** Treatment Pass */
-            treatment_pass: string | null;
-            /** Comment */
-            comment: string | null;
-            /** Invasive Plants On Site */
-            invasive_plants_on_site: components["schemas"]["PlantOnSite"][];
-            /** Management Efficacy Rating */
-            management_efficacy_rating: string | null;
-            /** Treatment Efficacy Rating */
-            treatment_efficacy_rating: string | null;
-        };
-        /** DraftMonitoringTreatmentMechanicalOut */
-        DraftMonitoringTreatmentMechanicalOut: {
-            centroid?: components["schemas"]["Point"] | null;
-            /** Employer */
-            employer: components["schemas"]["EmployerOut"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgencyOut"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["JurisdictionOut"][];
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivityOut"][];
-            /** Media */
-            media: components["schemas"]["UploadedImageOut"][];
-            /** Participants */
-            participants: components["schemas"]["ParticipantOut"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectOut"][];
-            /** Shape */
-            shape?: {
-                [key: string]: unknown;
-            } | null;
-            /** Short Id */
-            short_id: string;
-            /** Id */
-            id?: string | null;
-            /** Created By */
-            created_by: string;
-            /**
-             * Form Status
-             * @default Draft
-             */
-            form_status: string;
-            /** Type */
-            type: string;
-            /** Access Description */
-            access_description?: string | null;
-            /** Comment */
-            comment?: string | null;
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Area M */
-            area_m?: number | null;
-            /** Latitude */
-            latitude?: string | null;
-            /** Longitude */
-            longitude?: string | null;
-            /** Utm Zone */
-            utm_zone?: number | null;
-            /** Utm Easting */
-            utm_easting?: number | null;
-            /** Utm Northing */
-            utm_northing?: number | null;
-            /** Location Description */
-            location_description?: string | null;
-            /**
-             * Subtype
-             * @constant
-             */
-            subtype: "Monitoring_Mechanical_Plant_Terrestrial_Aquatic";
-            subtype_data: components["schemas"]["api__protocol__activity__plants_out__subtypes__monitoring_treatment_chemical__DraftSubtypeData"];
-        };
-        /** DraftObservationAquaticPlantOut */
-        DraftObservationAquaticPlantOut: {
-            centroid?: components["schemas"]["Point"] | null;
-            /** Employer */
-            employer: components["schemas"]["EmployerOut"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgencyOut"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["JurisdictionOut"][];
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivityOut"][];
-            /** Media */
-            media: components["schemas"]["UploadedImageOut"][];
-            /** Participants */
-            participants: components["schemas"]["ParticipantOut"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectOut"][];
-            /** Shape */
-            shape?: {
-                [key: string]: unknown;
-            } | null;
-            /** Short Id */
-            short_id: string;
-            /** Id */
-            id?: string | null;
-            /** Created By */
-            created_by: string;
-            /**
-             * Form Status
-             * @default Draft
-             */
-            form_status: string;
-            /** Type */
-            type: string;
-            /** Access Description */
-            access_description?: string | null;
-            /** Comment */
-            comment?: string | null;
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Area M */
-            area_m?: number | null;
-            /** Latitude */
-            latitude?: string | null;
-            /** Longitude */
-            longitude?: string | null;
-            /** Utm Zone */
-            utm_zone?: number | null;
-            /** Utm Easting */
-            utm_easting?: number | null;
-            /** Utm Northing */
-            utm_northing?: number | null;
-            /** Location Description */
-            location_description?: string | null;
-            /**
-             * Subtype
-             * @constant
-             */
-            subtype: "Observation_Plant_Aquatic";
-            subtype_data: components["schemas"]["api__protocol__activity__plants_out__subtypes__observation_aquatic__DraftSubtypeData"];
-        };
-        /** DraftObservationTerrestrialPlantOut */
-        DraftObservationTerrestrialPlantOut: {
-            centroid?: components["schemas"]["Point"] | null;
-            /** Employer */
-            employer: components["schemas"]["EmployerOut"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgencyOut"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["JurisdictionOut"][];
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivityOut"][];
-            /** Media */
-            media: components["schemas"]["UploadedImageOut"][];
-            /** Participants */
-            participants: components["schemas"]["ParticipantOut"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectOut"][];
-            /** Shape */
-            shape?: {
-                [key: string]: unknown;
-            } | null;
-            /** Short Id */
-            short_id: string;
-            /** Id */
-            id?: string | null;
-            /** Created By */
-            created_by: string;
-            /**
-             * Form Status
-             * @default Draft
-             */
-            form_status: string;
-            /** Type */
-            type: string;
-            /** Access Description */
-            access_description?: string | null;
-            /** Comment */
-            comment?: string | null;
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Area M */
-            area_m?: number | null;
-            /** Latitude */
-            latitude?: string | null;
-            /** Longitude */
-            longitude?: string | null;
-            /** Utm Zone */
-            utm_zone?: number | null;
-            /** Utm Easting */
-            utm_easting?: number | null;
-            /** Utm Northing */
-            utm_northing?: number | null;
-            /** Location Description */
-            location_description?: string | null;
-            /**
-             * Subtype
-             * @constant
-             */
-            subtype: "Observation_Plant_Terrestrial";
-            subtype_data: components["schemas"]["api__protocol__activity__plants_out__subtypes__observation_terrestrial__DraftSubtypeData"];
-        };
-        /** DraftTargetPlantPhenologyOut */
-        DraftTargetPlantPhenologyOut: {
-            /** Winter Dormant */
-            winter_dormant: number | null;
-            /** Seedlings */
-            seedlings: number | null;
-            /** Rosettes */
-            rosettes: number | null;
-            /** Bolts */
-            bolts: number | null;
-            /** Flowering */
-            flowering: number | null;
-            /** Seeds Forming */
-            seeds_forming: number | null;
-            /** Senescent */
-            senescent: number | null;
-            /** Target Plant Heights */
-            target_plant_heights: components["schemas"]["TargetPlantHeight"][];
-        };
-        /** DraftTreatmentChemicalAquaticOut */
-        DraftTreatmentChemicalAquaticOut: {
-            centroid?: components["schemas"]["Point"] | null;
-            /** Employer */
-            employer: components["schemas"]["EmployerOut"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgencyOut"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["JurisdictionOut"][];
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivityOut"][];
-            /** Media */
-            media: components["schemas"]["UploadedImageOut"][];
-            /** Participants */
-            participants: components["schemas"]["ParticipantOut"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectOut"][];
-            /** Shape */
-            shape?: {
-                [key: string]: unknown;
-            } | null;
-            /** Short Id */
-            short_id: string;
-            /** Id */
-            id?: string | null;
-            /** Created By */
-            created_by: string;
-            /**
-             * Form Status
-             * @default Draft
-             */
-            form_status: string;
-            /** Type */
-            type: string;
-            /** Access Description */
-            access_description?: string | null;
-            /** Comment */
-            comment?: string | null;
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Area M */
-            area_m?: number | null;
-            /** Latitude */
-            latitude?: string | null;
-            /** Longitude */
-            longitude?: string | null;
-            /** Utm Zone */
-            utm_zone?: number | null;
-            /** Utm Easting */
-            utm_easting?: number | null;
-            /** Utm Northing */
-            utm_northing?: number | null;
-            /** Location Description */
-            location_description?: string | null;
-            /**
-             * Subtype
-             * @constant
-             */
-            subtype: "Treatment_Chemical_Plant_Aquatic";
-            subtype_data: components["schemas"]["api__protocol__activity__plants_out__subtypes__treatment_chemical_aquatic__DraftSubtypeData"];
-        };
-        /** DraftTreatmentChemicalTerrestrialOut */
-        DraftTreatmentChemicalTerrestrialOut: {
-            centroid?: components["schemas"]["Point"] | null;
-            /** Employer */
-            employer: components["schemas"]["EmployerOut"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgencyOut"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["JurisdictionOut"][];
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivityOut"][];
-            /** Media */
-            media: components["schemas"]["UploadedImageOut"][];
-            /** Participants */
-            participants: components["schemas"]["ParticipantOut"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectOut"][];
-            /** Shape */
-            shape?: {
-                [key: string]: unknown;
-            } | null;
-            /** Short Id */
-            short_id: string;
-            /** Id */
-            id?: string | null;
-            /** Created By */
-            created_by: string;
-            /**
-             * Form Status
-             * @default Draft
-             */
-            form_status: string;
-            /** Type */
-            type: string;
-            /** Access Description */
-            access_description?: string | null;
-            /** Comment */
-            comment?: string | null;
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Area M */
-            area_m?: number | null;
-            /** Latitude */
-            latitude?: string | null;
-            /** Longitude */
-            longitude?: string | null;
-            /** Utm Zone */
-            utm_zone?: number | null;
-            /** Utm Easting */
-            utm_easting?: number | null;
-            /** Utm Northing */
-            utm_northing?: number | null;
-            /** Location Description */
-            location_description?: string | null;
-            /**
-             * Subtype
-             * @constant
-             */
-            subtype: "Treatment_Chemical_Plant_Terrestrial";
-            subtype_data: components["schemas"]["api__protocol__activity__plants_out__subtypes__treatment_chemical_terrestrial__DraftSubtypeData"];
-        };
-        /** DraftTreatmentContextOut */
-        DraftTreatmentContextOut: {
-            /** Application Method */
-            application_method: string | null;
-            /** Tank Mix */
-            tank_mix: boolean | null;
-            /** Calculation Type */
-            calculation_type: string | null;
-            /** Area Treated Sqm */
-            area_treated_sqm: number | null;
-            /** Amount Mix Used L */
-            amount_mix_used_l: number | null;
-            /** Delivery Rate */
-            delivery_rate: number | null;
-            /** Dilution Percent */
-            dilution_percent: number | null;
-            /** Herbicide */
-            herbicide: components["schemas"]["HerbicideOut"][];
-            /** Plants Treated */
-            plants_treated: components["schemas"]["PlantTreatedOut"][];
-        };
-        /** DraftTreatmentMechanicalAquaticPlantOut */
-        DraftTreatmentMechanicalAquaticPlantOut: {
-            centroid?: components["schemas"]["Point"] | null;
-            /** Employer */
-            employer: components["schemas"]["EmployerOut"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgencyOut"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["JurisdictionOut"][];
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivityOut"][];
-            /** Media */
-            media: components["schemas"]["UploadedImageOut"][];
-            /** Participants */
-            participants: components["schemas"]["ParticipantOut"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectOut"][];
-            /** Shape */
-            shape?: {
-                [key: string]: unknown;
-            } | null;
-            /** Short Id */
-            short_id: string;
-            /** Id */
-            id?: string | null;
-            /** Created By */
-            created_by: string;
-            /**
-             * Form Status
-             * @default Draft
-             */
-            form_status: string;
-            /** Type */
-            type: string;
-            /** Access Description */
-            access_description?: string | null;
-            /** Comment */
-            comment?: string | null;
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Area M */
-            area_m?: number | null;
-            /** Latitude */
-            latitude?: string | null;
-            /** Longitude */
-            longitude?: string | null;
-            /** Utm Zone */
-            utm_zone?: number | null;
-            /** Utm Easting */
-            utm_easting?: number | null;
-            /** Utm Northing */
-            utm_northing?: number | null;
-            /** Location Description */
-            location_description?: string | null;
-            /**
-             * Subtype
-             * @constant
-             */
-            subtype: "Treatment_Mechanical_Plant_Aquatic";
-            subtype_data: components["schemas"]["api__protocol__activity__plants_out__subtypes__treatment_mechanical_aquatic__DraftSubtypeData"];
-        };
-        /** DraftTreatmentMechanicalTerrestrialPlantOut */
-        DraftTreatmentMechanicalTerrestrialPlantOut: {
-            centroid?: components["schemas"]["Point"] | null;
-            /** Employer */
-            employer: components["schemas"]["EmployerOut"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgencyOut"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["JurisdictionOut"][];
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivityOut"][];
-            /** Media */
-            media: components["schemas"]["UploadedImageOut"][];
-            /** Participants */
-            participants: components["schemas"]["ParticipantOut"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectOut"][];
-            /** Shape */
-            shape?: {
-                [key: string]: unknown;
-            } | null;
-            /** Short Id */
-            short_id: string;
-            /** Id */
-            id?: string | null;
-            /** Created By */
-            created_by: string;
-            /**
-             * Form Status
-             * @default Draft
-             */
-            form_status: string;
-            /** Type */
-            type: string;
-            /** Access Description */
-            access_description?: string | null;
-            /** Comment */
-            comment?: string | null;
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Area M */
-            area_m?: number | null;
-            /** Latitude */
-            latitude?: string | null;
-            /** Longitude */
-            longitude?: string | null;
-            /** Utm Zone */
-            utm_zone?: number | null;
-            /** Utm Easting */
-            utm_easting?: number | null;
-            /** Utm Northing */
-            utm_northing?: number | null;
-            /** Location Description */
-            location_description?: string | null;
-            /**
-             * Subtype
-             * @constant
-             */
-            subtype: "Treatment_Mechanical_Plant_Terrestrial";
-            subtype_data: components["schemas"]["api__protocol__activity__plants_out__subtypes__treatment_mechanical_terrestrial__DraftSubtypeData"];
-        };
-        /** DraftWbContext */
-        DraftWbContext: {
-            /** Access */
-            access: string | null;
-            /** Colour */
-            colour: string | null;
-            /** Comment */
-            comment: string | null;
-            /** Max Depth M */
-            max_depth_m: number | null;
-            /** Name Gazetted */
-            name_gazetted: string | null;
-            /** Name Local */
-            name_local: string | null;
-            /** Secchi Depth */
-            secchi_depth: number | null;
-            /** Tidal Influence */
-            tidal_influence: string | null;
-            /** Type */
-            type: string | null;
-            /** Inflow Permanent */
-            inflow_permanent: string[];
-            /** Inflow Seasonal */
-            inflow_seasonal: string[];
-            /** Outflow Permanent */
-            outflow_permanent: string[];
-            /** Outflow Seasonal */
-            outflow_seasonal: string[];
-            /** Water Use */
-            water_use: string[];
-            /** Waterlevel Management */
-            waterlevel_management: string[];
-            /** Shoreline Types */
-            shoreline_types: components["schemas"]["ShorelineType"][];
-        };
-        /** EmployerOut */
-        EmployerOut: {
-            /** Employer */
-            employer: string | null;
-        };
-        /** Entry */
-        Entry: {
-            /** Actual Biological Agents */
-            actual_biological_agents: components["schemas"]["SimpleAgentCountOut"][];
-            /** Estimated Biological Agents */
-            estimated_biological_agents: components["schemas"]["SimpleAgentCountOut"][];
-            /** Invasive Plant */
-            invasive_plant: string | null;
-            /** Biocontrol Agent */
-            biocontrol_agent: string | null;
-            /** Historical Iapp Site */
-            historical_iapp_site: number | null;
-            /** Collection Type */
-            collection_type: string | null;
-            /** Plant Count Collection */
-            plant_count_collection: number | null;
-            /** Time Collection Duration Minutes */
-            time_collection_duration_minutes: number | null;
-            /** Collection Method */
-            collection_method: string | null;
-            /** Number Of Sweeps */
-            number_of_sweeps: number | null;
-            /** Start Time Collecting */
-            start_time_collecting: string | null;
-            /** End Time Collecting */
-            end_time_collecting: string | null;
-            /** Comment */
-            comment: string | null;
-        };
-        /** ExtendedAgentCountOut */
-        ExtendedAgentCountOut: {
-            /** Quantity */
-            quantity: number | null;
-            /** Stage */
-            stage: string | null;
-            /** Agent Location */
-            agent_location: string | null;
-            /** Plant Position */
-            plant_position: string | null;
-        };
-        /** FundingAgencyOut */
-        FundingAgencyOut: {
-            /** Invasive Species Agency Code */
-            invasive_species_agency_code: string | null;
-        };
-        /** HerbicideOut */
-        HerbicideOut: {
-            /** Type */
-            type: string | null;
-            /** Name */
-            name: string | null;
-            /** Application Rate */
-            application_rate: number | null;
-        };
-        /** JurisdictionOut */
-        JurisdictionOut: {
-            /** Jurisdiction */
-            jurisdiction: string | null;
-            /** Percent Covered */
-            percent_covered?: number | null;
-        };
-        /** LinkedActivityOut */
-        LinkedActivityOut: {
-            /** Label */
-            label: string;
-            /**
-             * Full
-             * Format: uuid
-             */
-            full: string;
-        };
-        /** MechanicalTreatmentEntryOut */
-        MechanicalTreatmentEntryOut: {
-            /** Disposed Material Amount */
-            disposed_material_amount?: number | null;
-            /** Disposed Material Format */
-            disposed_material_format?: string | null;
-            /** Disposal Method */
-            disposal_method?: string | null;
-            /** Invasive Plant */
-            invasive_plant?: string | null;
-            /** Mechanical Method */
-            mechanical_method?: string | null;
-            /** Treated Area Msq */
-            treated_area_msq?: number | null;
-        };
-        /** Metadata */
-        Metadata: {
-            /** Plants */
-            plants: string | null;
-            /** Positive Plants */
-            positive_plants: string | null;
-            /** Negative Plants */
-            negative_plants: string | null;
-            /** History */
-            history: components["schemas"]["RecordHistoryOut"][];
-            /**
-             * Created Date
-             * Format: date-time
-             */
-            created_date: string;
-            /** Batch Id */
-            batch_id: number | null;
-            /** Linking Activities */
-            linking_activities: components["schemas"]["ActivityPlantRowOut"][];
-            /** Created By */
-            created_by: string | null;
-        };
-        /** MicrositeConditionOut */
-        MicrositeConditionOut: {
-            /** Mesoslope Position */
-            mesoslope_position: string | null;
-            /** Site Surface Shape */
-            site_surface_shape: string | null;
-        };
-        /** MonitoringTreatmentChemicalOut */
-        MonitoringTreatmentChemicalOut: {
-            centroid: components["schemas"]["Point"];
-            /** Employer */
-            employer: components["schemas"]["EmployerOut"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgencyOut"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["JurisdictionOut"][];
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivityOut"][];
-            /** Media */
-            media: components["schemas"]["UploadedImageOut"][];
-            /** Participants */
-            participants: components["schemas"]["ParticipantOut"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectOut"][];
-            /** Shape */
-            shape: {
-                [key: string]: unknown;
-            };
-            /** Short Id */
-            short_id: string;
-            /** Id */
-            id?: string | null;
-            /** Created By */
-            created_by: string;
-            /**
-             * Form Status
-             * @default Draft
-             */
-            form_status: string;
-            /** Type */
-            type: string;
-            /** Access Description */
-            access_description?: string | null;
-            /** Comment */
-            comment?: string | null;
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Area M */
-            area_m?: number | null;
-            /** Latitude */
-            latitude?: string | null;
-            /** Longitude */
-            longitude?: string | null;
-            /** Utm Zone */
-            utm_zone?: number | null;
-            /** Utm Easting */
-            utm_easting?: number | null;
-            /** Utm Northing */
-            utm_northing?: number | null;
-            /** Location Description */
-            location_description?: string | null;
-            /**
-             * Subtype
-             * @constant
-             */
-            subtype: "Monitoring_Chemical_Plant_Terrestrial_Aquatic";
-            subtype_data: components["schemas"]["api__protocol__activity__plants_out__subtypes__monitoring_treatment_chemical__SubtypeData"];
-        };
-        /** MonitoringTreatmentEntryOut */
-        MonitoringTreatmentEntryOut: {
-            /** Invasive Plant */
-            invasive_plant?: string | null;
-            /** Invasive Plant Aquatic */
-            invasive_plant_aquatic?: string | null;
-            /** Evidence Of Treatment */
-            evidence_of_treatment: string | null;
-            /** Treatment Pass */
-            treatment_pass: string | null;
-            /** Comment */
-            comment: string | null;
-            /** Invasive Plants On Site */
-            invasive_plants_on_site: components["schemas"]["PlantOnSite"][];
-            /** Management Efficacy Rating */
-            management_efficacy_rating: string | null;
-            /** Treatment Efficacy Rating */
-            treatment_efficacy_rating: string | null;
-        };
-        /** MonitoringTreatmentMechanicalOut */
-        MonitoringTreatmentMechanicalOut: {
-            centroid: components["schemas"]["Point"];
-            /** Employer */
-            employer: components["schemas"]["EmployerOut"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgencyOut"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["JurisdictionOut"][];
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivityOut"][];
-            /** Media */
-            media: components["schemas"]["UploadedImageOut"][];
-            /** Participants */
-            participants: components["schemas"]["ParticipantOut"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectOut"][];
-            /** Shape */
-            shape: {
-                [key: string]: unknown;
-            };
-            /** Short Id */
-            short_id: string;
-            /** Id */
-            id?: string | null;
-            /** Created By */
-            created_by: string;
-            /**
-             * Form Status
-             * @default Draft
-             */
-            form_status: string;
-            /** Type */
-            type: string;
-            /** Access Description */
-            access_description?: string | null;
-            /** Comment */
-            comment?: string | null;
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Area M */
-            area_m?: number | null;
-            /** Latitude */
-            latitude?: string | null;
-            /** Longitude */
-            longitude?: string | null;
-            /** Utm Zone */
-            utm_zone?: number | null;
-            /** Utm Easting */
-            utm_easting?: number | null;
-            /** Utm Northing */
-            utm_northing?: number | null;
-            /** Location Description */
-            location_description?: string | null;
-            /**
-             * Subtype
-             * @constant
-             */
-            subtype: "Monitoring_Mechanical_Plant_Terrestrial_Aquatic";
-            subtype_data: components["schemas"]["api__protocol__activity__plants_out__subtypes__monitoring_treatment_chemical__SubtypeData"];
-        };
-        /** ObservationAquaticPlantOut */
-        ObservationAquaticPlantOut: {
-            centroid: components["schemas"]["Point"];
-            /** Employer */
-            employer: components["schemas"]["EmployerOut"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgencyOut"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["JurisdictionOut"][];
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivityOut"][];
-            /** Media */
-            media: components["schemas"]["UploadedImageOut"][];
-            /** Participants */
-            participants: components["schemas"]["ParticipantOut"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectOut"][];
-            /** Shape */
-            shape: {
-                [key: string]: unknown;
-            };
-            /** Short Id */
-            short_id: string;
-            /** Id */
-            id?: string | null;
-            /** Created By */
-            created_by: string;
-            /**
-             * Form Status
-             * @default Draft
-             */
-            form_status: string;
-            /** Type */
-            type: string;
-            /** Access Description */
-            access_description?: string | null;
-            /** Comment */
-            comment?: string | null;
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Area M */
-            area_m?: number | null;
-            /** Latitude */
-            latitude?: string | null;
-            /** Longitude */
-            longitude?: string | null;
-            /** Utm Zone */
-            utm_zone?: number | null;
-            /** Utm Easting */
-            utm_easting?: number | null;
-            /** Utm Northing */
-            utm_northing?: number | null;
-            /** Location Description */
-            location_description?: string | null;
-            /**
-             * Subtype
-             * @constant
-             */
-            subtype: "Observation_Plant_Aquatic";
-            subtype_data: components["schemas"]["api__protocol__activity__plants_out__subtypes__observation_aquatic__SubtypeData"];
-        };
-        /** ObservationTerrestrialPlantOut */
-        ObservationTerrestrialPlantOut: {
-            centroid: components["schemas"]["Point"];
-            /** Employer */
-            employer: components["schemas"]["EmployerOut"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgencyOut"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["JurisdictionOut"][];
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivityOut"][];
-            /** Media */
-            media: components["schemas"]["UploadedImageOut"][];
-            /** Participants */
-            participants: components["schemas"]["ParticipantOut"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectOut"][];
-            /** Shape */
-            shape: {
-                [key: string]: unknown;
-            };
-            /** Short Id */
-            short_id: string;
-            /** Id */
-            id?: string | null;
-            /** Created By */
-            created_by: string;
-            /**
-             * Form Status
-             * @default Draft
-             */
-            form_status: string;
-            /** Type */
-            type: string;
-            /** Access Description */
-            access_description?: string | null;
-            /** Comment */
-            comment?: string | null;
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Area M */
-            area_m?: number | null;
-            /** Latitude */
-            latitude?: string | null;
-            /** Longitude */
-            longitude?: string | null;
-            /** Utm Zone */
-            utm_zone?: number | null;
-            /** Utm Easting */
-            utm_easting?: number | null;
-            /** Utm Northing */
-            utm_northing?: number | null;
-            /** Location Description */
-            location_description?: string | null;
-            /**
-             * Subtype
-             * @constant
-             */
-            subtype: "Observation_Plant_Terrestrial";
-            subtype_data: components["schemas"]["api__protocol__activity__plants_out__subtypes__observation_terrestrial__SubtypeData"];
-        };
-        /** ParticipantOut */
-        ParticipantOut: {
-            /** Name */
-            name?: string | null;
-            /** Pac Number */
-            pac_number?: number | null;
-        };
-        /** PlantOnSite */
-        PlantOnSite: {
-            /** Invasive Plants On Site */
-            invasive_plants_on_site: string | null;
-        };
-        /** PlantRecordWithMetadataOut */
-        PlantRecordWithMetadataOut: {
-            /** Available Actions */
-            available_actions: components["schemas"]["RecordAction"][];
-            metadata: components["schemas"]["Metadata"];
-            /** Data */
-            data: components["schemas"]["ObservationTerrestrialPlantOut"] | components["schemas"]["ObservationAquaticPlantOut"] | components["schemas"]["DraftObservationTerrestrialPlantOut"] | components["schemas"]["DraftObservationAquaticPlantOut"] | components["schemas"]["TreatmentMechanicalAquaticPlantOut"] | components["schemas"]["TreatmentMechanicalTerrestrialPlantOut"] | components["schemas"]["TreatmentChemicalTerrestrialOut"] | components["schemas"]["TreatmentChemicalAquaticOut"] | components["schemas"]["DraftTreatmentMechanicalAquaticPlantOut"] | components["schemas"]["DraftTreatmentMechanicalTerrestrialPlantOut"] | components["schemas"]["DraftTreatmentChemicalTerrestrialOut"] | components["schemas"]["DraftTreatmentChemicalAquaticOut"] | components["schemas"]["MonitoringTreatmentChemicalOut"] | components["schemas"]["MonitoringTreatmentMechanicalOut"] | components["schemas"]["DraftMonitoringTreatmentChemicalOut"] | components["schemas"]["DraftMonitoringTreatmentMechanicalOut"] | components["schemas"]["BiocontrolReleaseOut"] | components["schemas"]["BiocontrolCollectionOut"] | components["schemas"]["BiocontrolReleaseMonitoringOut"] | components["schemas"]["BiocontrolDispersalMonitoringOut"] | components["schemas"]["DraftBiocontrolReleaseOut"] | components["schemas"]["DraftBiocontrolCollectionOut"] | components["schemas"]["DraftBiocontrolReleaseMonitoringOut"] | components["schemas"]["DraftBiocontrolDispersalMonitoringOut"];
-        };
-        /** PlantTreatedOut */
-        PlantTreatedOut: {
-            /** Percent Covered */
-            percent_covered: number | null;
-            /** Invasive Plant */
-            invasive_plant: string | null;
-        };
-        /**
-         * Point
-         * @description Point Model
-         */
-        Point: {
-            /** Bbox */
-            bbox?: [
-                number,
-                number,
-                number,
-                number
-            ] | [
-                number,
-                number,
-                number,
-                number,
-                number,
-                number
-            ] | null;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            type: "Point";
-            /** Coordinates */
-            coordinates: components["schemas"]["Position2D"] | components["schemas"]["Position3D"];
-        };
-        Position2D: [
-            number,
-            number
-        ];
-        Position3D: [
-            number,
-            number,
-            number
-        ];
-        /** ProjectOut */
-        ProjectOut: {
-            /** Description */
-            description?: string | null;
-        };
-        /**
-         * RecordAction
-         * @enum {string}
-         */
-        RecordAction: "EDIT" | "DELETE" | "SUBMIT";
-        /** RecordHistoryOut */
-        RecordHistoryOut: {
-            /** User */
-            user: string;
-            /** Activity */
-            activity: string;
-            /**
-             * Date
-             * Format: date-time
-             */
-            date: string;
-            /** Version */
-            version: number;
-            /** Platform */
-            platform: string;
-            /** Diff */
-            diff: Record<string, never>;
-        };
-        /** ShorelineType */
-        ShorelineType: {
-            /** Shoreline Type */
-            shoreline_type: string | null;
-            /** Percent Covered */
-            percent_covered: number | null;
-        };
-        /** SimpleAgentCountOut */
-        SimpleAgentCountOut: {
-            /** Quantity */
-            quantity: number | null;
-            /** Stage */
-            stage: string | null;
-        };
-        /** SpecificUseOut */
-        SpecificUseOut: {
-            /** Specific Use */
-            specific_use: string | null;
-        };
-        /** SpreadResultsOut */
-        SpreadResultsOut: {
-            /** Agent Density */
-            agent_density: number | null;
-            /** Plant Attack */
-            plant_attack: number | null;
-            /** Max Spread Distance M */
-            max_spread_distance_m: number | null;
-            /** Max Spread Aspect Deg */
-            max_spread_aspect_deg: number | null;
-        };
-        /** TargetPlantHeight */
-        TargetPlantHeight: {
-            /** Height Cm */
-            height_cm: number | null;
-        };
-        /** TargetPlantPhenologyOut */
-        TargetPlantPhenologyOut: {
-            /** Winter Dormant */
-            winter_dormant: number | null;
-            /** Seedlings */
-            seedlings: number | null;
-            /** Rosettes */
-            rosettes: number | null;
-            /** Bolts */
-            bolts: number | null;
-            /** Flowering */
-            flowering: number | null;
-            /** Seeds Forming */
-            seeds_forming: number | null;
-            /** Senescent */
-            senescent: number | null;
-            /** Target Plant Heights */
-            target_plant_heights: components["schemas"]["TargetPlantHeight"][];
-        };
-        /** TreatmentChemicalAquaticOut */
-        TreatmentChemicalAquaticOut: {
-            centroid: components["schemas"]["Point"];
-            /** Employer */
-            employer: components["schemas"]["EmployerOut"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgencyOut"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["JurisdictionOut"][];
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivityOut"][];
-            /** Media */
-            media: components["schemas"]["UploadedImageOut"][];
-            /** Participants */
-            participants: components["schemas"]["ParticipantOut"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectOut"][];
-            /** Shape */
-            shape: {
-                [key: string]: unknown;
-            };
-            /** Short Id */
-            short_id: string;
-            /** Id */
-            id?: string | null;
-            /** Created By */
-            created_by: string;
-            /**
-             * Form Status
-             * @default Draft
-             */
-            form_status: string;
-            /** Type */
-            type: string;
-            /** Access Description */
-            access_description?: string | null;
-            /** Comment */
-            comment?: string | null;
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Area M */
-            area_m?: number | null;
-            /** Latitude */
-            latitude?: string | null;
-            /** Longitude */
-            longitude?: string | null;
-            /** Utm Zone */
-            utm_zone?: number | null;
-            /** Utm Easting */
-            utm_easting?: number | null;
-            /** Utm Northing */
-            utm_northing?: number | null;
-            /** Location Description */
-            location_description?: string | null;
-            /**
-             * Subtype
-             * @constant
-             */
-            subtype: "Treatment_Chemical_Plant_Aquatic";
-            subtype_data: components["schemas"]["api__protocol__activity__plants_out__subtypes__treatment_chemical_aquatic__SubtypeData"];
-        };
-        /** TreatmentChemicalTerrestrialOut */
-        TreatmentChemicalTerrestrialOut: {
-            centroid: components["schemas"]["Point"];
-            /** Employer */
-            employer: components["schemas"]["EmployerOut"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgencyOut"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["JurisdictionOut"][];
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivityOut"][];
-            /** Media */
-            media: components["schemas"]["UploadedImageOut"][];
-            /** Participants */
-            participants: components["schemas"]["ParticipantOut"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectOut"][];
-            /** Shape */
-            shape: {
-                [key: string]: unknown;
-            };
-            /** Short Id */
-            short_id: string;
-            /** Id */
-            id?: string | null;
-            /** Created By */
-            created_by: string;
-            /**
-             * Form Status
-             * @default Draft
-             */
-            form_status: string;
-            /** Type */
-            type: string;
-            /** Access Description */
-            access_description?: string | null;
-            /** Comment */
-            comment?: string | null;
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Area M */
-            area_m?: number | null;
-            /** Latitude */
-            latitude?: string | null;
-            /** Longitude */
-            longitude?: string | null;
-            /** Utm Zone */
-            utm_zone?: number | null;
-            /** Utm Easting */
-            utm_easting?: number | null;
-            /** Utm Northing */
-            utm_northing?: number | null;
-            /** Location Description */
-            location_description?: string | null;
-            /**
-             * Subtype
-             * @constant
-             */
-            subtype: "Treatment_Chemical_Plant_Terrestrial";
-            subtype_data: components["schemas"]["api__protocol__activity__plants_out__subtypes__treatment_chemical_terrestrial__SubtypeData"];
-        };
-        /** TreatmentContextOut */
-        TreatmentContextOut: {
-            /** Application Method */
-            application_method: string | null;
-            /** Tank Mix */
-            tank_mix: boolean | null;
-            /** Calculation Type */
-            calculation_type: string | null;
-            /** Area Treated Sqm */
-            area_treated_sqm: number | null;
-            /** Amount Mix Used L */
-            amount_mix_used_l: number | null;
-            /** Delivery Rate */
-            delivery_rate: number | null;
-            /** Dilution Percent */
-            dilution_percent: number | null;
-            /** Herbicide */
-            herbicide: components["schemas"]["HerbicideOut"][];
-            /** Plants Treated */
-            plants_treated: components["schemas"]["PlantTreatedOut"][];
-        };
-        /** TreatmentMechanicalAquaticPlantOut */
-        TreatmentMechanicalAquaticPlantOut: {
-            centroid: components["schemas"]["Point"];
-            /** Employer */
-            employer: components["schemas"]["EmployerOut"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgencyOut"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["JurisdictionOut"][];
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivityOut"][];
-            /** Media */
-            media: components["schemas"]["UploadedImageOut"][];
-            /** Participants */
-            participants: components["schemas"]["ParticipantOut"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectOut"][];
-            /** Shape */
-            shape: {
-                [key: string]: unknown;
-            };
-            /** Short Id */
-            short_id: string;
-            /** Id */
-            id?: string | null;
-            /** Created By */
-            created_by: string;
-            /**
-             * Form Status
-             * @default Draft
-             */
-            form_status: string;
-            /** Type */
-            type: string;
-            /** Access Description */
-            access_description?: string | null;
-            /** Comment */
-            comment?: string | null;
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Area M */
-            area_m?: number | null;
-            /** Latitude */
-            latitude?: string | null;
-            /** Longitude */
-            longitude?: string | null;
-            /** Utm Zone */
-            utm_zone?: number | null;
-            /** Utm Easting */
-            utm_easting?: number | null;
-            /** Utm Northing */
-            utm_northing?: number | null;
-            /** Location Description */
-            location_description?: string | null;
-            /**
-             * Subtype
-             * @constant
-             */
-            subtype: "Treatment_Mechanical_Plant_Aquatic";
-            subtype_data: components["schemas"]["api__protocol__activity__plants_out__subtypes__treatment_mechanical_aquatic__SubtypeData"];
-        };
-        /** TreatmentMechanicalTerrestrialPlantOut */
-        TreatmentMechanicalTerrestrialPlantOut: {
-            centroid: components["schemas"]["Point"];
-            /** Employer */
-            employer: components["schemas"]["EmployerOut"][];
-            /** Funding Agencies */
-            funding_agencies: components["schemas"]["FundingAgencyOut"][];
-            /** Jurisdictions */
-            jurisdictions: components["schemas"]["JurisdictionOut"][];
-            /** Linked Activities */
-            linked_activities: components["schemas"]["LinkedActivityOut"][];
-            /** Media */
-            media: components["schemas"]["UploadedImageOut"][];
-            /** Participants */
-            participants: components["schemas"]["ParticipantOut"][];
-            /** Projects */
-            projects: components["schemas"]["ProjectOut"][];
-            /** Shape */
-            shape: {
-                [key: string]: unknown;
-            };
-            /** Short Id */
-            short_id: string;
-            /** Id */
-            id?: string | null;
-            /** Created By */
-            created_by: string;
-            /**
-             * Form Status
-             * @default Draft
-             */
-            form_status: string;
-            /** Type */
-            type: string;
-            /** Access Description */
-            access_description?: string | null;
-            /** Comment */
-            comment?: string | null;
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Area M */
-            area_m?: number | null;
-            /** Latitude */
-            latitude?: string | null;
-            /** Longitude */
-            longitude?: string | null;
-            /** Utm Zone */
-            utm_zone?: number | null;
-            /** Utm Easting */
-            utm_easting?: number | null;
-            /** Utm Northing */
-            utm_northing?: number | null;
-            /** Location Description */
-            location_description?: string | null;
-            /**
-             * Subtype
-             * @constant
-             */
-            subtype: "Treatment_Mechanical_Plant_Terrestrial";
-            subtype_data: components["schemas"]["api__protocol__activity__plants_out__subtypes__treatment_mechanical_terrestrial__SubtypeData"];
-        };
-        /** UploadedImageOut */
-        UploadedImageOut: {
-            /** Encoded File */
-            encoded_file?: string | null;
-            /** File Name */
-            file_name: string;
-            /** Description */
-            description?: string | null;
-        };
-        /** VoucherSpecimenOut */
-        VoucherSpecimenOut: {
-            /** Voucher Sample Id */
-            voucher_sample_id: string | null;
-            /** Herbarium */
-            herbarium: string | null;
-            /** Accession Number */
-            accession_number: string | null;
-            /** Date Collected */
-            date_collected: string | null;
-            /** Date Verified */
-            date_verified: string | null;
-            /** Completed By Person */
-            completed_by_person: string | null;
-            /** Completed By Org */
-            completed_by_org: string | null;
-            /** Utm Zone */
-            utm_zone: number | null;
-            /** Utm Easting */
-            utm_easting: number | null;
-            /** Utm Northing */
-            utm_northing: number | null;
-        };
-        /** WbContext */
-        WbContext: {
-            /** Access */
-            access: string | null;
-            /** Colour */
-            colour: string | null;
-            /** Comment */
-            comment: string | null;
-            /** Max Depth M */
-            max_depth_m: number | null;
-            /** Name Gazetted */
-            name_gazetted: string | null;
-            /** Name Local */
-            name_local: string | null;
-            /** Secchi Depth */
-            secchi_depth: number | null;
-            /** Tidal Influence */
-            tidal_influence: string | null;
-            /** Type */
-            type: string;
-            /** Inflow Permanent */
-            inflow_permanent: string[];
-            /** Inflow Seasonal */
-            inflow_seasonal: string[];
-            /** Outflow Permanent */
-            outflow_permanent: string[];
-            /** Outflow Seasonal */
-            outflow_seasonal: string[];
-            /** Water Use */
-            water_use: string[];
-            /** Waterlevel Management */
-            waterlevel_management: string[];
-            /** Shoreline Types */
-            shoreline_types: components["schemas"]["ShorelineType"][];
-        };
-        /** WeatherConditionsOut */
-        WeatherConditionsOut: {
-            /** Comments */
-            comments: string | null;
-            /** Cloud Cover */
-            cloud_cover: string | null;
-            /** Precipitation */
-            precipitation: string | null;
-            /** Temperature */
-            temperature: number | null;
-            /** Wind Direction */
-            wind_direction: string | null;
-            /** Wind Speed Kmh */
-            wind_speed_kmh: number | null;
-        };
-        /** WellEntryOut */
-        WellEntryOut: {
-            /** Well Tag */
-            well_tag: string | null;
-            /** Distance */
-            distance: number | null;
-        };
-        /** DraftSubtypeData */
-        api__protocol__activity__plants_out__subtypes__biocontrol_collection__DraftSubtypeData: {
-            microsite_conditions: components["schemas"]["MicrositeConditionOut"] | null;
-            weather_conditions: components["schemas"]["WeatherConditionsOut"] | null;
-            target_plant_phenology: components["schemas"]["DraftTargetPlantPhenologyOut"] | null;
-            /** Entries */
-            entries: components["schemas"]["DraftEntry"][];
-        };
-        /** SubtypeData */
-        api__protocol__activity__plants_out__subtypes__biocontrol_collection__SubtypeData: {
-            weather_conditions: components["schemas"]["WeatherConditionsOut"] | null;
-            microsite_conditions: components["schemas"]["MicrositeConditionOut"] | null;
-            target_plant_phenology: components["schemas"]["TargetPlantPhenologyOut"] | null;
-            /** Entries */
-            entries: components["schemas"]["Entry"][];
-        };
-        /** DraftEntries */
-        api__protocol__activity__plants_out__subtypes__biocontrol_dispersal_monitoring__DraftEntries: {
-            /** Actual Biological Agents */
-            actual_biological_agents: components["schemas"]["ExtendedAgentCountOut"][];
-            /** Estimated Biological Agents */
-            estimated_biological_agents: components["schemas"]["ExtendedAgentCountOut"][];
-            /** Biocontrol Agent */
-            biocontrol_agent: string | null;
-            /** Biocontrol Present */
-            biocontrol_present: boolean | null;
-            /** Invasive Plant */
-            invasive_plant: string | null;
-            /** Historical Iapp Site */
-            historical_iapp_site: number | null;
-            /** Monitoring Type */
-            monitoring_type: string | null;
-            /** Plant Count */
-            plant_count: number | null;
-            /** Monitoring Method */
-            monitoring_method: string | null;
-            /** Count Duration Minutes */
-            count_duration_minutes: number | null;
-            /** Location Agent Found */
-            location_agent_found: string[];
-            /** Number Of Sweeps */
-            number_of_sweeps: string | null;
-            /** Sign Of Biocontrol Presence */
-            sign_of_biocontrol_presence: string[];
-            /** Start Time */
-            start_time: string | null;
-            /** Stop Time */
-            stop_time: string | null;
-            /** Linear Segment */
-            linear_segment: string | null;
-            /** Suitable For Collection */
-            suitable_for_collection: string | null;
-        };
-        /** DraftSubtypeData */
-        api__protocol__activity__plants_out__subtypes__biocontrol_dispersal_monitoring__DraftSubtypeData: {
-            target_plant_phenology: components["schemas"]["DraftTargetPlantPhenologyOut"] | null;
-            weather_conditions: components["schemas"]["WeatherConditionsOut"] | null;
-            microsite_conditions: components["schemas"]["MicrositeConditionOut"] | null;
-            /** Entries */
-            entries: components["schemas"]["api__protocol__activity__plants_out__subtypes__biocontrol_dispersal_monitoring__DraftEntries"][];
-        };
-        /** Entries */
-        api__protocol__activity__plants_out__subtypes__biocontrol_dispersal_monitoring__Entries: {
-            /** Actual Biological Agents */
-            actual_biological_agents: components["schemas"]["ExtendedAgentCountOut"][];
-            /** Estimated Biological Agents */
-            estimated_biological_agents: components["schemas"]["ExtendedAgentCountOut"][];
-            /** Biocontrol Agent */
-            biocontrol_agent: string | null;
-            /** Biocontrol Present */
-            biocontrol_present: boolean | null;
-            /** Invasive Plant */
-            invasive_plant: string | null;
-            /** Historical Iapp Site */
-            historical_iapp_site: number | null;
-            /** Monitoring Type */
-            monitoring_type: string | null;
-            /** Plant Count */
-            plant_count: number | null;
-            /** Monitoring Method */
-            monitoring_method: string | null;
-            /** Count Duration Minutes */
-            count_duration_minutes: number | null;
-            /** Location Agent Found */
-            location_agent_found: string[];
-            /** Number Of Sweeps */
-            number_of_sweeps: string | null;
-            /** Sign Of Biocontrol Presence */
-            sign_of_biocontrol_presence: string[];
-            /** Start Time */
-            start_time: string | null;
-            /** Stop Time */
-            stop_time: string | null;
-            /** Linear Segment */
-            linear_segment: string | null;
-            /** Suitable For Collection */
-            suitable_for_collection: string | null;
-        };
-        /** SubtypeData */
-        api__protocol__activity__plants_out__subtypes__biocontrol_dispersal_monitoring__SubtypeData: {
-            target_plant_phenology: components["schemas"]["TargetPlantPhenologyOut"] | null;
-            weather_conditions: components["schemas"]["WeatherConditionsOut"] | null;
-            microsite_conditions: components["schemas"]["MicrositeConditionOut"] | null;
-            /** Entries */
-            entries: components["schemas"]["api__protocol__activity__plants_out__subtypes__biocontrol_dispersal_monitoring__Entries"][];
-        };
-        /** DraftEntries */
-        api__protocol__activity__plants_out__subtypes__biocontrol_release__DraftEntries: {
-            /** Actual Biological Agents */
-            actual_biological_agents: components["schemas"]["SimpleAgentCountOut"][];
-            /** Estimated Biological Agents */
-            estimated_biological_agents: components["schemas"]["SimpleAgentCountOut"][];
-            /** Agent Source */
-            agent_source: string | null;
-            /** Biocontrol Agent */
-            biocontrol_agent: string | null;
-            /** Collection Date */
-            collection_date: string | null;
-            /** Linear Segment */
-            linear_segment: string | null;
-            /** Invasive Plant */
-            invasive_plant: string | null;
-            /** Mortality */
-            mortality: number | null;
-            /** Plant Collected From */
-            plant_collected_from: string | null;
-            /** Plant Collected From Manual */
-            plant_collected_from_manual: string | null;
-        };
-        /** DraftSubtypeData */
-        api__protocol__activity__plants_out__subtypes__biocontrol_release__DraftSubtypeData: {
-            weather_conditions: components["schemas"]["WeatherConditionsOut"] | null;
-            microsite_conditions: components["schemas"]["MicrositeConditionOut"] | null;
-            target_plant_phenology: components["schemas"]["DraftTargetPlantPhenologyOut"] | null;
-            /** Entries */
-            entries: components["schemas"]["api__protocol__activity__plants_out__subtypes__biocontrol_release__DraftEntries"][];
-        };
-        /** Entries */
-        api__protocol__activity__plants_out__subtypes__biocontrol_release__Entries: {
-            /** Actual Biological Agents */
-            actual_biological_agents: components["schemas"]["SimpleAgentCountOut"][];
-            /** Estimated Biological Agents */
-            estimated_biological_agents: components["schemas"]["SimpleAgentCountOut"][];
-            /** Agent Source */
-            agent_source: string | null;
-            /** Biocontrol Agent */
-            biocontrol_agent: string | null;
-            /** Collection Date */
-            collection_date: string | null;
-            /** Linear Segment */
-            linear_segment: string | null;
-            /** Invasive Plant */
-            invasive_plant: string | null;
-            /** Mortality */
-            mortality: number | null;
-            /** Plant Collected From */
-            plant_collected_from: string | null;
-            /** Plant Collected From Manual */
-            plant_collected_from_manual: string | null;
-        };
-        /** SubtypeData */
-        api__protocol__activity__plants_out__subtypes__biocontrol_release__SubtypeData: {
-            microsite_conditions: components["schemas"]["MicrositeConditionOut"] | null;
-            target_plant_phenology: components["schemas"]["TargetPlantPhenologyOut"] | null;
-            weather_conditions: components["schemas"]["WeatherConditionsOut"] | null;
-            /** Entries */
-            entries: components["schemas"]["api__protocol__activity__plants_out__subtypes__biocontrol_release__Entries"][];
-        };
-        /** DraftEntries */
-        api__protocol__activity__plants_out__subtypes__biocontrol_release_monitoring__DraftEntries: {
-            /** Actual Biological Agents */
-            actual_biological_agents: components["schemas"]["ExtendedAgentCountOut"][];
-            /** Estimated Biological Agents */
-            estimated_biological_agents: components["schemas"]["ExtendedAgentCountOut"][];
-            /** Biocontrol Agent */
-            biocontrol_agent: string | null;
-            /** Biocontrol Present */
-            biocontrol_present: boolean | null;
-            /** Invasive Plant */
-            invasive_plant: string | null;
-            /** Historical Iapp Site */
-            historical_iapp_site: number | null;
-            /** Monitoring Type */
-            monitoring_type: string | null;
-            /** Plant Count */
-            plant_count: number | null;
-            /** Monitoring Method */
-            monitoring_method: string | null;
-            /** Count Duration Minutes */
-            count_duration_minutes: number | null;
-            /** Location Agent Found */
-            location_agent_found: string[];
-            /** Number Of Sweeps */
-            number_of_sweeps: string | null;
-            /** Sign Of Biocontrol Presence */
-            sign_of_biocontrol_presence: string[];
-            /** Start Time */
-            start_time: string | null;
-            /** Stop Time */
-            stop_time: string | null;
-            /** Suitable For Collection */
-            suitable_for_collection: string | null;
-        };
-        /** DraftSubtypeData */
-        api__protocol__activity__plants_out__subtypes__biocontrol_release_monitoring__DraftSubtypeData: {
-            spread_results: components["schemas"]["SpreadResultsOut"] | null;
-            target_plant_phenology: components["schemas"]["DraftTargetPlantPhenologyOut"] | null;
-            weather_conditions: components["schemas"]["WeatherConditionsOut"] | null;
-            microsite_conditions: components["schemas"]["MicrositeConditionOut"] | null;
-            /** Entries */
-            entries: components["schemas"]["api__protocol__activity__plants_out__subtypes__biocontrol_release_monitoring__DraftEntries"][];
-        };
-        /** Entries */
-        api__protocol__activity__plants_out__subtypes__biocontrol_release_monitoring__Entries: {
-            /** Actual Biological Agents */
-            actual_biological_agents: components["schemas"]["ExtendedAgentCountOut"][];
-            /** Estimated Biological Agents */
-            estimated_biological_agents: components["schemas"]["ExtendedAgentCountOut"][];
-            /** Biocontrol Agent */
-            biocontrol_agent: string | null;
-            /** Biocontrol Present */
-            biocontrol_present: boolean | null;
-            /** Invasive Plant */
-            invasive_plant: string | null;
-            /** Historical Iapp Site */
-            historical_iapp_site: number | null;
-            /** Monitoring Type */
-            monitoring_type: string | null;
-            /** Plant Count */
-            plant_count: number | null;
-            /** Monitoring Method */
-            monitoring_method: string | null;
-            /** Count Duration Minutes */
-            count_duration_minutes: number | null;
-            /** Location Agent Found */
-            location_agent_found: string[];
-            /** Number Of Sweeps */
-            number_of_sweeps: string | null;
-            /** Sign Of Biocontrol Presence */
-            sign_of_biocontrol_presence: string[];
-            /** Start Time */
-            start_time: string | null;
-            /** Stop Time */
-            stop_time: string | null;
-            /** Suitable For Collection */
-            suitable_for_collection: string | null;
-        };
-        /** SubtypeData */
-        api__protocol__activity__plants_out__subtypes__biocontrol_release_monitoring__SubtypeData: {
-            spread_results: components["schemas"]["SpreadResultsOut"] | null;
-            target_plant_phenology: components["schemas"]["TargetPlantPhenologyOut"] | null;
-            weather_conditions: components["schemas"]["WeatherConditionsOut"] | null;
-            microsite_conditions: components["schemas"]["MicrositeConditionOut"] | null;
-            /** Entries */
-            entries: components["schemas"]["api__protocol__activity__plants_out__subtypes__biocontrol_release_monitoring__Entries"][];
-        };
-        /** DraftSubtypeData */
-        api__protocol__activity__plants_out__subtypes__monitoring_treatment_chemical__DraftSubtypeData: {
-            /** Entries */
-            entries: components["schemas"]["DraftMonitoringTreatmentEntryOut"][];
-        };
-        /** SubtypeData */
-        api__protocol__activity__plants_out__subtypes__monitoring_treatment_chemical__SubtypeData: {
-            /** Entries */
-            entries: components["schemas"]["MonitoringTreatmentEntryOut"][];
-        };
-        /** Context */
-        api__protocol__activity__plants_out__subtypes__observation_aquatic__Context: {
-            /** Suitable For Biocontrol */
-            suitable_for_biocontrol: string;
-        };
-        /** DraftContext */
-        api__protocol__activity__plants_out__subtypes__observation_aquatic__DraftContext: {
-            /** Suitable For Biocontrol */
-            suitable_for_biocontrol: string | null;
-        };
-        /** DraftEntries */
-        api__protocol__activity__plants_out__subtypes__observation_aquatic__DraftEntries: {
-            /** Sample Point Id */
-            sample_point_id?: string | null;
-            /** Density */
-            density: string | null;
-            /** Distribution */
-            distribution: string | null;
-            /** Invasive Plant */
-            invasive_plant: string | null;
-            /** Life Stage */
-            life_stage: string | null;
-            /** Observation Type */
-            observation_type?: string | null;
-            voucher_specimen?: components["schemas"]["VoucherSpecimenOut"] | null;
-        };
-        /** DraftSubtypeData */
-        api__protocol__activity__plants_out__subtypes__observation_aquatic__DraftSubtypeData: {
-            context: components["schemas"]["api__protocol__activity__plants_out__subtypes__observation_aquatic__DraftContext"] | null;
-            /** Entries */
-            entries: components["schemas"]["api__protocol__activity__plants_out__subtypes__observation_aquatic__DraftEntries"][];
-            /** Pretreatment Observation */
-            pretreatment_observation: string | null;
-            waterbody_context: components["schemas"]["DraftWbContext"] | null;
-            /** Adjacent Land Use */
-            adjacent_land_use: string[];
-            /** Substrate Type */
-            substrate_type: string[];
-            /** Shoreline Types */
-            shoreline_types: components["schemas"]["ShorelineType"][];
-        };
-        /** Entries */
-        api__protocol__activity__plants_out__subtypes__observation_aquatic__Entries: {
-            /** Sample Point Id */
-            sample_point_id?: string | null;
-            /** Density */
-            density: string | null;
-            /** Distribution */
-            distribution: string | null;
-            /** Invasive Plant */
-            invasive_plant: string;
-            /** Life Stage */
-            life_stage: string | null;
-            /** Observation Type */
-            observation_type: string;
-            voucher_specimen?: components["schemas"]["VoucherSpecimenOut"] | null;
-        };
-        /** SubtypeData */
-        api__protocol__activity__plants_out__subtypes__observation_aquatic__SubtypeData: {
-            context: components["schemas"]["api__protocol__activity__plants_out__subtypes__observation_aquatic__Context"];
-            /** Entries */
-            entries: components["schemas"]["api__protocol__activity__plants_out__subtypes__observation_aquatic__Entries"][];
-            /** Pretreatment Observation */
-            pretreatment_observation: string;
-            waterbody_context: components["schemas"]["WbContext"];
-            /** Adjacent Land Use */
-            adjacent_land_use: string[];
-            /** Substrate Type */
-            substrate_type: string[];
-            /** Shoreline Types */
-            shoreline_types: components["schemas"]["ShorelineType"][];
-        };
-        /** Context */
-        api__protocol__activity__plants_out__subtypes__observation_terrestrial__Context: {
-            /** Aspect */
-            aspect: string | null;
-            /** Research Observation */
-            research_observation: string | null;
-            /** Slope Percent */
-            slope_percent: string | null;
-            /** Soil Texture */
-            soil_texture: string | null;
-            /** Specific Uses */
-            specific_uses: components["schemas"]["SpecificUseOut"][];
-            /** Suitable For Biocontrol Agent */
-            suitable_for_biocontrol_agent: string | null;
-            /** Visible Well Nearby */
-            visible_well_nearby: string | null;
-        };
-        /** DraftContext */
-        api__protocol__activity__plants_out__subtypes__observation_terrestrial__DraftContext: {
-            /** Aspect */
-            aspect: string | null;
-            /** Research Observation */
-            research_observation: string | null;
-            /** Slope Percent */
-            slope_percent: string | null;
-            /** Soil Texture */
-            soil_texture: string | null;
-            /** Specific Uses */
-            specific_uses: components["schemas"]["SpecificUseOut"][];
-            /** Suitable For Biocontrol Agent */
-            suitable_for_biocontrol_agent: string | null;
-            /** Visible Well Nearby */
-            visible_well_nearby: string | null;
-        };
-        /** DraftEntries */
-        api__protocol__activity__plants_out__subtypes__observation_terrestrial__DraftEntries: {
-            /** Density */
-            density: string | null;
-            /** Distribution */
-            distribution: string | null;
-            /** Invasive Plant */
-            invasive_plant: string | null;
-            /** Life Stage */
-            life_stage: string | null;
-            /** Observation Type */
-            observation_type?: string | null;
-            voucher_specimen?: components["schemas"]["VoucherSpecimenOut"] | null;
-        };
-        /** DraftSubtypeData */
-        api__protocol__activity__plants_out__subtypes__observation_terrestrial__DraftSubtypeData: {
-            context: components["schemas"]["api__protocol__activity__plants_out__subtypes__observation_terrestrial__DraftContext"] | null;
-            /** Entries */
-            entries: components["schemas"]["api__protocol__activity__plants_out__subtypes__observation_terrestrial__DraftEntries"][];
-            /** Pretreatment Observation */
-            pretreatment_observation: string | null;
-        };
-        /** Entries */
-        api__protocol__activity__plants_out__subtypes__observation_terrestrial__Entries: {
-            /** Density */
-            density: string | null;
-            /** Distribution */
-            distribution: string | null;
-            /** Invasive Plant */
-            invasive_plant: string;
-            /** Life Stage */
-            life_stage: string | null;
-            /** Observation Type */
-            observation_type: string;
-            voucher_specimen?: components["schemas"]["VoucherSpecimenOut"] | null;
-        };
-        /** SubtypeData */
-        api__protocol__activity__plants_out__subtypes__observation_terrestrial__SubtypeData: {
-            context: components["schemas"]["api__protocol__activity__plants_out__subtypes__observation_terrestrial__Context"];
-            /** Entries */
-            entries: components["schemas"]["api__protocol__activity__plants_out__subtypes__observation_terrestrial__Entries"][];
-            /** Pretreatment Observation */
-            pretreatment_observation: string;
-        };
-        /** DraftSubtypeData */
-        api__protocol__activity__plants_out__subtypes__treatment_chemical_aquatic__DraftSubtypeData: {
-            /** Well Entries */
-            well_entries: components["schemas"]["WellEntryOut"][];
-            treatment_context: components["schemas"]["DraftTreatmentContextOut"];
-            context: components["schemas"]["ChemicalTreatmentContextOut"];
-        };
-        /** SubtypeData */
-        api__protocol__activity__plants_out__subtypes__treatment_chemical_aquatic__SubtypeData: {
-            /** Well Entries */
-            well_entries: components["schemas"]["WellEntryOut"][];
-            treatment_context: components["schemas"]["TreatmentContextOut"];
-            context: components["schemas"]["ChemicalTreatmentContextOut"];
-        };
-        /** DraftSubtypeData */
-        api__protocol__activity__plants_out__subtypes__treatment_chemical_terrestrial__DraftSubtypeData: {
-            /** Well Entries */
-            well_entries: components["schemas"]["WellEntryOut"][];
-            treatment_context: components["schemas"]["DraftTreatmentContextOut"];
-            context: components["schemas"]["ChemicalTreatmentContextOut"];
-        };
-        /** SubtypeData */
-        api__protocol__activity__plants_out__subtypes__treatment_chemical_terrestrial__SubtypeData: {
-            /** Well Entries */
-            well_entries: components["schemas"]["WellEntryOut"][];
-            treatment_context: components["schemas"]["TreatmentContextOut"];
-            context: components["schemas"]["ChemicalTreatmentContextOut"];
-        };
-        /** DraftSubtypeData */
-        api__protocol__activity__plants_out__subtypes__treatment_mechanical_aquatic__DraftSubtypeData: {
-            /** Authorization Information */
-            authorization_information?: string | null;
-            /** Entries */
-            entries: components["schemas"]["MechanicalTreatmentEntryOut"][];
-            /** Shoreline Types */
-            shoreline_types: components["schemas"]["ShorelineType"][];
-        };
-        /** SubtypeData */
-        api__protocol__activity__plants_out__subtypes__treatment_mechanical_aquatic__SubtypeData: {
-            /** Authorization Information */
-            authorization_information?: string | null;
-            /** Entries */
-            entries: components["schemas"]["MechanicalTreatmentEntryOut"][];
-            /** Shoreline Types */
-            shoreline_types: components["schemas"]["ShorelineType"][];
-        };
-        /** DraftSubtypeData */
-        api__protocol__activity__plants_out__subtypes__treatment_mechanical_terrestrial__DraftSubtypeData: {
-            /** Entries */
-            entries: components["schemas"]["MechanicalTreatmentEntryOut"][];
-        };
-        /** SubtypeData */
-        api__protocol__activity__plants_out__subtypes__treatment_mechanical_terrestrial__SubtypeData: {
-            /** Entries */
-            entries: components["schemas"]["MechanicalTreatmentEntryOut"][];
-        };
-        /** UserProfileOut */
-        UserProfileOut: {
-            /** Employers */
-            employers: string[];
-            /** Funding Agencies */
-            funding_agencies: string[];
-            /** Pac Number */
-            pac_number?: string | null;
-            /** Pac Service Numbers */
-            pac_service_numbers: string[];
-            /** Roles */
-            roles: string[];
-            /** Write Privilege */
-            write_privilege: string[];
-            /**
-             * Subject
-             * @default Unset
-             */
-            subject: string | null;
-            /** Display Name */
-            display_name?: string | null;
-            /** Email */
-            email?: string | null;
-            /**
-             * Is Active
-             * @default true
-             */
-            is_active: boolean;
-            /** Phone Number */
-            phone_number?: string | null;
-            /** Expiry Date */
-            expiry_date?: string | null;
-        };
-        /** UserAccessIn */
-        UserAccessIn: {
-            /** Employer */
-            employer: string[];
-            /** Funding Agencies */
-            funding_agencies: string[];
-            /** Pac Number */
-            pac_number?: number | null;
-            /** Pac Service Numbers */
-            pac_service_numbers: string[];
-            /** Phone */
-            phone: string | null;
-            /** Roles */
-            roles: string[];
-            /** Comments */
-            comments: string | null;
-        };
-        /** DraftActivityPlantRowOut */
-        DraftActivityPlantRowOut: {
-            /**
-             * Activity Id
-             * Format: uuid4
-             */
-            activity_id: string;
-            /**
-             * Activity Date
-             * Format: date
-             */
-            activity_date: string;
-            /** Activity Type */
-            activity_type: string;
-            /** Created By */
-            created_by: string;
-            /** Short Id */
-            short_id: string;
-            geom?: components["schemas"]["Point"] | null;
-            /** Activity Subtype */
-            activity_subtype: string;
-            /** Elevation */
-            elevation?: number | null;
-            /** Biogeoclimatic Zones */
-            biogeoclimatic_zones?: string | null;
-            /** Regional Districts */
-            regional_districts?: string | null;
-            /** Invasive Plant Management Areas */
-            invasive_plant_management_areas?: string | null;
-            /** Regional Invasive Species Organization Areas */
-            regional_invasive_species_organization_areas?: string | null;
-            /** Reported Area */
-            reported_area: number | null;
-            /** Agency */
-            agency?: string | null;
-            /** Updated By */
-            updated_by?: string | null;
-            /** Species Biocontrol Full */
-            species_biocontrol_full?: string | null;
-            /** Species Treated Full */
-            species_treated_full?: string | null;
-            /** Species Negative Full */
-            species_negative_full?: string | null;
-            /** Species Positive Full */
-            species_positive_full?: string | null;
-            /** Invasive Plant */
-            invasive_plant?: string | null;
-            /** Jurisdiction Display */
-            jurisdiction_display?: string | null;
-            /** Project Code */
-            project_code?: string | null;
-            /** Batch Id */
-            batch_id?: number | null;
-        };
-        /** RecordsetRowsResponseOut */
-        RecordsetRowsResponseOut: {
-            /** Total */
-            total: number;
-            /** Entries */
-            entries: components["schemas"]["ActivityPlantRowOut"][] | components["schemas"]["DraftActivityPlantRowOut"][] | string[] | null;
-        };
-        /** FilterObjects */
-        FilterObjects: {
-            /** Limit */
-            limit?: number | null;
-            /** Page */
-            page?: number | null;
-            /** Sortcolumn */
-            sortColumn?: string | null;
-            /** Sortorder */
-            sortOrder?: string | null;
-            /** Ids To Filter */
-            ids_to_filter?: string[] | null;
-            /** Recordsettype */
-            recordSetType?: "Activity" | "IAPP" | null;
-            /**
-             * Tablefilters
-             * @default []
-             */
-            tableFilters: components["schemas"]["TableFilterIn"][] | null;
-            /** Selectcolumns */
-            selectColumns: string[];
-            /** Csvtype */
-            CSVType?: string | null;
-        };
-        /** FilterObjectsIn */
-        FilterObjectsIn: {
-            /** Filterobjects */
-            filterObjects: components["schemas"]["FilterObjects"][];
-        };
-        /** TableFilterIn */
-        TableFilterIn: {
-            /** Field */
-            field?: string | null;
-            /** Filter */
-            filter?: string | null;
-            /** Operator */
-            operator: "CONTAINS" | "DOES NOT CONTAIN" | "CONTAINED IN";
-            /** Operator2 */
-            operator2?: "AND" | "OR" | null;
-            /** Geojson */
-            geojson?: {
-                [key: string]: unknown;
-            } | null;
-            /** Filtertype */
-            filterType: "spatialFilterDrawn" | "spatialFilterUploaded" | "tableFilter" | "mostRecentObservation";
-        };
-        /** ActivityPlantSummaryOut */
-        ActivityPlantSummaryOut: {
-            /** Observations */
-            observations: components["schemas"]["ActivityPlantRowOut"][];
-            /** Treatments */
-            treatments: components["schemas"]["ActivityPlantRowOut"][];
-            /** Monitoring */
-            monitoring: components["schemas"]["ActivityPlantRowOut"][];
-            /** Biocontrol */
-            biocontrol: components["schemas"]["ActivityPlantRowOut"][];
-        };
-        /** IdListIn */
-        IdListIn: {
-            /** Idlist */
-            idList: string[];
-        };
-        /** BaseModel */
-        BaseModel: Record<string, never>;
-        /**
-         * CachedActivityPlantRowOut
-         * @description Stack Metadata for Cached recordsets tile layers
-         */
-        CachedActivityPlantRowOut: {
-            /**
-             * Activity Id
-             * Format: uuid4
-             */
-            activity_id: string;
-            /**
-             * Activity Date
-             * Format: date
-             */
-            activity_date: string;
-            /** Activity Type */
-            activity_type: string;
-            /** Created By */
-            created_by: string;
-            /** Short Id */
-            short_id: string;
-            geom?: components["schemas"]["Feature"] | null;
-            /** Activity Subtype */
-            activity_subtype: string;
-            /** Elevation */
-            elevation: number | null;
-            /** Biogeoclimatic Zones */
-            biogeoclimatic_zones: string | null;
-            /** Regional Districts */
-            regional_districts: string | null;
-            /** Invasive Plant Management Areas */
-            invasive_plant_management_areas: string | null;
-            /** Regional Invasive Species Organization Areas */
-            regional_invasive_species_organization_areas?: string | null;
-            /** Reported Area */
-            reported_area: number | null;
-            /** Agency */
-            agency?: string | null;
-            /** Updated By */
-            updated_by?: string | null;
-            /** Species Biocontrol Full */
-            species_biocontrol_full?: string | null;
-            /** Species Treated Full */
-            species_treated_full?: string | null;
-            /** Species Negative Full */
-            species_negative_full?: string | null;
-            /** Species Positive Full */
-            species_positive_full?: string | null;
-            /** Invasive Plant */
-            invasive_plant?: string | null;
-            /** Jurisdiction Display */
-            jurisdiction_display?: string | null;
-            /** Project Code */
-            project_code?: string | null;
-            /** Batch Id */
-            batch_id?: number | null;
-            /** Data */
-            data: components["schemas"]["ObservationTerrestrialPlantOut"] | components["schemas"]["ObservationAquaticPlantOut"] | components["schemas"]["DraftObservationTerrestrialPlantOut"] | components["schemas"]["DraftObservationAquaticPlantOut"] | components["schemas"]["TreatmentMechanicalAquaticPlantOut"] | components["schemas"]["TreatmentMechanicalTerrestrialPlantOut"] | components["schemas"]["TreatmentChemicalTerrestrialOut"] | components["schemas"]["TreatmentChemicalAquaticOut"] | components["schemas"]["DraftTreatmentMechanicalAquaticPlantOut"] | components["schemas"]["DraftTreatmentMechanicalTerrestrialPlantOut"] | components["schemas"]["DraftTreatmentChemicalTerrestrialOut"] | components["schemas"]["DraftTreatmentChemicalAquaticOut"] | components["schemas"]["MonitoringTreatmentChemicalOut"] | components["schemas"]["MonitoringTreatmentMechanicalOut"] | components["schemas"]["DraftMonitoringTreatmentChemicalOut"] | components["schemas"]["DraftMonitoringTreatmentMechanicalOut"] | components["schemas"]["BiocontrolReleaseOut"] | components["schemas"]["BiocontrolCollectionOut"] | components["schemas"]["BiocontrolReleaseMonitoringOut"] | components["schemas"]["BiocontrolDispersalMonitoringOut"] | components["schemas"]["DraftBiocontrolReleaseOut"] | components["schemas"]["DraftBiocontrolCollectionOut"] | components["schemas"]["DraftBiocontrolReleaseMonitoringOut"] | components["schemas"]["DraftBiocontrolDispersalMonitoringOut"];
-            centroid?: components["schemas"]["Feature"] | null;
-        };
-        /**
-         * Feature
-         * @description Feature Model
-         */
-        Feature: {
-            /** Bbox */
-            bbox?: [
-                number,
-                number,
-                number,
-                number
-            ] | [
-                number,
-                number,
-                number,
-                number,
-                number,
-                number
-            ] | null;
-            /**
-             * Type
-             * @constant
-             */
-            type: "Feature";
-            /** Geometry */
-            geometry: (components["schemas"]["Point"] | components["schemas"]["MultiPoint"] | components["schemas"]["LineString"] | components["schemas"]["MultiLineString"] | components["schemas"]["Polygon"] | components["schemas"]["MultiPolygon"] | components["schemas"]["GeometryCollection"]) | null;
-            /** Properties */
-            properties: {
-                [key: string]: unknown;
-            } | components["schemas"]["BaseModel"] | null;
-            /** Id */
-            id?: number | string | null;
-        };
-        /**
-         * GeometryCollection
-         * @description GeometryCollection Model
-         */
-        GeometryCollection: {
-            /** Bbox */
-            bbox?: [
-                number,
-                number,
-                number,
-                number
-            ] | [
-                number,
-                number,
-                number,
-                number,
-                number,
-                number
-            ] | null;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            type: "GeometryCollection";
-            /** Geometries */
-            geometries: (components["schemas"]["Point"] | components["schemas"]["MultiPoint"] | components["schemas"]["LineString"] | components["schemas"]["MultiLineString"] | components["schemas"]["Polygon"] | components["schemas"]["MultiPolygon"] | components["schemas"]["GeometryCollection"])[];
-        };
-        /**
-         * LineString
-         * @description LineString Model
-         */
-        LineString: {
-            /** Bbox */
-            bbox?: [
-                number,
-                number,
-                number,
-                number
-            ] | [
-                number,
-                number,
-                number,
-                number,
-                number,
-                number
-            ] | null;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            type: "LineString";
-            /** Coordinates */
-            coordinates: (components["schemas"]["Position2D"] | components["schemas"]["Position3D"])[];
-        };
-        /**
-         * MultiLineString
-         * @description MultiLineString Model
-         */
-        MultiLineString: {
-            /** Bbox */
-            bbox?: [
-                number,
-                number,
-                number,
-                number
-            ] | [
-                number,
-                number,
-                number,
-                number,
-                number,
-                number
-            ] | null;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            type: "MultiLineString";
-            /** Coordinates */
-            coordinates: (components["schemas"]["Position2D"] | components["schemas"]["Position3D"])[][];
-        };
-        /**
-         * MultiPoint
-         * @description MultiPoint Model
-         */
-        MultiPoint: {
-            /** Bbox */
-            bbox?: [
-                number,
-                number,
-                number,
-                number
-            ] | [
-                number,
-                number,
-                number,
-                number,
-                number,
-                number
-            ] | null;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            type: "MultiPoint";
-            /** Coordinates */
-            coordinates: (components["schemas"]["Position2D"] | components["schemas"]["Position3D"])[];
-        };
-        /**
-         * MultiPolygon
-         * @description MultiPolygon Model
-         */
-        MultiPolygon: {
-            /** Bbox */
-            bbox?: [
-                number,
-                number,
-                number,
-                number
-            ] | [
-                number,
-                number,
-                number,
-                number,
-                number,
-                number
-            ] | null;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            type: "MultiPolygon";
-            /** Coordinates */
-            coordinates: (components["schemas"]["Position2D"] | components["schemas"]["Position3D"])[][][];
-        };
-        /**
-         * Polygon
-         * @description Polygon Model
-         */
-        Polygon: {
-            /** Bbox */
-            bbox?: [
-                number,
-                number,
-                number,
-                number
-            ] | [
-                number,
-                number,
-                number,
-                number,
-                number,
-                number
-            ] | null;
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            type: "Polygon";
-            /** Coordinates */
-            coordinates: (components["schemas"]["Position2D"] | components["schemas"]["Position3D"])[][];
-        };
-        /** SummaryIn */
-        SummaryIn: {
-            /** Zone */
-            zone?: string[] | null;
-            /** User */
-            user?: string | null;
-        };
-        /**
-         * TeamMembershipOut
-         * @description Returns Teams belonging to a User, includes permission to create a new team
-         */
-        TeamMembershipOut: {
-            /** Can Create Team */
-            can_create_team: boolean;
-            /** Teams */
-            teams: components["schemas"]["TeamMembershipRowOut"][];
-        };
-        /** TeamMembershipRowOut */
-        TeamMembershipRowOut: {
-            /** Description */
-            description: string;
-            /** Team Founder */
-            team_founder: string;
-            /** Team Name */
-            team_name: string;
-            /** Team Id */
-            team_id: number;
-            /**
-             * Join Date
-             * Format: date
-             */
-            join_date?: string;
-        };
-        /** CreateTeamSchema */
-        CreateTeamSchema: {
-            /** Name */
-            name: string;
-            /** Agencies */
-            agencies: string[];
-            /** Description */
-            description: string | null;
-        };
-        /** InvitationOut */
-        InvitationOut: {
-            /** Id */
-            id: number;
-            /** Agencies */
-            agencies?: string | null;
-            /**
-             * Date Stamp
-             * Format: date-time
-             */
-            date_stamp: string;
-            /** Description */
-            description: string;
-            /** Employers */
-            employers?: string | null;
-            /** Founder */
-            founder: string;
-            /**
-             * Founding Date
-             * Format: date
-             */
-            founding_date: string;
-            /** Invitee */
-            invitee: string;
-            /** Name */
-            name: string;
-            status: components["schemas"]["InviteStatus"];
-        };
-        /**
-         * InviteStatus
-         * @enum {string}
-         */
-        InviteStatus: "Pending" | "Accepted" | "Declined" | "Cancelled";
-        /** SingleTeamOut */
-        SingleTeamOut: {
-            /** Agencies */
-            agencies: string | null;
-            /** Can Edit */
-            can_edit: boolean;
-            /** Employers */
-            employers: string | null;
-            /** Founder */
-            founder: string;
-            /** Invitations */
-            invitations?: components["schemas"]["InvitationOut"][] | null;
-            /** Members */
-            members: components["schemas"]["TeamMemberOut"][];
-            /** Name */
-            name: string;
-            /**
-             * Founding Date
-             * Format: date
-             */
-            founding_date?: string;
-            /** Id */
-            id?: number | null;
-            /** Description */
-            description?: string | null;
-        };
-        /** TeamMemberOut */
-        TeamMemberOut: {
-            /**
-             * Join Date
-             * Format: date
-             */
-            join_date: string;
-            /** Leave Date */
-            leave_date?: string | null;
-            /** Name */
-            name: string;
-            /** Subject */
-            subject: string;
-        };
-        /**
-         * UpdateTeamSchema
-         * @description Schema for Updating a Team. Presently teams can only update their name.
-         *     Agencies are locked to creation of Team.
-         */
-        UpdateTeamSchema: {
-            /** Name */
-            name: string | null;
-            /** Description */
-            description: string | null;
-        };
-        /** InviteUserToTeamSchema */
-        InviteUserToTeamSchema: {
-            /** Subject */
-            subject: string;
-        };
-        /** TeamSuggestedUserOut */
-        TeamSuggestedUserOut: {
-            /** Code */
-            code: string;
-            /** Full Name */
-            full_name: string;
-        };
-        /** InvitationResponseSchema */
-        InvitationResponseSchema: {
-            /** Invitation Id */
-            invitation_id: number;
-            response: components["schemas"]["InviteStatus"];
-        };
+  schemas: {
+    /** CreationPermissionsOut */
+    CreationPermissionsOut: {
+      /** Can Create */
+      can_create: boolean;
     };
-    responses: never;
-    parameters: never;
-    requestBodies: never;
-    headers: never;
-    pathItems: never;
+    /**
+     * ActivityMinimal
+     * @description Minimal fields - shared between all representations
+     */
+    ActivityMinimal: {
+      /**
+       * Id
+       * Format: uuid4
+       */
+      id: string;
+      /** Short Id */
+      short_id: string;
+      /**
+       * Date
+       * Format: date
+       */
+      date: string;
+      /** Type */
+      type: string;
+      /** Subtype */
+      subtype: string;
+    };
+    /**
+     * ActivitySearchParameters
+     * @description An object representing activity search parameters
+     */
+    ActivitySearchParameters: {
+      /** Date From */
+      date_from: string | null;
+      /** Date To */
+      date_to: string | null;
+    };
+    /** ActivitySearchResult */
+    ActivitySearchResult: {
+      /** Items */
+      items: components['schemas']['ActivityMinimal'][];
+      search: components['schemas']['ActivitySearchParameters'];
+    };
+    /** ActivityPermissionsOut */
+    ActivityPermissionsOut: {
+      /** Can Submit */
+      can_submit: boolean;
+      /** Can Edit */
+      can_edit: boolean;
+      /** Can Delete */
+      can_delete: boolean;
+    };
+    /** ActivityPlantRowOut */
+    ActivityPlantRowOut: {
+      /**
+       * Activity Id
+       * Format: uuid4
+       */
+      activity_id: string;
+      /**
+       * Activity Date
+       * Format: date
+       */
+      activity_date: string;
+      /** Activity Type */
+      activity_type: string;
+      /** Created By */
+      created_by: string;
+      /** Short Id */
+      short_id: string;
+      geom?: components['schemas']['Point'] | null;
+      /** Activity Subtype */
+      activity_subtype: string;
+      /** Elevation */
+      elevation: number | null;
+      /** Biogeoclimatic Zones */
+      biogeoclimatic_zones: string | null;
+      /** Regional Districts */
+      regional_districts: string | null;
+      /** Invasive Plant Management Areas */
+      invasive_plant_management_areas: string | null;
+      /** Employers */
+      employers?: string | null;
+      /** Regional Invasive Species Organization Areas */
+      regional_invasive_species_organization_areas?: string | null;
+      /** Reported Area */
+      reported_area: number | null;
+      /** Agency */
+      agency?: string | null;
+      /** Updated By */
+      updated_by?: string | null;
+      /** Species Biocontrol Full */
+      species_biocontrol_full?: string | null;
+      /** Species Treated Full */
+      species_treated_full?: string | null;
+      /** Species Negative Full */
+      species_negative_full?: string | null;
+      /** Species Positive Full */
+      species_positive_full?: string | null;
+      /** Invasive Plant */
+      invasive_plant?: string | null;
+      /** Jurisdiction Display */
+      jurisdiction_display?: string | null;
+      /** Project Code */
+      project_code?: string | null;
+      /** Batch Id */
+      batch_id?: number | null;
+    };
+    /** BiocontrolCollectionOut */
+    BiocontrolCollectionOut: {
+      centroid: components['schemas']['Point'];
+      /** Employer */
+      employer: components['schemas']['EmployerOut'][];
+      /** Funding Agencies */
+      funding_agencies: components['schemas']['FundingAgencyOut'][];
+      /** Jurisdictions */
+      jurisdictions: components['schemas']['JurisdictionOut'][];
+      /** Linked Activities */
+      linked_activities: components['schemas']['LinkedActivityOut'][];
+      /** Media */
+      media: components['schemas']['UploadedImageOut'][];
+      /** Participants */
+      participants: components['schemas']['ParticipantOut'][];
+      /** Projects */
+      projects: components['schemas']['ProjectOut'][];
+      /** Shape */
+      shape: {
+        [key: string]: unknown;
+      };
+      /** Short Id */
+      short_id: string;
+      /** Id */
+      id?: string | null;
+      /** Created By */
+      created_by: string;
+      /**
+       * Form Status
+       * @default Draft
+       */
+      form_status: string;
+      /** Type */
+      type: string;
+      /** Access Description */
+      access_description?: string | null;
+      /** Comment */
+      comment?: string | null;
+      /**
+       * Date
+       * Format: date
+       */
+      date: string;
+      /** Area M */
+      area_m?: number | null;
+      /** Latitude */
+      latitude?: string | null;
+      /** Longitude */
+      longitude?: string | null;
+      /** Utm Zone */
+      utm_zone?: number | null;
+      /** Utm Easting */
+      utm_easting?: number | null;
+      /** Utm Northing */
+      utm_northing?: number | null;
+      /** Location Description */
+      location_description?: string | null;
+      /**
+       * Subtype
+       * @constant
+       */
+      subtype: 'Biocontrol_Collection';
+      subtype_data: components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_collection__SubtypeData'];
+    };
+    /** BiocontrolDispersalMonitoringOut */
+    BiocontrolDispersalMonitoringOut: {
+      centroid: components['schemas']['Point'];
+      /** Employer */
+      employer: components['schemas']['EmployerOut'][];
+      /** Funding Agencies */
+      funding_agencies: components['schemas']['FundingAgencyOut'][];
+      /** Jurisdictions */
+      jurisdictions: components['schemas']['JurisdictionOut'][];
+      /** Linked Activities */
+      linked_activities: components['schemas']['LinkedActivityOut'][];
+      /** Media */
+      media: components['schemas']['UploadedImageOut'][];
+      /** Participants */
+      participants: components['schemas']['ParticipantOut'][];
+      /** Projects */
+      projects: components['schemas']['ProjectOut'][];
+      /** Shape */
+      shape: {
+        [key: string]: unknown;
+      };
+      /** Short Id */
+      short_id: string;
+      /** Id */
+      id?: string | null;
+      /** Created By */
+      created_by: string;
+      /**
+       * Form Status
+       * @default Draft
+       */
+      form_status: string;
+      /** Type */
+      type: string;
+      /** Access Description */
+      access_description?: string | null;
+      /** Comment */
+      comment?: string | null;
+      /**
+       * Date
+       * Format: date
+       */
+      date: string;
+      /** Area M */
+      area_m?: number | null;
+      /** Latitude */
+      latitude?: string | null;
+      /** Longitude */
+      longitude?: string | null;
+      /** Utm Zone */
+      utm_zone?: number | null;
+      /** Utm Easting */
+      utm_easting?: number | null;
+      /** Utm Northing */
+      utm_northing?: number | null;
+      /** Location Description */
+      location_description?: string | null;
+      /**
+       * Subtype
+       * @constant
+       */
+      subtype: 'Monitoring_Biocontrol_Dispersal_Plant_Terrestrial';
+      subtype_data: components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_dispersal_monitoring__SubtypeData'];
+    };
+    /** BiocontrolReleaseMonitoringOut */
+    BiocontrolReleaseMonitoringOut: {
+      centroid: components['schemas']['Point'];
+      /** Employer */
+      employer: components['schemas']['EmployerOut'][];
+      /** Funding Agencies */
+      funding_agencies: components['schemas']['FundingAgencyOut'][];
+      /** Jurisdictions */
+      jurisdictions: components['schemas']['JurisdictionOut'][];
+      /** Linked Activities */
+      linked_activities: components['schemas']['LinkedActivityOut'][];
+      /** Media */
+      media: components['schemas']['UploadedImageOut'][];
+      /** Participants */
+      participants: components['schemas']['ParticipantOut'][];
+      /** Projects */
+      projects: components['schemas']['ProjectOut'][];
+      /** Shape */
+      shape: {
+        [key: string]: unknown;
+      };
+      /** Short Id */
+      short_id: string;
+      /** Id */
+      id?: string | null;
+      /** Created By */
+      created_by: string;
+      /**
+       * Form Status
+       * @default Draft
+       */
+      form_status: string;
+      /** Type */
+      type: string;
+      /** Access Description */
+      access_description?: string | null;
+      /** Comment */
+      comment?: string | null;
+      /**
+       * Date
+       * Format: date
+       */
+      date: string;
+      /** Area M */
+      area_m?: number | null;
+      /** Latitude */
+      latitude?: string | null;
+      /** Longitude */
+      longitude?: string | null;
+      /** Utm Zone */
+      utm_zone?: number | null;
+      /** Utm Easting */
+      utm_easting?: number | null;
+      /** Utm Northing */
+      utm_northing?: number | null;
+      /** Location Description */
+      location_description?: string | null;
+      /**
+       * Subtype
+       * @constant
+       */
+      subtype: 'Monitoring_Biocontrol_Release_Plant_Terrestrial';
+      subtype_data: components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_release_monitoring__SubtypeData'];
+    };
+    /** BiocontrolReleaseOut */
+    BiocontrolReleaseOut: {
+      centroid: components['schemas']['Point'];
+      /** Employer */
+      employer: components['schemas']['EmployerOut'][];
+      /** Funding Agencies */
+      funding_agencies: components['schemas']['FundingAgencyOut'][];
+      /** Jurisdictions */
+      jurisdictions: components['schemas']['JurisdictionOut'][];
+      /** Linked Activities */
+      linked_activities: components['schemas']['LinkedActivityOut'][];
+      /** Media */
+      media: components['schemas']['UploadedImageOut'][];
+      /** Participants */
+      participants: components['schemas']['ParticipantOut'][];
+      /** Projects */
+      projects: components['schemas']['ProjectOut'][];
+      /** Shape */
+      shape: {
+        [key: string]: unknown;
+      };
+      /** Short Id */
+      short_id: string;
+      /** Id */
+      id?: string | null;
+      /** Created By */
+      created_by: string;
+      /**
+       * Form Status
+       * @default Draft
+       */
+      form_status: string;
+      /** Type */
+      type: string;
+      /** Access Description */
+      access_description?: string | null;
+      /** Comment */
+      comment?: string | null;
+      /**
+       * Date
+       * Format: date
+       */
+      date: string;
+      /** Area M */
+      area_m?: number | null;
+      /** Latitude */
+      latitude?: string | null;
+      /** Longitude */
+      longitude?: string | null;
+      /** Utm Zone */
+      utm_zone?: number | null;
+      /** Utm Easting */
+      utm_easting?: number | null;
+      /** Utm Northing */
+      utm_northing?: number | null;
+      /** Location Description */
+      location_description?: string | null;
+      /**
+       * Subtype
+       * @constant
+       */
+      subtype: 'Biocontrol_Release';
+      subtype_data: components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_release__SubtypeData'];
+    };
+    /** ChemicalTreatmentContextOut */
+    ChemicalTreatmentContextOut: {
+      /** Pesticide Use Permit */
+      pesticide_use_permit: string | null;
+      /** Pest Management Plan */
+      pest_management_plan: string | null;
+      /** Pest Management Plan Manual */
+      pest_management_plan_manual: string | null;
+      /** Pesticide Employer Code */
+      pesticide_employer_code: string | null;
+      /** Temperature C */
+      temperature_c: number | null;
+      /** Wind Speed Kmh */
+      wind_speed_kmh: number | null;
+      /** Application Start Time */
+      application_start_time: string | null;
+      /** Wind Direction */
+      wind_direction: string | null;
+      /** Humidity */
+      humidity: number | null;
+      /** Treatment Notice Signs */
+      treatment_notice_signs: string | null;
+      /** Precautionary Statement */
+      precautionary_statement: string | null;
+      /** Ntz Reduction */
+      ntz_reduction: boolean | null;
+      /** Rationale For Ntz Reduction */
+      rationale_for_ntz_reduction: string | null;
+      /** Additional Unmapped Well Water */
+      additional_unmapped_well_water: boolean | null;
+      /** Pest Injury Threshold Determination */
+      pest_injury_threshold_determination: boolean | null;
+    };
+    /** DraftBiocontrolCollectionOut */
+    DraftBiocontrolCollectionOut: {
+      centroid?: components['schemas']['Point'] | null;
+      /** Employer */
+      employer: components['schemas']['EmployerOut'][];
+      /** Funding Agencies */
+      funding_agencies: components['schemas']['FundingAgencyOut'][];
+      /** Jurisdictions */
+      jurisdictions: components['schemas']['JurisdictionOut'][];
+      /** Linked Activities */
+      linked_activities: components['schemas']['LinkedActivityOut'][];
+      /** Media */
+      media: components['schemas']['UploadedImageOut'][];
+      /** Participants */
+      participants: components['schemas']['ParticipantOut'][];
+      /** Projects */
+      projects: components['schemas']['ProjectOut'][];
+      /** Shape */
+      shape?: {
+        [key: string]: unknown;
+      } | null;
+      /** Short Id */
+      short_id: string;
+      /** Id */
+      id?: string | null;
+      /** Created By */
+      created_by: string;
+      /**
+       * Form Status
+       * @default Draft
+       */
+      form_status: string;
+      /** Type */
+      type: string;
+      /** Access Description */
+      access_description?: string | null;
+      /** Comment */
+      comment?: string | null;
+      /**
+       * Date
+       * Format: date
+       */
+      date: string;
+      /** Area M */
+      area_m?: number | null;
+      /** Latitude */
+      latitude?: string | null;
+      /** Longitude */
+      longitude?: string | null;
+      /** Utm Zone */
+      utm_zone?: number | null;
+      /** Utm Easting */
+      utm_easting?: number | null;
+      /** Utm Northing */
+      utm_northing?: number | null;
+      /** Location Description */
+      location_description?: string | null;
+      /**
+       * Subtype
+       * @constant
+       */
+      subtype: 'Biocontrol_Collection';
+      subtype_data: components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_collection__DraftSubtypeData'];
+    };
+    /** DraftBiocontrolDispersalMonitoringOut */
+    DraftBiocontrolDispersalMonitoringOut: {
+      centroid?: components['schemas']['Point'] | null;
+      /** Employer */
+      employer: components['schemas']['EmployerOut'][];
+      /** Funding Agencies */
+      funding_agencies: components['schemas']['FundingAgencyOut'][];
+      /** Jurisdictions */
+      jurisdictions: components['schemas']['JurisdictionOut'][];
+      /** Linked Activities */
+      linked_activities: components['schemas']['LinkedActivityOut'][];
+      /** Media */
+      media: components['schemas']['UploadedImageOut'][];
+      /** Participants */
+      participants: components['schemas']['ParticipantOut'][];
+      /** Projects */
+      projects: components['schemas']['ProjectOut'][];
+      /** Shape */
+      shape?: {
+        [key: string]: unknown;
+      } | null;
+      /** Short Id */
+      short_id: string;
+      /** Id */
+      id?: string | null;
+      /** Created By */
+      created_by: string;
+      /**
+       * Form Status
+       * @default Draft
+       */
+      form_status: string;
+      /** Type */
+      type: string;
+      /** Access Description */
+      access_description?: string | null;
+      /** Comment */
+      comment?: string | null;
+      /**
+       * Date
+       * Format: date
+       */
+      date: string;
+      /** Area M */
+      area_m?: number | null;
+      /** Latitude */
+      latitude?: string | null;
+      /** Longitude */
+      longitude?: string | null;
+      /** Utm Zone */
+      utm_zone?: number | null;
+      /** Utm Easting */
+      utm_easting?: number | null;
+      /** Utm Northing */
+      utm_northing?: number | null;
+      /** Location Description */
+      location_description?: string | null;
+      /**
+       * Subtype
+       * @constant
+       */
+      subtype: 'Monitoring_Biocontrol_Dispersal_Plant_Terrestrial';
+      subtype_data: components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_dispersal_monitoring__DraftSubtypeData'];
+    };
+    /** DraftBiocontrolReleaseMonitoringOut */
+    DraftBiocontrolReleaseMonitoringOut: {
+      centroid?: components['schemas']['Point'] | null;
+      /** Employer */
+      employer: components['schemas']['EmployerOut'][];
+      /** Funding Agencies */
+      funding_agencies: components['schemas']['FundingAgencyOut'][];
+      /** Jurisdictions */
+      jurisdictions: components['schemas']['JurisdictionOut'][];
+      /** Linked Activities */
+      linked_activities: components['schemas']['LinkedActivityOut'][];
+      /** Media */
+      media: components['schemas']['UploadedImageOut'][];
+      /** Participants */
+      participants: components['schemas']['ParticipantOut'][];
+      /** Projects */
+      projects: components['schemas']['ProjectOut'][];
+      /** Shape */
+      shape?: {
+        [key: string]: unknown;
+      } | null;
+      /** Short Id */
+      short_id: string;
+      /** Id */
+      id?: string | null;
+      /** Created By */
+      created_by: string;
+      /**
+       * Form Status
+       * @default Draft
+       */
+      form_status: string;
+      /** Type */
+      type: string;
+      /** Access Description */
+      access_description?: string | null;
+      /** Comment */
+      comment?: string | null;
+      /**
+       * Date
+       * Format: date
+       */
+      date: string;
+      /** Area M */
+      area_m?: number | null;
+      /** Latitude */
+      latitude?: string | null;
+      /** Longitude */
+      longitude?: string | null;
+      /** Utm Zone */
+      utm_zone?: number | null;
+      /** Utm Easting */
+      utm_easting?: number | null;
+      /** Utm Northing */
+      utm_northing?: number | null;
+      /** Location Description */
+      location_description?: string | null;
+      /**
+       * Subtype
+       * @constant
+       */
+      subtype: 'Monitoring_Biocontrol_Release_Plant_Terrestrial';
+      subtype_data: components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_release_monitoring__DraftSubtypeData'];
+    };
+    /** DraftBiocontrolReleaseOut */
+    DraftBiocontrolReleaseOut: {
+      centroid?: components['schemas']['Point'] | null;
+      /** Employer */
+      employer: components['schemas']['EmployerOut'][];
+      /** Funding Agencies */
+      funding_agencies: components['schemas']['FundingAgencyOut'][];
+      /** Jurisdictions */
+      jurisdictions: components['schemas']['JurisdictionOut'][];
+      /** Linked Activities */
+      linked_activities: components['schemas']['LinkedActivityOut'][];
+      /** Media */
+      media: components['schemas']['UploadedImageOut'][];
+      /** Participants */
+      participants: components['schemas']['ParticipantOut'][];
+      /** Projects */
+      projects: components['schemas']['ProjectOut'][];
+      /** Shape */
+      shape?: {
+        [key: string]: unknown;
+      } | null;
+      /** Short Id */
+      short_id: string;
+      /** Id */
+      id?: string | null;
+      /** Created By */
+      created_by: string;
+      /**
+       * Form Status
+       * @default Draft
+       */
+      form_status: string;
+      /** Type */
+      type: string;
+      /** Access Description */
+      access_description?: string | null;
+      /** Comment */
+      comment?: string | null;
+      /**
+       * Date
+       * Format: date
+       */
+      date: string;
+      /** Area M */
+      area_m?: number | null;
+      /** Latitude */
+      latitude?: string | null;
+      /** Longitude */
+      longitude?: string | null;
+      /** Utm Zone */
+      utm_zone?: number | null;
+      /** Utm Easting */
+      utm_easting?: number | null;
+      /** Utm Northing */
+      utm_northing?: number | null;
+      /** Location Description */
+      location_description?: string | null;
+      /**
+       * Subtype
+       * @constant
+       */
+      subtype: 'Biocontrol_Release';
+      subtype_data: components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_release__DraftSubtypeData'];
+    };
+    /** DraftEntry */
+    DraftEntry: {
+      /** Actual Biological Agents */
+      actual_biological_agents: components['schemas']['SimpleAgentCountOut'][];
+      /** Estimated Biological Agents */
+      estimated_biological_agents: components['schemas']['SimpleAgentCountOut'][];
+      /** Invasive Plant */
+      invasive_plant: string | null;
+      /** Biocontrol Agent */
+      biocontrol_agent: string | null;
+      /** Historical Iapp Site */
+      historical_iapp_site: number | null;
+      /** Collection Type */
+      collection_type: string | null;
+      /** Plant Count Collection */
+      plant_count_collection: number | null;
+      /** Time Collection Duration Minutes */
+      time_collection_duration_minutes: number | null;
+      /** Collection Method */
+      collection_method: string | null;
+      /** Number Of Sweeps */
+      number_of_sweeps: number | null;
+      /** Start Time Collecting */
+      start_time_collecting: string | null;
+      /** End Time Collecting */
+      end_time_collecting: string | null;
+      /** Comment */
+      comment: string | null;
+    };
+    /** DraftMonitoringTreatmentChemicalOut */
+    DraftMonitoringTreatmentChemicalOut: {
+      centroid?: components['schemas']['Point'] | null;
+      /** Employer */
+      employer: components['schemas']['EmployerOut'][];
+      /** Funding Agencies */
+      funding_agencies: components['schemas']['FundingAgencyOut'][];
+      /** Jurisdictions */
+      jurisdictions: components['schemas']['JurisdictionOut'][];
+      /** Linked Activities */
+      linked_activities: components['schemas']['LinkedActivityOut'][];
+      /** Media */
+      media: components['schemas']['UploadedImageOut'][];
+      /** Participants */
+      participants: components['schemas']['ParticipantOut'][];
+      /** Projects */
+      projects: components['schemas']['ProjectOut'][];
+      /** Shape */
+      shape?: {
+        [key: string]: unknown;
+      } | null;
+      /** Short Id */
+      short_id: string;
+      /** Id */
+      id?: string | null;
+      /** Created By */
+      created_by: string;
+      /**
+       * Form Status
+       * @default Draft
+       */
+      form_status: string;
+      /** Type */
+      type: string;
+      /** Access Description */
+      access_description?: string | null;
+      /** Comment */
+      comment?: string | null;
+      /**
+       * Date
+       * Format: date
+       */
+      date: string;
+      /** Area M */
+      area_m?: number | null;
+      /** Latitude */
+      latitude?: string | null;
+      /** Longitude */
+      longitude?: string | null;
+      /** Utm Zone */
+      utm_zone?: number | null;
+      /** Utm Easting */
+      utm_easting?: number | null;
+      /** Utm Northing */
+      utm_northing?: number | null;
+      /** Location Description */
+      location_description?: string | null;
+      /**
+       * Subtype
+       * @constant
+       */
+      subtype: 'Monitoring_Chemical_Plant_Terrestrial_Aquatic';
+      subtype_data: components['schemas']['api__protocol__activity__plants_out__subtypes__monitoring_treatment_chemical__DraftSubtypeData'];
+    };
+    /** DraftMonitoringTreatmentEntryOut */
+    DraftMonitoringTreatmentEntryOut: {
+      /** Invasive Plant */
+      invasive_plant?: string | null;
+      /** Invasive Plant Aquatic */
+      invasive_plant_aquatic?: string | null;
+      /** Evidence Of Treatment */
+      evidence_of_treatment: string | null;
+      /** Treatment Pass */
+      treatment_pass: string | null;
+      /** Comment */
+      comment: string | null;
+      /** Invasive Plants On Site */
+      invasive_plants_on_site: components['schemas']['PlantOnSite'][];
+      /** Management Efficacy Rating */
+      management_efficacy_rating: string | null;
+      /** Treatment Efficacy Rating */
+      treatment_efficacy_rating: string | null;
+    };
+    /** DraftMonitoringTreatmentMechanicalOut */
+    DraftMonitoringTreatmentMechanicalOut: {
+      centroid?: components['schemas']['Point'] | null;
+      /** Employer */
+      employer: components['schemas']['EmployerOut'][];
+      /** Funding Agencies */
+      funding_agencies: components['schemas']['FundingAgencyOut'][];
+      /** Jurisdictions */
+      jurisdictions: components['schemas']['JurisdictionOut'][];
+      /** Linked Activities */
+      linked_activities: components['schemas']['LinkedActivityOut'][];
+      /** Media */
+      media: components['schemas']['UploadedImageOut'][];
+      /** Participants */
+      participants: components['schemas']['ParticipantOut'][];
+      /** Projects */
+      projects: components['schemas']['ProjectOut'][];
+      /** Shape */
+      shape?: {
+        [key: string]: unknown;
+      } | null;
+      /** Short Id */
+      short_id: string;
+      /** Id */
+      id?: string | null;
+      /** Created By */
+      created_by: string;
+      /**
+       * Form Status
+       * @default Draft
+       */
+      form_status: string;
+      /** Type */
+      type: string;
+      /** Access Description */
+      access_description?: string | null;
+      /** Comment */
+      comment?: string | null;
+      /**
+       * Date
+       * Format: date
+       */
+      date: string;
+      /** Area M */
+      area_m?: number | null;
+      /** Latitude */
+      latitude?: string | null;
+      /** Longitude */
+      longitude?: string | null;
+      /** Utm Zone */
+      utm_zone?: number | null;
+      /** Utm Easting */
+      utm_easting?: number | null;
+      /** Utm Northing */
+      utm_northing?: number | null;
+      /** Location Description */
+      location_description?: string | null;
+      /**
+       * Subtype
+       * @constant
+       */
+      subtype: 'Monitoring_Mechanical_Plant_Terrestrial_Aquatic';
+      subtype_data: components['schemas']['api__protocol__activity__plants_out__subtypes__monitoring_treatment_chemical__DraftSubtypeData'];
+    };
+    /** DraftObservationAquaticPlantOut */
+    DraftObservationAquaticPlantOut: {
+      centroid?: components['schemas']['Point'] | null;
+      /** Employer */
+      employer: components['schemas']['EmployerOut'][];
+      /** Funding Agencies */
+      funding_agencies: components['schemas']['FundingAgencyOut'][];
+      /** Jurisdictions */
+      jurisdictions: components['schemas']['JurisdictionOut'][];
+      /** Linked Activities */
+      linked_activities: components['schemas']['LinkedActivityOut'][];
+      /** Media */
+      media: components['schemas']['UploadedImageOut'][];
+      /** Participants */
+      participants: components['schemas']['ParticipantOut'][];
+      /** Projects */
+      projects: components['schemas']['ProjectOut'][];
+      /** Shape */
+      shape?: {
+        [key: string]: unknown;
+      } | null;
+      /** Short Id */
+      short_id: string;
+      /** Id */
+      id?: string | null;
+      /** Created By */
+      created_by: string;
+      /**
+       * Form Status
+       * @default Draft
+       */
+      form_status: string;
+      /** Type */
+      type: string;
+      /** Access Description */
+      access_description?: string | null;
+      /** Comment */
+      comment?: string | null;
+      /**
+       * Date
+       * Format: date
+       */
+      date: string;
+      /** Area M */
+      area_m?: number | null;
+      /** Latitude */
+      latitude?: string | null;
+      /** Longitude */
+      longitude?: string | null;
+      /** Utm Zone */
+      utm_zone?: number | null;
+      /** Utm Easting */
+      utm_easting?: number | null;
+      /** Utm Northing */
+      utm_northing?: number | null;
+      /** Location Description */
+      location_description?: string | null;
+      /**
+       * Subtype
+       * @constant
+       */
+      subtype: 'Observation_Plant_Aquatic';
+      subtype_data: components['schemas']['api__protocol__activity__plants_out__subtypes__observation_aquatic__DraftSubtypeData'];
+    };
+    /** DraftObservationTerrestrialPlantOut */
+    DraftObservationTerrestrialPlantOut: {
+      centroid?: components['schemas']['Point'] | null;
+      /** Employer */
+      employer: components['schemas']['EmployerOut'][];
+      /** Funding Agencies */
+      funding_agencies: components['schemas']['FundingAgencyOut'][];
+      /** Jurisdictions */
+      jurisdictions: components['schemas']['JurisdictionOut'][];
+      /** Linked Activities */
+      linked_activities: components['schemas']['LinkedActivityOut'][];
+      /** Media */
+      media: components['schemas']['UploadedImageOut'][];
+      /** Participants */
+      participants: components['schemas']['ParticipantOut'][];
+      /** Projects */
+      projects: components['schemas']['ProjectOut'][];
+      /** Shape */
+      shape?: {
+        [key: string]: unknown;
+      } | null;
+      /** Short Id */
+      short_id: string;
+      /** Id */
+      id?: string | null;
+      /** Created By */
+      created_by: string;
+      /**
+       * Form Status
+       * @default Draft
+       */
+      form_status: string;
+      /** Type */
+      type: string;
+      /** Access Description */
+      access_description?: string | null;
+      /** Comment */
+      comment?: string | null;
+      /**
+       * Date
+       * Format: date
+       */
+      date: string;
+      /** Area M */
+      area_m?: number | null;
+      /** Latitude */
+      latitude?: string | null;
+      /** Longitude */
+      longitude?: string | null;
+      /** Utm Zone */
+      utm_zone?: number | null;
+      /** Utm Easting */
+      utm_easting?: number | null;
+      /** Utm Northing */
+      utm_northing?: number | null;
+      /** Location Description */
+      location_description?: string | null;
+      /**
+       * Subtype
+       * @constant
+       */
+      subtype: 'Observation_Plant_Terrestrial';
+      subtype_data: components['schemas']['api__protocol__activity__plants_out__subtypes__observation_terrestrial__DraftSubtypeData'];
+    };
+    /** DraftTargetPlantPhenologyOut */
+    DraftTargetPlantPhenologyOut: {
+      /** Winter Dormant */
+      winter_dormant: number | null;
+      /** Seedlings */
+      seedlings: number | null;
+      /** Rosettes */
+      rosettes: number | null;
+      /** Bolts */
+      bolts: number | null;
+      /** Flowering */
+      flowering: number | null;
+      /** Seeds Forming */
+      seeds_forming: number | null;
+      /** Senescent */
+      senescent: number | null;
+      /** Target Plant Heights */
+      target_plant_heights: components['schemas']['TargetPlantHeight'][];
+    };
+    /** DraftTreatmentChemicalAquaticOut */
+    DraftTreatmentChemicalAquaticOut: {
+      centroid?: components['schemas']['Point'] | null;
+      /** Employer */
+      employer: components['schemas']['EmployerOut'][];
+      /** Funding Agencies */
+      funding_agencies: components['schemas']['FundingAgencyOut'][];
+      /** Jurisdictions */
+      jurisdictions: components['schemas']['JurisdictionOut'][];
+      /** Linked Activities */
+      linked_activities: components['schemas']['LinkedActivityOut'][];
+      /** Media */
+      media: components['schemas']['UploadedImageOut'][];
+      /** Participants */
+      participants: components['schemas']['ParticipantOut'][];
+      /** Projects */
+      projects: components['schemas']['ProjectOut'][];
+      /** Shape */
+      shape?: {
+        [key: string]: unknown;
+      } | null;
+      /** Short Id */
+      short_id: string;
+      /** Id */
+      id?: string | null;
+      /** Created By */
+      created_by: string;
+      /**
+       * Form Status
+       * @default Draft
+       */
+      form_status: string;
+      /** Type */
+      type: string;
+      /** Access Description */
+      access_description?: string | null;
+      /** Comment */
+      comment?: string | null;
+      /**
+       * Date
+       * Format: date
+       */
+      date: string;
+      /** Area M */
+      area_m?: number | null;
+      /** Latitude */
+      latitude?: string | null;
+      /** Longitude */
+      longitude?: string | null;
+      /** Utm Zone */
+      utm_zone?: number | null;
+      /** Utm Easting */
+      utm_easting?: number | null;
+      /** Utm Northing */
+      utm_northing?: number | null;
+      /** Location Description */
+      location_description?: string | null;
+      /**
+       * Subtype
+       * @constant
+       */
+      subtype: 'Treatment_Chemical_Plant_Aquatic';
+      subtype_data: components['schemas']['api__protocol__activity__plants_out__subtypes__treatment_chemical_aquatic__DraftSubtypeData'];
+    };
+    /** DraftTreatmentChemicalTerrestrialOut */
+    DraftTreatmentChemicalTerrestrialOut: {
+      centroid?: components['schemas']['Point'] | null;
+      /** Employer */
+      employer: components['schemas']['EmployerOut'][];
+      /** Funding Agencies */
+      funding_agencies: components['schemas']['FundingAgencyOut'][];
+      /** Jurisdictions */
+      jurisdictions: components['schemas']['JurisdictionOut'][];
+      /** Linked Activities */
+      linked_activities: components['schemas']['LinkedActivityOut'][];
+      /** Media */
+      media: components['schemas']['UploadedImageOut'][];
+      /** Participants */
+      participants: components['schemas']['ParticipantOut'][];
+      /** Projects */
+      projects: components['schemas']['ProjectOut'][];
+      /** Shape */
+      shape?: {
+        [key: string]: unknown;
+      } | null;
+      /** Short Id */
+      short_id: string;
+      /** Id */
+      id?: string | null;
+      /** Created By */
+      created_by: string;
+      /**
+       * Form Status
+       * @default Draft
+       */
+      form_status: string;
+      /** Type */
+      type: string;
+      /** Access Description */
+      access_description?: string | null;
+      /** Comment */
+      comment?: string | null;
+      /**
+       * Date
+       * Format: date
+       */
+      date: string;
+      /** Area M */
+      area_m?: number | null;
+      /** Latitude */
+      latitude?: string | null;
+      /** Longitude */
+      longitude?: string | null;
+      /** Utm Zone */
+      utm_zone?: number | null;
+      /** Utm Easting */
+      utm_easting?: number | null;
+      /** Utm Northing */
+      utm_northing?: number | null;
+      /** Location Description */
+      location_description?: string | null;
+      /**
+       * Subtype
+       * @constant
+       */
+      subtype: 'Treatment_Chemical_Plant_Terrestrial';
+      subtype_data: components['schemas']['api__protocol__activity__plants_out__subtypes__treatment_chemical_terrestrial__DraftSubtypeData'];
+    };
+    /** DraftTreatmentContextOut */
+    DraftTreatmentContextOut: {
+      /** Application Method */
+      application_method: string | null;
+      /** Tank Mix */
+      tank_mix: boolean | null;
+      /** Calculation Type */
+      calculation_type: string | null;
+      /** Area Treated Sqm */
+      area_treated_sqm: number | null;
+      /** Amount Mix Used L */
+      amount_mix_used_l: number | null;
+      /** Delivery Rate */
+      delivery_rate: number | null;
+      /** Dilution Percent */
+      dilution_percent: number | null;
+      /** Herbicide */
+      herbicide: components['schemas']['HerbicideOut'][];
+      /** Plants Treated */
+      plants_treated: components['schemas']['PlantTreatedOut'][];
+    };
+    /** DraftTreatmentMechanicalAquaticPlantOut */
+    DraftTreatmentMechanicalAquaticPlantOut: {
+      centroid?: components['schemas']['Point'] | null;
+      /** Employer */
+      employer: components['schemas']['EmployerOut'][];
+      /** Funding Agencies */
+      funding_agencies: components['schemas']['FundingAgencyOut'][];
+      /** Jurisdictions */
+      jurisdictions: components['schemas']['JurisdictionOut'][];
+      /** Linked Activities */
+      linked_activities: components['schemas']['LinkedActivityOut'][];
+      /** Media */
+      media: components['schemas']['UploadedImageOut'][];
+      /** Participants */
+      participants: components['schemas']['ParticipantOut'][];
+      /** Projects */
+      projects: components['schemas']['ProjectOut'][];
+      /** Shape */
+      shape?: {
+        [key: string]: unknown;
+      } | null;
+      /** Short Id */
+      short_id: string;
+      /** Id */
+      id?: string | null;
+      /** Created By */
+      created_by: string;
+      /**
+       * Form Status
+       * @default Draft
+       */
+      form_status: string;
+      /** Type */
+      type: string;
+      /** Access Description */
+      access_description?: string | null;
+      /** Comment */
+      comment?: string | null;
+      /**
+       * Date
+       * Format: date
+       */
+      date: string;
+      /** Area M */
+      area_m?: number | null;
+      /** Latitude */
+      latitude?: string | null;
+      /** Longitude */
+      longitude?: string | null;
+      /** Utm Zone */
+      utm_zone?: number | null;
+      /** Utm Easting */
+      utm_easting?: number | null;
+      /** Utm Northing */
+      utm_northing?: number | null;
+      /** Location Description */
+      location_description?: string | null;
+      /**
+       * Subtype
+       * @constant
+       */
+      subtype: 'Treatment_Mechanical_Plant_Aquatic';
+      subtype_data: components['schemas']['api__protocol__activity__plants_out__subtypes__treatment_mechanical_aquatic__DraftSubtypeData'];
+    };
+    /** DraftTreatmentMechanicalTerrestrialPlantOut */
+    DraftTreatmentMechanicalTerrestrialPlantOut: {
+      centroid?: components['schemas']['Point'] | null;
+      /** Employer */
+      employer: components['schemas']['EmployerOut'][];
+      /** Funding Agencies */
+      funding_agencies: components['schemas']['FundingAgencyOut'][];
+      /** Jurisdictions */
+      jurisdictions: components['schemas']['JurisdictionOut'][];
+      /** Linked Activities */
+      linked_activities: components['schemas']['LinkedActivityOut'][];
+      /** Media */
+      media: components['schemas']['UploadedImageOut'][];
+      /** Participants */
+      participants: components['schemas']['ParticipantOut'][];
+      /** Projects */
+      projects: components['schemas']['ProjectOut'][];
+      /** Shape */
+      shape?: {
+        [key: string]: unknown;
+      } | null;
+      /** Short Id */
+      short_id: string;
+      /** Id */
+      id?: string | null;
+      /** Created By */
+      created_by: string;
+      /**
+       * Form Status
+       * @default Draft
+       */
+      form_status: string;
+      /** Type */
+      type: string;
+      /** Access Description */
+      access_description?: string | null;
+      /** Comment */
+      comment?: string | null;
+      /**
+       * Date
+       * Format: date
+       */
+      date: string;
+      /** Area M */
+      area_m?: number | null;
+      /** Latitude */
+      latitude?: string | null;
+      /** Longitude */
+      longitude?: string | null;
+      /** Utm Zone */
+      utm_zone?: number | null;
+      /** Utm Easting */
+      utm_easting?: number | null;
+      /** Utm Northing */
+      utm_northing?: number | null;
+      /** Location Description */
+      location_description?: string | null;
+      /**
+       * Subtype
+       * @constant
+       */
+      subtype: 'Treatment_Mechanical_Plant_Terrestrial';
+      subtype_data: components['schemas']['api__protocol__activity__plants_out__subtypes__treatment_mechanical_terrestrial__DraftSubtypeData'];
+    };
+    /** DraftWbContext */
+    DraftWbContext: {
+      /** Access */
+      access: string | null;
+      /** Colour */
+      colour: string | null;
+      /** Comment */
+      comment: string | null;
+      /** Max Depth M */
+      max_depth_m: number | null;
+      /** Name Gazetted */
+      name_gazetted: string | null;
+      /** Name Local */
+      name_local: string | null;
+      /** Secchi Depth */
+      secchi_depth: number | null;
+      /** Tidal Influence */
+      tidal_influence: string | null;
+      /** Type */
+      type: string | null;
+      /** Inflow Permanent */
+      inflow_permanent: string[];
+      /** Inflow Seasonal */
+      inflow_seasonal: string[];
+      /** Outflow Permanent */
+      outflow_permanent: string[];
+      /** Outflow Seasonal */
+      outflow_seasonal: string[];
+      /** Water Use */
+      water_use: string[];
+      /** Waterlevel Management */
+      waterlevel_management: string[];
+      /** Shoreline Types */
+      shoreline_types: components['schemas']['ShorelineType'][];
+    };
+    /** EmployerOut */
+    EmployerOut: {
+      /** Employer */
+      employer: string | null;
+    };
+    /** Entry */
+    Entry: {
+      /** Actual Biological Agents */
+      actual_biological_agents: components['schemas']['SimpleAgentCountOut'][];
+      /** Estimated Biological Agents */
+      estimated_biological_agents: components['schemas']['SimpleAgentCountOut'][];
+      /** Invasive Plant */
+      invasive_plant: string | null;
+      /** Biocontrol Agent */
+      biocontrol_agent: string | null;
+      /** Historical Iapp Site */
+      historical_iapp_site: number | null;
+      /** Collection Type */
+      collection_type: string | null;
+      /** Plant Count Collection */
+      plant_count_collection: number | null;
+      /** Time Collection Duration Minutes */
+      time_collection_duration_minutes: number | null;
+      /** Collection Method */
+      collection_method: string | null;
+      /** Number Of Sweeps */
+      number_of_sweeps: number | null;
+      /** Start Time Collecting */
+      start_time_collecting: string | null;
+      /** End Time Collecting */
+      end_time_collecting: string | null;
+      /** Comment */
+      comment: string | null;
+    };
+    /** ExtendedAgentCountOut */
+    ExtendedAgentCountOut: {
+      /** Quantity */
+      quantity: number | null;
+      /** Stage */
+      stage: string | null;
+      /** Agent Location */
+      agent_location: string | null;
+      /** Plant Position */
+      plant_position: string | null;
+    };
+    /** FundingAgencyOut */
+    FundingAgencyOut: {
+      /** Invasive Species Agency Code */
+      invasive_species_agency_code: string | null;
+    };
+    /** HerbicideOut */
+    HerbicideOut: {
+      /** Type */
+      type: string | null;
+      /** Name */
+      name: string | null;
+      /** Application Rate */
+      application_rate: number | null;
+    };
+    /** JurisdictionOut */
+    JurisdictionOut: {
+      /** Jurisdiction */
+      jurisdiction: string | null;
+      /** Percent Covered */
+      percent_covered?: number | null;
+    };
+    /** LinkedActivityOut */
+    LinkedActivityOut: {
+      /** Label */
+      label: string;
+      /**
+       * Full
+       * Format: uuid
+       */
+      full: string;
+    };
+    /** MechanicalTreatmentEntryOut */
+    MechanicalTreatmentEntryOut: {
+      /** Disposed Material Amount */
+      disposed_material_amount?: number | null;
+      /** Disposed Material Format */
+      disposed_material_format?: string | null;
+      /** Disposal Method */
+      disposal_method?: string | null;
+      /** Invasive Plant */
+      invasive_plant?: string | null;
+      /** Mechanical Method */
+      mechanical_method?: string | null;
+      /** Treated Area Msq */
+      treated_area_msq?: number | null;
+    };
+    /** Metadata */
+    Metadata: {
+      /** Plants */
+      plants: string | null;
+      /** Positive Plants */
+      positive_plants: string | null;
+      /** Negative Plants */
+      negative_plants: string | null;
+      /** History */
+      history: components['schemas']['RecordHistoryOut'][];
+      /**
+       * Created Date
+       * Format: date-time
+       */
+      created_date: string;
+      /** Batch Id */
+      batch_id: number | null;
+      /** Linking Activities */
+      linking_activities: components['schemas']['ActivityPlantRowOut'][];
+      /** Created By */
+      created_by: string | null;
+    };
+    /** MicrositeConditionOut */
+    MicrositeConditionOut: {
+      /** Mesoslope Position */
+      mesoslope_position: string | null;
+      /** Site Surface Shape */
+      site_surface_shape: string | null;
+    };
+    /** MonitoringTreatmentChemicalOut */
+    MonitoringTreatmentChemicalOut: {
+      centroid: components['schemas']['Point'];
+      /** Employer */
+      employer: components['schemas']['EmployerOut'][];
+      /** Funding Agencies */
+      funding_agencies: components['schemas']['FundingAgencyOut'][];
+      /** Jurisdictions */
+      jurisdictions: components['schemas']['JurisdictionOut'][];
+      /** Linked Activities */
+      linked_activities: components['schemas']['LinkedActivityOut'][];
+      /** Media */
+      media: components['schemas']['UploadedImageOut'][];
+      /** Participants */
+      participants: components['schemas']['ParticipantOut'][];
+      /** Projects */
+      projects: components['schemas']['ProjectOut'][];
+      /** Shape */
+      shape: {
+        [key: string]: unknown;
+      };
+      /** Short Id */
+      short_id: string;
+      /** Id */
+      id?: string | null;
+      /** Created By */
+      created_by: string;
+      /**
+       * Form Status
+       * @default Draft
+       */
+      form_status: string;
+      /** Type */
+      type: string;
+      /** Access Description */
+      access_description?: string | null;
+      /** Comment */
+      comment?: string | null;
+      /**
+       * Date
+       * Format: date
+       */
+      date: string;
+      /** Area M */
+      area_m?: number | null;
+      /** Latitude */
+      latitude?: string | null;
+      /** Longitude */
+      longitude?: string | null;
+      /** Utm Zone */
+      utm_zone?: number | null;
+      /** Utm Easting */
+      utm_easting?: number | null;
+      /** Utm Northing */
+      utm_northing?: number | null;
+      /** Location Description */
+      location_description?: string | null;
+      /**
+       * Subtype
+       * @constant
+       */
+      subtype: 'Monitoring_Chemical_Plant_Terrestrial_Aquatic';
+      subtype_data: components['schemas']['api__protocol__activity__plants_out__subtypes__monitoring_treatment_chemical__SubtypeData'];
+    };
+    /** MonitoringTreatmentEntryOut */
+    MonitoringTreatmentEntryOut: {
+      /** Invasive Plant */
+      invasive_plant?: string | null;
+      /** Invasive Plant Aquatic */
+      invasive_plant_aquatic?: string | null;
+      /** Evidence Of Treatment */
+      evidence_of_treatment: string | null;
+      /** Treatment Pass */
+      treatment_pass: string | null;
+      /** Comment */
+      comment: string | null;
+      /** Invasive Plants On Site */
+      invasive_plants_on_site: components['schemas']['PlantOnSite'][];
+      /** Management Efficacy Rating */
+      management_efficacy_rating: string | null;
+      /** Treatment Efficacy Rating */
+      treatment_efficacy_rating: string | null;
+    };
+    /** MonitoringTreatmentMechanicalOut */
+    MonitoringTreatmentMechanicalOut: {
+      centroid: components['schemas']['Point'];
+      /** Employer */
+      employer: components['schemas']['EmployerOut'][];
+      /** Funding Agencies */
+      funding_agencies: components['schemas']['FundingAgencyOut'][];
+      /** Jurisdictions */
+      jurisdictions: components['schemas']['JurisdictionOut'][];
+      /** Linked Activities */
+      linked_activities: components['schemas']['LinkedActivityOut'][];
+      /** Media */
+      media: components['schemas']['UploadedImageOut'][];
+      /** Participants */
+      participants: components['schemas']['ParticipantOut'][];
+      /** Projects */
+      projects: components['schemas']['ProjectOut'][];
+      /** Shape */
+      shape: {
+        [key: string]: unknown;
+      };
+      /** Short Id */
+      short_id: string;
+      /** Id */
+      id?: string | null;
+      /** Created By */
+      created_by: string;
+      /**
+       * Form Status
+       * @default Draft
+       */
+      form_status: string;
+      /** Type */
+      type: string;
+      /** Access Description */
+      access_description?: string | null;
+      /** Comment */
+      comment?: string | null;
+      /**
+       * Date
+       * Format: date
+       */
+      date: string;
+      /** Area M */
+      area_m?: number | null;
+      /** Latitude */
+      latitude?: string | null;
+      /** Longitude */
+      longitude?: string | null;
+      /** Utm Zone */
+      utm_zone?: number | null;
+      /** Utm Easting */
+      utm_easting?: number | null;
+      /** Utm Northing */
+      utm_northing?: number | null;
+      /** Location Description */
+      location_description?: string | null;
+      /**
+       * Subtype
+       * @constant
+       */
+      subtype: 'Monitoring_Mechanical_Plant_Terrestrial_Aquatic';
+      subtype_data: components['schemas']['api__protocol__activity__plants_out__subtypes__monitoring_treatment_chemical__SubtypeData'];
+    };
+    /** ObservationAquaticPlantOut */
+    ObservationAquaticPlantOut: {
+      centroid: components['schemas']['Point'];
+      /** Employer */
+      employer: components['schemas']['EmployerOut'][];
+      /** Funding Agencies */
+      funding_agencies: components['schemas']['FundingAgencyOut'][];
+      /** Jurisdictions */
+      jurisdictions: components['schemas']['JurisdictionOut'][];
+      /** Linked Activities */
+      linked_activities: components['schemas']['LinkedActivityOut'][];
+      /** Media */
+      media: components['schemas']['UploadedImageOut'][];
+      /** Participants */
+      participants: components['schemas']['ParticipantOut'][];
+      /** Projects */
+      projects: components['schemas']['ProjectOut'][];
+      /** Shape */
+      shape: {
+        [key: string]: unknown;
+      };
+      /** Short Id */
+      short_id: string;
+      /** Id */
+      id?: string | null;
+      /** Created By */
+      created_by: string;
+      /**
+       * Form Status
+       * @default Draft
+       */
+      form_status: string;
+      /** Type */
+      type: string;
+      /** Access Description */
+      access_description?: string | null;
+      /** Comment */
+      comment?: string | null;
+      /**
+       * Date
+       * Format: date
+       */
+      date: string;
+      /** Area M */
+      area_m?: number | null;
+      /** Latitude */
+      latitude?: string | null;
+      /** Longitude */
+      longitude?: string | null;
+      /** Utm Zone */
+      utm_zone?: number | null;
+      /** Utm Easting */
+      utm_easting?: number | null;
+      /** Utm Northing */
+      utm_northing?: number | null;
+      /** Location Description */
+      location_description?: string | null;
+      /**
+       * Subtype
+       * @constant
+       */
+      subtype: 'Observation_Plant_Aquatic';
+      subtype_data: components['schemas']['api__protocol__activity__plants_out__subtypes__observation_aquatic__SubtypeData'];
+    };
+    /** ObservationTerrestrialPlantOut */
+    ObservationTerrestrialPlantOut: {
+      centroid: components['schemas']['Point'];
+      /** Employer */
+      employer: components['schemas']['EmployerOut'][];
+      /** Funding Agencies */
+      funding_agencies: components['schemas']['FundingAgencyOut'][];
+      /** Jurisdictions */
+      jurisdictions: components['schemas']['JurisdictionOut'][];
+      /** Linked Activities */
+      linked_activities: components['schemas']['LinkedActivityOut'][];
+      /** Media */
+      media: components['schemas']['UploadedImageOut'][];
+      /** Participants */
+      participants: components['schemas']['ParticipantOut'][];
+      /** Projects */
+      projects: components['schemas']['ProjectOut'][];
+      /** Shape */
+      shape: {
+        [key: string]: unknown;
+      };
+      /** Short Id */
+      short_id: string;
+      /** Id */
+      id?: string | null;
+      /** Created By */
+      created_by: string;
+      /**
+       * Form Status
+       * @default Draft
+       */
+      form_status: string;
+      /** Type */
+      type: string;
+      /** Access Description */
+      access_description?: string | null;
+      /** Comment */
+      comment?: string | null;
+      /**
+       * Date
+       * Format: date
+       */
+      date: string;
+      /** Area M */
+      area_m?: number | null;
+      /** Latitude */
+      latitude?: string | null;
+      /** Longitude */
+      longitude?: string | null;
+      /** Utm Zone */
+      utm_zone?: number | null;
+      /** Utm Easting */
+      utm_easting?: number | null;
+      /** Utm Northing */
+      utm_northing?: number | null;
+      /** Location Description */
+      location_description?: string | null;
+      /**
+       * Subtype
+       * @constant
+       */
+      subtype: 'Observation_Plant_Terrestrial';
+      subtype_data: components['schemas']['api__protocol__activity__plants_out__subtypes__observation_terrestrial__SubtypeData'];
+    };
+    /** ParticipantOut */
+    ParticipantOut: {
+      /** Name */
+      name?: string | null;
+      /** Pac Number */
+      pac_number?: number | null;
+    };
+    /** PlantOnSite */
+    PlantOnSite: {
+      /** Invasive Plants On Site */
+      invasive_plants_on_site: string | null;
+    };
+    /** PlantRecordWithMetadataOut */
+    PlantRecordWithMetadataOut: {
+      /** Available Actions */
+      available_actions: components['schemas']['RecordAction'][];
+      permissions: components['schemas']['ActivityPermissionsOut'];
+      metadata: components['schemas']['Metadata'];
+      /** Data */
+      data:
+        | components['schemas']['ObservationTerrestrialPlantOut']
+        | components['schemas']['ObservationAquaticPlantOut']
+        | components['schemas']['DraftObservationTerrestrialPlantOut']
+        | components['schemas']['DraftObservationAquaticPlantOut']
+        | components['schemas']['TreatmentMechanicalAquaticPlantOut']
+        | components['schemas']['TreatmentMechanicalTerrestrialPlantOut']
+        | components['schemas']['TreatmentChemicalTerrestrialOut']
+        | components['schemas']['TreatmentChemicalAquaticOut']
+        | components['schemas']['DraftTreatmentMechanicalAquaticPlantOut']
+        | components['schemas']['DraftTreatmentMechanicalTerrestrialPlantOut']
+        | components['schemas']['DraftTreatmentChemicalTerrestrialOut']
+        | components['schemas']['DraftTreatmentChemicalAquaticOut']
+        | components['schemas']['MonitoringTreatmentChemicalOut']
+        | components['schemas']['MonitoringTreatmentMechanicalOut']
+        | components['schemas']['DraftMonitoringTreatmentChemicalOut']
+        | components['schemas']['DraftMonitoringTreatmentMechanicalOut']
+        | components['schemas']['BiocontrolReleaseOut']
+        | components['schemas']['BiocontrolCollectionOut']
+        | components['schemas']['BiocontrolReleaseMonitoringOut']
+        | components['schemas']['BiocontrolDispersalMonitoringOut']
+        | components['schemas']['DraftBiocontrolReleaseOut']
+        | components['schemas']['DraftBiocontrolCollectionOut']
+        | components['schemas']['DraftBiocontrolReleaseMonitoringOut']
+        | components['schemas']['DraftBiocontrolDispersalMonitoringOut'];
+    };
+    /** PlantTreatedOut */
+    PlantTreatedOut: {
+      /** Percent Covered */
+      percent_covered: number | null;
+      /** Invasive Plant */
+      invasive_plant: string | null;
+    };
+    /**
+     * Point
+     * @description Point Model
+     */
+    Point: {
+      /** Bbox */
+      bbox?: [number, number, number, number] | [number, number, number, number, number, number] | null;
+      /**
+       * @description discriminator enum property added by openapi-typescript
+       * @enum {string}
+       */
+      type: 'Point';
+      /** Coordinates */
+      coordinates: components['schemas']['Position2D'] | components['schemas']['Position3D'];
+    };
+    Position2D: [number, number];
+    Position3D: [number, number, number];
+    /** ProjectOut */
+    ProjectOut: {
+      /** Description */
+      description?: string | null;
+    };
+    /**
+     * RecordAction
+     * @enum {string}
+     */
+    RecordAction: 'EDIT' | 'DELETE' | 'SUBMIT';
+    /** RecordHistoryOut */
+    RecordHistoryOut: {
+      /** User */
+      user: string;
+      /** Activity */
+      activity: string;
+      /**
+       * Date
+       * Format: date-time
+       */
+      date: string;
+      /** Version */
+      version: number;
+      /** Platform */
+      platform: string;
+      /** Diff */
+      diff: Record<string, never>;
+    };
+    /** ShorelineType */
+    ShorelineType: {
+      /** Shoreline Type */
+      shoreline_type: string | null;
+      /** Percent Covered */
+      percent_covered: number | null;
+    };
+    /** SimpleAgentCountOut */
+    SimpleAgentCountOut: {
+      /** Quantity */
+      quantity: number | null;
+      /** Stage */
+      stage: string | null;
+    };
+    /** SpecificUseOut */
+    SpecificUseOut: {
+      /** Specific Use */
+      specific_use: string | null;
+    };
+    /** SpreadResultsOut */
+    SpreadResultsOut: {
+      /** Agent Density */
+      agent_density: number | null;
+      /** Plant Attack */
+      plant_attack: number | null;
+      /** Max Spread Distance M */
+      max_spread_distance_m: number | null;
+      /** Max Spread Aspect Deg */
+      max_spread_aspect_deg: number | null;
+    };
+    /** TargetPlantHeight */
+    TargetPlantHeight: {
+      /** Height Cm */
+      height_cm: number | null;
+    };
+    /** TargetPlantPhenologyOut */
+    TargetPlantPhenologyOut: {
+      /** Winter Dormant */
+      winter_dormant: number | null;
+      /** Seedlings */
+      seedlings: number | null;
+      /** Rosettes */
+      rosettes: number | null;
+      /** Bolts */
+      bolts: number | null;
+      /** Flowering */
+      flowering: number | null;
+      /** Seeds Forming */
+      seeds_forming: number | null;
+      /** Senescent */
+      senescent: number | null;
+      /** Target Plant Heights */
+      target_plant_heights: components['schemas']['TargetPlantHeight'][];
+    };
+    /** TreatmentChemicalAquaticOut */
+    TreatmentChemicalAquaticOut: {
+      centroid: components['schemas']['Point'];
+      /** Employer */
+      employer: components['schemas']['EmployerOut'][];
+      /** Funding Agencies */
+      funding_agencies: components['schemas']['FundingAgencyOut'][];
+      /** Jurisdictions */
+      jurisdictions: components['schemas']['JurisdictionOut'][];
+      /** Linked Activities */
+      linked_activities: components['schemas']['LinkedActivityOut'][];
+      /** Media */
+      media: components['schemas']['UploadedImageOut'][];
+      /** Participants */
+      participants: components['schemas']['ParticipantOut'][];
+      /** Projects */
+      projects: components['schemas']['ProjectOut'][];
+      /** Shape */
+      shape: {
+        [key: string]: unknown;
+      };
+      /** Short Id */
+      short_id: string;
+      /** Id */
+      id?: string | null;
+      /** Created By */
+      created_by: string;
+      /**
+       * Form Status
+       * @default Draft
+       */
+      form_status: string;
+      /** Type */
+      type: string;
+      /** Access Description */
+      access_description?: string | null;
+      /** Comment */
+      comment?: string | null;
+      /**
+       * Date
+       * Format: date
+       */
+      date: string;
+      /** Area M */
+      area_m?: number | null;
+      /** Latitude */
+      latitude?: string | null;
+      /** Longitude */
+      longitude?: string | null;
+      /** Utm Zone */
+      utm_zone?: number | null;
+      /** Utm Easting */
+      utm_easting?: number | null;
+      /** Utm Northing */
+      utm_northing?: number | null;
+      /** Location Description */
+      location_description?: string | null;
+      /**
+       * Subtype
+       * @constant
+       */
+      subtype: 'Treatment_Chemical_Plant_Aquatic';
+      subtype_data: components['schemas']['api__protocol__activity__plants_out__subtypes__treatment_chemical_aquatic__SubtypeData'];
+    };
+    /** TreatmentChemicalTerrestrialOut */
+    TreatmentChemicalTerrestrialOut: {
+      centroid: components['schemas']['Point'];
+      /** Employer */
+      employer: components['schemas']['EmployerOut'][];
+      /** Funding Agencies */
+      funding_agencies: components['schemas']['FundingAgencyOut'][];
+      /** Jurisdictions */
+      jurisdictions: components['schemas']['JurisdictionOut'][];
+      /** Linked Activities */
+      linked_activities: components['schemas']['LinkedActivityOut'][];
+      /** Media */
+      media: components['schemas']['UploadedImageOut'][];
+      /** Participants */
+      participants: components['schemas']['ParticipantOut'][];
+      /** Projects */
+      projects: components['schemas']['ProjectOut'][];
+      /** Shape */
+      shape: {
+        [key: string]: unknown;
+      };
+      /** Short Id */
+      short_id: string;
+      /** Id */
+      id?: string | null;
+      /** Created By */
+      created_by: string;
+      /**
+       * Form Status
+       * @default Draft
+       */
+      form_status: string;
+      /** Type */
+      type: string;
+      /** Access Description */
+      access_description?: string | null;
+      /** Comment */
+      comment?: string | null;
+      /**
+       * Date
+       * Format: date
+       */
+      date: string;
+      /** Area M */
+      area_m?: number | null;
+      /** Latitude */
+      latitude?: string | null;
+      /** Longitude */
+      longitude?: string | null;
+      /** Utm Zone */
+      utm_zone?: number | null;
+      /** Utm Easting */
+      utm_easting?: number | null;
+      /** Utm Northing */
+      utm_northing?: number | null;
+      /** Location Description */
+      location_description?: string | null;
+      /**
+       * Subtype
+       * @constant
+       */
+      subtype: 'Treatment_Chemical_Plant_Terrestrial';
+      subtype_data: components['schemas']['api__protocol__activity__plants_out__subtypes__treatment_chemical_terrestrial__SubtypeData'];
+    };
+    /** TreatmentContextOut */
+    TreatmentContextOut: {
+      /** Application Method */
+      application_method: string | null;
+      /** Tank Mix */
+      tank_mix: boolean | null;
+      /** Calculation Type */
+      calculation_type: string | null;
+      /** Area Treated Sqm */
+      area_treated_sqm: number | null;
+      /** Amount Mix Used L */
+      amount_mix_used_l: number | null;
+      /** Delivery Rate */
+      delivery_rate: number | null;
+      /** Dilution Percent */
+      dilution_percent: number | null;
+      /** Herbicide */
+      herbicide: components['schemas']['HerbicideOut'][];
+      /** Plants Treated */
+      plants_treated: components['schemas']['PlantTreatedOut'][];
+    };
+    /** TreatmentMechanicalAquaticPlantOut */
+    TreatmentMechanicalAquaticPlantOut: {
+      centroid: components['schemas']['Point'];
+      /** Employer */
+      employer: components['schemas']['EmployerOut'][];
+      /** Funding Agencies */
+      funding_agencies: components['schemas']['FundingAgencyOut'][];
+      /** Jurisdictions */
+      jurisdictions: components['schemas']['JurisdictionOut'][];
+      /** Linked Activities */
+      linked_activities: components['schemas']['LinkedActivityOut'][];
+      /** Media */
+      media: components['schemas']['UploadedImageOut'][];
+      /** Participants */
+      participants: components['schemas']['ParticipantOut'][];
+      /** Projects */
+      projects: components['schemas']['ProjectOut'][];
+      /** Shape */
+      shape: {
+        [key: string]: unknown;
+      };
+      /** Short Id */
+      short_id: string;
+      /** Id */
+      id?: string | null;
+      /** Created By */
+      created_by: string;
+      /**
+       * Form Status
+       * @default Draft
+       */
+      form_status: string;
+      /** Type */
+      type: string;
+      /** Access Description */
+      access_description?: string | null;
+      /** Comment */
+      comment?: string | null;
+      /**
+       * Date
+       * Format: date
+       */
+      date: string;
+      /** Area M */
+      area_m?: number | null;
+      /** Latitude */
+      latitude?: string | null;
+      /** Longitude */
+      longitude?: string | null;
+      /** Utm Zone */
+      utm_zone?: number | null;
+      /** Utm Easting */
+      utm_easting?: number | null;
+      /** Utm Northing */
+      utm_northing?: number | null;
+      /** Location Description */
+      location_description?: string | null;
+      /**
+       * Subtype
+       * @constant
+       */
+      subtype: 'Treatment_Mechanical_Plant_Aquatic';
+      subtype_data: components['schemas']['api__protocol__activity__plants_out__subtypes__treatment_mechanical_aquatic__SubtypeData'];
+    };
+    /** TreatmentMechanicalTerrestrialPlantOut */
+    TreatmentMechanicalTerrestrialPlantOut: {
+      centroid: components['schemas']['Point'];
+      /** Employer */
+      employer: components['schemas']['EmployerOut'][];
+      /** Funding Agencies */
+      funding_agencies: components['schemas']['FundingAgencyOut'][];
+      /** Jurisdictions */
+      jurisdictions: components['schemas']['JurisdictionOut'][];
+      /** Linked Activities */
+      linked_activities: components['schemas']['LinkedActivityOut'][];
+      /** Media */
+      media: components['schemas']['UploadedImageOut'][];
+      /** Participants */
+      participants: components['schemas']['ParticipantOut'][];
+      /** Projects */
+      projects: components['schemas']['ProjectOut'][];
+      /** Shape */
+      shape: {
+        [key: string]: unknown;
+      };
+      /** Short Id */
+      short_id: string;
+      /** Id */
+      id?: string | null;
+      /** Created By */
+      created_by: string;
+      /**
+       * Form Status
+       * @default Draft
+       */
+      form_status: string;
+      /** Type */
+      type: string;
+      /** Access Description */
+      access_description?: string | null;
+      /** Comment */
+      comment?: string | null;
+      /**
+       * Date
+       * Format: date
+       */
+      date: string;
+      /** Area M */
+      area_m?: number | null;
+      /** Latitude */
+      latitude?: string | null;
+      /** Longitude */
+      longitude?: string | null;
+      /** Utm Zone */
+      utm_zone?: number | null;
+      /** Utm Easting */
+      utm_easting?: number | null;
+      /** Utm Northing */
+      utm_northing?: number | null;
+      /** Location Description */
+      location_description?: string | null;
+      /**
+       * Subtype
+       * @constant
+       */
+      subtype: 'Treatment_Mechanical_Plant_Terrestrial';
+      subtype_data: components['schemas']['api__protocol__activity__plants_out__subtypes__treatment_mechanical_terrestrial__SubtypeData'];
+    };
+    /** UploadedImageOut */
+    UploadedImageOut: {
+      /** Encoded File */
+      encoded_file?: string | null;
+      /** File Name */
+      file_name: string;
+      /** Description */
+      description?: string | null;
+    };
+    /** VoucherSpecimenOut */
+    VoucherSpecimenOut: {
+      /** Voucher Sample Id */
+      voucher_sample_id: string | null;
+      /** Herbarium */
+      herbarium: string | null;
+      /** Accession Number */
+      accession_number: string | null;
+      /** Date Collected */
+      date_collected: string | null;
+      /** Date Verified */
+      date_verified: string | null;
+      /** Completed By Person */
+      completed_by_person: string | null;
+      /** Completed By Org */
+      completed_by_org: string | null;
+      /** Utm Zone */
+      utm_zone: number | null;
+      /** Utm Easting */
+      utm_easting: number | null;
+      /** Utm Northing */
+      utm_northing: number | null;
+    };
+    /** WbContext */
+    WbContext: {
+      /** Access */
+      access: string | null;
+      /** Colour */
+      colour: string | null;
+      /** Comment */
+      comment: string | null;
+      /** Max Depth M */
+      max_depth_m: number | null;
+      /** Name Gazetted */
+      name_gazetted: string | null;
+      /** Name Local */
+      name_local: string | null;
+      /** Secchi Depth */
+      secchi_depth: number | null;
+      /** Tidal Influence */
+      tidal_influence: string | null;
+      /** Type */
+      type: string;
+      /** Inflow Permanent */
+      inflow_permanent: string[];
+      /** Inflow Seasonal */
+      inflow_seasonal: string[];
+      /** Outflow Permanent */
+      outflow_permanent: string[];
+      /** Outflow Seasonal */
+      outflow_seasonal: string[];
+      /** Water Use */
+      water_use: string[];
+      /** Waterlevel Management */
+      waterlevel_management: string[];
+      /** Shoreline Types */
+      shoreline_types: components['schemas']['ShorelineType'][];
+    };
+    /** WeatherConditionsOut */
+    WeatherConditionsOut: {
+      /** Comments */
+      comments: string | null;
+      /** Cloud Cover */
+      cloud_cover: string | null;
+      /** Precipitation */
+      precipitation: string | null;
+      /** Temperature */
+      temperature: number | null;
+      /** Wind Direction */
+      wind_direction: string | null;
+      /** Wind Speed Kmh */
+      wind_speed_kmh: number | null;
+    };
+    /** WellEntryOut */
+    WellEntryOut: {
+      /** Well Tag */
+      well_tag: string | null;
+      /** Distance */
+      distance: number | null;
+    };
+    /** DraftSubtypeData */
+    api__protocol__activity__plants_out__subtypes__biocontrol_collection__DraftSubtypeData: {
+      microsite_conditions: components['schemas']['MicrositeConditionOut'] | null;
+      weather_conditions: components['schemas']['WeatherConditionsOut'] | null;
+      target_plant_phenology: components['schemas']['DraftTargetPlantPhenologyOut'] | null;
+      /** Entries */
+      entries: components['schemas']['DraftEntry'][];
+    };
+    /** SubtypeData */
+    api__protocol__activity__plants_out__subtypes__biocontrol_collection__SubtypeData: {
+      weather_conditions: components['schemas']['WeatherConditionsOut'] | null;
+      microsite_conditions: components['schemas']['MicrositeConditionOut'] | null;
+      target_plant_phenology: components['schemas']['TargetPlantPhenologyOut'] | null;
+      /** Entries */
+      entries: components['schemas']['Entry'][];
+    };
+    /** DraftEntries */
+    api__protocol__activity__plants_out__subtypes__biocontrol_dispersal_monitoring__DraftEntries: {
+      /** Actual Biological Agents */
+      actual_biological_agents: components['schemas']['ExtendedAgentCountOut'][];
+      /** Estimated Biological Agents */
+      estimated_biological_agents: components['schemas']['ExtendedAgentCountOut'][];
+      /** Biocontrol Agent */
+      biocontrol_agent: string | null;
+      /** Biocontrol Present */
+      biocontrol_present: boolean | null;
+      /** Invasive Plant */
+      invasive_plant: string | null;
+      /** Historical Iapp Site */
+      historical_iapp_site: number | null;
+      /** Monitoring Type */
+      monitoring_type: string | null;
+      /** Plant Count */
+      plant_count: number | null;
+      /** Monitoring Method */
+      monitoring_method: string | null;
+      /** Count Duration Minutes */
+      count_duration_minutes: number | null;
+      /** Location Agent Found */
+      location_agent_found: string[];
+      /** Number Of Sweeps */
+      number_of_sweeps: string | null;
+      /** Sign Of Biocontrol Presence */
+      sign_of_biocontrol_presence: string[];
+      /** Start Time */
+      start_time: string | null;
+      /** Stop Time */
+      stop_time: string | null;
+      /** Linear Segment */
+      linear_segment: string | null;
+      /** Suitable For Collection */
+      suitable_for_collection: string | null;
+    };
+    /** DraftSubtypeData */
+    api__protocol__activity__plants_out__subtypes__biocontrol_dispersal_monitoring__DraftSubtypeData: {
+      target_plant_phenology: components['schemas']['DraftTargetPlantPhenologyOut'] | null;
+      weather_conditions: components['schemas']['WeatherConditionsOut'] | null;
+      microsite_conditions: components['schemas']['MicrositeConditionOut'] | null;
+      /** Entries */
+      entries: components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_dispersal_monitoring__DraftEntries'][];
+    };
+    /** Entries */
+    api__protocol__activity__plants_out__subtypes__biocontrol_dispersal_monitoring__Entries: {
+      /** Actual Biological Agents */
+      actual_biological_agents: components['schemas']['ExtendedAgentCountOut'][];
+      /** Estimated Biological Agents */
+      estimated_biological_agents: components['schemas']['ExtendedAgentCountOut'][];
+      /** Biocontrol Agent */
+      biocontrol_agent: string | null;
+      /** Biocontrol Present */
+      biocontrol_present: boolean | null;
+      /** Invasive Plant */
+      invasive_plant: string | null;
+      /** Historical Iapp Site */
+      historical_iapp_site: number | null;
+      /** Monitoring Type */
+      monitoring_type: string | null;
+      /** Plant Count */
+      plant_count: number | null;
+      /** Monitoring Method */
+      monitoring_method: string | null;
+      /** Count Duration Minutes */
+      count_duration_minutes: number | null;
+      /** Location Agent Found */
+      location_agent_found: string[];
+      /** Number Of Sweeps */
+      number_of_sweeps: string | null;
+      /** Sign Of Biocontrol Presence */
+      sign_of_biocontrol_presence: string[];
+      /** Start Time */
+      start_time: string | null;
+      /** Stop Time */
+      stop_time: string | null;
+      /** Linear Segment */
+      linear_segment: string | null;
+      /** Suitable For Collection */
+      suitable_for_collection: string | null;
+    };
+    /** SubtypeData */
+    api__protocol__activity__plants_out__subtypes__biocontrol_dispersal_monitoring__SubtypeData: {
+      target_plant_phenology: components['schemas']['TargetPlantPhenologyOut'] | null;
+      weather_conditions: components['schemas']['WeatherConditionsOut'] | null;
+      microsite_conditions: components['schemas']['MicrositeConditionOut'] | null;
+      /** Entries */
+      entries: components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_dispersal_monitoring__Entries'][];
+    };
+    /** DraftEntries */
+    api__protocol__activity__plants_out__subtypes__biocontrol_release__DraftEntries: {
+      /** Actual Biological Agents */
+      actual_biological_agents: components['schemas']['SimpleAgentCountOut'][];
+      /** Estimated Biological Agents */
+      estimated_biological_agents: components['schemas']['SimpleAgentCountOut'][];
+      /** Agent Source */
+      agent_source: string | null;
+      /** Biocontrol Agent */
+      biocontrol_agent: string | null;
+      /** Collection Date */
+      collection_date: string | null;
+      /** Linear Segment */
+      linear_segment: string | null;
+      /** Invasive Plant */
+      invasive_plant: string | null;
+      /** Mortality */
+      mortality: number | null;
+      /** Plant Collected From */
+      plant_collected_from: string | null;
+      /** Plant Collected From Manual */
+      plant_collected_from_manual: string | null;
+    };
+    /** DraftSubtypeData */
+    api__protocol__activity__plants_out__subtypes__biocontrol_release__DraftSubtypeData: {
+      weather_conditions: components['schemas']['WeatherConditionsOut'] | null;
+      microsite_conditions: components['schemas']['MicrositeConditionOut'] | null;
+      target_plant_phenology: components['schemas']['DraftTargetPlantPhenologyOut'] | null;
+      /** Entries */
+      entries: components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_release__DraftEntries'][];
+    };
+    /** Entries */
+    api__protocol__activity__plants_out__subtypes__biocontrol_release__Entries: {
+      /** Actual Biological Agents */
+      actual_biological_agents: components['schemas']['SimpleAgentCountOut'][];
+      /** Estimated Biological Agents */
+      estimated_biological_agents: components['schemas']['SimpleAgentCountOut'][];
+      /** Agent Source */
+      agent_source: string | null;
+      /** Biocontrol Agent */
+      biocontrol_agent: string | null;
+      /** Collection Date */
+      collection_date: string | null;
+      /** Linear Segment */
+      linear_segment: string | null;
+      /** Invasive Plant */
+      invasive_plant: string | null;
+      /** Mortality */
+      mortality: number | null;
+      /** Plant Collected From */
+      plant_collected_from: string | null;
+      /** Plant Collected From Manual */
+      plant_collected_from_manual: string | null;
+    };
+    /** SubtypeData */
+    api__protocol__activity__plants_out__subtypes__biocontrol_release__SubtypeData: {
+      microsite_conditions: components['schemas']['MicrositeConditionOut'] | null;
+      target_plant_phenology: components['schemas']['TargetPlantPhenologyOut'] | null;
+      weather_conditions: components['schemas']['WeatherConditionsOut'] | null;
+      /** Entries */
+      entries: components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_release__Entries'][];
+    };
+    /** DraftEntries */
+    api__protocol__activity__plants_out__subtypes__biocontrol_release_monitoring__DraftEntries: {
+      /** Actual Biological Agents */
+      actual_biological_agents: components['schemas']['ExtendedAgentCountOut'][];
+      /** Estimated Biological Agents */
+      estimated_biological_agents: components['schemas']['ExtendedAgentCountOut'][];
+      /** Biocontrol Agent */
+      biocontrol_agent: string | null;
+      /** Biocontrol Present */
+      biocontrol_present: boolean | null;
+      /** Invasive Plant */
+      invasive_plant: string | null;
+      /** Historical Iapp Site */
+      historical_iapp_site: number | null;
+      /** Monitoring Type */
+      monitoring_type: string | null;
+      /** Plant Count */
+      plant_count: number | null;
+      /** Monitoring Method */
+      monitoring_method: string | null;
+      /** Count Duration Minutes */
+      count_duration_minutes: number | null;
+      /** Location Agent Found */
+      location_agent_found: string[];
+      /** Number Of Sweeps */
+      number_of_sweeps: string | null;
+      /** Sign Of Biocontrol Presence */
+      sign_of_biocontrol_presence: string[];
+      /** Start Time */
+      start_time: string | null;
+      /** Stop Time */
+      stop_time: string | null;
+      /** Suitable For Collection */
+      suitable_for_collection: string | null;
+    };
+    /** DraftSubtypeData */
+    api__protocol__activity__plants_out__subtypes__biocontrol_release_monitoring__DraftSubtypeData: {
+      spread_results: components['schemas']['SpreadResultsOut'] | null;
+      target_plant_phenology: components['schemas']['DraftTargetPlantPhenologyOut'] | null;
+      weather_conditions: components['schemas']['WeatherConditionsOut'] | null;
+      microsite_conditions: components['schemas']['MicrositeConditionOut'] | null;
+      /** Entries */
+      entries: components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_release_monitoring__DraftEntries'][];
+    };
+    /** Entries */
+    api__protocol__activity__plants_out__subtypes__biocontrol_release_monitoring__Entries: {
+      /** Actual Biological Agents */
+      actual_biological_agents: components['schemas']['ExtendedAgentCountOut'][];
+      /** Estimated Biological Agents */
+      estimated_biological_agents: components['schemas']['ExtendedAgentCountOut'][];
+      /** Biocontrol Agent */
+      biocontrol_agent: string | null;
+      /** Biocontrol Present */
+      biocontrol_present: boolean | null;
+      /** Invasive Plant */
+      invasive_plant: string | null;
+      /** Historical Iapp Site */
+      historical_iapp_site: number | null;
+      /** Monitoring Type */
+      monitoring_type: string | null;
+      /** Plant Count */
+      plant_count: number | null;
+      /** Monitoring Method */
+      monitoring_method: string | null;
+      /** Count Duration Minutes */
+      count_duration_minutes: number | null;
+      /** Location Agent Found */
+      location_agent_found: string[];
+      /** Number Of Sweeps */
+      number_of_sweeps: string | null;
+      /** Sign Of Biocontrol Presence */
+      sign_of_biocontrol_presence: string[];
+      /** Start Time */
+      start_time: string | null;
+      /** Stop Time */
+      stop_time: string | null;
+      /** Suitable For Collection */
+      suitable_for_collection: string | null;
+    };
+    /** SubtypeData */
+    api__protocol__activity__plants_out__subtypes__biocontrol_release_monitoring__SubtypeData: {
+      spread_results: components['schemas']['SpreadResultsOut'] | null;
+      target_plant_phenology: components['schemas']['TargetPlantPhenologyOut'] | null;
+      weather_conditions: components['schemas']['WeatherConditionsOut'] | null;
+      microsite_conditions: components['schemas']['MicrositeConditionOut'] | null;
+      /** Entries */
+      entries: components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_release_monitoring__Entries'][];
+    };
+    /** DraftSubtypeData */
+    api__protocol__activity__plants_out__subtypes__monitoring_treatment_chemical__DraftSubtypeData: {
+      /** Entries */
+      entries: components['schemas']['DraftMonitoringTreatmentEntryOut'][];
+    };
+    /** SubtypeData */
+    api__protocol__activity__plants_out__subtypes__monitoring_treatment_chemical__SubtypeData: {
+      /** Entries */
+      entries: components['schemas']['MonitoringTreatmentEntryOut'][];
+    };
+    /** Context */
+    api__protocol__activity__plants_out__subtypes__observation_aquatic__Context: {
+      /** Suitable For Biocontrol */
+      suitable_for_biocontrol: string;
+    };
+    /** DraftContext */
+    api__protocol__activity__plants_out__subtypes__observation_aquatic__DraftContext: {
+      /** Suitable For Biocontrol */
+      suitable_for_biocontrol: string | null;
+    };
+    /** DraftEntries */
+    api__protocol__activity__plants_out__subtypes__observation_aquatic__DraftEntries: {
+      /** Sample Point Id */
+      sample_point_id?: string | null;
+      /** Density */
+      density: string | null;
+      /** Distribution */
+      distribution: string | null;
+      /** Invasive Plant */
+      invasive_plant: string | null;
+      /** Life Stage */
+      life_stage: string | null;
+      /** Observation Type */
+      observation_type?: string | null;
+      voucher_specimen?: components['schemas']['VoucherSpecimenOut'] | null;
+    };
+    /** DraftSubtypeData */
+    api__protocol__activity__plants_out__subtypes__observation_aquatic__DraftSubtypeData: {
+      context:
+        | components['schemas']['api__protocol__activity__plants_out__subtypes__observation_aquatic__DraftContext']
+        | null;
+      /** Entries */
+      entries: components['schemas']['api__protocol__activity__plants_out__subtypes__observation_aquatic__DraftEntries'][];
+      /** Pretreatment Observation */
+      pretreatment_observation: string | null;
+      waterbody_context: components['schemas']['DraftWbContext'] | null;
+      /** Adjacent Land Use */
+      adjacent_land_use: string[];
+      /** Substrate Type */
+      substrate_type: string[];
+      /** Shoreline Types */
+      shoreline_types: components['schemas']['ShorelineType'][];
+    };
+    /** Entries */
+    api__protocol__activity__plants_out__subtypes__observation_aquatic__Entries: {
+      /** Sample Point Id */
+      sample_point_id?: string | null;
+      /** Density */
+      density: string | null;
+      /** Distribution */
+      distribution: string | null;
+      /** Invasive Plant */
+      invasive_plant: string;
+      /** Life Stage */
+      life_stage: string | null;
+      /** Observation Type */
+      observation_type: string;
+      voucher_specimen?: components['schemas']['VoucherSpecimenOut'] | null;
+    };
+    /** SubtypeData */
+    api__protocol__activity__plants_out__subtypes__observation_aquatic__SubtypeData: {
+      context: components['schemas']['api__protocol__activity__plants_out__subtypes__observation_aquatic__Context'];
+      /** Entries */
+      entries: components['schemas']['api__protocol__activity__plants_out__subtypes__observation_aquatic__Entries'][];
+      /** Pretreatment Observation */
+      pretreatment_observation: string;
+      waterbody_context: components['schemas']['WbContext'];
+      /** Adjacent Land Use */
+      adjacent_land_use: string[];
+      /** Substrate Type */
+      substrate_type: string[];
+      /** Shoreline Types */
+      shoreline_types: components['schemas']['ShorelineType'][];
+    };
+    /** Context */
+    api__protocol__activity__plants_out__subtypes__observation_terrestrial__Context: {
+      /** Aspect */
+      aspect: string | null;
+      /** Research Observation */
+      research_observation: string | null;
+      /** Slope Percent */
+      slope_percent: string | null;
+      /** Soil Texture */
+      soil_texture: string | null;
+      /** Specific Uses */
+      specific_uses: components['schemas']['SpecificUseOut'][];
+      /** Suitable For Biocontrol Agent */
+      suitable_for_biocontrol_agent: string | null;
+      /** Visible Well Nearby */
+      visible_well_nearby: string | null;
+    };
+    /** DraftContext */
+    api__protocol__activity__plants_out__subtypes__observation_terrestrial__DraftContext: {
+      /** Aspect */
+      aspect: string | null;
+      /** Research Observation */
+      research_observation: string | null;
+      /** Slope Percent */
+      slope_percent: string | null;
+      /** Soil Texture */
+      soil_texture: string | null;
+      /** Specific Uses */
+      specific_uses: components['schemas']['SpecificUseOut'][];
+      /** Suitable For Biocontrol Agent */
+      suitable_for_biocontrol_agent: string | null;
+      /** Visible Well Nearby */
+      visible_well_nearby: string | null;
+    };
+    /** DraftEntries */
+    api__protocol__activity__plants_out__subtypes__observation_terrestrial__DraftEntries: {
+      /** Density */
+      density: string | null;
+      /** Distribution */
+      distribution: string | null;
+      /** Invasive Plant */
+      invasive_plant: string | null;
+      /** Life Stage */
+      life_stage: string | null;
+      /** Observation Type */
+      observation_type?: string | null;
+      voucher_specimen?: components['schemas']['VoucherSpecimenOut'] | null;
+    };
+    /** DraftSubtypeData */
+    api__protocol__activity__plants_out__subtypes__observation_terrestrial__DraftSubtypeData: {
+      context:
+        | components['schemas']['api__protocol__activity__plants_out__subtypes__observation_terrestrial__DraftContext']
+        | null;
+      /** Entries */
+      entries: components['schemas']['api__protocol__activity__plants_out__subtypes__observation_terrestrial__DraftEntries'][];
+      /** Pretreatment Observation */
+      pretreatment_observation: string | null;
+    };
+    /** Entries */
+    api__protocol__activity__plants_out__subtypes__observation_terrestrial__Entries: {
+      /** Density */
+      density: string | null;
+      /** Distribution */
+      distribution: string | null;
+      /** Invasive Plant */
+      invasive_plant: string;
+      /** Life Stage */
+      life_stage: string | null;
+      /** Observation Type */
+      observation_type: string;
+      voucher_specimen?: components['schemas']['VoucherSpecimenOut'] | null;
+    };
+    /** SubtypeData */
+    api__protocol__activity__plants_out__subtypes__observation_terrestrial__SubtypeData: {
+      context: components['schemas']['api__protocol__activity__plants_out__subtypes__observation_terrestrial__Context'];
+      /** Entries */
+      entries: components['schemas']['api__protocol__activity__plants_out__subtypes__observation_terrestrial__Entries'][];
+      /** Pretreatment Observation */
+      pretreatment_observation: string;
+    };
+    /** DraftSubtypeData */
+    api__protocol__activity__plants_out__subtypes__treatment_chemical_aquatic__DraftSubtypeData: {
+      /** Well Entries */
+      well_entries: components['schemas']['WellEntryOut'][];
+      treatment_context: components['schemas']['DraftTreatmentContextOut'];
+      context: components['schemas']['ChemicalTreatmentContextOut'];
+    };
+    /** SubtypeData */
+    api__protocol__activity__plants_out__subtypes__treatment_chemical_aquatic__SubtypeData: {
+      /** Well Entries */
+      well_entries: components['schemas']['WellEntryOut'][];
+      treatment_context: components['schemas']['TreatmentContextOut'];
+      context: components['schemas']['ChemicalTreatmentContextOut'];
+    };
+    /** DraftSubtypeData */
+    api__protocol__activity__plants_out__subtypes__treatment_chemical_terrestrial__DraftSubtypeData: {
+      /** Well Entries */
+      well_entries: components['schemas']['WellEntryOut'][];
+      treatment_context: components['schemas']['DraftTreatmentContextOut'];
+      context: components['schemas']['ChemicalTreatmentContextOut'];
+    };
+    /** SubtypeData */
+    api__protocol__activity__plants_out__subtypes__treatment_chemical_terrestrial__SubtypeData: {
+      /** Well Entries */
+      well_entries: components['schemas']['WellEntryOut'][];
+      treatment_context: components['schemas']['TreatmentContextOut'];
+      context: components['schemas']['ChemicalTreatmentContextOut'];
+    };
+    /** DraftSubtypeData */
+    api__protocol__activity__plants_out__subtypes__treatment_mechanical_aquatic__DraftSubtypeData: {
+      /** Authorization Information */
+      authorization_information?: string | null;
+      /** Entries */
+      entries: components['schemas']['MechanicalTreatmentEntryOut'][];
+      /** Shoreline Types */
+      shoreline_types: components['schemas']['ShorelineType'][];
+    };
+    /** SubtypeData */
+    api__protocol__activity__plants_out__subtypes__treatment_mechanical_aquatic__SubtypeData: {
+      /** Authorization Information */
+      authorization_information?: string | null;
+      /** Entries */
+      entries: components['schemas']['MechanicalTreatmentEntryOut'][];
+      /** Shoreline Types */
+      shoreline_types: components['schemas']['ShorelineType'][];
+    };
+    /** DraftSubtypeData */
+    api__protocol__activity__plants_out__subtypes__treatment_mechanical_terrestrial__DraftSubtypeData: {
+      /** Entries */
+      entries: components['schemas']['MechanicalTreatmentEntryOut'][];
+    };
+    /** SubtypeData */
+    api__protocol__activity__plants_out__subtypes__treatment_mechanical_terrestrial__SubtypeData: {
+      /** Entries */
+      entries: components['schemas']['MechanicalTreatmentEntryOut'][];
+    };
+    /** UserProfileOut */
+    UserProfileOut: {
+      /** Employers */
+      employers: string[];
+      /** Funding Agencies */
+      funding_agencies: string[];
+      /** Pac Number */
+      pac_number?: string | null;
+      /** Pac Service Numbers */
+      pac_service_numbers: string[];
+      /** Roles */
+      roles: string[];
+      /** Write Privilege */
+      write_privilege: string[];
+      /**
+       * Subject
+       * @default Unset
+       */
+      subject: string | null;
+      /** Display Name */
+      display_name?: string | null;
+      /** Email */
+      email?: string | null;
+      /**
+       * Is Active
+       * @default true
+       */
+      is_active: boolean;
+      /** Phone Number */
+      phone_number?: string | null;
+      /** Expiry Date */
+      expiry_date?: string | null;
+    };
+    /** UserAccessIn */
+    UserAccessIn: {
+      /** Employer */
+      employer: string[];
+      /** Funding Agencies */
+      funding_agencies: string[];
+      /** Pac Number */
+      pac_number?: number | null;
+      /** Pac Service Numbers */
+      pac_service_numbers: string[];
+      /** Phone */
+      phone: string | null;
+      /** Roles */
+      roles: string[];
+      /** Comments */
+      comments: string | null;
+    };
+    /** DraftActivityPlantRowOut */
+    DraftActivityPlantRowOut: {
+      /**
+       * Activity Id
+       * Format: uuid4
+       */
+      activity_id: string;
+      /**
+       * Activity Date
+       * Format: date
+       */
+      activity_date: string;
+      /** Activity Type */
+      activity_type: string;
+      /** Created By */
+      created_by: string;
+      /** Short Id */
+      short_id: string;
+      geom?: components['schemas']['Point'] | null;
+      /** Activity Subtype */
+      activity_subtype: string;
+      /** Elevation */
+      elevation?: number | null;
+      /** Biogeoclimatic Zones */
+      biogeoclimatic_zones?: string | null;
+      /** Regional Districts */
+      regional_districts?: string | null;
+      /** Invasive Plant Management Areas */
+      invasive_plant_management_areas?: string | null;
+      /** Employers */
+      employers?: string | null;
+      /** Regional Invasive Species Organization Areas */
+      regional_invasive_species_organization_areas?: string | null;
+      /** Reported Area */
+      reported_area: number | null;
+      /** Agency */
+      agency?: string | null;
+      /** Updated By */
+      updated_by?: string | null;
+      /** Species Biocontrol Full */
+      species_biocontrol_full?: string | null;
+      /** Species Treated Full */
+      species_treated_full?: string | null;
+      /** Species Negative Full */
+      species_negative_full?: string | null;
+      /** Species Positive Full */
+      species_positive_full?: string | null;
+      /** Invasive Plant */
+      invasive_plant?: string | null;
+      /** Jurisdiction Display */
+      jurisdiction_display?: string | null;
+      /** Project Code */
+      project_code?: string | null;
+      /** Batch Id */
+      batch_id?: number | null;
+    };
+    /** RecordsetRowsResponseOut */
+    RecordsetRowsResponseOut: {
+      /** Total */
+      total: number;
+      /** Entries */
+      entries:
+        | components['schemas']['ActivityPlantRowOut'][]
+        | components['schemas']['DraftActivityPlantRowOut'][]
+        | string[]
+        | null;
+    };
+    /** FilterObjects */
+    FilterObjects: {
+      /** Limit */
+      limit?: number | null;
+      /** Page */
+      page?: number | null;
+      /** Sortcolumn */
+      sortColumn?: string | null;
+      /** Sortorder */
+      sortOrder?: string | null;
+      /** Ids To Filter */
+      ids_to_filter?: string[] | null;
+      /** Recordsettype */
+      recordSetType?: 'Activity' | 'IAPP' | null;
+      /**
+       * Tablefilters
+       * @default []
+       */
+      tableFilters: components['schemas']['TableFilterIn'][] | null;
+      /** Selectcolumns */
+      selectColumns: string[];
+      /** Csvtype */
+      CSVType?: string | null;
+    };
+    /** FilterObjectsIn */
+    FilterObjectsIn: {
+      /** Filterobjects */
+      filterObjects: components['schemas']['FilterObjects'][];
+    };
+    /** TableFilterIn */
+    TableFilterIn: {
+      /** Field */
+      field?: string | null;
+      /** Filter */
+      filter?: string | null;
+      /** Operator */
+      operator: 'CONTAINS' | 'DOES NOT CONTAIN' | 'CONTAINED IN';
+      /** Operator2 */
+      operator2?: 'AND' | 'OR' | null;
+      /** Geojson */
+      geojson?: {
+        [key: string]: unknown;
+      } | null;
+      /** Filtertype */
+      filterType: 'spatialFilterDrawn' | 'spatialFilterUploaded' | 'tableFilter' | 'mostRecentObservation';
+    };
+    /** ActivityPlantSummaryOut */
+    ActivityPlantSummaryOut: {
+      /** Observations */
+      observations: components['schemas']['ActivityPlantRowOut'][];
+      /** Treatments */
+      treatments: components['schemas']['ActivityPlantRowOut'][];
+      /** Monitoring */
+      monitoring: components['schemas']['ActivityPlantRowOut'][];
+      /** Biocontrol */
+      biocontrol: components['schemas']['ActivityPlantRowOut'][];
+    };
+    /** IdListIn */
+    IdListIn: {
+      /** Idlist */
+      idList: string[];
+    };
+    /** BaseModel */
+    BaseModel: Record<string, never>;
+    /**
+     * CachedActivityPlantRowOut
+     * @description Stack Metadata for Cached recordsets tile layers
+     */
+    CachedActivityPlantRowOut: {
+      /**
+       * Activity Id
+       * Format: uuid4
+       */
+      activity_id: string;
+      /**
+       * Activity Date
+       * Format: date
+       */
+      activity_date: string;
+      /** Activity Type */
+      activity_type: string;
+      /** Created By */
+      created_by: string;
+      /** Short Id */
+      short_id: string;
+      geom?: components['schemas']['Feature'] | null;
+      /** Activity Subtype */
+      activity_subtype: string;
+      /** Elevation */
+      elevation: number | null;
+      /** Biogeoclimatic Zones */
+      biogeoclimatic_zones: string | null;
+      /** Regional Districts */
+      regional_districts: string | null;
+      /** Invasive Plant Management Areas */
+      invasive_plant_management_areas: string | null;
+      /** Employers */
+      employers?: string | null;
+      /** Regional Invasive Species Organization Areas */
+      regional_invasive_species_organization_areas?: string | null;
+      /** Reported Area */
+      reported_area: number | null;
+      /** Agency */
+      agency?: string | null;
+      /** Updated By */
+      updated_by?: string | null;
+      /** Species Biocontrol Full */
+      species_biocontrol_full?: string | null;
+      /** Species Treated Full */
+      species_treated_full?: string | null;
+      /** Species Negative Full */
+      species_negative_full?: string | null;
+      /** Species Positive Full */
+      species_positive_full?: string | null;
+      /** Invasive Plant */
+      invasive_plant?: string | null;
+      /** Jurisdiction Display */
+      jurisdiction_display?: string | null;
+      /** Project Code */
+      project_code?: string | null;
+      /** Batch Id */
+      batch_id?: number | null;
+      /** Data */
+      data:
+        | components['schemas']['ObservationTerrestrialPlantOut']
+        | components['schemas']['ObservationAquaticPlantOut']
+        | components['schemas']['DraftObservationTerrestrialPlantOut']
+        | components['schemas']['DraftObservationAquaticPlantOut']
+        | components['schemas']['TreatmentMechanicalAquaticPlantOut']
+        | components['schemas']['TreatmentMechanicalTerrestrialPlantOut']
+        | components['schemas']['TreatmentChemicalTerrestrialOut']
+        | components['schemas']['TreatmentChemicalAquaticOut']
+        | components['schemas']['DraftTreatmentMechanicalAquaticPlantOut']
+        | components['schemas']['DraftTreatmentMechanicalTerrestrialPlantOut']
+        | components['schemas']['DraftTreatmentChemicalTerrestrialOut']
+        | components['schemas']['DraftTreatmentChemicalAquaticOut']
+        | components['schemas']['MonitoringTreatmentChemicalOut']
+        | components['schemas']['MonitoringTreatmentMechanicalOut']
+        | components['schemas']['DraftMonitoringTreatmentChemicalOut']
+        | components['schemas']['DraftMonitoringTreatmentMechanicalOut']
+        | components['schemas']['BiocontrolReleaseOut']
+        | components['schemas']['BiocontrolCollectionOut']
+        | components['schemas']['BiocontrolReleaseMonitoringOut']
+        | components['schemas']['BiocontrolDispersalMonitoringOut']
+        | components['schemas']['DraftBiocontrolReleaseOut']
+        | components['schemas']['DraftBiocontrolCollectionOut']
+        | components['schemas']['DraftBiocontrolReleaseMonitoringOut']
+        | components['schemas']['DraftBiocontrolDispersalMonitoringOut'];
+      centroid?: components['schemas']['Feature'] | null;
+    };
+    /**
+     * Feature
+     * @description Feature Model
+     */
+    Feature: {
+      /** Bbox */
+      bbox?: [number, number, number, number] | [number, number, number, number, number, number] | null;
+      /**
+       * Type
+       * @constant
+       */
+      type: 'Feature';
+      /** Geometry */
+      geometry:
+        | (
+            | components['schemas']['Point']
+            | components['schemas']['MultiPoint']
+            | components['schemas']['LineString']
+            | components['schemas']['MultiLineString']
+            | components['schemas']['Polygon']
+            | components['schemas']['MultiPolygon']
+            | components['schemas']['GeometryCollection']
+          )
+        | null;
+      /** Properties */
+      properties:
+        | {
+            [key: string]: unknown;
+          }
+        | components['schemas']['BaseModel']
+        | null;
+      /** Id */
+      id?: number | string | null;
+    };
+    /**
+     * GeometryCollection
+     * @description GeometryCollection Model
+     */
+    GeometryCollection: {
+      /** Bbox */
+      bbox?: [number, number, number, number] | [number, number, number, number, number, number] | null;
+      /**
+       * @description discriminator enum property added by openapi-typescript
+       * @enum {string}
+       */
+      type: 'GeometryCollection';
+      /** Geometries */
+      geometries: (
+        | components['schemas']['Point']
+        | components['schemas']['MultiPoint']
+        | components['schemas']['LineString']
+        | components['schemas']['MultiLineString']
+        | components['schemas']['Polygon']
+        | components['schemas']['MultiPolygon']
+        | components['schemas']['GeometryCollection']
+      )[];
+    };
+    /**
+     * LineString
+     * @description LineString Model
+     */
+    LineString: {
+      /** Bbox */
+      bbox?: [number, number, number, number] | [number, number, number, number, number, number] | null;
+      /**
+       * @description discriminator enum property added by openapi-typescript
+       * @enum {string}
+       */
+      type: 'LineString';
+      /** Coordinates */
+      coordinates: (components['schemas']['Position2D'] | components['schemas']['Position3D'])[];
+    };
+    /**
+     * MultiLineString
+     * @description MultiLineString Model
+     */
+    MultiLineString: {
+      /** Bbox */
+      bbox?: [number, number, number, number] | [number, number, number, number, number, number] | null;
+      /**
+       * @description discriminator enum property added by openapi-typescript
+       * @enum {string}
+       */
+      type: 'MultiLineString';
+      /** Coordinates */
+      coordinates: (components['schemas']['Position2D'] | components['schemas']['Position3D'])[][];
+    };
+    /**
+     * MultiPoint
+     * @description MultiPoint Model
+     */
+    MultiPoint: {
+      /** Bbox */
+      bbox?: [number, number, number, number] | [number, number, number, number, number, number] | null;
+      /**
+       * @description discriminator enum property added by openapi-typescript
+       * @enum {string}
+       */
+      type: 'MultiPoint';
+      /** Coordinates */
+      coordinates: (components['schemas']['Position2D'] | components['schemas']['Position3D'])[];
+    };
+    /**
+     * MultiPolygon
+     * @description MultiPolygon Model
+     */
+    MultiPolygon: {
+      /** Bbox */
+      bbox?: [number, number, number, number] | [number, number, number, number, number, number] | null;
+      /**
+       * @description discriminator enum property added by openapi-typescript
+       * @enum {string}
+       */
+      type: 'MultiPolygon';
+      /** Coordinates */
+      coordinates: (components['schemas']['Position2D'] | components['schemas']['Position3D'])[][][];
+    };
+    /**
+     * Polygon
+     * @description Polygon Model
+     */
+    Polygon: {
+      /** Bbox */
+      bbox?: [number, number, number, number] | [number, number, number, number, number, number] | null;
+      /**
+       * @description discriminator enum property added by openapi-typescript
+       * @enum {string}
+       */
+      type: 'Polygon';
+      /** Coordinates */
+      coordinates: (components['schemas']['Position2D'] | components['schemas']['Position3D'])[][];
+    };
+    /** SummaryIn */
+    SummaryIn: {
+      /** Zone */
+      zone?: string[] | null;
+      /** User */
+      user?: string | null;
+    };
+    /**
+     * TeamMembershipOut
+     * @description Returns Teams belonging to a User, includes permission to create a new team
+     */
+    TeamMembershipOut: {
+      /** Can Create Team */
+      can_create_team: boolean;
+      /** Teams */
+      teams: components['schemas']['TeamMembershipRowOut'][];
+    };
+    /** TeamMembershipRowOut */
+    TeamMembershipRowOut: {
+      /** Description */
+      description: string;
+      /** Team Founder */
+      team_founder: string;
+      /** Team Name */
+      team_name: string;
+      /** Team Id */
+      team_id: number;
+      /**
+       * Join Date
+       * Format: date
+       */
+      join_date?: string;
+    };
+    /** CreateTeamSchema */
+    CreateTeamSchema: {
+      /** Name */
+      name: string;
+      /** Agencies */
+      agencies: string[];
+      /** Description */
+      description: string | null;
+    };
+    /** InvitationOut */
+    InvitationOut: {
+      /** Id */
+      id: number;
+      /** Agencies */
+      agencies?: string | null;
+      /**
+       * Date Stamp
+       * Format: date-time
+       */
+      date_stamp: string;
+      /** Description */
+      description: string;
+      /** Employers */
+      employers?: string | null;
+      /** Founder */
+      founder: string;
+      /**
+       * Founding Date
+       * Format: date
+       */
+      founding_date: string;
+      /** Invitee */
+      invitee: string;
+      /** Name */
+      name: string;
+      status: components['schemas']['InviteStatus'];
+    };
+    /**
+     * InviteStatus
+     * @enum {string}
+     */
+    InviteStatus: 'Pending' | 'Accepted' | 'Declined' | 'Cancelled';
+    /** SingleTeamOut */
+    SingleTeamOut: {
+      /** Agencies */
+      agencies: string | null;
+      /** Can Edit */
+      can_edit: boolean;
+      /** Employers */
+      employers: string | null;
+      /** Founder */
+      founder: string;
+      /** Invitations */
+      invitations?: components['schemas']['InvitationOut'][] | null;
+      /** Members */
+      members: components['schemas']['TeamMemberOut'][];
+      /** Name */
+      name: string;
+      /**
+       * Founding Date
+       * Format: date
+       */
+      founding_date?: string;
+      /** Id */
+      id?: number | null;
+      /** Description */
+      description?: string | null;
+    };
+    /** TeamMemberOut */
+    TeamMemberOut: {
+      /**
+       * Join Date
+       * Format: date
+       */
+      join_date: string;
+      /** Leave Date */
+      leave_date?: string | null;
+      /** Name */
+      name: string;
+      /** Subject */
+      subject: string;
+    };
+    /**
+     * UpdateTeamSchema
+     * @description Schema for Updating a Team. Presently teams can only update their name.
+     *     Agencies are locked to creation of Team.
+     */
+    UpdateTeamSchema: {
+      /** Name */
+      name: string | null;
+      /** Description */
+      description: string | null;
+    };
+    /** InviteUserToTeamSchema */
+    InviteUserToTeamSchema: {
+      /** Subject */
+      subject: string;
+    };
+    /** TeamSuggestedUserOut */
+    TeamSuggestedUserOut: {
+      /** Code */
+      code: string;
+      /** Full Name */
+      full_name: string;
+    };
+    /** InvitationResponseSchema */
+    InvitationResponseSchema: {
+      /** Invitation Id */
+      invitation_id: number;
+      response: components['schemas']['InviteStatus'];
+    };
+  };
+  responses: never;
+  parameters: never;
+  requestBodies: never;
+  headers: never;
+  pathItems: never;
 }
+export type CreationPermissionsOut = components['schemas']['CreationPermissionsOut'];
 export type ActivityMinimal = components['schemas']['ActivityMinimal'];
 export type ActivitySearchParameters = components['schemas']['ActivitySearchParameters'];
 export type ActivitySearchResult = components['schemas']['ActivitySearchResult'];
+export type ActivityPermissionsOut = components['schemas']['ActivityPermissionsOut'];
 export type ActivityPlantRowOut = components['schemas']['ActivityPlantRowOut'];
 export type BiocontrolCollectionOut = components['schemas']['BiocontrolCollectionOut'];
 export type BiocontrolDispersalMonitoringOut = components['schemas']['BiocontrolDispersalMonitoringOut'];
@@ -3693,7 +3707,8 @@ export type DraftTreatmentChemicalAquaticOut = components['schemas']['DraftTreat
 export type DraftTreatmentChemicalTerrestrialOut = components['schemas']['DraftTreatmentChemicalTerrestrialOut'];
 export type DraftTreatmentContextOut = components['schemas']['DraftTreatmentContextOut'];
 export type DraftTreatmentMechanicalAquaticPlantOut = components['schemas']['DraftTreatmentMechanicalAquaticPlantOut'];
-export type DraftTreatmentMechanicalTerrestrialPlantOut = components['schemas']['DraftTreatmentMechanicalTerrestrialPlantOut'];
+export type DraftTreatmentMechanicalTerrestrialPlantOut =
+  components['schemas']['DraftTreatmentMechanicalTerrestrialPlantOut'];
 export type DraftWbContext = components['schemas']['DraftWbContext'];
 export type EmployerOut = components['schemas']['EmployerOut'];
 export type Entry = components['schemas']['Entry'];
@@ -3736,42 +3751,78 @@ export type VoucherSpecimenOut = components['schemas']['VoucherSpecimenOut'];
 export type WbContext = components['schemas']['WbContext'];
 export type WeatherConditionsOut = components['schemas']['WeatherConditionsOut'];
 export type WellEntryOut = components['schemas']['WellEntryOut'];
-export type ApiProtocolActivityPlantsOutSubtypesBiocontrolCollectionDraftSubtypeData = components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_collection__DraftSubtypeData'];
-export type ApiProtocolActivityPlantsOutSubtypesBiocontrolCollectionSubtypeData = components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_collection__SubtypeData'];
-export type ApiProtocolActivityPlantsOutSubtypesBiocontrolDispersalMonitoringDraftEntries = components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_dispersal_monitoring__DraftEntries'];
-export type ApiProtocolActivityPlantsOutSubtypesBiocontrolDispersalMonitoringDraftSubtypeData = components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_dispersal_monitoring__DraftSubtypeData'];
-export type ApiProtocolActivityPlantsOutSubtypesBiocontrolDispersalMonitoringEntries = components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_dispersal_monitoring__Entries'];
-export type ApiProtocolActivityPlantsOutSubtypesBiocontrolDispersalMonitoringSubtypeData = components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_dispersal_monitoring__SubtypeData'];
-export type ApiProtocolActivityPlantsOutSubtypesBiocontrolReleaseDraftEntries = components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_release__DraftEntries'];
-export type ApiProtocolActivityPlantsOutSubtypesBiocontrolReleaseDraftSubtypeData = components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_release__DraftSubtypeData'];
-export type ApiProtocolActivityPlantsOutSubtypesBiocontrolReleaseEntries = components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_release__Entries'];
-export type ApiProtocolActivityPlantsOutSubtypesBiocontrolReleaseSubtypeData = components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_release__SubtypeData'];
-export type ApiProtocolActivityPlantsOutSubtypesBiocontrolReleaseMonitoringDraftEntries = components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_release_monitoring__DraftEntries'];
-export type ApiProtocolActivityPlantsOutSubtypesBiocontrolReleaseMonitoringDraftSubtypeData = components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_release_monitoring__DraftSubtypeData'];
-export type ApiProtocolActivityPlantsOutSubtypesBiocontrolReleaseMonitoringEntries = components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_release_monitoring__Entries'];
-export type ApiProtocolActivityPlantsOutSubtypesBiocontrolReleaseMonitoringSubtypeData = components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_release_monitoring__SubtypeData'];
-export type ApiProtocolActivityPlantsOutSubtypesMonitoringTreatmentChemicalDraftSubtypeData = components['schemas']['api__protocol__activity__plants_out__subtypes__monitoring_treatment_chemical__DraftSubtypeData'];
-export type ApiProtocolActivityPlantsOutSubtypesMonitoringTreatmentChemicalSubtypeData = components['schemas']['api__protocol__activity__plants_out__subtypes__monitoring_treatment_chemical__SubtypeData'];
-export type ApiProtocolActivityPlantsOutSubtypesObservationAquaticContext = components['schemas']['api__protocol__activity__plants_out__subtypes__observation_aquatic__Context'];
-export type ApiProtocolActivityPlantsOutSubtypesObservationAquaticDraftContext = components['schemas']['api__protocol__activity__plants_out__subtypes__observation_aquatic__DraftContext'];
-export type ApiProtocolActivityPlantsOutSubtypesObservationAquaticDraftEntries = components['schemas']['api__protocol__activity__plants_out__subtypes__observation_aquatic__DraftEntries'];
-export type ApiProtocolActivityPlantsOutSubtypesObservationAquaticDraftSubtypeData = components['schemas']['api__protocol__activity__plants_out__subtypes__observation_aquatic__DraftSubtypeData'];
-export type ApiProtocolActivityPlantsOutSubtypesObservationAquaticEntries = components['schemas']['api__protocol__activity__plants_out__subtypes__observation_aquatic__Entries'];
-export type ApiProtocolActivityPlantsOutSubtypesObservationAquaticSubtypeData = components['schemas']['api__protocol__activity__plants_out__subtypes__observation_aquatic__SubtypeData'];
-export type ApiProtocolActivityPlantsOutSubtypesObservationTerrestrialContext = components['schemas']['api__protocol__activity__plants_out__subtypes__observation_terrestrial__Context'];
-export type ApiProtocolActivityPlantsOutSubtypesObservationTerrestrialDraftContext = components['schemas']['api__protocol__activity__plants_out__subtypes__observation_terrestrial__DraftContext'];
-export type ApiProtocolActivityPlantsOutSubtypesObservationTerrestrialDraftEntries = components['schemas']['api__protocol__activity__plants_out__subtypes__observation_terrestrial__DraftEntries'];
-export type ApiProtocolActivityPlantsOutSubtypesObservationTerrestrialDraftSubtypeData = components['schemas']['api__protocol__activity__plants_out__subtypes__observation_terrestrial__DraftSubtypeData'];
-export type ApiProtocolActivityPlantsOutSubtypesObservationTerrestrialEntries = components['schemas']['api__protocol__activity__plants_out__subtypes__observation_terrestrial__Entries'];
-export type ApiProtocolActivityPlantsOutSubtypesObservationTerrestrialSubtypeData = components['schemas']['api__protocol__activity__plants_out__subtypes__observation_terrestrial__SubtypeData'];
-export type ApiProtocolActivityPlantsOutSubtypesTreatmentChemicalAquaticDraftSubtypeData = components['schemas']['api__protocol__activity__plants_out__subtypes__treatment_chemical_aquatic__DraftSubtypeData'];
-export type ApiProtocolActivityPlantsOutSubtypesTreatmentChemicalAquaticSubtypeData = components['schemas']['api__protocol__activity__plants_out__subtypes__treatment_chemical_aquatic__SubtypeData'];
-export type ApiProtocolActivityPlantsOutSubtypesTreatmentChemicalTerrestrialDraftSubtypeData = components['schemas']['api__protocol__activity__plants_out__subtypes__treatment_chemical_terrestrial__DraftSubtypeData'];
-export type ApiProtocolActivityPlantsOutSubtypesTreatmentChemicalTerrestrialSubtypeData = components['schemas']['api__protocol__activity__plants_out__subtypes__treatment_chemical_terrestrial__SubtypeData'];
-export type ApiProtocolActivityPlantsOutSubtypesTreatmentMechanicalAquaticDraftSubtypeData = components['schemas']['api__protocol__activity__plants_out__subtypes__treatment_mechanical_aquatic__DraftSubtypeData'];
-export type ApiProtocolActivityPlantsOutSubtypesTreatmentMechanicalAquaticSubtypeData = components['schemas']['api__protocol__activity__plants_out__subtypes__treatment_mechanical_aquatic__SubtypeData'];
-export type ApiProtocolActivityPlantsOutSubtypesTreatmentMechanicalTerrestrialDraftSubtypeData = components['schemas']['api__protocol__activity__plants_out__subtypes__treatment_mechanical_terrestrial__DraftSubtypeData'];
-export type ApiProtocolActivityPlantsOutSubtypesTreatmentMechanicalTerrestrialSubtypeData = components['schemas']['api__protocol__activity__plants_out__subtypes__treatment_mechanical_terrestrial__SubtypeData'];
+export type ApiProtocolActivityPlantsOutSubtypesBiocontrolCollectionDraftSubtypeData =
+  components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_collection__DraftSubtypeData'];
+export type ApiProtocolActivityPlantsOutSubtypesBiocontrolCollectionSubtypeData =
+  components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_collection__SubtypeData'];
+export type ApiProtocolActivityPlantsOutSubtypesBiocontrolDispersalMonitoringDraftEntries =
+  components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_dispersal_monitoring__DraftEntries'];
+export type ApiProtocolActivityPlantsOutSubtypesBiocontrolDispersalMonitoringDraftSubtypeData =
+  components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_dispersal_monitoring__DraftSubtypeData'];
+export type ApiProtocolActivityPlantsOutSubtypesBiocontrolDispersalMonitoringEntries =
+  components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_dispersal_monitoring__Entries'];
+export type ApiProtocolActivityPlantsOutSubtypesBiocontrolDispersalMonitoringSubtypeData =
+  components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_dispersal_monitoring__SubtypeData'];
+export type ApiProtocolActivityPlantsOutSubtypesBiocontrolReleaseDraftEntries =
+  components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_release__DraftEntries'];
+export type ApiProtocolActivityPlantsOutSubtypesBiocontrolReleaseDraftSubtypeData =
+  components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_release__DraftSubtypeData'];
+export type ApiProtocolActivityPlantsOutSubtypesBiocontrolReleaseEntries =
+  components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_release__Entries'];
+export type ApiProtocolActivityPlantsOutSubtypesBiocontrolReleaseSubtypeData =
+  components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_release__SubtypeData'];
+export type ApiProtocolActivityPlantsOutSubtypesBiocontrolReleaseMonitoringDraftEntries =
+  components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_release_monitoring__DraftEntries'];
+export type ApiProtocolActivityPlantsOutSubtypesBiocontrolReleaseMonitoringDraftSubtypeData =
+  components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_release_monitoring__DraftSubtypeData'];
+export type ApiProtocolActivityPlantsOutSubtypesBiocontrolReleaseMonitoringEntries =
+  components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_release_monitoring__Entries'];
+export type ApiProtocolActivityPlantsOutSubtypesBiocontrolReleaseMonitoringSubtypeData =
+  components['schemas']['api__protocol__activity__plants_out__subtypes__biocontrol_release_monitoring__SubtypeData'];
+export type ApiProtocolActivityPlantsOutSubtypesMonitoringTreatmentChemicalDraftSubtypeData =
+  components['schemas']['api__protocol__activity__plants_out__subtypes__monitoring_treatment_chemical__DraftSubtypeData'];
+export type ApiProtocolActivityPlantsOutSubtypesMonitoringTreatmentChemicalSubtypeData =
+  components['schemas']['api__protocol__activity__plants_out__subtypes__monitoring_treatment_chemical__SubtypeData'];
+export type ApiProtocolActivityPlantsOutSubtypesObservationAquaticContext =
+  components['schemas']['api__protocol__activity__plants_out__subtypes__observation_aquatic__Context'];
+export type ApiProtocolActivityPlantsOutSubtypesObservationAquaticDraftContext =
+  components['schemas']['api__protocol__activity__plants_out__subtypes__observation_aquatic__DraftContext'];
+export type ApiProtocolActivityPlantsOutSubtypesObservationAquaticDraftEntries =
+  components['schemas']['api__protocol__activity__plants_out__subtypes__observation_aquatic__DraftEntries'];
+export type ApiProtocolActivityPlantsOutSubtypesObservationAquaticDraftSubtypeData =
+  components['schemas']['api__protocol__activity__plants_out__subtypes__observation_aquatic__DraftSubtypeData'];
+export type ApiProtocolActivityPlantsOutSubtypesObservationAquaticEntries =
+  components['schemas']['api__protocol__activity__plants_out__subtypes__observation_aquatic__Entries'];
+export type ApiProtocolActivityPlantsOutSubtypesObservationAquaticSubtypeData =
+  components['schemas']['api__protocol__activity__plants_out__subtypes__observation_aquatic__SubtypeData'];
+export type ApiProtocolActivityPlantsOutSubtypesObservationTerrestrialContext =
+  components['schemas']['api__protocol__activity__plants_out__subtypes__observation_terrestrial__Context'];
+export type ApiProtocolActivityPlantsOutSubtypesObservationTerrestrialDraftContext =
+  components['schemas']['api__protocol__activity__plants_out__subtypes__observation_terrestrial__DraftContext'];
+export type ApiProtocolActivityPlantsOutSubtypesObservationTerrestrialDraftEntries =
+  components['schemas']['api__protocol__activity__plants_out__subtypes__observation_terrestrial__DraftEntries'];
+export type ApiProtocolActivityPlantsOutSubtypesObservationTerrestrialDraftSubtypeData =
+  components['schemas']['api__protocol__activity__plants_out__subtypes__observation_terrestrial__DraftSubtypeData'];
+export type ApiProtocolActivityPlantsOutSubtypesObservationTerrestrialEntries =
+  components['schemas']['api__protocol__activity__plants_out__subtypes__observation_terrestrial__Entries'];
+export type ApiProtocolActivityPlantsOutSubtypesObservationTerrestrialSubtypeData =
+  components['schemas']['api__protocol__activity__plants_out__subtypes__observation_terrestrial__SubtypeData'];
+export type ApiProtocolActivityPlantsOutSubtypesTreatmentChemicalAquaticDraftSubtypeData =
+  components['schemas']['api__protocol__activity__plants_out__subtypes__treatment_chemical_aquatic__DraftSubtypeData'];
+export type ApiProtocolActivityPlantsOutSubtypesTreatmentChemicalAquaticSubtypeData =
+  components['schemas']['api__protocol__activity__plants_out__subtypes__treatment_chemical_aquatic__SubtypeData'];
+export type ApiProtocolActivityPlantsOutSubtypesTreatmentChemicalTerrestrialDraftSubtypeData =
+  components['schemas']['api__protocol__activity__plants_out__subtypes__treatment_chemical_terrestrial__DraftSubtypeData'];
+export type ApiProtocolActivityPlantsOutSubtypesTreatmentChemicalTerrestrialSubtypeData =
+  components['schemas']['api__protocol__activity__plants_out__subtypes__treatment_chemical_terrestrial__SubtypeData'];
+export type ApiProtocolActivityPlantsOutSubtypesTreatmentMechanicalAquaticDraftSubtypeData =
+  components['schemas']['api__protocol__activity__plants_out__subtypes__treatment_mechanical_aquatic__DraftSubtypeData'];
+export type ApiProtocolActivityPlantsOutSubtypesTreatmentMechanicalAquaticSubtypeData =
+  components['schemas']['api__protocol__activity__plants_out__subtypes__treatment_mechanical_aquatic__SubtypeData'];
+export type ApiProtocolActivityPlantsOutSubtypesTreatmentMechanicalTerrestrialDraftSubtypeData =
+  components['schemas']['api__protocol__activity__plants_out__subtypes__treatment_mechanical_terrestrial__DraftSubtypeData'];
+export type ApiProtocolActivityPlantsOutSubtypesTreatmentMechanicalTerrestrialSubtypeData =
+  components['schemas']['api__protocol__activity__plants_out__subtypes__treatment_mechanical_terrestrial__SubtypeData'];
 export type UserProfileOut = components['schemas']['UserProfileOut'];
 export type UserAccessIn = components['schemas']['UserAccessIn'];
 export type DraftActivityPlantRowOut = components['schemas']['DraftActivityPlantRowOut'];
@@ -3804,709 +3855,731 @@ export type TeamSuggestedUserOut = components['schemas']['TeamSuggestedUserOut']
 export type InvitationResponseSchema = components['schemas']['InvitationResponseSchema'];
 export type $defs = Record<string, never>;
 export interface operations {
-    api_protocol_activity_api_list_activities: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ActivityMinimal"][];
-                };
-            };
-        };
+  api_protocol_activity_api_creation_permissions: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        subtype: string;
+      };
+      cookie?: never;
     };
-    api_protocol_activity_api_activity_search: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ActivitySearchParameters"];
-            };
+        content: {
+          'application/json': components['schemas']['CreationPermissionsOut'];
         };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ActivitySearchResult"];
-                };
-            };
-        };
+      };
     };
-    api_protocol_activity_api_submit_record: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": unknown;
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PlantRecordWithMetadataOut"];
-                };
-            };
-        };
+  };
+  api_protocol_activity_api_list_activities: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    api_protocol_activity_api_submit_draft_record: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody: {
-            content: {
-                "application/json": unknown;
-            };
+        content: {
+          'application/json': components['schemas']['ActivityMinimal'][];
         };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PlantRecordWithMetadataOut"];
-                };
-            };
-        };
+      };
     };
-    api_protocol_activity_api_get_activity_by_id: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PlantRecordWithMetadataOut"];
-                };
-            };
-        };
+  };
+  api_protocol_activity_api_activity_search: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    api_protocol_activity_api_delete_activity_by_id: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description No Content */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ActivitySearchParameters'];
+      };
     };
-    api_protocol_auth_api_get_self: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserProfileOut"];
-                };
-            };
-            /** @description Unauthorized */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
+        content: {
+          'application/json': components['schemas']['ActivitySearchResult'];
         };
+      };
     };
-    api_protocol_auth_api_get_user: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                subject: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserProfileOut"];
-                };
-            };
-        };
+  };
+  api_protocol_activity_api_submit_record: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    api_protocol_auth_api_request_access: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UserAccessIn"];
-            };
-        };
-        responses: {
-            /** @description Created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-            /** @description No Content */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-        };
+    requestBody: {
+      content: {
+        'application/json': unknown;
+      };
     };
-    api_protocol_recordset_api_get_recordset_rows: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["FilterObjectsIn"];
-            };
+        content: {
+          'application/json': components['schemas']['PlantRecordWithMetadataOut'];
         };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RecordsetRowsResponseOut"];
-                };
-            };
-        };
+      };
     };
-    api_protocol_recordset_api_get_csv_export: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["FilterObjectsIn"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ActivityPlantSummaryOut"];
-                };
-            };
-        };
+  };
+  api_protocol_activity_api_submit_draft_record: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    api_protocol_recordset_api_get_recordset_cache: {
-        parameters: {
-            query: {
-                idList: string[];
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["CachedActivityPlantRowOut"][];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-        };
+    requestBody: {
+      content: {
+        'application/json': unknown;
+      };
     };
-    api_protocol_summary_api_get_summary: {
-        parameters: {
-            query?: {
-                zone?: string[] | null;
-                user?: string | null;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ActivityPlantSummaryOut"];
-                };
-            };
+        content: {
+          'application/json': components['schemas']['PlantRecordWithMetadataOut'];
         };
+      };
     };
-    api_protocol_teams_api_get_list_of_teams: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TeamMembershipOut"];
-                };
-            };
-        };
+  };
+  api_protocol_activity_api_get_activity_by_id: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
     };
-    api_protocol_teams_api_create_team: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateTeamSchema"];
-            };
+        content: {
+          'application/json': components['schemas']['PlantRecordWithMetadataOut'];
         };
-        responses: {
-            /** @description Created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-            /** @description Forbidden */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-        };
+      };
     };
-    api_protocol_teams_api_get_team_info: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                team_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SingleTeamOut"];
-                };
-            };
-            /** @description Forbidden */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-        };
+  };
+  api_protocol_activity_api_delete_activity_by_id: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
     };
-    api_protocol_teams_api_disband_team: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                team_id: number;
-            };
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description No Content */
+      204: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description No Content */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Forbidden */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+        content?: never;
+      };
     };
-    api_protocol_teams_api_update_team_metadata: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                team_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateTeamSchema"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SingleTeamOut"];
-                };
-            };
-            /** @description Conflict */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-        };
+  };
+  api_protocol_auth_api_get_self: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    api_protocol_teams_api_get_suggested_users: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                team_id: string;
-            };
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TeamSuggestedUserOut"][];
-                };
-            };
-            /** @description Forbidden */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
+        content: {
+          'application/json': components['schemas']['UserProfileOut'];
         };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
     };
-    api_protocol_teams_api_invite_user_to_team: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                team_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["InviteUserToTeamSchema"];
-            };
-        };
-        responses: {
-            /** @description Created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-            /** @description Forbidden */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Conflict */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-        };
+  };
+  api_protocol_auth_api_get_user: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        subject: string;
+      };
+      cookie?: never;
     };
-    api_protocol_teams_api_get_active_invitations: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["InvitationOut"][];
-                };
-            };
+        content: {
+          'application/json': components['schemas']['UserProfileOut'];
         };
+      };
     };
-    api_protocol_teams_api_update_invitation_status: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["InvitationResponseSchema"];
-            };
-        };
-        responses: {
-            /** @description Created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Forbidden */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-        };
+  };
+  api_protocol_auth_api_request_access: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    api_protocol_teams_api_leave_team: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                team_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description No Content */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UserAccessIn'];
+      };
     };
-    api_protocol_teams_api_kick_member: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                team_id: number;
-                subject: string;
-            };
-            cookie?: never;
+    responses: {
+      /** @description Created */
+      201: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description No Content */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
+        content: {
+          'application/json': {
+            [key: string]: unknown;
+          };
         };
+      };
+      /** @description No Content */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            [key: string]: unknown;
+          };
+        };
+      };
     };
-    api_protocol_map_tiles_vector_tiles_req_activity_vector_tile: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                z: number;
-                x: number;
-                y: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+  };
+  api_protocol_recordset_api_get_recordset_rows: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    api_protocol_map_tiles_vector_tiles_zone_vector_tile: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                z: number;
-                x: number;
-                y: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['FilterObjectsIn'];
+      };
     };
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['RecordsetRowsResponseOut'];
+        };
+      };
+    };
+  };
+  api_protocol_recordset_api_get_csv_export: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['FilterObjectsIn'];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ActivityPlantSummaryOut'];
+        };
+      };
+    };
+  };
+  api_protocol_recordset_api_get_recordset_cache: {
+    parameters: {
+      query: {
+        idList: string[];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CachedActivityPlantRowOut'][];
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            [key: string]: unknown;
+          };
+        };
+      };
+    };
+  };
+  api_protocol_summary_api_get_summary: {
+    parameters: {
+      query?: {
+        zone?: string[] | null;
+        user?: string | null;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ActivityPlantSummaryOut'];
+        };
+      };
+    };
+  };
+  api_protocol_teams_api_get_list_of_teams: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TeamMembershipOut'];
+        };
+      };
+    };
+  };
+  api_protocol_teams_api_create_team: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateTeamSchema'];
+      };
+    };
+    responses: {
+      /** @description Created */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            [key: string]: unknown;
+          };
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            [key: string]: unknown;
+          };
+        };
+      };
+    };
+  };
+  api_protocol_teams_api_get_team_info: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        team_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SingleTeamOut'];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            [key: string]: unknown;
+          };
+        };
+      };
+    };
+  };
+  api_protocol_teams_api_disband_team: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        team_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No Content */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  api_protocol_teams_api_update_team_metadata: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        team_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpdateTeamSchema'];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SingleTeamOut'];
+        };
+      };
+      /** @description Conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            [key: string]: unknown;
+          };
+        };
+      };
+    };
+  };
+  api_protocol_teams_api_get_suggested_users: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        team_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TeamSuggestedUserOut'][];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  api_protocol_teams_api_invite_user_to_team: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        team_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['InviteUserToTeamSchema'];
+      };
+    };
+    responses: {
+      /** @description Created */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            [key: string]: unknown;
+          };
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            [key: string]: unknown;
+          };
+        };
+      };
+    };
+  };
+  api_protocol_teams_api_get_active_invitations: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['InvitationOut'][];
+        };
+      };
+    };
+  };
+  api_protocol_teams_api_update_invitation_status: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['InvitationResponseSchema'];
+      };
+    };
+    responses: {
+      /** @description Created */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            [key: string]: unknown;
+          };
+        };
+      };
+    };
+  };
+  api_protocol_teams_api_leave_team: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        team_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No Content */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Bad Request */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  api_protocol_teams_api_kick_member: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        team_id: number;
+        subject: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No Content */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Bad Request */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  api_protocol_map_tiles_vector_tiles_req_activity_vector_tile: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        z: number;
+        x: number;
+        y: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  api_protocol_map_tiles_vector_tiles_zone_vector_tile: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        z: number;
+        x: number;
+        y: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
 }

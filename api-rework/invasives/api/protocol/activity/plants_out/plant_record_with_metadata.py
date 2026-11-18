@@ -7,7 +7,12 @@ from api.models.activity import Activity, DraftActivity
 from api.protocol.activity.activity_plant_row_out import ActivityPlantRowOut
 from api.models.audits import ActivityModificationRecord
 from api.schemas import RecordAction
-from api.permissions.activity_access import filter_activities_by_access
+from api.permissions.activity_access import (
+    SENSITIVE_ROLES,
+    _role_names,
+    filter_activities_by_access,
+    get_activity_permissions,
+)
 
 type Record = Activity | DraftActivity
 
@@ -20,8 +25,10 @@ class Metadata(AllPlantMixin, Schema):
     created_by: Optional[str]
 
     @staticmethod
-    def resolve_history(obj: Record) -> List[RecordHistoryOut]:
-        if isinstance(obj, DraftActivity):
+    def resolve_history(obj: Record, context) -> List[RecordHistoryOut]:
+        if isinstance(obj, DraftActivity) or not (
+            _role_names(context["request"].auth) & SENSITIVE_ROLES
+        ):
             return []
         return ActivityModificationRecord.objects.filter(activity=obj).order_by("-date")
 
@@ -41,8 +48,15 @@ class Metadata(AllPlantMixin, Schema):
         ).order_by("-date")
 
 
+class ActivityPermissionsOut(Schema):
+    can_submit: bool
+    can_edit: bool
+    can_delete: bool
+
+
 class PlantRecordWithMetadataOut(Schema):
     available_actions: List[RecordAction]
+    permissions: ActivityPermissionsOut
     metadata: Metadata
     data: PlantRecordOut
 
@@ -55,5 +69,14 @@ class PlantRecordWithMetadataOut(Schema):
         return obj
 
     @staticmethod
-    def resolve_available_actions(obj) -> List[RecordAction]:
-        return [*RecordAction]
+    def resolve_permissions(obj, context):
+        return get_activity_permissions(context["request"].auth, obj)
+
+    @staticmethod
+    def resolve_available_actions(obj, context) -> List[RecordAction]:
+        permissions = get_activity_permissions(context["request"].auth, obj)
+        return [
+            action
+            for action in RecordAction
+            if permissions[f"can_{action.value.lower()}"]
+        ]

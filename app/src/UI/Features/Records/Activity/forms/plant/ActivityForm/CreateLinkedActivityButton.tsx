@@ -89,10 +89,8 @@ const CreateLinkedActivityButton = () => {
   const dispatch = useDispatch();
   const currentSubtype = useSelector((state) => state.ActivityPage.formType);
   const isRecordSubmitted = useSelector((state) => state.ActivityPage.formState?.form_status === 'Submitted');
-  const formActions = useSelector((state) => state.ActivityPage.recordActions);
   const formState = useSelector((state) => state.ActivityPage?.formState);
-  const shouldHideFields =
-    !isRecordSubmitted || !currentSubtype || !CONFIG?.[currentSubtype] || !formActions?.includes('SUBMIT');
+  const shouldHideFields = !isRecordSubmitted || !currentSubtype || !CONFIG?.[currentSubtype];
 
   if (shouldHideFields) return;
   return (
