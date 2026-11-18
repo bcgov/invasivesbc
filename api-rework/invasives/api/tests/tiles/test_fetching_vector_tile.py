@@ -20,14 +20,15 @@ class VectorTileTestCase(BaseTestCase):
 
     url_pattern = "/ninja/tiles/activity/{}/{}/{}?filterObjects={}"
 
-    fixtures = ["test/common/test_activities.json"]
+    extra_fixtures = ["test/common/test_activities.json"]
 
     def setUp(self):
+        super().setUp()
         self.client = Client()
 
     def get_tile(self, z: int, x: int, y: int, test_status: int, auth: bool = True):
         url = self.url_pattern.format(z, x, y, self.base_filter_object)
-        headers = {"Authorization": "Bearer act_as_user=test_user"} if auth else {}
+        headers = self.auth_headers("bc_admin") if auth else {}
         response = self.client.get(
             url,
             headers=headers,
@@ -181,7 +182,7 @@ class VectorTileTestCase(BaseTestCase):
 
         response = self.client.get(
             url,
-            headers={"Authorization": "Bearer act_as_user=test_user"},
+            headers=self.auth_headers("bc_admin"),
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.headers["Content-Type"], CONTENT_TYPE)

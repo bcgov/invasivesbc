@@ -12,6 +12,7 @@ import { getCurrentJWT } from 'state/sagas/auth/auth';
 import { RootState } from 'state/reducers/rootReducer';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { PlantRecordWithMetadataOut, RecordAction } from 'api/api-schema';
+import { activityPermissionActions } from 'utils/activityPermissions';
 import FormCode from 'interfaces/FormCode';
 
 interface INewActivity {
@@ -104,9 +105,9 @@ class Activity {
         if (record) {
           return {
             data: JSON.parse(record.data),
-            available_actions: ['DELETE', 'EDIT', 'SUBMIT'],
-            metadata: {}
-          } as PlantRecordWithMetadataOut;
+            available_actions: [] as Array<RecordAction>,
+            metadata: undefined
+          };
         }
         if (!Network.connected) {
           // Attempt fetching from cache if online
@@ -116,8 +117,8 @@ class Activity {
             return {
               data: offlineRecord,
               available_actions: [] as Array<RecordAction>,
-              metadata: {}
-            } as PlantRecordWithMetadataOut;
+              metadata: undefined
+            };
           return rejectWithValue(404);
         }
       }
@@ -125,9 +126,9 @@ class Activity {
         headers: { Authorization: await getCurrentJWT() }
       });
 
-      if (req.status === 404) return rejectWithValue(404);
-      const { data, available_actions, metadata } = (await req.json()) as SingleActivityResponse;
-      return { data, available_actions, metadata };
+      if (!req.ok) return rejectWithValue(req.status);
+      const { data, permissions, metadata } = (await req.json()) as PlantRecordWithMetadataOut;
+      return { data, available_actions: activityPermissionActions(permissions), metadata };
     }
   );
 

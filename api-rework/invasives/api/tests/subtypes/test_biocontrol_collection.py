@@ -10,7 +10,7 @@ from api.tests.mock_frontend_submissions import (
 
 class BiocontrolReleaseTest(BaseActivitySubtypeTest):
 
-    fixtures = [
+    extra_fixtures = [
         "test/common/test_chemical_treatments_codes.json",
         "test/common/test_employer_codes",
         "test/common/test_jurisdictions_codes",

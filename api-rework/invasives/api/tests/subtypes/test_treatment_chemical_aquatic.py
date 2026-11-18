@@ -10,7 +10,7 @@ from api.tests.mock_frontend_submissions import (
 
 class AquaticChemicalTreatmentTest(BaseActivitySubtypeTest):
 
-    fixtures = [
+    extra_fixtures = [
         "test/common/test_employer_codes",
         "test/common/test_jurisdictions_codes",
         "test/common/test_funding_agency_codes",

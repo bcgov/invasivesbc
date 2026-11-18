@@ -9,8 +9,13 @@ from django.db.utils import DatabaseError
 from rest_framework import authentication, exceptions
 
 from api.utils.timezones import local_today
-from api.constants import WellKnownRoles
-from api.models.auth import User, Role
+from api.models.auth import User
+
+
+class AuthenticationServiceUnavailable(exceptions.APIException):
+    status_code = 503
+    default_detail = "Unable to verify authentication"
+    default_code = "authentication_service_unavailable"
 
 
 def update_user_attributes_if_needed(user: User, user_token: dict):
@@ -47,6 +52,9 @@ class UserAuthentication(authentication.BaseAuthentication):
     jwks_uri = None
     jwks = None
 
+    def authenticate_header(self, request):
+        return "Bearer"
+
     def refresh_jwk(self):
         oidc_response = requests.get(settings.KEYCLOAK["JWKS_ENDPOINT"])
         jwks_uri = json.loads(oidc_response.text)["jwks_uri"]
@@ -64,20 +72,6 @@ class UserAuthentication(authentication.BaseAuthentication):
             logging.warning("Authorization header required")
             raise exceptions.AuthenticationFailed("Authorization header required")
 
-        if settings.UNIT_TESTING_ENABLED:
-            user, _ = User.objects.get_or_create(
-                subject="test-user", display_name="test, user"
-            )
-            if user_is_expired(user):
-                raise exceptions.AuthenticationFailed("User account has expired")
-            if not user.roles.filter(name=WellKnownRoles.ADMINISTRATOR.value).exists():
-                admin_role, _ = Role.objects.get_or_create(
-                    name=WellKnownRoles.ADMINISTRATOR.value
-                )
-                user.roles.set((admin_role,))
-
-            return user, None
-
         try:
             scheme, token = auth.split()
         except ValueError:
@@ -93,21 +87,22 @@ class UserAuthentication(authentication.BaseAuthentication):
             logging.warning("No token found")
             raise exceptions.AuthenticationFailed("No token found")
 
-        token_validation_errors = []
-
-        if not self.jwks_uri or not self.jwks_client:
-            # should only need to be done once. we don't do it when testing though.
-            self.refresh_jwk()
-            self.jwks_client = jwt.PyJWKClient(
-                self.jwks_uri, cache_keys=True, cache_jwk_set=True
-            )
-
         try:
+            if not self.jwks_uri or not self.jwks_client:
+                # Cache discovery per instance; tests mock the remote responses.
+                self.refresh_jwk()
+                self.jwks_client = jwt.PyJWKClient(
+                    self.jwks_uri, cache_keys=True, cache_jwk_set=True
+                )
             signing_key = self.jwks_client.get_signing_key_from_jwt(token)
-        except Exception as exc:
-            logging.warning("error retrieving signing key", exc_info=True)
-            token_validation_errors.append(exc)
-            raise Exception(str(exc))
+        except (jwt.PyJWKClientConnectionError, requests.RequestException) as exc:
+            logging.error("Unable to retrieve signing keys", exc_info=True)
+            raise AuthenticationServiceUnavailable() from exc
+        except jwt.PyJWTError as exc:
+            logging.warning("Invalid token or signing key")
+            raise exceptions.AuthenticationFailed(
+                "Invalid token or signing key"
+            ) from exc
 
         try:
             user_token = jwt.decode(
@@ -115,17 +110,11 @@ class UserAuthentication(authentication.BaseAuthentication):
                 signing_key.key,
                 algorithms=["RS256"],
                 audience=settings.KEYCLOAK["AUDIENCE"],
-                options={"verify_exp": True},
+                options={"verify_exp": True, "require": ["sub"]},
             )
-        except (jwt.InvalidTokenError, jwt.DecodeError) as exc:
-            token_validation_errors.append(exc)
-            raise Exception(str(exc))
-
-        if not user_token:
-            raise exceptions.AuthenticationFailed(
-                "No successful decode of user token. Exceptions occurred: {}",
-                "\n".join([str(error) for error in token_validation_errors]),
-            )
+        except jwt.InvalidTokenError as exc:
+            logging.warning("Invalid or expired token")
+            raise exceptions.AuthenticationFailed("Invalid or expired token") from exc
 
         user, _ = User.objects.get_or_create(subject=user_token["sub"])
 

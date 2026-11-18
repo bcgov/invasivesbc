@@ -3,6 +3,7 @@ import json
 from api.models.activity import Activity
 from api.models.activity.activity_subtypes import ActivitySubtypes, SubtypePrimary
 from api.permissions.role_based import HasAnyApplicationRole
+from api.permissions.activity_access import filter_activities_by_access
 from api.serializers.linked_record_query import LinkedRecordQuerySerializer
 from api.viewsets.mixins.atomic import AtomicViewSetMixin
 from django.contrib.gis.geos import GEOSGeometry
@@ -40,7 +41,9 @@ class IdsWithinBoundsViewSet(AtomicViewSetMixin, GenericViewSet):
 
         try:
             search_geometry = GEOSGeometry(json.dumps(bounds))
-            queryset = Activity.objects.filter(shape__intersects=search_geometry)
+            queryset = filter_activities_by_access(
+                Activity.objects.filter(shape__intersects=search_geometry), request.user
+            )
             if subtype:
                 primary = self.map_subtype_to_type(subtype)
                 queryset = queryset.filter(type=primary)

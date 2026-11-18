@@ -5,7 +5,6 @@ import jwt
 import requests
 from django.conf import settings
 from ninja.security import HttpBearer
-from rest_framework import exceptions
 from typing import Optional
 from ninja.errors import HttpError
 from api.constants import WellKnownRoles
@@ -33,37 +32,24 @@ class NinjaKeycloakAuthentication(HttpBearer):
     def authenticate(self, request, token) -> Optional[User]:
         """Verify the JWT and do user lookup"""
 
-        if settings.UNIT_TESTING_ENABLED:
-            header = request.META.get("HTTP_AUTHORIZATION")
-            subject = header.split("act_as_user=")[1]
-            user = User.objects.filter(subject=subject).first()
-            if not user:
-                user, _ = User.objects.update_or_create(
-                    subject="test-user", display_name="test, user"
-                )
-            if user_is_expired(user):
-                return None
-            return user
-
         if not token:
             logging.warning("No token found")
-            raise exceptions.AuthenticationFailed("No token found")
-
-        token_validation_errors = []
-
-        if not self.jwks_uri or not self.jwks_client:
-            # should only need to be done once. we don't do it when testing though.
-            self.refresh_jwk()
-            self.jwks_client = jwt.PyJWKClient(
-                self.jwks_uri, cache_keys=True, cache_jwk_set=True
-            )
+            return None
 
         try:
+            if not self.jwks_uri or not self.jwks_client:
+                # Cache discovery per instance; tests mock the remote responses.
+                self.refresh_jwk()
+                self.jwks_client = jwt.PyJWKClient(
+                    self.jwks_uri, cache_keys=True, cache_jwk_set=True
+                )
             signing_key = self.jwks_client.get_signing_key_from_jwt(token)
-        except Exception as exc:
-            logging.warning("error retrieving signing key", exc_info=True)
-            token_validation_errors.append(exc)
-            raise Exception(str(exc))
+        except (jwt.PyJWKClientConnectionError, requests.RequestException):
+            logging.error("Unable to retrieve signing keys", exc_info=True)
+            raise HttpError(503, "Unable to verify authentication")
+        except jwt.PyJWTError:
+            logging.warning("Invalid token or signing key")
+            return None
 
         try:
             user_token = jwt.decode(
@@ -71,17 +57,14 @@ class NinjaKeycloakAuthentication(HttpBearer):
                 signing_key.key,
                 algorithms=["RS256"],
                 audience=settings.KEYCLOAK["AUDIENCE"],
-                options={"verify_exp": True},
+                options={"verify_exp": True, "require": ["sub"]},
             )
-        except (jwt.InvalidTokenError, jwt.DecodeError) as exc:
-            token_validation_errors.append(exc)
-            raise Exception(str(exc))
+        except jwt.InvalidTokenError:
+            logging.warning("Invalid or expired token")
+            return None
 
         if not user_token:
-            raise exceptions.AuthenticationFailed(
-                "No successful decode of user token. Exceptions occurred: {}",
-                "\n".join([str(error) for error in token_validation_errors]),
-            )
+            return None
 
         user, _ = User.objects.get_or_create(subject=user_token["sub"])
         if user_is_expired(user):
@@ -92,7 +75,17 @@ class NinjaKeycloakAuthentication(HttpBearer):
         return user
 
 
-class NinjaRoleRequired(NinjaKeycloakAuthentication):
+class NinjaAnyRoleRequired(NinjaKeycloakAuthentication):
+    def authenticate(self, request, token):
+        user = super().authenticate(request, token)
+        if not user:
+            return None
+        if not user.roles.exists():
+            raise HttpError(403, "Insufficient Permissions to access resource")
+        return user
+
+
+class NinjaRoleRequired(NinjaAnyRoleRequired):
     def __init__(self, *roles: WellKnownRoles):
         super().__init__()
         self.roles = frozenset(r.value if hasattr(r, "value") else r for r in roles)

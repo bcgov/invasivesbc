@@ -15,6 +15,19 @@ import { getCurrentJWT } from 'state/sagas/auth/auth';
 import formAlerts from 'constants/alerts/formAlerts';
 import transformPydanticErrors from 'utils/transformPydanticErrors';
 import createRecordId from 'utils/createRecordId';
+import { activityPermissionActions } from 'utils/activityPermissions';
+
+const getCreationActions = async (subtype: ActivitySubtypes, state: RootState): Promise<RecordAction[]> => {
+  if (!state.Network.connected) throw new Error('Creating a record requires an online permission check.');
+  const response = await fetch(
+    `${state.Configuration.current.runtime.API_V2_BASE}/ninja/activities/creation-permissions/${encodeURIComponent(subtype)}`,
+    { headers: { Authorization: await getCurrentJWT() } }
+  );
+  if (!response.ok) throw new Error('Unable to check permission to create this record.');
+  const result: { can_create: boolean } = await response.json();
+  if (!result.can_create) throw new Error('You do not have permission to create this type of record.');
+  return ['EDIT', 'SUBMIT'];
+};
 
 interface FormSubmission {
   data: FormSchema;
@@ -32,12 +45,26 @@ class FormActions {
   private static readonly PREFIX = 'FormActions';
   static readonly createNewForm = createAsyncThunk(
     `${this.PREFIX}/createNewForm`,
-    async (subtype: ActivitySubtypes) => {
+    async (subtype: ActivitySubtypes, { getState, dispatch }) => {
+      let available_actions: RecordAction[];
+      try {
+        available_actions = await getCreationActions(subtype, getState() as RootState);
+      } catch (error) {
+        dispatch(
+          Alerts.create({
+            severity: AlertSeverity.Error,
+            subject: AlertSubjects.Form,
+            content: error instanceof Error ? error.message : 'Unable to check creation permissions.',
+            autoClose: 8
+          })
+        );
+        throw error;
+      }
       const newFormId = crypto.randomUUID();
       return {
         newFormId,
         subtype,
-        available_actions: ['DELETE', 'EDIT', 'SUBMIT'] as Array<RecordAction>
+        available_actions
       };
     }
   );
@@ -50,7 +77,7 @@ class FormActions {
       const hasDeletePermission = !!ActivityPage.recordActions?.includes('DELETE');
 
       if (!hasDeletePermission) {
-        rejectWithValue('You do not have permission to perform this action.');
+        return rejectWithValue('You do not have permission to perform this action.');
       } else if (!ActivityPage?.formState) {
         dispatch(Alerts.create(formAlerts.noActiveForm));
         return rejectWithValue('No Active Form');
@@ -75,7 +102,21 @@ class FormActions {
 
   static readonly duplicateForm = createAsyncThunk(
     `${this.PREFIX}/duplicateForm`,
-    async ({ subtype, extraFields }: DuplicateForm, { getState }) => {
+    async ({ subtype, extraFields }: DuplicateForm, { getState, dispatch }) => {
+      let available_actions: RecordAction[];
+      try {
+        available_actions = await getCreationActions(subtype, getState() as RootState);
+      } catch (error) {
+        dispatch(
+          Alerts.create({
+            severity: AlertSeverity.Error,
+            subject: AlertSubjects.Form,
+            content: error instanceof Error ? error.message : 'Unable to check creation permissions.',
+            autoClose: 8
+          })
+        );
+        throw error;
+      }
       const {
         Auth,
         ActivityPage: { formState }
@@ -99,7 +140,7 @@ class FormActions {
       if (extraFields) Object.assign(duplicatedForm, extraFields);
       return {
         data: duplicatedForm as FormSchema,
-        available_actions: ['EDIT', 'DELETE', 'SUBMIT'] as Array<RecordAction>,
+        available_actions,
         metadata: {} as PlantRecordWithMetadataOut['metadata']
       };
     }
@@ -220,7 +261,8 @@ class FormActions {
         } else {
           dispatch(Alerts.create(formAlerts.recordSubmittedSuccess));
         }
-        return (await res.json()) as PlantRecordWithMetadataOut;
+        const record = (await res.json()) as PlantRecordWithMetadataOut;
+        return { ...record, available_actions: activityPermissionActions(record.permissions) };
       }
     }
   );

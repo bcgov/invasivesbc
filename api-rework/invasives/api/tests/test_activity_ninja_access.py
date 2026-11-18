@@ -1,20 +1,26 @@
 import datetime
-from unittest import mock
+import uuid
+from types import SimpleNamespace
 
 from django.contrib.gis.geos import GEOSGeometry
 
 from api.constants import WellKnownRoles
 from api.models import Role, User
-from api.models.activity import Activity, ActivitySubtypes, ActivityType
-from api.ninja_authentication import NinjaKeycloakAuthentication
+from api.models.activity import (
+    Activity,
+    ActivitySubtypes,
+    ActivityType,
+    TerrestrialBiocontrolReleaseEntry,
+)
 from api.tests.base_test_case import BaseTestCase
 from api.tests.factories.plants.create_plant_record import build_plant_record
+from api.tests.factories.plants.subtypes import (
+    build_biocontrol_release,
+    build_observation_plant_terrestrial,
+)
+from api.serializers.activity import ActivitySerializer
 
 BASE = "/ninja/activities"
-
-
-def fake_authenticate(self, request, token):
-    return User.objects.filter(subject=token).first()
 
 
 class ActivityNinjaAccessTest(BaseTestCase):
@@ -26,6 +32,11 @@ class ActivityNinjaAccessTest(BaseTestCase):
         master.roles.add(WellKnownRoles.MASTER_ADMINISTRATOR.value)
         owner = User.objects.create(subject="bc_owner")
         owner.roles.add(WellKnownRoles.DATA_MANAGER.value)
+        role, _ = Role.objects.get_or_create(
+            name=WellKnownRoles.BCGOV_STAFF_PLANTS.value
+        )
+        staff = User.objects.create(subject="bc_plant_staff")
+        staff.roles.add(role)
         other = User.objects.get(subject="bc_datamanager")
 
         def make(i, type_, creator):
@@ -53,29 +64,23 @@ class ActivityNinjaAccessTest(BaseTestCase):
         cls.other_bio = build_plant_record(
             subject=other, subtype=ActivitySubtypes.Biocontrol_Release
         )
+        TerrestrialBiocontrolReleaseEntry.objects.filter(
+            activity_data_record__activity_id__in=[cls.owner_bio.id, cls.other_bio.id]
+        ).update(biocontrol_agent_id="ACERANG")
         cls.all_ids = {
             str(a.id)
             for a in (cls.owner_obs, cls.other_obs, cls.owner_bio, cls.other_bio)
         }
 
-    def setUp(self):
-        patcher = mock.patch.object(
-            NinjaKeycloakAuthentication, "authenticate", fake_authenticate
-        )
-        patcher.start()
-        self.addCleanup(patcher.stop)
-
     def get(self, subject, path=""):
-        return self.client.get(
-            f"{BASE}{path}", headers={"Authorization": f"Bearer {subject}"}
-        )
+        return self.client.get(f"{BASE}{path}", headers=self.auth_headers(subject))
 
     def post(self, subject, path, body):
         return self.client.post(
             f"{BASE}{path}",
             body,
             content_type="application/json",
-            headers={"Authorization": f"Bearer {subject}"},
+            headers=self.auth_headers(subject),
         )
 
     def ids(self, response):
@@ -88,30 +93,30 @@ class ActivityNinjaAccessTest(BaseTestCase):
             "bc_admin": self.all_ids,
             "bc_master": self.all_ids,
             "bc_owner": non_bio,
-            "bc_biocontrol": self.all_ids,
-            "bc_noroles": set(),
+            "bc_biocontrol": {str(self.owner_bio.id), str(self.other_bio.id)},
         }
         for subject, ids in expected.items():
             self.assertEqual(self.ids(self.get(subject, "/")), ids, subject)
+        self.assertEqual(self.get("bc_noroles", "/").status_code, 403)
 
     def test_search_by_user(self):
         body = {"date_from": "2023-01-01", "date_to": "2025-01-01"}
         expected = {
             "bc_admin": self.all_ids,
-            "bc_biocontrol": self.all_ids,
+            "bc_biocontrol": {str(self.owner_bio.id), str(self.other_bio.id)},
             "bc_owner": {str(self.owner_obs.id), str(self.other_obs.id)},
-            "bc_noroles": set(),
         }
         for subject, ids in expected.items():
             response = self.post(subject, "/search", body)
             self.assertEqual(response.status_code, 200, response.content)
             found = {str(i["id"]) for i in response.json()["items"]}
             self.assertEqual(found, ids, subject)
+        self.assertEqual(self.post("bc_noroles", "/search", body).status_code, 403)
 
     def test_get_by_id_denied_returns_404(self):
         cases = [
             ("bc_owner", self.owner_bio, 404),
-            ("bc_noroles", self.owner_obs, 404),
+            ("bc_noroles", self.owner_obs, 403),
         ]
         for subject, activity, status in cases:
             response = self.get(subject, f"/{activity.id}")
@@ -128,6 +133,107 @@ class ActivityNinjaAccessTest(BaseTestCase):
             response = self.get(subject, f"/{activity.id}")
             self.assertEqual(response.status_code, 200, (subject, response.content))
             self.assertEqual(response.json()["data"]["id"], str(activity.id))
+
+    def test_permissions_match_drf_and_creation_policy(self):
+        response = self.get("bc_owner", f"/{self.owner_obs.id}")
+        self.assertEqual(response.status_code, 200)
+        permissions = response.json()["permissions"]
+        self.assertEqual(
+            permissions, {"can_submit": False, "can_edit": False, "can_delete": False}
+        )
+        serializer = ActivitySerializer(
+            self.owner_obs,
+            context={"request": SimpleNamespace(user=self.owner_obs.creating_user)},
+        )
+        self.assertEqual(serializer.data["permissions"], permissions)
+        self.assertNotIn("permissions", ActivitySerializer(self.owner_obs).data)
+        self.assertFalse(
+            self.get(
+                "bc_owner", "/creation-permissions/Observation_Plant_Terrestrial"
+            ).json()["can_create"]
+        )
+        self.assertTrue(
+            self.get(
+                "bc_plant_staff", "/creation-permissions/Observation_Plant_Terrestrial"
+            ).json()["can_create"]
+        )
+
+    def test_recordset_count_and_cache_filter_sensitive_records(self):
+        response = self.client.post(
+            "/ninja/recordset/rows",
+            {"filterObjects": [{"selectColumns": ["activity_id"]}]},
+            content_type="application/json",
+            headers=self.auth_headers("bc_owner"),
+        )
+        self.assertEqual(response.status_code, 200, response.content)
+        result = response.json()
+        self.assertEqual(
+            set(result["entries"]), {str(self.owner_obs.id), str(self.other_obs.id)}
+        )
+        self.assertEqual(result["total"], 2)
+
+        response = self.client.get(
+            "/ninja/recordset/cache",
+            {"idList": [str(self.owner_obs.id), str(self.owner_bio.id)]},
+            headers=self.auth_headers("bc_owner"),
+        )
+        self.assertEqual(response.status_code, 200, response.content)
+        self.assertEqual(
+            {entry["activity_id"] for entry in response.json()},
+            {str(self.owner_obs.id)},
+        )
+
+    def test_writes_check_existing_record_and_sensitive_payload(self):
+        subject = User.objects.get(subject="bc_plant_staff")
+        payload = build_observation_plant_terrestrial(
+            subject=subject,
+            subtype=ActivitySubtypes.Observation_Plant_Terrestrial,
+            linking_activities=[],
+            form_id=self.owner_obs.id,
+        )
+        payload.pop("creating_user", None)
+        response = self.post("bc_plant_staff", "/submit", payload)
+        self.assertEqual(response.status_code, 403, response.content)
+        response = self.post("bc_owner", "/submit", payload)
+        self.assertEqual(response.status_code, 403, response.content)
+
+        payload = build_biocontrol_release(
+            subject=subject,
+            subtype=ActivitySubtypes.Biocontrol_Release,
+            linking_activities=[],
+            form_id=uuid.uuid4(),
+        )
+        payload.pop("creating_user", None)
+        for entry in payload["subtype_data"]["entries"]:
+            entry["biocontrol_agent"] = "ACERANG"
+        response = self.post("bc_plant_staff", "/submit", payload)
+        self.assertEqual(response.status_code, 403, response.content)
+        self.assertFalse(Activity.objects.filter(pk=payload["id"]).exists())
+
+    def test_draft_flags_and_submission(self):
+        subject = User.objects.get(subject="bc_plant_staff")
+        payload = build_observation_plant_terrestrial(
+            subject=subject,
+            subtype=ActivitySubtypes.Observation_Plant_Terrestrial,
+            linking_activities=[],
+            form_id=uuid.uuid4(),
+        )
+        payload.pop("creating_user", None)
+        payload["form_status"] = "Draft"
+        response = self.post("bc_plant_staff", "/draft", payload)
+        self.assertEqual(response.status_code, 200, response.content)
+        self.assertEqual(
+            response.json()["permissions"],
+            {"can_submit": True, "can_edit": True, "can_delete": False},
+        )
+        self.assertEqual(self.post("bc_owner", "/draft", payload).status_code, 403)
+        payload["form_status"] = "Submitted"
+        response = self.post("bc_plant_staff", "/submit", payload)
+        self.assertEqual(response.status_code, 200, response.content)
+        self.assertEqual(
+            response.json()["permissions"],
+            {"can_submit": False, "can_edit": True, "can_delete": False},
+        )
 
     def test_linked_activities_metadata_is_filtered(self):
         extra = Activity.objects.create(

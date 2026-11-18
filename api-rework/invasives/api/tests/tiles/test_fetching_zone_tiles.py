@@ -9,11 +9,12 @@ class ZoneOfInterestTestCase(BaseTestCase):
     url_pattern = "/ninja/tiles/zone/{}/{}/{}"
 
     def setUp(self):
+        super().setUp()
         self.client = Client()
 
     def get_tile(self, z: int, x: int, y: int, test_status: int, auth: bool = True):
         url = self.url_pattern.format(z, x, y)
-        headers = {"Authorization": "Bearer act_as_user=bc_admin"} if auth else {}
+        headers = self.auth_headers("bc_admin") if auth else {}
         response = self.client.get(
             url,
             headers=headers,

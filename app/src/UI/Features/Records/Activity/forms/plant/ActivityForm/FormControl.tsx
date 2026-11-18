@@ -104,8 +104,8 @@ const FormControl = () => {
   }, [recordActions]);
 
   const canSubmit: boolean = useMemo(() => {
-    return !!recordActions?.includes('SUBMIT');
-  }, [recordActions]);
+    return !!recordActions?.includes(isFormSubmitted ? 'EDIT' : 'SUBMIT');
+  }, [recordActions, isFormSubmitted]);
 
   return (
     <>
@@ -124,7 +124,7 @@ const FormControl = () => {
           {/* Type="Submit" is tied to react-hook-form, it will handle the submission logic. // Errors don't need to be
           accounted for in disabling, since the rhf will pan to the error */}
           <Button type="submit" className="control-button" form="activity-form" disabled={disabled || !canSubmit}>
-            Submit
+            {isFormSubmitted ? 'Save changes' : 'Submit'}
           </Button>
           {!isFormSubmitted && (
             <>

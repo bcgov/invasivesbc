@@ -1,4 +1,5 @@
 import json, asyncio
+from asgiref.sync import sync_to_async
 from ninja import Router
 from django.db.models import Aggregate, F, Func
 from django.contrib.gis.db.models import GeometryField, BinaryField
@@ -6,14 +7,15 @@ from django.contrib.gis.db.models.functions import PointOnSurface
 from django.http import HttpResponse
 from django.contrib.gis.db.models.functions import Transform
 
-from api.ninja_authentication import NinjaKeycloakAuthentication
+from api.ninja_authentication import NinjaAnyRoleRequired
 from api.utils.filtered_activity_queryset import FilteredActivityQueryset
 from api.models.mapping import ZoneOfInterest
+from api.permissions.activity_access import filter_activities_by_access
 
 CENTROID_ZOOM_LIMIT = 12
 CONTENT_TYPE = "application/vnd.mapbox-vector-tile"
 
-router = Router(auth=NinjaKeycloakAuthentication())
+router = Router(auth=NinjaAnyRoleRequired())
 
 
 class ST_TileEnvelope(Func):
@@ -61,6 +63,9 @@ async def req_activity_vector_tile(request, z: int, x: int, y: int):
 
         filter_objects = [json.loads(raw_filters)]
         activity_queryset = FilteredActivityQueryset(filter_objects).apply_filters()
+        activity_queryset = await sync_to_async(filter_activities_by_access)(
+            activity_queryset, request.auth
+        )
 
         if not await activity_queryset.aexists():
             return HttpResponse(status=204, content_type=CONTENT_TYPE)

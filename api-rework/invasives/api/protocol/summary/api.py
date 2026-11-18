@@ -3,21 +3,22 @@ from ninja import Router, Query
 from django.db import transaction
 from typing import List
 from django.db.models import OuterRef, Exists
-from api.ninja_authentication import NinjaKeycloakAuthentication
+from api.ninja_authentication import NinjaAnyRoleRequired
 from api.models.mapping import ZoneOfInterest
 from api.protocol.activity.activity_plant_summary_out import ActivityPlantSummaryOut
 from api.models.activity import Activity
+from api.permissions.activity_access import filter_activities_by_access
 from . import SummaryIn
 
 ROOT_PATH = "/summary"
-router = Router(auth=NinjaKeycloakAuthentication())
+router = Router(auth=NinjaAnyRoleRequired())
 log = logging.getLogger(__name__)
 
 
 @router.get("", response={200: ActivityPlantSummaryOut})
 def get_summary(request, filters: Query[SummaryIn]):
     with transaction.atomic():
-        query = Activity.objects.all()
+        query = filter_activities_by_access(Activity.objects.all(), request.auth)
         if filters.zone:
             zones = ZoneOfInterest.objects.filter(
                 public_id__in=filters.zone,

@@ -6,7 +6,7 @@ from api.tests.base_test_case import BaseTestCase
 
 class ActivitySerializerTest(BaseTestCase):
 
-    fixtures = [
+    extra_fixtures = [
         "test/common/test_activities.json",
         "test/common/test_jurisdictions_codes.json",
         "test/common/test_jurisdictions.json",
@@ -21,7 +21,7 @@ class ActivitySerializerTest(BaseTestCase):
         client = Client()
         result = client.get(
             "/activities",
-            headers={"Authorization": "Bearer act_as_user=test_user"},
+            headers=self.auth_headers("bc_admin"),
         )
         self.assertEqual(result.status_code, 200)
 
@@ -33,7 +33,7 @@ class ActivitySerializerTest(BaseTestCase):
         client = Client()
         result = client.get(
             "/activities/6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
-            headers={"Authorization": "Bearer act_as_user=test_user"},
+            headers=self.auth_headers("bc_admin"),
         )
         self.assertEqual(result.status_code, 200)
 
@@ -47,7 +47,7 @@ class ActivitySerializerTest(BaseTestCase):
         client = Client()
         result = client.get(
             "/activities/6BBA2749-EE3D-41B6-A9F1-4A0CB37029F7",
-            headers={"Authorization": "Bearer act_as_user=test_user"},
+            headers=self.auth_headers("bc_admin"),
         )
         self.assertEqual(result.status_code, 200)
 

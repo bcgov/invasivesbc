@@ -2,12 +2,10 @@ from abc import ABC
 
 from api.models.activity import DraftActivity
 from django.test.client import Client
-from django.test import override_settings
 from rest_framework import status
 from api.tests.base_test_case import BaseTestCase
 
 
-@override_settings(UNIT_TESTING_ENABLED=True)
 class BaseActivitySubtypeTest(BaseTestCase, ABC):
     """
     Base Class for Activity Subtypes to inherit off for common functionality/test-cases.
@@ -28,9 +26,9 @@ class BaseActivitySubtypeTest(BaseTestCase, ABC):
         client = Client()
         result = client.get(
             f"/activities/{id}",
-            headers={"Authorization": "Bearer act_as_user=test_user"},
+            headers=self.auth_headers("bc_admin"),
         )
-        self.assertEqual(result.status_code, 200)
+        self.assertEqual(result.status_code, 200, result.content)
         return result
 
     def fetch_a(self):
@@ -63,7 +61,7 @@ class BaseActivitySubtypeTest(BaseTestCase, ABC):
         client = Client()
         result = client.post(
             f"/ninja/activities/{type}",
-            headers={"Authorization": "Bearer act_as_user=test_user"},
+            headers=self.auth_headers("bc_admin"),
             content_type="application/json",
             data=payload,
         )
@@ -111,7 +109,7 @@ class BaseActivitySubtypeTest(BaseTestCase, ABC):
             errors = self.parse_422_response(result)
             self.fail(errors)
 
-        self.assertEqual(result.status_code, 200)
+        self.assertEqual(result.status_code, 200, result.content)
         return result
 
     def match_common_fields(self, record_in: dict, record_out: dict):

@@ -11,7 +11,7 @@ from api.constants import short_id_regex, uuid_regex
 from api.utils.filtered_activity_queryset import FilteredActivityQueryset
 from api.models.export.csv import CSV_EXPORT_ROW_MAP
 from api.models.activity import Activity
-from api.ninja_authentication import NinjaKeycloakAuthentication
+from api.ninja_authentication import NinjaAnyRoleRequired
 from api.permissions.activity_access import filter_activities_by_access
 from api.protocol.activity.activity_plant_summary_out import ActivityPlantSummaryOut
 from api.protocol.activity.activity_plant_row_out import CachedActivityPlantRowOut
@@ -19,7 +19,7 @@ from api.protocol.recordset.recordset_rows_response_out import RecordsetRowsResp
 from . import FilterObjectsIn, IdListIn
 
 ROOT_PATH = "/recordset"
-router = Router(auth=NinjaKeycloakAuthentication())
+router = Router(auth=NinjaAnyRoleRequired())
 log = logging.getLogger(__name__)
 
 
