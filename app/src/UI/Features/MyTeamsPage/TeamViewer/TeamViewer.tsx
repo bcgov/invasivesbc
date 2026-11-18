@@ -10,8 +10,9 @@ import Button from 'UI/Reusable/Button/Button';
 import { Cancel, GroupRemove, PersonRemove, Refresh } from '@mui/icons-material';
 import useTeamsManagement from '../subcomponents/useTeamManagement.hooks';
 import EditTeamInfo from './EditTeamInfo';
-import Spinner from 'UI/Reusable/Spinner/Spinner';
 import ConfirmationButton from 'UI/Reusable/ConfirmationButton/ConfirmationButton';
+import OverlayContentWrapper from 'UI/Reusable/OverlayContentWrapper/OverlayContentWrapper';
+import LoadingPage from 'UI/Features/SystemStatusPages/LoadingPage/LoadingPage';
 import './teamViewer.css';
 
 type InfoProps = {
@@ -113,25 +114,11 @@ const TeamViewer = () => {
       </div>
     );
   }
-  if (initLoading || !details)
-    return (
-      <div id="team-viewer">
-        <div className="fixed-back-button">
-          <BackButton />
-        </div>
-        <div className="content">
-          <Spinner />
-          <p>Gathering information...</p>
-        </div>
-      </div>
-    );
+  if (initLoading || !details) return <LoadingPage />;
   return (
-    <div id="team-viewer">
-      <div className="fixed-back-button">
-        <BackButton />
-      </div>
-      <div className="content">
-        <Fieldset label="Overview">
+    <OverlayContentWrapper backButton>
+      <div id="team-viewer">
+        <Fieldset label="Overview" className="team-cont">
           <dl className="overview">
             <Info term={'Name'} definition={details.name} />
             <Info term={'Agencies'} definition={details.agencies} />
@@ -143,7 +130,7 @@ const TeamViewer = () => {
           {canEdit && <EditTeamInfo details={details} refresh={refreshTeamInformation} />}
         </Fieldset>
 
-        <Fieldset label={'Members'} tooltip={MEMBER_TOOLTIP}>
+        <Fieldset label={'Members'} className="team-cont" tooltip={MEMBER_TOOLTIP}>
           <StyledTable>
             <thead>
               <tr>
@@ -183,7 +170,7 @@ const TeamViewer = () => {
         </Fieldset>
 
         {details?.invitations && (
-          <Fieldset label={'Invitations'} tooltip={INVITATION_TOOLTIP}>
+          <Fieldset label={'Invitations'} className="team-cont" tooltip={INVITATION_TOOLTIP}>
             <InviteMember teamId={teamId} refreshTeam={refreshTeamInformation} />
             <StyledTable>
               <thead>
@@ -225,7 +212,7 @@ const TeamViewer = () => {
           <GroupRemove /> &nbsp; {canEdit ? 'Disband Team' : 'Leave Team'}
         </ConfirmationButton>
       </div>
-    </div>
+    </OverlayContentWrapper>
   );
 };
 
