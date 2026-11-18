@@ -23,6 +23,12 @@ app.conf.task_queues = [
         routing_key="tasks",
         queue_arguments={"x-max-priority": 10},
     ),
+    Queue(
+        "node_tasks",
+        Exchange("node_tasks"),
+        routing_key="node_tasks",
+        queue_arguments={"x-max-priority": 9},
+    ),
 ]
 
 app.conf.task_queue_max_priority = 10
