@@ -1,5 +1,4 @@
 from deepdiff import DeepDiff
-from django.contrib.gis.geos import GEOSGeometry
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 import json
@@ -8,7 +7,8 @@ from ninja.errors import HttpError
 from typing import List
 
 from api.ninja_authentication import NinjaAnyRoleRequired
-from api.models.activity import Activity, DraftActivity, ActivitySubtypes
+from api.models.activity import Activity, DraftActivity
+from api.permissions.activity_access import get_activity_permissions
 from api.models.audits import ActivityModificationRecord
 from api.models.enums import FormStatus
 from api.schemas.plant_activity import ACTIVITY_PROCESSORS, DRAFT_ACTIVITY_PROCESSORS
@@ -239,17 +239,22 @@ def get_activity_by_id(request, id: str):
     )
 
 
-@router.api_operation(["DELETE"], "/{id}", response={204: None})
+@router.api_operation(["DELETE"], "/{id}", response={204: None, 403: None})
 def delete_activity_by_id(request, id: str):
-    # TODO: Deviate between Draft and Submitted Models, Add Permission Checks on User to ensure no invalid deletions
-    raise HttpError(
-        message="This endpoint is stubbed and currently under development.",
-        status_code=501,
-    )
-    if Activity.objects.get(id=id).exists():
-        record = Activity.objects.get(id=id)
-        record.form_status = FormStatus.Deleted
-        record.save(update_fields=["form_status"])
-    elif DraftActivity.objects(id=id).exists():
-        # TODO: If Draft Activity Objects. Exists, Delete it.
-        pass
+    with transaction.atomic():
+        if submitted := Activity.objects.filter(id=id).first():
+            if get_activity_permissions(request.auth, submitted).get(
+                "can_delete", False
+            ):
+                submitted.form_status = FormStatus.Deleted
+                submitted.save(update_fields=["form_status"])
+                return 204, None
+            else:
+                return 403, None
+
+        if draft := get_object_or_404(DraftActivity, id=id, creating_user=request.auth):
+            if get_activity_permissions(request.auth, draft).get("can_delete", False):
+                draft.delete()
+                return 204, None
+            else:
+                return 403, None
