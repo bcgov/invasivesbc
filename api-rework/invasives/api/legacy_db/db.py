@@ -72,11 +72,12 @@ from api.models.iapp import IAPPSite
 from api.models.migrator import ActivityPendingLink
 from api.utils.timezones import legacy_local_to_aware
 from django.core.exceptions import ValidationError as DjangoValidationError
-from django.db import DatabaseError
+from django.db import DatabaseError, transaction
 from django.db.models import Q
 from django.utils import timezone
 from invasivesbc.settings import LEGACY_DB_CONNECTION_STRING
 import psycopg
+from psycopg import transaction
 from psycopg.rows import dict_row
 from pydantic import ValidationError
 from rich import pretty
@@ -734,6 +735,24 @@ class LegacyDB:
                         logging.debug(parsed)
 
                         if not dry_run:
+
+                            # delete incorrectly-migrated users
+                            if parsed.subject != parsed.subject_for_update:
+                                updated_activities = Activity.objects.filter(
+                                    creating_user__subject=parsed.subject_for_update
+                                )
+                                if updated_activities.exists():
+                                    logging.warning(
+                                        f"Activities for {parsed.subject} must be re-associated (run bind_activity_to_user)"
+                                    )
+                                updated_activities.update(creating_user=None)
+                                HistoricalUserName.objects.filter(
+                                    user_id=parsed.subject_for_update
+                                ).delete()
+                                User.objects.filter(
+                                    subject=parsed.subject_for_update
+                                ).delete()
+
                             User.objects.update_or_create(
                                 subject=parsed.subject,
                                 defaults={
@@ -758,9 +777,13 @@ class LegacyDB:
                             HistoricalUserName.objects.filter(
                                 user_id=parsed.subject
                             ).delete()
+
                             for hun in parsed.historical_user_names:
                                 HistoricalUserName.objects.update_or_create(
-                                    user_id=parsed.subject, historical_username=hun
+                                    historical_username=hun,
+                                    defaults={
+                                        "user_id": parsed.subject,
+                                    },
                                 )
 
                             employers = []

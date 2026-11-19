@@ -1043,12 +1043,33 @@ class LegacyUser(BaseModel):
 
     @computed_field
     @property
-    def subject(self) -> str:
+    def subject_for_update(self) -> str:
+        """
+        An earlier version incorrectly returned @bceid-business suffix for idir accounts.
+        the migration logic now checks for this and updates these records.
+
+        this can be safely deleted after production migration
+
+        :return:
+        """
         if self.bceid_userid is not None:
             return f"{self.bceid_userid.lower()}@bceid-business"
 
         if self.idir_userid is not None:
             return f"{self.idir_userid.lower()}@bceid-business"
+
+        raise ValueError(
+            "subject_for_update cannot be computed from available properties"
+        )
+
+    @computed_field
+    @property
+    def subject(self) -> str:
+        if self.bceid_userid is not None:
+            return f"{self.bceid_userid.lower()}@bceid-business"
+
+        if self.idir_userid is not None:
+            return f"{self.idir_userid.lower()}@idir"
 
         raise ValueError("subject cannot be computed from available properties")
 
