@@ -258,6 +258,7 @@ def get_suggested_users(request, team_id):
             | Q(employerassociations__employer__in=team.employers.all())
         )
         .exclude(subject__in=members)  # Remove existing team members
+        .exclude(is_active=False)  # Remove inactive accounts
         .distinct()  # Prevent duplication from the Q OR conditions in filter
         .order_by("display_name")
     )
