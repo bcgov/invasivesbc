@@ -31,6 +31,9 @@
       &:nth-child(odd) {
         background-color: var(--odd-list-item-bg-color);
       }
+      &:hover {
+        background-color: var(--hovered-list-item-bg-color);
+      }
 
       button {
         width: 100%;

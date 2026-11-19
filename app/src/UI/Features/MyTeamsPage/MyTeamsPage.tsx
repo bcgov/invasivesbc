@@ -4,6 +4,8 @@ import MyTeams from './subcomponents/MyTeams/MyTeams';
 import useTeamsManagement from './subcomponents/useTeamManagement.hooks';
 import { useSelector } from 'utils/use_selector';
 import { InvitationOut, TeamMembershipOut } from 'api/api-schema';
+import OverlayContentWrapper from 'UI/Reusable/OverlayContentWrapper/OverlayContentWrapper';
+import OnlineOnlyWrapper from 'UI/Features/SystemStatusPages/OnlineOnlyWrapper/OnlineOnlyWrapper';
 import './myTeamsPage.css';
 
 const MyTeamsPage = () => {
@@ -30,25 +32,15 @@ const MyTeamsPage = () => {
     })();
   }, [online]);
 
-  if (!online) {
-    return (
-      <div id="my-teams-page">
-        <div className="content">
-          <p>
-            <b>Sorry, teams is not available while offline.</b>
-          </p>
-        </div>
-      </div>
-    );
-  }
-  if (!membershipDetails) return null;
   return (
-    <div id="my-teams-page">
-      <div className="content">
-        <MyTeams membershipDetails={membershipDetails} />
-        <MyInvitations invitations={invitations} refresh={loadInfo} />
-      </div>
-    </div>
+    <OnlineOnlyWrapper>
+      <OverlayContentWrapper>
+        <div id="my-teams-page">
+          <MyTeams membershipDetails={membershipDetails} />
+          <MyInvitations invitations={invitations} refresh={loadInfo} />
+        </div>
+      </OverlayContentWrapper>
+    </OnlineOnlyWrapper>
   );
 };
 

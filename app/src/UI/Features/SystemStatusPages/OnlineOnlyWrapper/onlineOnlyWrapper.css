@@ -1,0 +1,11 @@
+.system-status-online-only {
+  padding-top: 1rem;
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  background-color: var(--overlay-content-background-color);
+  max-width: var(--overlay-content-max-width);
+  height: 100%;
+}

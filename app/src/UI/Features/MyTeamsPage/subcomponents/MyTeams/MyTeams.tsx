@@ -4,9 +4,10 @@ import { TeamMembershipOut } from 'api/api-schema';
 import './myTeams.css';
 
 type PropTypes = {
-  membershipDetails: TeamMembershipOut;
+  membershipDetails?: TeamMembershipOut;
 };
 const MyTeams = ({ membershipDetails }: PropTypes) => {
+  if (!membershipDetails) return null;
   return (
     <section className="my-teams">
       <h2>My Teams</h2>

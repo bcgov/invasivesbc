@@ -10,8 +10,10 @@ import Button from 'UI/Reusable/Button/Button';
 import { Cancel, GroupRemove, PersonRemove, Refresh } from '@mui/icons-material';
 import useTeamsManagement from '../subcomponents/useTeamManagement.hooks';
 import EditTeamInfo from './EditTeamInfo';
-import Spinner from 'UI/Reusable/Spinner/Spinner';
 import ConfirmationButton from 'UI/Reusable/ConfirmationButton/ConfirmationButton';
+import OverlayContentWrapper from 'UI/Reusable/OverlayContentWrapper/OverlayContentWrapper';
+import LoadingPage from 'UI/Features/SystemStatusPages/LoadingPage/LoadingPage';
+import OnlineOnlyWrapper from 'UI/Features/SystemStatusPages/OnlineOnlyWrapper/OnlineOnlyWrapper';
 import './teamViewer.css';
 
 type InfoProps = {
@@ -113,119 +115,107 @@ const TeamViewer = () => {
       </div>
     );
   }
-  if (initLoading || !details)
-    return (
-      <div id="team-viewer">
-        <div className="fixed-back-button">
-          <BackButton />
-        </div>
-        <div className="content">
-          <Spinner />
-          <p>Gathering information...</p>
-        </div>
-      </div>
-    );
+  if (initLoading || !details) return <LoadingPage />;
   return (
-    <div id="team-viewer">
-      <div className="fixed-back-button">
-        <BackButton />
-      </div>
-      <div className="content">
-        <Fieldset label="Overview">
-          <dl className="overview">
-            <Info term={'Name'} definition={details.name} />
-            <Info term={'Agencies'} definition={details.agencies} />
-            <Info term={'Employer(s)'} definition={details.employers} />
-            <Info term={'Founder'} definition={details.founder} />
-            <Info term={'Founding Date'} definition={details.founding_date} />
-            <Info term={'Description'} definition={details.description} />
-          </dl>
-          {canEdit && <EditTeamInfo details={details} refresh={refreshTeamInformation} />}
-        </Fieldset>
+    <OnlineOnlyWrapper>
+      <OverlayContentWrapper backButton>
+        <div id="team-viewer">
+          <Fieldset label="Overview" className="team-cont">
+            <dl className="overview">
+              <Info term={'Name'} definition={details.name} />
+              <Info term={'Agencies'} definition={details.agencies} />
+              <Info term={'Employer(s)'} definition={details.employers} />
+              <Info term={'Founder'} definition={details.founder} />
+              <Info term={'Founding Date'} definition={details.founding_date} />
+              <Info term={'Description'} definition={details.description} />
+            </dl>
+            {canEdit && <EditTeamInfo details={details} refresh={refreshTeamInformation} />}
+          </Fieldset>
 
-        <Fieldset label={'Members'} tooltip={MEMBER_TOOLTIP}>
-          <StyledTable>
-            <thead>
-              <tr>
-                <th>Member</th>
-                <th>Date Joined</th>
-                {canEdit && (
-                  <>
-                    <th>Date of Departure</th>
-                    <th>Action</th>
-                  </>
-                )}
-              </tr>
-            </thead>
-            <tbody>
-              {details.members.map((m) => (
-                <tr key={m.subject}>
-                  <td>{m.name}</td>
-                  <td>{m?.join_date}</td>
-                  {canEdit && (
-                    <>
-                      <td>{m?.leave_date ?? 'N/A'}</td>
-                      <td>
-                        {/* User is not team owner and user is active member of team */}
-                        {details.founder !== m.name && !m?.leave_date && (
-                          <ConfirmationButton className="destructive" onClick={() => handleRemoveUser(m.subject)}>
-                            <PersonRemove />
-                            &nbsp; Remove
-                          </ConfirmationButton>
-                        )}
-                      </td>
-                    </>
-                  )}
-                </tr>
-              ))}
-            </tbody>
-          </StyledTable>
-        </Fieldset>
-
-        {details?.invitations && (
-          <Fieldset label={'Invitations'} tooltip={INVITATION_TOOLTIP}>
-            <InviteMember teamId={teamId} refreshTeam={refreshTeamInformation} />
+          <Fieldset label={'Members'} className="team-cont" tooltip={MEMBER_TOOLTIP}>
             <StyledTable>
               <thead>
                 <tr>
                   <th>Member</th>
-                  <th>Date Requested</th>
-                  <th>Status</th>
-                  <th>Action</th>
+                  <th>Date Joined</th>
+                  {canEdit && (
+                    <>
+                      <th>Date of Departure</th>
+                      <th>Action</th>
+                    </>
+                  )}
                 </tr>
               </thead>
               <tbody>
-                {details.invitations.map((t) => (
-                  <tr key={t.id}>
-                    <td>{t.invitee}</td>
-                    <td>{moment(t?.date_stamp).format('YYYY-MM-DD')}</td>
-                    <td>{t.status}</td>
-                    <td>
-                      {t.status === 'Pending' && (
-                        <ConfirmationButton
-                          variant="destructive"
-                          onClick={() => handleEditInvitation(t.id, 'Cancelled')}
-                        >
-                          <Cancel /> &nbsp; Cancel
-                        </ConfirmationButton>
-                      )}
-                    </td>
+                {details.members.map((m) => (
+                  <tr key={m.subject}>
+                    <td>{m.name}</td>
+                    <td>{m?.join_date}</td>
+                    {canEdit && (
+                      <>
+                        <td>{m?.leave_date ?? 'N/A'}</td>
+                        <td>
+                          {/* User is not team owner and user is active member of team */}
+                          {details.founder !== m.name && !m?.leave_date && (
+                            <ConfirmationButton className="destructive" onClick={() => handleRemoveUser(m.subject)}>
+                              <PersonRemove />
+                              &nbsp; Remove
+                            </ConfirmationButton>
+                          )}
+                        </td>
+                      </>
+                    )}
                   </tr>
                 ))}
-                {details.invitations.length === 0 && (
-                  <tr className="empty-row">
-                    <td colSpan={4}>There are no invitations for this team</td>
-                  </tr>
-                )}
               </tbody>
             </StyledTable>
           </Fieldset>
-        )}
-        <ConfirmationButton variant="contained" onClick={handleLeaveTeam}>
-          <GroupRemove /> &nbsp; {canEdit ? 'Disband Team' : 'Leave Team'}
-        </ConfirmationButton>
-      </div>
-    </div>
+
+          {details?.invitations && (
+            <Fieldset label={'Invitations'} className="team-cont" tooltip={INVITATION_TOOLTIP}>
+              <InviteMember teamId={teamId} refreshTeam={refreshTeamInformation} />
+              <StyledTable>
+                <thead>
+                  <tr>
+                    <th>Member</th>
+                    <th>Date Requested</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {details.invitations.map((t) => (
+                    <tr key={t.id}>
+                      <td>{t.invitee}</td>
+                      <td>{moment(t?.date_stamp).format('YYYY-MM-DD')}</td>
+                      <td>{t.status}</td>
+                      <td>
+                        {t.status === 'Pending' && (
+                          <ConfirmationButton
+                            variant="destructive"
+                            onClick={() => handleEditInvitation(t.id, 'Cancelled')}
+                          >
+                            <Cancel /> &nbsp; Cancel
+                          </ConfirmationButton>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                  {details.invitations.length === 0 && (
+                    <tr className="empty-row">
+                      <td colSpan={4}>There are no invitations for this team</td>
+                    </tr>
+                  )}
+                </tbody>
+              </StyledTable>
+            </Fieldset>
+          )}
+          <ConfirmationButton variant="contained" onClick={handleLeaveTeam}>
+            <GroupRemove /> &nbsp; {canEdit ? 'Disband Team' : 'Leave Team'}
+          </ConfirmationButton>
+        </div>
+      </OverlayContentWrapper>
+    </OnlineOnlyWrapper>
   );
 };
 

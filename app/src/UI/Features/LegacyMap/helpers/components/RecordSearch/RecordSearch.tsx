@@ -19,7 +19,7 @@ type Suggestion = ActivitySuggestion | IappSuggestion;
 const RecordSearch = () => {
   const MINIMUM_LOOKUP_LENGTH = 5;
   const navigate = useNavigate();
-  const DELAY_IN_MS = 750;
+  const DELAY_IN_MS = 250;
   const API_V2_BASE = useSelector((state) => state.Configuration.current.runtime.API_V2_BASE);
   const API_BASE = useSelector((state) => state.Configuration.current.runtime.API_BASE);
 
@@ -62,7 +62,7 @@ const RecordSearch = () => {
             {
               id: '123',
               selectColumns: [field],
-              limit: 2,
+              limit: 5,
               sortColumn: field,
               tableFilters: [
                 {
@@ -91,7 +91,7 @@ const RecordSearch = () => {
             body: recordsetFilters('short_id')
           });
           if (res?.ok) {
-            ibcSuggestions = await res.json();
+            ibcSuggestions = (await res.json()).entries;
           }
         }
       } catch (e) {

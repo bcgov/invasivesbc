@@ -15,3 +15,5 @@ from .biocontrol import *
 
 from .uploaded_image import *
 from .bcgw_observation_export_view import BCGWObservationExportView
+from .restricted_biocontrol import RestrictedBiocontrol
+from .biocontrol_host_association import BiocontrolHostAssociation

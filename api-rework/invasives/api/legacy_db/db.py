@@ -8,7 +8,11 @@ from api.legacy_db.migrate import MigrationCumulativeTaskResult, MigrationTaskRe
 from api.legacy_db.migrate_iapp import create_iapp_site, refresh_iapp_site
 from api.legacy_db.model_serializer import LegacyUserWithRoles
 from api.models import EmployerAssociation, PACNumber, Role, User
-from api.models.activity import Activity
+from api.models.activity import (
+    Activity,
+    BiocontrolHostAssociation,
+    RestrictedBiocontrol,
+)
 from api.models.auth import AgencyAssociation, HistoricalUserName
 from api.models.codes import (
     AdjacentLandUseCode,
@@ -405,6 +409,34 @@ class LegacyDB:
         )
 
     @staticmethod
+    def migrate_biocontrol_maps():
+        # language=PostgreSQL
+        restricted_agent_query = """
+        SELECT agent_code_name
+        FROM private_biocontrol_agents
+        """
+        # language=PostgreSQL
+        agent_host_association_query = """
+        SELECT plant_code_name, agent_code_name
+        FROM plant_agent_treatment
+        """
+
+        with psycopg.connect(LEGACY_DB_CONNECTION_STRING, row_factory=dict_row) as conn:
+            with conn.cursor() as cursor:
+                result = cursor.execute(restricted_agent_query)
+                for row in result.fetchall():
+                    RestrictedBiocontrol.objects.get_or_create(
+                        agent=BiocontrolAgentCode(code=row["agent_code_name"])
+                    )
+
+                result = cursor.execute(agent_host_association_query)
+                for row in result.fetchall():
+                    BiocontrolHostAssociation.objects.get_or_create(
+                        agent=BiocontrolAgentCode(code=row["agent_code_name"]),
+                        plant=PlantsWithBiocontrol(code=row["plant_code_name"]),
+                    )
+
+    @staticmethod
     def migrate_codes(dry_run=False):
         # language=PostgreSQL
         query = """select c.code_name                  as code_name,
@@ -462,6 +494,8 @@ class LegacyDB:
                             log.warning(
                                 f"{row['header_name']} has no equivalent code table"
                             )
+        if not dry_run:
+            LegacyDB.migrate_biocontrol_maps()
 
         return stats
 

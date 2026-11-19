@@ -29,6 +29,15 @@ ROOT_PATH = "/teams"
 router = Router(auth=NinjaAnyRoleRequired())
 log = logging.getLogger(__name__)
 
+TEAM_MANAGERS = (
+    WellKnownRoles.ADMINISTRATOR.value,
+    WellKnownRoles.MASTER_ADMINISTRATOR.value,
+    WellKnownRoles.DATA_MANAGER.value,
+    WellKnownRoles.DATA_MANAGER_ANIMALS.value,
+    WellKnownRoles.DATA_MANAGER_PLANTS.value,
+    WellKnownRoles.DATA_MANAGER_BOTH.value,
+)
+
 ##############
 # Team Creation Handling
 ###
@@ -52,7 +61,7 @@ def get_list_of_teams(request):
 @router.post(
     "/team",
     response={201: dict, 403: dict},
-    auth=NinjaRoleRequired(WellKnownRoles.ADMINISTRATOR, WellKnownRoles.DATA_MANAGER),
+    auth=NinjaRoleRequired(*TEAM_MANAGERS),
 )
 def create_team(request, data: CreateTeamSchema):
     """
@@ -112,7 +121,7 @@ def get_team_info(request, team_id: PositiveInt):
 @router.delete(
     "/team/{team_id}",
     response={204: None, 403: None},
-    auth=NinjaRoleRequired(WellKnownRoles.ADMINISTRATOR, WellKnownRoles.DATA_MANAGER),
+    auth=NinjaRoleRequired(*TEAM_MANAGERS),
 )
 def disband_team(request, team_id: PositiveInt):
     """
@@ -146,7 +155,7 @@ def disband_team(request, team_id: PositiveInt):
 @router.patch(
     "/team/{team_id}",
     response={200: SingleTeamOut, 409: dict},
-    auth=NinjaRoleRequired(WellKnownRoles.ADMINISTRATOR, WellKnownRoles.DATA_MANAGER),
+    auth=NinjaRoleRequired(*TEAM_MANAGERS),
 )
 def update_team_metadata(request, team_id: PositiveInt, data: UpdateTeamSchema):
     """
@@ -185,7 +194,7 @@ def update_team_metadata(request, team_id: PositiveInt, data: UpdateTeamSchema):
 @router.post(
     "/team/{team_id}/invite",
     response={201: dict, 403: None, 409: dict},
-    auth=NinjaRoleRequired(WellKnownRoles.ADMINISTRATOR, WellKnownRoles.DATA_MANAGER),
+    auth=NinjaRoleRequired(*TEAM_MANAGERS),
 )
 def invite_user_to_team(request, team_id: PositiveInt, data: InviteUserToTeamSchema):
     """
@@ -233,7 +242,7 @@ def invite_user_to_team(request, team_id: PositiveInt, data: InviteUserToTeamSch
 @router.get(
     "/team/{team_id}/invite",
     response={200: List[TeamSuggestedUserOut], 403: None},
-    auth=NinjaRoleRequired(WellKnownRoles.ADMINISTRATOR, WellKnownRoles.DATA_MANAGER),
+    auth=NinjaRoleRequired(*TEAM_MANAGERS),
 )
 def get_suggested_users(request, team_id):
     """
@@ -346,7 +355,7 @@ def leave_team(request, team_id: int):
 @router.delete(
     "/team/{team_id}/members/{subject}",
     response={204: None, 400: None},
-    auth=NinjaRoleRequired(WellKnownRoles.ADMINISTRATOR, WellKnownRoles.DATA_MANAGER),
+    auth=NinjaRoleRequired(*TEAM_MANAGERS),
 )
 def kick_member(request, team_id: int, subject: str):
     """
