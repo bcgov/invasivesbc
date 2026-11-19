@@ -3,7 +3,6 @@
   width: 100%;
   box-sizing: border-box;
   flex-direction: column;
-  padding-bottom: 3rem;
   min-height: 100%;
   background-color: var(--overlay-background-color);
   align-items: center;
