@@ -12,6 +12,7 @@ from api.models.codes import (
     BioAgentLifeStageCode,
     BiocontrolAgentCode,
     BiocontrolPresenceCode,
+    BugReportTypeCode,
     ChemicalApplicationMethodDirectCode,
     ChemicalApplicationMethodSprayCode,
     ChemicalPrecautionaryStatement,
@@ -152,6 +153,12 @@ BiocontrolAgentCodeType = Annotated[
 BiocontrolPresenceCodeType = Annotated[
     BiocontrolPresenceCode,
     MapCodeTable(BiocontrolPresenceCode),
+    SerializeCodeTable(),
+    WithJsonSchema({"type": "string"}),
+]
+BugReportTypeCodeType = Annotated[
+    BugReportTypeCode,
+    MapCodeTable(BugReportTypeCode),
     SerializeCodeTable(),
     WithJsonSchema({"type": "string"}),
 ]
