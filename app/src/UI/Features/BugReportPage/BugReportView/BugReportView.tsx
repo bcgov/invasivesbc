@@ -22,6 +22,7 @@ const Info = ({ term, definition }: InfoProps) => {
   );
 };
 
+// TODO - Add ability to change status of ticket (Closed, Resolved) and view uploaded screenshots/videos
 const BugReportView = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [reportDetails, setReportDetails] = useState<Record<string, string> | null>(null);
