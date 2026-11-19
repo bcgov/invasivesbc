@@ -8,6 +8,11 @@
   background-color: midnightblue;
   padding: 4px;
 
+  .network-wrapper {
+    color: white;
+    padding: 5px;
+    box-sizing: border-box;
+  }
   button {
     width: 100%;
     text-align: justify;

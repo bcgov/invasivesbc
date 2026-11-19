@@ -11,6 +11,7 @@ import { PlatformGated } from 'UI/Reusable/Predicates/PlatformGated';
 import ClearAppCache from './ClearAppCache';
 import PlotClientBoundary from './PlotClientBoundary';
 import { useNavigate } from 'react-router';
+import { NetworkStateControl } from 'UI/Reusable/NetworkStateControl';
 import './DebugMenu.css';
 
 const DebugMenu = () => {
@@ -33,6 +34,9 @@ const DebugMenu = () => {
       </IconButton>
       <CustomPopover buttonOverrideOptions={{ anchorEl, setAnchorEl }}>
         <div id={'debug-panel'}>
+          <div className="network-wrapper">
+            <NetworkStateControl />
+          </div>
           <input
             type="text"
             className="debug-nav"
