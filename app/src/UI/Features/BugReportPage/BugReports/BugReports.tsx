@@ -8,6 +8,7 @@ import { useSelector } from 'utils/use_selector';
 import Button from 'UI/Reusable/Button/Button';
 import useBugReportPage from '../bugReportPage.hooks';
 
+// TODO - Add actions for changing status of report (Closed, Resolved)
 const BugReports = () => {
   const { fetchBugReports } = useBugReportPage();
   const navigate = useNavigate();
