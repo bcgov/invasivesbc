@@ -5,4 +5,5 @@ from .team_model_out import (
     TeamMembershipOut,
     TeamMembershipRowOut,
     TeamSuggestedUserOut,
+    TEAM_MANAGERS,
 )
