@@ -72,12 +72,11 @@ from api.models.iapp import IAPPSite
 from api.models.migrator import ActivityPendingLink
 from api.utils.timezones import legacy_local_to_aware
 from django.core.exceptions import ValidationError as DjangoValidationError
-from django.db import DatabaseError, transaction
+from django.db import DatabaseError
 from django.db.models import Q
 from django.utils import timezone
 from invasivesbc.settings import LEGACY_DB_CONNECTION_STRING
 import psycopg
-from psycopg import transaction
 from psycopg.rows import dict_row
 from pydantic import ValidationError
 from rich import pretty
