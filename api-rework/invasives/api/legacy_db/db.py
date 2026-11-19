@@ -876,15 +876,19 @@ class LegacyDB:
                                     defaults={"expires": None, "effective": None},
                                 )
 
-                            # roles
+                            new_roles = set()
                             for r in parsed.roles if parsed.roles else []:
                                 role = Role.objects.filter(name=r.upper()).first()
                                 if not role:
-                                    logging.warning(f"Role {role} not found")
+                                    logging.warning(f"Role {r} not found")
                                 else:
-                                    user = User.objects.get(subject=parsed.subject)
-                                    user.roles.add(role)
-                                    user.save()
+                                    new_roles.add(role)
+
+                            user = User.objects.get(subject=parsed.subject)
+                            prev_roles = user.roles.values_list("name", flat=True)
+                            # As this may be run multiple times due to ETL, prevent constant rewriting of roles if there's no change
+                            if prev_roles != new_roles:
+                                user.roles.set(new_roles)
 
                         stats.succeeded += 1
                     except Exception as e:
