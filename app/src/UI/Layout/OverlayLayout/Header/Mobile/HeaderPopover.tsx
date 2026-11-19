@@ -19,6 +19,7 @@ import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
 import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
 import { useNavigate } from 'react-router';
 import DrawToolCrosshairUserSettingControl from './DrawToolCrosshairUserSettingControl';
+import FlagIcon from '@mui/icons-material/Flag';
 
 const LogoutButton = () => {
   const dispatch = useDispatch();
@@ -60,16 +61,21 @@ const HeaderPopover = () => {
     setAnchorEl(event.currentTarget);
     dispatch(Alerts.deleteAll());
   };
-  const navToUpdateRequest = () => {
-    navigate('/AccessRequest');
-    dispatch(EventActions.setLayoutParameters({ viewLayout: LayoutMode.MAP_HIDDEN }));
+
+  const navTo = (url: string) => {
+    navigate(url);
+    setAnchorEl(null);
   };
 
+  const navToUpdateRequest = () => {
+    navTo('/AccessRequest');
+    dispatch(EventActions.setLayoutParameters({ viewLayout: LayoutMode.MAP_HIDDEN }));
+  };
   const requestAccess = async () => {
     if (!authenticated) {
       dispatch(AuthActions.signinRequest({}));
     } else {
-      navigate('/AccessRequest');
+      navTo('/AccessRequest');
       dispatch(EventActions.setLayoutParameters({ viewLayout: LayoutMode.MAP_HIDDEN }));
     }
   };
@@ -78,6 +84,7 @@ const HeaderPopover = () => {
 
   const activated = useSelector((state) => state.UserInfo.activated);
   const { authenticated, offlineUsers, workingOffline, loggedInOrWorkingOffline } = useSelector(selectAuth);
+  const connected = useSelector((state) => state.Network.connected);
   const loginInProgress = useSelector((state) => state.Auth.loginInProgress);
   const [offlineUserSelectionAvailable, setOfflineUserSelectionAvailable] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -113,18 +120,28 @@ const HeaderPopover = () => {
                 </li>
                 <FeatureGated requires="TEAMS">
                   <li>
-                    <button onClick={() => navigate('/teams')}>
+                    <button onClick={() => navTo('/teams')}>
                       <Group />
                       My Teams
                     </button>
                   </li>
                 </FeatureGated>
+                {connected && (
+                  <FeatureGated requires="BUG_REPORT">
+                    <li>
+                      <button onClick={() => navTo('/ReportBug')}>
+                        <FlagIcon />
+                        Report a Bug
+                      </button>
+                    </li>
+                  </FeatureGated>
+                )}
               </>
             )}
             {loggedInOrWorkingOffline && (
               <>
                 <li>
-                  <button onClick={() => navigate('/News')}>
+                  <button onClick={() => navTo('/News')}>
                     <Newspaper />
                     What's New
                   </button>
@@ -132,7 +149,7 @@ const HeaderPopover = () => {
                 <MobileOnly>
                   <FeatureGated requires={'USER_GUIDE'}>
                     <li>
-                      <button onClick={() => navigate('/Guide')}>
+                      <button onClick={() => navTo('/Guide')}>
                         <HelpCenter />
                         User Guide
                       </button>
@@ -140,7 +157,7 @@ const HeaderPopover = () => {
                   </FeatureGated>
                   <FeatureGated requires={'PLAN_MY_TRIP'}>
                     <li>
-                      <button onClick={() => navigate('/ManageTrips')}>
+                      <button onClick={() => navTo('/ManageTrips')}>
                         <Luggage />
                         Manage My Trips
                       </button>

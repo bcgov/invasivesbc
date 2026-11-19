@@ -18,6 +18,7 @@ import NavTab from 'UI/Layout/OverlayLayout/Header/NavTab';
 import { usePrimaryNavigationLinks } from 'UI/Layout/Routes/PrimaryNavigation';
 import DebugMenu from 'UI/Layout/DebugMenu/DebugMenu';
 import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
+import FlagIcon from '@mui/icons-material/Flag';
 
 const ButtonWrapper = ({ children }) => {
   return (
@@ -101,6 +102,12 @@ const LoginOrOutMemo = React.memo(() => {
 
   const navToUpdateRequest = () => {
     navigate('/AccessRequest');
+    handleClose();
+  };
+
+  const navToBugReport = () => {
+    navigate('/ReportBug');
+    handleClose();
   };
 
   const requestAccess = async () => {
@@ -108,6 +115,7 @@ const LoginOrOutMemo = React.memo(() => {
       dispatch(AuthActions.signinRequest({}));
     } else {
       navigate('/AccessRequest');
+      handleClose();
     }
   };
 
@@ -160,6 +168,17 @@ const LoginOrOutMemo = React.memo(() => {
             </MenuItem>
           </FeatureGated>
         )}
+        {activated && (
+          <FeatureGated requires="BUG_REPORT">
+            <MenuItem onClick={navToBugReport}>
+              <ListItemIcon>
+                <FlagIcon />
+              </ListItemIcon>
+              Report Bug
+            </MenuItem>
+          </FeatureGated>
+        )}
+
         {authenticated ? (
           <LogoutButton />
         ) : (
