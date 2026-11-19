@@ -10,6 +10,12 @@ import amqp, { ConfirmChannel } from 'amqplib';
 const url = process.env.CELERY_BROKER_URL ?? 'unset';
 const QUEUE = 'node_tasks';
 
+enum CeleryTasks {
+  ETL_BATCH = 'node_tasks.normalize_batch',
+  ETL_ACTIVITY = 'node_tasks.normalize_legacy_record',
+  ETL_USER = 'node_tasks.etl_updated_user'
+}
+
 let channel: ConfirmChannel | null = null;
 
 const getChannel = async (): Promise<ConfirmChannel> => {
@@ -31,7 +37,12 @@ const getChannel = async (): Promise<ConfirmChannel> => {
   return channel;
 };
 
-export async function publishPriorityTask(taskName: string, args: unknown[] = [], kwargs: object = {}, priority = 9) {
+export async function publishPriorityTask(
+  taskName: `${CeleryTasks}`,
+  args: unknown[] = [],
+  kwargs: object = {},
+  priority = 9
+) {
   const ch = await getChannel();
   const taskId = randomUUID();
   const body = Buffer.from(
