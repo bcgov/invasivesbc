@@ -9,7 +9,8 @@ const AdminLayout: React.FC<PropsWithChildren> = ({ children }) => {
     { to: '/Admin/accessRequests', label: 'Access Requests' },
     { to: '/Admin/roleAssignment', label: 'Role Assignments' },
     { to: '/Admin/emailSettings', label: 'Email Settings' },
-    { to: '/Admin/emailTemplates', label: 'Email Templates' }
+    { to: '/Admin/emailTemplates', label: 'Email Templates' },
+    { to: '/Admin/bugReports', label: 'Bug Reports', featureFlag: 'BUG_REPORT' }
   ];
   return (
     <>

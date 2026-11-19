@@ -7,12 +7,12 @@ import { UnifiedConfig } from 'state/configuration/unified-config';
 import AppActions from 'state/actions/appActions/appActions';
 
 enum appModeEnum {
-  'Records',
-  'Record',
-  'Landing',
-  'Reports',
-  'Batch',
-  'IAPP'
+  Records,
+  Record,
+  Landing,
+  Reports,
+  Batch,
+  IAPP
 }
 
 interface AppModeState {
@@ -82,7 +82,7 @@ function createAppModeReducer(config: UnifiedConfig) {
       return createNextState(state, (draftState) => {
         draftState.url = action?.payload;
         if (
-          ['Batch', 'Reports', 'Training', 'Legend', 'Landing', 'News', 'Admin', 'Guide'].includes(
+          ['Batch', 'Reports', 'Training', 'Legend', 'Landing', 'News', 'Admin', 'Guide', 'ReportBug'].includes(
             action.payload.split('/')[1]
           )
         ) {
