@@ -285,7 +285,7 @@ async function batchApproveAccessRequests(req: InvasivesRequest, res: Response, 
       );
     }
     // After Adding new Users successfully, send message to rabbit to keep states in sync.
-    publishPriorityTask('node_tasks.etl_updated_user');
+    await publishPriorityTask('node_tasks.etl_updated_user');
     return res.status(201).json({
       message: 'Access requests processed',
       request: req.body,
