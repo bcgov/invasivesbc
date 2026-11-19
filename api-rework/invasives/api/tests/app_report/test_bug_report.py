@@ -80,6 +80,14 @@ class BugReportTest(BaseTestCase):
         self.assertIsNotNone(data[0]["title"])
         self.assertIsNotNone(data[0]["issue_type"])
 
-        # Fetch Specified Bug Report
+        ## Fetch Bug Reports Unauthorized -- Denied
+        res = self.get(url=f"/bug_report", user=self.NO_ROLE_USER)
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+
+        # Fetch Specified Bug Report Authorized -- Success
         res = self.get(url=f"/bug_report/{BUG_REPORT_ID}")
         self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        # Fetch Specified Bug Report Unauthorized -- Denied
+        res = self.get(url=f"/bug_report/{BUG_REPORT_ID}", user=self.NO_ROLE_USER)
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
