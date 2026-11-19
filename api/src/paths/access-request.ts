@@ -20,6 +20,7 @@ import { buildMailer } from 'utils/mailer';
 import isAdminFromAuthContext from 'utils/isAdminFromAuthContext';
 import LoggerHandler from 'utils/endpoints/LoggerHandler';
 import { InvasivesRequest } from 'utils/auth-utils';
+import { publishPriorityTask } from 'rabbit';
 
 const defaultLog = getLogger('access-request');
 const logger = new LoggerHandler('access-request');
@@ -283,6 +284,8 @@ async function batchApproveAccessRequests(req: InvasivesRequest, res: Response, 
         'html'
       );
     }
+    // After Adding new Users successfully, send message to rabbit to keep states in sync.
+    publishPriorityTask('node_tasks.etl_updated_user');
     return res.status(201).json({
       message: 'Access requests processed',
       request: req.body,
