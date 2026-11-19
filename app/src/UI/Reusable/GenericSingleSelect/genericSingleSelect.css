@@ -1,0 +1,70 @@
+.form-single-select-input {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  box-sizing: border-box;
+  width: 100%;
+  margin-bottom: 10px;
+
+  /* stylelint-disable-next-line selector-class-pattern */
+  .select-input__control,
+  .select-input {
+    appearance: none; /* Prevent iOS Style overriding */
+    width: 100%;
+    text-align: left;
+    font-size: var(--form-input-font-size);
+    min-height: var(--form-input-height);
+  }
+
+  /* stylelint-disable-next-line selector-class-pattern */
+  .select-input__single-value {
+    white-space: unset;
+  }
+
+  /* stylelint-disable-next-line selector-class-pattern */
+  .select-input__single-value--is-disabled {
+    color: black;
+  }
+
+  .top {
+    display: flex;
+    width: 100%;
+  }
+
+  label {
+    height: 25px;
+    font-size: var(--form-input-label-font-size);
+    font-weight: 600;
+    margin-right: auto;
+
+    &::after {
+      content: ':';
+    }
+  }
+
+  &.full-width {
+    width: 100%;
+  }
+
+  &.half-width {
+    width: 49%;
+  }
+
+  &.third-width {
+    width: 32%;
+  }
+
+  &.quarter-width {
+    width: 24%;
+  }
+}
+
+@media screen and (width < 650px) {
+  .form-single-select-input {
+    &.half-width,
+    &.third-width,
+    &.quarter-width {
+      width: 100%;
+    }
+  }
+}
