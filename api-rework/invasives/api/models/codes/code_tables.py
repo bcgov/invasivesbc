@@ -260,3 +260,8 @@ class HerbicideTypeCode(BaseCode):
 class HerbicideApplicationMethodCode(BaseCode):
     class Meta:
         db_table = '"codes"."herbicide_application_method"'
+
+
+class BugReportTypeCode(BaseCode):
+    class Meta:
+        db_table = '"codes"."bug_report_type"'

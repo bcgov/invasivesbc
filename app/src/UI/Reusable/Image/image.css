@@ -1,0 +1,31 @@
+.photo-card {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  box-shadow: #ccc 2px 2px 1px 1px;
+  border: 1pt solid #888;
+  padding: 5px;
+  position: relative;
+  max-width: 100%;
+}
+
+.missing-image {
+  display: flex;
+  color: gray;
+  align-items: center;
+}
+
+img {
+  object-fit: fill;
+
+  &:hover {
+    cursor: zoom-in;
+  }
+}
+
+.delete-button {
+    color: black;
+    position: absolute;
+    top: -15px;
+    right: -15px;
+}

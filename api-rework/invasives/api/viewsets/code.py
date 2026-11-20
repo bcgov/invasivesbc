@@ -25,6 +25,7 @@ class CodeViewSet(AtomicViewSetMixin, ViewSet):
         BioAgentLifeStageCode,
         BiocontrolAgentCode,
         BiocontrolPresenceCode,
+        BugReportTypeCode,
         ChemicalApplicationMethodDirectCode,
         ChemicalApplicationMethodSprayCode,
         CloudCoverCode,

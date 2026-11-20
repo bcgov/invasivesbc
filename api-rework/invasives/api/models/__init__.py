@@ -7,3 +7,4 @@ from .export import *
 from .teams import *
 from .mapping import *
 from .iapp import *
+from .app_report import *

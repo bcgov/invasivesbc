@@ -18,6 +18,7 @@ from api.protocol.summary import summary_router, SUMMARY_PATH
 from api.protocol.teams import teams_router, TEAMS_ROOT_PATH
 from api.protocol.recordset import recordset_router, RECORDSET_ROOT_PATH
 from api.protocol.auth import auth_router, AUTH_ROOT_PATH
+from api.protocol.app_report import app_report_router, APP_REPORT_ROOT_PATH
 
 from ninja import NinjaAPI
 
@@ -39,5 +40,6 @@ ninja_api.add_router(RECORDSET_ROOT_PATH, recordset_router)
 ninja_api.add_router(SUMMARY_PATH, summary_router)
 ninja_api.add_router(TEAMS_ROOT_PATH, teams_router)
 ninja_api.add_router("/tiles", tile_router)
+ninja_api.add_router(APP_REPORT_ROOT_PATH, app_report_router)
 
 urlpatterns = [path("", include(ROUTER.urls)), path("ninja/", ninja_api.urls)]
