@@ -118,3 +118,14 @@ def run_full_etl(self, clobber=True):
         import_all_activities.si(clobber=clobber),
     )
     c.apply_async()
+
+
+@celery_app.task(
+    name="node_tasks.etl_updated_user",
+    bind=True,
+    max_retries=3,
+    time_limit=3600 * 12,
+)
+def etl_updated_user(self):
+    stats = LegacyDB.migrate_users()
+    logging.info(pformat(stats))
