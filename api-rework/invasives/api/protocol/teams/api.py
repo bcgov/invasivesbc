@@ -17,6 +17,7 @@ from api.schemas.teams import (
     SingleTeamOut,
     TeamMembershipOut,
     TeamSuggestedUserOut,
+    TEAM_MANAGERS,
 )
 from . import (
     CreateTeamSchema,
@@ -29,14 +30,6 @@ ROOT_PATH = "/teams"
 router = Router(auth=NinjaAnyRoleRequired())
 log = logging.getLogger(__name__)
 
-TEAM_MANAGERS = (
-    WellKnownRoles.ADMINISTRATOR.value,
-    WellKnownRoles.MASTER_ADMINISTRATOR.value,
-    WellKnownRoles.DATA_MANAGER.value,
-    WellKnownRoles.DATA_MANAGER_ANIMALS.value,
-    WellKnownRoles.DATA_MANAGER_PLANTS.value,
-    WellKnownRoles.DATA_MANAGER_BOTH.value,
-)
 
 ##############
 # Team Creation Handling
@@ -83,8 +76,10 @@ def create_team(request, data: CreateTeamSchema):
             founder=request.auth, name=data.name, description=data.description
         )
         # Assign Employers based on user profile
-        employers = EmployerAssociation.objects.filter(user=request.auth).values_list(
-            "employer", flat=True
+        employers = (
+            EmployerAssociation.objects.filter(user=request.auth)
+            .exclude(employer="NRQ")
+            .values_list("employer", flat=True)
         )
 
         team.employers.set(employers)
@@ -263,6 +258,7 @@ def get_suggested_users(request, team_id):
             | Q(employerassociations__employer__in=team.employers.all())
         )
         .exclude(subject__in=members)  # Remove existing team members
+        .exclude(is_active=False)  # Remove inactive accounts
         .distinct()  # Prevent duplication from the Q OR conditions in filter
         .order_by("display_name")
     )

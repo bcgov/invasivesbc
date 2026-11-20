@@ -5,6 +5,15 @@ from pydantic import Field, AliasPath
 from api.constants import WellKnownRoles
 from api.models.teams import Team, TeamMember, TeamInvitation, InviteStatus
 
+TEAM_MANAGERS = (
+    WellKnownRoles.ADMINISTRATOR.value,
+    WellKnownRoles.MASTER_ADMINISTRATOR.value,
+    WellKnownRoles.DATA_MANAGER.value,
+    WellKnownRoles.DATA_MANAGER_ANIMALS.value,
+    WellKnownRoles.DATA_MANAGER_PLANTS.value,
+    WellKnownRoles.DATA_MANAGER_BOTH.value,
+)
+
 
 class TeamMemberOut(ModelSchema):
     join_date: date
@@ -122,12 +131,7 @@ class TeamMembershipOut(Schema):
 
     @staticmethod
     def resolve_can_create_team(_, context):
-        return context["request"].auth.has_any_role(
-            [
-                WellKnownRoles.DATA_MANAGER.value,
-                WellKnownRoles.ADMINISTRATOR.value,
-            ]
-        )
+        return context["request"].auth.has_any_role(list(TEAM_MANAGERS))
 
 
 class TeamSuggestedUserOut(Schema):
