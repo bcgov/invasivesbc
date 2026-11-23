@@ -1,8 +1,15 @@
-from ninja import ModelSchema
 from typing import List, Optional
-from api.models.auth import User, PACNumber, AgencyAssociation, EmployerAssociation
+
 from api.models.activity import ActivitySubtypes
+from api.models.auth import (
+    AgencyAssociation,
+    EmployerAssociation,
+    PACNumber,
+    PACServiceNumber,
+    User,
+)
 from api.models.codes.code_tables import ServiceLicenseNumberAndCompany
+from ninja import ModelSchema
 
 
 class UserProfileOut(ModelSchema):
@@ -40,7 +47,7 @@ class UserProfileOut(ModelSchema):
     def resolve_pac_service_numbers(obj) -> List[str]:
         """Pesticide Application Certificate Numbers for a Company the user is registered with."""
         # @TODO Update when fields adjusted
-        pacs: List[str] = PACNumber.objects.filter(user=obj).values_list(
+        pacs: List[str] = PACServiceNumber.objects.filter(user=obj).values_list(
             "number", flat=True
         )
         if not pacs:
