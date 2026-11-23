@@ -3765,7 +3765,10 @@ export interface components {
         };
         /** BugReportRowOut */
         BugReportRowOut: {
-            /** Date */
+            /**
+             * Date
+             * Format: date
+             */
             date: string;
             /** Time */
             time: string;
@@ -3773,14 +3776,14 @@ export interface components {
             offline_online: string;
             /** Reproducible */
             reproducible: string;
+            /** Issue Type */
+            issue_type: string;
             /** Id */
             id?: number | null;
             /** Title */
             title: string;
             /** Device */
             device: string;
-            /** Issue Type */
-            issue_type: string;
             /**
              * Status
              * @default Open

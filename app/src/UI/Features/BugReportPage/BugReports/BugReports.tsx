@@ -2,20 +2,16 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 
-import './bugReports.css';
-import { BugReportRowOut } from 'api/api-schema';
-
 import { CustomNoRowsOverlay } from 'UI/Features/Admin/components/CustomNoRowsOverlay';
-import { useSelector } from 'utils/use_selector';
 import Button from 'UI/Reusable/Button/Button';
 import useBugReportPage from 'UI/Features/BugReportPage/bugReportPage.hooks';
 import LoadingPage from 'UI/Features/SystemStatusPages/LoadingPage/LoadingPage';
+import './bugReports.css';
 
 // TODO - Add actions for changing status of report (Closed, Resolved)
 const BugReports = () => {
   const { fetchBugReports } = useBugReportPage();
   const navigate = useNavigate();
-  const bugIssueTypeCodes = useSelector((state) => state.ActivityPage?.formCodes?.BugReportTypeCode);
 
   const [rows, setRows] = useState<Record<string, unknown>[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -27,7 +23,7 @@ const BugReports = () => {
       const res = await fetchBugReports();
       if (res?.ok) {
         const reports = await res.json();
-        buildRowModel(reports.entries);
+        setRows(reports.entries);
       }
     } catch (e) {
       console.error('[onSubmit]', e);
@@ -38,19 +34,6 @@ const BugReports = () => {
   React.useEffect(() => {
     load();
   }, []);
-
-  const buildRowModel = (requests: BugReportRowOut[]) => {
-    const rows: BugReportRowOut[] = [];
-    for (const request of requests) {
-      const issueType = bugIssueTypeCodes.find((code) => code.code === request.issue_type)?.full_name || '';
-
-      rows.push({
-        ...request,
-        issue_type: issueType
-      });
-    }
-    setRows(rows);
-  };
 
   const requestColumns: GridColDef[] = [
     //1185 max width

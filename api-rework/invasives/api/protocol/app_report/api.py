@@ -38,7 +38,9 @@ def create_bug_report(request, data: CreateBugReportInSchema):
     ),
 )
 def get_bug_reports(request):
-    return {"entries": BugReport.objects.all()}
+    reports = BugReport.objects.select_related("issue_type")
+
+    return {"entries": reports}
 
 
 @router.get(
