@@ -76,7 +76,7 @@ class BugReportTest(BaseTestCase):
         # Check if initial bug report created is present in the list
         self.assertEqual(data[0]["title"], "Test Bug Report 1")
         self.assertIsNotNone(data[0]["id"])
-        self.assertTrue(data[0]["online"])
+        self.assertEqual(data[0]["offline_online"], "Online")
         self.assertIsNotNone(data[0]["title"])
         self.assertIsNotNone(data[0]["issue_type"])
 
