@@ -13,7 +13,7 @@ from api.models.activity import (
     BiocontrolHostAssociation,
     RestrictedBiocontrol,
 )
-from api.models.auth import AgencyAssociation, HistoricalUserName
+from api.models.auth import AgencyAssociation, HistoricalUserName, PACServiceNumber
 from api.models.codes import (
     AdjacentLandUseCode,
     AgentLocationFoundCode,
@@ -861,7 +861,17 @@ class LegacyDB:
                                 parsed.pac_service_number_1 is not None
                                 and parsed.pac_service_number_1.strip != ""
                             ):
-                                PACNumber.objects.update_or_create(
+                                # a previous version of the migration incorrectly assumed pac_number == pac_service_number. delete the incorrect row.
+                                delete_count, _ = PACNumber.objects.filter(
+                                    user_id=parsed.subject,
+                                    number=parsed.pac_service_number_1,
+                                ).delete()
+                                if delete_count > 0:
+                                    logging.warning(
+                                        f"Deleted incorrect PAC number {parsed.pac_service_number_1} for {parsed.subject}"
+                                    )
+
+                                PACServiceNumber.objects.update_or_create(
                                     user_id=parsed.subject,
                                     number=parsed.pac_service_number_1,
                                     defaults={"expires": None, "effective": None},
@@ -870,11 +880,21 @@ class LegacyDB:
                                 parsed.pac_service_number_2 is not None
                                 and parsed.pac_service_number_2.strip() != ""
                             ):
-                                PACNumber.objects.update_or_create(
+                                # a previous version of the migration incorrectly assumed pac_number == pac_service_number. delete the incorrect row.
+                                delete_count, _ = PACNumber.objects.filter(
                                     user_id=parsed.subject,
                                     number=parsed.pac_service_number_2,
-                                    defaults={"expires": None, "effective": None},
-                                )
+                                ).delete()
+                                if delete_count > 0:
+                                    logging.warning(
+                                        f"Deleted incorrect PAC number {parsed.pac_service_number_2} for {parsed.subject}"
+                                    )
+
+                                    PACServiceNumber.objects.update_or_create(
+                                        user_id=parsed.subject,
+                                        number=parsed.pac_service_number_2,
+                                        defaults={"expires": None, "effective": None},
+                                    )
 
                             new_roles = set()
                             for r in parsed.roles if parsed.roles else []:
