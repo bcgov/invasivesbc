@@ -1,9 +1,10 @@
 import { CreateBugReportInSchema } from 'api/api-schema';
 import { useForm, FormProvider } from 'react-hook-form';
-import { defaultSchema } from './reportBugPage.consts';
-import ReportBugForm from './ReportBugForm';
-import OverlayContentWrapper from 'UI/Reusable/OverlayContentWrapper/OverlayContentWrapper';
+
 import './reportBugPage.css';
+import { defaultSchema } from 'UI/Features/ReportBugPage/reportBugPage.consts';
+import ReportBugForm from 'UI/Features/ReportBugPage/ReportBugForm';
+import OverlayContentWrapper from 'UI/Reusable/OverlayContentWrapper/OverlayContentWrapper';
 
 const ReportBugPage = () => {
   const methods = useForm<CreateBugReportInSchema>({

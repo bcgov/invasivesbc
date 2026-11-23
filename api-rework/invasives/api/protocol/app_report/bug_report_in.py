@@ -9,10 +9,10 @@ class CreateBugReportInSchema(Schema):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     device: PlatformSource
-    description: str
-    title: str
+    description: str = Field(max_length=8192)
+    title: str = Field(max_length=100)
     reproducible: bool
-    expected_behavior: Optional[str] = Field(max_length=6000)
+    expected_behavior: Optional[str] = Field(max_length=8192)
     offline: bool
     online: bool
     issue_type: BugReportTypeCodeType

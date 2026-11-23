@@ -20,7 +20,7 @@ def down(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("api", "0049_restrictedbiocontrol_biocontrolhostassociation"),
+        ("api", "0050_pacservicenumber"),
     ]
 
     operations = [

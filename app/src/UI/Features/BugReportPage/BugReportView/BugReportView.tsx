@@ -3,8 +3,8 @@ import { ReactNode, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 
 import { useSelector } from 'utils/use_selector';
-import useBugReportPage from '../bugReportPage.hooks';
 import './bugReportView.css';
+import useBugReportPage from 'UI/Features/BugReportPage/bugReportPage.hooks';
 import OverlayContentWrapper from 'UI/Reusable/OverlayContentWrapper/OverlayContentWrapper';
 import LoadingPage from 'UI/Features/SystemStatusPages/LoadingPage/LoadingPage';
 

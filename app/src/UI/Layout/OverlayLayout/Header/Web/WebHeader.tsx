@@ -100,13 +100,8 @@ const LoginOrOutMemo = React.memo(() => {
     setAnchorEl(null);
   };
 
-  const navToUpdateRequest = () => {
-    navigate('/AccessRequest');
-    handleClose();
-  };
-
-  const navToBugReport = () => {
-    navigate('/ReportBug');
+  const navTo = (url: string) => {
+    navigate(url);
     handleClose();
   };
 
@@ -114,8 +109,7 @@ const LoginOrOutMemo = React.memo(() => {
     if (!authenticated) {
       dispatch(AuthActions.signinRequest({}));
     } else {
-      navigate('/AccessRequest');
-      handleClose();
+      navTo('/AccessRequest');
     }
   };
 
@@ -143,7 +137,7 @@ const LoginOrOutMemo = React.memo(() => {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
       >
         {activated && (
-          <MenuItem onClick={navToUpdateRequest}>
+          <MenuItem onClick={() => navTo('/AccessRequest')}>
             <ListItemIcon>
               <AssignmentIcon />
             </ListItemIcon>
@@ -160,7 +154,7 @@ const LoginOrOutMemo = React.memo(() => {
         )}
         {activated && (
           <FeatureGated requires="TEAMS">
-            <MenuItem onClick={() => navigate('/teams')}>
+            <MenuItem onClick={() => navTo('/teams')}>
               <ListItemIcon>
                 <Group />
               </ListItemIcon>
@@ -170,7 +164,7 @@ const LoginOrOutMemo = React.memo(() => {
         )}
         {activated && (
           <FeatureGated requires="BUG_REPORT">
-            <MenuItem onClick={navToBugReport}>
+            <MenuItem onClick={() => navTo('/ReportBug')}>
               <ListItemIcon>
                 <FlagIcon />
               </ListItemIcon>

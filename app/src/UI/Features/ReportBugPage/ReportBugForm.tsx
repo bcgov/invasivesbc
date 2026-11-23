@@ -1,26 +1,27 @@
-import { Controller, get, SubmitHandler, useFormContext } from 'react-hook-form';
+import { get, SubmitHandler, useFormContext } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 
-import TextArea from '../Records/Activity/forms/common/TextArea/TextArea';
-import greaterThanEqual from '../Records/Activity/forms/common/validators/greaterThanEqual';
-import { Width } from '../Records/Activity/forms/common/utils';
-import CheckboxUI from '../Records/Activity/forms/common/CheckboxUI/CheckboxUI';
 import './reportBugPage.css';
+import { CreateBugReportInSchema, PlatformSource } from 'api/api-schema';
+import { PLATFORM_SRC } from 'constants/misc';
+import Alerts from 'state/actions/alerts/Alerts';
+import { useDispatch, useSelector } from 'utils/use_selector';
+
+import TextArea from 'UI/Features/Records/Activity/forms/common/TextArea/TextArea';
+import greaterThanEqual from 'UI/Features//Records/Activity/forms/common/validators/greaterThanEqual';
+import { Width } from 'UI/Features//Records/Activity/forms/common/utils';
 // import { chooseMediaFromLibrary, takePhotoFromCamera, transformImageToFormData } from 'utils/fileUpload';
 // import UploadedPhoto from 'interfaces/UploadedPhoto';
 // import Image from 'UI/Reusable/Image/Image';
 import Button from 'UI/Reusable/Button/Button';
 import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
-import { CreateBugReportInSchema, PlatformSource } from 'api/api-schema';
-import useReportBugPage from './reportBugPage.hooks';
-import { PLATFORM_SRC } from 'constants/misc';
-import { useDispatch, useSelector } from 'utils/use_selector';
-import SingleSelect from '../Records/Activity/forms/common/SingleSelect/SingleSelect';
+import useReportBugPage from 'UI/Features/ReportBugPage/reportBugPage.hooks';
+import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
 import { GenericSingleSelect } from 'UI/Reusable/GenericSingleSelect/GenericSingleSelect';
-import ErrorMessage from '../Records/Activity/forms/common/ErrorMessage/ErrorMessage';
+import ErrorMessage from 'UI/Features/Records/Activity/forms/common/ErrorMessage/ErrorMessage';
 import TextInput from 'UI/Features/Records/Activity/forms/common/TextInput/TextInput';
-import Alerts from 'state/actions/alerts/Alerts';
-import { alertMessages } from './reportBugPage.consts';
+import { alertMessages } from 'UI/Features/ReportBugPage/reportBugPage.consts';
+import CheckboxInput from 'UI/Features/Records/Activity/forms/common/CheckboxInput/CheckboxInput';
 
 // TODO - Add ability to upload screenshots/videos
 const ReportBugForm = () => {
@@ -28,15 +29,16 @@ const ReportBugForm = () => {
   const dispatch = useDispatch();
   // const [files, setFiles] = useState<UploadedPhoto[]>([]);
   const bugIssueTypeCodes = useSelector((state) => state.ActivityPage?.formCodes?.BugReportTypeCode);
+  const { MOBILE } = useSelector((state) => state.Configuration.current.build);
   const {
-    control,
-    getValues,
     handleSubmit,
     register,
     formState: { errors }
   } = useFormContext<CreateBugReportInSchema>();
 
-  const atLeastOne = () => getValues('online') || getValues('offline') || 'Select online or offline';
+  const atLeastOne = (_, formValues) => {
+    return formValues.online || formValues.offline || 'Select online or offline';
+  };
 
   // const handleTakePhotoFromCamera = async () => {
   //   const result = await takePhotoFromCamera();
@@ -87,6 +89,7 @@ const ReportBugForm = () => {
         error={get(errors, `title`)}
         id={`title`}
         label={'Title'}
+        maxLength={100}
         required
         width={Width.Full}
         {...register('title', {
@@ -95,9 +98,10 @@ const ReportBugForm = () => {
         })}
       />
       <TextArea
-        label={'Description/Steps You Took'}
-        id="description"
         error={get(errors, 'description')}
+        id="description"
+        label={'Description/Steps You Took'}
+        maxLength={8192}
         required
         width={Width.Full}
         {...register('description', {
@@ -105,55 +109,37 @@ const ReportBugForm = () => {
           validate: (val) => greaterThanEqual(val, 5)
         })}
       />
-      <TextArea label={'Expected behavior'} id="expected_behavior" width={Width.Full} />
+      <TextArea id="expected_behavior" label={'Expected behavior'} maxLength={8192} width={Width.Full} />
       <GenericSingleSelect
         label={'Can you reproduce it?'}
+        name={'reproducible'}
         options={[
           { label: 'Yes', value: 'Yes' },
           { label: 'No', value: 'No' }
         ]}
+        required
         rules={{ required: true }}
         width={Width.Half}
-        name={'reproducible'}
-        required
       />
       <MobileOnly>
         <div className="checkbox-question-container">
           <p className="checkbox-question-label">Is this happening online or offline (or both)?</p>
           <div className="checkbox-container">
-            <Controller
-              control={control}
-              defaultValue={false}
-              name="offline"
-              rules={{ validate: atLeastOne, deps: ['online'] }}
-              render={({ field: { onChange, value } }) => (
-                <CheckboxUI
-                  label={'Offline'}
-                  required
-                  state={value}
-                  onChange={() => {
-                    onChange(!value);
-                  }}
-                  width={Width.Quarter}
-                />
-              )}
+            <CheckboxInput
+              label={'Offline'}
+              {...register('offline', {
+                deps: ['online'],
+                validate: (val, formValues) => (MOBILE ? atLeastOne(val, formValues) : undefined)
+              })}
+              width={Width.Quarter}
             />
-            <Controller
-              control={control}
-              defaultValue={false}
-              name="online"
-              rules={{ validate: atLeastOne, deps: ['offline'] }}
-              render={({ field: { onChange, value } }) => (
-                <CheckboxUI
-                  label={'Online'}
-                  required
-                  state={value}
-                  onChange={() => {
-                    onChange(!value);
-                  }}
-                  width={Width.Quarter}
-                />
-              )}
+            <CheckboxInput
+              label={'Online'}
+              {...register('online', {
+                deps: ['offline'],
+                validate: (val, formValues) => (MOBILE ? atLeastOne(val, formValues) : undefined)
+              })}
+              width={Width.Quarter}
             />
           </div>
           {(errors.online || errors.offline) && <ErrorMessage error={{ type: 'required' }} label="Online or Offline" />}
@@ -161,11 +147,11 @@ const ReportBugForm = () => {
       </MobileOnly>
       <SingleSelect
         label={'Type of issue'}
+        name={'issue_type'}
         options={bugIssueTypeCodes}
+        required
         rules={{ required: true }}
         width={Width.Half}
-        name={'issue_type'}
-        required
       />
       {/* TODO */}
       {/* <div className="media-upload-container">
@@ -198,7 +184,7 @@ const ReportBugForm = () => {
           ))}
         </div>
       </div> */}
-      <Button variant="contained" color="primary" size="lg" type="submit">
+      <Button color="primary" size="lg" type="submit" variant="contained">
         Submit Report
       </Button>
     </form>

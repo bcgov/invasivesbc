@@ -10,6 +10,7 @@ from . import CreateBugReportInSchema
 from api.schemas.app_report import SingleBugReportOut
 from api.schemas.app_report.bug_report_out import BugReportResponseOut
 from api.constants import WellKnownRoles
+from django.shortcuts import get_object_or_404
 
 ROOT_PATH = "/app_report"
 router = Router(auth=NinjaAnyRoleRequired())
@@ -19,9 +20,6 @@ log = logging.getLogger(__name__)
 
 @router.post("/bug_report", response={201: dict, 403: str})
 def create_bug_report(request, data: CreateBugReportInSchema):
-    """
-    Endpoint to create a bug report.
-    """
     with transaction.atomic():
         payload = data.model_dump(mode="python", exclude_unset=True)
 
@@ -40,10 +38,6 @@ def create_bug_report(request, data: CreateBugReportInSchema):
     ),
 )
 def get_bug_reports(request):
-    """
-    Endpoint to get all bug reports.
-    If Admin, return all bug reports. If not Admin, return None
-    """
     return {"entries": BugReport.objects.all()}
 
 
@@ -55,15 +49,4 @@ def get_bug_reports(request):
     ),
 )
 def get_bug_report(request, bug_report_id: PositiveInt):
-    """
-    Endpoint to get specified bug report.
-    """
-    bug_report = BugReport.objects.filter(id=bug_report_id).first()
-
-    if not bug_report:
-        return JsonResponse(
-            status=status.HTTP_403_FORBIDDEN,
-            data={"detail": "No bug report found"},
-        )
-
-    return bug_report
+    return get_object_or_404(BugReport, id=bug_report_id)

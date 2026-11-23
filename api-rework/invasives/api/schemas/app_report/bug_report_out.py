@@ -1,26 +1,44 @@
 from ninja import ModelSchema, Schema
 from typing import List
 from api.models.app_report import BugReport
+from datetime import date
 
 
 class BugReportResponseOut(Schema):
-    entries: List[BugReportOut]
+    entries: List[BugReportRowOut]
 
 
-class BugReportOut(ModelSchema):
+class BugReportRowOut(ModelSchema):
+    date: date
+    time: str
+    offline_online: str
+    reproducible: str
+
     class Meta:
         model = BugReport
         fields = (
             "id",
             "title",
-            "created_timestamp",
             "device",
-            "reproducible",
             "issue_type",
-            "offline",
-            "online",
             "status",
         )
+
+    @staticmethod
+    def resolve_date(obj):
+        return obj.created_timestamp.date()
+
+    @staticmethod
+    def resolve_time(obj):
+        return obj.created_timestamp.strftime("%I:%M %p")
+
+    @staticmethod
+    def resolve_reproducible(obj):
+        return "Yes" if obj.reproducible else "No"
+
+    @staticmethod
+    def resolve_offline_online(obj):
+        return "Offline" if obj.offline else "Online"
 
 
 class SingleBugReportOut(ModelSchema):

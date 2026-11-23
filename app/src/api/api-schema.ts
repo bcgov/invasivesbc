@@ -458,17 +458,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * Get Bug Reports
-         * @description Endpoint to get all bug reports.
-         *     If Admin, return all bug reports. If not Admin, return None
-         */
+        /** Get Bug Reports */
         get: operations["api_protocol_app_report_api_get_bug_reports"];
         put?: never;
-        /**
-         * Create Bug Report
-         * @description Endpoint to create a bug report.
-         */
+        /** Create Bug Report */
         post: operations["api_protocol_app_report_api_create_bug_report"];
         delete?: never;
         options?: never;
@@ -483,10 +476,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * Get Bug Report
-         * @description Endpoint to get specified bug report.
-         */
+        /** Get Bug Report */
         get: operations["api_protocol_app_report_api_get_bug_report"];
         put?: never;
         post?: never;
@@ -3768,37 +3758,34 @@ export interface components {
          * @enum {string}
          */
         PlatformSource: "Ios" | "Android" | "Batch" | "Web" | "Unknown";
-        /** BugReportOut */
-        BugReportOut: {
+        /** BugReportResponseOut */
+        BugReportResponseOut: {
+            /** Entries */
+            entries: components["schemas"]["BugReportRowOut"][];
+        };
+        /** BugReportRowOut */
+        BugReportRowOut: {
+            /** Date */
+            date: string;
+            /** Time */
+            time: string;
+            /** Offline Online */
+            offline_online: string;
+            /** Reproducible */
+            reproducible: string;
             /** Id */
             id?: number | null;
             /** Title */
             title: string;
-            /**
-             * Created Timestamp
-             * Format: date-time
-             */
-            created_timestamp: string;
             /** Device */
             device: string;
-            /** Reproducible */
-            reproducible: boolean;
             /** Issue Type */
             issue_type: string;
-            /** Offline */
-            offline: boolean;
-            /** Online */
-            online: boolean;
             /**
              * Status
              * @default Open
              */
             status: string;
-        };
-        /** BugReportResponseOut */
-        BugReportResponseOut: {
-            /** Entries */
-            entries: components["schemas"]["BugReportOut"][];
         };
         /** SingleBugReportOut */
         SingleBugReportOut: {
@@ -3975,8 +3962,8 @@ export type TeamSuggestedUserOut = components['schemas']['TeamSuggestedUserOut']
 export type InvitationResponseSchema = components['schemas']['InvitationResponseSchema'];
 export type CreateBugReportInSchema = components['schemas']['CreateBugReportInSchema'];
 export type PlatformSource = components['schemas']['PlatformSource'];
-export type BugReportOut = components['schemas']['BugReportOut'];
 export type BugReportResponseOut = components['schemas']['BugReportResponseOut'];
+export type BugReportRowOut = components['schemas']['BugReportRowOut'];
 export type SingleBugReportOut = components['schemas']['SingleBugReportOut'];
 export type $defs = Record<string, never>;
 export interface operations {
@@ -4129,6 +4116,13 @@ export interface operations {
         responses: {
             /** @description No Content */
             204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };

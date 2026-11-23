@@ -2,11 +2,14 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 
+import './bugReports.css';
+import { BugReportRowOut } from 'api/api-schema';
+
 import { CustomNoRowsOverlay } from 'UI/Features/Admin/components/CustomNoRowsOverlay';
-import Spinner from 'UI/Reusable/Spinner/Spinner';
 import { useSelector } from 'utils/use_selector';
 import Button from 'UI/Reusable/Button/Button';
-import useBugReportPage from '../bugReportPage.hooks';
+import useBugReportPage from 'UI/Features/BugReportPage/bugReportPage.hooks';
+import LoadingPage from 'UI/Features/SystemStatusPages/LoadingPage/LoadingPage';
 
 // TODO - Add actions for changing status of report (Closed, Resolved)
 const BugReports = () => {
@@ -36,23 +39,14 @@ const BugReports = () => {
     load();
   }, []);
 
-  const buildRowModel = (requests) => {
-    const rows: Record<string, unknown>[] = [];
+  const buildRowModel = (requests: BugReportRowOut[]) => {
+    const rows: BugReportRowOut[] = [];
     for (const request of requests) {
-      const date = new Date(request.created_timestamp).toLocaleString();
-      const dateSplit = date.split(', ');
-      const issueType = bugIssueTypeCodes.find((code) => code.code === request.issue_type)?.full_name;
+      const issueType = bugIssueTypeCodes.find((code) => code.code === request.issue_type)?.full_name || '';
 
       rows.push({
-        id: request.id,
-        title: request.title,
-        date: dateSplit[0],
-        time: dateSplit[1],
-        reproducible: request.reproducible ? 'Yes' : 'No',
-        issue_type: issueType,
-        device: request.device,
-        offlineOnline: request.offline ? 'Offline' : 'Online',
-        status: request.status
+        ...request,
+        issue_type: issueType
       });
     }
     setRows(rows);
@@ -75,13 +69,14 @@ const BugReports = () => {
     { field: 'reproducible', headerName: 'Reproducible', width: 120 },
     { field: 'issue_type', headerName: 'Issue Type', width: 200 },
     { field: 'device', headerName: 'Device', width: 120 },
-    { field: 'offlineOnline', headerName: 'Offline or Online', width: 120 },
+    { field: 'offline_online', headerName: 'Offline or Online', width: 120 },
     {
       field: 'status',
       headerName: 'Status',
       width: 159
     },
     {
+      cellClassName: 'grid-action-cell',
       field: 'actions',
       headerName: 'Actions',
       width: 100,
@@ -104,7 +99,7 @@ const BugReports = () => {
   };
 
   if (loading) {
-    return <Spinner />;
+    return <LoadingPage />;
   }
 
   return (
@@ -112,13 +107,17 @@ const BugReports = () => {
       <h2>Bug Reports</h2>
 
       <DataGrid
+        initialState={{
+          sorting: {
+            sortModel: [{ field: 'date', sort: 'desc' }]
+          }
+        }}
         loading={loading}
         slots={{
           noRowsOverlay: CustomNoRowsOverlay
         }}
         rows={rows}
         columns={requestColumns}
-        sortModel={[{ field: 'dateRequested', sort: 'desc' }]}
       />
     </>
   );

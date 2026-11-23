@@ -1,1 +1,1 @@
-from .bug_report_out import BugReportOut, SingleBugReportOut
+from .bug_report_out import BugReportRowOut, SingleBugReportOut

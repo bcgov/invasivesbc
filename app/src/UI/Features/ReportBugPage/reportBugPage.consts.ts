@@ -13,7 +13,7 @@ export const defaultSchema: CreateBugReportInSchema = {
   title: ''
 };
 
-export const alertMessages: Record<string, AlertMessage> = {
+export const alertMessages: Record<PropertyKey, AlertMessage> = {
   success: {
     content: 'Your bug report has been submitted.',
     severity: AlertSeverity.Success,
