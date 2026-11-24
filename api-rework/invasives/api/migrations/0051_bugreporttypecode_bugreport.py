@@ -69,7 +69,7 @@ class Migration(migrations.Migration):
                         max_length=24,
                     ),
                 ),
-                ("title", models.CharField(max_length=1000)),
+                ("title", models.CharField(max_length=100)),
                 ("description", models.CharField(max_length=8192)),
                 ("reproducible", models.BooleanField()),
                 (
