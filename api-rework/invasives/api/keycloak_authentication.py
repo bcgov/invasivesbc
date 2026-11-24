@@ -19,6 +19,16 @@ class AuthenticationServiceUnavailable(exceptions.APIException):
 
 
 def update_user_attributes_if_needed(user: User, user_token: dict):
+    def get_username_from_token(tkn: dict) -> str | None:
+        provider = tkn.get("identity_provider", None)
+        if provider == "idir":
+            if idir := tkn.get("idir_username", ""):
+                return f"{idir.lower()}@idir"
+        elif provider == "bceidbusiness":
+            if bceid := tkn.get("bceid_username", ""):
+                return f"{bceid}@bceid-business"
+        return None
+
     today = local_today()
 
     if user.last_seen != today:
@@ -31,11 +41,16 @@ def update_user_attributes_if_needed(user: User, user_token: dict):
     if display_name is None and "name" in user_token and user_token["name"] is not None:
         display_name = user_token["name"]
 
-    if user.email != email or user.display_name != display_name:
+    token_username = get_username_from_token(user_token)
+
+    if (
+        user.email != email
+        or user.display_name != display_name
+        or token_username != user.username
+    ):
         try:
             User.objects.filter(subject=user_token["sub"]).update(
-                email=email,
-                display_name=display_name,
+                email=email, display_name=display_name, username=token_username
             )
         except (DatabaseError, ValidationError):
             logging.warning("Error updating user email or display name", exc_info=True)
