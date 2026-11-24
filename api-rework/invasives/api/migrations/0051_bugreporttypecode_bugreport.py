@@ -70,11 +70,11 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ("title", models.CharField(max_length=1000)),
-                ("description", models.CharField(max_length=6000)),
+                ("description", models.CharField(max_length=8192)),
                 ("reproducible", models.BooleanField()),
                 (
                     "expected_behavior",
-                    models.CharField(blank=True, max_length=6000, null=True),
+                    models.CharField(blank=True, max_length=8192, null=True),
                 ),
                 ("offline", models.BooleanField()),
                 ("online", models.BooleanField()),
