@@ -109,7 +109,16 @@ const ReportBugForm = () => {
           validate: (val) => greaterThanEqual(val, 5)
         })}
       />
-      <TextArea id="expected_behavior" label={'Expected behavior'} maxLength={8192} width={Width.Full} />
+      <TextArea
+        error={get(errors, 'expected_behavior')}
+        id="expected_behavior"
+        label={'Expected behavior'}
+        maxLength={8192}
+        width={Width.Full}
+        {...register('expected_behavior', {
+          validate: (val) => (val ? greaterThanEqual(val, 5) : undefined)
+        })}
+      />
       <GenericSingleSelect
         label={'Can you reproduce it?'}
         name={'reproducible'}
