@@ -5,6 +5,8 @@ import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
 import recordsetColourScheme from 'constants/recordsetColourScheme';
 import { white } from 'constants/colors';
 
+const CENTROID_ZOOM_LIMIT = 12;
+
 interface LayerOptions {
   layerId: string;
   sourceId: string;
@@ -106,7 +108,7 @@ const createLabelLayer = (options: LabelOptions): LayerSpecificationWithStacking
     'text-halo-width': 1,
     'text-halo-blur': 1
   },
-  minzoom: options?.minzoom ?? 0,
+  minzoom: options?.minzoom ?? CENTROID_ZOOM_LIMIT,
   maxzoom: options?.maxzoom ?? 24,
   stackLayer: LAYER_Z_FOREGROUND
 });
