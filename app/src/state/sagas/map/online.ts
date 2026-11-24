@@ -57,7 +57,7 @@ export function* handle_IAPP_TABLE_ROWS_GET_ONLINE(action: PayloadAction<IappTab
   const networkReturn = yield fetch(`${API_V2_BASE}/ninja/iapp/rows`, {
     method: 'POST',
     headers: { Authorization: yield getCurrentJWT() },
-    body: JSON.stringify({})
+    body: JSON.stringify({ filterObjects: [action.payload.filterObj] })
   });
 
   const tableFiltersHash = mapState?.recordTables[action.payload.recordSetID]?.tableFiltersHash;

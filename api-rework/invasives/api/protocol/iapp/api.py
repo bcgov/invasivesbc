@@ -1,6 +1,7 @@
 from ninja import Router
 from api.ninja_authentication import NinjaAnyRoleRequired
 from api.models.iapp import IAPPSite
+from api.protocol.recordset import FilterObjectsIn
 from . import IAPPRowResponse
 
 ROOT_PATH = "/iapp"
@@ -9,6 +10,6 @@ router = Router(auth=None)
 
 
 @router.post("/rows", response=IAPPRowResponse)
-def get_iapp_rows(request):
+def get_iapp_rows(request, data: FilterObjectsIn):
     qs = IAPPSite.objects.all()
     return {"count": qs.count(), "entries": qs[0:20]}
