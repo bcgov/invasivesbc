@@ -41,9 +41,7 @@ class LinkedActivityOut(Schema):
 
     @staticmethod
     def resolve_label(obj: Activity):
-        creator = (
-            obj.creating_user.display_name if obj.creating_user else obj.created_by
-        )
+        creator = obj.creating_user.username if obj.creating_user else obj.created_by
         return f"{obj.short_id} | {obj.date} | {creator}"
 
 
