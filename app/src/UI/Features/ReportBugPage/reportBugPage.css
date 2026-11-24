@@ -9,7 +9,7 @@
 #report-bug-form {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 20px;
     height: 100%;
     padding: 2rem;
 }
