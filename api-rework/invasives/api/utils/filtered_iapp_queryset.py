@@ -46,9 +46,19 @@ class FilteredIappQueryset:
     def __init__(self, filter_objects=None, user: User = None):
         self.filter_objects = filter_objects or [{}]
 
-        self.queryset = IAPPSite.objects.all()
+        self.queryset = IAPPSite.objects.all().prefetch_related(
+            "site_selections",
+            "surveys",
+            "mechanical_treatments",
+            "mechanical_monitorings",
+            "chemical_treatments",
+            "chemical_monitorings",
+            "biological_treatments",
+            "biological_monitorings",
+            "biological_dispersals",
+        )
         if user and not user.has_any_role(list(BIOCONTROL_ROLES)):
-            self.queryset = IAPPSite.objects.exclude(protected=True)
+            self.queryset = self.queryset.exclude(protected=True)
 
         self._is_filtered = False
         self._is_sorted = False
@@ -61,7 +71,6 @@ class FilteredIappQueryset:
             Column.MIN_SURVEY.value: "iappsiteselection__survey_date",
             Column.MAX_SURVEY.value: "iappsiteselection__survey_date",
             Column.ALL_SPECIES.value: "iappsiteselection__all_species_on_site",
-            Column.BIO_AGENT.value: "",
             Column.AGENCIES.value: "iappsiteselection__survey_agency",
             Column.HAS_BIO_TREATMENT.value: "",
             Column.HAS_CHEM_TREATMENT.value: "",
