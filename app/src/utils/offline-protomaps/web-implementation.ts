@@ -39,7 +39,7 @@ export class OfflineMapsPluginWebImplementation extends WebPlugin implements Off
   async byteRange(options: ByteRangeRequestOptions): Promise<{ encoded: string }> {
     // unlike the ios plugin, this doesn't download anything. we need to look up the url in the object first
 
-    let url: string | undefined = undefined;
+    let url: string | undefined;
     if (this.URLLookupCache.has(options.filename)) {
       url = this.URLLookupCache.get(options.filename);
     } else {

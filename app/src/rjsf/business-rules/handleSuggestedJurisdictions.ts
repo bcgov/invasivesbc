@@ -36,9 +36,9 @@ const handleSuggestedJurisdictions = (
     });
   });
   enumOptions.sort((left, right) => {
-    if (left.hasOwnProperty('suggested')) {
+    if (Object.prototype.hasOwnProperty.call(left, 'suggested')) {
       return -1;
-    } else if (right.hasOwnProperty('suggested')) {
+    } else if (Object.prototype.hasOwnProperty.call(right, 'suggested')) {
       return 1;
     }
     return 0;

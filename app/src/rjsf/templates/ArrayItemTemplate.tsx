@@ -1,5 +1,5 @@
 // Used in the two templates
-import { Box, Grid, Paper } from '@mui/material';
+import { Grid, Paper } from '@mui/material';
 import React from 'react';
 import { ArrayFieldItemTemplateProps, getTemplate, getUiOptions } from '@rjsf/utils';
 

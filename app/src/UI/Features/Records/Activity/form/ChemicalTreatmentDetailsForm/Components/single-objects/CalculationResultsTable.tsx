@@ -40,14 +40,7 @@ const CalculationResultsTable = ({ data }) => {
   );
 };
 
-function createData(name: string, value: number) {
-  return {
-    name,
-    value
-  };
-}
-
-function Row(props: { name: string; row: ReturnType<typeof createData> }) {
+function Row(props: { name: string; row: { name: string; value: number } }) {
   const { row, name } = props;
   const [open, setOpen] = React.useState(false);
 

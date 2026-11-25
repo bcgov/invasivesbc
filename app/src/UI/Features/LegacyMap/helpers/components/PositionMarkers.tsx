@@ -34,7 +34,6 @@ const PositionMarkers = ({ mapReady }) => {
 
   // Draw tools - determine who needs edit and where the geos get dispatched, what tools to display etc
   const hoveredFeature = useSelector((state) => state.Map.whatsHere?.feature);
-  const appModeUrl = useSelector((state) => state.AppMode.url);
 
   const activityGeo = useSelector((state) => state.ActivityPage.activity?.geometry);
 

@@ -1,20 +1,18 @@
-import { ChangeEvent, useState } from 'react';
+import { useState } from 'react';
 import { Tab, Tabs } from '@mui/material';
 import AdjustIcon from '@mui/icons-material/Adjust';
 import FolderIcon from '@mui/icons-material/Folder';
 import { ArrowLeftIcon } from '@mui/x-date-pickers/icons';
 import { useNavigate } from 'react-router';
-import LoadingPage from '../SystemStatusPages/LoadingPage/LoadingPage';
 import TabularWhatsHereData from './Subcomponents/TabularWhatsHereData';
 import { useSelector } from 'utils/use_selector';
 import { calc_utm } from 'utils/utm';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import Button from 'UI/Reusable/Button/Button';
 import 'UI/Features/WhatsHere/WhatsHereTable.css';
+import LoadingPage from 'UI/Features/SystemStatusPages/LoadingPage/LoadingPage';
 
 export const WhatsHereTable = () => {
-  const handleChange = (_event: ChangeEvent<{}>, newSection: RecordSetType) => setRecordTab(newSection);
-
   const navigate = useNavigate();
   const whatsHere = useSelector((state) => state.Map?.whatsHere);
 
@@ -39,7 +37,13 @@ export const WhatsHereTable = () => {
           <dd>{`UTM: Z-${zone} E-${easting} N-${northing}`}</dd>
         </dl>
         <div>
-          <Tabs value={recordTab} onChange={handleChange} centered>
+          <Tabs
+            value={recordTab}
+            onChange={(_e, value) => {
+              setRecordTab(value);
+            }}
+            centered
+          >
             <Tab value={RecordSetType.Activity} label="InvasivesBC Records" icon={<FolderIcon />} />
             <Tab value={RecordSetType.IAPP} label="IAPP Records" icon={<AdjustIcon />} />
           </Tabs>

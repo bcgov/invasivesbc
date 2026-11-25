@@ -175,7 +175,7 @@ export const OfflineDataSyncTable = ({ handleClose }: PropTypes) => {
                       </td>
                       <td colSpan={4}>
                         <pre>
-                          {(value as OfflineActivityRecord).error_object?.hasOwnProperty('message')
+                          {value.error_object != null && Object.hasOwn(value.error_object, 'message')
                             ? JSON.stringify((value as OfflineActivityRecord).error_object?.message)
                             : JSON.stringify((value as OfflineActivityRecord).error_object)}
                         </pre>

@@ -10,7 +10,7 @@ type PropTypes = {
   hideDelete?: boolean;
 };
 
-const OfflineMapControls = ({ id, name, hideLayerToggle = false }: PropTypes) => {
+const OfflineMapControls = ({ name, hideLayerToggle = false }: PropTypes) => {
   const { setOverlayState, layers } = useInvasivesMapLayers();
 
   const isEnabled = layers.some((layer) => `pmtiles-${name}` === layer.source);

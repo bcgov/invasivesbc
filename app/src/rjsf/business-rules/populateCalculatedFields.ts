@@ -114,7 +114,7 @@ export const autoFillTotalBioAgentQuantity = (formData: any) => {
     formData.activity_subtype_data.Biocontrol_Collection_Information ||
     undefined;
 
-  let formLabel = '';
+  let formLabel: string;
 
   if (formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information) {
     formLabel = 'Monitoring_BiocontrolDispersal_Information';
@@ -131,7 +131,6 @@ export const autoFillTotalBioAgentQuantity = (formData: any) => {
     return formData;
   }
 
-  let newFormData = {};
   const totalEstimated = new Array(currentForm.length).fill(0);
   const totalActual = new Array(currentForm.length).fill(0);
 
@@ -166,7 +165,7 @@ export const autoFillTotalBioAgentQuantity = (formData: any) => {
     };
   });
 
-  newFormData = {
+  const newFormData = {
     ...formData,
     activity_subtype_data: {
       ...formData.activity_subtype_data,

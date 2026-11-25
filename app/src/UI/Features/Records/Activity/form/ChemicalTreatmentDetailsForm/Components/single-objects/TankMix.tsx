@@ -112,7 +112,6 @@ const TankMix: FC = () => {
                   ...prevFields,
                   amount_of_mix: input
                 }));
-              } else {
               }
             }}
             defaultValue={undefined}

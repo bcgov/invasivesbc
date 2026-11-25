@@ -1,6 +1,6 @@
 import Select from 'react-select';
 import { Controller, FieldValues, RegisterOptions, useFormContext, Path } from 'react-hook-form';
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import FormCode from 'interfaces/FormCode';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
 import ErrorMessage from 'UI/Features/Records/Activity/forms/common/ErrorMessage/ErrorMessage';

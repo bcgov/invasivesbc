@@ -83,7 +83,7 @@ const TreatmentChemicalPlantCalculations = () => {
     if (!NUM_HERBICIDES || !NUM_INVASIVE_PLANTS) throw new Error('Missing Herbicides and/or Invasive Plants');
 
     const isMultipleHerbicides = NUM_HERBICIDES > 1;
-    const isMultiplePlants = NUM_INVASIVE_PLANTS > 1;
+    const _isMultiplePlants = NUM_INVASIVE_PLANTS > 1;
 
     if (tank_mix && !isMultipleHerbicides) throw new Error('Tank mix requires multiple herbicides');
     if (tank_mix && isMultipleHerbicides) {
@@ -165,7 +165,7 @@ const TreatmentChemicalPlantCalculations = () => {
     area_treated_sqm,
     delivery_rate
   } = useWatch<ChemTreatment>({
-    defaultValue: (getDefaultFormState(subtype) as ChemTreatment).subtype_data.treatment_context, // protect against information missing
+    defaultValue: (getDefaultFormState(subtype!) as ChemTreatment).subtype_data.treatment_context, // protect against information missing
     control,
     name: 'subtype_data.treatment_context'
   });

@@ -8,12 +8,13 @@ import { greaterThanEqual, lessThanEqual } from 'UI/Features/Records/Activity/fo
 import Button from 'UI/Reusable/Button/Button';
 import './editTeamInfo.css';
 import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
-import useTeamsManagement from '../subcomponents/useTeamManagement.hooks';
+
 import { SingleTeamOut, UpdateTeamSchema } from 'api/api-schema';
+import useTeamsManagement from 'UI/Features/MyTeamsPage/subcomponents/useTeamManagement.hooks';
 
 type PropTypes = {
   details: SingleTeamOut;
-  refresh: Function;
+  refresh: () => Promise<void>;
 };
 
 const EditTeamInfo = ({ details, refresh }: PropTypes) => {

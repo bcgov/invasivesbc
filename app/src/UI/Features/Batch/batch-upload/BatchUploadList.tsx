@@ -14,7 +14,7 @@ const BatchUploadList = () => {
   const { working, error, list, templates, errorMessage } = useSelector(selectBatch);
   const dispatch = useDispatch();
   const { darkTheme } = useSelector(selectUserSettings);
-  const [serial, setSerial] = useState(1);
+  const [serial, _setSerial] = useState(1);
   const authState = useSelector(selectAuth);
 
   useEffect(() => {

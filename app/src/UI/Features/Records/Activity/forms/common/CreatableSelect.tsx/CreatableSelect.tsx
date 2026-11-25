@@ -1,7 +1,6 @@
 import './creatableSelect.css';
 import Creatable from 'react-select/creatable';
 import { Controller, FieldValues, RegisterOptions, useFormContext, Path } from 'react-hook-form';
-import { cps } from 'redux-saga/effects';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
 import ErrorMessage from 'UI/Features/Records/Activity/forms/common/ErrorMessage/ErrorMessage';
 import { getInputWidth, Width } from 'UI/Features/Records/Activity/forms/common/utils';
@@ -26,27 +25,19 @@ export function CreatableSelect<T extends FieldValues, TOption>({
   options,
   labelKey,
   valueKey,
-  placeholder = label,
   required = false,
   rules,
   tooltip,
   width
 }: PropTypes<T, TOption>) {
   const { control } = useFormContext<T>();
-  const handleCreateInput = (val: string) => console.log('handleCreateInput not Implemented. Value Received:', val);
 
   return (
     <Controller
       name={name}
       control={control}
       rules={rules}
-      render={({ field: { onChange, ref, value, disabled }, fieldState: { error } }) => {
-        const getValue = () => {
-          if (!value) return null;
-          const actualValue = typeof value === 'object' ? value[valueKey] : value;
-          return options.find((o) => o[valueKey] === actualValue) || null;
-        };
-
+      render={({ field: { onChange, value, disabled }, fieldState: { error } }) => {
         return (
           <div className={`form-creatable-select-input ${getInputWidth(width)}`}>
             {label && (

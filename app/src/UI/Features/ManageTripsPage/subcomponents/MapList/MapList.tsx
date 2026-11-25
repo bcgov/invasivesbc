@@ -1,4 +1,3 @@
-import { NavLink } from 'react-router';
 import ProtomapsList from 'UI/Features/TileCache/ProtomapsImplementation/ProtomapsList';
 
 import './MapList.css';

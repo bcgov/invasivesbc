@@ -12,7 +12,6 @@ const ArrayItemButtonTemplate = (props: ArrayFieldItemButtonsTemplateProps) => {
     hasMoveUp,
     hasRemove,
     fieldPathId,
-    index,
     onMoveUpItem,
     onMoveDownItem,
     onRemoveItem

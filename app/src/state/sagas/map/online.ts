@@ -54,10 +54,8 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action: PayloadAction<A
 }
 
 export function* handle_IAPP_TABLE_ROWS_GET_ONLINE(action: PayloadAction<IappTableRowGetRequest>) {
-  let mapState = yield select((state) => state.Map);
-
   const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/IAPP/`, { filterObjects: [action.payload.filterObj] });
-  mapState = yield select((state) => state.Map);
+  const mapState = yield select((state) => state.Map);
 
   const tableFiltersHash = mapState?.recordTables[action.payload.recordSetID]?.tableFiltersHash;
 

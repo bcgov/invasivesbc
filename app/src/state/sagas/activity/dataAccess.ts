@@ -44,7 +44,6 @@ import MapActions from 'state/actions/map';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
 import DrawToolActions, { IUpdateShapeSuccess } from 'state/actions/drawtool/drawToolActions';
-import { RootState } from 'state/reducers/rootReducer';
 
 function* handle_ACTIVITY_GET_REQUEST(action: PayloadAction<string>) {
   try {

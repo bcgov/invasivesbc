@@ -22,10 +22,6 @@ interface IPreppedFilters {
   color: string;
   cacheMetadataStatus: UserRecordCacheStatus;
 }
-interface IPreppedOfflineActivityLayer {
-  mapToggle: boolean;
-  labelToggle: boolean;
-}
 interface IUserCoord {
   position: {
     coords: {

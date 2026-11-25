@@ -21,11 +21,11 @@ import NetworkActions from 'state/actions/network/NetworkActions';
 import { constructUnifiedConfig, UnifiedConfig } from 'state/configuration/unified-config';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
 
-let store;
-let config: UnifiedConfig;
-
 import defaultRecordSets from 'constants/defaultRecordSets';
 import UserSettings from 'state/actions/userSettings/UserSettings';
+
+let store;
+let config: UnifiedConfig;
 
 // Setup default Redux store for tests
 beforeAll(async () => {

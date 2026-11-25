@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useRef, useState } from 'react';
 
 /**
  * @desc Optional Settings for hook
@@ -6,7 +6,7 @@ import { useState, useRef } from 'react';
  * @property {number} delay time of longpress in ms
  */
 interface Options {
-  onClick?: Function;
+  onClick?: () => void;
   delay?: number;
 }
 
@@ -24,7 +24,7 @@ interface Options {
  * @param {Options} options additional customization
  * @returns custom hook for longpress event.
  */
-const useLongPress = (callback: Function, options?: Options) => {
+const useLongPress = (callback: () => void, options?: Options) => {
   enum Actions {
     longpress,
     click
