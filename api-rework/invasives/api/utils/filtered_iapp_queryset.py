@@ -6,6 +6,8 @@ from enum import Enum
 from psycopg.rows import dict_row
 from django.core.exceptions import FieldError
 from api.models.iapp import IAPPSite
+from api.models.auth import User
+from api.protocol.iapp import BIOCONTROL_ROLES
 from api.serializers.activity_recordset_row import (
     ActivityRecordsetRowSerializer,
     DraftActivityRecordsetRowSerializer,
@@ -38,14 +40,15 @@ class Column(Enum):
     SHAPE = "geometry"
 
 
-class FilteredActivityQueryset:
+class FilteredIappQueryset:
     """Helper for querying IAPP across endpoints using incoming filterObjeccts"""
 
-    def __init__(self, filter_objects=None):
+    def __init__(self, filter_objects=None, user: User = None):
         self.filter_objects = filter_objects or [{}]
-        self.root = self.prefix + "activitydatarecord"
 
         self.queryset = IAPPSite.objects.all()
+        if user and not user.has_any_role(list(BIOCONTROL_ROLES)):
+            self.queryset = IAPPSite.objects.exclude(protected=True)
 
         self._is_filtered = False
         self._is_sorted = False
@@ -75,3 +78,41 @@ class FilteredActivityQueryset:
             "iappbiologicalmonitoring__biological_agent",
             "iappbiologicaltreatment__biological_agent",
         ]
+
+    def paginate(self, page=None, limit=None):
+        meta = self.filter_objects[0] if self.filter_objects else {}
+        target_page = int(page if page is not None else meta.get("page", 0))
+        target_limit = int(limit if limit is not None else meta.get("limit", 10))
+
+        start = target_page * target_limit
+        self.queryset = self.queryset[start : start + target_limit]
+        return self
+
+        # Bridge functions to avoid needing to branch into queryset for endpoint specific functionality (Tiles)
+
+    def exists(self):
+        return self.queryset.exists()
+
+    def aexists(self):
+        return self.queryset.aexists()
+
+    def filter(self, *args, **kwargs):
+        self.queryset = self.queryset.filter(*args, **kwargs)
+        return self
+
+    def annotate(self, *args, **kwargs):
+        self.queryset = self.queryset.annotate(*args, **kwargs)
+        return self
+
+    def aggregate(self, *args, **kwargs):
+        return self.queryset.aggregate(*args, **kwargs)
+
+    def aaggregate(self, *args, **kwargs):
+        return self.queryset.aaggregate(*args, **kwargs)
+
+    def get(self, *args, **kwargs):
+        return self.queryset.get(*args, **kwargs)
+
+    def values(self, *args, **kwargs):
+        self.queryset = self.queryset.values(*args, **kwargs)
+        return self
