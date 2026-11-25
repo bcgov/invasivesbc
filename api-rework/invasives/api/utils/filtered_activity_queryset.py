@@ -11,6 +11,7 @@ from api.models.activity import (
     DraftActivity,
     ActivityType,
 )
+from api.models.auth import User
 from api.serializers.activity_recordset_row import (
     ActivityRecordsetRowSerializer,
     DraftActivityRecordsetRowSerializer,
@@ -52,7 +53,9 @@ class Column(Enum):
 class FilteredActivityQueryset:
     """Helper for querying Activities across endpoints using incoming 'filterObjects'"""
 
-    def __init__(self, filter_objects=None, draft_override: bool = False):
+    def __init__(
+        self, filter_objects=None, draft_override: bool = False, user: User = None
+    ):
         self.filter_objects = filter_objects or [{}]
         meta = self.filter_objects[0]
 
@@ -64,9 +67,10 @@ class FilteredActivityQueryset:
         self.root = self.prefix + "activitydatarecord"
 
         if self.should_filter_drafts:
-            # TODO: Pre-filter Draft Activities to only be by requesting user.
+            if not user:
+                raise Exception("User was not provided for draft filtering.")
             self.model = DraftActivity
-            self.queryset = DraftActivity.objects.all()
+            self.queryset = DraftActivity.objects.filter(creating_user=user)
         else:
             self.model = Activity
             self.queryset = Activity.objects.all()
