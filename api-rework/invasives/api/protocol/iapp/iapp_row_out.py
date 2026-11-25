@@ -1,40 +1,35 @@
 from datetime import date
 import json
-
-from django.db.models import Model
 from geojson_pydantic import Point
 from ninja import Schema
 from typing import List, Optional
 
-from api.models.iapp import (
-    IAPPBiologicalTreatment,
-    IAPPBiologicalMonitoring,
-    IAPPBiologicalDispersal,
-    IAPPChemicalTreatment,
-    IAPPChemicalMonitoring,
-    IAPPMechanicalTreatment,
-    IAPPMechanicalMonitoring,
-    IAPPSurvey,
-    IAPPSiteSelection,
-    IAPPSite,
-)
+from api.models.iapp import IAPPSite
 
 
-def yes_no_exists(site_id: str | int, model: Model) -> str:
-    if model.objects.filter(site_id=site_id).exists():
+def prefetch_yes_no_exists(obj: IAPPSite, rel: str) -> str:
+    """Iterate through prefetched values to avoid DB round trips"""
+    if bool(getattr(obj, rel).all()):
         return "Yes"
     return "No"
 
 
-def distinct_list(key: str, site_id: str | int, model: Model) -> str | None:
-    kwargs = {f"{key}__isnull": False}
-    qs = (
-        model.objects.filter(site_id=site_id, **kwargs)
-        .values_list(key, flat=True)
-        .distinct(key)
-        .order_by(key)
+def prefetch_distinct_list(
+    obj: IAPPSite, rel: str, key, join: bool = True
+) -> str | None:
+    """Iterate through prefetched values to avoid DB round trips."""
+    result = sorted(
+        set(
+            [
+                getattr(v, key)
+                for v in getattr(obj, rel).all()
+                if getattr(v, key) is not None
+            ]
+        )
     )
-    return ", ".join(qs)
+    if join:
+        return ", ".join(result)
+    return result
 
 
 class IappRowOut(Schema):
@@ -58,17 +53,17 @@ class IappRowOut(Schema):
 
     @staticmethod
     def resolve_min_survey(obj: IAPPSite, context):
-        qs = IAPPSurvey.objects.filter(site_id=obj.site_id)
-        return qs.order_by("survey_date").values_list("survey_date", flat=True).first()
+        dates = prefetch_distinct_list(obj, "surveys", "survey_date", join=False)
+        return min(dates, default=None)
 
     @staticmethod
     def resolve_site_paper_file_id(obj: IAPPSite, context):
-        return distinct_list("site_paper_file_id", obj.site_id, IAPPSiteSelection)
+        return prefetch_distinct_list(obj, "site_selections", "site_paper_file_id")
 
     @staticmethod
     def resolve_max_survey(obj: IAPPSite, context):
-        qs = IAPPSurvey.objects.filter(site_id=obj.site_id)
-        return qs.order_by("-survey_date").values_list("survey_date", flat=True).first()
+        dates = prefetch_distinct_list(obj, "surveys", "survey_date", join=False)
+        return max(dates, default=None)
 
     @staticmethod
     def resolve_geometry(obj: IAPPSite):
@@ -76,77 +71,65 @@ class IappRowOut(Schema):
 
     @staticmethod
     def resolve_biological_agent(obj: IAPPSite):
-        sensitive = {"protected": False}
-        return ", ".join(
-            sorted(
-                list(
-                    {
-                        *IAPPBiologicalTreatment.objects.filter(
-                            site_id=obj.site_id, **sensitive
-                        ).values_list("biological_agent", flat=True),
-                        *IAPPBiologicalMonitoring.objects.filter(
-                            site_id=obj.site_id, **sensitive
-                        ).values_list("biological_agent", flat=True),
-                        *IAPPBiologicalDispersal.objects.filter(
-                            site_id=obj.site_id, **sensitive
-                        ).values_list("biological_agent", flat=True),
-                    }
-                )
-            )
+        AGENT_KEY = "biological_agent"
+        bt = prefetch_distinct_list(obj, "biological_treatments", AGENT_KEY, join=False)
+        bd = prefetch_distinct_list(obj, "biological_dispersals", AGENT_KEY, join=False)
+        bm = prefetch_distinct_list(
+            obj, "biological_monitorings", AGENT_KEY, join=False
         )
+        return ", ".join(sorted(set(bt + bm + bd)))
 
     @staticmethod
     def resolve_jurisdictions_flattened(obj: IAPPSite):
-        return distinct_list("jurisdictions", obj.site_id, IAPPSiteSelection)
+        return prefetch_distinct_list(obj, "site_selections", "jurisdictions")
 
     @staticmethod
     def resolve_agencies(obj: IAPPSite):
-        return distinct_list("survey_agency", obj.site_id, IAPPSurvey)
+        return prefetch_distinct_list(obj, "surveys", "survey_agency")
 
     @staticmethod
     def resolve_has_biological_treatments(obj: IAPPSite):
-        return yes_no_exists(site_id=obj.site_id, model=IAPPBiologicalTreatment)
+        return prefetch_yes_no_exists(obj, "biological_treatments")
 
     @staticmethod
     def resolve_has_chemical_treatments(obj: IAPPSite):
-        return yes_no_exists(site_id=obj.site_id, model=IAPPChemicalTreatment)
+        return prefetch_yes_no_exists(obj, "chemical_treatments")
 
     @staticmethod
     def resolve_has_mechanical_treatments(obj: IAPPSite):
-        return yes_no_exists(site_id=obj.site_id, model=IAPPMechanicalTreatment)
+        return prefetch_yes_no_exists(obj, "mechanical_treatments")
 
     @staticmethod
     def resolve_has_biological_dispersals(obj: IAPPSite):
-        return yes_no_exists(site_id=obj.site_id, model=IAPPBiologicalDispersal)
+        return prefetch_yes_no_exists(obj, "biological_dispersals")
 
     @staticmethod
     def resolve_monitored(obj: IAPPSite):
-        if (
-            IAPPChemicalMonitoring.objects.filter(site_id=obj.site_id).exists()
-            or IAPPMechanicalMonitoring.objects.filter(site_id=obj.site_id).exists()
+        if bool(getattr(obj, "mechanical_monitorings").all()) or bool(
+            getattr(obj, "chemical_monitorings").all()
         ):
             return "Yes"
         return "No"
 
     @staticmethod
     def resolve_regional_district(obj: IAPPSite):
-        return distinct_list("regional_district", obj.site_id, IAPPSiteSelection)
+        return prefetch_distinct_list(obj, "site_selections", "regional_district")
 
     @staticmethod
     def resolve_regional_invasive_species_organization(obj: IAPPSite):
-        return distinct_list(
-            "regional_invasive_species_organization", obj.site_id, IAPPSiteSelection
+        return prefetch_distinct_list(
+            obj, "site_selections", "regional_invasive_species_organization"
         )
 
     @staticmethod
     def resolve_invasive_plant_management_area(obj: IAPPSite):
-        return distinct_list(
-            "invasive_plant_management_area", obj.site_id, IAPPSiteSelection
+        return prefetch_distinct_list(
+            obj, "site_selections", "invasive_plant_management_area"
         )
 
     @staticmethod
     def resolve_all_species_on_site(obj: IAPPSite):
-        return distinct_list("all_species_on_site", obj.site_id, IAPPSiteSelection)
+        return prefetch_distinct_list(obj, "site_selections", "all_species_on_site")
 
 
 class IAPPRowResponse(Schema):
