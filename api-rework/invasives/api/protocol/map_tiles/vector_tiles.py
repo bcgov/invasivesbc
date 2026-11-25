@@ -62,7 +62,9 @@ async def req_activity_vector_tile(request, z: int, x: int, y: int):
             )
 
         filter_objects = [json.loads(raw_filters)]
-        activity_queryset = FilteredActivityQueryset(filter_objects).apply_filters()
+        activity_queryset = FilteredActivityQueryset(
+            filter_objects=filter_objects, user=request.auth
+        ).apply_filters()
         activity_queryset = await sync_to_async(filter_activities_by_access)(
             activity_queryset, request.auth
         )
