@@ -35,7 +35,7 @@ class Metadata(AllPlantMixin, Schema):
     @staticmethod
     def resolve_created_by(obj: Record) -> str:
         if obj.creating_user != None:
-            return obj.creating_user.display_name
+            return obj.creating_user.username
         return obj.created_by or ""
 
     @staticmethod

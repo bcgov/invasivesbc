@@ -752,6 +752,17 @@ class LegacyDB:
                                     subject=parsed.subject_for_update
                                 ).delete()
 
+                            def fetch_username():
+                                """Parse Legacy user for current username"""
+                                if parsed.preferred_username:
+                                    return parsed.preferred_username
+                                elif parsed.idir_account_name:
+                                    return parsed.idir_account_name
+                                elif parsed.bceid_account_name:
+                                    return parsed.bceid_account_name
+                                else:
+                                    return None
+
                             User.objects.update_or_create(
                                 subject=parsed.subject,
                                 defaults={
@@ -763,6 +774,7 @@ class LegacyDB:
                                         else timezone.now()
                                     ),
                                     "display_name": parsed.display_name,
+                                    "username": fetch_username(),
                                     "is_active": parsed.account_status == 1,
                                     "expiry_date": (
                                         parsed.expiry_date.date()

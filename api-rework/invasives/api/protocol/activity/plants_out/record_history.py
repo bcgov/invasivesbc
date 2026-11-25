@@ -3,9 +3,13 @@ from api.models.audits import ActivityModificationRecord
 
 
 class RecordHistoryOut(ModelSchema):
-    user: str = Field(..., alias="user.display_name")
+    user: str
     activity: str = Field(..., alias="activity.short_id")
 
     class Meta:
         model = ActivityModificationRecord
         fields = ("date", "version", "platform", "diff")
+
+    @staticmethod
+    def resolve_user(obj):
+        return obj.user.username if obj.user.username else obj.user.display_name

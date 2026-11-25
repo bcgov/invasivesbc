@@ -30,6 +30,12 @@ class User(AbstractBaseUser):
     display_name = models.CharField(null=True, blank=True, max_length=512)
     email = models.EmailField(null=True, blank=True, max_length=512)
     phone_number = models.CharField(null=True, blank=True, max_length=32)
+    username = models.CharField(
+        null=True,
+        blank=True,
+        max_length=64,
+        db_comment="Legacy method of linking users, still preferred as the display value for 'created by' in records. Originating from IAPP.",
+    )
 
     created = models.DateTimeField(default=timezone.now)
 
