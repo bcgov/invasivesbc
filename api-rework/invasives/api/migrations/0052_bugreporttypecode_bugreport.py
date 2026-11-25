@@ -20,7 +20,7 @@ def down(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("api", "0050_pacservicenumber"),
+        ("api", "0051_user_username"),
     ]
 
     operations = [
