@@ -53,7 +53,9 @@ class IappRowOut(Schema):
 
     @staticmethod
     def resolve_min_survey(obj: IAPPSite, context):
-        dates = prefetch_distinct_list(obj, "surveys", "survey_date", join=False)
+        dates = prefetch_distinct_list(
+            obj, "site_selections", "site_created_date", join=False
+        )
         return min(dates, default=None)
 
     @staticmethod
@@ -62,7 +64,9 @@ class IappRowOut(Schema):
 
     @staticmethod
     def resolve_max_survey(obj: IAPPSite, context):
-        dates = prefetch_distinct_list(obj, "surveys", "survey_date", join=False)
+        dates = prefetch_distinct_list(
+            obj, "site_selections", "last_surveyed_date", join=False
+        )
         return max(dates, default=None)
 
     @staticmethod
