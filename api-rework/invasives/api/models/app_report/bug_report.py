@@ -10,7 +10,7 @@ class BugReport(models.Model):
     created_timestamp = models.DateTimeField(auto_now_add=True)
     device = models.CharField(choices=PlatformSource, max_length=24)
     description = models.CharField(max_length=8192)
-    title = models.CharField(max_length=1000)
+    title = models.CharField(max_length=100)
     reproducible = models.BooleanField()
     expected_behavior = models.CharField(max_length=8192, null=True, blank=True)
     offline = models.BooleanField()
