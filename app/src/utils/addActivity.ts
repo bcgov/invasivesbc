@@ -25,12 +25,6 @@ const activityDefaults = {
   reviewed_at: undefined
 };
 
-type OfflineDocsProperties = {
-  [key: PropertyKey]: {
-    options?: { value: string; label: string }[];
-  };
-};
-
 /*
   Function to generate activity payload for a new activity (in old pouchDB doc format)
 */

@@ -1,6 +1,10 @@
 import { get, useFormContext, useWatch } from 'react-hook-form';
-import { useSelector } from 'utils/use_selector';
 import { useEffect, useMemo } from 'react';
+import { ActivitySubtypes } from 'sharedAPI';
+import { ApplicationRateHerbicide } from '../../interfaces/ChemicalTreatmentContext';
+import HerbicideEntry from './HerbicideEntry';
+import TreatmentChemicalPlantCalculations from './TreatmentChemicalPlantCalculations';
+import { useSelector } from 'utils/use_selector';
 import { ChemTreatment } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
 import RadioInput from 'UI/Features/Records/Activity/forms/common/RadioInput/RadioInput';
@@ -10,8 +14,6 @@ import ArrayField from 'UI/Features/Records/Activity/forms/common/ArrayField/Arr
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
 import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
-import { ActivitySubtypes } from 'sharedAPI';
-import HerbicideEntry from './HerbicideEntry';
 import {
   checkSum,
   greaterThan,
@@ -20,9 +22,7 @@ import {
   noRepeatKey,
   maxArrayLength
 } from 'UI/Features/Records/Activity/forms/common/validators';
-import TreatmentChemicalPlantCalculations from './TreatmentChemicalPlantCalculations';
 import useFieldPath from 'UI/Features/Records/Activity/forms/plant/hooks/useFieldPath';
-import { ApplicationRateHerbicide } from '../../interfaces/ChemicalTreatmentContext';
 
 const TreatmentChemicalPlantDetails = () => {
   enum CalculationType {

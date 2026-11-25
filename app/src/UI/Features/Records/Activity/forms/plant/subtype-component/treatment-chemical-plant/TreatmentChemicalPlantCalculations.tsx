@@ -1,11 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { useSelector } from 'utils/use_selector';
 import { BugReport } from '@mui/icons-material';
 import { ActivitySubtypes } from 'sharedAPI';
-import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
-import { ChemTreatment } from 'UI/Features/Records/Activity/forms/plant/interfaces';
-import AdvisoryMessage from 'UI/Features/Records/Activity/forms/common/AdvisoryMessage/AdvisoryMessage';
 import {
   ApplicationCalculationVariables,
   DilutionCalculationVariables,
@@ -15,6 +11,10 @@ import {
   mSpecie_sLHerb_spray_usingDilutionPercent,
   mSpecie_sLHerb_spray_usingProdAppRate
 } from './calculations';
+import { useSelector } from 'utils/use_selector';
+import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
+import { ChemTreatment } from 'UI/Features/Records/Activity/forms/plant/interfaces';
+import AdvisoryMessage from 'UI/Features/Records/Activity/forms/common/AdvisoryMessage/AdvisoryMessage';
 import './treatmentChemicalPlantCalculations.css';
 import Accordion from 'UI/Reusable/Accordion/Accordion';
 import { Debug } from 'UI/Reusable/Predicates/Debug';
@@ -83,7 +83,7 @@ const TreatmentChemicalPlantCalculations = () => {
     if (!NUM_HERBICIDES || !NUM_INVASIVE_PLANTS) throw new Error('Missing Herbicides and/or Invasive Plants');
 
     const isMultipleHerbicides = NUM_HERBICIDES > 1;
-    const isMultiplePlants = NUM_INVASIVE_PLANTS > 1;
+    const _isMultiplePlants = NUM_INVASIVE_PLANTS > 1;
 
     if (tank_mix && !isMultipleHerbicides) throw new Error('Tank mix requires multiple herbicides');
     if (tank_mix && isMultipleHerbicides) {
@@ -165,7 +165,7 @@ const TreatmentChemicalPlantCalculations = () => {
     area_treated_sqm,
     delivery_rate
   } = useWatch<ChemTreatment>({
-    defaultValue: (getDefaultFormState(subtype) as ChemTreatment).subtype_data.treatment_context, // protect against information missing
+    defaultValue: (getDefaultFormState(subtype!) as ChemTreatment).subtype_data.treatment_context, // protect against information missing
     control,
     name: 'subtype_data.treatment_context'
   });

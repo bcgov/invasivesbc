@@ -1,6 +1,6 @@
-import { useSelector } from 'utils/use_selector';
 import { Fragment, ReactNode, useState } from 'react';
 import { ArrowForward } from '@mui/icons-material';
+import { useSelector } from 'utils/use_selector';
 import StyledModal from 'UI/Reusable/StyledModal/StyledModal';
 import Button from 'UI/Reusable/Button/Button';
 import './changeHistory.css';

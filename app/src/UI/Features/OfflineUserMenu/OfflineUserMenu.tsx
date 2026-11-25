@@ -1,9 +1,9 @@
 import React from 'react';
 
-import { selectAuth } from 'state/reducers/auth';
-import { useSelector } from 'utils/use_selector';
 import { Button, Dialog, DialogContent, DialogTitle, Typography } from '@mui/material';
 import { useDispatch } from 'react-redux';
+import { selectAuth } from 'state/reducers/auth';
+import { useSelector } from 'utils/use_selector';
 
 import 'UI/Features/OfflineUserMenu/OfflineUserMenu.css';
 import { AuthActions } from 'state/actions/auth/Auth';

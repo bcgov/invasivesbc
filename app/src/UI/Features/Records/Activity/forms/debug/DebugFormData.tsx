@@ -1,8 +1,8 @@
 import { useFormContext } from 'react-hook-form';
+import { BugReport } from '@mui/icons-material';
 import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import { Debug } from 'UI/Reusable/Predicates/Debug';
 import Accordion from 'UI/Reusable/Accordion/Accordion';
-import { BugReport } from '@mui/icons-material';
 import { CopyToClipboardButton } from 'UI/Features/Batch/batch-upload/ClipboardHelper';
 
 const DebugFormData = () => {

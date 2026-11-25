@@ -39,7 +39,7 @@ class OfflineProtomaps {
       const generationResponse: MapGenerationExecutionResponse = await generationResult.json();
       // now we should have an id we can poll to follow the progress of map generation
 
-      let finished = false;
+      const finished = false;
 
       while (!finished) {
         await new Promise((resolve) => setTimeout(resolve, 10000));
@@ -59,7 +59,7 @@ class OfflineProtomaps {
         }
         const monitorResultBody: MapGenerationRequestMonitoringResponse = await monitoringResult.json();
         if (monitorResultBody.status === 'COMPLETED' || monitorResultBody.status === 'FAILED') {
-          finished = true;
+          // finished = true; // but we return here anyway, so eslint complains
           return {
             tripId: spec.tripId,
             generationRecord: monitorResultBody.generation_record
@@ -97,7 +97,7 @@ class OfflineProtomaps {
       const generationResponse: MapGenerationExecutionResponse = await regenerationResponse.json();
       // now we should have an id we can poll to follow the progress of map generation
 
-      let finished = false;
+      const finished = false;
 
       while (!finished) {
         await new Promise((resolve) => setTimeout(resolve, 10000));
@@ -117,7 +117,7 @@ class OfflineProtomaps {
         }
         const monitorResultBody: MapGenerationRequestMonitoringResponse = await monitoringResult.json();
         if (monitorResultBody.status === 'COMPLETED' || monitorResultBody.status === 'FAILED') {
-          finished = true;
+          // finished = true; // but we return here anyway
           return {
             tripId: spec.tripId,
             generationRecord: monitorResultBody.generation_record

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { get, useFormContext, useWatch } from 'react-hook-form';
+import { HerbicideApplicationRates } from 'sharedAPI';
 import { useSelector } from 'utils/use_selector';
 import { ChemTreatment } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
@@ -7,7 +8,6 @@ import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/N
 import { greaterThan } from 'UI/Features/Records/Activity/forms/common/validators';
 import { CalculationType } from 'UI/Features/Records/Activity/forms/enums';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
-import { HerbicideApplicationRates } from 'sharedAPI';
 import CheckboxUI from 'UI/Features/Records/Activity/forms/common/CheckboxUI/CheckboxUI';
 import useLocalStorage from 'UI/Features/Records/Activity/forms/plant/hooks/useLocalStorage';
 import useFieldPath from 'UI/Features/Records/Activity/forms/plant/hooks/useFieldPath';

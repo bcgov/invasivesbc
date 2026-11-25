@@ -1,6 +1,6 @@
 import { cleanup, render, waitFor } from '@testing-library/react';
-import DataSharingAgreement from 'UI/Features/Landing/DataSharingAgreement/DataSharingAgreement';
 import userEvent from '@testing-library/user-event';
+import DataSharingAgreement from 'UI/Features/Landing/DataSharingAgreement/DataSharingAgreement';
 
 const dataSharingAgreementHeader = 'InvasivesBC Data Sharing Agreement';
 describe('DataSharingAgreement.tsx', () => {

@@ -11,9 +11,9 @@ import {
   TextField,
   Typography
 } from '@mui/material';
-import UploadedPhoto from 'interfaces/UploadedPhoto';
 import EditIcon from '@mui/icons-material/Edit';
 import { useState } from 'react';
+import UploadedPhoto from 'interfaces/UploadedPhoto';
 import Activity from 'state/actions/activity/Activity';
 import { useDispatch } from 'utils/use_selector';
 

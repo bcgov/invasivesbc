@@ -1,6 +1,6 @@
 import { ArrowLeftIcon, ArrowRightIcon } from '@mui/x-date-pickers/icons';
-import { UserRecordSet } from 'interfaces/UserRecordSet';
 import { useDispatch } from 'react-redux';
+import { UserRecordSet } from 'interfaces/UserRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { useSelector } from 'utils/use_selector';
 

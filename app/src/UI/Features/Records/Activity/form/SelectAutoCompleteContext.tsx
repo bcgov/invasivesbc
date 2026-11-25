@@ -1,26 +1,29 @@
 import React, { createContext, useReducer } from 'react';
 
-export const initialValues = {
+type LastFieldChanged = {
+  id?: string;
+  option?: string;
+};
+
+type ISelectAutoCompleteContext = {
+  lastFieldChanged: LastFieldChanged;
+  setLastFieldChanged: (data: LastFieldChanged) => void;
+};
+
+export const initialValues: ISelectAutoCompleteContext = {
   lastFieldChanged: {},
   setLastFieldChanged: () => {}
 };
 
-type ISelectAutoCompleteContext = {
-  lastFieldChanged: {
-    id?: string;
-    option?: string;
-  };
-  setLastFieldChanged: (data) => void;
-};
 export const SelectAutoCompleteContext = createContext<ISelectAutoCompleteContext>(initialValues);
 
 type State = {
-  lastFieldChanged: {};
+  lastFieldChanged: LastFieldChanged;
 };
 
 type Action = {
   type: 'setLastFieldChanged';
-  data: {};
+  data: LastFieldChanged;
 };
 
 function reducer(state: State, action: Action) {

@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
-import DisplayComposite from 'UI/Features/LegacyMap/helpers/components/DisplayComposite/DisplayComposite';
 import { Provider } from 'react-redux';
+import DisplayComposite from 'UI/Features/LegacyMap/helpers/components/DisplayComposite/DisplayComposite';
 import { createMockConfigurationReducer, createMockStore, mockSliceReducer } from 'test/testUtils';
 
 describe('DisplayComposite.tsx', () => {

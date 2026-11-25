@@ -1,8 +1,8 @@
 import { useSelector } from 'react-redux';
-import { selectUserSettings } from 'state/reducers/userSettings';
 import { Box, Container, Stack } from '@mui/material';
 import { NavLink, To } from 'react-router';
 import React from 'react';
+import { selectUserSettings } from 'state/reducers/userSettings';
 import './SecondaryNavigation.css';
 
 interface SecondaryNavigationLinkDefinition {

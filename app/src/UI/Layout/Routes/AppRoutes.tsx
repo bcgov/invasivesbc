@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes, useNavigate, useParams } from 'react-router';
+import React, { Suspense, useEffect } from 'react';
 import { LandingComponent } from 'UI/Features/Landing/Landing';
 import { Records } from 'UI/Features/Records/Records';
 import { Activity } from 'UI/Features/Records/Record';
@@ -6,7 +7,6 @@ import { IAPPRecord } from 'UI/Features/IAPP/IAPPRecord';
 import { RecordSetId } from 'interfaces/UserRecordSet';
 import { OfflineRecordSet } from 'UI/Features/Records/RecordSet/OfflineRecordSet';
 import { RecordSet } from 'UI/Features/Records/RecordSet/RecordSet';
-import React, { Suspense, useEffect } from 'react';
 import Spinner from 'UI/Reusable/Spinner/Spinner';
 import { WhatsHereTable } from 'UI/Features/WhatsHere/WhatsHereTable';
 import { useSelector } from 'utils/use_selector';
@@ -45,6 +45,16 @@ const CreateTeam = React.lazy(() => import('UI/Features/MyTeamsPage/subcomponent
 
 const SummaryPage = React.lazy(() => import('UI/Features/SummaryPage/SummaryPage'));
 
+const LocalRecordsListRoute = () => {
+  const { id } = useParams<{ id: string }>();
+  if (id) {
+    return (
+      <>{id === RecordSetId.OfflineActivities ? <OfflineRecordSet setID={id} /> : <RecordSet setID={id} />}</>
+    );
+  }
+  return null;
+};
+
 const AppRoutes = () => {
   const navigate = useNavigate();
   const userActivated = useSelector((state) => state.UserInfo.activated);
@@ -67,15 +77,7 @@ const AppRoutes = () => {
       <Route path="/Records/IAPP/:id/:mode" Component={() => <IAPPRecord />} />
       <Route
         path="/Records/List/Local/:id"
-        Component={() => {
-          const { id } = useParams<{ id: string }>();
-          if (id) {
-            return (
-              <>{id === RecordSetId.OfflineActivities ? <OfflineRecordSet setID={id} /> : <RecordSet setID={id} />}</>
-            );
-          }
-          return null;
-        }}
+        Component={LocalRecordsListRoute}
       />
 
       <Route path="/Records" Component={() => <Records />} />

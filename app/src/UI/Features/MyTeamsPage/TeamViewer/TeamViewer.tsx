@@ -1,20 +1,20 @@
 import { useParams } from 'react-router';
 import { ReactNode, useEffect, useState } from 'react';
+import moment from 'moment';
+import { Cancel, GroupRemove, PersonRemove, Refresh } from '@mui/icons-material';
+import InviteMember from './InviteMember';
+import EditTeamInfo from './EditTeamInfo';
 import StyledTable from 'UI/Reusable/StyledTable/StyledTable';
 import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
-import moment from 'moment';
 import { InviteStatus, SingleTeamOut } from 'api/api-schema';
-import InviteMember from './InviteMember';
 import BackButton from 'UI/Reusable/BackButton/BackButton';
 import Button from 'UI/Reusable/Button/Button';
-import { Cancel, GroupRemove, PersonRemove, Refresh } from '@mui/icons-material';
-import useTeamsManagement from '../subcomponents/useTeamManagement.hooks';
-import EditTeamInfo from './EditTeamInfo';
 import ConfirmationButton from 'UI/Reusable/ConfirmationButton/ConfirmationButton';
 import OverlayContentWrapper from 'UI/Reusable/OverlayContentWrapper/OverlayContentWrapper';
 import LoadingPage from 'UI/Features/SystemStatusPages/LoadingPage/LoadingPage';
 import OnlineOnlyWrapper from 'UI/Features/SystemStatusPages/OnlineOnlyWrapper/OnlineOnlyWrapper';
 import './teamViewer.css';
+import useTeamsManagement from 'UI/Features/MyTeamsPage/subcomponents/useTeamManagement.hooks';
 
 type InfoProps = {
   term: string;

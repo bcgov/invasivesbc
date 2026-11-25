@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import { PrimaryNavigationLink } from 'UI/Layout/Routes/PrimaryNavigation';
 import { useNavigate } from 'react-router';
+import { PrimaryNavigationLink } from 'UI/Layout/Routes/PrimaryNavigation';
 
 const NavTab = ({ icon, path, label, active }: PrimaryNavigationLink) => {
   const navigate = useNavigate();

@@ -1,6 +1,7 @@
 import localForage from 'localforage';
 import booleanIntersects from '@turf/boolean-intersects';
 import { Feature, FeatureCollection } from 'geojson';
+import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
 import {
   IWellCacheProgressCallbackParameters,
   IWellRepositoryMetadata,
@@ -8,7 +9,6 @@ import {
   WellRepositoryStatus
 } from '.';
 import WellData from 'interfaces/WellData';
-import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
 
 class LocalForageWellCacheService extends WellCacheService {
   private static _instance: LocalForageWellCacheService;

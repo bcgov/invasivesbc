@@ -1,7 +1,7 @@
 import { FormControl, FormHelperText, List, ListItem, Typography } from '@mui/material';
 import React from 'react';
-import WrapIfAdditional from './WrapIfAdditional';
 import { FieldTemplateProps } from '@rjsf/utils';
+import WrapIfAdditional from './WrapIfAdditional';
 
 const FieldTemplate = (props: FieldTemplateProps) => {
   return (

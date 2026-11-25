@@ -1,11 +1,9 @@
 import { ImageSearch } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import HoverTooltip from 'UI/Reusable/HoverTooltip/HoverTooltip';
-import { MapContext } from '../../helpers/components/MapContext';
-import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
 import type { MapGeoJSONFeature, Map as MapLibreMap, MapMouseEvent, MapTouchEvent } from 'maplibre-gl';
 import { useNavigate } from 'react-router';
+import { MapContext } from '../../helpers/components/MapContext';
 import {
   CLICKABLE_LAYER,
   MIN_ZOOM_FOR_ZONES,
@@ -15,6 +13,8 @@ import {
   removeZoneLayers,
   selectionFilter
 } from './definitions';
+import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
+import HoverTooltip from 'UI/Reusable/HoverTooltip/HoverTooltip';
 import { useDispatch } from 'utils/use_selector';
 
 /**

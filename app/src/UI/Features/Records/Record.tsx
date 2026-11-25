@@ -1,10 +1,10 @@
 import { useEffect, useRef } from 'react';
 import 'UI/Features/Records/Record.css';
 import { useNavigate, useParams } from 'react-router';
+import { Button } from '@mui/material';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import { ActivityForm } from 'UI/Features/Records/Activity/Form';
 import { ActivityPhotos } from 'UI/Features/Records/Activity/Photos';
-import { Button } from '@mui/material';
 import { RENDER_DEBUG } from 'UI/App';
 import ActivityActions from 'state/actions/activity/Activity';
 import Spinner from 'UI/Reusable/Spinner/Spinner';

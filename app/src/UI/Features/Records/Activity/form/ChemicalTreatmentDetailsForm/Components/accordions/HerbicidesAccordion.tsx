@@ -1,10 +1,10 @@
 import { useContext, useRef } from 'react';
 import { Typography, Box, Button } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import { nanoid } from '@reduxjs/toolkit';
 import { ChemicalTreatmentDetailsContext } from 'UI/Features/Records/Activity/form/ChemicalTreatmentDetailsForm/ChemicalTreatmentDetailsContext';
 import Herbicide from 'UI/Features/Records/Activity/form/ChemicalTreatmentDetailsForm/Components/single-objects/Herbicide';
-import AddIcon from '@mui/icons-material/Add';
 import { RENDER_DEBUG } from 'UI/App';
-import { nanoid } from '@reduxjs/toolkit';
 
 type PropTypes = {
   insideTankMix: boolean;

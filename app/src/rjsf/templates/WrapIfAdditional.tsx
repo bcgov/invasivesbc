@@ -1,7 +1,7 @@
 import { FormControl, Grid, Input, InputLabel } from '@mui/material';
 import React from 'react';
-import IconButton from 'rjsf/components/IconButton';
 import { ADDITIONAL_PROPERTY_FLAG } from '@rjsf/utils';
+import IconButton from 'rjsf/components/IconButton';
 
 type WrapIfAdditionalProps = {
   children: React.ReactElement;

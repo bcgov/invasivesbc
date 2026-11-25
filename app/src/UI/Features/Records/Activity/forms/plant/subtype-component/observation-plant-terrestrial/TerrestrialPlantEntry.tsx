@@ -1,9 +1,9 @@
-import { useSelector } from 'utils/use_selector';
 import { useFormContext, useWatch } from 'react-hook-form';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'utils/use_selector';
 import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import { ObservationType } from 'UI/Features/Records/Activity/forms/enums';
-import { useEffect, useState } from 'react';
 import CheckboxUI from 'UI/Features/Records/Activity/forms/common/CheckboxUI/CheckboxUI';
 import { TerrestrialPlantObservationSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';

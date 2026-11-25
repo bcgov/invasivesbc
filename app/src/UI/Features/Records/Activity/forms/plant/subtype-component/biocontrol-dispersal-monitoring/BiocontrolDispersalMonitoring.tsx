@@ -1,4 +1,5 @@
 import { ActivitySubtypes } from 'sharedAPI';
+import BiocontrolDispersalMonitoringEntry from './BiocontrolDispersalMonitoringEntry';
 import ArrayField from 'UI/Features/Records/Activity/forms/common/ArrayField/ArrayField';
 import { distinctEntries } from 'UI/Features/Records/Activity/forms/common/validators';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
@@ -6,7 +7,6 @@ import { BiocontrolDispersalMonitoringSchema } from 'UI/Features/Records/Activit
 import MicrositeConditions from 'UI/Features/Records/Activity/forms/plant/subtype-component/common/MicrositeConditions';
 import BiocontrolWeatherConditions from 'UI/Features/Records/Activity/forms/plant/subtype-component/common/WeatherConditions';
 import TargetPlantPhenology from 'UI/Features/Records/Activity/forms/plant/subtype-component/common/TargetPlantPhenology';
-import BiocontrolDispersalMonitoringEntry from './BiocontrolDispersalMonitoringEntry';
 
 const BiocontrolDispersalMonitoring = () => {
   return (

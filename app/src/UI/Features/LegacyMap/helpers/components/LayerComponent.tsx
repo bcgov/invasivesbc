@@ -1,6 +1,6 @@
 import { useContext, useEffect } from 'react';
-import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
 import { LayerSpecification } from 'maplibre-gl/dist/maplibre-gl-dev';
+import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
 import {
   hasStackingOrder,
   LayerSpecificationWithStackingOrder

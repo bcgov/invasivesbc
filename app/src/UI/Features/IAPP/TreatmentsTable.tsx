@@ -500,19 +500,6 @@ export const TreatmentsTable = (props) => {
   };
 
   const createData = (treatment) => {
-    let method_code;
-    let returnObj;
-    switch (type) {
-      case 'Mechanical':
-        method_code = treatment.mechanical_method_code;
-        break;
-      case 'Chemical':
-        method_code = treatment.chemical_method_code;
-        break;
-      default:
-        method_code = null;
-    }
-
     switch (type) {
       case 'Mechanical Treatment':
         returnObj = {

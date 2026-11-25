@@ -1,7 +1,7 @@
 import { render, waitFor } from '@testing-library/react';
-import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
+import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
 
 const defaultButtonText = 'Default Button';
 const componentText = 'Hello World!';

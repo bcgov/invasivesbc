@@ -2,13 +2,8 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import './map.css';
 
-import { useDispatch, useSelector } from 'utils/use_selector';
-import { getCurrentJWT } from 'state/sagas/auth/auth';
-import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
-import { InvasivesMap } from 'UI/Features/LegacyMap/InvasivesMap';
 import * as maplibregl from 'maplibre-gl/dist/maplibre-gl-dev';
 import { PMTiles, Protocol } from 'pmtiles';
-import { CurrentActivityLayer } from 'UI/Features/LegacyMap/helpers/components/CurrentActivityLayer';
 import DisplayComposite from './helpers/components/DisplayComposite/DisplayComposite';
 import {
   addClientBoundariesIfNotExists,
@@ -18,6 +13,12 @@ import {
   removeClientBoundaries,
   removeOrphanClientBoundaries
 } from './helpers/functional/handleBoundaries';
+import OfflineRecordsetLayer from './helpers/components/OfflineRecordsetLayer';
+import { useDispatch, useSelector } from 'utils/use_selector';
+import { getCurrentJWT } from 'state/sagas/auth/auth';
+import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
+import { InvasivesMap } from 'UI/Features/LegacyMap/InvasivesMap';
+import { CurrentActivityLayer } from 'UI/Features/LegacyMap/helpers/components/CurrentActivityLayer';
 import { ButtonContainer } from 'UI/Features/LegacyMap/Controls/ButtonContainer';
 import { LayerPicker } from 'UI/Features/LegacyMap/LayerPicker/LayerPicker';
 import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
@@ -28,7 +29,6 @@ import { POSITIONING_LAYERS } from 'UI/Features/LegacyMap/helpers/functional/lay
 import { useInvasivesMapLayers } from 'UI/Features/LegacyMap/helpers/functional/layers-hook';
 import LayerDataMarker from 'UI/Features/LegacyMap/helpers/components/LayerDataMarker/LayerDataMarker';
 import { useRecordSetControls } from 'utils/useRecordSetControls';
-import OfflineRecordsetLayer from './helpers/components/OfflineRecordsetLayer';
 import { useOfflineRecordSetLayers } from 'utils/useOfflineRecordSetLayers';
 import { OfflineMapsPluginPMTilesSource } from 'utils/offline-protomaps/capacitor';
 import OfflineProtomaps from 'state/actions/cache/OfflineProtomaps';

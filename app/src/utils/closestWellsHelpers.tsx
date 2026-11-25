@@ -1,16 +1,16 @@
 import { polygon } from '@turf/helpers';
-import { Feature, Point, Polygon } from 'geojson';
+import { Feature, Point, Polygon, LineString } from 'geojson';
 import pointToLineDistance from '@turf/point-to-line-distance';
 import polygonToLine from '@turf/polygon-to-line';
 import inside from '@turf/boolean-point-in-polygon';
 import buffer from '@turf/buffer';
-import { getDataFromDataBCv2 } from './WFSConsumer';
-import { selectNetworkState } from 'state/reducers/network';
 import { select } from 'redux-saga/effects';
+import { getDataFromDataBCv2 } from './WFSConsumer';
 import { WellCacheServiceFactory } from './well-cache/context';
+import { selectNetworkState } from 'state/reducers/network';
 import GeoShapes from 'constants/geoShapes';
 import WellData from 'interfaces/WellData';
-import { LineString } from 'geojson';
+
 import { buildTimeConfig } from 'state/configuration/build-time-config';
 
 /**

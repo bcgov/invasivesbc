@@ -1,9 +1,7 @@
 import { LayerSpecification } from 'maplibre-gl/dist/maplibre-gl-dev';
-import { useContext, useEffect } from 'react';
 import { FeatureFlags } from 'state/configuration/feature-flags';
 import { Platform } from 'state/configuration/build-time-config';
 import { SOURCES } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/layer-definitions';
-import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
 
 // these layers are used as placeholders so the others can be placed relative to them
 const LAYER_Z_BACKGROUND = 'LAYER_Z_BACKGROUND';

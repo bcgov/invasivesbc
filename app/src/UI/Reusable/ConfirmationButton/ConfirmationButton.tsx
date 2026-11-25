@@ -1,6 +1,6 @@
 import { FocusEvent, MouseEvent, ReactNode, useState } from 'react';
-import Button, { InputButtonProps } from 'UI/Reusable/Button/Button';
 import { Warning } from '@mui/icons-material';
+import Button, { InputButtonProps } from 'UI/Reusable/Button/Button';
 
 interface PropTypes extends InputButtonProps {
   confirmationPrompt?: ReactNode;

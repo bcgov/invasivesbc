@@ -1,11 +1,11 @@
 import { useFormContext } from 'react-hook-form';
+import { useMemo } from 'react';
+import tooltips from '../content/tooltips';
 import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import { useSelector } from 'utils/use_selector';
 import MultiSelect from 'UI/Features/Records/Activity/forms/common/MultiSelect/MultiSelect';
-import tooltips from '../content/tooltips';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import { minArrayLength } from 'UI/Features/Records/Activity/forms/common/validators';
-import { useMemo } from 'react';
 import { Role } from 'constants/roles';
 
 type PropTypes = {

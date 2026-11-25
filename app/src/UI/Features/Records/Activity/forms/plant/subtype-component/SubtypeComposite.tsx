@@ -1,7 +1,4 @@
 import { ActivitySubtypes } from 'sharedAPI';
-import { useSelector } from 'utils/use_selector';
-import ObservationPlantTerrestrial from 'UI/Features/Records/Activity/forms/plant/subtype-component/observation-plant-terrestrial/ObservationPlantTerrestrial';
-import ObservationPlantAquatic from 'UI/Features/Records/Activity/forms/plant/subtype-component/observation-plant-aquatic/ObservationPlantAquatic';
 import TreatmentMechPlantTerrestrial from './treatment-mech-plant-terrestrial/TreatmentMechPlantTerrestrial';
 import TreatmentMechPlantAquatic from './treatment-mech-plant-aquatic/TreatmentMechPlantAquatic';
 import MonitoringChemMechPlant from './monitoring-chem-mech-plant/MonitoringChemMechPlant';
@@ -10,6 +7,9 @@ import BiocontrolReleaseMonitoring from './biocontrol-release-monitoring/Biocont
 import BiocontrolDispersalMonitoring from './biocontrol-dispersal-monitoring/BiocontrolDispersalMonitoring';
 import BiocontrolCollection from './biocontrol-collection/BiocontrolCollection';
 import TreatmentChemicalPlant from './treatment-chemical-plant/TreatmentChemicalPlant';
+import ObservationPlantAquatic from 'UI/Features/Records/Activity/forms/plant/subtype-component/observation-plant-aquatic/ObservationPlantAquatic';
+import ObservationPlantTerrestrial from 'UI/Features/Records/Activity/forms/plant/subtype-component/observation-plant-terrestrial/ObservationPlantTerrestrial';
+import { useSelector } from 'utils/use_selector';
 
 /**
  * @desc Handles the Branching Subtypes for Forms, matches Subtype to required Subfields

@@ -1,4 +1,4 @@
-import { Platform, buildTimeConfig } from 'state/configuration/build-time-config';
+import { buildTimeConfig, Platform } from 'state/configuration/build-time-config';
 import { RecordCacheService } from 'utils/record-cache/index';
 import { SQLiteRecordCacheService } from 'utils/record-cache/sqlite-cache';
 import { LocalForageRecordCacheService } from 'utils/record-cache/localforage-cache';

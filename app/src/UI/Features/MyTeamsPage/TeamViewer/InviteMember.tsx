@@ -1,15 +1,15 @@
 import { GroupAdd, PersonAdd } from '@mui/icons-material';
-import { InviteUserToTeamSchema, SingleTeamOut, TeamSuggestedUserOut } from 'api/api-schema';
 import { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { InviteUserToTeamSchema, SingleTeamOut, TeamSuggestedUserOut } from 'api/api-schema';
 import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
 import { greaterThanEqual } from 'UI/Features/Records/Activity/forms/common/validators';
 import Button from 'UI/Reusable/Button/Button';
-import useTeamsManagement from '../subcomponents/useTeamManagement.hooks';
+import useTeamsManagement from 'UI/Features/MyTeamsPage/subcomponents/useTeamManagement.hooks';
 
 type PropTypes = {
   teamId: SingleTeamOut['id'];
-  refreshTeam: Function;
+  refreshTeam: () => Promise<void>;
 };
 
 const InviteMember = ({ teamId, refreshTeam }: PropTypes) => {

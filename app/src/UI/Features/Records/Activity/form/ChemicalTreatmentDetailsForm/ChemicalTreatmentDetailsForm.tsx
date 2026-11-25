@@ -14,6 +14,8 @@ import {
 } from '@mui/material';
 import { ChangeEvent, useEffect, useState } from 'react';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import { performCalculation, runValidation, ValidationError } from 'sharedAPI';
+import { useSelector } from 'react-redux';
 import CustomAutoComplete from 'UI/Features/Records/Activity/form/ChemicalTreatmentDetailsForm/CustomAutoComplete';
 import {
   ChemicalTreatmentDetailsContextProvider,
@@ -22,10 +24,8 @@ import {
 import HerbicidesAccordion from 'UI/Features/Records/Activity/form/ChemicalTreatmentDetailsForm/Components/accordions/HerbicidesAccordion';
 import TankMixAccordion from 'UI/Features/Records/Activity/form/ChemicalTreatmentDetailsForm/Components/accordions/TankMixAccordion';
 import InvasivePlantsAccordion from 'UI/Features/Records/Activity/form/ChemicalTreatmentDetailsForm/Components/accordions/InvasivePlantsAccordion';
-import { performCalculation, runValidation, ValidationError } from 'sharedAPI';
 import { GeneralDialog, IGeneralDialog } from 'UI/Reusable/GeneralDialog/GeneralDialog';
 import CalculationResultsTable from 'UI/Features/Records/Activity/form/ChemicalTreatmentDetailsForm/Components/single-objects/CalculationResultsTable';
-import { useSelector } from 'react-redux';
 
 type PropTypes = {
   activitySubType: Record<PropertyKey, unknown>;

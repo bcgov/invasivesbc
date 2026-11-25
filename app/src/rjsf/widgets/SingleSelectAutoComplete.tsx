@@ -10,11 +10,11 @@ import {
   FormControl,
   FormHelperText
 } from '@mui/material';
-import { SelectAutoCompleteContext } from 'UI/Features/Records/Activity/form/SelectAutoCompleteContext';
 import { useContext, useEffect, useState } from 'react';
 import { WidgetProps } from '@rjsf/utils';
-import { useSelector } from 'utils/use_selector';
 import { nanoid } from '@reduxjs/toolkit';
+import { useSelector } from 'utils/use_selector';
+import { SelectAutoCompleteContext } from 'UI/Features/Records/Activity/form/SelectAutoCompleteContext';
 import handleSuggestedJurisdictions from 'rjsf/business-rules/handleSuggestedJurisdictions';
 
 // Custom type to support this widget

@@ -1,9 +1,9 @@
 import { createFilterOptions } from '@mui/material/Autocomplete';
 import { TextField, Autocomplete, MenuItem } from '@mui/material';
-import { SelectAutoCompleteContext } from 'UI/Features/Records/Activity/form/SelectAutoCompleteContext';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { WidgetProps } from '@rjsf/utils';
 import { nanoid } from '@reduxjs/toolkit';
+import { SelectAutoCompleteContext } from 'UI/Features/Records/Activity/form/SelectAutoCompleteContext';
 import { useSelector } from 'utils/use_selector';
 import { Role } from 'constants/roles';
 

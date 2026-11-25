@@ -713,7 +713,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
       throw new Error(CACHE_UNAVAILABLE);
     }
     const idList: string[] = [];
-    let moreRows = true;
+    let moreRows: boolean;
     let offsetMultiplier = 0;
     do {
       const act =

@@ -3,11 +3,11 @@ import { Slider } from '@mui/material';
 
 import bbox from '@turf/bbox';
 import { bboxPolygon } from '@turf/turf';
-import { getCurrentJWT } from 'state/sagas/auth/auth';
+import debounce from 'lodash.debounce';
 import { MapGenerationEstimateRequest, MapGenerationEstimateResponse, MapRecord } from './definitions';
+import { getCurrentJWT } from 'state/sagas/auth/auth';
 import MapEstimateRenderer from 'UI/Features/TileCache/ProtomapsImplementation/MapEstimateRenderer';
 import { useSelector } from 'utils/use_selector';
-import debounce from 'lodash.debounce';
 
 import './ProtomapsImplementation.css';
 

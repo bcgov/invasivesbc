@@ -1,7 +1,7 @@
 import { ReactNode, useMemo } from 'react';
+import { ActivitySubtypesShortLabels } from 'sharedAPI';
 import { selectGlobalRecordsetFilters } from 'state/reducers/map';
 import { useSelector } from 'utils/use_selector';
-import { ActivitySubtypesShortLabels } from 'sharedAPI';
 import './GlobalFilterWarning.css';
 import { WarningAmberRounded } from '@mui/icons-material';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';

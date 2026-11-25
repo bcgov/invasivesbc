@@ -1,9 +1,9 @@
 import { act, render, waitFor, within } from '@testing-library/react';
-import LpRecordSet from 'UI/Features/LegacyMap/LayerPicker/LpRecordSet/LpRecordSet';
 import { Provider } from 'react-redux';
 import { Router } from 'react-router';
-import setupStore, { historySingleton } from 'state/store';
 import userEvent from '@testing-library/user-event';
+import setupStore, { historySingleton } from 'state/store';
+import LpRecordSet from 'UI/Features/LegacyMap/LayerPicker/LpRecordSet/LpRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import defaultRecordSets from 'constants/defaultRecordSets';

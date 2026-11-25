@@ -1,12 +1,12 @@
-import { UserAccessIn } from 'api/api-schema';
 import { FormProvider, get, useForm } from 'react-hook-form';
+import { greaterThanEqual, minArrayLength } from '../Records/Activity/forms/common/validators';
+import { UserAccessIn } from 'api/api-schema';
 import OverlayContentWrapper from 'UI/Reusable/OverlayContentWrapper/OverlayContentWrapper';
 import { useSelector } from 'utils/use_selector';
 import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
 import TextInput from 'UI/Features//Records/Activity/forms/common/TextInput/TextInput';
 import MultiSelect from 'UI/Features//Records/Activity/forms/common/MultiSelect/MultiSelect';
 import NumberInput from 'UI/Features//Records/Activity/forms/common/NumberInput/NumberInput';
-import { greaterThanEqual, minArrayLength } from '../Records/Activity/forms/common/validators';
 import TextArea from 'UI/Features/Records/Activity/forms/common/TextArea/TextArea';
 import Button from 'UI/Reusable/Button/Button';
 import './userRegistrationPage.css';

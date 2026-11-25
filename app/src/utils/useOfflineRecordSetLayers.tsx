@@ -5,7 +5,9 @@
 import { useEffect, useState } from 'react';
 import { SourceSpecification } from 'maplibre-gl/dist/maplibre-gl-dev';
 import { shallowEqual } from 'react-redux';
+import { Md5 } from 'ts-md5';
 import { useDispatch, useSelector } from './use_selector';
+import { RecordCacheServiceFactory } from './record-cache/context';
 import {
   InvasivesMapLayerDefinitionWithState,
   LayerSpecificationWithStackingOrder
@@ -24,8 +26,6 @@ import {
   getPaintBySchemeOrColor
 } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/reusable-layer-specifications';
 import { RecordSetId, RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
-import { RecordCacheServiceFactory } from './record-cache/context';
-import { Md5 } from 'ts-md5';
 import Alerts from 'state/actions/alerts/Alerts';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import UserSettings from 'state/actions/userSettings/UserSettings';

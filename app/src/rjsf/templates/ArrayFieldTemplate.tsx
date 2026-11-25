@@ -1,5 +1,4 @@
 import React from 'react';
-import AddButton from 'rjsf/components/AddButton';
 import { Box, Grid } from '@mui/material';
 import {
   ArrayFieldTemplateProps,
@@ -11,6 +10,7 @@ import {
   TitleFieldProps
 } from '@rjsf/utils';
 import { getDefaultRegistry } from '@rjsf/core';
+import AddButton from 'rjsf/components/AddButton';
 
 const ArrayFieldTemplate = (props: ArrayFieldTemplateProps) => {
   const { schema, registry = getDefaultRegistry() } = props;

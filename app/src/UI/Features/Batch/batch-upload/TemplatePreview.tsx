@@ -1,10 +1,10 @@
 import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 
-import { CodeTableReference } from 'UI/Features/Batch/batch-upload/CodeTableReference';
 import { useDispatch } from 'react-redux';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Download } from '@mui/icons-material';
+import { CodeTableReference } from 'UI/Features/Batch/batch-upload/CodeTableReference';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { useSelector } from 'utils/use_selector';
 import { DeepTemplate, selectBatch } from 'state/reducers/batch';

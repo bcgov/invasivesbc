@@ -1,11 +1,11 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { IconButton } from '@mui/material';
+import { GpsFixed, GpsNotFixed, GpsOff } from '@mui/icons-material';
+import { MapLibreEvent } from 'maplibre-gl';
+import { MapContext } from '../helpers/components/MapContext';
 import { useSelector } from 'utils/use_selector';
 import MapActions from 'state/actions/map';
-import { GpsFixed, GpsNotFixed, GpsOff } from '@mui/icons-material';
-import { MapContext } from '../helpers/components/MapContext';
-import { MapLibreEvent } from 'maplibre-gl';
 import { isTracking } from 'utils/geoTrackingHelpers';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import HoverTooltip from 'UI/Reusable/HoverTooltip/HoverTooltip';

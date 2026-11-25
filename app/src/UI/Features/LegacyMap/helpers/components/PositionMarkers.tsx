@@ -1,18 +1,18 @@
 import { useContext, useEffect, useRef } from 'react';
+import pointOnFeature from '@turf/point-on-feature';
+import maplibregl, { LngLatLike } from 'maplibre-gl';
+import circle from '@turf/circle';
+import { refreshWhatsHereFeature } from '../functional/whats-here';
 import {
   refreshCurrentRecMakers,
   refreshHighlightedRecord
 } from 'UI/Features/LegacyMap/helpers/functional/current-record';
-import pointOnFeature from '@turf/point-on-feature';
-import maplibregl, { LngLatLike } from 'maplibre-gl';
 import { useSelector } from 'utils/use_selector';
-import circle from '@turf/circle';
 import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
 import { handlePositionTracking } from 'UI/Features/LegacyMap/helpers/functional/position-tracking';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import { makeMapMarker, makeMarkerElement } from 'utils/makeMapMarker';
-import { refreshWhatsHereFeature } from '../functional/whats-here';
 
 const PositionMarkers = ({ mapReady }) => {
   const map = useContext(MapContext);
@@ -34,7 +34,6 @@ const PositionMarkers = ({ mapReady }) => {
 
   // Draw tools - determine who needs edit and where the geos get dispatched, what tools to display etc
   const hoveredFeature = useSelector((state) => state.Map.whatsHere?.feature);
-  const appModeUrl = useSelector((state) => state.AppMode.url);
 
   const activityGeo = useSelector((state) => state.ActivityPage.activity?.geometry);
 

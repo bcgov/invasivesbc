@@ -1,20 +1,9 @@
-import { InputHTMLAttributes } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
 import ErrorMessage from 'UI/Features/Records/Activity/forms/common/ErrorMessage/ErrorMessage';
-import { getInputWidth, Width } from 'UI/Features/Records/Activity/forms/common/utils';
+import { getInputWidth } from 'UI/Features/Records/Activity/forms/common/utils';
 import OptionalField from 'UI/Features/Records/Activity/forms/common/OptionalField/OptionalField';
 import './dateInput.css';
-
-interface PropTypes extends InputHTMLAttributes<HTMLInputElement> {
-  includeTime?: boolean;
-  name: string;
-  label?: string;
-  tooltip?: string;
-  required?: boolean;
-  width?: Width;
-  rules: object;
-}
 
 const DateInput = ({ includeTime = false, width, name, label, rules, required = false, tooltip, ...props }) => {
   const { control } = useFormContext();

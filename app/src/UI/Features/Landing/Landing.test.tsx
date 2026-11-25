@@ -1,7 +1,7 @@
 import { render, waitFor, within } from '@testing-library/react';
-import { LandingComponent } from 'UI/Features/Landing/Landing';
 import { Provider } from 'react-redux';
 import userEvent from '@testing-library/user-event';
+import { LandingComponent } from 'UI/Features/Landing/Landing';
 import {
   createMockConfigurationReducer,
   createMockStore,

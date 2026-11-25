@@ -13,9 +13,9 @@ import {
 } from '@mui/material';
 import './UserInputModals.css';
 import { useState } from 'react';
-import { NumberModalInterface, ReduxPayload } from 'interfaces/prompt-interfaces';
 import { useDispatch } from 'react-redux';
 import { UnknownAction } from 'redux';
+import { NumberModalInterface, ReduxPayload } from 'interfaces/prompt-interfaces';
 import Prompt from 'state/actions/prompts/Prompt';
 
 const NumberModal = ({

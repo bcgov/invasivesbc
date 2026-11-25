@@ -1,8 +1,8 @@
 import { ChangeEvent, KeyboardEvent, useCallback, useState } from 'react';
 import debounce from 'lodash.debounce';
+import { useNavigate } from 'react-router';
 import { useSelector } from 'utils/use_selector';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
-import { useNavigate } from 'react-router';
 import './recordSearch.css';
 
 type ActivitySuggestion = {
@@ -79,7 +79,7 @@ const RecordSearch = () => {
         });
 
       let ibcSuggestions = [];
-      let iappSuggestions = [];
+      const iappSuggestions = [];
       try {
         if (partialRecordId.length >= MINIMUM_LOOKUP_LENGTH) {
           const res = await fetch(`${API_V2_BASE}/ninja/recordset/rows`, {

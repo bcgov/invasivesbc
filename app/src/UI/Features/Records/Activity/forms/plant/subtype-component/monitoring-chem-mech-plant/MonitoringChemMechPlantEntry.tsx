@@ -1,3 +1,5 @@
+import { get, useFormContext } from 'react-hook-form';
+import { useEffect } from 'react';
 import { useSelector } from 'utils/use_selector';
 import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
@@ -9,8 +11,6 @@ import {
   MonitoringChemPlantSchema,
   MonitoringMechPlantSchema
 } from 'UI/Features/Records/Activity/forms/plant/interfaces';
-import { get, useFormContext } from 'react-hook-form';
-import { useEffect } from 'react';
 import FormSpacer from 'UI/Features/Records/Activity/forms/common/FormSpacer/FormSpacer';
 import useFieldPath from 'UI/Features/Records/Activity/forms/plant/hooks/useFieldPath';
 import TextArea from 'UI/Features/Records/Activity/forms/common/TextArea/TextArea';

@@ -1,17 +1,17 @@
 import React, { LazyExoticComponent, Suspense, useEffect, useState } from 'react';
 import './App.css';
+import { PluginListenerHandle } from '@capacitor/core';
+import LocationChangeListener from './LocationChangeListener';
 import { selectGlobalErrorState } from 'state/reducers/error_handler';
 import { ErrorHandler } from 'UI/Layout/ErrorHandler/ErrorHandler';
 import { ConnectivityErrorHandler } from 'UI/Layout/ErrorHandler/ConnectivityErrorHandler';
 import { selectAuth } from 'state/reducers/auth';
 import { useSelector } from 'utils/use_selector';
-import { usePlatformClasses } from 'state/configuration/build-time-config';
+import { usePlatformClasses, Platform, buildTimeConfig } from 'state/configuration/build-time-config';
 import WideLayout from 'UI/Layout/WideLayout/WideLayout';
 import Overlay from 'UI/Layout/OverlayLayout/Overlay';
 import SafeInsets from 'utils/android-safe-area/safeArea';
-import { PluginListenerHandle } from '@capacitor/core';
-import { Platform, buildTimeConfig } from 'state/configuration/build-time-config';
-import LocationChangeListener from './LocationChangeListener';
+
 
 export const RENDER_DEBUG = false;
 

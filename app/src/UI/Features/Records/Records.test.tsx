@@ -13,19 +13,19 @@
 import { render, screen, waitFor, within, act } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { Provider } from 'react-redux';
+import { beforeAll } from 'vitest';
 import { Records } from 'UI/Features/Records/Records';
 import setupStore from 'state/store';
 import UserInputModalController from 'UI/Reusable/UserInputModals/UserInputModalController';
 import NetworkActions from 'state/actions/network/NetworkActions';
 import { constructUnifiedConfig, UnifiedConfig } from 'state/configuration/unified-config';
-import { beforeAll } from 'vitest';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
-
-let store;
-let config: UnifiedConfig;
 
 import defaultRecordSets from 'constants/defaultRecordSets';
 import UserSettings from 'state/actions/userSettings/UserSettings';
+
+let store;
+let config: UnifiedConfig;
 
 // Setup default Redux store for tests
 beforeAll(async () => {

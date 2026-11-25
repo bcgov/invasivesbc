@@ -1,10 +1,10 @@
 import { TextField, Tooltip } from '@mui/material';
 import { ChangeEvent, FC, useContext, useEffect, useRef, useState } from 'react';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import isNumber from 'is-number';
 import CustomAutoComplete from 'UI/Features/Records/Activity/form/ChemicalTreatmentDetailsForm/CustomAutoComplete';
 import HerbicidesAccordion from 'UI/Features/Records/Activity/form/ChemicalTreatmentDetailsForm/Components/accordions/HerbicidesAccordion';
 import { ChemicalTreatmentDetailsContext } from 'UI/Features/Records/Activity/form/ChemicalTreatmentDetailsForm/ChemicalTreatmentDetailsContext';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import isNumber from 'is-number';
 import { RENDER_DEBUG } from 'UI/App';
 
 const TankMix: FC = () => {
@@ -112,7 +112,6 @@ const TankMix: FC = () => {
                   ...prevFields,
                   amount_of_mix: input
                 }));
-              } else {
               }
             }}
             defaultValue={undefined}

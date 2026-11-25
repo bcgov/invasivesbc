@@ -1,8 +1,8 @@
 import React from 'react';
-import NetworkActions from 'state/actions/network/NetworkActions';
-import { useDispatch, useSelector } from 'utils/use_selector';
 import { FormControl, FormControlLabel, Grow, Switch } from '@mui/material';
 import { SignalWifi4Bar, SignalWifiOff } from '@mui/icons-material';
+import NetworkActions from 'state/actions/network/NetworkActions';
+import { useDispatch, useSelector } from 'utils/use_selector';
 
 const NetworkStateControl: React.FC = () => {
   const handleNetworkStateChange = () => {

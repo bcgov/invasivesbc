@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { CopyToClipboardButton } from 'UI/Features/Batch/batch-upload/ClipboardHelper';
 import { Button } from '@mui/material';
 import { UnfoldLess, UnfoldMore } from '@mui/icons-material';
+import { useNavigate } from 'react-router';
+import { CopyToClipboardButton } from 'UI/Features/Batch/batch-upload/ClipboardHelper';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { useSelector } from 'utils/use_selector';
-import { useNavigate } from 'react-router';
 
 export const AbbreviatedDisplayWithCopy = (props: { displayVal: string; content?: string; length?: number }) => {
   const [truncate, setTruncate] = useState(true);

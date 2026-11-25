@@ -1,10 +1,10 @@
 import { IconButton } from '@mui/material';
+import { HourglassTop, TravelExplore } from '@mui/icons-material';
+import { useLocation, useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import Alerts from 'state/actions/alerts/Alerts';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
-import { HourglassTop, TravelExplore } from '@mui/icons-material';
-import { useLocation, useNavigate } from 'react-router';
 import HoverTooltip from 'UI/Reusable/HoverTooltip/HoverTooltip';
 
 export const WhatsHereButton = () => {

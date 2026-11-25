@@ -1,7 +1,7 @@
 import { Typography } from '@mui/material';
 import { useEffect } from 'react';
-import TemplatePreview from 'UI/Features/Batch/batch-upload/TemplatePreview';
 import { useDispatch } from 'react-redux';
+import TemplatePreview from 'UI/Features/Batch/batch-upload/TemplatePreview';
 import { useSelector } from 'utils/use_selector';
 import { selectBatch } from 'state/reducers/batch';
 import Spinner from 'UI/Reusable/Spinner/Spinner';

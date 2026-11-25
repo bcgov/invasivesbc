@@ -1,11 +1,11 @@
-import FormCode from 'interfaces/FormCode';
 import Select from 'react-select';
+import { Controller, FieldValues, RegisterOptions, useFormContext, Path } from 'react-hook-form';
+import { useEffect } from 'react';
+import FormCode from 'interfaces/FormCode';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
 import ErrorMessage from 'UI/Features/Records/Activity/forms/common/ErrorMessage/ErrorMessage';
-import { Controller, FieldValues, RegisterOptions, useFormContext, Path } from 'react-hook-form';
 import { getInputWidth, Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import OptionalField from 'UI/Features/Records/Activity/forms/common/OptionalField/OptionalField';
-import { useEffect, useMemo } from 'react';
 import './singleSelect.css';
 
 type Option = { label: string; value: string | boolean };
@@ -95,7 +95,7 @@ export function SingleSelect<T extends FieldValues>({
         }
       }}
       render={({ field: { onChange, ref, disabled, value }, fieldState: { error } }) => {
-        const mappedOptions = useMemo(() => {
+        const mappedOptions = (() => {
           if (!activityDate) {
             return options.map((o) => ({ label: o.full_name, value: o.code }));
           }
@@ -123,7 +123,7 @@ export function SingleSelect<T extends FieldValues>({
             label: o.full_name,
             value: o.code
           }));
-        }, [activityDate, options, value]);
+        })();
 
         return (
           <div className={`form-single-select-input ${getInputWidth(width)}`}>

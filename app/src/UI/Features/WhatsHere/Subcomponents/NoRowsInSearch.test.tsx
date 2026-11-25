@@ -1,8 +1,8 @@
-import { createMockStore, mockSliceReducer } from 'test/testUtils';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import NoRowsInSearch from './NoRowsInSearch';
 import { MemoryRouter } from 'react-router';
+import NoRowsInSearch from './NoRowsInSearch';
+import { createMockStore, mockSliceReducer } from 'test/testUtils';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 
