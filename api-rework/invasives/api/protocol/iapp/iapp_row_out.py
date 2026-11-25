@@ -1,5 +1,5 @@
-from datetime import date
 import json
+from datetime import date
 from geojson_pydantic import Point
 from ninja import Schema
 from typing import List, Optional
@@ -52,18 +52,18 @@ class IappRowOut(Schema):
     geometry: Optional[Point] = None
 
     @staticmethod
-    def resolve_min_survey(obj: IAPPSite, context):
+    def resolve_min_survey(obj: IAPPSite):
         dates = prefetch_distinct_list(
             obj, "site_selections", "site_created_date", join=False
         )
         return min(dates, default=None)
 
     @staticmethod
-    def resolve_site_paper_file_id(obj: IAPPSite, context):
+    def resolve_site_paper_file_id(obj: IAPPSite):
         return prefetch_distinct_list(obj, "site_selections", "site_paper_file_id")
 
     @staticmethod
-    def resolve_max_survey(obj: IAPPSite, context):
+    def resolve_max_survey(obj: IAPPSite):
         dates = prefetch_distinct_list(
             obj, "site_selections", "last_surveyed_date", join=False
         )
