@@ -113,7 +113,7 @@ export const refreshHighlightedRecord = (map, options: any) => {
     map
       .addSource(LAYER_ID, {
         type: 'geojson',
-        data: options.userRecordOnHoverRecordGeometry.geometry
+        data: options.userRecordOnHoverRecordGeometry
       })
       .addLayer(
         {

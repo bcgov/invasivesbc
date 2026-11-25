@@ -1,7 +1,6 @@
 import { put, select } from 'redux-saga/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { getIappRowsFromCache, getRowsFromCachedRecordset } from './dataAccess';
-import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import IappActions, { IappTableRowGetRequest } from 'state/actions/activity/Iapp';
 import Activity, { ActivityTableRowGetRequest } from 'state/actions/activity/Activity';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
@@ -9,7 +8,6 @@ import { selectConfiguration } from 'state/reducers/configuration';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import Alerts from 'state/actions/alerts/Alerts';
 import networkAlertMessages from 'constants/alerts/networkAlerts';
-import { getUnnestedFieldsForIAPP } from 'UI/Features/Records/RecordSet/RecordTableHelpers';
 
 export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action: PayloadAction<ActivityTableRowGetRequest>) {
   const mapState = yield select((state) => state.Map);
@@ -54,20 +52,24 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action: PayloadAction<A
 }
 
 export function* handle_IAPP_TABLE_ROWS_GET_ONLINE(action: PayloadAction<IappTableRowGetRequest>) {
-  const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/IAPP/`, { filterObjects: [action.payload.filterObj] });
   const mapState = yield select((state) => state.Map);
+  const API_V2_BASE = yield select((state) => state.Configuration.current.runtime.API_V2_BASE);
+  const networkReturn = yield fetch(`${API_V2_BASE}/ninja/iapp/rows`, {
+    method: 'POST',
+    headers: { Authorization: yield getCurrentJWT() },
+    body: JSON.stringify({})
+  });
 
   const tableFiltersHash = mapState?.recordTables[action.payload.recordSetID]?.tableFiltersHash;
 
   if (tableFiltersHash !== action.payload.tableFiltersHash) return;
-
-  if (networkReturn?.ok && networkReturn?.data?.result) {
-    const formattedRows = networkReturn.data.result.map(getUnnestedFieldsForIAPP);
+  if (networkReturn?.ok) {
+    const data = yield networkReturn.json();
     yield put(
       IappActions.getRowsSuccess({
         recordSetID: action.payload.recordSetID,
-        rows: formattedRows,
-        totalCount: networkReturn.data.count,
+        rows: data.entries,
+        totalCount: data.count,
         tableFiltersHash: action.payload.tableFiltersHash,
         page: action.payload.page,
         limit: action.payload.limit
