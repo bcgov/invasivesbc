@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
+import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { DoNothing } from 'UI/Features/LegacyMap/helpers/functional/do-nothing-mode';

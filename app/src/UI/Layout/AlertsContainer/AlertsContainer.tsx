@@ -16,9 +16,9 @@ import {
 } from '@mui/icons-material';
 import { useDispatch } from 'react-redux';
 import 'UI/Layout/AlertsContainer/AlertsContainer.css';
+import { useEffect, useRef } from 'react';
 import AlertMessage from 'interfaces/AlertMessage';
 import { AlertSubjects } from 'constants/alertEnums';
-import { useEffect, useRef } from 'react';
 import { useSelector } from 'utils/use_selector';
 import Alerts from 'state/actions/alerts/Alerts';
 

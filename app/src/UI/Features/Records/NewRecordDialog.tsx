@@ -1,13 +1,13 @@
 import { useEffect, useMemo } from 'react';
 import { ActivitySubtypesRelations, ActivitySubtypes, ActivitySubtypesShortLabels } from 'sharedAPI';
 import 'UI/Features/Records/NewRecordDialog.css';
-import { useDispatch, useSelector } from 'utils/use_selector';
-import UserSettings from 'state/actions/userSettings/UserSettings';
 import { useNavigate } from 'react-router';
-import FormActions from 'state/actions/activity/FormActions';
-import StyledModal from 'UI/Reusable/StyledModal/StyledModal';
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 import SingleSelect from './Activity/forms/common/SingleSelect/SingleSelect';
+import { useDispatch, useSelector } from 'utils/use_selector';
+import UserSettings from 'state/actions/userSettings/UserSettings';
+import FormActions from 'state/actions/activity/FormActions';
+import StyledModal from 'UI/Reusable/StyledModal/StyledModal';
 import FormCode from 'interfaces/FormCode';
 
 interface NewRecordForm {

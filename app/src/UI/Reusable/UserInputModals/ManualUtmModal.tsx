@@ -12,9 +12,9 @@ import {
 } from '@mui/material';
 import './UserInputModals.css';
 import { useEffect, useState } from 'react';
-import { ManualUtmModalInterface, ReduxPayload, UtmInputObj } from 'interfaces/prompt-interfaces';
 import { useDispatch } from 'react-redux';
 import { UnknownAction } from 'redux';
+import { ManualUtmModalInterface, ReduxPayload, UtmInputObj } from 'interfaces/prompt-interfaces';
 import { calc_lat_long_from_utm } from 'utils/utm';
 import Prompt from 'state/actions/prompts/Prompt';
 

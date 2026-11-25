@@ -1,16 +1,16 @@
 import { IconButton } from '@mui/material';
 import React, { ChangeEvent, KeyboardEvent, useState } from 'react';
+import { BugReport } from '@mui/icons-material';
+import { useNavigate } from 'react-router';
+import ClearAppCache from './ClearAppCache';
+import PlotClientBoundary from './PlotClientBoundary';
 import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
 import LayoutSwitch from 'UI/Layout/DebugMenu/LayoutSwitch';
 import { Debug } from 'UI/Reusable/Predicates/Debug';
-import { BugReport } from '@mui/icons-material';
 import { bcYellow } from 'constants/colors';
 import { Platform } from 'state/configuration/build-time-config';
 import { AndroidMemoryReport } from 'UI/Layout/DebugMenu/AndroidMemoryReport';
 import { PlatformGated } from 'UI/Reusable/Predicates/PlatformGated';
-import ClearAppCache from './ClearAppCache';
-import PlotClientBoundary from './PlotClientBoundary';
-import { useNavigate } from 'react-router';
 import { NetworkStateControl } from 'UI/Reusable/NetworkStateControl';
 import './DebugMenu.css';
 

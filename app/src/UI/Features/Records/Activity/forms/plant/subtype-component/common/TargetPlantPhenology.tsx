@@ -1,4 +1,5 @@
 import { get, useFormContext, useWatch } from 'react-hook-form';
+import { ActivitySubtypes } from 'sharedAPI';
 import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
 import { BiocontrolReleaseSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import CheckboxUI from 'UI/Features/Records/Activity/forms/common/CheckboxUI/CheckboxUI';
@@ -6,7 +7,6 @@ import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
 import ArrayField from 'UI/Features/Records/Activity/forms/common/ArrayField/ArrayField';
 import { minArrayLength, greaterThan } from 'UI/Features/Records/Activity/forms/common/validators';
-import { ActivitySubtypes } from 'sharedAPI';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
 import ErrorMessage from 'UI/Features/Records/Activity/forms/common/ErrorMessage/ErrorMessage';
 import useFieldPath from 'UI/Features/Records/Activity/forms/plant/hooks/useFieldPath';

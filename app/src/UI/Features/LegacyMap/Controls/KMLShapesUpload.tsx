@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Box, Button } from '@mui/material';
-import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { useDispatch } from 'react-redux';
-import MapActions from 'state/actions/map';
 import { styled } from '@mui/material/styles';
 import { FileUpload } from '@mui/icons-material';
+import MapActions from 'state/actions/map';
+import { useInvasivesApi } from 'hooks/useInvasivesApi';
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',

@@ -1,4 +1,6 @@
 import { get, useFormContext } from 'react-hook-form';
+import { Fragment, useEffect, useState } from 'react';
+import TreatmentChemicalPlantDetails from './TreatmentChemicalPlantDetails';
 import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
 import { ChemTreatment } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
@@ -21,8 +23,6 @@ import {
   noFutureDate
 } from 'UI/Features/Records/Activity/forms/common/validators';
 import CheckboxUI from 'UI/Features/Records/Activity/forms/common/CheckboxUI/CheckboxUI';
-import { Fragment, useEffect, useState } from 'react';
-import TreatmentChemicalPlantDetails from './TreatmentChemicalPlantDetails';
 import useFilteredServiceLicenseCodes from 'UI/Features/Records/Activity/forms/plant/hooks/useFilteredServiceLicenseCodes';
 import useLocalStorage from 'UI/Features/Records/Activity/forms/plant/hooks/useLocalStorage';
 import useFieldPath from 'UI/Features/Records/Activity/forms/plant/hooks/useFieldPath';

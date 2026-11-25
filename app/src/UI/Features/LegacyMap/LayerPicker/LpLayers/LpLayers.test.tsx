@@ -1,11 +1,11 @@
 import { render, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
+import userEvent from '@testing-library/user-event';
+import { useInvasivesMapLayers } from '../../helpers/functional/layers-hook';
 import LpLayers from './LpLayers';
 import { createMockStore, DEFAULT_TEST_CONFIGURATION, mockSliceReducer } from 'test/testUtils';
 import { createMapReducer } from 'state/reducers/map';
-import userEvent from '@testing-library/user-event';
 import UserSettings from 'state/actions/userSettings/UserSettings';
-import { useInvasivesMapLayers } from '../../helpers/functional/layers-hook';
 import { createUserSettingsReducer } from 'state/reducers/userSettings';
 import { createConfigurationReducerWithDefaultState } from 'state/reducers/configuration';
 

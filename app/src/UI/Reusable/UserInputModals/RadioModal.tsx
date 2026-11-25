@@ -14,10 +14,10 @@ import {
   Typography
 } from '@mui/material';
 import './UserInputModals.css';
-import { RadioModalInterface, ReduxPayload } from 'interfaces/prompt-interfaces';
 import { useDispatch } from 'react-redux';
 import { UnknownAction } from 'redux';
 import { ChangeEvent, useState } from 'react';
+import { RadioModalInterface, ReduxPayload } from 'interfaces/prompt-interfaces';
 import Prompt from 'state/actions/prompts/Prompt';
 
 /**

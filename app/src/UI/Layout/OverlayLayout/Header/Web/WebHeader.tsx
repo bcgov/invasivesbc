@@ -7,6 +7,8 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import invbclogo from '/assets/InvasivesBC_Icon.svg';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
+import { useNavigate } from 'react-router';
+import { Group } from '@mui/icons-material';
 import { AppDispatch, useDispatch, useSelector } from 'utils/use_selector';
 import { selectAuth } from 'state/reducers/auth';
 import MapActions from 'state/actions/map';
@@ -15,8 +17,6 @@ import Alerts from 'state/actions/alerts/Alerts';
 import NavTab from 'UI/Layout/OverlayLayout/Header/NavTab';
 import { usePrimaryNavigationLinks } from 'UI/Layout/Routes/PrimaryNavigation';
 import DebugMenu from 'UI/Layout/DebugMenu/DebugMenu';
-import { useNavigate } from 'react-router';
-import { Group } from '@mui/icons-material';
 import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
 
 const ButtonWrapper = ({ children }) => {

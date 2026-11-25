@@ -1,6 +1,6 @@
+import { useDispatch } from 'react-redux';
 import { selectOfflineActivity } from 'state/reducers/offlineActivity';
 import { useSelector } from 'utils/use_selector';
-import { useDispatch } from 'react-redux';
 import { OfflineDataSyncTable } from 'UI/Features/OfflineDataSync/OfflineDataSyncTable';
 import 'UI/Features/OfflineDataSync/OfflineDataSync.css';
 import { useEffect } from 'react';

@@ -1,4 +1,5 @@
 import { ActivitySubtypes } from 'sharedAPI';
+import { get, useFormContext } from 'react-hook-form';
 import ArrayField from 'UI/Features/Records/Activity/forms/common/ArrayField/ArrayField';
 import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
@@ -9,7 +10,6 @@ import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips'
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
 import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
-import { get, useFormContext } from 'react-hook-form';
 import { DisposedMaterialFormat } from 'UI/Features/Records/Activity/forms/enums';
 
 const TreatmentMechPlantTerrestrial = () => {

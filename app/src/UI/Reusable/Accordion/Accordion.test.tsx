@@ -1,6 +1,6 @@
 import { render, waitFor } from '@testing-library/react';
-import Accordion from 'UI/Reusable/Accordion/Accordion';
 import userEvent from '@testing-library/user-event';
+import Accordion from 'UI/Reusable/Accordion/Accordion';
 
 describe('Accordion.tsx', () => {
   it('Should render without icon', () => {

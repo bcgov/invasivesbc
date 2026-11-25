@@ -1,4 +1,5 @@
 import { useFormContext } from 'react-hook-form';
+import { ActivitySubtypes } from 'sharedAPI';
 import ArrayField from 'UI/Features/Records/Activity/forms/common/ArrayField/ArrayField';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
@@ -8,7 +9,6 @@ import {
 } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import { distinctEntries, greaterThan } from 'UI/Features/Records/Activity/forms/common/validators';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
-import { ActivitySubtypes } from 'sharedAPI';
 import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
 import NumberInput from 'UI/Features/Records/Activity/forms/common/NumberInput/NumberInput';
 import { useSelector } from 'utils/use_selector';

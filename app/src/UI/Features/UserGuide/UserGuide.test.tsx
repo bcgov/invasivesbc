@@ -1,8 +1,8 @@
 import { Map } from '@mui/icons-material';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import UserGuideEntry from 'interfaces/UserGuideEntry';
 import androidIcon from './images/androidDownload.png';
+import UserGuideEntry from 'interfaces/UserGuideEntry';
 
 describe('UserGuide.tsx', () => {
   afterEach(() => {

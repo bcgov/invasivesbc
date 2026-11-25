@@ -1,10 +1,10 @@
+import { useMemo, useState } from 'react';
+import { FormProvider, get, SubmitHandler, useForm } from 'react-hook-form';
 import MultiSelect from 'UI/Features/Records/Activity/forms/common/MultiSelect/MultiSelect';
 import TextInput from 'UI/Features/Records/Activity/forms/common/TextInput/TextInput';
 import { greaterThanEqual, lessThanEqual, minArrayLength } from 'UI/Features/Records/Activity/forms/common/validators';
 import { CreateTeamSchema } from 'api/api-schema';
 import { Role } from 'constants/roles';
-import { useMemo, useState } from 'react';
-import { FormProvider, get, SubmitHandler, useForm } from 'react-hook-form';
 import { useSelector } from 'utils/use_selector';
 import './createNewTeam.css';
 import Button from 'UI/Reusable/Button/Button';

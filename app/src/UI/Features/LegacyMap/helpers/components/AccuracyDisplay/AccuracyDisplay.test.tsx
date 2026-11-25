@@ -1,6 +1,6 @@
 import { render, waitFor } from '@testing-library/react';
-import AccuracyDisplay from 'UI/Features/LegacyMap/helpers/components/AccuracyDisplay/AccuracyDisplay';
 import { Provider } from 'react-redux';
+import AccuracyDisplay from 'UI/Features/LegacyMap/helpers/components/AccuracyDisplay/AccuracyDisplay';
 import { createMockStore, mockSliceReducer } from 'test/testUtils';
 
 describe('AccuracyDisplay.tsx', () => {

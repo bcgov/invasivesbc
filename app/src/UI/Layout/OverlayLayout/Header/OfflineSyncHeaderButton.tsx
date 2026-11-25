@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
 import { useDispatch } from 'react-redux';
-import { useSelector } from 'utils/use_selector';
-import { OfflineActivityRecord, OfflineActivitySyncState, selectOfflineActivity } from 'state/reducers/offlineActivity';
 import { Badge, CircularProgress, IconButton } from '@mui/material';
 import Sync from '@mui/icons-material/Sync';
 import SyncProblem from '@mui/icons-material/SyncProblem';
+import { OfflineActivityRecord, OfflineActivitySyncState, selectOfflineActivity } from 'state/reducers/offlineActivity';
+import { useSelector } from 'utils/use_selector';
 import Activity from 'state/actions/activity/Activity';
 
 export const OfflineSyncHeaderButton = () => {

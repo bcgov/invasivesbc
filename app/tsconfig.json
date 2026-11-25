@@ -23,6 +23,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "skipLibCheck": true,
+    "ignoreDeprecations": "6.0",
     "resolveJsonModule": true,
     "strict": true,
     "strictNullChecks": true,

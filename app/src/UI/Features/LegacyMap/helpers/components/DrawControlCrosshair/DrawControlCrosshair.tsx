@@ -1,10 +1,10 @@
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import './drawControlCrosshair.css';
 import { useContext, useEffect, useRef, useState } from 'react';
-import { MapContext } from '../MapContext';
 import AddIcon from '@mui/icons-material/Add';
 import { IconButton } from '@mui/material';
 import { AddCircle, CheckCircle } from '@mui/icons-material';
+import { MapContext } from '../MapContext';
 import { useSelector } from 'utils/use_selector';
 
 interface PropTypes {

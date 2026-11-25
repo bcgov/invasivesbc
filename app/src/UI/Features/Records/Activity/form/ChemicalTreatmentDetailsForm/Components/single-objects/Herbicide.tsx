@@ -1,13 +1,13 @@
 import { Typography, Button, TextField, Tooltip, InputLabel } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { ChangeEvent, useContext, useEffect, useState } from 'react';
-import CustomAutoComplete from 'UI/Features/Records/Activity/form/ChemicalTreatmentDetailsForm/CustomAutoComplete';
-import { ChemicalTreatmentDetailsContext } from 'UI/Features/Records/Activity/form/ChemicalTreatmentDetailsForm/ChemicalTreatmentDetailsContext';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import isNumber from 'is-number';
 import { IHerbicide } from 'sharedAPI';
 import { shallowEqual } from 'react-redux';
 import { nanoid } from '@reduxjs/toolkit';
+import { ChemicalTreatmentDetailsContext } from 'UI/Features/Records/Activity/form/ChemicalTreatmentDetailsForm/ChemicalTreatmentDetailsContext';
+import CustomAutoComplete from 'UI/Features/Records/Activity/form/ChemicalTreatmentDetailsForm/CustomAutoComplete';
 
 enum ApplicationMethod {
   Spray,

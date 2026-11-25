@@ -1,10 +1,10 @@
 import './RecordTablePopoverContent.css';
+import { GeoJSON } from 'geojson';
+import { useNavigate } from 'react-router';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import { useDispatch } from 'utils/use_selector';
 import UserSettings from 'state/actions/userSettings/UserSettings';
-import { GeoJSON } from 'geojson';
 import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
-import { useNavigate } from 'react-router';
 import Button from 'UI/Reusable/Button/Button';
 
 /**

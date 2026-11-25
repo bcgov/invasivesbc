@@ -1,8 +1,8 @@
 import { WidgetProps } from '@rjsf/utils';
 import { Autocomplete, TextField } from '@mui/material';
+import { useMemo } from 'react';
 import { useSelector } from 'utils/use_selector';
 import { Role } from 'constants/roles';
-import { useMemo } from 'react';
 
 interface SelectOption {
   label: string;

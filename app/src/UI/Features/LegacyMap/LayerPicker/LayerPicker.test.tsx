@@ -1,8 +1,8 @@
 import { render, waitFor, within } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { LayerPicker } from 'UI/Features/LegacyMap/LayerPicker/LayerPicker';
 import userEvent from '@testing-library/user-event';
 import { act } from 'react';
+import { LayerPicker } from 'UI/Features/LegacyMap/LayerPicker/LayerPicker';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { createMockConfigurationReducer, createMockStore, mockSliceReducer } from 'test/testUtils';
 

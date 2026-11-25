@@ -1,14 +1,14 @@
 import { CSSProperties, StrictMode, useEffect, useState } from 'react';
 import { Button } from '@mui/material';
 import './Records.css';
+import { useNavigate } from 'react-router';
+import UploadSiteList from '../SiteLists/UploadSiteList/UploadSiteList';
+import RecordSetDetails from './RecordSetDetails';
+import RecordSetControl from './RecordSetControl';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { RecordSetId, RecordSetType } from 'interfaces/UserRecordSet';
-import RecordSetDetails from './RecordSetDetails';
-import RecordSetControl from './RecordSetControl';
 import filterRecordsetsByNetworkState from 'utils/filterRecordsetsByNetworkState';
-import UploadSiteList from '../SiteLists/UploadSiteList/UploadSiteList';
-import { useNavigate } from 'react-router';
 
 export const Records = () => {
   const { MOBILE } = useSelector((state) => state.Configuration.current.build);

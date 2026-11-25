@@ -1,5 +1,5 @@
-import { useDispatch, useSelector } from 'utils/use_selector';
 import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'utils/use_selector';
 import EventActions from 'state/actions/events/EventActions';
 import { LayoutComponent } from 'UI/App';
 

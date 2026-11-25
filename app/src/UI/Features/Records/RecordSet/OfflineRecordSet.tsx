@@ -1,19 +1,19 @@
 import 'UI/Features/Records/RecordSet/RecordSet.css';
+import { MouseEvent, TouchEvent, useEffect, useState } from 'react';
+import { GeoJSON } from 'geojson';
+import useOfflineRecordsetEntries from '../Activity/forms/plant/hooks/useOfflineRecordsetEntries';
+import CheckboxUI from '../Activity/forms/common/CheckboxUI/CheckboxUI';
+import RecordSetControl from '../RecordSetControl';
 import RecordSetFooter from 'UI/Features/Records/RecordSet/RecordSetFooter';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import { offlineActivityColumnsToDisplay } from 'UI/Features/Records/RecordSet/RecordTableHelpers';
 import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
 import RecordTablePopoverContent from 'UI/Features/Records/RecordSet/RecordTablePopoverContent/RecordTablePopoverContent';
-import { MouseEvent, TouchEvent, useEffect, useState } from 'react';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import IOfflineActivityRow from 'interfaces/TableRows/IOfflineActivityRow';
-import { GeoJSON } from 'geojson';
 import Activity from 'state/actions/activity/Activity';
-import useOfflineRecordsetEntries from '../Activity/forms/plant/hooks/useOfflineRecordsetEntries';
-import CheckboxUI from '../Activity/forms/common/CheckboxUI/CheckboxUI';
 import StyledTable from 'UI/Reusable/StyledTable/StyledTable';
-import RecordSetControl from '../RecordSetControl';
 import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
 import BackButton from 'UI/Reusable/BackButton/BackButton';
 

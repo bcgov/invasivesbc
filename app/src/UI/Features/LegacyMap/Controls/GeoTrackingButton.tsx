@@ -1,9 +1,9 @@
 import { IconButton } from '@mui/material';
 import PolylineIcon from '@mui/icons-material/Polyline';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
-import GeoShapes from 'constants/geoShapes';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+import GeoShapes from 'constants/geoShapes';
 import { useSelector } from 'utils/use_selector';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import Prompt from 'state/actions/prompts/Prompt';

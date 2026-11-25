@@ -5,8 +5,8 @@
  *  - Click Displays Tip (Important for mobile)
  */
 import { render, waitFor } from '@testing-library/react';
-import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
 import userEvent from '@testing-library/user-event';
+import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
 
 const toolTipText = 'Test Render';
 

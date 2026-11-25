@@ -1,7 +1,7 @@
 import { Check, Edit } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
-import { RecordSetType } from 'interfaces/UserRecordSet';
 import { MouseEvent, ReactNode, useState } from 'react';
+import { RecordSetType } from 'interfaces/UserRecordSet';
 
 type PropTypes = {
   name: string;

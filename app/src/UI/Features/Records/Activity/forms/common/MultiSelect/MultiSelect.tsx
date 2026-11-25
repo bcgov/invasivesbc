@@ -1,9 +1,9 @@
 import { Controller, FieldValues, RegisterOptions, useFormContext, Path } from 'react-hook-form';
 import Select from 'react-select';
+import { getInputWidth, Width } from '../utils';
 import FormCode from 'interfaces/FormCode';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
 import ErrorMessage from 'UI/Features/Records/Activity/forms/common/ErrorMessage/ErrorMessage';
-import { getInputWidth, Width } from '../utils';
 import OptionalField from 'UI/Features/Records/Activity/forms/common/OptionalField/OptionalField';
 import './multiSelect.css';
 import { useEffect, useMemo } from 'react';
@@ -92,7 +92,7 @@ export function MultiSelect<T extends FieldValues>({
         }
       }}
       render={({ field: { onChange, ref, disabled, value }, fieldState: { error } }) => {
-        const mappedOptions = useMemo(() => {
+        const mappedOptions = (() => {
           if (!activityDate) {
             return options.map((o) => ({ label: o.full_name, value: o.code }));
           }
@@ -124,7 +124,7 @@ export function MultiSelect<T extends FieldValues>({
             label: o.full_name,
             value: o.code
           }));
-        }, [activityDate, options, value]);
+        })();
 
         return (
           <div className={`form-multi-select-input ${getInputWidth(width)}`}>

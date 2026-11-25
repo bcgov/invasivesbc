@@ -1,8 +1,8 @@
-import FormCode from 'interfaces/FormCode';
-import IOfflineActivityRow from 'interfaces/TableRows/IOfflineActivityRow';
 import moment from 'moment';
 import { useMemo } from 'react';
 import { ActivitySubtypesShortLabels, ActivitySubtypesToType } from 'sharedAPI';
+import IOfflineActivityRow from 'interfaces/TableRows/IOfflineActivityRow';
+import FormCode from 'interfaces/FormCode';
 import { OfflineActivityRecord, OfflineActivitySyncState } from 'state/reducers/offlineActivity';
 import { useSelector } from 'utils/use_selector';
 

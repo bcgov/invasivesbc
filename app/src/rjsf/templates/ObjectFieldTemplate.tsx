@@ -1,8 +1,8 @@
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import React from 'react';
-import AddButton from 'rjsf/components/AddButton';
 import { Grid, Tooltip } from '@mui/material';
 import { canExpand, getTemplate, ObjectFieldTemplateProps } from '@rjsf/utils';
+import AddButton from 'rjsf/components/AddButton';
 
 const ObjectFieldTemplate = (props: ObjectFieldTemplateProps) => {
   const DescriptionField = getTemplate('DescriptionFieldTemplate', props.registry, props.uiSchema);

@@ -1,8 +1,8 @@
 // Used in the two templates
 import { Grid } from '@mui/material';
-import IconButton from '../components/IconButton';
 import React from 'react';
 import { ArrayFieldItemButtonsTemplateProps, buttonId } from '@rjsf/utils';
+import IconButton from '../components/IconButton';
 
 const ArrayItemButtonTemplate = (props: ArrayFieldItemButtonsTemplateProps) => {
   const {

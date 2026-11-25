@@ -13,9 +13,9 @@ import {
 } from '@mui/material';
 import 'UI/Reusable/UserInputModals/UserInputModals.css';
 import { useState } from 'react';
-import { ReduxPayload, TextModalInterface } from 'interfaces/prompt-interfaces';
 import { useDispatch } from 'react-redux';
 import { UnknownAction } from 'redux';
+import { ReduxPayload, TextModalInterface } from 'interfaces/prompt-interfaces';
 import Prompt from 'state/actions/prompts/Prompt';
 
 const TextModal = ({

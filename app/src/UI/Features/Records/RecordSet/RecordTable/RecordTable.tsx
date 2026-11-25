@@ -1,15 +1,15 @@
 import { Fragment } from 'react/jsx-runtime';
-import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
-import StyledTable from 'UI/Reusable/StyledTable/StyledTable';
-import RecordTablePopoverContent from '../RecordTablePopoverContent/RecordTablePopoverContent';
 import { MouseEvent, TouchEvent, useState } from 'react';
 import { GeoJSON } from 'geojson';
+import RecordTablePopoverContent from '../RecordTablePopoverContent/RecordTablePopoverContent';
+import RecordTableColumnSelect from '../RecordTableColumnSelect/RecordTableColumnSelect';
+import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
+import StyledTable from 'UI/Reusable/StyledTable/StyledTable';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import IIappTableRow from 'interfaces/TableRows/IIappTableRow';
 import { ActivityPlantRowOut } from 'api/api-schema';
-import RecordTableColumnSelect from '../RecordTableColumnSelect/RecordTableColumnSelect';
 
 interface BaseProps {
   setId?: string;

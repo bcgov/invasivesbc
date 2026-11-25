@@ -1,13 +1,13 @@
 import { createRoot } from 'react-dom/client';
 import { PersistGate } from 'redux-persist/integration/react';
 import { BrowserRouter } from 'react-router';
-import setupStore from 'state/store';
 import { Provider } from 'react-redux';
+import { createContext } from 'react';
+import { Store } from 'redux';
+import setupStore from 'state/store';
 import App from 'UI/App';
 import { PersistorContext } from 'utils/PersistorContext';
-import { createContext } from 'react';
 import { RecordCacheService } from 'utils/record-cache';
-import { Store } from 'redux';
 import { UnifiedConfig } from 'state/configuration/unified-config';
 import { LOAD_RECORDSET_CACHES } from 'UI/StartupCoordinator/Tasks/RecordsetCache';
 import { OfflineProtomapsService } from 'utils/offline-protomaps';

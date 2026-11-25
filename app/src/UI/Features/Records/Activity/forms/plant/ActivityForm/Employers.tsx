@@ -1,10 +1,10 @@
 import { useFormContext } from 'react-hook-form';
+import { useMemo } from 'react';
 import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import { useSelector } from 'utils/use_selector';
 import MultiSelect from 'UI/Features/Records/Activity/forms/common/MultiSelect/MultiSelect';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
 import { Width } from 'UI/Features/Records/Activity/forms/common/utils';
-import { useMemo } from 'react';
 import { Role } from 'constants/roles';
 import { minArrayLength } from 'UI/Features/Records/Activity/forms/common/validators';
 

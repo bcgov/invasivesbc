@@ -1,10 +1,10 @@
 import { TextField, Button, Tooltip } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { ChangeEvent, FC, useContext, useEffect, useState } from 'react';
-import CustomAutoComplete from 'UI/Features/Records/Activity/form/ChemicalTreatmentDetailsForm/CustomAutoComplete';
-import { ChemicalTreatmentDetailsContext } from 'UI/Features/Records/Activity/form/ChemicalTreatmentDetailsForm/ChemicalTreatmentDetailsContext';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import { IInvasivePlant } from 'sharedAPI';
+import CustomAutoComplete from 'UI/Features/Records/Activity/form/ChemicalTreatmentDetailsForm/CustomAutoComplete';
+import { ChemicalTreatmentDetailsContext } from 'UI/Features/Records/Activity/form/ChemicalTreatmentDetailsForm/ChemicalTreatmentDetailsContext';
 
 export interface IInvasivePlantComponent {
   index: number;

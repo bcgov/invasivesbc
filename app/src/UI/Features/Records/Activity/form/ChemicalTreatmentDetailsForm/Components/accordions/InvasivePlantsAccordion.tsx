@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { Typography, Button } from '@mui/material';
-import { ChemicalTreatmentDetailsContext } from 'UI/Features/Records/Activity/form/ChemicalTreatmentDetailsForm/ChemicalTreatmentDetailsContext';
 import AddIcon from '@mui/icons-material/Add';
+import { ChemicalTreatmentDetailsContext } from 'UI/Features/Records/Activity/form/ChemicalTreatmentDetailsForm/ChemicalTreatmentDetailsContext';
 import InvasivePlant from 'UI/Features/Records/Activity/form/ChemicalTreatmentDetailsForm/Components/single-objects/InvasivePlant';
 import 'UI/Features/Records/Activity/Form.css';
 

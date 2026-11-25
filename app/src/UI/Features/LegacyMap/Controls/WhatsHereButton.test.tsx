@@ -1,9 +1,9 @@
 import { render, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { WhatsHereButton } from 'UI/Features/LegacyMap/Controls/WhatsHereButton';
 import { Router } from 'react-router';
-import { historySingleton } from 'state/store';
 import userEvent from '@testing-library/user-event';
+import { WhatsHereButton } from 'UI/Features/LegacyMap/Controls/WhatsHereButton';
+import { historySingleton } from 'state/store';
 import { createMapReducer } from 'state/reducers/map';
 import Alerts from 'state/actions/alerts/Alerts';
 import AlertMessage from 'interfaces/AlertMessage';

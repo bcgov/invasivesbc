@@ -1,7 +1,7 @@
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { IconButton } from '@mui/material';
-import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import { useDispatch } from 'react-redux';
+import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import Alerts from 'state/actions/alerts/Alerts';
 
 type PropTypes = {

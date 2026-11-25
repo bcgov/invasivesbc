@@ -1,3 +1,6 @@
+import { ActivitySubtypes } from 'sharedAPI';
+import { useEffect } from 'react';
+import { useFormContext } from 'react-hook-form';
 import { useSelector } from 'utils/use_selector';
 import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
 import SingleSelect from 'UI/Features/Records/Activity/forms/common/SingleSelect/SingleSelect';
@@ -9,11 +12,8 @@ import TerrestrialPlantEntry from 'UI/Features/Records/Activity/forms/plant/subt
 import { TerrestrialPlantObservationSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import tooltips from 'UI/Features/Records/Activity/forms/plant/content/tooltips';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
-import { ActivitySubtypes } from 'sharedAPI';
 import MultiSelect from 'UI/Features/Records/Activity/forms/common/MultiSelect/MultiSelect';
 import useFieldPath from 'UI/Features/Records/Activity/forms/plant/hooks/useFieldPath';
-import { useEffect } from 'react';
-import { useFormContext } from 'react-hook-form';
 
 const ObservationPlantTerrestrial = () => {
   const FLAT_CODE = 'FL';

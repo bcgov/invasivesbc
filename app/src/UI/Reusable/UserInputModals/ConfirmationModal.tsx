@@ -1,8 +1,8 @@
 import { Box, Button, DialogActions, DialogContent, DialogTitle, Divider, Modal, Typography } from '@mui/material';
 import 'UI/Reusable/UserInputModals/UserInputModals.css';
-import { ConfirmationModalInterface, ReduxPayload } from 'interfaces/prompt-interfaces';
 import { useDispatch } from 'react-redux';
 import { UnknownAction } from 'redux';
+import { ConfirmationModalInterface, ReduxPayload } from 'interfaces/prompt-interfaces';
 import Prompt from 'state/actions/prompts/Prompt';
 
 /**

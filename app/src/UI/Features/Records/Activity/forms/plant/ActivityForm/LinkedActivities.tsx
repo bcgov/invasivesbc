@@ -1,4 +1,6 @@
 import { useFormContext } from 'react-hook-form';
+import { useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router';
 import CreatableSelect from 'UI/Features/Records/Activity/forms/common/CreatableSelect.tsx/CreatableSelect';
 import Fieldset from 'UI/Features/Records/Activity/forms/common/Fieldset/Fieldset';
 import { FormSchema } from 'UI/Features/Records/Activity/forms/plant/interfaces';
@@ -6,10 +8,8 @@ import { useDispatch, useSelector } from 'utils/use_selector';
 import Prompt from 'state/actions/prompts/Prompt';
 import Activity from 'state/actions/activity/Activity';
 import { isActivityObservation } from 'state/reducers/activity';
-import { useEffect, useMemo } from 'react';
 import FormActions from 'state/actions/activity/FormActions';
 import StyledTable from 'UI/Reusable/StyledTable/StyledTable';
-import { useNavigate } from 'react-router';
 
 type LinkedOption = {
   full: string;

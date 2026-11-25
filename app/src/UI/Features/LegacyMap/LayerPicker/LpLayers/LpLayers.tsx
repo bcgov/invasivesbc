@@ -1,8 +1,8 @@
-import { useDispatch, useSelector } from 'utils/use_selector';
 import { Layers, Settings } from '@mui/icons-material';
-import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
-import LpLayersOption from './LpLayersOption';
 import { nanoid } from '@reduxjs/toolkit';
+import LpLayersOption from './LpLayersOption';
+import { useDispatch, useSelector } from 'utils/use_selector';
+import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
 import { InvasivesMapLayerDefinitionWithState } from 'UI/Features/LegacyMap/helpers/functional/layers-hook';
 import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
 import './LpLayers.css';

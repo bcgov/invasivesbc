@@ -1,10 +1,10 @@
 import { act, render, RenderResult, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
+import userEvent from '@testing-library/user-event';
 import UserInputModalController from './UserInputModalController';
 import { createAlertsAndPromptsReducer } from 'state/reducers/alertsAndPrompts';
 import Prompt from 'state/actions/prompts/Prompt';
 import { RadioModalInterface } from 'interfaces/prompt-interfaces';
-import userEvent from '@testing-library/user-event';
 import { createMockStore } from 'test/testUtils';
 
 const textCallBack = (str: string | number) => {

@@ -1,11 +1,11 @@
 import { AdminPanelSettings, Assessment, FileUpload, Home, Map, Newspaper, School } from '@mui/icons-material';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import React, { ReactNode, useEffect } from 'react';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import { matchPath, PathPattern, useLocation } from 'react-router';
 import { FeatureFlags } from 'state/configuration/feature-flags';
 import { useSelector } from 'utils/use_selector';
-import AssignmentIcon from '@mui/icons-material/Assignment';
 import { selectAuth } from 'state/reducers/auth';
-import { matchPath, PathPattern, useLocation } from 'react-router';
 import IappLogo from 'UI/Reusable/IappLogo';
 
 enum LayoutMode {

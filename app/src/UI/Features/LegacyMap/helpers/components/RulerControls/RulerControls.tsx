@@ -1,9 +1,9 @@
 import RulerControl from '@mapbox-controls/ruler';
 import * as maplibregl from 'maplibre-gl/dist/maplibre-gl-dev';
 import './rulerControls.css';
-import { MapContext } from '../MapContext';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Straighten } from '@mui/icons-material';
+import { MapContext } from '../MapContext';
 import rulerConfig from './rulerControls.config';
 
 const RulerControls = () => {

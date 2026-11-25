@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import moment from 'moment';
 import { thresholds, useTileSizeThresholds } from 'UI/Features/TileCache/tileSizeHook';
 import { MapGenerationEstimateResponse } from 'UI/Features/TileCache/ProtomapsImplementation/definitions';
-import moment from 'moment';
 import { convertBytesToReadableString } from 'utils/humanize_units';
 import './ProtomapsImplementation.css';
 

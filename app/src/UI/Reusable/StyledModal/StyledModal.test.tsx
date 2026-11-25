@@ -1,7 +1,7 @@
 import { render, waitFor } from '@testing-library/react';
-import StyledModal from './StyledModal';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
+import StyledModal from './StyledModal';
 
 const renderText = 'Hello World!';
 

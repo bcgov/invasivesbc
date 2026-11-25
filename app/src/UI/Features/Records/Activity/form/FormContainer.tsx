@@ -2,6 +2,8 @@ import { Box, Button, CircularProgress, createTheme, Theme, ThemeOptions, ThemeP
 import { Form } from '@rjsf/mui';
 import CoreForm from '@rjsf/core';
 import { createRef, RefObject, useCallback, useEffect, useRef, useState } from 'react';
+import { shallowEqual, useDispatch } from 'react-redux';
+import validator from '@rjsf/validator-ajv8';
 import { SelectAutoCompleteContextProvider } from 'UI/Features/Records/Activity/form/SelectAutoCompleteContext';
 import ArrayFieldTemplate from 'rjsf/templates/ArrayFieldTemplate';
 import FieldTemplate from 'rjsf/templates/FieldTemplate';
@@ -11,8 +13,6 @@ import SingleSelectAutoComplete from 'rjsf/widgets/SingleSelectAutoComplete';
 import rjsfTheme from 'UI/Features/Records/Activity/form/rjsfTheme';
 import ChemicalTreatmentDetailsForm from 'UI/Features/Records/Activity/form/ChemicalTreatmentDetailsForm/ChemicalTreatmentDetailsForm';
 import { useSelector } from 'utils/use_selector';
-import { shallowEqual, useDispatch } from 'react-redux';
-import validator from '@rjsf/validator-ajv8';
 import 'UI/Features/Records/Activity/form/aditionalFormStyles.css';
 import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
 import debounce from 'lodash.debounce';

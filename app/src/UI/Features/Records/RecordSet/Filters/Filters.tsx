@@ -1,12 +1,12 @@
 import { FilterAlt, FilterAltOff } from '@mui/icons-material';
 import { Button } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
+import Filter from './Filter';
 import EFilterType from 'constants/EFilterType';
 import { IFilter } from 'state/actions/userSettings/RecordSet';
 import Accordion from 'UI/Reusable/Accordion/Accordion';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { useDispatch, useSelector } from 'utils/use_selector';
-import Filter from './Filter';
 import './filters.css';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { RecordSetId, RecordSetType } from 'interfaces/UserRecordSet';

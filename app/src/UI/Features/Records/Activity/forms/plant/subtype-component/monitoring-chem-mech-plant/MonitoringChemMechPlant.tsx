@@ -1,3 +1,4 @@
+import MonitoringChemMechPlantEntry from './MonitoringChemMechPlantEntry';
 import { useSelector } from 'utils/use_selector';
 import ArrayField from 'UI/Features/Records/Activity/forms/common/ArrayField/ArrayField';
 import {
@@ -6,7 +7,6 @@ import {
 } from 'UI/Features/Records/Activity/forms/plant/interfaces';
 import getDefaultFormState from 'UI/Features/Records/Activity/forms/plant/builders/getDefaultState';
 import { minArrayLength, noRepeatKey } from 'UI/Features/Records/Activity/forms/common/validators';
-import MonitoringChemMechPlantEntry from './MonitoringChemMechPlantEntry';
 
 const MonitoringChemMechPlant = () => {
   const subtype = useSelector((state) => state.ActivityPage?.formType);

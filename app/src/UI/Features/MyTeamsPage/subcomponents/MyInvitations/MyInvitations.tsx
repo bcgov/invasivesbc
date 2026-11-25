@@ -1,8 +1,8 @@
-import StyledTable from 'UI/Reusable/StyledTable/StyledTable';
-import useTeamsManagement from '../useTeamManagement.hooks';
-import Button from 'UI/Reusable/Button/Button';
 import { Cancel, CheckCircle } from '@mui/icons-material';
 import moment from 'moment';
+import useTeamsManagement from '../useTeamManagement.hooks';
+import StyledTable from 'UI/Reusable/StyledTable/StyledTable';
+import Button from 'UI/Reusable/Button/Button';
 import './myInvitations.css';
 import { InvitationOut, InviteStatus } from 'api/api-schema';
 import ConfirmationButton from 'UI/Reusable/ConfirmationButton/ConfirmationButton';

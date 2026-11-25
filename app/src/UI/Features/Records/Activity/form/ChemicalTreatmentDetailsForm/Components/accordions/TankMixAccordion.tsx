@@ -1,7 +1,7 @@
 import { Accordion, AccordionDetails, AccordionSummary, Typography } from '@mui/material';
 import { useContext, useRef } from 'react';
-import TankMix from 'UI/Features/Records/Activity/form/ChemicalTreatmentDetailsForm/Components/single-objects/TankMix';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import TankMix from 'UI/Features/Records/Activity/form/ChemicalTreatmentDetailsForm/Components/single-objects/TankMix';
 import { ChemicalTreatmentDetailsContext } from 'UI/Features/Records/Activity/form/ChemicalTreatmentDetailsForm/ChemicalTreatmentDetailsContext';
 import { RENDER_DEBUG } from 'UI/App';
 

@@ -1,9 +1,9 @@
 import { TextField, MenuItem } from '@mui/material';
-import { SelectAutoCompleteContext } from 'UI/Features/Records/Activity/form/SelectAutoCompleteContext';
 import { ChangeEvent, useContext, useEffect, useState } from 'react';
 import { WidgetProps } from '@rjsf/utils';
-import { useSelector } from 'utils/use_selector';
 import { nanoid } from '@reduxjs/toolkit';
+import { useSelector } from 'utils/use_selector';
+import { SelectAutoCompleteContext } from 'UI/Features/Records/Activity/form/SelectAutoCompleteContext';
 
 type SelectOption = {
   value: string;

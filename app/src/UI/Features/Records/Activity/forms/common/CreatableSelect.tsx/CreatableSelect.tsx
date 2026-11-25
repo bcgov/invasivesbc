@@ -1,11 +1,11 @@
 import './creatableSelect.css';
 import Creatable from 'react-select/creatable';
+import { Controller, FieldValues, RegisterOptions, useFormContext, Path } from 'react-hook-form';
+import { cps } from 'redux-saga/effects';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
 import ErrorMessage from 'UI/Features/Records/Activity/forms/common/ErrorMessage/ErrorMessage';
-import { Controller, FieldValues, RegisterOptions, useFormContext, Path } from 'react-hook-form';
 import { getInputWidth, Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import OptionalField from 'UI/Features/Records/Activity/forms/common/OptionalField/OptionalField';
-import { cps } from 'redux-saga/effects';
 
 interface PropTypes<T extends FieldValues, TOption> {
   label?: string;

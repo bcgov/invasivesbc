@@ -1,8 +1,8 @@
 import 'UI/Layout/ErrorHandler/ErrorHandler.css';
 import { useDispatch } from 'react-redux';
-import { AuthActions } from 'state/actions/auth/Auth';
 import { Button } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { AuthActions } from 'state/actions/auth/Auth';
 
 export const ConnectivityErrorHandler = () => {
   const dispatch = useDispatch();

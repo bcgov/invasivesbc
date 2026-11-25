@@ -1,10 +1,10 @@
 import './manageTripsPage.css';
+import { NavLink, Route, Routes, useLocation, useMatch } from 'react-router';
+import { ArrowBackIos, FiberNewSharp, TripOrigin, DownloadOutlined } from '@mui/icons-material';
 import TripForm from 'UI/Features/ManageTripsPage/subcomponents/TripForm/TripForm';
 import TripList from 'UI/Features/ManageTripsPage/subcomponents/TripList/TripList';
 import MapList from 'UI/Features/ManageTripsPage/subcomponents/MapList/MapList';
 
-import { NavLink, Route, Routes, useLocation, useMatch } from 'react-router';
-import { ArrowBackIos, FiberNewSharp, TripOrigin, DownloadOutlined } from '@mui/icons-material';
 
 const ManageTripsPage = () => {
   const atRoot = useMatch('/ManageTrips/') !== null;

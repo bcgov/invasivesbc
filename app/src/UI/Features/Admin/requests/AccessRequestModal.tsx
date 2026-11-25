@@ -10,6 +10,7 @@ import {
   ListItem,
   Typography
 } from '@mui/material';
+
 type Props = {
   closeRequestDetailsDialog: () => void;
   requestDetailsDialogOpen: boolean;

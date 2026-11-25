@@ -1,11 +1,11 @@
 import './recordMetadata.css';
+import { ActivitySubtypesShortLabels } from 'sharedAPI';
+import { ReactNode } from 'react';
+import moment from 'moment';
 import Fieldset from '../Fieldset/Fieldset';
 import { FormSchema } from '../../plant/interfaces';
-import { ActivitySubtypesShortLabels } from 'sharedAPI';
 import ChangeHistory from '../ChangeHistory/ChangeHistory';
-import { ReactNode } from 'react';
 import { useSelector } from 'utils/use_selector';
-import moment from 'moment';
 
 type InfoProps = {
   term: string;

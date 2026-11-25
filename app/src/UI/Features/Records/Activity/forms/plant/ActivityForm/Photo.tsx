@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
+import { BrokenImage } from '@mui/icons-material';
 import { FormSchema } from '../interfaces';
 import StyledModal from 'UI/Reusable/StyledModal/StyledModal';
 import { WebOnly } from 'UI/Reusable/Predicates/WebOnly';
-import { BrokenImage } from '@mui/icons-material';
 
 const Photo = ({ photo, index, remove }) => {
   const handleClose = () => setIsModalOpen(false);

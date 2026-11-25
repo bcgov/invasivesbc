@@ -1,9 +1,9 @@
+import { useDispatch } from 'react-redux';
+import { Fragment, MouseEvent, TouchEvent, useState } from 'react';
 import WhatsHerePagination from 'UI/Features/WhatsHere/Subcomponents/WhatsHerePagination';
 import { useSelector } from 'utils/use_selector';
-import { useDispatch } from 'react-redux';
 import NoRowsInSearch from 'UI/Features/WhatsHere/Subcomponents/NoRowsInSearch';
 import { RecordSetType } from 'interfaces/UserRecordSet';
-import { Fragment, MouseEvent, TouchEvent, useState } from 'react';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
 import RecordTablePopoverContent from 'UI/Features/Records/RecordSet/RecordTablePopoverContent/RecordTablePopoverContent';

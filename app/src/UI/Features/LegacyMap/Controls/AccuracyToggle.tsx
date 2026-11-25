@@ -1,6 +1,6 @@
 import { IconButton } from '@mui/material';
-import { useDispatch, useSelector } from 'utils/use_selector';
 import AttributionIcon from '@mui/icons-material/Attribution';
+import { useDispatch, useSelector } from 'utils/use_selector';
 import MapActions from 'state/actions/map';
 import HoverTooltip from 'UI/Reusable/HoverTooltip/HoverTooltip';
 

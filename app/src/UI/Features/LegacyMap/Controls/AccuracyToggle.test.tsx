@@ -1,7 +1,7 @@
 import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { AccuracyToggle } from 'UI/Features/LegacyMap/Controls/AccuracyToggle';
 import { Provider } from 'react-redux';
+import { AccuracyToggle } from 'UI/Features/LegacyMap/Controls/AccuracyToggle';
 import { createMockStore, mockSliceReducer } from 'test/testUtils';
 
 const store = createMockStore({

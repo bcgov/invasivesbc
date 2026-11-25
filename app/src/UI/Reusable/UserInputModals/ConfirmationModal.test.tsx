@@ -1,10 +1,10 @@
 import { act, render, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
+import userEvent from '@testing-library/user-event';
 import UserInputModalController from 'UI/Reusable/UserInputModals/UserInputModalController';
 import { createAlertsAndPromptsReducer } from 'state/reducers/alertsAndPrompts';
 import Prompt from 'state/actions/prompts/Prompt';
 import { ConfirmationModalInterface } from 'interfaces/prompt-interfaces';
-import userEvent from '@testing-library/user-event';
 import { createMockStore } from 'test/testUtils';
 
 const confirmationCallBack = (bool: boolean) => {

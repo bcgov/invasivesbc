@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useState } from 'react';
-import { getInputWidth, Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import { nanoid } from '@reduxjs/toolkit';
+import { getInputWidth, Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
 import OptionalField from 'UI/Features/Records/Activity/forms/common/OptionalField/OptionalField';
 import './checkboxUI.css';

@@ -1,13 +1,8 @@
-import { RecordSetId } from 'interfaces/UserRecordSet';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'utils/use_selector';
-import { SourceComponent } from './SourceComponent';
-import { LayerComponent } from './LayerComponent';
-import { SourceCleanupComponent } from './SourceCleanupComponent';
-import { OfflineActivityRecord, OfflineActivitySyncState } from 'state/reducers/offlineActivity';
 import { FeatureCollection, GeoJSON } from 'geojson';
 import { SourceSpecification } from 'maplibre-gl/dist/maplibre-gl-dev';
 import { Md5 } from 'ts-md5';
+import { ActivitySubtypeShortLabels, ActivitySubtypesToType } from 'sharedAPI';
 import {
   createBorderLayer,
   createCircleLayer,
@@ -16,7 +11,12 @@ import {
   getPaintBySchemeOrColor
 } from '../functional/layer-definitions/reusable-layer-specifications';
 import { LayerSpecificationWithStackingOrder } from '../functional/layers-hook';
-import { ActivitySubtypeShortLabels, ActivitySubtypesToType } from 'sharedAPI';
+import { SourceComponent } from './SourceComponent';
+import { LayerComponent } from './LayerComponent';
+import { SourceCleanupComponent } from './SourceCleanupComponent';
+import { OfflineActivityRecord, OfflineActivitySyncState } from 'state/reducers/offlineActivity';
+import { useSelector } from 'utils/use_selector';
+import { RecordSetId } from 'interfaces/UserRecordSet';
 
 type PropTypes = {
   mapReady: boolean;

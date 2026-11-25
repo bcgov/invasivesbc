@@ -1,21 +1,21 @@
 import './Landing.css';
 import { Alert, Box, Button, Divider, Grid } from '@mui/material';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router';
+import DataSharingAgreement from './DataSharingAgreement/DataSharingAgreement';
 import { selectNetworkConnected } from 'state/reducers/network';
 import { selectAuth } from 'state/reducers/auth';
 import { selectUserInfo } from 'state/reducers/userInfo';
 import { useSelector } from 'utils/use_selector';
-import { useDispatch } from 'react-redux';
 import { INFORMATIONAL_LINKS } from 'constants/links';
 import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
 import { AuthActions } from 'state/actions/auth/Auth';
-import DataSharingAgreement from './DataSharingAgreement/DataSharingAgreement';
 import IosDownloadLink from 'UI/Reusable/IosDownloadLink/IosDownloadLink';
 import AndroidDownloadLink from 'UI/Reusable/AndroidDownloadLink/AndroidDownloadLink';
 import { WebOnly } from 'UI/Reusable/Predicates/WebOnly';
 import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
 import EventActions from 'state/actions/events/EventActions';
 import { LayoutMode } from 'UI/Layout/Routes/PrimaryNavigation';
-import { useNavigate } from 'react-router';
 
 const InformationalLinkBox = () => {
   return (

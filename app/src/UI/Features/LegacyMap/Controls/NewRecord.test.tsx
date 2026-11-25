@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
-import { NewRecord } from 'UI/Features/LegacyMap/Controls/NewRecord';
 import userEvent from '@testing-library/user-event';
+import { NewRecord } from 'UI/Features/LegacyMap/Controls/NewRecord';
 
 const mockDispatch = vi.fn();
 vi.mock('utils/use_selector', () => ({

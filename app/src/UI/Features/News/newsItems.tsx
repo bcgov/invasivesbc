@@ -1,7 +1,7 @@
-import NewsArticle, { NewsPlatform, NewsSubject } from 'interfaces/NewsArticle';
-import { buildTimeConfig } from 'state/configuration/build-time-config';
 import copyGeom from './pictures/copy-geometry-button.png';
 import mostRecentObservations from './pictures/most-recent-observations.png';
+import NewsArticle, { NewsPlatform, NewsSubject } from 'interfaces/NewsArticle';
+import { buildTimeConfig } from 'state/configuration/build-time-config';
 /**
  * Text content for the '/News' page.
  * Array sorts by date to keep things chronological.
