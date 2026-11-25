@@ -6,5 +6,6 @@ BIOCONTROL_ROLES = (
     WellKnownRoles.BIOCONTROL_USER.value,
 )
 from .iapp_row_out import IappRowOut, IAPPRowResponse
+from .iapp_site_out import IappSiteOut
 
 from .api import router as iapp_router, ROOT_PATH as IAPP_ROOT_PATH
