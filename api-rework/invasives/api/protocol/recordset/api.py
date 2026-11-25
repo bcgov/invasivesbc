@@ -32,7 +32,9 @@ def get_recordset_rows(request, data: FilterObjectsIn):
 
     with transaction.atomic():
         builder: FilteredActivityQueryset = filter_activities_by_access(
-            FilteredActivityQueryset(filter_objects=filter_objects).apply_filters(),
+            FilteredActivityQueryset(
+                filter_objects=filter_objects, user=request.auth
+            ).apply_filters(),
             request.auth,
         )
         total_records = builder.query.count()
