@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import newsItems from 'UI/Features/News/newsItems';
-import 'UI/Features/News/NewsPage.css';
-import NewsArticle, { NewsSubject } from 'interfaces/NewsArticle';
 import { BugReport, FiberNew, Update } from '@mui/icons-material';
-import { Icon } from '@mui/material';
+import newsItems from 'UI/Features/News/newsItems';
+import NewsArticle, { NewsSubject } from 'interfaces/NewsArticle';
+import Button from 'UI/Reusable/Button/Button';
+import OverlayContentWrapper from 'UI/Reusable/OverlayContentWrapper/OverlayContentWrapper';
+import 'UI/Features/News/NewsPage.css';
 
 const NewsPage = () => {
   const BASE_SHOW = 5;
@@ -13,53 +14,46 @@ const NewsPage = () => {
   const subjectToIcon = (subject: NewsSubject) => {
     switch (subject) {
       case NewsSubject.New:
-        return (
-          <Icon aria-label="New Feature Added">
-            <FiberNew />
-          </Icon>
-        );
+        return <FiberNew aria-label="New Feature Added" />;
       case NewsSubject.Update:
-        return (
-          <Icon aria-label="New Update">
-            <Update />
-          </Icon>
-        );
+        return <Update aria-label="New Update" />;
       case NewsSubject.BugFix:
-        return (
-          <Icon aria-label="Bug Fix Implemented">
-            <BugReport />
-          </Icon>
-        );
+        return <BugReport aria-label="Bug Fix Implemented" />;
       default:
+        return null;
     }
   };
 
   return (
-    <div id="newsPageContainer">
-      <h2 id="newsPageHeader">What's New in InvasivesBC?</h2>
-      <div id="newsPageContent">
-        {newsItems.map((newsItem: NewsArticle, index) => {
-          if (index < loadMore) {
-            return (
-              <div className="newsListItem" key={index}>
-                <div className="newsIcon">{subjectToIcon(newsItem?.subject)}</div>
-                <h3 className="newsListItemTitle">{newsItem.title}</h3>
-                <p className="newsListDate">
-                  Posted:{' '}
-                  <time dateTime={newsItem.date.toLocaleDateString()}>{newsItem.date.toLocaleDateString()}</time>
-                </p>
-                {newsItem.content}
-              </div>
-            );
-          }
-        })}
-        {newsItems.length > loadMore && (
-          <button className="newsPageSeeMore" onClick={handleMore}>
-            See more
-          </button>
-        )}
+    <OverlayContentWrapper>
+      <div id="news-page">
+        <h2>What's New in InvasivesBC?</h2>
+        <div className="content">
+          {newsItems.map((newsItem: NewsArticle, index) => {
+            if (index < loadMore) {
+              const date = newsItem.date.toLocaleDateString();
+              return (
+                <div className="entry" key={index}>
+                  <div className="icon">{subjectToIcon(newsItem?.subject)}</div>
+                  <hgroup>
+                    <h3>{newsItem.title}</h3>
+                    <p className="date">
+                      Posted: <time dateTime={date}>{date}</time>
+                    </p>
+                  </hgroup>
+                  {newsItem.content}
+                </div>
+              );
+            }
+          })}
+          {newsItems.length > loadMore && (
+            <Button variant="contained" className="news-page-see-more" onClick={handleMore}>
+              See more
+            </Button>
+          )}
+        </div>
       </div>
-    </div>
+    </OverlayContentWrapper>
   );
 };
 

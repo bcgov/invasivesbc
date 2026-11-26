@@ -2,6 +2,12 @@ import copyGeom from './pictures/copy-geometry-button.png';
 import mostRecentObservations from './pictures/most-recent-observations.png';
 import NewsArticle, { NewsPlatform, NewsSubject } from 'interfaces/NewsArticle';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
+import measureToolEx from './pictures/measuring-tools.png';
+import mapSearch from './pictures/map-search.png';
+import mockRecordSearch from './pictures/record-search-with-mock-result.png';
+import zoiIcon from './pictures/zones-of-interest-icon.png';
+import zonesOfInterest from './pictures/zones-of-interest.png';
+
 /**
  * Text content for the '/News' page.
  * Array sorts by date to keep things chronological.
@@ -12,10 +18,144 @@ const newsItems: NewsArticle[] = [
     title: '',
     date: new Date(),
     content: <></>,
-    subject: NewsSubject.
+    subject: NewsSubject.,
     platform: NewsPlatform.
   },
   */
+  {
+    title: 'Major Version Release',
+    date: new Date('Dec 1, 2026'),
+    content: (
+      <div className="content">
+        <p>
+          We are pleased to announce a major release of InvasivesBC. We have been working hard behind the scenes to
+          deliver a richer experience for our users
+        </p>
+        <section>
+          <h4>What's Here Improvements</h4>
+          <ul>
+            <li>
+              <b>No more size limits:</b> You can now inspect areas of any size without hitting a cap.
+            </li>
+            <li>
+              <b>Faster/consistent load times:</b> Results appear much quicker when querying an area.
+            </li>
+            <li>
+              <b>Clearer plant breakdowns:</b> Plant lists are now organized into three distinct categories, Species
+              Positive, Species Negative, and Species Treated.
+            </li>
+            <li>
+              <b>Back-to-back drawing:</b> Jump straight from viewing on “What's Here” result to drawing your next
+              search area without extra clicks.
+            </li>
+          </ul>
+        </section>
+        <section>
+          <h4>Forms and Photo Uploads</h4>
+          <ul>
+            <li>
+              <b>Fresh look and improved performance:</b> Activity Forms feature a cleaner design and respond faster
+              while you work.
+            </li>
+            <li>
+              <b>No more “ghost” submission errors:</b> Improved Form validation ensures that if something prevents you
+              from submitting a record, you'll clearly see what needs to be fixed
+            </li>
+            <li>
+              <b>Track changes over time:</b> Enhanced Record Versioning lets you view a clear history of edits directly
+              inside the form.
+            </li>
+            <li>
+              <b>Full-size photo viewing:</b> Click into Uploaded record Photos to view them in larger, full-size
+              detail.
+            </li>
+          </ul>
+        </section>
+        <section>
+          <h4>Recordsets</h4>
+          <ul>
+            <li>
+              <b>Filter by employer</b>: View and filter records by Employer directly in your recordset tables.
+            </li>
+            <li>
+              <b>Refreshed table design</b>: Recordset tables have been updated for easier reading and navigation
+            </li>
+          </ul>
+        </section>
+        <section>
+          <h4>Teams (Early Access)</h4>
+          <ul>
+            <li>
+              <b>Build your team:</b> Data Managers and Administrators can now create teams and invite members from
+              their agency or employer. Once invited, team members simply accept the invitation to join.
+            </li>
+            <li>
+              <b>Coming soon:</b> We are actively building permissions that will allow Team Leaders to edit records
+              belonging to their team members. You can set up your teams now so you're ready as soon as those tools go
+              live.
+            </li>
+          </ul>
+        </section>
+        <section>
+          <h4>Maps and Spatial Tools</h4>
+          <ul>
+            <li>
+              <b>Measure distances on the map:</b> Use the measuring tool to easily calculate the distance between
+              locations, along trails, or across areas
+            </li>
+            <li>
+              <b>Explore 'Zones of Interest' (Early Access)</b>: Select predefined areas directly on the map to
+              instantly view a summary of records within that zone. (We'll continue expanding this feature in updates)
+            </li>
+            <li>
+              <b>More accurate map markers:</b> Map markers now sit directly inside the actual boundaries of an area
+              rather than at a mathematical centre point, preventing pins from appearing 'off course' or outside oddly
+              shapes zones.
+            </li>
+          </ul>
+          <figure>
+            <img src={zoiIcon} alt="Zones of Interest Icon" />
+            <figcaption>[Figure 1: Zones of Interest toggle]</figcaption>
+          </figure>
+          <figure>
+            <img src={zonesOfInterest} alt="Zones of Interest Map display" />
+            <figcaption>[Figure 2: Zones of Interest]</figcaption>
+          </figure>
+          <figure>
+            <img src={measureToolEx} alt="Measuring tool example" />
+            <figcaption>[Figure 3: Measuring tools]</figcaption>
+          </figure>
+        </section>
+        <section>
+          <h4>Record Search</h4>
+          <ul>
+            <li>
+              <b>Search for records by ID:</b> Quicky find a specific InvasivesBC or IAPP record by typing their ID
+              directly into the search bar
+            </li>
+            <li>
+              <b>Remember your last search type:</b> The search tool now automatically saves your last-used search
+              option, and provides a simple menu for when you want to switch to a different one
+            </li>
+          </ul>
+          <figure>
+            <img src={mockRecordSearch} alt="Record Search with result" />
+            <figcaption>[Figure 4: Record search]</figcaption>
+          </figure>
+          <figure>
+            <img src={mapSearch} alt="Map Search Tool displaying mode" />
+            <figcaption>[Figure 5: Map search modes]</figcaption>
+          </figure>
+        </section>
+        <p>
+          If you have any concerns or wish to report a bug, please contact us at{' '}
+          <a href="mailto:InvasivesBC@gov.bc.ca">InvasivesBC@gov.bc.ca</a>
+        </p>
+      </div>
+    ),
+    subject: NewsSubject.New,
+    platform: NewsPlatform.BOTH
+  },
   {
     title: 'Feature: "Copy Geometry"',
     date: new Date('Nov 18, 2025'),
