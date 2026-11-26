@@ -14,6 +14,7 @@ import AdminLayout from 'UI/Features/Admin/AdminLayout';
 import BatchLayout from 'UI/Features/Batch/BatchLayout';
 import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
 
+const IAPPSummary = React.lazy(() => import('UI/Features/IAPP/IAPPSummary'));
 const EmailSettings = React.lazy(() => import('UI/Features/Admin/email-setup/EmailSettings'));
 const EmailTemplates = React.lazy(() => import('UI/Features/Admin/email-setup/EmailTemplates'));
 const PendingRequests = React.lazy(() => import('UI/Features/Admin/requests/PendingRequests'));
@@ -48,9 +49,7 @@ const SummaryPage = React.lazy(() => import('UI/Features/SummaryPage/SummaryPage
 const LocalRecordsListRoute = () => {
   const { id } = useParams<{ id: string }>();
   if (id) {
-    return (
-      <>{id === RecordSetId.OfflineActivities ? <OfflineRecordSet setID={id} /> : <RecordSet setID={id} />}</>
-    );
+    return <>{id === RecordSetId.OfflineActivities ? <OfflineRecordSet setID={id} /> : <RecordSet setID={id} />}</>;
   }
   return null;
 };
@@ -74,11 +73,8 @@ const AppRoutes = () => {
       <Route path="/Landing" Component={() => <LandingComponent />} />
       <Route path="/Records/LegacyForm/:id/:mode" Component={() => <Activity />}></Route>
 
-      <Route path="/Records/IAPP/:id/:mode" Component={() => <IAPPRecord />} />
-      <Route
-        path="/Records/List/Local/:id"
-        Component={LocalRecordsListRoute}
-      />
+      <Route path="/Records/IAPP/:id/:mode" Component={() => <IAPPSummary />} />
+      <Route path="/Records/List/Local/:id" Component={LocalRecordsListRoute} />
 
       <Route path="/Records" Component={() => <Records />} />
 
