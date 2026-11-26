@@ -54,20 +54,22 @@ class Column(Enum):
 class FilteredIappQueryset:
     """Helper for querying IAPP across endpoints using incoming filterObjeccts"""
 
+    PREFETCH = (
+        "site_selections",
+        "surveys",
+        "mechanical_treatments",
+        "mechanical_monitorings",
+        "chemical_treatments",
+        "chemical_monitorings",
+        "biological_treatments",
+        "biological_monitorings",
+        "biological_dispersals",
+    )
+
     def __init__(self, filter_objects=None, user: User = None):
         self.filter_objects = filter_objects or [{}]
 
-        self.queryset = IAPPSite.objects.all().prefetch_related(
-            "site_selections",
-            "surveys",
-            "mechanical_treatments",
-            "mechanical_monitorings",
-            "chemical_treatments",
-            "chemical_monitorings",
-            "biological_treatments",
-            "biological_monitorings",
-            "biological_dispersals",
-        )
+        self.queryset = IAPPSite.objects.all().prefetch_related(*self.PREFETCH)
         if user and not user.has_any_role(list(BIOCONTROL_ROLES)):
             self.queryset = self.queryset.exclude(protected=True)
 
