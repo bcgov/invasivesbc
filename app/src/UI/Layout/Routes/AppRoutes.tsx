@@ -13,15 +13,18 @@ import { useSelector } from 'utils/use_selector';
 import AdminLayout from 'UI/Features/Admin/AdminLayout';
 import BatchLayout from 'UI/Features/Batch/BatchLayout';
 import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
+import BugReportView from 'UI/Features/BugReportPage/BugReportView/BugReportView';
 
 const EmailSettings = React.lazy(() => import('UI/Features/Admin/email-setup/EmailSettings'));
 const EmailTemplates = React.lazy(() => import('UI/Features/Admin/email-setup/EmailTemplates'));
 const PendingRequests = React.lazy(() => import('UI/Features/Admin/requests/PendingRequests'));
 const RoleAssignment = React.lazy(() => import('UI/Features/Admin/users/RoleAssignment'));
+const BugReports = React.lazy(() => import('UI/Features/BugReportPage/BugReports/BugReports'));
 
 const EmbeddedReportsPage = React.lazy(() => import('UI/Features/Reports/EmbeddedReportsPage'));
 const AccessRequestPage = React.lazy(() => import('UI/Features/AccessRequest/AccessRequestPage'));
 const UserRegistrationPage = React.lazy(() => import('UI/Features/UserRegistration/UserRegistrationPage'));
+const ReportBugPage = React.lazy(() => import('UI/Features/ReportBugPage/ReportBugPage'));
 const TrainingPage = React.lazy(() => import('UI/Features/Training/Training'));
 const NewsPage = React.lazy(() => import('UI/Features/News/NewsPage'));
 
@@ -176,6 +179,17 @@ const AppRoutes = () => {
       />
 
       <Route
+        path="/ReportBug"
+        Component={() => (
+          <Suspense fallback={<Spinner />}>
+            <FeatureGated requires="BUG_REPORT">
+              <ReportBugPage />
+            </FeatureGated>
+          </Suspense>
+        )}
+      />
+
+      <Route
         path="/Admin/emailSettings"
         Component={() => (
           <AdminLayout>
@@ -214,6 +228,30 @@ const AppRoutes = () => {
               <RoleAssignment />
             </Suspense>
           </AdminLayout>
+        )}
+      />
+
+      <Route
+        path="/Admin/bugReports"
+        Component={() => (
+          <AdminLayout>
+            <Suspense fallback={<Spinner />}>
+              <FeatureGated requires="BUG_REPORT">
+                <BugReports />
+              </FeatureGated>
+            </Suspense>
+          </AdminLayout>
+        )}
+      />
+
+      <Route
+        path="/Admin/bugReports/:id"
+        Component={() => (
+          <Suspense fallback={<Spinner />}>
+            <FeatureGated requires="BUG_REPORT">
+              <BugReportView />
+            </FeatureGated>
+          </Suspense>
         )}
       />
 

@@ -4,6 +4,7 @@
   align-items: flex-start;
   margin-bottom: 10px;
   min-height: 137px;
+  height: 100%;
   box-sizing: border-box;
 
   div {

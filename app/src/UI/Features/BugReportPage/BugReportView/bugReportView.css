@@ -1,0 +1,26 @@
+.bug-report-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 40%;
+}
+
+.bug-report-content {
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+
+    .list-item {
+        display: flex;
+        flex-direction: row;
+        gap: 8px;
+        margin: 4px;
+
+        dt {
+            font-weight: bold;
+        }
+
+        dd {
+            margin: 0;
+        }
+    }
+}

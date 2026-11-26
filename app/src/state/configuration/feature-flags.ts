@@ -16,6 +16,7 @@ class FeatureFlag {
 
 const BASELINE_FEATURES = {
   BATCH: new FeatureFlag('BATCH', true),
+  BUG_REPORT: new FeatureFlag('BUG_REPORT', false),
 
   CACHE_RECORDSETS: new FeatureFlag('CACHE_RECORDSETS', true),
   CACHE_TILES: new FeatureFlag('CACHE_TILES', true),

@@ -4,10 +4,13 @@ import { NavLink, To } from 'react-router';
 import React from 'react';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import './SecondaryNavigation.css';
+import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
+import { FeatureFlags } from 'state/configuration/feature-flags';
 
 interface SecondaryNavigationLinkDefinition {
   label: string;
   to: To;
+  featureFlag?: keyof FeatureFlags;
 }
 
 interface SecondaryNavigationProps {
@@ -21,11 +24,19 @@ const SecondaryNavigation: React.FC<SecondaryNavigationProps> = ({ links }) => {
     <Box className={`secondary-navigation ${darkTheme ? 'dark' : ''}`}>
       <Container maxWidth={'lg'}>
         <Stack direction="row" justifyContent="start" alignItems="center" spacing={6}>
-          {links.map((l) => (
-            <NavLink key={l.label} to={l.to} className={({ isActive }) => (isActive ? 'active' : '')}>
-              {l.label}
-            </NavLink>
-          ))}
+          {links.map((l) =>
+            l.featureFlag ? (
+              <FeatureGated requires={l.featureFlag}>
+                <NavLink key={l.label} to={l.to} className={({ isActive }) => (isActive ? 'active' : '')}>
+                  {l.label}
+                </NavLink>
+              </FeatureGated>
+            ) : (
+              <NavLink key={l.label} to={l.to} className={({ isActive }) => (isActive ? 'active' : '')}>
+                {l.label}
+              </NavLink>
+            )
+          )}
         </Stack>
       </Container>
     </Box>

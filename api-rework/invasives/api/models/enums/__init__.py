@@ -7,3 +7,4 @@ from .platform_source import *
 from .treatment_pass import *
 from .yes_no_unknown import *
 from .yes_no import *
+from .bug_report_status import *

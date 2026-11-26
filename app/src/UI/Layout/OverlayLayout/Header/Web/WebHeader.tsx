@@ -18,6 +18,7 @@ import NavTab from 'UI/Layout/OverlayLayout/Header/NavTab';
 import { usePrimaryNavigationLinks } from 'UI/Layout/Routes/PrimaryNavigation';
 import DebugMenu from 'UI/Layout/DebugMenu/DebugMenu';
 import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
+import FlagIcon from '@mui/icons-material/Flag';
 
 const ButtonWrapper = ({ children }) => {
   return (
@@ -99,15 +100,16 @@ const LoginOrOutMemo = React.memo(() => {
     setAnchorEl(null);
   };
 
-  const navToUpdateRequest = () => {
-    navigate('/AccessRequest');
+  const navTo = (url: string) => {
+    navigate(url);
+    handleClose();
   };
 
   const requestAccess = async () => {
     if (!authenticated) {
       dispatch(AuthActions.signinRequest({}));
     } else {
-      navigate('/AccessRequest');
+      navTo('/AccessRequest');
     }
   };
 
@@ -135,7 +137,7 @@ const LoginOrOutMemo = React.memo(() => {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
       >
         {activated && (
-          <MenuItem onClick={navToUpdateRequest}>
+          <MenuItem onClick={() => navTo('/AccessRequest')}>
             <ListItemIcon>
               <AssignmentIcon />
             </ListItemIcon>
@@ -152,7 +154,7 @@ const LoginOrOutMemo = React.memo(() => {
         )}
         {activated && (
           <FeatureGated requires="TEAMS">
-            <MenuItem onClick={() => navigate('/teams')}>
+            <MenuItem onClick={() => navTo('/teams')}>
               <ListItemIcon>
                 <Group />
               </ListItemIcon>
@@ -160,6 +162,17 @@ const LoginOrOutMemo = React.memo(() => {
             </MenuItem>
           </FeatureGated>
         )}
+        {activated && (
+          <FeatureGated requires="BUG_REPORT">
+            <MenuItem onClick={() => navTo('/ReportBug')}>
+              <ListItemIcon>
+                <FlagIcon />
+              </ListItemIcon>
+              Report Bug
+            </MenuItem>
+          </FeatureGated>
+        )}
+
         {authenticated ? (
           <LogoutButton />
         ) : (
