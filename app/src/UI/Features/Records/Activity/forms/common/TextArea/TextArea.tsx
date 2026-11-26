@@ -4,15 +4,15 @@ import ErrorMessage from 'UI/Features/Records/Activity/forms/common/ErrorMessage
 import { getInputWidth, Width } from 'UI/Features/Records/Activity/forms/common/utils';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
 import OptionalField from 'UI/Features/Records/Activity/forms/common/OptionalField/OptionalField';
-import './textArea.css';
 import AdvisoryMessage from '../AdvisoryMessage/AdvisoryMessage';
+import './textArea.css';
 
 interface PropTypes extends InputHTMLAttributes<HTMLTextAreaElement> {
   error?: FieldError;
   label?: string;
   required?: boolean;
   tooltip?: string;
-  width?: Width;
+  width?: `${Width}`;
   advisoryText?: string;
 }
 
