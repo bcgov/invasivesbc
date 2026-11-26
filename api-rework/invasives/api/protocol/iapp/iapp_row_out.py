@@ -109,8 +109,10 @@ class IappRowOut(Schema):
 
     @staticmethod
     def resolve_monitored(obj: IAPPSite):
-        if bool(getattr(obj, "mechanical_monitorings").all()) or bool(
-            getattr(obj, "chemical_monitorings").all()
+        if (
+            bool(getattr(obj, "mechanical_monitorings").all())
+            or bool(getattr(obj, "chemical_monitorings").all())
+            or bool(getattr(obj, "biological_monitorings").all())
         ):
             return "Yes"
         return "No"
