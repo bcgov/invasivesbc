@@ -13,7 +13,8 @@ const useReportBugPage = () => {
     await fetch(`${BASE}/bug_report`, {
       method: 'POST',
       headers: {
-        Authorization: await getCurrentJWT()
+        Authorization: await getCurrentJWT(),
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify(data)
     });

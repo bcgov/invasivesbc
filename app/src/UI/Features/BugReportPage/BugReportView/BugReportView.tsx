@@ -53,7 +53,7 @@ const BugReportView = () => {
     load();
   }, [reportId]);
 
-  if (loading) return <LoadingPage />;
+  if (loading || !bugIssueTypeCodes) return <LoadingPage />;
 
   return (
     <OverlayContentWrapper backButton>
@@ -67,8 +67,8 @@ const BugReportView = () => {
             <Info term="Device" definition={reportDetails?.device} />
             <Info term="Reproducible" definition={reportDetails?.reproducible ? 'Yes' : 'No'} />
             <Info term="Expected behavior" definition={reportDetails?.expected_behavior} />
-            <Info term="Offline" definition={reportDetails?.offline ? 'Yes' : 'No'} />
-            <Info term="Online" definition={reportDetails?.online ? 'Yes' : 'No'} />
+            <Info term="Happening Offline?" definition={reportDetails?.offline ? 'Yes' : 'No'} />
+            <Info term="Happening Online?" definition={reportDetails?.online ? 'Yes' : 'No'} />
             <Info term="Issue type" definition={reportDetails?.issue_type} />
           </dl>
         </div>
