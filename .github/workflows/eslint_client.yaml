@@ -36,6 +36,12 @@ jobs:
       - name: eslint
         working-directory: ./api-rework/client
         run: npx eslint src
+      - name: install app deps
+        working-directory: ./app
+        run: npm ci
+      - name: eslint app
+        working-directory: ./app
+        run: npx eslint src --quiet
       - name: stylelint
         working-directory: ./api-rework/client
         run: npx stylelint "src/**/*.css" "src/**/*.scss" --mw 0
