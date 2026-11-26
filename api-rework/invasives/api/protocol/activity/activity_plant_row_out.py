@@ -123,8 +123,8 @@ class ActivityPlantRowOut(ModelSchema):
     def resolve_updated_by(obj: Activity):
         """Get last update record, or return creator name if absent"""
         if update := ActivityModificationRecord.objects.filter(activity=obj).last():
-            return update.user.display_name
-        return obj.creating_user.display_name
+            return update.user.username
+        return obj.creating_user.username
 
     @staticmethod
     def resolve_species_biocontrol_full(obj: Activity):
@@ -179,7 +179,7 @@ class ActivityPlantRowOut(ModelSchema):
     def resolve_created_by(obj: Activity):
         if not obj.creating_user:
             return obj.created_by
-        return obj.creating_user.display_name
+        return obj.creating_user.username
 
     @staticmethod
     def resolve_species_positive_full(obj: Activity):
@@ -363,7 +363,7 @@ class DraftActivityPlantRowOut(ActivityPlantRowOut):
     def resolve_created_by(obj: DraftActivity):
         if not obj.creating_user:
             return obj.created_by
-        return obj.creating_user.display_name
+        return obj.creating_user.username
 
     @staticmethod
     def resolve_species_positive_full(obj: DraftActivity):
