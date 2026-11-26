@@ -8,7 +8,6 @@ from . import IAPPRowResponse, IappSiteOut, BIOCONTROL_ROLES
 
 ROOT_PATH = "/iapp"
 router = Router(auth=NinjaAnyRoleRequired())
-# router = Router(auth=None)
 
 
 @router.post("/rows", response=IAPPRowResponse)
@@ -25,8 +24,11 @@ def get_iapp_rows(request, data: FilterObjectsIn):
 
 @router.get("/site/{id}", response=IappSiteOut)
 def get_iapp_site(request, id: int):
-    kwargs = {"site_id": id}
-    # if not request.auth.has_any_role(list(BIOCONTROL_ROLES)):
-    #     kwargs["protected"] = False
 
-    return get_object_or_404(IAPPSite, **kwargs)
+    kwargs = {"site_id": id}
+    if not request.auth.has_any_role(list(BIOCONTROL_ROLES)):
+        kwargs["protected"] = False
+    prefetched = IAPPSite.objects.prefetch_related(
+        "images", *FilteredIappQueryset.PREFETCH
+    )
+    return get_object_or_404(prefetched, **kwargs)
